@@ -1,0 +1,171 @@
+{
+  "translation-revision-date": "2023-12-13 15:09+01:00",
+  "generator": "WP-CLI\/2.7.1",
+  "source": "ticket_scanner.js",
+  "domain": "event-tickets-with-ticket-scanner",
+  "locale_data": {
+    "event-tickets-with-ticket-scanner": {
+      "": {
+        "domain": "event-tickets-with-ticket-scanner",
+        "lang": "hu",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "For QR code barcode scanner": [
+        "QR kódolvasóhoz"
+      ],
+      "label\u0004Ok": [
+        "Ok"
+      ],
+      "label\u0004Reload": [
+        "Frissítés"
+      ],
+      "label\u0004Close": [
+        "Bezár"
+      ],
+      "...loading...": [
+        "...betöltés..."
+      ],
+      "Ticket redeemed": [
+        "Jegy beváltva"
+      ],
+      "Redeemed": [
+        "Jegy beváltva"
+      ],
+      "TICKET NOT REDEEMED - see reason below": [
+        "JEGY NINCS BEVÁLTVA - lásd lejjebb"
+      ],
+      "NOT REDEEMED - see reason below": [
+        "NINCS BEVÁLTVA - lásd lejjebb"
+      ],
+      "TICKET OK - Redeemed": [
+        "JEGY RENDBEN"
+      ],
+      "Successfully redeemed": [
+        "Sikeres beváltás"
+      ],
+      "Failed to redeem": [
+        "Hibás beváltás"
+      ],
+      "Scan next Ticket": [
+        "Következő szkennelése"
+      ],
+      "found %s": [
+        "%s találat"
+      ],
+      "Access rights missing. Please login first.": [
+        "Hozzáférési jogosultság hiányzik. Jelentkezzen be."
+      ],
+      "cal\u0004Sun": [
+        "Vas"
+      ],
+      "cal\u0004Mon": [
+        "Hé"
+      ],
+      "cal\u0004Tue": [
+        "Ke"
+      ],
+      "cal\u0004Wed": [
+        "Sze"
+      ],
+      "cal\u0004Thu": [
+        "Csü"
+      ],
+      "cal\u0004Fri": [
+        "Pé"
+      ],
+      "cal\u0004Sat": [
+        "Szo"
+      ],
+      "cal\u0004Jan": [
+        "Jan"
+      ],
+      "cal\u0004Feb": [
+        "Feb"
+      ],
+      "cal\u0004Mar": [
+        "Már"
+      ],
+      "cal\u0004Apr": [
+        "Ápr"
+      ],
+      "cal\u0004May": [
+        "Máj"
+      ],
+      "cal\u0004Jun": [
+        "Jún"
+      ],
+      "cal\u0004Jul": [
+        "Júl"
+      ],
+      "cal\u0004Aug": [
+        "Aug"
+      ],
+      "cal\u0004Sep": [
+        "Szept"
+      ],
+      "cal\u0004Oct": [
+        "Okt"
+      ],
+      "cal\u0004Nov": [
+        "Nov"
+      ],
+      "cal\u0004Dec": [
+        "Dec"
+      ],
+      "Ticket is NOT paid (%s).": [
+        "Jegy NINCS kifizetve (%s)."
+      ],
+      "Ticket paid": [
+        "Jegy kifizetve"
+      ],
+      "Ticket NOT paid": [
+        "Jegy NINCS kifizetve"
+      ],
+      "Ticket NOT redeemed": [
+        "Jegy NINCS beváltva"
+      ],
+      "Ticket not redeemed": [
+        "Jegy nincs beváltva"
+      ],
+      "Ticket is already redeemed": [
+        "Jegyet már beváltották"
+      ],
+      "Confirmed status validation check counter: <b>%s<\/b>": [
+        "Confirmed status validation check counter: <b>(%s)<\/b>"
+      ],
+      "Max Redeem Amount for this ticket: <b>%s<\/b>": [
+        "Max. beváltások száma: <b>%s<\/b>"
+      ],
+      "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
+        "Entwertungen: <b>%1$d<\/b> von <b>%2$d<\/b>"
+      ],
+      "Bought at %s": [
+        "Vásárlás ideje: %s"
+      ],
+      "Expiration at %s": [
+        "Lejárat ideje: %s"
+      ],
+      "Redeemable from %s": [
+        "Beváltás kezdete: %s"
+      ],
+      "Expires after %1$d days (%2$s)": [
+        "Expires after %1$d days (%2$s)"
+      ],
+      "start redeem ticket...loading...": [
+        "Jegy beváltás ...betöltés..."
+      ],
+      "label\u0004Redeem Ticket": [
+        "Jegy beváltás"
+      ],
+      "label\u0004Download PDF": [
+        "Download PDF"
+      ],
+      "%d tickets of this event (product) redeemed already": [
+        "%d jegy beváltva ehhez az eseményhez"
+      ],
+      "attr\u0004Type in the ticket number and hit ENTER (optional to scanning)": [
+        "Type in the ticket number and hit ENTER (optional to scanning)"
+      ]
+    }
+  }
+}
