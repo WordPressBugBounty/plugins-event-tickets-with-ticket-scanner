@@ -90,7 +90,7 @@ class sasoEventtickets_TicketDesigner {
 		$ticket["end_time"] = trim(get_post_meta( $tmp_product->get_id(), 'saso_eventtickets_ticket_end_time', true ));
 		$ticket["end_date_timestamp"] = 0;
         if (empty($ticket["start_date"]) && !empty($ticket["start_time"])) {
-            $ticket["start_date"] = SASO_EVENTTICKETS::date("Y-m-d");
+            $ticket["start_date"] = date("Y-m-d", current_time("timestamp"));
         }
         if (empty($ticket["end_date"]) && !empty($ticket["end_time"])) {
             $ticket["end_date"] = $ticket["start_date"];
@@ -125,8 +125,8 @@ class sasoEventtickets_TicketDesigner {
         //$ticket["date_time_format"] = str_replace("Y","yyyy", str_replace("i", "mm", str_replace("H", "kk", str_replace("d", "dd", str_replace("m", "MM", $date_time_format)))));
         $ticket["date_time_format"] = $date_time_format;
 
-        $ticket["order_date_paid_text"] = empty($order->get_date_paid()) ? "-" : SASO_EVENTTICKETS::date($date_time_format, strtotime($order->get_date_paid()));
-        $ticket["order_date_completed_text"] = empty($order->get_date_completed()) ? "-" : SASO_EVENTTICKETS::date($date_time_format, strtotime($order->get_date_completed()));
+        $ticket["order_date_paid_text"] = empty($order->get_date_paid()) ? "-" : date($date_time_format, strtotime($order->get_date_paid()));
+        $ticket["order_date_completed_text"] = empty($order->get_date_completed()) ? "-" : date($date_time_format, strtotime($order->get_date_completed()));
         $ticket["order_item_pos"] = 1;
         $ticket["codes"] = explode(",", $order_item->get_meta('_saso_eventtickets_product_code', true));
         if (count($ticket["codes"]) > 1) {
@@ -187,9 +187,9 @@ class sasoEventtickets_TicketDesigner {
                 }
                 return $date->format($pattern);
             } else if (is_int($date)) {
-                return SASO_EVENTTICKETS::date($pattern, $date);
+                return date($pattern, $date);
             }
-            return SASO_EVENTTICKETS::date($pattern, strtotime($date));
+            return date($pattern, strtotime($date));
         });
         $twig->addFilter($filter_format_datetime);
         $filter_stripslashes = new \Twig\TwigFilter('stripslashes', function ($text) {
@@ -243,8 +243,8 @@ class sasoEventtickets_TicketDesigner {
             'forPDFOutput' => $forPDFOutput,
             'isScanner' => $this->MAIN->getTicketHandler()->isScanner(),
             'SERVER' => [
-                "time"=>SASO_EVENTTICKETS::date("Y-m-d H:i:s"),
-                "timestamp"=>SASO_EVENTTICKETS::time(),
+                "time"=>date("Y-m-d H:i:s", current_time("timestamp")),
+                "timestamp"=>current_time("timestamp"),
                 "timezone"=>wp_timezone()
             ],
             'WPDB' => $wpdb

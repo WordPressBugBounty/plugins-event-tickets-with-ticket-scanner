@@ -200,7 +200,7 @@ class sasoEventtickets_Core {
 			$metaObj['wc_ticket']['_set_by_admin_username'] = "";
 		}
 		if ($metaObj['wc_ticket']['is_ticket'] == 1 && $codeObj != null && is_array($codeObj)) {
-			if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".SASO_EVENTTICKETS::time());
+			if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".current_time("timestamp"));
 			if (empty($metaObj['wc_ticket']['_public_ticket_id'])) $metaObj['wc_ticket']['_public_ticket_id'] = $this->getTicketId($codeObj, $metaObj);
 			if (empty($metaObj['wc_ticket']['_qr_content'])) $metaObj['wc_ticket']['_qr_content'] = $this->getQRCodeContent($codeObj, $metaObj);
 			$metaObj['wc_ticket']['_url'] = $this->getTicketURL($codeObj, $metaObj);
@@ -629,7 +629,7 @@ class sasoEventtickets_Core {
 		$order_id = $order->get_id();
 		$idcode = $order->get_meta('_saso_eventtickets_order_idcode');
 		if (empty($idcode)) {
-			$idcode = strtoupper(md5($order_id."-".SASO_EVENTTICKETS::time()."-".uniqid()));
+			$idcode = strtoupper(md5($order_id."-".current_time("timestamp")."-".uniqid()));
 			$order->update_meta_data( '_saso_eventtickets_order_idcode', $idcode );
 			$order->save();
 		}

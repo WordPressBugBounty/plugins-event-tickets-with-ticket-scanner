@@ -131,7 +131,7 @@ class sasoEventtickets_Frontend {
 	private function addNewUsedEntryToMetaObject($metaObj) {
 		// darf auf used setzen, die letzte IP wird genutzt.
 		if (!isset($metaObj['used'])) $metaObj['used'] = [];
-		$metaObj['used']['reg_request'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+		$metaObj['used']['reg_request'] = date("Y-m-d H:i:s", current_time("timestamp"));
 		$metaObj['used']['reg_request_tz'] = date_default_timezone_get();
 		$metaObj['used']['reg_ip'] = $this->getCore()->getRealIpAddr();
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('oneTimeUseOfRegisterCodeWPuser')) {
@@ -178,11 +178,11 @@ class sasoEventtickets_Frontend {
 				}
 				$confirmedCount = isset($metaObj['confirmedCount']) ? intval($metaObj['confirmedCount']) : 0;
 				if ($confirmedCount == 0) {
-					$metaObj['validation']['first_success'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+					$metaObj['validation']['first_success'] = date("Y-m-d H:i:s", current_time("timestamp"));
 					$metaObj['validation']['first_success_tz'] = wp_timezone_string();
 					$metaObj['validation']['first_ip'] = $this->getCore()->getRealIpAddr();
 				}
-				$metaObj['validation']['last_success'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+				$metaObj['validation']['last_success'] = date("Y-m-d H:i:s", current_time("timestamp"));
 				$metaObj['validation']['last_success_tz'] = wp_timezone_string();
 
 				$metaObj['confirmedCount'] = $confirmedCount + 1;
@@ -279,7 +279,7 @@ class sasoEventtickets_Frontend {
 				if (strpos($label, '{VALIDATION-FIRST_SUCCESS}') === false ) {
 					$label .= " {VALIDATION-FIRST_SUCCESS}";
 				}
-				$label = str_replace('{VALIDATION-FIRST_SUCCESS}', SASO_EVENTTICKETS::date($date_format, strtotime($metaObj['validation']['first_success'])), $label);
+				$label = str_replace('{VALIDATION-FIRST_SUCCESS}', date($date_format, strtotime($metaObj['validation']['first_success'])), $label);
 				$label = str_replace('{VALIDATION-FIRST_SUCCESS_TZ}', $metaObj['validation']['first_success_tz'], $label);
 				$codeObj['_retObject']['message']['text'] .= "<br>".$label;
 			}
@@ -289,7 +289,7 @@ class sasoEventtickets_Frontend {
 				if (strpos($label, '{VALIDATION-LAST_SUCCESS}') === false ) {
 					$label .= " {VALIDATION-LAST_SUCCESS}";
 				}
-				$label = str_replace('{VALIDATION-LAST_SUCCESS}', SASO_EVENTTICKETS::date($date_format, strtotime($metaObj['validation']['last_success'])), $label);
+				$label = str_replace('{VALIDATION-LAST_SUCCESS}', date($date_format, strtotime($metaObj['validation']['last_success'])), $label);
 				$label = str_replace('{VALIDATION-LAST_SUCCESS_TZ}', $metaObj['validation']['last_success_tz'], $label);
 				$codeObj['_retObject']['message']['text'] .= "<br>".$label;
 			}
@@ -406,7 +406,7 @@ class sasoEventtickets_Frontend {
 		$metaObj['user']['value'] = htmlentities($data['value']);
 		$metaObj['user']['reg_ip'] = $this->getCore()->getRealIpAddr();
 		$metaObj['user']['reg_approved'] = 1; // auto approval
-		$metaObj['user']['reg_request'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+		$metaObj['user']['reg_request'] = date("Y-m-d H:i:s", current_time("timestamp"));
 		$metaObj['user']['reg_request_tz'] = date_default_timezone_get();
 		$metaObj['user']['reg_userid'] = 0;
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('allowUserRegisterCodeWPuserid')) {

@@ -1,4 +1,5 @@
 function sasoEventtickets_order_detail() {
+    const { __, _x, _n, sprintf } = wp.i18n;
     if (typeof sasoEventtickets_order_detail_data == "undefined") return "";
     let DATA = sasoEventtickets_order_detail_data;
     let div = null;
@@ -28,9 +29,9 @@ function sasoEventtickets_order_detail() {
     }
     function displayOrderDetails() {
         let div_order = $('<div>').appendTo(div);
-        let text_content = "Order Ticket Infos<br>"
-            +DATA.order.products.length+" Products<br>"
-            +DATA.tickets.length+" Tickets";
+        let text_content = __("Order Ticket Infos", 'event-tickets-with-ticket-scanner')+'<br>'
+            +DATA.order.products.length+" "+__("Products", 'event-tickets-with-ticket-scanner')+"<br>"
+            +DATA.tickets.length+" "+__("Tickets", 'event-tickets-with-ticket-scanner')
         let extra_content = "";
 
         for (let pidx=0;pidx<DATA.order.products.length;pidx++) {
@@ -180,6 +181,7 @@ function sasoEventtickets_order_detail() {
 
     }
     function init() {
+        document.title = __("Order Ticket", 'event-tickets-with-ticket-scanner');
         $ = jQuery;
         div = $('#'+DATA.system.divPrefix+'_order_detail_area');
         if (!div) {

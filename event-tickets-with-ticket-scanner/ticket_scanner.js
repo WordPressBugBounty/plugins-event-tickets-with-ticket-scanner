@@ -129,7 +129,7 @@ jQuery(document).ready(()=>{
             _storeValue("ticketScannerCameraId", html5QrcodeScanner.persistedDataManager.data.lastUsedCameraId, 365);
         }
 
-        $("#ticket_scanner_info_area").html("<center>"+sprintf(/* translators: %s: ticket number */__("found %s", 'event-tickets-with-ticket-scanner'), decodedText)+'</center>');
+        updateTicketScannerInfoArea("<center>"+sprintf(/* translators: %s: ticket number */__("found %s", 'event-tickets-with-ticket-scanner'), decodedText)+'</center>');
         // handle the scanned code as you like, for example:
         //console.log(`Code matched = ${decodedText}`, decodedResult);
         $("#reader_output").html(__("...loading...", 'event-tickets-with-ticket-scanner'));
@@ -144,7 +144,7 @@ jQuery(document).ready(()=>{
                 setAuthToken(token);
                 clearAreas();
                 $("#reader_output").html('');
-                $('#ticket_scanner_info_area').html('<h1 style="color:green !important;">Auth Token Set</h3>');
+                updateTicketScannerInfoArea('<h1 style="color:green !important;">Auth Token Set</h3>');
                 window.setTimeout(()=>{
                     showScanNextTicketButton();
                 }, 350);
@@ -173,8 +173,8 @@ jQuery(document).ready(()=>{
       }
 
     function startScanner() {
-        if (!ticket_scanner_operating_option.redeem_auto) jQuery("#ticket_scanner_info_area").html("");
-        jQuery("#reader_output").html("");
+        if (!ticket_scanner_operating_option.redeem_auto) updateTicketScannerInfoArea("");
+        $("#reader_output").html("");
         loadingticket = false;
 
         if (system.PARA.useoldticketscanner) {
@@ -192,7 +192,7 @@ jQuery(document).ready(()=>{
             $("#reader").html("");
             start_cam = true;
             $('#reader').append('<video id="'+v_id+'" style="width:100%" disablepictureinpicture playsinline></video>');
-            $('<select id="'+camlist_id+'"></select>').appendTo($('#reader')).on("change", event=>{
+            $('<select id="'+camlist_id+'" style="width: 100%;"></select>').appendTo($('#reader')).on("change", event=>{
                 _storeValue("ticketScannerCameraId", event.target.value, 365);
                 qrScanner.setCamera(event.target.value);//.then(updateFlashAvailability);
             });
@@ -589,7 +589,7 @@ jQuery(document).ready(()=>{
         $('#ticket_info_btns').html('');
         $('#ticket_add_info').html('');
         $('#ticket_info').html('');
-        $('#ticket_scanner_info_area').html('');
+        updateTicketScannerInfoArea('');
         $('#ticket_info_retrieved').html('');
     }
     function retrieveTicket(code, redeemed, cbf) {
@@ -657,7 +657,7 @@ jQuery(document).ready(()=>{
         }, response=>{
             clearAreas();
             $("#reader_output").html('');
-            $('#ticket_scanner_info_area').html('<h1 style="color:red !important;">'+response.data+'</h3>');
+            updateTicketScannerInfoArea('<h1 style="color:red !important;">'+response.data+'</h3>');
             showScanNextTicketButton();
             cbf && cbf();
         });
@@ -808,24 +808,27 @@ jQuery(document).ready(()=>{
     function displayTicketRedeemedInfo(data) {
         showScanNextTicketButton();
         // zeige retrieved info an
-        $('#ticket_scanner_info_area').html('<center>'+system.code+'</center>');
+        let content = $('<div>').html('<center>'+system.code+'</center>');
         if (system.redeemed_successfully) {
-            $('#ticket_scanner_info_area').append('<h3 style="color:green !important;text-align:center;">'+__('Redeemed', 'event-tickets-with-ticket-scanner')+'</h3>');
-            $('#ticket_scanner_info_area').append('<p style="text-align:center;color:green"><img src="'+system.img_pfad+'button_ok.png"><br><b>'+__('Successfully redeemed', 'event-tickets-with-ticket-scanner')+'</b></p>');
+            content.append('<h3 style="color:green !important;text-align:center;">'+__('Redeemed', 'event-tickets-with-ticket-scanner')+'</h3>');
+            content.append('<p style="text-align:center;color:green"><img src="'+system.img_pfad+'button_ok.png"><br><b>'+__('Successfully redeemed', 'event-tickets-with-ticket-scanner')+'</b></p>');
         } else {
-            $('#ticket_scanner_info_area').append('<h3 style="color:red !important;text-align:center;">'+__('NOT REDEEMED - see reason below', 'event-tickets-with-ticket-scanner')+'</h3>');
-            $('#ticket_scanner_info_area').append('<p style="text-align:center;color:red;"><img src="'+system.img_pfad+'button_cancel.png"><br><b>'+__('Failed to redeem', 'event-tickets-with-ticket-scanner')+'</b></p>');
+            content.append('<h3 style="color:red !important;text-align:center;">'+__('NOT REDEEMED - see reason below', 'event-tickets-with-ticket-scanner')+'</h3>');
+            content.append('<p style="text-align:center;color:red;"><img src="'+system.img_pfad+'button_cancel.png"><br><b>'+__('Failed to redeem', 'event-tickets-with-ticket-scanner')+'</b></p>');
         }
+        updateTicketScannerInfoArea(content);
     }
     function displayRedeemedOrderInfo(code, data) {
-        $('#ticket_scanner_info_area').html('<center>'+code+'</center>');
+        let content = $('<div>');
+        content.html('<center>'+code+'</center>');
         if (data.errors.length > 0) {
-            $('#ticket_scanner_info_area').append('<h3 style="color:red !important;text-align:center;">'+__('ERRORS - see reason below', 'event-tickets-with-ticket-scanner')+'</h3>');
+            content.append('<h3 style="color:red !important;text-align:center;">'+__('ERRORS - see reason below', 'event-tickets-with-ticket-scanner')+'</h3>');
         } else if (data.not_redeemed.length) { // is not implemented yet
-            $('#ticket_scanner_info_area').append('<h3 style="color:orange !important;text-align:center;">'+__('NOT REDEEMED - see reason below', 'event-tickets-with-ticket-scanner')+'</h3>');
+            content.append('<h3 style="color:orange !important;text-align:center;">'+__('NOT REDEEMED - see reason below', 'event-tickets-with-ticket-scanner')+'</h3>');
         } else {
-            $('#ticket_scanner_info_area').append('<h3 style="color:green !important;text-align:center;">'+__('Order Redeemed', 'event-tickets-with-ticket-scanner')+'</h3>');
+            content.append('<h3 style="color:green !important;text-align:center;">'+__('Order Redeemed', 'event-tickets-with-ticket-scanner')+'</h3>');
         }
+        updateTicketScannerInfoArea(content);
 
         system.INPUTFIELD.focus();
         system.INPUTFIELD.select();
@@ -834,8 +837,9 @@ jQuery(document).ready(()=>{
         clearAreas();
         system.redeemed_successfully = false;
         $("#reader_output").html(__("start redeem ticket...loading..."));
-        $('#ticket_scanner_info_area').html(_getSpinnerHTML());
+        updateTicketScannerInfoArea(_getSpinnerHTML());
         _makeGet('redeem_ticket', {'code':code}, data=>{
+            system.data = data;
             $("#reader_output").html('');
 
             if (typeof data.is_order_ticket !== "undefined" && data.is_order_ticket) {
@@ -874,7 +878,7 @@ jQuery(document).ready(()=>{
         }, response=>{
             clearAreas();
             $("#reader_output").html('');
-            $('#ticket_scanner_info_area').html('<h1 style="color:red !important;">'+response.data+'</h3>');
+            updateTicketScannerInfoArea('<h1 style="color:red !important;">'+response.data+'</h3>');
 
             showScanNextTicketButton();
 
@@ -1066,6 +1070,27 @@ jQuery(document).ready(()=>{
         $('<h5 style="color:black !important">').html(sprintf(/* translators: %d: amount redeemed tickets */__('%d tickets of this event (product) redeemed already', 'event-tickets-with-ticket-scanner'), data._ret.tickets_redeemed)).appendTo(div);
         return div;
     }
+    function updateTicketScannerInfoArea(content) {
+        $('#ticket_scanner_info_area').html(content);
+        if (toBool(myAjax.ticketScannerDisplayTimes)) {
+            let data = system.data;
+            if (typeof data._ret != "undefined" && typeof data._ret._server != "undefined") {
+                let div = $('<div>');
+                div.append("Server: "+data._ret._server.time+" "+data._ret._server.timezone.timezone+" Offset: "+data._ret._server.timezone.timezone+"<br>");
+                let date = new Date();
+                div.append("Local: "+date+"<br>");
+                if (typeof data._ret.redeem_allowed_from != "undefined") {
+                    let date = new Date(data._ret.redeem_allowed_from);
+                    div.append("Redeem allowed from : "+date+"<br>");
+                }
+                if (typeof data._ret.redeem_allowed_until != "undefined") {
+                    date = new Date(data._ret.redeem_allowed_until);
+                    div.append("Redeem allowed untill : "+date+"<br>");
+                }
+                $('#ticket_scanner_info_area').append(div);
+            }
+        }
+    }
     function displayTimezoneInformation(data) {
         let div = $('<div>').css('text-align', 'center');
         if (typeof system.PARA.displaytime !== "undefined") {
@@ -1122,7 +1147,6 @@ jQuery(document).ready(()=>{
                 }
             });
         system.INPUTFIELD = div;
-        //$("#ticket_scanner_info_area").parent().prepend(system.INPUTFIELD);
     }
     function addRemoveAuthTokenButton() {
         let div = $('<div style="padding-top:10px;">').css('text-align', 'center');

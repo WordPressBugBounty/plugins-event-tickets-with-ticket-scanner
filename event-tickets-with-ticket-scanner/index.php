@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.4.0
+ * Version: 2.4.1
  * Author: Saso Nikolov
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.4.0');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.4.1');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -522,26 +522,20 @@ class sasoEventtickets {
 			wp_die( __( 'You do not have sufficient permissions to access this page.', 'event-tickets-with-ticket-scanner' ) );
 		}
 
+		wp_enqueue_style("wp-jquery-ui-dialog");
+
+		$js_url = "jquery.qrcode.min.js?_v=".$this->_js_version;
+		wp_register_script('ajax_script2', plugins_url( "3rd/".$js_url,__FILE__ ), array('jquery', 'jquery-ui-dialog'));
+		wp_enqueue_script('ajax_script2');
+
+		wp_enqueue_media(); // um die js wp.media lib zu laden
+
 		// einbinden das js starter skript
 		$js_url = $this->_js_file."?_v=".$this->_js_version;
 		if (defined( 'WP_DEBUG')) $js_url .= '&debug=1';
-
-		wp_enqueue_media(); // um die js wp.media lib zu laden
-		wp_register_script( 'ajax_script_backend', plugins_url( $js_url,__FILE__ ) );
-        wp_enqueue_script(
-            'ajax_script_backend',
-            plugins_url( $js_url,__FILE__ ),
-            array('jquery', 'jquery-ui-dialog', 'wp-i18n')
-        );
-		$js_url = "jquery.qrcode.min.js?_v=".$this->_js_version;
-		wp_enqueue_script(
-			'ajax_script2',
-			plugins_url( "3rd/".$js_url,__FILE__ ),
-			array('jquery', 'jquery-ui-dialog')
-		);
-
+		wp_register_script('ajax_script_backend', plugins_url( $js_url,__FILE__ ), array('jquery', 'jquery-ui-dialog', 'wp-i18n'));
+        wp_enqueue_script('ajax_script_backend');
 		wp_set_script_translations('ajax_script_backend', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
-		wp_enqueue_style("wp-jquery-ui-dialog");
 
 		// per script eine variable einbinden, die url hat den wp-admin prefix
 		// damit im backend.js dann die richtige callback url genutzt werden kann
@@ -723,37 +717,33 @@ class sasoEventtickets {
 	}
 
 	public function setTicketScannerJS() {
-		// könnte man auch auf ajax umstellen, damit es nicht den rest-service nutzt und den normalen ticket scanner ganz abschalten.??
+		wp_enqueue_style("wp-jquery-ui-dialog");
+
 		$js_url = "jquery.qrcode.min.js?_v=".$this->getPluginVersion();
 		wp_enqueue_script(
-			'ajax_script',
+			'ajax_script2',
 			plugins_url( "3rd/".$js_url,__FILE__ ),
 			array('jquery', 'jquery-ui-dialog')
 		);
 
 		$js_url = plugin_dir_url(__FILE__)."3rd/html5-qrcode.min.js?_v=".$this->getPluginVersion();
-		wp_register_script('html5-qrcode', $js_url);
+		wp_register_script('html5-qrcode', $js_url, array('jquery', 'jquery-ui-dialog'));
 		wp_enqueue_script('html5-qrcode');
 
-		// https://github.com/nimiq/qr-scanner
+		// https://github.com/nimiq/qr-scanner - NEW scanner lib
 		$js_url = plugin_dir_url(__FILE__)."3rd/qr-scanner-1.4.2/qr-scanner.umd.min.js?_v=".$this->getPluginVersion();
-		wp_register_script('qr-scanner', $js_url);
+		wp_register_script('qr-scanner', $js_url, array('jquery', 'jquery-ui-dialog'));
 		wp_enqueue_script('qr-scanner');
 
 		$js_url = "ticket_scanner.js?_v=".$this->getPluginVersion();
-		if (defined('WP_DEBUG')) $js_url .= SASO_EVENTTICKETS::time();
+		if (defined('WP_DEBUG')) $js_url .= '&t='.current_time("timestamp");
 		$js_url = plugins_url( $js_url,__FILE__ );
+		wp_register_script('ajax_script_ticket_scanner', $js_url, array('jquery', 'jquery-ui-dialog', 'wp-i18n'));
+		wp_enqueue_script('ajax_script_ticket_scanner');
+		wp_set_script_translations('ajax_script_ticket_scanner', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
 
 		$ticketScannerDontRememberCamChoice = $this->getOptions()->isOptionCheckboxActive("ticketScannerDontRememberCamChoice") ? true : false;
 
-		wp_register_script('ajax_script_ticket_scanner', $js_url);
-		wp_enqueue_script(
-			'ajax_script_ticket_scanner',
-			$js_url,
-			array('jquery', 'jquery-ui-dialog', 'wp-i18n')
-		);
-		wp_set_script_translations('ajax_script_ticket_scanner', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
-		wp_enqueue_style("wp-jquery-ui-dialog");
 		$vars = [
 			'_plugin_home_url' =>plugins_url( "",__FILE__ ),
 			'_action' => $this->_prefix.'_executeAdminSettings',
@@ -775,6 +765,7 @@ class sasoEventtickets {
 			'ticketScannerHideTicketInformation' => $this->getOptions()->isOptionCheckboxActive('ticketScannerHideTicketInformation'),
 			'ticketScannerDontShowBtnPDF' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDontShowBtnPDF'),
 			'ticketScannerDontShowBtnBadge' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDontShowBtnBadge'),
+			'ticketScannerDisplayTimes' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDisplayTimes')
 		];
 		$vars = apply_filters( $this->_add_filter_prefix.'main_setTicketScannerJS', $vars );
         wp_localize_script(
@@ -957,6 +948,7 @@ class sasoEventtickets {
             plugins_url( $js_url,__FILE__ ),
             array('jquery', 'wp-i18n')
         );
+		wp_set_script_translations('ajax_script_validator', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
 
 		$vars = array(
 				'shortcode_attr'=>json_encode($attr),
@@ -985,11 +977,9 @@ class sasoEventtickets {
 
 		if ($this->isPremium() && method_exists($this->getPremiumFunctions(), "addJSFrontFile")) $this->getPremiumFunctions()->addJSFrontFile();
 
-		wp_set_script_translations('ajax_script_validator', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
-
         wp_localize_script(
             'ajax_script_validator',
-            'Ajax_'.$this->_prefix, // name der injected variable
+            'Ajax_'.$this->_prefix, // name of the injected variable
             $vars
         );
         $ret = '';

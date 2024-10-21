@@ -329,10 +329,10 @@ class sasoEventtickets_TicketBadge {
                     $key = substr(substr($item, 16), 0, -1);
                     $value = $this->getValueOfArrayByPlaceholder($key, $product_dates);
                     if ($key == "ticket_start_date" || $key == "ticket_end_date") {
-                        $value = @SASO_EVENTTICKETS::date($date_format, strtotime($value));
+                        $value = @date($date_format, strtotime($value));
                     }
                     if ($key == "ticket_start_time" || $key == "ticket_end_time") {
-                        $value = @SASO_EVENTTICKETS::date($date_format, strtotime($product_dates['ticket_start_date']." ".$value));
+                        $value = @date($date_format, strtotime($product_dates['ticket_start_date']." ".$value));
                     }
                     $html = str_replace($item, wp_kses_post($value), $html);
                 }
@@ -363,7 +363,7 @@ class sasoEventtickets_TicketBadge {
                             $value = $this->getValueOfWCObject($key, $order);
                         }
                         if ($key == "date.paid" || $key == "date.completed" || $key == "date.created") {
-                            $value = SASO_EVENTTICKETS::date($this->date_time_format, strtotime($value));
+                            $value = date($this->date_time_format, strtotime($value));
                         }
                         $html = str_replace($item, wp_kses_post($value), $html);
                     }
@@ -408,7 +408,7 @@ class sasoEventtickets_TicketBadge {
                 $key = substr(substr($item, $len_pattern), 0, -1);
                 $value = $this->getValueOfWCObject($key, $product);
                 if ($key == "date.modified" || $key == "date.created") {
-                    $value = SASO_EVENTTICKETS::date($this->date_time_format, strtotime($value));
+                    $value = date($this->date_time_format, strtotime($value));
                 }
                 $html = str_replace($item, wp_kses_post($value), $html);
             }

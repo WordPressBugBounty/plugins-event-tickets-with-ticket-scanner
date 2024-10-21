@@ -82,11 +82,11 @@ class sasoEventtickets_Authtoken {
 		$tokenObj = ['meta'=>''];
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectAuthtoken($tokenObj['meta']);
 
-		$felder = ["name"=>strip_tags($data['name']), "time"=>SASO_EVENTTICKETS::date("Y-m-d H:i:s")];
-		$felder['code'] = strtoupper(base64_encode(get_site_url())."_".md5(SASO_EVENTTICKETS::time()."-".uniqid()));
+		$felder = ["name"=>strip_tags($data['name']), "time"=>date("Y-m-d H:i:s", current_time("timestamp"))];
+		$felder['code'] = strtoupper(base64_encode(get_site_url())."_".md5(current_time("timestamp")."-".uniqid()));
 		$felder['areacode'] = "ticketscanner";
 		$felder['aktiv'] = isset($data['aktiv']) ? intval($data['aktiv']) : 1;
-		$felder['time'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+		$felder['time'] = date("Y-m-d H:i:s", current_time("timestamp"));
 
 		$metaObj = $this->setMetaDataForAuthtokens($data, $metaObj);
 
@@ -118,7 +118,7 @@ class sasoEventtickets_Authtoken {
 
 		if (isset($data['name']) && trim($data['name']) != "") $felder["name"] = strip_tags($data['name']);
 		if (isset($data['aktiv'])) $felder["aktiv"] = intval($data['aktiv']);
-		$felder['changed'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+		$felder['changed'] = date("Y-m-d H:i:s", current_time("timestamp"));
 
 		$metaObj = $this->setMetaDataForAuthtokens($data, $metaObj);
 

@@ -237,13 +237,14 @@ class sasoEventtickets_WC {
 			$prem_JS_file = $this->MAIN->getPremiumFunctions()->getJSBackendFile();
 		}
 
+		wp_enqueue_style("wp-jquery-ui-dialog");
+
 		wp_register_script(
 			'SasoEventticketsValidator_WC_backend',
 			trailingslashit( plugin_dir_url( __FILE__ ) ) . 'wc_backend.js?_v='.$this->getMain()->getPluginVersion(),
 			array( 'jquery', 'jquery-blockui', 'wp-i18n'),
-			(current_user_can("administrator") ? SASO_EVENTTICKETS::time() : $this->getMain()->getPluginVersion()),
+			(current_user_can("administrator") ? current_time("timestamp") : $this->getMain()->getPluginVersion()),
 			true );
-		wp_set_script_translations('SasoEventticketsValidator_WC_backend', 'event-tickets-with-ticket-scanner');
 		wp_localize_script(
  			'SasoEventticketsValidator_WC_backend',
 			'Ajax_sasoEventtickets_wc', // name der js variable
@@ -267,12 +268,15 @@ class sasoEventtickets_WC {
  			] // werte in der js variable
  			);
       	wp_enqueue_script('SasoEventticketsValidator_WC_backend');
+		wp_set_script_translations('SasoEventticketsValidator_WC_backend', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
+
 		$js_url = "jquery.qrcode.min.js?_v=".$this->MAIN->getPluginVersion();
 		wp_enqueue_script(
 			'ajax_script2',
 			plugins_url( "3rd/".$js_url,__FILE__ ),
 			array('jquery', 'jquery-ui-dialog')
 		);
+
 		wp_enqueue_style($this->getMain()->getPrefix()."_backendcss", plugins_url( "",__FILE__ ).'/css/styles_backend.css');
 
 		echo '<div id="saso_eventtickets_wc_product_data" class="panel woocommerce_options_panel hidden">';
@@ -1401,14 +1405,15 @@ class sasoEventtickets_WC {
 
 	private function wc_order_addJSFileAndHandlerBackend($order) {
 		$tickets = $this->getTicketsFromOrder($order);
+		wp_enqueue_style("wp-jquery-ui-dialog");
 		wp_enqueue_media(); // damit der media chooser von wordpress geladen wird
 		wp_register_script(
 			$this->getMain()->getPrefix().'WC_Order_Ajax_Backend_Basic',
 			trailingslashit( plugin_dir_url( __FILE__ ) ) . 'wc_backend.js?_v='.$this->getMain()->getPluginVersion(),
-			array( 'jquery', 'jquery-blockui', 'wp-i18n' ),
-			(current_user_can("administrator") ? SASO_EVENTTICKETS::time() : $this->getMain()->getPluginVersion()),
+			array( 'jquery', 'jquery-ui-dialog', 'jquery-blockui', 'wp-i18n' ),
+			(current_user_can("administrator") ? current_time("timestamp") : $this->getMain()->getPluginVersion()),
 			true );
-		wp_set_script_translations($this->getMain()->getPrefix().'WC_Order_Ajax_Backend_Basic', 'event-tickets-with-ticket-scanner');
+		wp_set_script_translations($this->getMain()->getPrefix().'WC_Order_Ajax_Backend_Basic', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
 		wp_localize_script(
 			$this->getMain()->getPrefix().'WC_Order_Ajax_Backend_Basic',
 			'Ajax_sasoEventtickets_wc', // name der js variable
@@ -1810,13 +1815,14 @@ class sasoEventtickets_WC {
 		// erstmal ist diese fkt nur für sales restriction
 		if (version_compare( WC_VERSION, SASO_EVENTTICKETS_PLUGIN_MIN_WC_VER, '<' )) return;
 
+		wp_enqueue_style("wp-jquery-ui-dialog");
 		wp_register_script(
 			'SasoEventticketsValidator_WC_frontend',
 			trailingslashit( plugin_dir_url( __FILE__ ) ) . 'wc_frontend.js?_v='.$this->getMain()->getPluginVersion(),
-			array( 'jquery', 'jquery-blockui', 'wp-i18n' ),
-			(current_user_can("administrator") ? SASO_EVENTTICKETS::time() : $this->getMain()->getPluginVersion()),
+			array( 'jquery', 'jquery-ui-dialog', 'jquery-blockui', 'wp-i18n' ),
+			(current_user_can("administrator") ? current_time("timestamp") : $this->getMain()->getPluginVersion()),
 			true );
-		wp_set_script_translations('SasoEventticketsValidator_WC_frontend', 'event-tickets-with-ticket-scanner');
+		wp_set_script_translations('SasoEventticketsValidator_WC_frontend', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
 		wp_localize_script(
  			'SasoEventticketsValidator_WC_frontend',
 			'SasoEventticketsValidator_phpObject', // name der js variable

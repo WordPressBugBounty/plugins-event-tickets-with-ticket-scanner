@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.4.0
+Stable tag: 2.4.1
 Tested up to: 6.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -316,9 +316,24 @@ Serial code options are removed. They do not fit with the event and party ticket
 = 1.0.4 =
 Activate in the options the new feature to attach the calendar entry (ICS file) to your purchase emails.
 
-== Changelog ==
 = 2.4.0 =
-* New option for the QR code. You can now add a padding, to seperate the QR code image from a background on your PDF - qrTicketPDFPadding
+New Javascript library for the ticket scanner. If you need to use the old ticket scanner, then add the parameter &useoldticketscanner=1 to the ticket scanner URL.
+
+= 2.4.1 =
+New default value for the option to allow access to the admin area of the tickets - now it is false, only administrator, untill you set it otherwise.
+
+== Changelog ==
+= 2.4.1 - 2024-10-21 =
+* Rework the whole date calculation - again. I hope this time for the last time - tested in Manila and Zurich.
+* New option to display server time and local time to the ticket scanner - option ticketScannerDisplayTimes
+* Optimize JS file including and added loading the translation to the order detail script
+* Added the functionality to have the order detail view translated
+* New column "confirmed count" added to the admin area - option displayAdminAreaColumnConfirmedCount to show it
+* New default values for the ticket number formatter if not set at all - 21 letter, use also numbers and delimiter with "-" after 7 letters - this makes sure you have enough ticket numbers for the future
+* New default value for option allowOnlySepcificRoleAccessToAdmin - it was set to false and allowed everyone with access to the backend access to the ticket admin
+
+= 2.4.0 - 2024-09-25 =
+* New option for the QR code. You can now add a padding, to separate the QR code image from a background on your PDF - qrTicketPDFPadding
 * New ticket scanner library - if you want to use the old scanner, then you can add the URL parameter &useoldticketscanner=1 to the ticket scanner URL
 * Increase the speed of the old ticket scanner - just in case
 * Moved the video help link to the option title and more helper videos added

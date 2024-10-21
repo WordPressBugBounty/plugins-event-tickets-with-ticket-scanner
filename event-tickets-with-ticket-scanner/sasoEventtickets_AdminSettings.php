@@ -218,7 +218,7 @@ class sasoEventtickets_AdminSettings {
 
 		do_action( $this->MAIN->_do_action_prefix.'db_repairTables', $d );
 
-		return "tables repair executed at ".SASO_EVENTTICKETS::date("Y/m/d H:i:s");
+		return "tables repair executed at ".date("Y/m/d H:i:s", current_time("timestamp"));
 	}
 
 	private function getMediaData($data) {
@@ -303,10 +303,10 @@ class sasoEventtickets_AdminSettings {
 			$versions["date_default_timezone"] = date_default_timezone_get();
 			$versions["date_WP_timezone"] = wp_timezone_string();
 			$versions["date_WP_timezone_time"] = $this->wpdocs_custom_timezone_string();
-			$versions["date_default_timezone_time"] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+			$versions["date_default_timezone_time"] = date("Y-m-d H:i:s", current_time("timestamp"));
 			$timezone = new DateTimeZone("UTC");
 			$dt = new DateTime('now', $timezone);
-			$versions["date_UTC_timezone_time"] = SASO_EVENTTICKETS::date("Y-m-d H:i:s", $dt->getTimestamp(), new DateTimeZone('UTC'));
+			$versions["date_UTC_timezone_time"] = $dt->format("Y-m-d H:i:s");
 
 			$infos = [
 				'ticket'=>[
@@ -416,7 +416,7 @@ class sasoEventtickets_AdminSettings {
 		$metaObj['user']['reg_ip'] = $this->getCore()->getRealIpAddr();
 		$metaObj['user']['reg_approved'] = 1; // auto approval
 		if (empty($metaObj['user']['reg_request'])) {
-			$metaObj['user']['reg_request'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+			$metaObj['user']['reg_request'] = date("Y-m-d H:i:s", current_time("timestamp"));
 			$metaObj['user']['reg_request_tz'] = wp_timezone_string();
 		}
 		if (isset($data['reg_userid'])) $metaObj['user']['reg_userid'] = intval($data['reg_userid']);
@@ -460,7 +460,7 @@ class sasoEventtickets_AdminSettings {
 		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		$metaObj['used']['reg_ip'] = $this->getCore()->getRealIpAddr();
 		if (empty($metaObj['used']['reg_request'])) {
-			$metaObj['used']['reg_request'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+			$metaObj['used']['reg_request'] = date("Y-m-d H:i:s", current_time("timestamp"));
 			$metaObj['used']['reg_request_tz'] = wp_timezone_string();
 		}
 		if (isset($data['reg_userid'])) $metaObj['used']['reg_userid'] = intval($data['reg_userid']);
@@ -580,7 +580,7 @@ class sasoEventtickets_AdminSettings {
 		$listObj = ['meta'=>''];
 		$metaObj = $this->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
 
-		$felder = ["name"=>$data['name'], "aktiv"=>1, "time"=>SASO_EVENTTICKETS::date("Y-m-d H:i:s")];
+		$felder = ["name"=>$data['name'], "aktiv"=>1, "time"=>date("Y-m-d H:i:s", current_time("timestamp"))];
 
 		$metaObj = $this->_setMetaDataForList($data, $metaObj);
 
@@ -904,7 +904,7 @@ class sasoEventtickets_AdminSettings {
 			$this->getCore()->retrieveCodeByCode($code, false);
 		} catch(Exception $e) { // not found -> add new
 			$this->getCore()->checkCodesSize();
-			$felder = ["code"=>$code, "code_display"=>$newcode, "cvv"=>$cvv, "aktiv"=>1, "time"=>SASO_EVENTTICKETS::date("Y-m-d H:i:s"), "meta"=>"", "list_id"=>$list_id];
+			$felder = ["code"=>$code, "code_display"=>$newcode, "cvv"=>$cvv, "aktiv"=>1, "time"=>date("Y-m-d H:i:s", current_time("timestamp")), "meta"=>"", "list_id"=>$list_id];
 			$this->MAIN->getBase()->increaseGlobalTicketCounter();
 			return $this->getDB()->insert("codes", $felder);
 		}
@@ -1020,7 +1020,7 @@ class sasoEventtickets_AdminSettings {
 		throw new Exception("#601 ".__('code could not be generated and stored', 'event-tickets-with-ticket-scanner'));
 	}
 	private function generateCode($formatterValues="") {
-		$code = implode('-', str_split(substr(strtoupper(md5(SASO_EVENTTICKETS::time()."_".rand())), 0, 20), 5));
+		$code = implode('-', str_split(substr(strtoupper(md5(current_time("timestamp")."_".rand())), 0, 20), 5));
 		if (!empty($formatterValues) || $this->isOptionCheckboxActive("wcassignmentUseGlobalSerialFormatter")) {
 			if (empty($formatterValues)) {
 				$codeFormatterJSON = $this->getOptionValue('wcassignmentUseGlobalSerialFormatter_values');
@@ -1088,14 +1088,14 @@ class sasoEventtickets_AdminSettings {
 		return $code;
 	}
 	private function replacePlaceholderForCode($code) {
-		$time = SASO_EVENTTICKETS::time();
+		$time = current_time("timestamp");
 		$code = str_replace("{TIMESTAMP}", $time, $code);
-		$code = str_replace("{Y}", SASO_EVENTTICKETS::date("Y", $time), $code);
-		$code = str_replace("{m}", SASO_EVENTTICKETS::date("m", $time), $code);
-		$code = str_replace("{d}", SASO_EVENTTICKETS::date("d", $time), $code);
-		$code = str_replace("{H}", SASO_EVENTTICKETS::date("H", $time), $code);
-		$code = str_replace("{i}", SASO_EVENTTICKETS::date("i", $time), $code);
-		$code = str_replace("{s}", SASO_EVENTTICKETS::date("s", $time), $code);
+		$code = str_replace("{Y}", date("Y", $time), $code);
+		$code = str_replace("{m}", date("m", $time), $code);
+		$code = str_replace("{d}", date("d", $time), $code);
+		$code = str_replace("{H}", date("H", $time), $code);
+		$code = str_replace("{i}", date("i", $time), $code);
+		$code = str_replace("{s}", date("s", $time), $code);
 		return $code;
 	}
 	public function addRetrictionCodeToOrder($code, $list_id, $order_id, $product_id = 0, $item_id = 0) {
@@ -1125,7 +1125,7 @@ class sasoEventtickets_AdminSettings {
 		}
 
 		$order = wc_get_order( $data['order_id'] );
-		$metaObj[$key] = ['order_id'=>$data['order_id'], 'creation_date'=>SASO_EVENTTICKETS::date("Y-m-d H:i:s"), 'creation_date_tz'=>wp_timezone_string()];
+		$metaObj[$key] = ['order_id'=>$data['order_id'], 'creation_date'=>date("Y-m-d H:i:s", current_time("timestamp")), 'creation_date_tz'=>wp_timezone_string()];
 		if (isset($data['product_id'])) $metaObj[$key]['product_id'] = $data['product_id'];
 		if (isset($data['item_id'])) $metaObj[$key]['item_id'] = $data['item_id'];
 		$metaObj[$key]['user_id'] = intval($order->get_user_id());
@@ -1362,7 +1362,7 @@ class sasoEventtickets_AdminSettings {
 
 		if (empty($metaObj['wc_ticket']['redeemed_date']) || $max_redeem_amount > 1) {
 			$stat_redeem = [];
-			$metaObj['wc_ticket']['redeemed_date'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s");
+			$metaObj['wc_ticket']['redeemed_date'] = date("Y-m-d H:i:s", current_time("timestamp"));
 			$metaObj['wc_ticket']['redeemed_date_tz'] = wp_timezone_string();
 			$metaObj['wc_ticket']['ip'] = $this->getCore()->getRealIpAddr();
 			if (isset($data['userid'])) $metaObj['wc_ticket']['userid'] = intval($data['userid']);
@@ -1433,7 +1433,7 @@ class sasoEventtickets_AdminSettings {
 		// set codeobj meta and set webhook trigger
 
 		$metaObj['wc_ticket']['set_by_admin'] = get_current_user_id();
-		$metaObj['wc_ticket']['set_by_admin_date'] = SASO_EVENTTICKETS::date("d.m.Y H:i:s");
+		$metaObj['wc_ticket']['set_by_admin_date'] = date("d.m.Y H:i:s", current_time("timestamp"));
 		$metaObj['wc_ticket']['set_by_admin_date_tz'] = wp_timezone_string();
 
 		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
@@ -1461,7 +1461,7 @@ class sasoEventtickets_AdminSettings {
 		if (!empty($valuePerTicket)) {
 			$metaObj['wc_ticket']['value_per_ticket'] = substr($valuePerTicket, 0, 140);
 		}
-		if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".SASO_EVENTTICKETS::time());
+		if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".current_time("timestamp"));
 		$metaObj['wc_ticket']['_url'] = $this->getCore()->getTicketURL($codeObj, $metaObj);
 		$metaObj['wc_ticket']['_public_ticket_id'] = $this->getCore()->getTicketId($codeObj, $metaObj);
 
@@ -1612,7 +1612,7 @@ class sasoEventtickets_AdminSettings {
 			$row = $this->transformMetaObjectToExportColumn($row, $fields, $field_options);
 		}
 		// sende csv datei
-		$filename = "export_codes_sasoEventtickets_".SASO_EVENTTICKETS::date("YmdHis").$filesuffix;
+		$filename = "export_codes_sasoEventtickets_".date("YmdHis", current_time("timestamp")).$filesuffix;
 
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'exportTableCodes')) {
 			$ret_ar = $this->MAIN->getPremiumFunctions()->exportTableCodes($data, $daten, $filename, $delimiter);
@@ -1798,7 +1798,7 @@ class sasoEventtickets_AdminSettings {
 			}
 		}
 		$felder = [
-			"time"=>SASO_EVENTTICKETS::date("y-m-d H:i:s"),
+			"time"=>date("y-m-d H:i:s", current_time("timestamp")),
 			"exception_msg"=>trim($exception_msg),
 			"msg"=>trim($msg),
 			"caller_name"=>trim($caller_name)

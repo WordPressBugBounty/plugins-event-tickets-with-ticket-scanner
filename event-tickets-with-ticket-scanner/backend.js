@@ -1438,11 +1438,13 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 				_displayFAQArea();
 			})
 			.appendTo(btn_grp);
+			/*
 		$('<button/>').addClass("button-primary").html(_x("Seating Plans", 'label', 'event-tickets-with-ticket-scanner'))
 			.on("click", ()=>{
 				_displaySeatingplanArea();
 			})
 			.appendTo(btn_grp);
+			*/
 		//if (_getOptions_Versions_isActivatedByKey('is_wc_available')) {
 			$('<button/>').addClass("button-primary").html(_x("Ticket Scanner", 'label', 'event-tickets-with-ticket-scanner'))
 			.on("click", ()=>{
@@ -1532,7 +1534,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 			let div_serials = $('<div>').html('<h4>'+_x('Serials options', 'title', 'event-tickets-with-ticket-scanner')+'</h4>').appendTo(appendToDiv);
 				// anzahl letters
 				let div_amount_letters = _createDivInput(_x('Amount of letter needed', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div_serials);
-				input_amount_letters = $('<input type="number" required value="12" min="1" max="30">').appendTo(div_amount_letters);
+				input_amount_letters = $('<input type="number" required value="21" min="1" max="30">').appendTo(div_amount_letters);
 				if (formatterValues && formatterValues['input_amount_letters'] != null) input_amount_letters.val(formatterValues['input_amount_letters']);
 				input_amount_letters.on("change", function(){
 					input_serial_delimiter.trigger("change");
@@ -1554,21 +1556,21 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 				});
 				// radio button numbers/none
 				let div_include_numbers = _createDivInput(_x('Numbers needed?', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div_serials);
-				input_include_numbers = $('<select><option value="1" selected>'+_x('No', 'label', 'event-tickets-with-ticket-scanner')+'</option><option value="2">'+_x('Yes', 'label', 'event-tickets-with-ticket-scanner')+'</option><option value="3">'+_x('Only numbers', 'option value', 'event-tickets-with-ticket-scanner')+'</option></select>').appendTo(div_include_numbers);
+				input_include_numbers = $('<select><option value="1">'+_x('No', 'label', 'event-tickets-with-ticket-scanner')+'</option><option value="2" selected>'+_x('Yes', 'label', 'event-tickets-with-ticket-scanner')+'</option><option value="3">'+_x('Only numbers', 'option value', 'event-tickets-with-ticket-scanner')+'</option></select>').appendTo(div_include_numbers);
 				if (formatterValues && formatterValues['input_include_numbers'] != null) input_include_numbers.val(formatterValues['input_include_numbers']);
 				input_include_numbers.on("change", ()=>{
 					_callCallbackHandle();
 				});
 				// select delimiter none/-/./space
 				let div_serial_delimiter = _createDivInput(_x('Delimiter?', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div_serials);
-				input_serial_delimiter = $('<select><option value="1" selected>'+_x('None', 'option value', 'event-tickets-with-ticket-scanner')+'</option><option value="2">-</option><option value="4">:</option><option value="3">'+_x('Space', 'option value', 'event-tickets-with-ticket-scanner')+'</option></select>').appendTo(div_serial_delimiter);
+				input_serial_delimiter = $('<select><option value="1">'+_x('None', 'option value', 'event-tickets-with-ticket-scanner')+'</option><option value="2" selected>-</option><option value="4">:</option><option value="3">'+_x('Space', 'option value', 'event-tickets-with-ticket-scanner')+'</option></select>').appendTo(div_serial_delimiter);
 				if (formatterValues && formatterValues['input_serial_delimiter'] != null) input_serial_delimiter.val(formatterValues['input_serial_delimiter']);
 				function __refreshDelimiterSpace() {
 					input_serial_delimiter_space.html("");
 					if (input_serial_delimiter.val() !== "1") {
 						let anzahl = parseInt(input_amount_letters.val(),10);
 						if (anzahl > 0) {
-							for(let a=1;a<anzahl;a++) input_serial_delimiter_space.append($('<option'+(anzahl > 2 && a === 3 ? " selected": "")+'>').attr("value",a).html(a));
+							for(let a=1;a<anzahl;a++) input_serial_delimiter_space.append($('<option'+(anzahl > 2 && a === 7 ? " selected": "")+'>').attr("value",a).html(a));
 						}
 					}
 				}
@@ -2376,7 +2378,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 
 				__renderTabelleListen();
 
-				let additionalColumn = {customerName:'',redeemAmount:''};
+				let additionalColumn = {customerName:'',redeemAmount:'',confirmedCount:''};
+				if (_getOptions_isActivatedByKey('displayAdminAreaColumnConfirmedCount')) {
+					additionalColumn.confirmedCount = '<th>'+_x('Confirmed Count', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
+				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnBillingName')) {
 					additionalColumn.customerName = '<th>'+_x('Customer', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
@@ -2384,7 +2389,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					additionalColumn.redeemAmount = '<th>'+_x('Redeem Amount', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
 
-				tabelle_codes.html('<thead><tr><th style="text-align:left;padding-left:10px;"><input type="checkbox" data-id="checkAll"></th><th>&nbsp;</th><th align="left">'+_x('Ticket', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.customerName+'<th align="left">'+_x('List', 'label', 'event-tickets-with-ticket-scanner')+'</th><th align="left">'+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+'</th><th align="left">'+_x('Redeemed', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.redeemAmount+'<th>'+_x('OrderId', 'label', 'event-tickets-with-ticket-scanner')+'</th><th>CVV</th><th>'+_x('Status', 'label', 'event-tickets-with-ticket-scanner')+'</th><th></th></tr></thead><tfoot><th colspan="10" style="text-align:left;font-weight:normal;padding-left:0;padding-bottom:0;"></th></tfoot>');
+				tabelle_codes.html('<thead><tr><th style="text-align:left;padding-left:10px;"><input type="checkbox" data-id="checkAll"></th><th>&nbsp;</th><th align="left">'+_x('Ticket', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.customerName+'<th align="left">'+_x('List', 'label', 'event-tickets-with-ticket-scanner')+'</th><th align="left">'+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.confirmedCount+'<th align="left">'+_x('Redeemed', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.redeemAmount+'<th>'+_x('OrderId', 'label', 'event-tickets-with-ticket-scanner')+'</th><th>CVV</th><th>'+_x('Status', 'label', 'event-tickets-with-ticket-scanner')+'</th><th></th></tr></thead><tfoot><th colspan="10" style="text-align:left;font-weight:normal;padding-left:0;padding-bottom:0;"></th></tfoot>');
 				tabelle_codes.find('input[data-id="checkAll"]').on('click', (e)=> {
 					let isChecked = $(e.currentTarget).prop('checked');
 					let found = false;
@@ -2525,8 +2530,21 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 						"data":"_customer_name","orderable":false
 					});
 				}
+				if (additionalColumn.confirmedCount != '') {
+					addition_column_offset++;
+					table_columns.splice(4+addition_column_offset, 0, {
+						"data":null,"orderable":false,"defaultContent":'',"className":"dt-center",
+						"render":function(data,type,row) {
+							let ret = '';
+							let metaObj = getCodeObjectMeta(data);
+							ret = metaObj.confirmedCount;
+							return ret;
+						}
+					});
+				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnRedeemedInfo')) {
-					table_columns.splice(6+addition_column_offset, 0, {
+					addition_column_offset++;
+					table_columns.splice(5+addition_column_offset, 0, {
 						"data":null,"orderable":false,"defaultContent":'',"className":"dt-center",
 						"render":function(data,type,row) {
 							let ret = '';

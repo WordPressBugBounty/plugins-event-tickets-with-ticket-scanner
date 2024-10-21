@@ -22,11 +22,12 @@ class sasoEventtickets_Options {
 		$this->_options[] = $this->getOptionsObject('h99', esc_html__("Display options", 'event-tickets-with-ticket-scanner'),"","heading");
 		$this->_options[] = $this->getOptionsObject('displayDateFormat', esc_html__("Your own date format", 'event-tickets-with-ticket-scanner'), esc_html__("If left empty, default will be 'Y/m/d'. Using the php date function format. Y=year, m=month, d=day H:hours, i:minutes, s=seconds", 'event-tickets-with-ticket-scanner'),"text", "Y/m/d", [], true);
 		$this->_options[] = $this->getOptionsObject('displayTimeFormat', esc_html__("Your own time format", 'event-tickets-with-ticket-scanner'), esc_html__("If left empty, default will be 'H:i'. Using the php date function format. H=hours with leading 0, i=minutes with leading zero, s=seconds", 'event-tickets-with-ticket-scanner'),"text", "H:i", [], true);
+		$this->_options[] = $this->getOptionsObject('displayAdminAreaColumnConfirmedCount', esc_html__("Display the column 'confirmed count' of the ticket", 'event-tickets-with-ticket-scanner'), esc_html__("If active, then a new column within the admin area for each ticket will be shown with the confirmed count value.", 'event-tickets-with-ticket-scanner'), "checkbox");
 		$this->_options[] = $this->getOptionsObject('displayAdminAreaColumnRedeemedInfo', esc_html__("Display a column with the information how often the ticket is redeemed", 'event-tickets-with-ticket-scanner'), esc_html__("If active, then a new column within the admin area for each ticket will be shown with the redeem ticket information. This feature can be very slow.", 'event-tickets-with-ticket-scanner'), "checkbox");
 		$this->_options[] = $this->getOptionsObject('displayAdminAreaColumnBillingName', esc_html__("Display a column with the name of the buyer", 'event-tickets-with-ticket-scanner'), __('If active, then a new column within the admin area for each ticket will be shown with the billing name. <b>This feature can be very slow.</b>', 'event-tickets-with-ticket-scanner'),"checkbox");
 
 		$this->_options[] = $this->getOptionsObject('h0a', "Access","","heading");
-		$this->_options[] = $this->getOptionsObject('allowOnlySepcificRoleAccessToAdmin', "Allow only specific roles access to the admin area","If active, then only the administrator and the choosen roles area allowed to access this admin area.","checkbox", "", [], true, 'https://youtu.be/YRC-isNcWu4');
+		$this->_options[] = $this->getOptionsObject('allowOnlySepcificRoleAccessToAdmin', "Allow only specific roles access to the admin area","If active, then only the administrator and the choosen roles area allowed to access this admin area.","checkbox", true, [], true, 'https://youtu.be/YRC-isNcWu4');
 		$all_roles = wp_roles()->roles;
 		$editable_roles = apply_filters('editable_roles', $all_roles);
 		$additional = [ "multiple"=>1, "values"=>[["label"=>"No role execept Administrator allowed", "value"=>"-"]] ];
@@ -86,6 +87,7 @@ class sasoEventtickets_Options {
 				'additional'=>$additional,
 				'isPublic'=>false
 				];
+		$options[] = ['key'=>'ticketScannerDisplayTimes', 'label'=>__('Display server and ticket times on the ticket scannner', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, then the server time, time zone and ticket times are displayed additional to the ticket scanner info. Ticket times, only if available.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox'];
 
 		$options[] = [
 			'key'=>'h12b3',
@@ -568,7 +570,7 @@ class sasoEventtickets_Options {
 	public function getOptionDateFormat() {
 		$date_format = $this->getOptionValue('displayDateFormat');
 		try {
-			$d = SASO_EVENTTICKETS::date($date_format);
+			$d = date($date_format, current_time("timestamp"));
 		} catch(Exception $e) {
 			$date_format = 'Y/m/d';
 		}
@@ -577,7 +579,7 @@ class sasoEventtickets_Options {
 	public function getOptionTimeFormat() {
 		$date_format = $this->getOptionValue('displayTimeFormat');
 		try {
-			$d = SASO_EVENTTICKETS::date($date_format);
+			$d = date($date_format, current_time("timestamp"));
 		} catch(Exception $e) {
 			$date_format = 'H:i';
 		}
@@ -588,7 +590,7 @@ class sasoEventtickets_Options {
 		$time_format = $this->getOptionTimeFormat();
 		// check if the date values are working
 		try {
-			$d = SASO_EVENTTICKETS::date($date_format." ".$time_format);
+			$d = date($date_format." ".$time_format, current_time("timestamp"));
 		} catch(Exception $e) {
 			$date_format = 'Y/m/d H:i';
 		}
