@@ -364,15 +364,20 @@ class sasoEventtickets_WC {
 				'description' => __('Activate this, to have the entered date printed on all product variants. No effect on simple products.', 'event-tickets-with-ticket-scanner')
 			]);
 		}
-		$max_redeem_amount = intval(get_post_meta( get_the_ID(), 'saso_eventtickets_ticket_max_redeem_amount', true ));
-		if ($max_redeem_amount < 1) $max_redeem_amount = 1;
+		$_max_redeem_amount = get_post_meta( get_the_ID(), 'saso_eventtickets_ticket_max_redeem_amount', true );
+		if (empty($_max_redeem_amount) || $_max_redeem_amount == "0") {
+			$max_redeem_amount = 1;
+		} else {
+			$max_redeem_amount = intval($_max_redeem_amount);
+			if ($max_redeem_amount < 1) $max_redeem_amount = 1;
+		}
 		woocommerce_wp_text_input([
 			'id'				=> 'saso_eventtickets_ticket_max_redeem_amount',
 			'value'       		=> $max_redeem_amount,
 			'label'       		=> __('Max. redeem operations', 'event-tickets-with-ticket-scanner'),
 			'type'				=> 'number',
-			'custom_attributes'	=> ['step'=>'1', 'min'=>'1'],
-			'description' 		=> __('How often do you allow to redeem the ticket?', 'event-tickets-with-ticket-scanner'),
+			'custom_attributes'	=> ['step'=>'1', 'min'=>'0'],
+			'description' 		=> __('How often do you allow to redeem the ticket? If you set it to 0, you can redeem the ticket unlimited.', 'event-tickets-with-ticket-scanner'),
 			'desc_tip'    		=> true
 		]);
 		woocommerce_wp_textarea_input([
@@ -569,9 +574,9 @@ class sasoEventtickets_WC {
 			delete_post_meta( $id, $key );
 		}
 		$key = 'saso_eventtickets_ticket_max_redeem_amount';
-		if( !empty( $_POST[$key] ) ) {
+		if( !empty($_POST[$key]) || $_POST[$key] == "0" ) {
 			$value = intval($_POST[$key]);
-			if ($value < 1) $value = 1;
+			if ($value < 0) $value = 1;
 			update_post_meta( $id, $key, $value );
 		} else {
 			delete_post_meta( $id, $key );

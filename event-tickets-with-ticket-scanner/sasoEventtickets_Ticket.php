@@ -446,14 +446,20 @@ final class sasoEventtickets_Ticket {
 
 		$ret['msg_ticket_not_valid_yet'] = wp_kses_post($this->getAdminSettings()->getOptionValue("wcTicketTransTicketNotValidToEarly"));
 		$ret['msg_ticket_not_valid_anymore'] = wp_kses_post($this->getAdminSettings()->getOptionValue("wcTicketTransTicketNotValidToLate"));
+		$ret['msg_ticket_event_ended'] = wp_kses_post($this->getAdminSettings()->getOptionValue("wcTicketTransTicketNotValidToLateEndEvent"));
+
 
 		$ret['max_redeem_amount'] = intval(get_post_meta( $product_parent->get_id(), 'saso_eventtickets_ticket_max_redeem_amount', true ));
-		if ($ret['max_redeem_amount'] < 1) $ret['max_redeem_amount'] = 1;
+		if ($ret['max_redeem_amount'] < 0) $ret['max_redeem_amount'] = 1;
 
 		$ret['_options'] = [
 			"displayConfirmedCounter"=>$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketScannerDisplayConfirmedCount'),
 			"wcTicketDontAllowRedeemTicketBeforeStart"=>$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDontAllowRedeemTicketBeforeStart'),
-			"wcTicketAllowRedeemTicketAfterEnd"=>$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemTicketAfterEnd')
+			"wcTicketAllowRedeemTicketAfterEnd"=>$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemTicketAfterEnd'),
+			"wsticketDenyRedeemAfterstart"=>$this->MAIN->getOptions()->isOptionCheckboxActive('wsticketDenyRedeemAfterstart'),
+			"isRedeemOperationTooEarly"=>$this->isRedeemOperationTooEarly($codeObj, $metaObj, $order),
+			"isRedeemOperationTooLateEventEnded"=>$this->isRedeemOperationTooLateEventEnded($codeObj, $metaObj, $order),
+			"isRedeemOperationTooLate"=>$this->isRedeemOperationTooLate($codeObj, $metaObj, $order)
 		];
 
 		$ret['_server'] = $this->getTimes();
@@ -598,14 +604,8 @@ final class sasoEventtickets_Ticket {
 		$ret['redeem_allowed_until'] = date("Y-m-d H:i:s", $ret['ticket_end_date_timestamp']); // here without the timezone
 		$ret['redeem_allowed_until_timestamp'] = $ret['ticket_end_date_timestamp'];
 		$ret['server_time_timestamp'] = current_time("timestamp"); // timezone is removed or added
+		$ret['redeem_allowed_too_late'] = $ret['ticket_end_date_timestamp'] < $ret['server_time_timestamp'];
 		$ret['server_time'] = date("Y-m-d H:i:s", current_time("timestamp")); // normal timestamp, because the function will do it the add/remove timezone also
-		//$ret['_time'] = SASO_EVENTTICKETS::time();
-		$ret['_time2'] = current_time("timestamp");
-		//$ret['_time3'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s", current_time("timestamp"));
-		//$ret['_time4'] = SASO_EVENTTICKETS::date("Y-m-d H:i:s", SASO_EVENTTICKETS::time());
-		$ret['_time5'] = date("Y-m-d H:i:s", current_time("timestamp"));
-		//$ret['_time6'] = date("Y-m-d H:i:s", SASO_EVENTTICKETS::time());
-		$ret['_time7'] = date("Y-m-d H:i:s", strtotime($ret['_time5']));
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_calcDateStringAllowedRedeemFrom', $ret, $product_id );
 		return $ret;
 	}
@@ -1676,7 +1676,9 @@ final class sasoEventtickets_Ticket {
 					$redeem_counter = count($vars["METAOBJ"]["wc_ticket"]["stats_redeemed"]);
 					$redeem_max = intval(get_post_meta( $vars["PRODUCT_PARENT"]->get_id(), 'saso_eventtickets_ticket_max_redeem_amount', true ));
 					$color = "red";
-					if ($redeem_max > 1 && $redeem_counter <= $redeem_max) {
+					if ($redeem_max == 0) { // unlimited
+						$color = "green";
+					} elseif ($redeem_max > 1 && $redeem_counter <= $redeem_max) {
 						$color = "green";
 					}
 					echo '<center>';
@@ -1788,70 +1790,82 @@ final class sasoEventtickets_Ticket {
 		return $text_redeem_amount;
 	}
 
+	private function isRedeemOperationTooEarly($codeObj, $metaObj, $order) {
+		// ermittel product
+		$order_item = $this->getOrderItem($order, $metaObj);
+		if ($order_item == null) throw new Exception("#8015 ".esc_html__("Can not find the product for this ticket.", 'event-tickets-with-ticket-scanner'));
+		$product = $order_item->get_product();
+		$is_variation = $product->get_type() == "variation" ? true : false;
+		$product_parent = $product;
+		$product_parent_id = $product->get_parent_id();
+		$tmp_prod = $product;
+		$saso_eventtickets_is_date_for_all_variants = true;
+		if ($is_variation && $product_parent_id > 0) {
+			$product_parent = $this->get_product( $product_parent_id );
+			$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
+			if ($saso_eventtickets_is_date_for_all_variants) {
+				$tmp_prod = $product_parent;
+			}
+		}
+		$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id());
+		return $ret['redeem_allowed_from_timestamp'] >= $ret['server_time_timestamp'];
+	}
+	private function isRedeemOperationTooLateEventEnded($codeObj, $metaObj, $order) {
+		$order_item = $this->getOrderItem($order, $metaObj);
+		if ($order_item == null) throw new Exception("#8015 ".esc_html__("Can not find the product for this ticket.", 'event-tickets-with-ticket-scanner'));
+		$product = $order_item->get_product();
+		$is_variation = $product->get_type() == "variation" ? true : false;
+		$product_parent = $product;
+		$product_parent_id = $product->get_parent_id();
+		$tmp_prod = $product;
+		$saso_eventtickets_is_date_for_all_variants = true;
+		if ($is_variation && $product_parent_id > 0) {
+			$product_parent = $this->get_product( $product_parent_id );
+			$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
+			if ($saso_eventtickets_is_date_for_all_variants) {
+				$tmp_prod = $product_parent;
+			}
+		}
+		$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id());
+		return $ret['ticket_end_date_timestamp'] <= $ret['server_time_timestamp'];
+	}
+	private function isRedeemOperationTooLate($codeObj, $metaObj, $order) {
+		$order_item = $this->getOrderItem($order, $metaObj);
+		$order_item = $this->getOrderItem($order, $metaObj);
+		if ($order_item == null) throw new Exception("#8018 ".esc_html__("Can not find the product for this ticket.", 'event-tickets-with-ticket-scanner'));
+		$product = $order_item->get_product();
+		$is_variation = $product->get_type() == "variation" ? true : false;
+		$product_parent = $product;
+		$product_parent_id = $product->get_parent_id();
+		$tmp_prod = $product;
+		$saso_eventtickets_is_date_for_all_variants = true;
+		if ($is_variation && $product_parent_id > 0) {
+			$product_parent = $this->get_product( $product_parent_id );
+			$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
+			if ($saso_eventtickets_is_date_for_all_variants) {
+				$tmp_prod = $product_parent;
+			}
+		}
+		$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id());
+		return $ret['is_date_set'] && $ret['ticket_start_date_timestamp'] < $ret['server_time_timestamp'];
+	}
 	private function checkEventStart($codeObj, $metaObj, $order) {
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDontAllowRedeemTicketBeforeStart')) {
-			// ermittel product
-			$order_item = $this->getOrderItem($order, $metaObj);
-			if ($order_item == null) throw new Exception("#8015 ".esc_html__("Can not find the product for this ticket.", 'event-tickets-with-ticket-scanner'));
-			$product = $order_item->get_product();
-			$is_variation = $product->get_type() == "variation" ? true : false;
-			$product_parent = $product;
-			$product_parent_id = $product->get_parent_id();
-			$tmp_prod = $product;
-			$saso_eventtickets_is_date_for_all_variants = true;
-			if ($is_variation && $product_parent_id > 0) {
-				$product_parent = $this->get_product( $product_parent_id );
-				$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
-				if ($saso_eventtickets_is_date_for_all_variants) {
-					$tmp_prod = $product_parent;
-				}
+			if ($this->isRedeemOperationTooEarly($codeObj, $metaObj, $order)) {
+				throw new Exception("#8016 ".esc_html__("Too early. Ticket cannot be redeemed yet.", 'event-tickets-with-ticket-scanner'));
 			}
-			$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id());
-			if ($ret['redeem_allowed_from_timestamp'] >= $ret['server_time_timestamp']) throw new Exception("#8016 ".esc_html__("Too early. Ticket cannot be redeemed yet.", 'event-tickets-with-ticket-scanner'));
 		}
 	}
 	private function checkEventEnd($codeObj, $metaObj, $order) {
-		$ret = null;
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemTicketAfterEnd') == false) {
-			$order_item = $this->getOrderItem($order, $metaObj);
-			if ($order_item == null) throw new Exception("#8015 ".esc_html__("Can not find the product for this ticket.", 'event-tickets-with-ticket-scanner'));
-			$product = $order_item->get_product();
-			$is_variation = $product->get_type() == "variation" ? true : false;
-			$product_parent = $product;
-			$product_parent_id = $product->get_parent_id();
-			$tmp_prod = $product;
-			$saso_eventtickets_is_date_for_all_variants = true;
-			if ($is_variation && $product_parent_id > 0) {
-				$product_parent = $this->get_product( $product_parent_id );
-				$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
-				if ($saso_eventtickets_is_date_for_all_variants) {
-					$tmp_prod = $product_parent;
-				}
+			if ($this->isRedeemOperationTooLateEventEnded($codeObj, $metaObj, $order)) {
+				throw new Exception("#8017 ".esc_html__("Too late, event finished. Ticket cannot be redeemed anymore.", 'event-tickets-with-ticket-scanner'));
 			}
-			$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id());
-			if ($ret['ticket_end_date_timestamp'] <= $ret['server_time_timestamp']) throw new Exception("#8017 ".esc_html__("Too late, event finished. Ticket cannot be redeemed anymore.", 'event-tickets-with-ticket-scanner'));
 		}
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wsticketDenyRedeemAfterstart')) {
-			if ($ret == null) {
-				$order_item = $this->getOrderItem($order, $metaObj);
-				$order_item = $this->getOrderItem($order, $metaObj);
-				if ($order_item == null) throw new Exception("#8018 ".esc_html__("Can not find the product for this ticket.", 'event-tickets-with-ticket-scanner'));
-				$product = $order_item->get_product();
-				$is_variation = $product->get_type() == "variation" ? true : false;
-				$product_parent = $product;
-				$product_parent_id = $product->get_parent_id();
-				$tmp_prod = $product;
-				$saso_eventtickets_is_date_for_all_variants = true;
-				if ($is_variation && $product_parent_id > 0) {
-					$product_parent = $this->get_product( $product_parent_id );
-					$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
-					if ($saso_eventtickets_is_date_for_all_variants) {
-						$tmp_prod = $product_parent;
-					}
-				}
-				$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id());
+			if ($this->isRedeemOperationTooLate($codeObj, $metaObj, $order)) {
+				throw new Exception("#8019 ".esc_html__("Too late, event started. Ticket cannot be redeemed anymore.", 'event-tickets-with-ticket-scanner'));
 			}
-			if ($ret['is_date_set'] && $ret['ticket_start_date_timestamp'] < $ret['server_time_timestamp']) throw new Exception("#8019 ".esc_html__("Too late, event started. Ticket cannot be redeemed anymore.", 'event-tickets-with-ticket-scanner'));
 		}
 	}
 	private function setStatusAfterRedeemOperation($order) {

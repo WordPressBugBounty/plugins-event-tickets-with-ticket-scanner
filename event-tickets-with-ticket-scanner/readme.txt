@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 Tested up to: 6.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -320,17 +320,28 @@ Activate in the options the new feature to attach the calendar entry (ICS file) 
 New Javascript library for the ticket scanner. If you need to use the old ticket scanner, then add the parameter &useoldticketscanner=1 to the ticket scanner URL.
 
 = 2.4.1 =
-New default value for the option to allow access to the admin area of the tickets - now it is false, only administrator, untill you set it otherwise.
+New default value for the option to allow access to the admin area of the tickets - now it is false, only administrator, until you set it otherwise.
 
 == Changelog ==
+= 2.4.2 - 2024-10-29 =
+* Fix wrong error message, if you have no values selected in option adminAreaAllowedRoles.
+* Fix default ordering over the created date if you display additional columns.
+* Preventing and removing "/" from the ticket number formatter prefix value, because this can cause issues on some installations due to the database search. The "/" will be replaced by "-".
+* Redeemable from info at the ticket scanner only displayed if the option wcTicketDontAllowRedeemTicketBeforeStart is activated.
+* Ticket scanner is not rescanning the same ticket for 10 seconds - this prevents double redeem operation in fast mode.
+* Removed most of the time calculation at the ticket scanner and using calculated times from the server
+* New label for the status "Event ended already" - wcTicketTransTicketNotValidToLateEndEvent
+* Default label value changed from "Redeemed at:" to "Last Redeemed:" - wcTicketTransRedeemDate
+* Fix of some misleading redeem messages. It is now more clear, if the ticket expired, the event did not start yet and it is too late to redeem the ticket.
+
 = 2.4.1 - 2024-10-21 =
 * Rework the whole date calculation - again. I hope this time for the last time - tested in Manila and Zurich.
-* New option to display server time and local time to the ticket scanner - option ticketScannerDisplayTimes
-* Optimize JS file including and added loading the translation to the order detail script
-* Added the functionality to have the order detail view translated
-* New column "confirmed count" added to the admin area - option displayAdminAreaColumnConfirmedCount to show it
-* New default values for the ticket number formatter if not set at all - 21 letter, use also numbers and delimiter with "-" after 7 letters - this makes sure you have enough ticket numbers for the future
-* New default value for option allowOnlySepcificRoleAccessToAdmin - it was set to false and allowed everyone with access to the backend access to the ticket admin
+* New option to display server time and local time to the ticket scanner - option ticketScannerDisplayTimes.
+* Optimize JS file including and added loading the translation to the order detail script.
+* Added the functionality to have the order detail view translated.
+* New column "confirmed count" added to the admin area - option displayAdminAreaColumnConfirmedCount to show it.
+* New default values for the ticket number formatter if not set at all - 21 letter, use also numbers and delimiter with "-" after 7 letters - this makes sure you have enough ticket numbers for the future.
+* New default value for option allowOnlySepcificRoleAccessToAdmin - it was set to false and allowed everyone with access to the backend access to the ticket admin.
 
 = 2.4.0 - 2024-09-25 =
 * New option for the QR code. You can now add a padding, to separate the QR code image from a background on your PDF - qrTicketPDFPadding

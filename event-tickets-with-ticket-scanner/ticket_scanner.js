@@ -1,6 +1,6 @@
 jQuery(document).ready(()=>{
     const { __, _x, _n, sprintf } = wp.i18n;
-    let system = {code:0, nonce:'', data:null, redeemed_successfully:false, img_pfad:''};
+    let system = {code:0, nonce:'', data:null, redeemed_successfully:false, img_pfad:'', last_scanned_ticket:{code:'', timestamp:0, auto_redeem:false}};
 	let myAjax;
     if (typeof IS_PRETTY_PERMALINK_ACTIVATED === "undefined") {
         IS_PRETTY_PERMALINK_ACTIVATED = false;
@@ -33,6 +33,7 @@ jQuery(document).ready(()=>{
     system.INPUTFIELD;
     system.AUTHTOKENREMOVEBUTTON;
     system.ADDITIONBUTTONS;
+    system.TIMEAREA;
 
     function toBool(v) {
         if (v == "1") return true;
@@ -121,8 +122,16 @@ jQuery(document).ready(()=>{
         if (!doNotUpdateScanOption) showScanOptions();
     }
     function onScanSuccess(decodedText, decodedResult) {
+        if (system.last_scanned_ticket.code == decodedText && system.last_scanned_ticket.timestamp + 10 > time()) {
+            return;
+        }
         if (loadingticket) return;
         loadingticket = true;
+        system.last_scanned_ticket = {code: decodedText, timestamp: time()};
+
+        if (qrScanner != null) {
+            //qrScanner.stop(); // faster if not executed
+        }
 
         // store setting to cookies / or browser storage
         if (!ticket_scanner_operating_option.ticketScannerDontRememberCamChoice && html5QrcodeScanner != null) {
@@ -155,9 +164,6 @@ jQuery(document).ready(()=>{
             retrieveTicket(decodedText);
         }
 
-        if (qrScanner != null) {
-        //    qrScanner.stop(); // faster if not executed
-        }
         window.setTimeout(()=>{
             if (html5QrcodeScanner != null) {
                 html5QrcodeScanner.clear().then((ignore) => {
@@ -203,6 +209,20 @@ jQuery(document).ready(()=>{
                 btn.css("display", "none");
                 btn_start.css("display", "block");
             });
+
+// flashlight button
+/*
+https://github.com/nimiq/qr-scanner
+Flashlight support
+On supported browsers, you can check whether the currently used camera has a flash and turn it on or off. Note that hasFlash should be called after the scanner was successfully started to avoid the need to open a temporary camera stream just to query whether it has flash support, potentially asking the user for camera access.
+
+qrScanner.hasFlash(); // check whether the browser and used camera support turning the flash on; async.
+qrScanner.isFlashOn(); // check whether the flash is on
+qrScanner.turnFlashOn(); // turn the flash on if supported; async
+qrScanner.turnFlashOff(); // turn the flash off if supported; async
+qrScanner.toggleFlash(); // toggle the flash if supported; async.
+*/
+
             let btn_start = $('<button class="button-ticket-options button-primary" style="display:none;">').text("Start Camera").appendTo($('#reader')).on("click", event=>{
                 btn_start.css("display", "none");
                 btn.css("display", "block");
@@ -321,6 +341,8 @@ jQuery(document).ready(()=>{
         $('<div style="margin-top:40px;">').append(system.INPUTFIELD).appendTo(div);
         if (typeof ticket_scanner_operating_option.auth == "object") div.append(system.AUTHTOKENREMOVEBUTTON);
         div.append(system.ADDITIONBUTTONS);
+        system.TIMEAREA = $('<div>');
+        div.append(system.TIMEAREA);
         $('#reader_options').html(div);
     }
 
@@ -594,6 +616,7 @@ jQuery(document).ready(()=>{
     }
     function retrieveTicket(code, redeemed, cbf) {
         clearAreas();
+        window.scrollBy(0,0);
         let div = $('#ticket_info').html(_getSpinnerHTML());
         div.css("display", "block");
 
@@ -625,6 +648,7 @@ jQuery(document).ready(()=>{
         if (redeemed == true) {
             redeem = false; // is already redeemed
         }
+        system.last_scanned_ticket.auto_redeem = redeem;
         _makeGet('retrieve_ticket', {'code':code, 'redeem':redeem ? 1 : 0}, data=>{
             if (ticket_scanner_operating_option.distract_free) {
                 div.css("display", "none");
@@ -643,7 +667,6 @@ jQuery(document).ready(()=>{
                 displayTicketAdditionalInfos(data);
 
                 $("#reader_output").html("");
-
                 if(!redeemed && ticket_scanner_operating_option.redeem_auto && typeof data._ret.redeem_operation !== "undefined") {
                     // display redeem operation
                     //redeemTicket(code);
@@ -664,42 +687,30 @@ jQuery(document).ready(()=>{
     }
     function isTicketExpired(ticketRetObject) {
         if (ticketRetObject.is_expired) return true;
-        let t = time();
-        if (ticketRetObject.timezone_id && ticketRetObject.timezone_id != "") {
-            t = time(ticketRetObject.timezone_id );
-        }
-        if (ticketRetObject.ticket_end_date != "" && ticketRetObject.ticket_end_date_timestamp <= t) {
-            return true;
-        }
         return false;
     }
     function isRedeemTooEarly(data) {
-        //console.log(data);
         if (data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart) {
-            let date = new Date(data._ret.redeem_allowed_from);
-            // makeDateFromString()
-            //d = new Date(new Date().toLocaleString('en', {timeZone: data._ret._server.timezone.timezone}));
-            let s_date = new Date(data._ret._server.time);
-            //console.log("early: "+date+" s:"+s_date);
-            if (s_date < date) {
-                return true;
-            }
+            return data._ret._options.isRedeemOperationTooEarly;
         }
         return false;
     }
     function isRedeemTooLate(data) {
-        if (data._ret._options.wcTicketAllowRedeemTicketAfterEnd == false) {
-            let date = new Date(data._ret.redeem_allowed_until);
-            let s_date = new Date(data._ret._server.time);
-            //console.log("late: "+date+" s:"+s_date);
-            if (s_date > date) {
-                return true;
-            }
+        if (data._ret._options.wsticketDenyRedeemAfterstart) {
+           return data._ret._options.isRedeemOperationTooLate;
         }
         return false;
     }
+    function isRedeemTooLateEndEvent(data) {
+        if (data._ret._options.wcTicketAllowRedeemTicketAfterEnd == false) {
+           return data._ret._options.isRedeemOperationTooLateEventEnded;
+        }
+        return false;
+    }
+
     function canTicketBeRedeemedNow(data) {
         if (isRedeemTooEarly(data)) return false;
+        if (isRedeemTooLateEndEvent(data)) return false;
         if (isRedeemTooLate(data)) return false;
         if (isTicketExpired(data._ret)) return false;
         return true;
@@ -716,8 +727,13 @@ jQuery(document).ready(()=>{
                 if (data._ret.max_redeem_amount > 1 && data.metaObj.wc_ticket.stats_redeemed.length < data._ret.max_redeem_amount) {
                     color = "green";
                 }
-                $('<h4 style="color:'+color+' !impoprtant;">').html(data._ret.msg_redeemed).appendTo(div);
-                div.append(data._ret.redeemed_date_label+' '+metaObj['wc_ticket']['redeemed_date']);
+                //if (system.last_scanned_ticket.auto_redeem == false) {
+                if (system.redeemed_successfully) {
+                    $('<h4 style="color:'+color+' !important;">').html(data._ret.msg_redeemed).appendTo(div);
+                }
+                if (metaObj.wc_ticket.redeemed_date != '') {
+                    div.append(data._ret.redeemed_date_label+' '+metaObj['wc_ticket']['redeemed_date']);
+                }
             } else {
                 if (is_expired) {
                     div.append('<div style="color:red;">'+data._ret.msg_ticket_expired+'</div>');
@@ -728,12 +744,24 @@ jQuery(document).ready(()=>{
                     }
                 }
             }
-            if (is_expired == false && !canTicketBeRedeemedNow(data)) {
-                let error_msg = data._ret.msg_ticket_not_valid_yet;
-                if(isRedeemTooLate(data)) {
-                    error_msg = data._ret.msg_ticket_not_valid_anymore;
+
+            if (is_expired == false) {
+                let _isRedeemTooLate = isRedeemTooLate(data);
+                let _isRedeemTooLateEndEvent = isRedeemTooLateEndEvent(data);
+                if (!canTicketBeRedeemedNow(data)) {
+                    let error_msg = data._ret.msg_ticket_not_valid_yet;
+                    if(_isRedeemTooLateEndEvent) {
+                        error_msg = data._ret.msg_ticket_event_ended;
+                    } else if(_isRedeemTooLate) {
+                        error_msg = data._ret.msg_ticket_not_valid_anymore;
+                    }
+                    div.append('<div style="color:red;">'+error_msg+'</div>');
                 }
-                div.append('<div style="color:red;">'+error_msg+'</div>');
+                if (_isRedeemTooLate == false && _isRedeemTooLateEndEvent == false && data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart) {
+                    if (typeof data._ret.redeem_allowed_from != "undefined") {
+                        div.append("<div>Redeem allowed from: <b>"+data._ret.redeem_allowed_from+"</b></div>");
+                    }
+                }
             }
         }
         $('#ticket_info_retrieved').html(div);
@@ -757,10 +785,17 @@ jQuery(document).ready(()=>{
         if(data._ret.max_redeem_amount > 1) {
             $('<div>').html(sprintf(/* translators: 1: redeemd tickets 2: max redeem */__('Redeem usage: <b>%1$d</b> of <b>%2$d</b>', 'event-tickets-with-ticket-scanner'), data.metaObj.wc_ticket.stats_redeemed.length, data._ret.max_redeem_amount)).appendTo(div);
         }
+
         let div2 = $('<div style="width:50%;display:inline-block;">');
-        if (data._ret.redeem_allowed_from_timestamp*1000 > new Date(data._ret._server.time).getTime()) {
-            div2.append('<div>').html(sprintf(/* translators: %s: date */__('Redeemable from %s', 'event-tickets-with-ticket-scanner'), data._ret.redeem_allowed_from));
+        if (data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart) {
+            //if (data._ret._options.isRedeemOperationTooEarly) {
+                div2.append($('<div>').html(sprintf(/* translators: %s: date */__('Redeemable from %s', 'event-tickets-with-ticket-scanner'), data._ret.redeem_allowed_from)));
+            //}
         }
+        if (typeof data._ret.redeem_allowed_until != "undefined") {
+            div2.append($('<div>').html(sprintf(/* translators: %s: date */__('Redeemable until %s', 'event-tickets-with-ticket-scanner'), data._ret.redeem_allowed_until)));
+        }
+
         if (data.metaObj.woocommerce.creation_date != "") {
            div2.append('<div>'+sprintf(/* translators: %s: date */__('Bought at %s', 'event-tickets-with-ticket-scanner'), DateTime2Text(new Date(data.metaObj.woocommerce.creation_date).getTime()))+'</div>');
         }
@@ -778,6 +813,7 @@ jQuery(document).ready(()=>{
                 }
             }
         }
+
         let div3 = $('<div>');
         if (typeof data._ret.product !== "undefined") {
             div3.css("margin-top", "10px").html(__('<b>Product information</b>', 'event-tickets-with-ticket-scanner'))
@@ -1075,19 +1111,11 @@ jQuery(document).ready(()=>{
         if (toBool(myAjax.ticketScannerDisplayTimes)) {
             let data = system.data;
             if (typeof data._ret != "undefined" && typeof data._ret._server != "undefined") {
-                let div = $('<div>');
+                let div = $('<div style="padding-top:30px;">');
                 div.append("Server: "+data._ret._server.time+" "+data._ret._server.timezone.timezone+" Offset: "+data._ret._server.timezone.timezone+"<br>");
                 let date = new Date();
                 div.append("Local: "+date+"<br>");
-                if (typeof data._ret.redeem_allowed_from != "undefined") {
-                    let date = new Date(data._ret.redeem_allowed_from);
-                    div.append("Redeem allowed from : "+date+"<br>");
-                }
-                if (typeof data._ret.redeem_allowed_until != "undefined") {
-                    date = new Date(data._ret.redeem_allowed_until);
-                    div.append("Redeem allowed untill : "+date+"<br>");
-                }
-                $('#ticket_scanner_info_area').append(div);
+                system.TIMEAREA.html(div);
             }
         }
     }
@@ -1110,9 +1138,9 @@ jQuery(document).ready(()=>{
                     div.append("Server time: "+data._ret._server.time+"<br>");
                     div.append("UTC time: "+data._ret._server.UTC_time+"<br>");
                     let date = new Date(data._ret.redeem_allowed_from);
-                    div.append("Redeem allowed from : "+date+"<br>");
+                    div.append("Redeem allowed from: "+date+"<br>");
                     date = new Date(data._ret.redeem_allowed_until);
-                    div.append("Redeem allowed untill : "+date+"<br>");
+                    div.append("Redeem allowed until: "+date+"<br>");
                 } catch(e) {
                     //console.log(e);
                 }

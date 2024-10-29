@@ -1080,6 +1080,7 @@ class sasoEventtickets_AdminSettings {
 						$prefix_code = trim($obj['input_prefix_codes']);
 						$prefix_code = str_replace(" ", "_", $prefix_code);
 						$prefix_code = $this->replacePlaceholderForCode($prefix_code);
+						$prefix_code = str_replace("/", "-", $prefix_code);
 						$code = $prefix_code.$code;
 					}
 				}

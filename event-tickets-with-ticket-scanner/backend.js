@@ -1704,7 +1704,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		}
 		function _getFormatterValues() {
 			return {
-				input_prefix_codes:_getPrefix(),
+				input_prefix_codes:_getPrefix().replace('/', '-'),
 				input_type_codes:input_type_codes.val(),
 				input_amount_letters:_getAmountLetters(),
 				input_letter_excl:input_letter_excl.val(),
@@ -2550,6 +2550,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 							let ret = '';
 							if (row._max_redeem_amount > 0) {
 								ret = row._redeemed_counter+'/'+row._max_redeem_amount;
+							} else {
+								ret = row._redeemed_counter+'/unlimited';
 							}
 							return ret;
 						}
@@ -2574,7 +2576,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 						url: _requestURL('getCodes'),
 						type: 'POST',
 					},
-	    			"order": [[ 5, "desc" ]],
+	    			"order": [[ 4 + (additionalColumn.customerName != "" ? 1 : 0), "desc" ]],
 	    			"columns": table_columns,
 					"initComplete": function () {
 						LAYOUT.renderSpinnerHide();
@@ -3041,7 +3043,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					let _max_redeem_amount = typeof metaObj.wc_ticket._max_redeem_amount !== "undefined" ? metaObj.wc_ticket._max_redeem_amount : 1;
 					$("<div>").html("<b>Ticket number: </b>"+codeObj.code_display).appendTo(div);
 					$("<div>").html("<b>Public Ticket number: </b>"+metaObj.wc_ticket._public_ticket_id).appendTo(div);
-					$("<div>").html("<b>Redeem usage: </b>"+metaObj.wc_ticket.stats_redeemed.length + ' of ' + _max_redeem_amount).appendTo(div);
+					$("<div>").html("<b>Redeem usage: </b>"+metaObj.wc_ticket.stats_redeemed.length + ' of ' + (_max_redeem_amount == 0 ? 'unlimited' : _max_redeem_amount)).appendTo(div);
 					$("<div>").html('<b>Ticket Page:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'">Open Ticket Detail Page</a>').appendTo(div);
 					$("<div>").html('<b>Ticket Page Testmode:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?testDesigner=1">Open Ticket Detail Page with template test code</a>').appendTo(div);
 					$("<div>").html('<b>Ticket PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?pdf">Open Ticket PDF</a>').appendTo(div);
@@ -3085,7 +3087,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					});
 				}).appendTo(btngrp);
 				let _max_redeem_amount = typeof metaObj.wc_ticket._max_redeem_amount !== "undefined" ? metaObj.wc_ticket._max_redeem_amount : 1;
-				if (metaObj.wc_ticket.is_ticket == 0 || (metaObj.wc_ticket.stats_redeemed.length >= _max_redeem_amount)) {
+				if (metaObj.wc_ticket.is_ticket == 0 || _max_redeem_amount == 0 || metaObj.wc_ticket.stats_redeemed.length >= _max_redeem_amount) {
 					btn_redeem.attr("disabled", true);
 				}
 
