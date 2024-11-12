@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.4.2
+ * Version: 2.4.3
  * Author: Saso Nikolov
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.4.2');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.4.3');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -342,7 +342,10 @@ class sasoEventtickets {
 		if (is_admin()) {
 			add_action('woocommerce_delete_order', [$this, 'relay_woocommerce_delete_order'], 10, 1 );
 			add_action('woocommerce_delete_order_item', [$this, 'relay_woocommerce_delete_order_item'], 20, 1);
+			add_action('woocommerce_pre_delete_order_refund', [$this, 'relay_woocommerce_pre_delete_order_refund'], 10, 3);
 			add_action('woocommerce_delete_order_refund', [$this, 'relay_woocommerce_delete_order_refund'], 10, 1 );
+			add_action('woocommerce_order_partially_refunded', [$this, 'relay_woocommerce_order_partially_refunded'], 10, 2);
+			//add_action('woocommerce_update_order', [$this, 'relay_woocommerce_update_order'], 10, 2);
 			add_filter('woocommerce_product_data_tabs', [$this, 'relay_woocommerce_product_data_tabs'], 98 );
 			add_action('woocommerce_product_data_panels', [$this, 'relay_woocommerce_product_data_panels'] );
 			add_action('woocommerce_process_product_meta', [$this, 'relay_woocommerce_process_product_meta'], 10, 2 );
@@ -399,6 +402,10 @@ class sasoEventtickets {
 		$args = func_get_args();
 		$this->getWC()->woocommerce_delete_order_item(...$args);
 	}
+	public function relay_woocommerce_pre_delete_order_refund() {
+		$args = func_get_args();
+		$this->getWC()->woocommerce_pre_delete_order_refund(...$args);
+	}
 	public function relay_woocommerce_delete_order_refund() {
 		$args = func_get_args();
 		$this->getWC()->woocommerce_delete_order_refund(...$args);
@@ -435,6 +442,14 @@ class sasoEventtickets {
 	public function relay_woocommerce_order_status_changed() {
 		$args = func_get_args();
 		$this->getWC()->woocommerce_order_status_changed(...$args);
+	}
+	public function relay_woocommerce_order_partially_refunded() {
+		$args = func_get_args();
+		$this->getWC()->woocommerce_order_partially_refunded(...$args);
+	}
+	public function relay_woocommerce_update_order() {
+		$args = func_get_args();
+		$this->getWC()->woocommerce_update_order(...$args);
 	}
 	public function relay_woocommerce_order_item_display_meta_key() {
 		$args = func_get_args();

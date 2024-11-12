@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.4.2
+Stable tag: 2.4.3
 Tested up to: 6.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -305,7 +305,7 @@ Attention, the translation forced bigger chunk of code to be changed.
 To update the old sold tickets, please execute the "repair table" button within the support area. From now on we will store also the user id of the ticket purchase.
 
 = 1.0.11 =
-Default value is changed to true for the option ro reuse not used ticket numbers within a ticket list assigned to a product
+Default value is changed to true for the option ro reuse not used tickeu39974   t numbers within a ticket list assigned to a product
 
 = 1.0.9 =
 New option to add the amount of purchased tickets per sold item on the PDF. Database updated. You can see now the redeemed ticket information within the admin area on the data table.
@@ -323,6 +323,13 @@ New Javascript library for the ticket scanner. If you need to use the old ticket
 New default value for the option to allow access to the admin area of the tickets - now it is false, only administrator, until you set it otherwise.
 
 == Changelog ==
+= 2.4.3 - 2024-11-12 =
+* On the badge the event date will not be shown if the value at the event is not set. {TICKET.PRODUCT.XYZ}. Properties are ticket_start_date, ticket_end_date, ticket_start_time and ticket_end_time
+* New option to remove tickets from partially refunded order items - wcassignmentOrderItemRefund
+* In order view, the public ticket ids are listed more easier to read
+* Bug fix for additional ticket numbers to an order item. Now the values are corrected and the amount of tickets is correct.
+* Bug fix for delete order - the tickets are removed now
+
 = 2.4.2 - 2024-10-29 =
 * Fix wrong error message, if you have no values selected in option adminAreaAllowedRoles.
 * Fix default ordering over the created date if you display additional columns.

@@ -12,6 +12,8 @@ class sasoEventtickets_WC {
 	private $_isTicket;
 	private $_product;
 
+	private $refund_parent_id; // order_id
+
 	private $_attachments = [];
 
 	public function __construct($MAIN) {
@@ -919,6 +921,90 @@ class sasoEventtickets_WC {
 		return $attachments;
 	}
 
+	// not in used. Hook commented out at index.php
+	// will be also called if woocommerce_order_partially_refunded is called
+	public function woocommerce_update_order($order_id, $order) {
+		// attention, this can trigger a loop.
+		//$this->add_serialcode_to_order($order_id); // vlt wurden manuel produkte hinzugefügt
+	}
+
+	public function woocommerce_order_partially_refunded($order_id, $refund_id) {
+		if ($this->getOptions()->isOptionCheckboxActive('wcassignmentOrderItemRefund')) {
+			$order = wc_get_order( $order_id );
+
+			foreach ($order->get_items() as $item_id => $item) {
+				$product = $item->get_product();
+				if( $product == null ) continue;
+				$product_id = $item->get_product_id();
+
+				$isTicket = get_post_meta($product_id, 'saso_eventtickets_is_ticket', true) == "yes";
+				if ($isTicket == false) continue;
+				$variation_id = $item->get_variation_id();
+				if ($variation_id > 0) {
+					// check ob diese variation vom ticket ausgeschlossen ist
+					if (get_post_meta($variation_id, '_saso_eventtickets_is_not_ticket', true) == "yes") {
+						continue;
+					}
+				}
+
+				$item_qty_refunded = $order->get_qty_refunded_for_item( $item_id );
+				if ($item_qty_refunded >= 0) continue;
+
+				$existingCodes = wc_get_order_item_meta($item_id , '_saso_eventtickets_product_code', true);
+				if (empty($existingCodes)) continue;
+
+				// check how many codes should be there, with the refund
+				if ($item->get_variation_id() > 0) {
+					$saso_eventtickets_ticket_amount_per_item = intval(get_post_meta( $item->get_variation_id(), 'saso_eventtickets_ticket_amount_per_item', true ));
+				} else {
+					$saso_eventtickets_ticket_amount_per_item = intval(get_post_meta( $product_id, 'saso_eventtickets_ticket_amount_per_item', true ));
+				}
+				if ($saso_eventtickets_ticket_amount_per_item < 1) {
+					$saso_eventtickets_ticket_amount_per_item = 1;
+				}
+				$new_quantity = $item->get_quantity() + $item_qty_refunded; // new quantity without the refunded
+				$new_quantity *= $saso_eventtickets_ticket_amount_per_item;
+
+				$old_codes = explode(",", $existingCodes);
+				$count_codes = count($old_codes);
+				if ($count_codes > $new_quantity) {
+					$codes = array_slice($old_codes, 0, $new_quantity);
+
+					$public_ticket_ids_value = wc_get_order_item_meta($item_id , '_saso_eventtickets_public_ticket_ids', true);
+					$existing_plublic_ticket_ids = explode(",", $public_ticket_ids_value);
+					$public_ticket_ids = [];
+					if (count($existing_plublic_ticket_ids) > $new_quantity) {
+						$public_ticket_ids = array_slice($existing_plublic_ticket_ids, 0, $new_quantity);
+					}
+
+					// save new values
+					wc_delete_order_item_meta( $item_id, '_saso_eventtickets_product_code' );
+					wc_add_order_item_meta($item_id , '_saso_eventtickets_product_code', implode(",", $codes) ) ;
+					wc_delete_order_item_meta( $item_id, "_saso_eventtickets_public_ticket_ids" );
+					wc_add_order_item_meta($item_id , "_saso_eventtickets_public_ticket_ids", implode(",", $public_ticket_ids) ) ;
+
+					// delete tickets
+					$codes_to_delete = array_slice($old_codes, $new_quantity);
+					foreach ($codes_to_delete as $code) {
+						$code = trim($code);
+						if (empty($code)) continue;
+
+						// remove used info - if it is a real ticket number and not the free max usage message
+						$data = ['code'=>$code];
+						try {
+							$this->getAdmin()->removeUsedInformationFromCode($data);
+							$this->getAdmin()->removeWoocommerceOrderInfoFromCode($data);
+							$this->getAdmin()->removeWoocommerceRstrPurchaseInfoFromCode($data);
+							$order->add_order_note( sprintf(/* translators: %s: ticket number */esc_html__('Refunded ticket(s). Ticket number %s removed for order item id: %s.', 'event-tickets-with-ticket-scanner'), esc_attr($code), esc_attr($item_id)) );
+						} catch (Exception $e) {
+							$this->MAIN->getAdmin()->logErrorToDB($e);
+						}
+					}
+				}
+			} // endfor each
+		}
+	}
+
 	public function woocommerce_order_status_changed($order_id,$old_status,$new_status) {
 		if ($new_status != "refunded" && $new_status != "cancelled" && $new_status != "wc-refunded" && $new_status != "wc-cancelled") {
 			$this->add_serialcode_to_order($order_id); // vlt wurden manuel produkte hinzugefügt
@@ -980,8 +1066,10 @@ class sasoEventtickets_WC {
 					$codes_[] = '<a target="_blank" href="admin.php?page=event-tickets-with-ticket-scanner&code='.urlencode($c).'">'.$c.'</a>';
 				}
 				$meta_value = implode(", ", $codes_);
-			}
-			if ($meta->key === '_saso_eventtickets_is_ticket' ) {
+			} else if ($meta->key === '_saso_eventtickets_public_ticket_ids') {
+				$codes = explode(",", $meta_value);
+				$meta_value = implode(", ", $codes);
+			} else if ($meta->key === '_saso_eventtickets_is_ticket' ) {
 				$meta_value = $meta_value == 1 ? "Yes" : "No";
 			}
 		}
@@ -1515,10 +1603,12 @@ class sasoEventtickets_WC {
 				$saso_eventtickets_ticket_amount_per_item = 1;
 			}
 
-			$quantity = $item->get_quantity();
+			$item_qty_refunded = $order->get_qty_refunded_for_item( $item_id );
+			$quantity = $item->get_quantity() + $item_qty_refunded;
 			$quantity *= $saso_eventtickets_ticket_amount_per_item;
 
 			$existingCode = wc_get_order_item_meta($item_id , $codeName, true);
+			$codes = [];
 			if (!empty($existingCode)) {
 				$codes = explode(",", $existingCode);
 				$quantity = $quantity - count($codes);
@@ -1542,16 +1632,19 @@ class sasoEventtickets_WC {
 					$values2 = $valuesPerTicket;
 				}
 
-				$codes = [];
-				$public_ticket_ids = [];
+				$public_ticket_ids_value = wc_get_order_item_meta($item_id , '_saso_eventtickets_public_ticket_ids', true);
+				$public_ticket_ids = explode(",", $public_ticket_ids_value);
+
+				$new_codes = [];
+				$offset = count($codes);
 				for($a=0;$a<$quantity;$a++) {
 					$namePerTicket = "";
-					if (isset($values[$a])) {
-						$namePerTicket = $values[$a];
+					if (isset($values[$offset + $a])) {
+						$namePerTicket = $values[$offset + $a];
 					}
 					$valuePerTicket = "";
-					if (isset($values2[$a])) {
-						$valuePerTicket = $values2[$a];
+					if (isset($values2[$offset + $a])) {
+						$valuePerTicket = $values2[$offset + $a];
 					}
 					$newcode = "";
 					try {
@@ -1572,13 +1665,15 @@ class sasoEventtickets_WC {
 						$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 						$public_ticket_ids[] = $metaObj['wc_ticket']['_public_ticket_id'];
 					}
-					$codes[] = $newcode;
+					$new_codes[] = $newcode;
 
 				} // end for quantity
+				$codes = array_merge($codes, $new_codes);
 				if (count($codes) > 0) {
 					$ret = $codes;
 					wc_delete_order_item_meta( $item_id, $codeName );
 					wc_add_order_item_meta($item_id , $codeName, implode(",", $codes) ) ;
+					wc_delete_order_item_meta( $item_id, $codeListName );
 					wc_add_order_item_meta($item_id , $codeListName, $saso_eventtickets_list ) ;
 				}
 				if (count($public_ticket_ids) > 0) {
@@ -2332,7 +2427,7 @@ class sasoEventtickets_WC {
 
 	private function removeTicketInfosFromOrder( $order_id ) {
 		$order = wc_get_order( $order_id );
-		if ($order != null) {
+		if ($order) {
 			$items = $order->get_items();
 			foreach ( $items as $item_id => $item ) {
 				$this->woocommerce_delete_order_item($item_id);
@@ -2341,11 +2436,21 @@ class sasoEventtickets_WC {
 	}
 
 	function woocommerce_delete_order( $id ) {
-		$this->removeAllTicketsFromOrder($id);
+		$this->removeAllTicketsFromOrder(['order_id'=>$id]);
 	}
 
+	function woocommerce_pre_delete_order_refund($ret, $refund, $force_delete) {
+		if ($refund) {
+			$this->refund_parent_id = $refund->get_parent_id();
+		}
+		return $ret;
+	}
 	function woocommerce_delete_order_refund( $id ) {
-		$this->removeAllTicketsFromOrder($id);
+		if ($this->refund_parent_id) {
+			$this->add_serialcode_to_order($this->refund_parent_id); // add missing ticket numbers
+		} else {
+			$this->removeAllTicketsFromOrder(['order_id'=>$id]);
+		}
 	}
 
 	function deleteCodesEntryOnOrderItem($item_id) {

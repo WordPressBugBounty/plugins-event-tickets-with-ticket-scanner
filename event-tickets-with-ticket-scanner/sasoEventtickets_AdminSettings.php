@@ -1157,14 +1157,37 @@ class sasoEventtickets_AdminSettings {
 		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		if ($codeObj['order_id'] > 0 || $metaObj['woocommerce']['order_id'] > 0) {
 
-			// extrahiere item id
-			$item_id = isset($metaObj['woocommerce']['item_id']) ? $metaObj['woocommerce']['item_id'] : 0;
-			if ($item_id > 0) {
-				if (class_exists( 'WooCommerce' )) {
-					$this->MAIN->getWC()->deleteCodesEntryOnOrderItem($item_id);
+				// extrahiere item id
+				$item_id = isset($metaObj['woocommerce']['item_id']) ? $metaObj['woocommerce']['item_id'] : 0;
+				if ($item_id > 0) {
+
+					$existingCodes = wc_get_order_item_meta($item_id , '_saso_eventtickets_product_code', true);
+					if (!empty($existingCodes)) {
+						$codes = explode(",", $existingCodes);
+						$public_ticket_ids_value = wc_get_order_item_meta($item_id , '_saso_eventtickets_public_ticket_ids', true);
+						$existing_plublic_ticket_ids = explode(",", $public_ticket_ids_value);
+						$public_ticket_ids = [];
+						$new_codes = [];
+						foreach($codes as $idx => $code) {
+							if ($code != $codeObj["code"]) {
+								$new_codes[] = $code;
+								if(isset($existing_plublic_ticket_ids[$idx])) {
+									$public_ticket_ids[] = $existing_plublic_ticket_ids[$idx];
+								}
+							}
+						}
+						if (count($new_codes) == 0) {
+							$this->MAIN->getWC()->deleteCodesEntryOnOrderItem($item_id);
+							$this->removeWoocommerceTicketForCode($data);
+						} else {
+							wc_delete_order_item_meta( $item_id, '_saso_eventtickets_product_code' );
+							wc_add_order_item_meta($item_id , '_saso_eventtickets_product_code', implode(",", $codes) );
+							wc_delete_order_item_meta( $item_id, "_saso_eventtickets_public_ticket_ids" );
+							wc_add_order_item_meta($item_id , "_saso_eventtickets_public_ticket_ids", implode(",", $public_ticket_ids) ) ;
+						}
+					}
 				}
-				$this->removeWoocommerceTicketForCode($data);
-			}
+
 		}
 		// leere meta woocommerce
 		$defMeta = $this->getCore()->getMetaObject();

@@ -328,11 +328,13 @@ class sasoEventtickets_TicketBadge {
                 foreach($matches[0] as $item) {
                     $key = substr(substr($item, 16), 0, -1);
                     $value = $this->getValueOfArrayByPlaceholder($key, $product_dates);
-                    if ($key == "ticket_start_date" || $key == "ticket_end_date") {
-                        $value = @date($date_format, strtotime($value));
-                    }
-                    if ($key == "ticket_start_time" || $key == "ticket_end_time") {
-                        $value = @date($date_format, strtotime($product_dates['ticket_start_date']." ".$value));
+                    if (!empty($value)) {
+                        if ($key == "ticket_start_date" || $key == "ticket_end_date") {
+                            $value = @date($date_format, strtotime($value));
+                        }
+                        if ($key == "ticket_start_time" || $key == "ticket_end_time") {
+                            $value = @date($date_format, strtotime($product_dates['ticket_start_date']." ".$value));
+                        }
                     }
                     $html = str_replace($item, wp_kses_post($value), $html);
                 }
