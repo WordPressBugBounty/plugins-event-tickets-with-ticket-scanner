@@ -2,8 +2,8 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.4.3
-Tested up to: 6.6
+Stable tag: 2.4.4
+Tested up to: 6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -323,6 +323,11 @@ New Javascript library for the ticket scanner. If you need to use the old ticket
 New default value for the option to allow access to the admin area of the tickets - now it is false, only administrator, until you set it otherwise.
 
 == Changelog ==
+= 2.4.4 - 2024-12-02 =
+* Added french language file for the backend. Big thanks to Maxime.
+* Remove HTML from the description of the auth token
+* Remove HTML from the product id list of the auth token
+
 = 2.4.3 - 2024-11-12 =
 * On the badge the event date will not be shown if the value at the event is not set. {TICKET.PRODUCT.XYZ}. Properties are ticket_start_date, ticket_end_date, ticket_start_time and ticket_end_time
 * New option to remove tickets from partially refunded order items - wcassignmentOrderItemRefund

@@ -556,7 +556,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 							$('<div style="margin-left:20px;width:256px;float:left;text-align:center">').html('<b>With Ticket Scanner URL</b><div id="'+id+'2" style="text-align:center;"></div><script>jQuery("#'+id+'2").qrcode(\''+content2+'\');</script>').appendTo(div_wrapper);
 
 							let div_inner = $('<div style="float:left;padding-left:10px;">').appendTo(div_wrapper);
-							$('<div>').html('<b><a href="'+content2+'" target="_blank">Open Ticket Scanner with Auth Token</a><br>Desc:</b> '+(metaObj.desc == "" ? "-" : "<br>"+metaObj.desc)).appendTo(div_inner);
+							let _desc = metaObj.desc == "" ? "-" : metaObj.desc;
+							$('<div>').html('<b><a href="'+content2+'" target="_blank">Open Ticket Scanner with Auth Token</a></b>').appendTo(div_inner);
+							$('<div>').html('<b>Desc:</b> ').append($('<span>').text(_desc)).appendTo(div_inner);
 
 							let bound_to_products = metaObj.ticketscanner.bound_to_products == "" ? [] : metaObj.ticketscanner.bound_to_products.toString().split(",");
 							$("<div>").html("<b>Bound to product:</b> "+(bound_to_products.length == 0 ? "all products": bound_to_products.join(", "))).appendTo(div_inner);

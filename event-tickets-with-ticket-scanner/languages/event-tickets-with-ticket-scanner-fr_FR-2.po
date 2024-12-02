@@ -1,0 +1,2898 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Event Tickets with Ticket Scanner\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-19 13:10+0000\n"
+"PO-Revision-Date: 2024-11-19 15:38+0000\n"
+"Last-Translator: Nomade Web\n"
+"Language-Team: Français\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.14; wp-6.7\n"
+"X-Domain: event-tickets-with-ticket-scanner"
+
+#: index.php:1009
+msgid "...loading..."
+msgstr "...Chargement..."
+
+#: sasoEventtickets_Options.php:377
+msgid "Activate redirect the user after a valid ticket was found."
+msgstr ""
+"Activer la redirection de l'utilisateur après la découverte d'un ticket "
+"valide."
+
+#: sasoEventtickets_Options.php:287
+msgid "Activate redirect the user after redeeming their own ticket."
+msgstr ""
+"Activer la redirection de l'utilisateur après avoir échangé son propre "
+"ticket."
+
+#: sasoEventtickets_Options.php:383
+msgid "Activate webhooks to call a service with the validation check."
+msgstr ""
+"Activez les webhooks pour appeler un service avec la vérification de "
+"validation."
+
+#: sasoEventtickets_Options.php:422
+msgid ""
+"Add to the ticket QR code the full URL to the ticket scanner with the public "
+"ticket id"
+msgstr ""
+"Ajoutez au code QR du billet l'URL complète du scanner de billets avec "
+"l'identifiant du billet public"
+
+#: sasoEventtickets_Options.php:63
+msgid "Allow logged in user as adminstrator to open the ticket scanner"
+msgstr ""
+"Autoriser l'utilisateur connecté en tant qu'administrateur à ouvrir le "
+"scanner de tickets"
+
+#: sasoEventtickets_Options.php:358
+msgid ""
+"Allow only logged in wordpress user to enter a ticket number for validation"
+msgstr ""
+"Autoriser uniquement l'utilisateur WordPress connecté à entrer un numéro de "
+"ticket pour validation"
+
+#: sasoEventtickets_Options.php:55
+msgid "Allow the specific role to access the ticket scanner"
+msgstr "Autoriser le rôle spécifique à accéder au scanner de tickets"
+
+#: sasoEventtickets_Options.php:69
+msgid "Allow tickets to be redeemed after ending date and time"
+msgstr "Allow tickets to be redeemed after ending date and time"
+
+#: sasoEventtickets_Options.php:64
+msgid "Allow to redeem ticket only if it is paid"
+msgstr ""
+"Autoriser l'échange d'un billet uniquement s'il est payé\n"
+
+#: sasoEventtickets_Core.php:253
+msgid "Amount of how many times the code was validated successfully."
+msgstr "Nombre de fois où le code a été validé avec succès."
+
+#: sasoEventtickets_Options.php:188
+msgid "Attach additional PDF to the PDF ticket"
+msgstr ""
+"Joindre un PDF supplémentaire au ticket PDF\n"
+
+#: sasoEventtickets_Options.php:258
+msgid ""
+"Attach all ticket badges of an order to the WooCommerce mails as one PDF"
+msgstr ""
+"Joindre tous les badges de billet d'une commande aux e-mails WooCommerce en "
+"un seul PDF"
+
+#: sasoEventtickets_Options.php:425
+msgid "Attach QR image to purchase email"
+msgstr "Joindre une image de code QR à l'e-mail d'achat"
+
+#: sasoEventtickets_Options.php:426
+msgid "Attach QR pdf to purchase email"
+msgstr "Joindre un PDF QR code à l'e-mail d'achat"
+
+#: sasoEventtickets_Options.php:427
+msgid "Attach QR PDF to purchase email as one PDF instead of single PDFs"
+msgstr ""
+"Joindre un PDF QR à l'e-mail d'achat en un seul PDF au lieu de PDF uniques"
+
+#: sasoEventtickets_Options.php:275
+msgid "Attach the ICS calendar file to the WooCommerce mails"
+msgstr "Joindre le fichier de calendrier ICS aux e-mails WooCommerce"
+
+#: sasoEventtickets_Options.php:256
+msgid "Attach the ticket badge download link to the WooCommerce mails"
+msgstr ""
+"Joindre le lien de téléchargement du badge de billet aux e-mails WooCommerce"
+
+#: sasoEventtickets_Options.php:257
+msgid "Attach the ticket badge file to the WooCommerce mails"
+msgstr "Joindre le fichier de badge de ticket aux e-mails WooCommerce"
+
+#: sasoEventtickets_Options.php:200 sasoEventtickets_Options.php:259
+msgid "BETA Use RTL for PDF"
+msgstr "BETA Utilisez RTL pour PDF"
+
+#: sasoEventtickets_Options.php:208
+msgid "BETA Use RTL for PDF <b>test</b>"
+msgstr "BETA Utilisez RTL pour PDF test"
+
+#: sasoEventtickets_Options.php:380
+msgid "Button label to click for the user to be redirected"
+msgstr ""
+"Étiquette de bouton sur laquelle cliquer pour que l'utilisateur soit redirigé"
+
+#: sasoEventtickets_Options.php:272
+msgid "Calendar file (ICS)"
+msgstr "Fichier de calendrier (ICS)"
+
+#: sasoEventtickets_Ticket.php:1796 sasoEventtickets_Ticket.php:1815
+#: sasoEventtickets_Ticket.php:1835
+msgid "Can not find the product for this ticket."
+msgstr "Je ne trouve pas le produit pour ce billet."
+
+#: sasoEventtickets_Options.php:265
+msgid "Choose background image for the ticket badge"
+msgstr "Choisissez l'image d'arrière-plan pour le badge de billet"
+
+#: sasoEventtickets_Options.php:320
+msgid "Choose background image for the ticket flyer"
+msgstr "Choisissez l'image d'arrière-plan du billet"
+
+#: sasoEventtickets_Options.php:184
+msgid "Choose background image for the ticket PDF"
+msgstr "Choisissez l'image d'arrière-plan pour le ticket PDF"
+
+#: sasoEventtickets_Options.php:312
+msgid "Choose banner image for the ticket flyer"
+msgstr "Choisissez l'image de la bannière pour le dépliant du billet"
+
+#: sasoEventtickets_Options.php:175
+msgid "Choose banner image for the ticket PDF"
+msgstr "Choisissez l'image de la bannière pour le PDF du billet"
+
+#: sasoEventtickets_Options.php:303
+msgid "Choose logo for the ticket flyer"
+msgstr "Choisissez le logo pour le dépliant du billet"
+
+#: sasoEventtickets_Options.php:166
+msgid "Choose logo for the ticket PDF"
+msgstr "Choisissez le logo pour le billet PDF"
+
+#: sasoEventtickets_Options.php:191
+msgid "Choose PDF to be added to the ticket PDF"
+msgstr "Choisissez le PDF à ajouter au PDF du ticket"
+
+#: sasoEventtickets_Options.php:84
+msgid "Choose the new order status if you redeem successfully a ticket"
+msgstr ""
+"Choisissez le statut de la nouvelle commande si vous utilisez un ticket avec "
+"succès"
+
+#: sasoEventtickets_Options.php:405
+msgid "Clear the ticket number if the order item was partially refunded"
+msgstr ""
+"Effacer le numéro de ticket si l'article de la commande a été partiellement "
+"remboursé"
+
+#: sasoEventtickets_Options.php:404
+msgid "Clear the ticket number if the order was deleted, canceled or refunded"
+msgstr ""
+"Effacer le numéro de ticket si la commande a été supprimée, annulée ou "
+"remboursée"
+
+#: index.php:644
+msgid "Click here for more help about the functions"
+msgstr "Cliquez ici pour plus d'aide sur les fonctions"
+
+#: sasoEventtickets_AdminSettings.php:1020
+msgid "code could not be generated and stored"
+msgstr "Le code n'a pas pu être généré et stocké"
+
+#: sasoEventtickets_AdminSettings.php:911
+msgid "code exists already"
+msgstr "Le code existe déjà"
+
+#: sasoEventtickets_AdminSettings.php:901
+msgid "Code is empty"
+msgstr "Le code est vide"
+
+#: sasoEventtickets_Ticket.php:246 sasoEventtickets_Ticket.php:485
+msgid "code missing"
+msgstr "Code manquant"
+
+#: sasoEventtickets_Options.php:94
+msgid "Compatibility Mode"
+msgstr "Mode de compatibilité"
+
+#: sasoEventtickets_Authtoken.php:107
+msgid "Could not create authtoken. Auth token code exists already."
+msgstr ""
+"Impossible de créer un jeton d'authentification. Le code du jeton "
+"d'authentification existe déjà."
+
+#: sasoEventtickets_AdminSettings.php:598
+msgid "Could not create code list. Name exists already."
+msgstr "Impossible de créer une liste de codes. Le nom existe déjà."
+
+#: sasoEventtickets_Options.php:65
+msgid ""
+"Count each ticket scan with the ticket scanner as a confirmed status check"
+msgstr ""
+"Comptez chaque scan de ticket avec le scanner de tickets comme une "
+"vérification de l'état confirmée"
+
+#: sasoEventtickets_Options.php:230
+msgid "Coupon used:"
+msgstr "Coupon utilisé :"
+
+#: sasoEventtickets_Core.php:261
+msgid "Creation date of the WooCommerce purchase using the allowance code."
+msgstr ""
+"Date de création de l'achat WooCommerce en utilisant le code d'allocation.\n"
+
+#: sasoEventtickets_Core.php:257
+msgid "Creation date of the WooCommerce sales date timezone."
+msgstr "Date de création du fuseau horaire de la date de vente WooCommerce."
+
+#: sasoEventtickets_Core.php:256
+msgid "Creation date of the WooCommerce sales date."
+msgstr "Date de création de la date de vente WooCommerce."
+
+#: sasoEventtickets_Core.php:262
+msgid ""
+"Creation date timezone of the WooCommerce purchase using the allowance code."
+msgstr ""
+"Date de création du fuseau horaire de l'achat WooCommerce en utilisant le "
+"code d'allocation."
+
+#: sasoEventtickets_Options.php:224
+msgid "Customer"
+msgstr "Client"
+
+#: sasoEventtickets_Options.php:182
+msgid "Display a background image at the center of the PDF"
+msgstr "Afficher une image d'arrière-plan au centre du PDF"
+
+#: sasoEventtickets_Options.php:318
+msgid "Display a background image at the center of the PDF."
+msgstr "Affichez une image d'arrière-plan au centre du PDF."
+
+#: sasoEventtickets_Options.php:263
+msgid "Display a background image image at the center of the PDF."
+msgstr "Afficher une image d'arrière-plan au centre du PDF."
+
+#: sasoEventtickets_Options.php:172
+msgid "Display a banner image at the top of the PDF"
+msgstr "Afficher une image de bannière en haut du PDF"
+
+#: sasoEventtickets_Options.php:309
+msgid "Display a banner image at the top of the PDF."
+msgstr "Affichez une image de bannière en haut du PDF."
+
+#: sasoEventtickets_Options.php:26
+msgid "Display a column with the information how often the ticket is redeemed"
+msgstr ""
+"Afficher une colonne avec les informations sur la fréquence à laquelle le "
+"billet est utilisé"
+
+#: sasoEventtickets_Options.php:27
+msgid "Display a column with the name of the buyer"
+msgstr "Afficher une colonne avec le nom de l'acheteur"
+
+#: sasoEventtickets_Options.php:163
+msgid "Display a small logo (max. 300x300px) at the bottom in the center"
+msgstr "Affichez un petit logo (max. 300x300px) en bas au centre"
+
+#: sasoEventtickets_Options.php:300
+msgid "Display a small logo (max. 300x300px) at the bottom in the center."
+msgstr "Affichez un petit logo (max. 300x300px) en bas au centre."
+
+#: sasoEventtickets_Options.php:115
+msgid ""
+"Display all tickets in one PDF download button/link on purchase order email"
+msgstr ""
+"Afficher tous les billets dans un bouton/lien de téléchargement PDF sur l'e-"
+"mail du bon de commande"
+
+#: sasoEventtickets_Options.php:116
+msgid ""
+"Display all tickets in one PDF download button/link on the checkout page"
+msgstr ""
+"Afficher tous les billets dans un bouton/lien de téléchargement PDF sur la "
+"page de paiement"
+
+#: sasoEventtickets_Options.php:117
+msgid ""
+"Display all tickets in one PDF download button/link on the order detail view"
+msgstr ""
+"Afficher tous les billets dans un bouton/lien de téléchargement PDF sur la "
+"vue détaillée de la commande"
+
+#: sasoEventtickets_Options.php:326
+msgid "Display bought ticket numbers within the user profile"
+msgstr ""
+"Afficher les numéros de billets achetés dans le profil de l'utilisateur"
+
+#: sasoEventtickets_Options.php:66
+msgid "Display confirmed status checks on the ticket scanner view"
+msgstr ""
+"Afficher les vérifications d'état confirmées sur la vue du scanner de tickets"
+
+#: sasoEventtickets_Options.php:22
+msgid "Display options"
+msgstr "Options d'affichage"
+
+#: sasoEventtickets_Options.php:145
+msgid "Display product variant name"
+msgstr "Afficher le nom de la variante du produit"
+
+#: sasoEventtickets_Options.php:325
+msgid "Display registered ticket numbers within the user profile"
+msgstr ""
+"Afficher les numéros de ticket enregistrés dans le profil de l'utilisateur"
+
+#: sasoEventtickets_Options.php:90
+msgid "Display server and ticket times on the ticket scannner"
+msgstr ""
+"Afficher les heures du serveur et des tickets sur le scanner de tickets"
+
+#: sasoEventtickets_Options.php:152
+msgid "Display the add ons of the purchased items of the order on the ticket"
+msgstr "Afficher les add-ons des articles achetés de la commande sur le ticket"
+
+#: sasoEventtickets_Options.php:25
+msgid "Display the column 'confirmed count' of the ticket"
+msgstr "Afficher la colonne « nombre confirmé » du ticket"
+
+#: sasoEventtickets_Options.php:147
+msgid "Display the customer note of the order on the ticket"
+msgstr "Afficher la note client de la commande sur le ticket"
+
+#: sasoEventtickets_Options.php:113
+msgid ""
+"Display the order detail view link with all tickets in one page in the "
+"purchase order email"
+msgstr ""
+"Afficher le lien de la vue détaillée de la commande avec tous les billets "
+"sur une seule page dans l'e-mail du bon de commande"
+
+#: sasoEventtickets_Options.php:114
+msgid ""
+"Display the order detail view link with all tickets in one page on the "
+"checkout page"
+msgstr ""
+"Afficher le lien de la vue détaillée de la commande avec tous les billets "
+"sur une seule page sur la page de paiement"
+
+#: sasoEventtickets_Options.php:416
+msgid "Display the prefix text always."
+msgstr "Affichez toujours le texte du préfixe."
+
+#: sasoEventtickets_Options.php:153
+msgid "Display the purchased items of the order on the ticket"
+msgstr "Afficher les articles achetés de la commande sur le ticket"
+
+#: sasoEventtickets_Options.php:154
+msgid "Display the quantity of the purchased item on the ticket."
+msgstr "Afficher la quantité de l'article acheté sur le ticket."
+
+#: sasoEventtickets_Options.php:328
+msgid "Display the redeem information for the ticket"
+msgstr "Afficher les informations d'échange pour le billet"
+
+#: sasoEventtickets_Options.php:158
+msgid "Display the registered user value on the ticket."
+msgstr "Afficher la valeur de l'utilisateur enregistré sur le ticket."
+
+#: sasoEventtickets_Options.php:146
+msgid "Display the short description of the product on the ticket"
+msgstr "Afficher la brève description du produit sur le ticket"
+
+#: sasoEventtickets_Options.php:327
+msgid "Display the ticket detail page URL"
+msgstr "Afficher l'URL de la page de détail du ticket"
+
+#: sasoEventtickets_Options.php:156
+msgid "Display the ticket list description on the ticket."
+msgstr "Affichez la description de la liste des tickets sur le ticket."
+
+#: sasoEventtickets_Options.php:155
+msgid "Display the ticket list name on the ticket."
+msgstr "Afficher le nom de la liste des billets sur le ticket"
+
+#: sasoEventtickets_Options.php:414
+msgid "Display ticket number to your loggedin user"
+msgstr "Afficher le numéro de ticket à votre utilisateur connecté"
+
+#: sasoEventtickets_Options.php:67
+msgid "Do not allow tickets to be redeemed before starting date"
+msgstr "N'autorisez pas l'échange de billets avant la date de début"
+
+#: sasoEventtickets_Options.php:78
+msgid "Do not change the order status"
+msgstr "Ne modifiez pas le statut de la commande"
+
+#: sasoEventtickets_Options.php:407
+msgid "Do not print the ticket number CVV on the confirmation to the customer."
+msgstr "N'imprimez pas le numéro de ticket CVV sur la confirmation au client."
+
+#: sasoEventtickets_Options.php:408
+msgid ""
+"Do not print the ticket number CVV on the PDF invoice woocommerce purchase."
+msgstr ""
+"N'imprimez pas le numéro de ticket CVV sur la facture PDF d'achat "
+"woocommerce."
+
+#: sasoEventtickets_Options.php:410
+msgid "Do not print the ticket on the PDF invoice woocommerce purchase."
+msgstr "N'imprimez pas le billet sur la facture PDF d'achat woocommerce."
+
+#: sasoEventtickets_Options.php:409
+msgid "Do not put the ticket in the emails to the customer"
+msgstr "Ne mettez pas le ticket dans les e-mails au client"
+
+#: sasoEventtickets_Options.php:73
+msgid "Do not show the Badge download button"
+msgstr "N'affichez pas le bouton de téléchargement du badge"
+
+#: sasoEventtickets_Options.php:71 sasoEventtickets_Options.php:74
+msgid "Do not show the option controls"
+msgstr "N'affichez pas les commandes d'option"
+
+#: sasoEventtickets_Options.php:72
+msgid "Do not show the PDF download button"
+msgstr "N'affichez pas le bouton de téléchargement du PDF"
+
+#: sasoEventtickets_Options.php:70
+msgid "Do not store the chosen cam device id on your browser"
+msgstr ""
+"Ne stockez pas l'identifiant de l'appareil cam choisi sur votre navigateur"
+
+#: sasoEventtickets_Options.php:207
+msgid "Do not use padding within the <b>test</b> PDF ticket"
+msgstr "N'utilisez pas de rembourrage dans le ticket PDF <b>test</b>"
+
+#: sasoEventtickets_Options.php:199
+msgid "Do not use padding within the PDF ticket"
+msgstr "N'utilisez pas de rembourrage dans le ticket PDF"
+
+#: sasoEventtickets_Options.php:238
+msgid ""
+"Do you want to redeem the ticket? Typically this is done at the entrance. "
+"This will mark this ticket as redeemed."
+msgstr ""
+"Voulez-vous échanger le billet ? Généralement, cela se fait à l'entrée. Cela "
+"marquera ce billet comme utilisé."
+
+#: sasoEventtickets_Options.php:274
+msgid "Download calendar file"
+msgstr "Télécharger le fichier de calendrier"
+
+#: sasoEventtickets_Options.php:121
+msgid "Download PDF Ticket"
+msgstr "Télécharger le billet PDF"
+
+#: sasoEventtickets_Options.php:255
+msgid "Download ticket badge"
+msgstr "Télécharger le badge de billet"
+
+#: sasoEventtickets_Options.php:120
+msgid "Download Tickets"
+msgstr "Télécharger les billets"
+
+#: sasoEventtickets_Options.php:279
+msgid "Email address for organizer entry"
+msgstr "Adresse e-mail pour l'entrée de l'organisateur"
+
+#: sasoEventtickets_Ticket.php:2108
+msgid "Error"
+msgstr "Erreur"
+
+#: sasoEventtickets_Options.php:246
+msgid "Event did not started yet"
+msgstr "L'événement n'a pas encore commencé"
+
+#: sasoEventtickets_Options.php:292
+msgid "Event Flyer"
+msgstr "Dépliant de l'événement"
+
+#: index.php:527 index.php:528
+msgid "Event Tickets"
+msgstr "Billets d'événement"
+
+#: sasoEventtickets_AdminSettings.php:1793
+msgid "Event Tickets Numbers"
+msgstr "Numéros de billets d'événement"
+
+#: sasoEventtickets_AdminSettings.php:1786
+msgid "Event Tickets Registered"
+msgstr "Billets d'événement enregistrés"
+
+#. Name of the plugin
+msgid "Event Tickets with Ticket Scanner"
+msgstr "Billets d'événement avec le scanner de billets"
+
+#: sasoEventtickets_Options.php:222
+msgid "EXPIRED"
+msgstr "EXPIRÉ"
+
+#: sasoEventtickets_Ticket.php:990
+msgid "Failed to redeem"
+msgstr "Échec de l'échange"
+
+#: sasoEventtickets_Options.php:143
+msgid "Font family for text on the ticket PDF"
+msgstr "Famille de polices pour le texte sur le ticket PDF"
+
+#: sasoEventtickets_Options.php:134
+msgid "Font size for text on the ticket PDF"
+msgstr "Taille de la police pour le texte sur le ticket PDF"
+
+#: sasoEventtickets_Options.php:420
+msgid ""
+"For dark backgrounds it could be helpfull to add a white border to the QR "
+"code. The size lets you add a border. If you need one, then 4 is a good "
+"value."
+msgstr ""
+"Pour les arrière-plans sombres, il pourrait être utile d'ajouter une bordure "
+"blanche au code QR. La taille vous permet d'ajouter une bordure. Si vous en "
+"avez besoin, alors 4 est un bon rapport qualité-prix."
+
+#: sasoEventtickets_Options.php:229
+msgid "Free ticket"
+msgstr "Billet gratuit"
+
+#: sasoEventtickets_AdminSettings.php:180 sasoEventtickets_Frontend.php:38
+#, php-format
+msgid "function \"%s\" not implemented"
+msgstr "Fonction \"%s\" non implémentée"
+
+#: sasoEventtickets_Options.php:120
+msgid "Heading for the Ticket Download section within the purchase order email"
+msgstr ""
+"Rubrique de la section Téléchargement du billet dans l'e-mail du bon de "
+"commande"
+
+#: sasoEventtickets_Options.php:73
+msgid "Hide the Badge button on the ticket scanner."
+msgstr "Cachez le bouton Badge sur le scanner de tickets."
+
+#: sasoEventtickets_Options.php:148
+msgid "Hide the customer name and address on the ticket"
+msgstr "Masquer le nom et l'adresse du client sur le ticket"
+
+#: sasoEventtickets_Options.php:278
+msgid "Hide the event date on the ticket"
+msgstr "Masquer la date de l'événement sur le billet"
+
+#: sasoEventtickets_Options.php:273
+msgid "Hide the ICS calendar file download button on ticket detail page"
+msgstr ""
+"Masquer le bouton de téléchargement du fichier de calendrier ICS sur la page "
+"de détails du ticket"
+
+#: sasoEventtickets_Options.php:71 sasoEventtickets_Options.php:74
+msgid ""
+"Hide the options of the ticket scanner from the ticket scanner view. So the "
+"person who is scanning cannot change the options. The presets are taking as "
+"default. If not active, the users choice on the ticket scanner will be used."
+msgstr ""
+"Masquer les options du scanner de tickets de la vue du scanner de tickets. "
+"Ainsi, la personne qui scanne ne peut pas modifier les options. Les "
+"préréglages sont pris par défaut. S'il n'est pas actif, le choix des "
+"utilisateurs sur le scanner de tickets sera utilisé."
+
+#: sasoEventtickets_Options.php:149
+msgid "Hide the payment method on the ticket"
+msgstr "Masquer le mode de paiement sur le ticket"
+
+#: sasoEventtickets_Options.php:72
+msgid "Hide the PDF button on the ticket scanner."
+msgstr "Masquer le bouton PDF sur le scanner de tickets."
+
+#: sasoEventtickets_Options.php:112
+msgid "Hide the PDF download button on ticket detail page"
+msgstr ""
+"Masquer le bouton de téléchargement du PDF sur la page de détails du ticket"
+
+#: sasoEventtickets_Options.php:118
+msgid "Hide the PDF download button/link on purchase order email"
+msgstr "Masquer le bouton/lien de téléchargement PDF sur l'e-mail de commande"
+
+#: sasoEventtickets_Options.php:119
+msgid "Hide the ticket detail page link on purchase order email"
+msgstr ""
+"Masquer le lien de la page de détail du ticket dans l'e-mail du bon de "
+"commande"
+
+#: sasoEventtickets_Options.php:124
+msgid "Hide ticket product after the event"
+msgstr "Masquer le produit du billet après l'événement"
+
+#: sasoEventtickets_Options.php:160
+msgid "Hide your blog description"
+msgstr "Masquer la description de votre blog"
+
+#: sasoEventtickets_Options.php:150 sasoEventtickets_Options.php:299
+msgid "Hide your ticket price."
+msgstr "Cachez le prix de votre billet."
+
+#: sasoEventtickets_Options.php:297
+msgid "Hide your wordpress description."
+msgstr "Cachez votre description wordpress."
+
+#: sasoEventtickets_Options.php:159
+msgid "Hide your wordpress name"
+msgstr "Cachez votre nom WordPress"
+
+#: sasoEventtickets_Options.php:296
+msgid "Hide your wordpress name."
+msgstr "Cachez votre nom wordpress."
+
+#: sasoEventtickets_Options.php:161
+msgid "Hide your wordpress URL"
+msgstr "Masquer votre URL wordpress"
+
+#: sasoEventtickets_Options.php:298
+msgid "Hide your wordpress URL."
+msgstr "Cachez votre URL wordpress."
+
+#: sasoEventtickets_Options.php:68
+msgid "How many hours before the event can the ticket be redeemed?"
+msgstr "Combien d'heures avant l'événement le billet peut-il être échangé ?"
+
+#. Author URI of the plugin
+msgid "https://vollstart.com"
+msgstr "Https://vollstart.com"
+
+#. URI of the plugin
+msgid "https://vollstart.com/event-tickets-with-ticket-scanner/docs/"
+msgstr "https://vollstart.com/event-tickets-with-ticket-scanner/docs/"
+
+#: sasoEventtickets_Options.php:309
+msgid "If a media file is choosen, the banner will be placed on the flyer."
+msgstr ""
+"Si un fichier multimédia est choisi, la bannière sera placée sur le dépliant."
+
+#: sasoEventtickets_Options.php:263 sasoEventtickets_Options.php:318
+msgid ""
+"If a media file is choosen, the image will be placed on the ticket flyer."
+msgstr ""
+"Si un fichier multimédia est choisi, l'image sera placée sur le dépliant du "
+"billet."
+
+#: sasoEventtickets_Options.php:300
+msgid "If a media file is choosen, the logo will be placed on the flyer."
+msgstr ""
+"Si un fichier multimédia est choisi, le logo sera placé sur le dépliant."
+
+#: sasoEventtickets_Options.php:172
+msgid "If a media file is chosen, the banner will be placed on the ticket PDF."
+msgstr ""
+"Si un fichier multimédia est choisi, la bannière sera placée sur le PDF du "
+"ticket."
+
+#: sasoEventtickets_Options.php:182
+msgid "If a media file is chosen, the image will be placed on the ticket PDF."
+msgstr ""
+"Si un fichier multimédia est choisi, l'image sera placée sur le PDF du "
+"ticket."
+
+#: sasoEventtickets_Options.php:163
+msgid "If a media file is chosen, the logo will be placed on the ticket PDF."
+msgstr ""
+"Si un fichier multimédia est choisi, le logo sera placé sur le PDF du ticket."
+
+#: sasoEventtickets_Options.php:188
+msgid "If a PDF file is chosen, the PDF will be attached to the PDF ticket."
+msgstr "Si un fichier PDF est choisi, le PDF sera joint au ticket PDF."
+
+#: sasoEventtickets_Options.php:56
+msgid ""
+"If a role is chosen, then the user with this role is allowed to use the "
+"ticket scanner. This will not exclude the 'administrator', if the option is "
+"activated."
+msgstr ""
+"Si un rôle est choisi, l'utilisateur ayant ce rôle est autorisé à utiliser "
+"le scanner de tickets. Cela n'exclura pas l'« administrateur », si l'option "
+"est activée."
+
+#: sasoEventtickets_Options.php:277
+msgid ""
+"If active and a date is set on the product, then it will display the date of "
+"the event on the product detail page to the client."
+msgstr ""
+"S'il est actif et qu'une date est définie sur le produit, il affichera la "
+"date de l'événement sur la page de détail du produit au client."
+
+#: sasoEventtickets_Options.php:276
+msgid ""
+"If active and a date is set on the product, then it will display the date of "
+"the event on the purchase email to the client."
+msgstr ""
+"S'il est actif et qu'une date est définie sur le produit, il affichera la "
+"date de l'événement sur l'e-mail d'achat au client."
+
+#: sasoEventtickets_Options.php:123
+msgid ""
+"If active and all items of the order are tickets, then it will set the order "
+"status to completed if the order status is 'processing' and all purchased "
+"items in the order are tickets."
+msgstr ""
+"S'il est actif et que tous les articles de la commande sont des tickets, le "
+"statut de la commande sera défini sur Terminé si le statut de la commande "
+"est « traitement » et que tous les articles achetés dans la commande sont "
+"des tickets."
+
+#: sasoEventtickets_Options.php:358
+msgid ""
+"If active and the user is not logged in, then the input fields will be "
+"disabled"
+msgstr ""
+"S'il est actif et que l'utilisateur n'est pas connecté, les champs de saisie "
+"seront désactivés"
+
+#: sasoEventtickets_Options.php:278
+msgid "If active the event date is not shown on the ticket."
+msgstr ""
+"S'il est actif, la date de l'événement n'est pas indiquée sur le billet."
+
+#: sasoEventtickets_Options.php:116
+msgid ""
+"If active, a link to download all tickets as one PDF on the checkout page "
+"above the order details will be placed. Only if the purchase has tickets."
+msgstr ""
+"S'il est actif, un lien pour télécharger tous les billets au format PDF sur "
+"la page de paiement au-dessus des détails de la commande sera placé. "
+"Seulement si l'achat a des billets."
+
+#: sasoEventtickets_Options.php:117
+msgid ""
+"If active, a link to download all tickets as one PDF on the order detail "
+"page below the tickets will be placed. Only if the purchase has tickets."
+msgstr ""
+"S'il est actif, un lien pour télécharger tous les billets au format PDF sur "
+"la page de détail de la commande sous les billets sera placé. Seulement si "
+"l'achat a des billets."
+
+#: sasoEventtickets_Options.php:115
+msgid ""
+"If active, a link to download all tickets as one PDF within the purchase "
+"email to the client. It will be below the order details table."
+msgstr ""
+"S'il est actif, un lien pour télécharger tous les billets au format PDF dans "
+"l'e-mail d'achat au client. Il sera sous le tableau des détails de la "
+"commande."
+
+#: sasoEventtickets_Options.php:114
+msgid ""
+"If active, a link to see all tickets QR codes within the checkout page will "
+"be placed. Only if the purchase has tickets. This speeds up the entrance for "
+"groups and family ticket purchase. It wil be above the order details table."
+msgstr ""
+"S'il est actif, un lien pour voir tous les codes QR des billets dans la page "
+"de paiement sera placé. Seulement si l'achat a des billets. Cela accélère "
+"l'entrée pour l'achat de billets de groupe et de famille. Il sera au-dessus "
+"du tableau des détails de la commande."
+
+#: sasoEventtickets_Options.php:113
+msgid ""
+"If active, a link to see all tickets QR codes within the purchase email to "
+"the client. This speeds up the entrance for groups and family ticket "
+"purchase. It wil be below the order details table."
+msgstr ""
+"S'il est actif, un lien pour voir tous les codes QR des billets dans l'e-"
+"mail d'achat au client. Cela accélère l'entrée pour l'achat de billets de "
+"groupe et de famille. Il sera sous le tableau des détails de la commande."
+
+#: sasoEventtickets_Options.php:65
+msgid ""
+"If active, each ticket scan will be counted treated as a confirmed "
+"validation check and increase the confirmed status check counter. Only if "
+"the ticket is active."
+msgstr ""
+"S'il est actif, chaque scan de ticket sera compté traité comme une "
+"vérification de validation confirmée et augmentera le compteur de "
+"vérification de l'état confirmé. Seulement si le ticket est actif."
+
+#: sasoEventtickets_Options.php:383
+msgid ""
+"If active, each validation request from a user will trigger an URL from the "
+"server side to another URL. Be carefull. This could slow down the validation "
+"check. It depends how fast your service URLs are responding."
+msgstr ""
+"Si elle est active, chaque demande de validation d'un utilisateur "
+"déclenchera une URL du côté serveur vers une autre URL. Soyez prudent. Cela "
+"pourrait ralentir la vérification de la validation. Cela dépend de la "
+"vitesse de réponse de vos URL de service."
+
+#: sasoEventtickets_Options.php:110
+msgid ""
+"If active, it will add the self-redeem button on the ticket detail view."
+msgstr ""
+"S'il est actif, il ajoutera le bouton d'auto-remousement sur la vue "
+"détaillée du ticket."
+
+#: sasoEventtickets_Options.php:146 sasoEventtickets_Options.php:147
+msgid "If active, it will be printed on the ticket detail view."
+msgstr "S'il est actif, il sera imprimé sur la vue détaillée du ticket."
+
+#: sasoEventtickets_Options.php:254
+msgid ""
+"If active, it will display the ticket badge file download button on the "
+"ticket detail view."
+msgstr ""
+"S'il est actif, il affichera le bouton de téléchargement du fichier de badge "
+"de ticket sur la vue détaillée du ticket."
+
+#: sasoEventtickets_Options.php:273
+msgid ""
+"If active, it will not display the calendar file download button on the "
+"ticket detail view. It will be only shown if the ticket product has a "
+"starting date."
+msgstr ""
+"S'il est actif, il n'affichera pas le bouton de téléchargement de fichier de "
+"calendrier sur la vue détaillée du ticket. Il ne sera affiché que si le "
+"produit du billet a une date de début."
+
+#: sasoEventtickets_Options.php:112
+msgid ""
+"If active, it will not display the PDF download button on the ticket detail "
+"view. But the PDF can still be generated with the URL."
+msgstr ""
+"S'il est actif, il n'affichera pas le bouton de téléchargement PDF sur la "
+"vue détaillée du ticket. Mais le PDF peut toujours être généré avec l'URL."
+
+#: sasoEventtickets_Options.php:118
+msgid ""
+"If active, it will not display the PDF download option for a single ticket "
+"on the purchase email to the client. But the PDF can still be generated with "
+"the URL."
+msgstr ""
+"S'il est actif, il n'affichera pas l'option de téléchargement PDF pour un "
+"seul ticket sur l'e-mail d'achat au client. Mais le PDF peut toujours être "
+"généré avec l'URL."
+
+#: sasoEventtickets_Options.php:119
+msgid ""
+"If active, it will not display the URWeL to the ticket detail page on the "
+"purchase email to the client."
+msgstr ""
+"S'il est actif, il n'affichera pas l'URWeL sur la page de détails du ticket "
+"sur l'e-mail d'achat au client."
+
+#: sasoEventtickets_Options.php:160 sasoEventtickets_Options.php:297
+msgid "If active, it will not display the wordpress description."
+msgstr "S'il est actif, il n'affichera pas la description de wordpress."
+
+#: sasoEventtickets_Options.php:159 sasoEventtickets_Options.php:296
+msgid "If active, it will not display the wordpress name."
+msgstr "S'il est actif, il n'affichera pas le nom wordpress."
+
+#: sasoEventtickets_Options.php:161 sasoEventtickets_Options.php:298
+msgid "If active, it will not display the wordpress URL."
+msgstr "S'il est actif, il n'affichera pas l'URL wordpress."
+
+#: sasoEventtickets_Options.php:148
+msgid ""
+"If active, it will not print the customer information on the ticket detail "
+"view."
+msgstr ""
+"S'il est actif, il n'imprimera pas les informations du client sur la vue "
+"détaillée du ticket."
+
+#: sasoEventtickets_Options.php:149
+msgid ""
+"If active, it will not print the payment details on the ticket detail view."
+msgstr ""
+"S'il est actif, il n'imprimera pas les détails de paiement sur la vue "
+"détaillée du ticket."
+
+#: sasoEventtickets_Options.php:152
+msgid ""
+"If active, it will print all the add on products of the order on the ticket. "
+"You can use the woocommerce (from another plugin) function "
+"'wc_product_addons_get_product_addons', if it exists, otherwise the default "
+"template will iterate over the meta property '_product_addons'."
+msgstr ""
+"S'il est actif, il imprimera tous les produits complémentaires de la "
+"commande sur le ticket. Vous pouvez utiliser la fonction woocommerce (à "
+"partir d'un autre plugin) 'wc_product_addons_get_product_addons', si elle "
+"existe, sinon le modèle par défaut itérera sur la métapropriété "
+"'_product_addons'."
+
+#: sasoEventtickets_Options.php:153
+msgid ""
+"If active, it will print all the products of the order on the ticket. The "
+"ticket product will be excluded from the list."
+msgstr ""
+"S'il est actif, il imprimera tous les produits de la commande sur le ticket. "
+"Le produit du billet sera exclu de la liste."
+
+#: sasoEventtickets_Options.php:154
+msgid ""
+"If active, it will print the amount of the purchased tickets on the ticket."
+msgstr ""
+"S'il est actif, il imprimera le montant des billets achetés sur le billet."
+
+#: sasoEventtickets_Options.php:156
+msgid ""
+"If active, it will print the description of the ticket list on the ticket."
+msgstr ""
+"S'il est actif, il imprimera la description de la liste des billets sur le "
+"ticket."
+
+#: sasoEventtickets_Options.php:155
+msgid "If active, it will print the name of the ticket list."
+msgstr "S'il est actif, il imprimera le nom de la liste des billets."
+
+#: sasoEventtickets_Options.php:158
+msgid ""
+"If active, it will print the registered user value on the ticket. The value "
+"and the label for it are only displayed, if the registered user value is not "
+"empty."
+msgstr ""
+"S'il est actif, il imprimera la valeur de l'utilisateur enregistré sur le "
+"ticket. La valeur et l'étiquette ne sont affichées que si la valeur de "
+"l'utilisateur enregistré n'est pas vide."
+
+#: sasoEventtickets_Options.php:63
+msgid ""
+"If active, only logged-in user can scan a ticket. It is also testing if the "
+"user is an administrator."
+msgstr ""
+"S'il est actif, seul l'utilisateur connecté peut scanner un ticket. Il teste "
+"également si l'utilisateur est un administrateur."
+
+#: sasoEventtickets_Options.php:64
+msgid ""
+"If active, only paid and not refunded or cancelled tickets can be redeemed "
+"by the ticket scanner. Normal users can anyway not redeem unpaid tickets by "
+"themself."
+msgstr ""
+"S'ils sont actifs, seuls les billets payés et non remboursés ou annulés "
+"peuvent être échangés par le scanner de billets. Les utilisateurs normaux ne "
+"peuvent de toute façon pas échanger les billets impayés par eux-mêmes."
+
+#: sasoEventtickets_Options.php:411
+msgid "If active, the a new ticket will generated using the following settings"
+msgstr ""
+"S'il est actif, un nouveau ticket sera généré en utilisant les paramètres "
+"suivants"
+
+#: sasoEventtickets_Options.php:407
+msgid "If active, the assigned CVV will not be printed on the email"
+msgstr "S'il est actif, le CVV assigné ne sera pas imprimé sur l'e-mail"
+
+#: sasoEventtickets_Options.php:408
+msgid "If active, the assigned CVV will not be printed on the PDF"
+msgstr "S'il est actif, le CVV attribué ne sera pas imprimé sur le PDF"
+
+#: sasoEventtickets_Options.php:409
+msgid ""
+"If active, the assigned ticket number and other ticket related information "
+"will not be put in the email"
+msgstr ""
+"S'il est actif, le numéro de ticket attribué et d'autres informations "
+"relatives au ticket ne seront pas mis dans l'e-mail"
+
+#: sasoEventtickets_Options.php:410
+msgid "If active, the assigned ticket will not be printed on the PDF"
+msgstr "S'il est actif, le billet attribué ne sera pas imprimé sur le PDF"
+
+#: sasoEventtickets_Options.php:66
+msgid ""
+"If active, the confirmed validation checks are displayed whith the retrieved "
+"ticket on the ticket scanner."
+msgstr ""
+"S'ils sont actifs, les vérifications de validation confirmées sont affichées "
+"avec le ticket récupéré sur le scanner de tickets."
+
+#: sasoEventtickets_Options.php:275
+msgid ""
+"If active, the ICS calendar file will be added as an attachment to the mails "
+"(order complete, customer note, customer invoice and processing order)"
+msgstr ""
+"S'il est actif, le fichier de calendrier ICS sera ajouté en pièce jointe aux "
+"courriers (commande terminée, note client, facture client et commande de "
+"traitement)"
+
+#: sasoEventtickets_Options.php:406
+msgid ""
+"If active, the system will try to use an existing ticket from the ticket "
+"list that is free. If no free code could be found, a new ticket will be "
+"created and assigned to the purchase."
+msgstr ""
+"S'il est actif, le système essaiera d'utiliser un ticket existant de la "
+"liste de billets qui est gratuit. Si aucun code gratuit n'a pu être trouvé, "
+"un nouveau ticket sera créé et attribué à l'achat."
+
+#: sasoEventtickets_Options.php:256
+msgid "If active, the ticket badge download link will be added to the mails."
+msgstr ""
+"S'il est actif, le lien de téléchargement du badge de billet sera ajouté aux "
+"e-mails."
+
+#: sasoEventtickets_Options.php:257
+msgid ""
+"If active, the ticket badge file will be added as an attachment to the mails."
+msgstr ""
+"S'il est actif, le fichier de badge de ticket sera ajouté en pièce jointe "
+"aux mails."
+
+#: sasoEventtickets_Options.php:258
+msgid ""
+"If active, the ticket badge files are merged into one PDF and will be added "
+"as an attachment to the mails."
+msgstr ""
+"S'ils sont actifs, les fichiers de badge de ticket sont fusionnés dans un "
+"seul PDF et seront ajoutés en pièce jointe aux e-mails."
+
+#: sasoEventtickets_Options.php:69
+msgid ""
+"If active, the ticket can be redeemed after the end date and time of the "
+"event. If the product has no end date, it will be ignored. If the product "
+"just have a date and no time, then the time will be set to 23:59 for the "
+"test."
+msgstr ""
+"S'il est actif, le billet peut être échangé après la date et l'heure de fin "
+"de l'événement. Si le produit n'a pas de date de fin, il sera ignoré. Si le "
+"produit n'a qu'une date et aucune heure, l'heure sera fixée à 23h59 pour le "
+"test."
+
+#: sasoEventtickets_Options.php:67
+msgid ""
+"If active, the ticket can only be redeemed at the start date and during the "
+"event."
+msgstr ""
+"S'il est actif, le billet ne peut être utilisé qu'à la date de début et "
+"pendant l'événement."
+
+#: sasoEventtickets_Options.php:77
+msgid "If active, the ticket information wil not be shown."
+msgstr "S'ils sont actifs, les informations du billet ne seront pas affichées."
+
+#: sasoEventtickets_Options.php:150
+msgid ""
+"If active, the ticket price will not be displayed on the ticket and the PDF "
+"ticket. The ticket scanner will still display the price."
+msgstr ""
+"S'il est actif, le prix du billet ne sera pas affiché sur le billet et le "
+"billet PDF. Le scanner de billets affichera toujours le prix."
+
+#: sasoEventtickets_Options.php:299
+msgid "If active, the ticket price will not be displayed."
+msgstr "S'il est actif, le prix du billet ne sera pas affiché."
+
+#: sasoEventtickets_Options.php:427
+msgid ""
+"If active, the ticket QR code files are merged into one PDF and will be "
+"added as an attachment to the mails."
+msgstr ""
+"S'ils sont actifs, les fichiers de code QR du ticket sont fusionnés en un "
+"seul PDF et seront ajoutés en pièce jointe aux courriers."
+
+#: sasoEventtickets_Options.php:76
+msgid ""
+"If active, the ticket scanner will be preset with the option to scan the "
+"ticket and redeem it with the scan."
+msgstr ""
+"S'il est actif, le scanner de tickets sera prédéfini avec la possibilité de "
+"scanner le ticket et de l'échanger avec le scan."
+
+#: sasoEventtickets_Options.php:75
+msgid ""
+"If active, the ticket scanner will skip the scan-next-button and start the "
+"cam immediately."
+msgstr ""
+"S'il est actif, le scanner de tickets sautera le bouton scan-next et "
+"démarrera immédiatement la caméra."
+
+#: sasoEventtickets_Options.php:378
+msgid ""
+"If active, the user will be redirected to the URL your provide below, even "
+"if the ticket is registered already and user checking is the same user that "
+"is registered to the ticket. It will not be executed, if the 'one time usage "
+"restriction is active'. The user needs to be logged in for the system to "
+"recognize the user."
+msgstr ""
+"S'il est actif, l'utilisateur sera redirigé vers l'URL que vous fournissez "
+"ci-dessous, même si le ticket est déjà enregistré et que la vérification de "
+"l'utilisateur est le même utilisateur qui est enregistré Il ne sera pas "
+"exécuté, si la « restriction d'utilisation unique est active ». "
+"L'utilisateur doit être connecté pour que le système reconnaisse "
+"l'utilisateur."
+
+#: sasoEventtickets_Options.php:287 sasoEventtickets_Options.php:377
+msgid "If active, the user will be redirected to the URL your provide below."
+msgstr ""
+"S'il est actif, l'utilisateur sera redirigé vers l'URL que vous fournissez "
+"ci-dessous."
+
+#: sasoEventtickets_Options.php:145
+msgid ""
+"If active, the variant name(s) will be display below the title without its "
+"variant id. Just the variant value. If more than one variant is choosen, "
+"then the delimiter will be a blank space."
+msgstr ""
+"S'ils sont actifs, le(s) nom(s) de la variante sera affiché(s) sous le titre "
+"sans son identifiant de variante. Juste la valeur de la variante. Si plus "
+"d'une variante est choisie, le délimiteur sera un espace vide."
+
+#: sasoEventtickets_Options.php:27
+msgid ""
+"If active, then a new column within the admin area for each ticket will be "
+"shown with the billing name. <b>This feature can be very slow.</b>"
+msgstr ""
+"S'il est actif, une nouvelle colonne dans la zone d'administration pour "
+"chaque ticket sera affichée avec le nom de facturation. <b>Cette "
+"fonctionnalité peut être très lente.</b>"
+
+#: sasoEventtickets_Options.php:25
+msgid ""
+"If active, then a new column within the admin area for each ticket will be "
+"shown with the confirmed count value."
+msgstr ""
+"S'il est actif, une nouvelle colonne dans la zone d'administration pour "
+"chaque ticket sera affichée avec la valeur de comptage confirmée."
+
+#: sasoEventtickets_Options.php:26
+msgid ""
+"If active, then a new column within the admin area for each ticket will be "
+"shown with the redeem ticket information. This feature can be very slow."
+msgstr ""
+"S'il est actif, une nouvelle colonne dans la zone d'administration pour "
+"chaque ticket sera affichée avec les informations d'échange du ticket. Cette "
+"fonction peut être très lente."
+
+#: sasoEventtickets_Options.php:199 sasoEventtickets_Options.php:207
+msgid ""
+"If active, then the PDF content will start directly from the beginning of "
+"the paper. You need to add your own padding and margin within the template."
+msgstr ""
+"S'il est actif, le contenu PDF commencera directement à partir du début du "
+"document. Vous devez ajouter votre propre remplissage et marge dans le "
+"modèle."
+
+#: sasoEventtickets_Options.php:124
+msgid ""
+"If active, then the plugin will search, once per day at 0:05, all ticket "
+"products that are public. Checks if the event date is set and expireed, and "
+"then set it to 'hidden' if so."
+msgstr ""
+"S'il est actif, le plugin recherchera, une fois par jour à 0:05, tous les "
+"produits de billets qui sont publics. Vérifie si la date de l'événement est "
+"définie et expirée, puis la définit sur \"caché\" si c'est le cas."
+
+#: sasoEventtickets_Options.php:425
+msgid ""
+"If active, then the QR as an image will be attached to the purchase email. "
+"The settings are taken from the ticket settings for purchase email."
+msgstr ""
+"S'il est actif, le QR sous forme d'image sera joint à l'e-mail d'achat. Les "
+"paramètres sont tirés des paramètres du ticket pour l'e-mail d'achat."
+
+#: sasoEventtickets_Options.php:426
+msgid ""
+"If active, then the QR as an pdf will be attached to the purchase email. The "
+"settings are taken from the ticket settings for purchase email."
+msgstr ""
+"S'il est actif, le QR sous forme de pdf sera joint à l'e-mail d'achat. Les "
+"paramètres sont tirés des paramètres du ticket pour l'e-mail d'achat."
+
+#: sasoEventtickets_Options.php:423
+msgid ""
+"If active, then the QR content will use the following content. You will not "
+"be able to scan the tickets with the ticket scanner, because the format "
+"cannot be recognized by the plugin ticket scanner."
+msgstr ""
+"S'il est actif, le contenu QR utilisera le contenu suivant. Vous ne pourrez "
+"pas scanner les tickets avec le scanner de tickets, car le format ne peut "
+"pas être reconnu par le scanner de tickets du plugin."
+
+#: sasoEventtickets_Options.php:90
+msgid ""
+"If active, then the server time, time zone and ticket times are displayed "
+"additional to the ticket scanner info. Ticket times, only if available."
+msgstr ""
+"S'il est actif, l'heure du serveur, le fuseau horaire et les heures des "
+"tickets sont affichés en plus des informations du scanner de tickets. Heures "
+"de billet, uniquement si disponibles."
+
+#: sasoEventtickets_Options.php:197
+msgid ""
+"If active, then the ticket template code will not be used. Best for "
+"beginners, who do not want to adjust the ticket template code. If the ticket "
+"template code is empty, then it will also use the default template code."
+msgstr ""
+"S'il est actif, le code du modèle de billet ne sera pas utilisé. Idéal pour "
+"les débutants, qui ne veulent pas ajuster le code du modèle de billet. Si le "
+"code du modèle de ticket est vide, il utilisera également le code du modèle "
+"par défaut."
+
+#: sasoEventtickets_Options.php:422
+msgid ""
+"If active, then the URL to your ticket scanner with the public ticket id "
+"will be used instead of only the public ticket id."
+msgstr ""
+"S'il est actif, l'URL de votre scanner de tickets avec l'identifiant de "
+"ticket public sera utilisée au lieu de seulement l'identifiant de ticket "
+"public."
+
+#: sasoEventtickets_Options.php:416
+msgid ""
+"If active, your prefix text will be rendered always. Even if the user is not "
+"logged in or do not have any tickets assigned to her yet."
+msgstr ""
+"S'il est actif, votre texte de préfixe sera toujours rendu. Même si "
+"l'utilisateur n'est pas connecté ou n'a pas encore de tickets attribués."
+
+#. %s: default value
+#: sasoEventtickets_Options.php:255 sasoEventtickets_Options.php:274
+#, php-format
+msgid "If left empty, default will be \"%s\""
+msgstr "Si laissé vide, la valeur par défaut sera \"%s\""
+
+#: sasoEventtickets_Options.php:341
+msgid "If left empty, default will be 'Check'"
+msgstr "S'il est laissé vide, la valeur par défaut sera 'Vérifier'"
+
+#: sasoEventtickets_Options.php:121
+msgid ""
+"If left empty, default will be 'Download PDF Ticket' on the button and on "
+"the link within the purchase email."
+msgstr ""
+"Si elle est laissée vide, la valeur par défaut sera « Télécharger le ticket "
+"PDF » sur le bouton et sur le lien dans l'e-mail d'achat."
+
+#: sasoEventtickets_Options.php:120
+msgid ""
+"If left empty, default will be 'Download Tickets' as the heading for the "
+"section below the order details table."
+msgstr ""
+"Si elle est laissée vide, la valeur par défaut sera « Télécharger les "
+"tickets » comme titre de la section sous le tableau des détails de la "
+"commande."
+
+#: sasoEventtickets_Options.php:24
+msgid ""
+"If left empty, default will be 'H:i'. Using the php date function format. "
+"H=hours with leading 0, i=minutes with leading zero, s=seconds"
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera 'H:i'. En utilisant le "
+"format de fonction de date php. H=heures avec 0 de tête, i=minutes avec zéro "
+"de tête, s=secondes"
+
+#: sasoEventtickets_Options.php:351
+msgid "If left empty, default will be 'Is registered to a user'"
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera \"Est enregistré auprès d'un "
+"utilisateur\""
+
+#: sasoEventtickets_Options.php:122
+msgid ""
+"If left empty, default will be 'Open Tickets' on the link within the "
+"purchase email."
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera « Ouvrir les tickets » sur "
+"le lien dans l'e-mail d'achat."
+
+#: sasoEventtickets_Options.php:402
+msgid ""
+"If left empty, default will be 'Please contact our support for the ticket'"
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera « Veuillez contacter notre "
+"support pour le ticket »"
+
+#: sasoEventtickets_Options.php:350
+msgid ""
+"If left empty, default will be 'Please contact support for further "
+"investigation'"
+msgstr ""
+"Si laissé vide, la valeur par défaut sera « Veuillez contacter le support "
+"pour une enquête plus approfondie »"
+
+#: sasoEventtickets_Options.php:353
+msgid "If left empty, default will be 'Ticket and CVV is not valid'."
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera \"Ticket and CVV is not "
+"valid\"."
+
+#: sasoEventtickets_Options.php:348
+msgid "If left empty, default will be 'Ticket confirmed'"
+msgstr "S'il est laissé vide, la valeur par défaut sera « Ticket confirmé »"
+
+#: sasoEventtickets_Options.php:352
+msgid "If left empty, default will be 'Ticket expired'"
+msgstr "S'il est laissé vide, la valeur par défaut sera « Ticket expiré »"
+
+#: sasoEventtickets_Options.php:355
+msgid "If left empty, default will be 'Ticket is redeemed'"
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera « Le billet est utilisé »"
+
+#: sasoEventtickets_Options.php:349
+msgid "If left empty, default will be 'Ticket not found'"
+msgstr "S'il est laissé vide, la valeur par défaut sera \"Ticket introuvable\""
+
+#: sasoEventtickets_Options.php:111
+msgid "If left empty, default will be 'Ticket number:'"
+msgstr "S'il est laissé vide, la valeur par défaut sera « Numéro de ticket : »"
+
+#: sasoEventtickets_Options.php:354
+msgid ""
+"If left empty, default will be 'Ticket stolen'. You could set it to be more "
+"precise e.g.: 'The Ticket is reported as stolen'"
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera \"Ticket volé\". Vous pouvez "
+"le définir pour qu'il soit plus précis, par exemple : « Le billet est "
+"signalé comme volé »"
+
+#: sasoEventtickets_Options.php:345
+msgid "If left empty, default will be 'white'"
+msgstr "S'il est laissé vide, la valeur par défaut sera « blanche »"
+
+#: sasoEventtickets_Options.php:342
+msgid "If left empty, default will be 'XXYYYZZ'"
+msgstr "S'il est laissé vide, la valeur par défaut sera 'XXYYYZZ'"
+
+#: sasoEventtickets_Options.php:23
+msgid ""
+"If left empty, default will be 'Y/m/d'. Using the php date function format. "
+"Y=year, m=month, d=day H:hours, i:minutes, s=seconds"
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera 'Y/m/d'. En utilisant le "
+"format de fonction de date php. Y=année, m=mois, d=jour H:heures, i:minutes, "
+"s=secondes"
+
+#: sasoEventtickets_Options.php:359
+msgid ""
+"If left empty, default will be 'You need to log in to use the ticket "
+"validator'"
+msgstr ""
+"Si elle est laissée vide, la valeur par défaut sera \"Vous devez vous "
+"connecter pour utiliser le validateur de tickets\""
+
+#: sasoEventtickets_Options.php:157
+msgid ""
+"If left empty, default will be '{TICKET_POSITION} of {TICKET_TOTAL_AMOUNT} "
+"Tickets'. {TICKET_POSITION} will be replaced with the position within the "
+"quantity of the item purchase. {TICKET_TOTAL_AMOUNT} will be replaced with "
+"the quantity of the purchased tickets for the order."
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera '{TICKET_POSITION} de "
+"{TICKET_TOTAL_AMOUNT} Tickets'. {TICKET_POSITION} sera remplacé par la "
+"position dans la quantité de l'achat de l'article. {TICKET_TOTAL_AMOUNT} "
+"sera remplacé par la quantité de billets achetés pour la commande."
+
+#: sasoEventtickets_Options.php:343 sasoEventtickets_Options.php:344
+msgid ""
+"If left empty, default will be <span style='color:#007bff;'>'#007bff'</span>"
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera <span style='color:#007bff;'>"
+"'#007bff'</span>"
+
+#: sasoEventtickets_Options.php:269
+msgid "If left empty, default will be used."
+msgstr "S'il est laissé vide, la valeur par défaut sera utilisée."
+
+#: sasoEventtickets_Options.php:204
+msgid ""
+"If left empty, default will be used. Check out this additional information "
+"about how you could use it: <a href=\"https://vollstart."
+"com/posts/events/documentation/option-wcticketdesignertemplate/\" "
+"target=\"_blank\">Option Documentation</a>"
+msgstr ""
+"S'il est laissé vide, la valeur par défaut sera utilisée. Consultez ces "
+"informations supplémentaires sur la façon dont vous pourriez l'utiliser : <a "
+"href=\"https://vollstart.com/posts/events/documentation/option-"
+"wcticketdesignertemplate/\" target=\"_blank\">Option Documentation</a>"
+
+#: sasoEventtickets_Options.php:98
+msgid ""
+"If left empty, default will be using the default ticket detail page from "
+"within the plugin folder. On some installations this leads to a 403 problem. "
+"If the the default ticket detail view of the plugin is not working try to "
+"set the ticket detail URL path. Make sure that the URL path does not exists, "
+"otherwise the page will be shown instead of the ticket. Example of a URL "
+"path 'event-tickets/myticket' or 'event-tickets/ticket-details/'. Any "
+"leading and trailing slash '/' will be ignored."
+msgstr ""
+"S'il est laissé vide, la valeur par défaut utilisera la page de détail du "
+"ticket par défaut à l'intérieur du dossier du plugin. Sur certaines "
+"installations, cela conduit à un problème 403. Si la vue par défaut des "
+"détails du ticket du plugin ne fonctionne pas, essayez de définir le chemin "
+"d'accès de l'URL des détails du ticket. Assurez-vous que le chemin de l'URL "
+"n'existe pas, sinon la page sera affichée à la place du ticket. Exemple de "
+"chemin d'URL 'event-tickets/myticket' ou 'event-tickets/ticket-details/'. "
+"Toute barre oblique '/' de début et de fin sera ignorée."
+
+#: sasoEventtickets_Options.php:279
+msgid ""
+"If set then the organizer tag will be added to the ICS file. The organizer "
+"name will be your website name"
+msgstr ""
+"Si elle est définie, la balise d'organisateur sera ajoutée au fichier ICS. "
+"Le nom de l'organisateur sera le nom de votre site Web"
+
+#: sasoEventtickets_Options.php:404
+msgid ""
+"If the order is deleted, cancelled or the status is set to 'refunded', then "
+"the WooCommerce order information is removed from the ticket number(s). If "
+"the option 'one time usage' is active, then the ticket number will be "
+"unmarked as used."
+msgstr ""
+"Si la commande est supprimée, annulée ou si le statut est défini sur « "
+"remboursé », les informations de la commande WooCommerce sont supprimées du "
+"ou des numéros de ticket. Si l'option « utilisation unique » est active, le "
+"numéro de ticket ne sera pas marqué comme utilisé."
+
+#: sasoEventtickets_Options.php:405
+msgid ""
+"If the order item is refunded, then the ticket(s) will be removed. If the "
+"option 'one time usage' is active, then the ticket number will be unmarked "
+"as used."
+msgstr ""
+"Si l'article de la commande est remboursé, le ou les billets seront "
+"supprimés. Si l'option « utilisation unique » est active, le numéro de "
+"ticket ne sera pas marqué comme utilisé."
+
+#: sasoEventtickets_Options.php:417
+msgid ""
+"If the user has more than one ticket number assigned to her, then this text "
+"will be used to seperate them for display the numbers. If left empty, then "
+"it will be ', ' as a default."
+msgstr ""
+"Si l'utilisateur a plus d'un numéro de ticket qui lui est attribué, ce texte "
+"sera utilisé pour les séparer et afficher les numéros. S'il est laissé vide, "
+"il sera ', ' par défaut."
+
+#: sasoEventtickets_Options.php:284
+msgid ""
+"If you customer redeem their own ticket, you can redirect them to another "
+"page. For this, the feature 'Do not show the redeem button on the ticket "
+"detail view for the client' has to be NOT checked.<br>If you also use the "
+"user redirect, then this option will be evaluated first!"
+msgstr ""
+"Si votre client utilise son propre ticket, vous pouvez le rediriger vers une "
+"autre page. Pour cela, la fonction \"Ne pas afficher le bouton d'échange sur "
+"la vue détaillée du ticket pour le client\" ne doit PAS être cochée.<br>Si "
+"vous utilisez également la redirection de l'utilisateur, cette option sera "
+"évaluée en premier !"
+
+#: sasoEventtickets_Options.php:162
+msgid ""
+"If you enter text here, then it will be added to the PDF ticket at the "
+"bottom part. You can add some corporate details if needed."
+msgstr ""
+"Si vous entrez du texte ici, il sera ajouté au ticket PDF dans la partie "
+"inférieure. Vous pouvez ajouter quelques détails de l'entreprise si "
+"nécessaire."
+
+#: sasoEventtickets_Options.php:144
+msgid ""
+"If you experience issues with the rendered PDF, then you can change the "
+"settings here to strip some not garanteed supported elements or choose even "
+"to display the HTML code (helps for debug purpose)."
+msgstr ""
+"Si vous rencontrez des problèmes avec le PDF rendu, vous pouvez modifier les "
+"paramètres ici pour supprimer certains éléments pris en charge non garantis "
+"ou choisir même d'afficher le code HTML (aide à des fins de débogage)."
+
+#: index.php:593 index.php:608
+msgid "If you like our plugin, then please give us a"
+msgstr "Si vous aimez notre plugin, veuillez nous donner un"
+
+#: sasoEventtickets_Options.php:143
+msgid "If you need special characters you might change the font."
+msgstr ""
+"Si vous avez besoin de caractères spéciaux, vous pouvez changer la police."
+
+#: sasoEventtickets_Options.php:101
+msgid ""
+"In case your ticket scanner cannot call the Rest service, because your setup "
+"is using a different location for the wordpress system, then you can add "
+"here the URL to your system. If left empty, default will be using the "
+"default retrieved from your server. You can add only FQDN, like 'https:"
+"//yourdomain'. This will be concatenated to the /wp-json/..."
+msgstr ""
+"Dans le cas où votre scanner de tickets ne peut pas appeler le service Rest, "
+"parce que votre configuration utilise un emplacement différent pour le "
+"système wordpress, vous pouvez ajouter ici l'URL à votre système. S'il est "
+"laissé vide, la valeur par défaut utilisera la valeur par défaut récupérée "
+"sur votre serveur. Vous ne pouvez ajouter que FQDN, comme 'https:"
+"//yourdomain'. Cela sera concaténé au /wp-json/..."
+
+#: sasoEventtickets_Options.php:85
+msgid ""
+"In doubt, do not play with it. :) If an order status is choosen and the "
+"ticket is redeemed successfully, then the order status will be set to your "
+"choice. If none is selected then nothing happens with the order."
+msgstr ""
+"En cas de doute, ne jouez pas avec. :) Si un statut de commande est choisi "
+"et que le billet est échangé avec succès, le statut de la commande sera "
+"défini à votre choix. Si aucun n'est sélectionné, rien ne se passe avec la "
+"commande."
+
+#: sasoEventtickets_Core.php:252
+msgid "IP addres of the user that used the code."
+msgstr "Adresses IP de l'utilisateur qui a utilisé le code."
+
+#: sasoEventtickets_Core.php:250
+msgid "IP address of the user, register to a code."
+msgstr "Adresse IP de l'utilisateur, inscrivez-vous à un code."
+
+#: index.php:104
+msgid "is active"
+msgstr "Est actif"
+
+#: sasoEventtickets_Options.php:351
+msgid "Is registered to a user"
+msgstr "Est enregistré pour un utilisateur"
+
+#: sasoEventtickets_Options.php:230
+msgid "It will display which coupon was used."
+msgstr "Il affichera quel coupon a été utilisé."
+
+#. %s: default value
+#: sasoEventtickets_Options.php:239
+#, php-format
+msgid "Label '%s' for the button to your client"
+msgstr "Étiquette '%s' pour le bouton à votre client"
+
+#: sasoEventtickets_Options.php:230
+msgid "Label 'Coupon used' on the payment details"
+msgstr "Étiquette « Coupon utilisé » sur les détails du paiement"
+
+#: sasoEventtickets_Options.php:224
+msgid "Label 'Customer' heading on the customer details"
+msgstr "Étiquetez l'en-tête « Client » sur les détails du client"
+
+#: sasoEventtickets_Options.php:238
+msgid ""
+"Label 'Do you want to redeem the ticket?' for the question to your client"
+msgstr ""
+"Étiquette « Voulez-vous utiliser le billet ? » Pour la question à votre "
+"client"
+
+#: sasoEventtickets_Options.php:222
+msgid "Label 'EXPIRED' on the event date"
+msgstr "Étiquette « EXPIRÉ » à la date de l'événement"
+
+#: sasoEventtickets_Options.php:229
+msgid "Label 'Free ticket' on the payment details"
+msgstr "Étiquette « Billet gratuit » sur les détails du paiement"
+
+#: sasoEventtickets_Options.php:223
+msgid "Label 'Location' heading on for the event location"
+msgstr "Étiquette « Emplacement » en direction du lieu de l'événement"
+
+#: sasoEventtickets_Options.php:227
+msgid "Label 'Order completed at' on the payment details"
+msgstr "Étiquetez « Commande terminée le » sur les détails du paiement"
+
+#: sasoEventtickets_Options.php:226
+msgid "Label 'Order paid at' on the payment details"
+msgstr "Étiquette « Commande payée à » sur les détails du paiement"
+
+#: sasoEventtickets_Options.php:233
+msgid "Label 'Original price' for the ticket number"
+msgstr "Étiquette « Prix d'origine » pour le numéro de billet"
+
+#: sasoEventtickets_Options.php:228
+msgid "Label 'Paid via' on the payment details"
+msgstr "Étiquette « Payé via » sur les détails du paiement"
+
+#: sasoEventtickets_Options.php:225
+msgid "Label 'Payment details' heading on the payment details"
+msgstr ""
+"Étiquetez l'en-tête « Détails du paiement » sur les détails du paiement"
+
+#: sasoEventtickets_Options.php:232
+msgid "Label 'Price' for the paid price"
+msgstr "Étiquette « Prix » pour le prix payé"
+
+#: sasoEventtickets_Options.php:235
+msgid "Label 'Redeemed at' for the customer notice"
+msgstr "Étiquette « Utilisé le » pour l'avis client"
+
+#: sasoEventtickets_Options.php:237
+msgid "Label 'Refresh page' for the button"
+msgstr "Étiquette « Actualiser la page » pour le bouton"
+
+#: sasoEventtickets_Options.php:234
+msgid "Label 'Ticket redeemed' for the customer notice"
+msgstr "Étiquette « Billet échangé » pour l'avis client"
+
+#: sasoEventtickets_Options.php:236
+msgid "Label 'Ticket valid' for the customer notice"
+msgstr "Étiquette « Billet valable » pour l'avis client"
+
+#: sasoEventtickets_Options.php:231
+msgid "Label 'Ticket' for the ticket number"
+msgstr "Étiquette « Billet » pour le numéro de billet"
+
+#. %s: default value
+#: sasoEventtickets_Options.php:240
+#, php-format
+msgid "Label Error '%s' for the customer notice"
+msgstr "Erreur d'étiquette '%s' pour l'avis client"
+
+#: sasoEventtickets_Options.php:246
+msgid "Label Error 'Event did not started yet' for the customer notice"
+msgstr ""
+"Erreur d'étiquette « L'événement n'a pas encore commencé » pour l'avis client"
+
+#: sasoEventtickets_Options.php:242
+msgid "Label Error 'Ticket is not valid' for the customer notice"
+msgstr ""
+"Erreur d'étiquette \"Le billet n'est pas valide\" pour l'avis du client"
+
+#: sasoEventtickets_Options.php:241
+msgid "Label Error 'Ticket is STOLEN' for the customer notice"
+msgstr "Erreur d'étiquette 'Billet VOLE' pour l'avis client"
+
+#: sasoEventtickets_Options.php:243
+msgid "Label Error 'Ticket number is wrong' for the customer notice"
+msgstr "Erreur d'étiquette 'Numéro de billet incorrect' pour l'avis du client"
+
+#: sasoEventtickets_Options.php:248
+msgid "Label Error 'Too late. Event ended already' for the ticket scanner"
+msgstr ""
+"Erreur d'étiquette 'Trop tard. L'événement est déjà terminé' pour le scanner "
+"de billets"
+
+#: sasoEventtickets_Options.php:247
+msgid "Label Error 'Too late. Event started already' for the ticket scanner"
+msgstr ""
+"Erreur d'étiquette 'Trop tard. L'événement a déjà commencé' pour le scanner "
+"de billets"
+
+#: sasoEventtickets_Options.php:125
+msgid "Label for error message on cart for missing text value"
+msgstr ""
+"Étiquette pour le message d'erreur sur le panier pour la valeur de texte "
+"manquante"
+
+#: sasoEventtickets_Options.php:126
+msgid "Label for error message on cart for not choosen dropdown value"
+msgstr ""
+"Étiquette pour le message d'erreur sur le panier pour la valeur déroulante "
+"non choisie"
+
+#: sasoEventtickets_Options.php:249
+msgid "Label User registered value on the ticket"
+msgstr "Étiquette Valeur enregistrée de l'utilisateur sur le billet"
+
+#: sasoEventtickets_Options.php:235
+msgid "Last Redeemed:"
+msgstr "Dernièrement racheté :"
+
+#: sasoEventtickets_Ticket.php:1046
+msgid "loading"
+msgstr "Chargement"
+
+#: sasoEventtickets_Options.php:223
+msgid "Location"
+msgstr "Emplacement"
+
+#: sasoEventtickets_Options.php:357
+msgid "Logged in user only"
+msgstr "Connecté en utilisateur uniquement"
+
+#: index.php:610
+msgid "more details here"
+msgstr "Plus de détails ici"
+
+#: sasoEventtickets_Options.php:424
+msgid "My QR content"
+msgstr "Mon contenu QR"
+
+#: sasoEventtickets_Ticket.php:794
+msgid "No date available"
+msgstr "Pas de date disponible"
+
+#: sasoEventtickets_Options.php:144
+msgid "No HTML strip"
+msgstr "Pas de bande HTML"
+
+#: sasoEventtickets_Options.php:49
+msgid "No login required to access scanner"
+msgstr "Aucune connexion requise pour accéder au scanner"
+
+#: sasoEventtickets_Ticket.php:2155
+msgid "No WooCommerce Support Found"
+msgstr "Aucun support WooCommerce trouvé"
+
+#: sasoEventtickets_Options.php:212
+msgid ""
+"Only for administrator role. Within the admin ticket detail view, you can "
+"start the ticket detail page to view this code. The easiest way is to open "
+"the preview in another browser window. Everytime you did a change and "
+"clicked out of the textarea, you can reload your ticket preview browser "
+"window to see the changes in effect. If you leave it empty, then the default "
+"template will be used."
+msgstr ""
+"Uniquement pour le rôle d'administrateur. Dans la vue des détails du ticket "
+"d'administration, vous pouvez commencer la page des détails du ticket pour "
+"afficher ce code. Le moyen le plus simple est d'ouvrir l'aperçu dans une "
+"autre fenêtre du navigateur. Chaque fois que vous avez effectué une "
+"modification et cliqué hors de la zone de texte, vous pouvez recharger la "
+"fenêtre de votre navigateur de prévisualisation des tickets pour voir les "
+"modifications en vigueur. Si vous le laissez vide, le modèle par défaut sera "
+"utilisé."
+
+#: sasoEventtickets_Options.php:380
+msgid ""
+"Only if filled out, the button will be displayed. If you left this field "
+"empty, then the user will be redirected immediately if the ticket is valid, "
+"without a button to click."
+msgstr ""
+"Ce n'est que si rempli que le bouton sera affiché. Si vous avez laissé ce "
+"champ vide, l'utilisateur sera redirigé immédiatement si le ticket est "
+"valide, sans bouton sur lequel cliquer."
+
+#: sasoEventtickets_Options.php:384 sasoEventtickets_Options.php:385
+#: sasoEventtickets_Options.php:386 sasoEventtickets_Options.php:387
+#: sasoEventtickets_Options.php:388 sasoEventtickets_Options.php:389
+#: sasoEventtickets_Options.php:390 sasoEventtickets_Options.php:391
+#: sasoEventtickets_Options.php:395 sasoEventtickets_Options.php:396
+#: sasoEventtickets_Options.php:397 sasoEventtickets_Options.php:398
+msgid "Only triggered, if not empty."
+msgstr "Seulement déclenché, si non vide."
+
+#: sasoEventtickets_Options.php:394
+msgid ""
+"Only triggered, if not empty. This webhook is called for each ticket number "
+"within a purchase, if the ticket has an order assigned to it."
+msgstr ""
+"Seulement déclenché, si non vide. Ce webhook est appelé pour chaque numéro "
+"de ticket dans un achat, si le ticket a une commande qui lui est attribuée."
+
+#: sasoEventtickets_Options.php:122
+msgid "Open Tickets"
+msgstr "Billets ouverts"
+
+#: sasoEventtickets_Options.php:227
+msgid "Order completed at:"
+msgstr "Commande terminée à :"
+
+#: sasoEventtickets_Ticket.php:1897
+msgid ""
+"Order is not paid. And the option is active to allow only paid ticket to be "
+"redeemed is active."
+msgstr ""
+"La commande n'est pas payée. Et l'option est active pour permettre "
+"uniquement l'échange de billets payants est active."
+
+#. %1$s: ticket number
+#: sasoEventtickets_AdminSettings.php:1450
+#, php-format
+msgid "Order item changed to ticket with ticket number: %1$s"
+msgstr "Article de commande changé en billet avec numéro de billet : %1$s"
+
+#: sasoEventtickets_Ticket.php:291 sasoEventtickets_Ticket.php:547
+msgid "Order item not found"
+msgstr "Article de commande introuvable"
+
+#: sasoEventtickets_Ticket.php:1226
+msgid "Order item not found for the PDF ticket"
+msgstr "Article de commande introuvable pour le ticket PDF"
+
+#: sasoEventtickets_Ticket.php:1986
+msgid "Order not marked as paid. Ticket not redeemed."
+msgstr "Commande non marquée comme payée. Billet non échangé."
+
+#: sasoEventtickets_Options.php:226
+msgid "Order paid at:"
+msgstr "Commande payée à :"
+
+#: sasoEventtickets_Options.php:233
+msgid "Original price:"
+msgstr "Prix d'origine :"
+
+#: sasoEventtickets_Options.php:420
+msgid "Padding for your QR code on the PDF"
+msgstr "Espace pour votre code QR sur le PDF"
+
+#: sasoEventtickets_Options.php:228
+msgid "Paid via:"
+msgstr "Payé via :"
+
+#: sasoEventtickets_Options.php:225
+msgid "Payment details"
+msgstr "Détails du paiement"
+
+#: index.php:642
+msgid "PHP Filters"
+msgstr "Filtres PHP"
+
+#: sasoEventtickets_Options.php:134
+msgid "Please choose a font size between 6pt and 16pt."
+msgstr "Veuillez choisir une taille de police entre 6pt et 16pt."
+
+#: sasoEventtickets_Options.php:402
+msgid "Please contact our support for the ticket"
+msgstr "Veuillez contacter notre support pour le ticket"
+
+#: sasoEventtickets_AdminSettings.php:995
+msgid "Please contact our support for the ticket/code"
+msgstr "Veuillez contacter notre support pour le ticket/code"
+
+#: sasoEventtickets_Options.php:350
+msgid "Please contact support for further investigation"
+msgstr "Veuillez contacter le support pour une enquête plus approfondie"
+
+#: sasoEventtickets_Ticket.php:2156
+msgid "Please contact us for a solution."
+msgstr "Veuillez nous contacter pour une solution."
+
+#: sasoEventtickets_Options.php:424
+msgid ""
+"Please make sure that you do not enter too many information, the more you "
+"add the finer the QR reader need to be able to scan.<br>You can use these "
+"placeholder for your content:<ul><li><b>{CODE}</b>: Will be replaced with "
+"the number (without the delimiters)</li><li><b>{CODEDISPLAY}</b>: Will be "
+"replaced with the number (WITH the delimiters)</li><b>{LIST}</b>: Name of "
+"the list if assigned</li><li><b>{LIST_DESC}</b>: Description of the assigned "
+"list</li><li><a href='#replacementtags'>You could use more tags.</a> But it "
+"is not recommend, since the QR code is generated within the admin area.</li>"
+"</ul>"
+msgstr ""
+"Veuillez vous assurer de ne pas entrer trop d'informations, plus vous en "
+"ajoutez, plus le lecteur QR doit pouvoir scanner.<br>Vous pouvez utiliser "
+"ces espaces réservés pour votre contenu :<ul><li><b>{CODE}</b> : Sera "
+"remplacé par le numéro (sans les délimiteurs)</li><li><b>{CODEDISPLAY}</b> : "
+"Sera remplacé par le numéro (AVEC les délimiteurs)</li><b>{LIST}</b> : Nom "
+"de la liste si elle est attribuée</li><li><b>{LIST_DESC}</b> : Description "
+"de la liste attribuée</li><li><a href='#replacementtags'>Vous pouvez "
+"utiliser plus de balises.</a> Mais ce n'est pas recommandé, car le code QR "
+"est généré dans la zone d'administration.</li></ul>"
+
+#: index.php:607
+msgid "Plugin Rating"
+msgstr "Évaluation du plugin"
+
+#: sasoEventtickets_Options.php:270
+msgid "Possible Tags"
+msgstr "Étiquettes possibles"
+
+#: index.php:611
+msgid "Premium Homepage"
+msgstr "Page d'accueil Premium"
+
+#: index.php:612
+msgid "premium version here"
+msgstr "Version premium ici"
+
+#: sasoEventtickets_Options.php:77
+msgid "Preset: Hide ticket information"
+msgstr "Préréglage : Masquer les informations du ticket"
+
+#: sasoEventtickets_Options.php:76
+msgid "Preset: Scan and Redeem immediately"
+msgstr "Préréglage : Numérisez et échangez immédiatement"
+
+#: sasoEventtickets_Options.php:75
+msgid "Preset: Start cam to scan next ticket immediately"
+msgstr ""
+"Préréglage : Démarrer la caméra pour scanner immédiatement le ticket suivant"
+
+#: sasoEventtickets_Options.php:232
+msgid "Price:"
+msgstr "Prix :"
+
+#: sasoEventtickets_Ticket.php:293 sasoEventtickets_Ticket.php:549
+msgid "product of the order and ticket not found!"
+msgstr "Produit de la commande et billet introuvable !"
+
+#: sasoEventtickets_Options.php:419
+msgid "QR code"
+msgstr "QR code"
+
+#: sasoEventtickets_Ticket.php:1957
+msgid "Redeem operation not possible. Too late."
+msgstr "L'opération d'échange n'est pas possible. Trop tard."
+
+#: sasoEventtickets_Ticket.php:1951
+msgid "Redeem operation not yet possible."
+msgstr "L'opération d'échange n'est pas encore possible."
+
+#: sasoEventtickets_Options.php:239 sasoEventtickets_Ticket.php:1023
+msgid "Redeem Ticket"
+msgstr "Échanger le ticket"
+
+#: sasoEventtickets_Options.php:378
+msgid "Redirect already registered tickets and the user is the same."
+msgstr "Rediriger les tickets déjà enregistrés et l'utilisateur est le même."
+
+#: sasoEventtickets_Options.php:237
+msgid "Refresh page"
+msgstr "Actualiser la page"
+
+#: sasoEventtickets_Ticket.php:1021
+msgid "Reload Ticket"
+msgstr "Recharger le ticket"
+
+#: sasoEventtickets_Options.php:144
+msgid "Remove unsupported HTML (default)"
+msgstr "Supprimer le HTML non pris en charge (par défaut)"
+
+#: sasoEventtickets_Options.php:101
+msgid "Rest Service URL path"
+msgstr "Chemin d'accès à l'URL du service de repos"
+
+#: sasoEventtickets_Options.php:406
+msgid ""
+"Reuse ticket from the ticket list assigned to the woocommerce product, that "
+"are not already used by a woocommerce purchase."
+msgstr ""
+"Réutiliser le ticket à partir de la liste des tickets attribué au produit "
+"woocommerce, qui ne sont pas déjà utilisés par un achat woocommerce."
+
+#. Author of the plugin
+msgid "Saso Nikolov"
+msgstr "Saso Nikolov"
+
+#: sasoEventtickets_Ticket.php:1079
+msgid "Scan and Redeem immediately"
+msgstr "Scannez et échangez immédiatement"
+
+#: sasoEventtickets_Ticket.php:1080
+msgid "Scan next Ticket"
+msgstr "Scannez le ticket suivant"
+
+#: sasoEventtickets_Options.php:123
+msgid ""
+"Set the order automatically to completed, if all purchased products are "
+"tickets"
+msgstr ""
+"Réglez automatiquement la commande sur terminée, si tous les produits "
+"achetés sont des billets"
+
+#: sasoEventtickets_Options.php:411
+msgid "Set the ticket number formatter pattern for new sales."
+msgstr ""
+"Définissez le modèle de formatage du numéro de ticket pour les nouvelles "
+"ventes."
+
+#: index.php:629
+msgid ""
+"Shortcode to display the assigned tickets and codes of an user within a page"
+msgstr ""
+"Shortcode pour afficher les tickets et les codes attribués à un utilisateur "
+"dans une page"
+
+#: index.php:639
+msgid "Shortcode to display the ticket scanner within a page"
+msgstr "Shortcode pour afficher le scanner de tickets dans une page"
+
+#: sasoEventtickets_Options.php:144
+msgid "Show HTML Tags as text (Debugging)"
+msgstr "Afficher les balises HTML sous forme de texte (débogage)"
+
+#: sasoEventtickets_Options.php:276
+msgid "Show the event date on purchase order email"
+msgstr "Afficher la date de l'événement sur l'e-mail du bon de commande"
+
+#: sasoEventtickets_Options.php:277
+msgid "Show the event date on the product detail page for your customer"
+msgstr ""
+"Montrez la date de l'événement sur la page de détails du produit pour votre "
+"client"
+
+#: sasoEventtickets_Options.php:110
+msgid "Show the redeem button on the ticket detail view for the client"
+msgstr ""
+"Afficher le bouton d'échange sur la vue détaillée du ticket pour le client"
+
+#: sasoEventtickets_Options.php:254
+msgid "Show ticket badge download button on ticket detail page"
+msgstr ""
+"Afficher le bouton de téléchargement du badge du billet sur la page de "
+"détail du billet"
+
+#: sasoEventtickets_Options.php:211
+msgid "Size for the QR code image on the <b>test PDF</b>"
+msgstr "Taille de l'image du code QR sur le <b>test PDF</b>"
+
+#: sasoEventtickets_Options.php:203 sasoEventtickets_Options.php:262
+msgid "Size for the QR code image on the PDF"
+msgstr "Taille pour l'image du code QR sur le PDF"
+
+#: sasoEventtickets_Options.php:202 sasoEventtickets_Options.php:261
+msgid "Size in mm for the height"
+msgstr "Taille en mm pour la hauteur"
+
+#: sasoEventtickets_Options.php:210
+msgid "Size in mm for the height of the <b>test</b>"
+msgstr "Taille en mm pour la hauteur du <b>test</b>"
+
+#: sasoEventtickets_Options.php:201 sasoEventtickets_Options.php:260
+msgid "Size in mm for the width"
+msgstr "Taille en mm pour la largeur"
+
+#: sasoEventtickets_Options.php:209
+msgid "Size in mm for the width of the <b>test</b>"
+msgstr "Taille en mm pour la largeur du <b>test</b>"
+
+#: sasoEventtickets_Options.php:144
+msgid "Strip HTML from text"
+msgstr "Détirer le HTML du texte"
+
+#: sasoEventtickets_Ticket.php:988
+msgid "Successfully redeemed"
+msgstr "Racheté avec succès"
+
+#: sasoEventtickets_Options.php:244
+msgid "Text for max redeem amount for the customer notice on the PDF ticket"
+msgstr ""
+"Texte pour le montant d'échange maximum pour l'avis client sur le billet PDF"
+
+#: sasoEventtickets_Options.php:245
+msgid "Text for redeemed amount for the customer notice on the ticket"
+msgstr "Texte pour le montant échangé pour l'avis client sur le ticket"
+
+#: sasoEventtickets_Options.php:417
+msgid ""
+"Text or letter to be used as a seperator for ticket numbers of the user."
+msgstr ""
+"Texte ou lettre à utiliser comme séparateur pour les numéros de ticket de "
+"l'utilisateur."
+
+#: sasoEventtickets_Options.php:274
+msgid "Text that will be added as the ICS calendar file download label"
+msgstr ""
+"Texte qui sera ajouté comme étiquette de téléchargement du fichier de "
+"calendrier ICS"
+
+#: sasoEventtickets_Options.php:122
+msgid "Text that will be added as the Order Ticket detail view label"
+msgstr ""
+"Texte qui sera ajouté comme étiquette de vue détaillée du ticket de commande"
+
+#: sasoEventtickets_Options.php:121
+msgid "Text that will be added as the PDF Ticket download label"
+msgstr "Texte qui sera ajouté comme étiquette de téléchargement du billet PDF"
+
+#: sasoEventtickets_Options.php:255
+msgid "Text that will be added as the ticket badge file download label"
+msgstr ""
+"Texte qui sera ajouté comme étiquette de téléchargement du fichier badge de "
+"billet"
+
+#: sasoEventtickets_Options.php:111
+msgid ""
+"Text that will be added before the ticket number on the PDF invoice, order "
+"table and order details"
+msgstr ""
+"Texte qui sera ajouté avant le numéro de ticket sur la facture PDF, le "
+"tableau des commandes et les détails de la commande"
+
+#: sasoEventtickets_Options.php:415
+msgid ""
+"Text that will be added before the ticket number(s) for the user are "
+"displayed."
+msgstr ""
+"Texte qui sera ajouté avant que le ou les numéros de ticket pour "
+"l'utilisateur ne soient affichés."
+
+#: sasoEventtickets_Options.php:157
+msgid ""
+"Text that will be added to the PDF if the option <b>'Display the quantity of "
+"the purchased tickets'</b> is activated."
+msgstr ""
+"Texte qui sera ajouté au PDF si l'option <b>'Afficher la quantité de billets "
+"achetés'</b> est activée."
+
+#: sasoEventtickets_Options.php:402
+msgid ""
+"Text that will be used, if you do not have <b>premium</b> and run out of "
+"free ticket amount. This text will be added to the WooCoomerce purchase "
+"information instead of the ticket number"
+msgstr ""
+"Texte qui sera utilisé, si vous n'avez pas <b>prime</b> et que vous n'avez "
+"plus de montant de billet gratuit. Ce texte sera ajouté aux informations "
+"d'achat WooCoomerce au lieu du numéro de billet"
+
+#: sasoEventtickets_Options.php:68
+msgid ""
+"The hours will be subtracted from the starting time of the event. Only used "
+"if the option \"wcTicketDontAllowRedeemTicketBeforeStart\" is active."
+msgstr ""
+"Les heures seront soustraites de l'heure de début de l'événement. Utilisé "
+"uniquement si l'option \"wcTicketDontAllowRedeemTicketBeforeStart\" est "
+"active."
+
+#: sasoEventtickets_Options.php:269
+msgid "The HTML value for the PDF"
+msgstr "La valeur HTML pour le PDF"
+
+#: sasoEventtickets_Options.php:272
+msgid ""
+"The ICS calendar file will cointain the event info and date (if added). This "
+"allows your customer to add the event easily from within the email to their "
+"calendar. Will work on most mail client."
+msgstr ""
+"Le fichier de calendrier ICS contiendra les informations et la date de "
+"l'événement (s'ils sont ajoutés). Cela permet à votre client d'ajouter "
+"facilement l'événement à son calendrier à partir de l'e-mail. Fonctionnera "
+"sur la plupart des clients de messagerie."
+
+#: sasoEventtickets_Options.php:198
+msgid ""
+"The plugin is using the Twig template engine (3.7.1). This is a well "
+"documented tempklate engine that gives you a great freedom.<br><a "
+"target=\"_blank\" href=\"https://twig.symfony.com/doc/3.x/\">Open "
+"Documentation of Twig</a>"
+msgstr ""
+"Le plugin utilise le moteur de modèle Twig (3.7.1). Il s'agit d'un moteur "
+"template bien documenté qui vous donne une grande liberté.<br><a "
+"target=\"_blank\" href=\"https://twig.symfony.com/doc/3.x/\">Documentation "
+"ouverte de Twig</a>"
+
+#: sasoEventtickets_Options.php:125
+msgid "The product \"{PRODUCT_NAME}\" requires a value for checkout."
+msgstr "Le produit \"{PRODUCT_NAME}\" nécessite une valeur pour le paiement."
+
+#: sasoEventtickets_Options.php:126
+msgid ""
+"The product \"{PRODUCT_NAME}\" requires a value from the dropdown for "
+"checkout."
+msgstr ""
+"Le produit \"{PRODUCT_NAME}\" nécessite une valeur de la liste déroulante "
+"pour le paiement."
+
+#: sasoEventtickets_Core.php:263
+msgid "The public ticket number"
+msgstr "Le numéro de billet public"
+
+#: sasoEventtickets_Options.php:212
+msgid ""
+"The template screen <b>test code</b> - TWIG HTML value for the testing the "
+"ticket. Use <b>{QRCODE_INLINE}</b> to place the QR-Code anywhere"
+msgstr ""
+"L'écran du modèle <b>code de test</b> - valeur HTML TWIG pour tester le "
+"ticket. Utilisez <b>{QRCODE_INLINE}</b> pour placer le QR-Code n'importe où"
+
+#: sasoEventtickets_Options.php:204
+msgid ""
+"The TWIG HTML value for the ticket. Use <b>{QRCODE_INLINE}</b> to place the "
+"QR-Code anywhere"
+msgstr ""
+"La valeur HTML TWIG pour le ticket. Utilisez <b>{QRCODE_INLINE}</b> pour "
+"placer le QR-Code n'importe où"
+
+#: sasoEventtickets_Options.php:288 sasoEventtickets_Options.php:379
+#: sasoEventtickets_Options.php:383
+msgid ""
+"The URL can be relative like '/page/' or absolute 'https//domain/url/'.<br>"
+"You can use these placeholder for your URL:<ul><li><b>{USERID}</b>: Will be "
+"replaced with the userid if the user is loggedin or empty</li><li><b>{CODE}"
+"</b>: Will be replaced with the ticket number (without the delimiters)</li>"
+"<li><b>{CODEDISPLAY}</b>: Will be replaced with the ticket number (WITH the "
+"delimiters)</li><li><b>{IP}</b>: The IP address of the user</li><li><b>{LIST}"
+"</b>: Name of the list if assigned</li><li><b>{LIST_DESC}</b>: Description "
+"of the assigned list</li><li><a href='#replacementtags'>More tags here</a>"
+"</li></ul>"
+msgstr ""
+"L'URL peut être relative comme '/page/' ou absolue 'https//domain/url/'.<br>"
+"Vous pouvez utiliser ces espaces réservés pour votre URL :<ul><li><b>{USERID}"
+"</b> : Sera remplacé par l'identifiant utilisateur si l'utilisateur est "
+"connecté ou vide</li><b><b>{CODE}</b> : Sera remplacé par le numéro de "
+"ticket (sans les délimiteurs)</li><li><b>{CODEDISPLAY}</b> : Sera remplacé "
+"par le numéro de ticket (AVEC les délimiteurs)</li><li><b>{IP}</b> : "
+"L'adresse IP de l'utilisateur</li><li><b>{LIST}</b> : Nom de la liste si "
+"elle est attribuée</li><b>><b>{LIST_DESC}</b> : Description de la"
+
+#: sasoEventtickets_Options.php:421
+msgid ""
+"The URL should be absolute, if you like to provide the generated QR image to "
+"your customers. The image can be retrieved within the event ticket area. The "
+"ticket number detail contains a button for it.<br>You can use these "
+"placeholder for your URL:<ul><li><b>{CODE}</b>: Will be replaced with the "
+"number (without the delimiters)</li><li><b>{CODEDISPLAY}</b>: Will be "
+"replaced with the number (WITH the delimiters)</li><b>{LIST}</b>: Name of "
+"the list if assigned</li><li><b>{LIST_DESC}</b>: Description of the assigned "
+"list</li><li><a href='#replacementtags'>You could use more tags.</a> But it "
+"is not recommend, since the QR code is generated within the admin area.</li>"
+"</ul>"
+msgstr ""
+"L'URL doit être absolue, si vous souhaitez fournir l'image QR générée à vos "
+"clients. L'image peut être récupérée dans la zone des billets d'événement. "
+"Le détail du numéro de ticket contient un bouton pour cela.<br>Vous pouvez "
+"utiliser ces espaces réservés pour votre URL :<ul><li><b>{CODE}</b> : Sera "
+"remplacé par le numéro (sans les délimiteurs)</li><li><b>{CODEDISPLAY}</b> : "
+"Sera remplacé par le numéro (AVEC les délimiteurs)</li><b>{LIST}</b> : Nom "
+"de la liste si elle est attribuée</li><li><b>{LIST_DESC}</b> : Description "
+"de la liste assignée</li><li><a href='#replacementtags'>Vous pouvez utiliser "
+"plus de balises.</a> Mais ce n'est pas recommandé, car le code QR est généré "
+"dans la zone d'administration.</li></ul>"
+
+#: sasoEventtickets_Options.php:95
+msgid ""
+"These settings can help to make it work, in case you adjusted your server "
+"and/or Wordpress settings."
+msgstr ""
+"Ces paramètres peuvent aider à le faire fonctionner, au cas où vous auriez "
+"ajusté vos paramètres de serveur et/ou de Wordpress."
+
+#: sasoEventtickets_Options.php:200 sasoEventtickets_Options.php:208
+#: sasoEventtickets_Options.php:259
+msgid ""
+"This feature is in Beta. This means, good results are not guaranteed, still "
+"optimizing this. If active, the PDF will be generated with RTL option active."
+msgstr ""
+"Cette fonctionnalité est en version bêta. Cela signifie que de bons "
+"résultats ne sont pas garantis, tout en optimisant cela. S'il est actif, le "
+"PDF sera généré avec l'option RTL active."
+
+#: sasoEventtickets_Options.php:221
+msgid "This is the title of the ticket"
+msgstr "Voici le titre du billet"
+
+#. %s: max amount ticket redeem
+#: sasoEventtickets_Options.php:244
+#, php-format
+msgid ""
+"This text will be added to the PDF ticket only if the ticket can be redeemed "
+"more than one time! Use the placeholder %s to display the amount."
+msgstr ""
+"Ce texte ne sera ajouté au billet PDF que si le billet peut être utilisé "
+"plus d'une fois ! Utilisez l'espace réservé %s pour afficher le montant."
+
+#. 1: amount redeemed ticket 2: max amount ticket redeem
+#: sasoEventtickets_Options.php:245
+#, php-format
+msgid ""
+"This text will be added to the ticket scanner and ticket detail page view. "
+"Only if the ticket can be redeemed more than one time! Use the placeholders "
+"%1$s and %2$s and to display the amounts."
+msgstr ""
+"Ce texte sera ajouté au scanner de tickets et à la page de détails du ticket."
+" Seulement si le billet peut être utilisé plus d'une fois ! Utilisez les "
+"espaces réservés %1$s et %2$s et pour afficher les montants."
+
+#: sasoEventtickets_Options.php:221
+msgid "Ticket"
+msgstr "Billet"
+
+#: sasoEventtickets_Options.php:353
+msgid "Ticket and CVV is not valid"
+msgstr "Le billet et le CVV ne sont pas valides"
+
+#: sasoEventtickets_Options.php:253
+msgid "Ticket Badge"
+msgstr "Badge de billet"
+
+#. 1: redeemed ticket counter 2: max redeem possible
+#: sasoEventtickets_AdminSettings.php:1381
+#, php-format
+msgid ""
+"Ticket cannot be redeemed anymore. All redeem operations are used up. %1$d "
+"of %2$d."
+msgstr ""
+"Le ticket ne peut plus être échangé. Toutes les opérations d'échange sont "
+"épuisées. %1$d de %2$d."
+
+#: sasoEventtickets_Options.php:348
+msgid "Ticket confirmed"
+msgstr "Billet confirmé"
+
+#: sasoEventtickets_Options.php:196
+msgid "Ticket Designer"
+msgstr "Concepteur de billets"
+
+#: sasoEventtickets_Options.php:206
+msgid "Ticket Designer Test"
+msgstr "Test de conception de billets"
+
+#: sasoEventtickets_Options.php:98
+msgid "Ticket detail URL path"
+msgstr "Chemin d'accès à l'URL du détail du ticket"
+
+#: sasoEventtickets_Options.php:240 sasoEventtickets_Options.php:352
+msgid "Ticket expired"
+msgstr "Billet expiré"
+
+#: sasoEventtickets_Ticket.php:633 sasoEventtickets_Ticket.php:655
+#: sasoEventtickets_Ticket.php:2015
+msgid "Ticket Info"
+msgstr "Informations sur les billets"
+
+#: sasoEventtickets_Options.php:242
+msgid "Ticket is not valid"
+msgstr "Le ticket n'est pas valide"
+
+#: sasoEventtickets_Options.php:355
+msgid "Ticket is redeemed"
+msgstr "Le billet est échangé"
+
+#: sasoEventtickets_Options.php:241
+msgid "Ticket is STOLEN"
+msgstr "Le billet est VOLÉ"
+
+#: sasoEventtickets_Options.php:354
+msgid "Ticket is stolen"
+msgstr "Le billet est volé"
+
+#: sasoEventtickets_Options.php:349
+msgid "Ticket not found"
+msgstr "Billet introuvable"
+
+#: sasoEventtickets_Ticket.php:952
+msgid "TICKET NOT REDEEMED - see reason below"
+msgstr "BILLET NON ÉCHANGÉ - voir la raison ci-dessous"
+
+#: sasoEventtickets_Options.php:243
+msgid "Ticket number is wrong"
+msgstr "Le numéro de billet est erroné"
+
+#: sasoEventtickets_Ticket.php:1921
+msgid "Ticket number to redeem is missing"
+msgstr "Le numéro du billet à utiliser est manquant"
+
+#: sasoEventtickets_Options.php:111
+msgid "Ticket number:"
+msgstr "Numéro du billet :"
+
+#: sasoEventtickets_Ticket.php:954
+msgid "TICKET OK - Redeemed"
+msgstr "TICKET OK - Échangé"
+
+#: sasoEventtickets_Options.php:130
+msgid "Ticket PDF settings"
+msgstr "Paramètres PDF du ticket"
+
+#: sasoEventtickets_Options.php:234
+msgid "Ticket redeemed"
+msgstr "Billet échangé"
+
+#: sasoEventtickets_Ticket.php:1087
+msgid "ticket redeemed already"
+msgstr "Billet déjà échangé"
+
+#: sasoEventtickets_Options.php:283
+msgid "Ticket Redirect"
+msgstr "Redirection des billets"
+
+#: index.php:609
+msgid "Ticket Sale option"
+msgstr "Option de vente de billets"
+
+#: sasoEventtickets_Options.php:43 sasoEventtickets_Ticket.php:949
+msgid "Ticket scanner"
+msgstr "Scanner de billets"
+
+#: sasoEventtickets_Options.php:221
+msgid "Ticket title"
+msgstr "Titre du billet"
+
+#: sasoEventtickets_Options.php:216
+msgid "Ticket Translations"
+msgstr "Traductions de billets"
+
+#: sasoEventtickets_Options.php:236
+msgid "Ticket valid"
+msgstr "Billet valide"
+
+#: sasoEventtickets_Options.php:231
+msgid "Ticket:"
+msgstr "Billet :"
+
+#: sasoEventtickets_Options.php:70
+msgid ""
+"To speed up the scanning start, the camera device id is stored within the "
+"browser for the ticket scanner. If you do not want this, you can deactivate "
+"this option. Additionally you can use the button within the ticket scanner "
+"at the bottom to clear the stored device id from your browser."
+msgstr ""
+"Pour accélérer le début de la numérisation, l'identifiant de l'appareil "
+"photo est stocké dans le navigateur pour le scanner de tickets. Si vous ne "
+"le souhaitez pas, vous pouvez désactiver cette option. De plus, vous pouvez "
+"utiliser le bouton à l'intérieur du scanner de tickets en bas pour effacer "
+"l'identifiant de l'appareil stocké de votre navigateur."
+
+#: sasoEventtickets_Options.php:305
+msgid ""
+"Too big! Choose an image with smaller size. Max 300px width, otherwise it "
+"will look not good on your flyer."
+msgstr ""
+"Trop gros ! Choisissez une image de plus petite taille. Largeur maximale de "
+"300px, sinon cela n'aura pas l'air bien sur votre dépliant."
+
+#: sasoEventtickets_Options.php:168
+msgid ""
+"Too big! Choose an image with smaller size. Max 300px width, otherwise it "
+"will look not good on your ticket."
+msgstr ""
+"Trop gros ! Choisissez une image de plus petite taille. Largeur maximale de "
+"300px, sinon cela n'aura pas l'air bien sur votre billet."
+
+#: sasoEventtickets_Ticket.php:1855
+msgid "Too early. Ticket cannot be redeemed yet."
+msgstr "Trop tôt. Le billet ne peut pas encore être échangé."
+
+#: sasoEventtickets_Ticket.php:1862
+msgid "Too late, event finished. Ticket cannot be redeemed anymore."
+msgstr ""
+"Trop tard, l'événement est terminé. Le ticket ne peut plus être échangé."
+
+#: sasoEventtickets_Ticket.php:1867
+msgid "Too late, event started. Ticket cannot be redeemed anymore."
+msgstr ""
+"Trop tard, l'événement a commencé. Le ticket ne peut plus être échangé."
+
+#: sasoEventtickets_Options.php:248
+msgid "Too late. Event ended already"
+msgstr "Trop tard. L'événement est déjà terminé"
+
+#: sasoEventtickets_Options.php:247
+msgid "Too late. Event started already"
+msgstr "Trop tard. L'événement a déjà commencé"
+
+#: sasoEventtickets_Options.php:314
+msgid ""
+"Too small! Choose an image with bigger size. Min 600px width, otherwise it "
+"will look not good on your flyer."
+msgstr ""
+"Trop petit ! Choisissez une image de plus grande taille. Largeur minimale de "
+"600px, sinon cela n'aura pas l'air bien sur votre dépliant."
+
+#: sasoEventtickets_Options.php:177
+msgid ""
+"Too small! Choose an image with bigger size. Min 600px width, otherwise it "
+"will look not good on your ticket."
+msgstr ""
+"Trop petit ! Choisissez une image de plus grande taille. Largeur minimale de "
+"600px, sinon cela n'aura pas l'air bien sur votre ticket."
+
+#: sasoEventtickets_Options.php:421
+msgid "URL for the QR image"
+msgstr "URL pour l'image QR"
+
+#: sasoEventtickets_Options.php:379
+msgid "URL to redirect the user, if the ticket is valid."
+msgstr "URL pour rediriger l'utilisateur, si le ticket est valide."
+
+#: sasoEventtickets_Options.php:288
+msgid "URL to redirect the user, if the ticket was redeemed."
+msgstr "URL pour rediriger l'utilisateur, si le ticket a été utilisé."
+
+#: sasoEventtickets_Options.php:387
+msgid "URL to your service if <b>someone register to this ticket</b>."
+msgstr "URL de votre service si <b>quelqu'un s'inscrit à ce ticket</b>."
+
+#: sasoEventtickets_Options.php:391
+msgid ""
+"URL to your service if an order item is bought using a restriction code."
+msgstr ""
+"URL de votre service si un article de commande est acheté à l'aide d'un code "
+"de restriction."
+
+#: sasoEventtickets_Options.php:384
+msgid "URL to your service if the checked ticket <b>is inactive</b>."
+msgstr "URL de votre service si le ticket vérifié <b>est inactif</b>."
+
+#: sasoEventtickets_Options.php:386
+msgid ""
+"URL to your service if the checked ticket <b>is invalid</b> (not found)."
+msgstr ""
+"URL de votre service si le ticket vérifié <b>n'est pas valide</b> "
+"(introuvable)."
+
+#: sasoEventtickets_Options.php:385
+msgid "URL to your service if the checked ticket <b>is valid</b>."
+msgstr "URL de votre service si le ticket vérifié <b>est valide</b>."
+
+#: sasoEventtickets_Options.php:390
+msgid ""
+"URL to your service if the checked ticket is already <b>marked as used and "
+"checked again</b>."
+msgstr ""
+"URL de votre service si le ticket vérifié est déjà <b>marqué comme utilisé "
+"et vérifié à nouveau</b>."
+
+#: sasoEventtickets_Options.php:388
+msgid ""
+"URL to your service if the checked ticket is already <b>registered to "
+"someone</b>."
+msgstr ""
+"URL de votre service si le ticket vérifié est déjà <b>enregistré à "
+"quelqu'un</b>."
+
+#: sasoEventtickets_Options.php:389
+msgid ""
+"URL to your service if the checked ticket is valid and is <b>marked to be "
+"used the first time</b>."
+msgstr ""
+"URL de votre service si le ticket vérifié est valide et est <b>marqué pour "
+"être utilisé la première fois</b>."
+
+#: sasoEventtickets_Options.php:398
+msgid ""
+"URL to your service if the WooCommerce ticket data is removed from the "
+"ticket number."
+msgstr ""
+"URL de votre service si les données du ticket WooCommerce sont supprimées du "
+"numéro de ticket."
+
+#: sasoEventtickets_Options.php:395
+msgid ""
+"URL to your service if the WooCommerce ticket data is set for this ticket "
+"number."
+msgstr ""
+"URL de votre service si les données du ticket WooCommerce sont définies pour "
+"ce numéro de ticket."
+
+#: sasoEventtickets_Options.php:396
+msgid "URL to your service if the WooCommerce ticket is redeemed."
+msgstr "URL de votre service si le ticket WooCommerce est Racheté"
+
+#: sasoEventtickets_Options.php:394
+msgid "URL to your service if the WooCommerce ticket is sold."
+msgstr "URL de votre service si le ticket WooCommerce est vendu."
+
+#: sasoEventtickets_Options.php:397
+msgid "URL to your service if the WooCommerce ticket is un-redeemed."
+msgstr "URL de votre service si le ticket WooCommerce n'est pas utilisé."
+
+#: sasoEventtickets_Options.php:423
+msgid "Use my QR content - I will use my own ticket scanner"
+msgstr "Utilisez mon contenu QR - J'utiliserai mon propre scanner de billets"
+
+#: sasoEventtickets_Options.php:197
+msgid "Use the default template for the ticket"
+msgstr "Utilisez le modèle par défaut pour le ticket"
+
+#: index.php:640
+msgid "Useful if you cannot open the ticket scanner due to security issues."
+msgstr ""
+"Utile si vous ne pouvez pas ouvrir le scanner de tickets en raison de "
+"problèmes de sécurité."
+
+#: sasoEventtickets_Core.php:251
+msgid "User id of the registered user to a code. Default will be 0."
+msgstr ""
+"ID utilisateur de l'utilisateur enregistré à un code. La valeur par défaut "
+"sera 0."
+
+#: sasoEventtickets_Core.php:258
+msgid "User id of the WooCommerce sales."
+msgstr "Identifiant utilisateur des ventes WooCommerce."
+
+#: sasoEventtickets_Options.php:324
+msgid "User profile"
+msgstr "Profil de l'utilisateur"
+
+#: sasoEventtickets_Options.php:376
+msgid "User redirection"
+msgstr "Redirection de l'utilisateur"
+
+#: sasoEventtickets_Options.php:249
+msgid "User value:"
+msgstr "Valeur utilisateur :"
+
+#: sasoEventtickets_Core.php:155 sasoEventtickets_Core.php:165
+#: sasoEventtickets_Core.php:175 sasoEventtickets_Core.php:185
+#: sasoEventtickets_Core.php:195
+msgid "USERID DO NOT EXISTS"
+msgstr "L'ID D'UTILISATEUR N'EXISTE PAS"
+
+#: sasoEventtickets_Options.php:340
+msgid "Validator Form for ticket number check"
+msgstr "Formulaire de validation pour la vérification du numéro de billet"
+
+#: sasoEventtickets_Core.php:249
+msgid "Value given by the user during the code registration."
+msgstr "Valeur donnée par l'utilisateur lors de l'enregistrement du code."
+
+#: index.php:592
+msgid "Version"
+msgstr "Version"
+
+#: sasoEventtickets_Options.php:382
+msgid "Webhooks"
+msgstr "Webhooks"
+
+#: sasoEventtickets_Options.php:261
+msgid ""
+"Will be used to set the height of the PDF for the badge. If empty or zero, "
+"the default of 120 will be used."
+msgstr ""
+"Sera utilisé pour définir la hauteur du PDF pour le badge. Si vide ou zéro, "
+"la valeur par défaut de 120 sera utilisée."
+
+#: sasoEventtickets_Options.php:202
+msgid ""
+"Will be used to set the height of the PDF. If empty or zero or lower than 20,"
+" the default of 297 will be used."
+msgstr ""
+"Sera utilisé pour définir la hauteur du PDF. S'il est vide ou zéro ou "
+"inférieur à 20, la valeur par défaut de 297 sera utilisée."
+
+#: sasoEventtickets_Options.php:210
+msgid ""
+"Will be used to set the height of the PDF. If empty or zero, the default of "
+"120 will be used."
+msgstr ""
+"Sera utilisé pour définir la hauteur du PDF. S'il est vide ou nul, la valeur "
+"par défaut de 120 sera utilisée."
+
+#: sasoEventtickets_Options.php:203 sasoEventtickets_Options.php:211
+#: sasoEventtickets_Options.php:262
+msgid ""
+"Will be used to set the width and height of the QR code image on the PDF "
+"ticket. If empty or zero, the default of 50 will be used."
+msgstr ""
+"Sera utilisé pour définir la largeur et la hauteur de l'image du code QR sur "
+"le ticket PDF. S'il est vide ou zéro, la valeur par défaut de 50 sera "
+"utilisée."
+
+#: sasoEventtickets_Options.php:260
+msgid ""
+"Will be used to set the width of the PDF for the badge. If empty or zero, "
+"the default of 80 will be used."
+msgstr ""
+"Sera utilisé pour définir la largeur du PDF pour le badge. S'il est vide ou "
+"nul, la valeur par défaut de 80 sera utilisée."
+
+#: sasoEventtickets_Options.php:201
+msgid ""
+"Will be used to set the width of the PDF. If empty or zero or lower than 20, "
+"the default of 210 will be used."
+msgstr ""
+"Sera utilisé pour définir la largeur du PDF. S'il est vide ou zéro ou "
+"inférieur à 20, la valeur par défaut de 210 sera utilisée."
+
+#: sasoEventtickets_Options.php:209
+msgid ""
+"Will be used to set the width of the PDF. If empty or zero, the default of "
+"80 will be used."
+msgstr ""
+"Sera utilisé pour définir la largeur du PDF. S'il est vide ou zéro, la "
+"valeur par défaut de 80 sera utilisée."
+
+#: sasoEventtickets_Core.php:254
+msgid "WooCommerce order id assigned to the code."
+msgstr "ID de commande WooCommerce attribué au code."
+
+#: sasoEventtickets_Core.php:259
+msgid ""
+"WooCommerce order id, that was purchases using this code as an allowance to "
+"purchase a restricted product."
+msgstr ""
+"ID de commande WooCommerce, c'est-à-dire des achats utilisant ce code comme "
+"autorisation pour acheter un produit restreint."
+
+#: sasoEventtickets_Core.php:255
+msgid "WooCommerce product id assigned to the code."
+msgstr "ID du produit WooCommerce attribué au code."
+
+#: sasoEventtickets_Core.php:260
+msgid "WooCommerce product id that was restricted with this code."
+msgstr "L'identifiant du produit WooCommerce qui a été restreint avec ce code."
+
+#: sasoEventtickets_Options.php:400
+msgid "Woocommerce product ticket assignment"
+msgstr "Affectation de billets de produits Woocommerce"
+
+#: sasoEventtickets_Options.php:105
+msgid "Woocommerce ticket sale"
+msgstr "Vente de billets oocommerce"
+
+#: sasoEventtickets_Options.php:342
+msgid "XXYYYZZ"
+msgstr "XXYYYZZ"
+
+#: sasoEventtickets_Options.php:106
+msgid ""
+"You can assign a list to a product and this will generate or re-use a ticket "
+"from this list as a ticket number. It will be printed on the purchase "
+"information to the customer."
+msgstr ""
+"Vous pouvez attribuer une liste à un produit et cela générera ou réutilisera "
+"un ticket de cette liste comme numéro de ticket. Il sera imprimé sur les "
+"informations d'achat au client."
+
+#. Description of the plugin
+msgid ""
+"You can create and generate tickets and codes. You can redeem the tickets at "
+"entrance using the built-in ticket scanner. You customer can download a PDF "
+"with the ticket information. The Premium allows you also to activate user "
+"registration and more. This allows your user to register them self to a "
+"ticket."
+msgstr ""
+"Vous pouvez créer et générer des tickets et des codes. Vous pouvez échanger "
+"les billets à l'entrée en utilisant le scanner de billets intégré. Votre "
+"client peut télécharger un PDF avec les informations du billet. La Premium "
+"vous permet également d'activer l'enregistrement des utilisateurs et plus "
+"encore. Cela permet à votre utilisateur de s'inscrire à un ticket."
+
+#: sasoEventtickets_Options.php:196
+msgid ""
+"You can design your ticket look & feel. You are able to preview your ticket "
+"design within the second ticket design textarea. This template will be used "
+"on the ticket detail view, ticket PDF"
+msgstr ""
+"Vous pouvez concevoir l'apparence et la sensation de votre billet. Vous "
+"pouvez prévisualiser la conception de votre ticket dans la deuxième zone de "
+"texte de conception de ticket. Ce modèle sera utilisé sur la vue détaillée "
+"du ticket, ticket PDF"
+
+#: sasoEventtickets_Options.php:162
+msgid "You can display additional text on the PDF ticket"
+msgstr "Vous pouvez afficher du texte supplémentaire sur le ticket PDF"
+
+#. %s: shortcode
+#: sasoEventtickets_Options.php:414
+#, php-format
+msgid "You can display the tickets assigned to an user with this shortcode %s."
+msgstr ""
+"Vous pouvez afficher les tickets attribués à un utilisateur avec ce "
+"shortcode %s."
+
+#: sasoEventtickets_Options.php:253
+msgid ""
+"You can download a badge for each ticket. This badge can be give to your "
+"customer so they can wear it as a name badge. You can download the badge PDF "
+"within the ticket detail view."
+msgstr ""
+"Vous pouvez télécharger un badge pour chaque billet. Ce badge peut être "
+"donné à votre client afin qu'il puisse le porter comme badge nominatif. Vous "
+"pouvez télécharger le PDF du badge dans la vue détaillée du ticket."
+
+#: sasoEventtickets_Options.php:293
+msgid ""
+"You can download a PDF flyer for your event within the product detail view. "
+"Control the components to be displayed."
+msgstr ""
+"Vous pouvez télécharger un dépliant PDF pour votre événement dans la vue "
+"détaillée du produit. Contrôlez les composants à afficher."
+
+#: index.php:612
+msgid "You can find more details about the"
+msgstr "Vous pouvez trouver plus de détails sur le"
+
+#: sasoEventtickets_Options.php:419
+msgid "You can generate QR code images for your ticket numbers."
+msgstr "Vous pouvez générer des images de code QR pour vos numéros de billets."
+
+#. %s: max amount ticket redeem
+#: sasoEventtickets_Options.php:244
+#, php-format
+msgid "You can redeem this ticket <b>%s times</b> within the valid period."
+msgstr ""
+"Vous pouvez échanger ce billet <b>%s fois</b> pendant la période valide."
+
+#: index.php:643
+msgid ""
+"You can use PHP code to register your filter functions for the validation "
+"check."
+msgstr ""
+"Vous pouvez utiliser le code PHP pour enregistrer vos fonctions de filtre "
+"pour la vérification de validation."
+
+#: sasoEventtickets_Options.php:125
+msgid ""
+"You can use the placeholder {PRODUCT_NAME} for the product name. If left "
+"empty, default will be 'The product {PRODUCT_NAME} requires a value for "
+"checkout.' as the error message on the cart."
+msgstr ""
+"Vous pouvez utiliser l'espace réservé {PRODUCT_NAME} pour le nom du produit. "
+"S'il est laissé vide, la valeur par défaut sera « Le produit {PRODUCT_NAME} "
+"nécessite une valeur pour le paiement. » comme message d'erreur sur le "
+"panier."
+
+#: sasoEventtickets_Options.php:126
+msgid ""
+"You can use the placeholder {PRODUCT_NAME} for the product name. If left "
+"empty, default will be 'The product {PRODUCT_NAME} requires a value from the "
+"dropdown for checkout.' as the error message on the cart."
+msgstr ""
+"Vous pouvez utiliser l'espace réservé {PRODUCT_NAME} pour le nom du produit. "
+"S'il est laissé vide, la valeur par défaut sera « Le produit {PRODUCT_NAME} "
+"nécessite une valeur de la liste déroulante pour le paiement. » comme "
+"message d'erreur sur le panier."
+
+#: index.php:610
+msgid ""
+"You can use this plugin to sell tickets and even redeem them. Check out the "
+"documentation for"
+msgstr ""
+"Vous pouvez utiliser ce plugin pour vendre des billets et même les échanger. "
+"Consultez la documentation pour"
+
+#: index.php:537
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+"Vous n'avez pas les autorisations suffisantes pour accéder à cette page."
+
+#. 1: amount redeemed ticket 2: max amount ticket redeem
+#: sasoEventtickets_Options.php:245
+#, php-format
+msgid "You have used this ticket %1$s of %2$s."
+msgstr "Vous avez utilisé ce billet %1$s de %2$s."
+
+#: sasoEventtickets_Options.php:359
+msgid "You need to log in to use the ticket validator"
+msgstr "Vous devez vous connecter pour utiliser le validateur de billets"
+
+#: sasoEventtickets_Options.php:359
+msgid "Your own 'Only for logged in user' message"
+msgstr "Votre propre message \"Uniquement pour les utilisateurs connectés\""
+
+#: sasoEventtickets_Options.php:353
+msgid "Your own 'Ticket and CVV is not valid' message"
+msgstr "Votre propre message « Le billet et le CVV ne sont pas valides »"
+
+#: sasoEventtickets_Options.php:348
+msgid "Your own 'Ticket confirmed' message"
+msgstr "Notre propre message \"Billet confirmé\""
+
+#: sasoEventtickets_Options.php:352
+msgid "Your own 'Ticket expired' message"
+msgstr "Votre propre message \"Ticket expiré\""
+
+#: sasoEventtickets_Options.php:350
+msgid "Your own 'Ticket inactive' message"
+msgstr "Votre propre message \"Ticket inactif\""
+
+#: sasoEventtickets_Options.php:351
+msgid "Your own 'Ticket is already registered to a user' message"
+msgstr ""
+"Votre propre message « Le ticket est déjà enregistré pour un utilisateur »"
+
+#: sasoEventtickets_Options.php:355
+msgid "Your own 'Ticket is redeemed' message"
+msgstr "Votre propre message « Le billet est échangé »"
+
+#: sasoEventtickets_Options.php:349
+msgid "Your own 'Ticket not found' message"
+msgstr "Votre propre message \"Ticket introuvable\""
+
+#: sasoEventtickets_Options.php:354
+msgid "Your own 'Ticket stolen' message"
+msgstr "Votre propre message \"Billet volé\""
+
+#: sasoEventtickets_Options.php:343
+msgid "Your own background color of the button"
+msgstr "Votre propre couleur de fond du bouton"
+
+#: sasoEventtickets_Options.php:344
+msgid "Your own border color of the button"
+msgstr "Votre propre couleur de bordure du bouton"
+
+#: sasoEventtickets_Options.php:341
+msgid "Your own check button label"
+msgstr "Votre propre étiquette de bouton de contrôle"
+
+#: sasoEventtickets_Options.php:23
+msgid "Your own date format"
+msgstr "Votre propre format de date"
+
+#: sasoEventtickets_Options.php:342
+msgid "Your own input field placeholder text"
+msgstr "Votre propre texte d'espace réservé au champ d'entrée"
+
+#: sasoEventtickets_Options.php:345
+msgid "Your own text color of the button"
+msgstr "Votre propre couleur de texte du bouton"
+
+#: sasoEventtickets_Options.php:24
+msgid "Your own time format"
+msgstr "Votre propre format de temps"
+
+#: sasoEventtickets_Options.php:415
+msgid "Your ticket number(s):"
+msgstr "Votre (vos) numéro(s) de billet :"
+
+#: sasoEventtickets_Options.php:157
+msgid "{TICKET_POSITION} of {TICKET_TOTAL_AMOUNT} Tickets"
+msgstr "{TICKET_POSITION} de {TICKET_TOTAL_MONTANT} Billets"
+

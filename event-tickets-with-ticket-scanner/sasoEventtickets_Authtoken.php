@@ -95,7 +95,7 @@ class sasoEventtickets_Authtoken {
 		}
 		if (isset($felder['meta']) && !empty($felder['meta'])) { // evtl gesetzt vom premium plugin
 			$f_meta = json_decode($felder['meta'], true);
-			$f_meta["desc"] = sanitize_textarea_field($f_meta["desc"]);
+			$f_meta["desc"] = strip_tags($f_meta["desc"]);
 			$metaObj = array_replace_recursive($metaObj, $f_meta);
 		}
 		$felder["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
@@ -115,6 +115,7 @@ class sasoEventtickets_Authtoken {
 		if (isset($data['name']) && trim($data['name']) == "") throw new Exception("#507 name parameter missing - cannot edit auth token");
 		$tokenObj = $this->getAuthtoken($data);
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectAuthtoken($tokenObj['meta']);
+		$felder = [];
 
 		if (isset($data['name']) && trim($data['name']) != "") $felder["name"] = strip_tags($data['name']);
 		if (isset($data['aktiv'])) $felder["aktiv"] = intval($data['aktiv']);
@@ -127,7 +128,7 @@ class sasoEventtickets_Authtoken {
 		}
 		if (isset($felder['meta']) && !empty($felder['meta'])) { // evtl gesetzt vom premium plugin
 			$f_meta = json_decode($felder['meta'], true);
-			$f_meta["desc"] = sanitize_textarea_field($f_meta["desc"]);
+			$f_meta["desc"] = strip_tags($f_meta["desc"]);
 			$metaObj = array_replace_recursive($metaObj, $f_meta);
 		}
 		$felder["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
@@ -149,10 +150,14 @@ class sasoEventtickets_Authtoken {
     private function setMetaDataForAuthtokens($data, $metaObj) {
 		if (isset($data['meta'])) {
 			if (isset($data['meta']['desc'])) {
-				$metaObj['desc'] = trim($data['meta']['desc']);
+				$metaObj['desc'] = strip_tags(trim($data['meta']['desc']));
 			}
-			$this->MAIN->getCore()->alignArrays($metaObj, $data["meta"]);
-			$metaObj = array_merge($metaObj, $data["meta"]);
+			if (isset($data['meta']['ticketscanner']) && isset($data['meta']['ticketscanner']['bound_to_products'])) {
+				$metaObj['ticketscanner']['bound_to_products'] = strip_tags(trim($data['meta']['ticketscanner']['bound_to_products']));
+			}
+			// der rotz hier ist BS und funktioniert nicht, da wieder data.meta genutzt wird
+			//$this->MAIN->getCore()->alignArrays($metaObj, $data["meta"]);
+			//$metaObj = array_merge($metaObj, $data["meta"]);
 		}
 		return $metaObj;
 	}
