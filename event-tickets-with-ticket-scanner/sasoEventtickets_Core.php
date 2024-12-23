@@ -134,6 +134,8 @@ class sasoEventtickets_Core {
 				'stats_redeemed'=>[],
 				'name_per_ticket'=>'',
 				'value_per_ticket'=>'',
+				'is_daychooser'=>0,
+				'day_per_ticket'=>'',
 				'_qr_content'=>''
 				] // ticket purchase ; stats_redeemed is only used if the ticket can be redeemed more than once
 			];

@@ -339,9 +339,9 @@ final class sasoEventtickets_Ticket {
 		$tmp_product = $product_parent;
 		if (!$saso_eventtickets_is_date_for_all_variants) $tmp_product = $product; // unter Umständen die Variante
 
-		$ret = array_merge($ret, $this->calcDateStringAllowedRedeemFrom($tmp_product->get_id()));
+		$ret = array_merge($ret, $this->calcDateStringAllowedRedeemFrom($tmp_product->get_id(), $codeObj));
 
-		$ret['ticket_date_as_string'] = $this->displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat());
+		$ret['ticket_date_as_string'] = $this->displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
 		$ret['short_desc'] = "";
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDisplayShortDesc')) {
 			$ret['short_desc'] = wp_kses_post(trim($product->get_short_description()));
@@ -414,6 +414,15 @@ final class sasoEventtickets_Ticket {
 			$ticket_pos = $this->ermittelCodePosition($codeObj['code_display'], $codes);
 		}
 		$ret['value_per_ticket_label'] = str_replace("{count}", $ticket_pos, $label);
+
+		$label = esc_attr($this->getLabelDaychooserPerTicket($product_parent->get_id()));
+		$ticket_pos = "";
+		if ($order_quantity > 1) {
+			// ermittel ticket pos
+			$codes = explode(",", $order_item->get_meta('_saso_eventtickets_product_code', true));
+			$ticket_pos = $this->ermittelCodePosition($codeObj['code_display'], $codes);
+		}
+		$ret['day_per_ticket_label'] = str_replace("{count}", $ticket_pos, $label);
 
 		$ret['ticket_amount_label'] = "";
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDisplayPurchasedTicketQuantity')) {
@@ -561,33 +570,50 @@ final class sasoEventtickets_Ticket {
 		return $ret;
 	}
 
-	function calcDateStringAllowedRedeemFrom($product_id) {
+	public function calcDateStringAllowedRedeemFrom($product_id, $codeObj = null) {
 		$ret = [];
+		$ret['is_daychooser'] = get_post_meta( $product_id, 'saso_eventtickets_is_daychooser', true ) == "yes" ? true : false;
+		$ret['is_daychooser_value_set'] = false;
+		$ret['is_date_for_all_variants'] = get_post_meta( $product_id, 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
 		$ret['ticket_start_date'] = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_start_date', true ));
 		$ret['ticket_start_time'] = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_start_time', true ));
 		$ret['ticket_end_date'] = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_end_date', true ));
 		$ret['ticket_end_date_orig'] = $ret['ticket_end_date'];
 		$ret['ticket_end_time'] = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_end_time', true ));
-		$ret['ticket_start_date_timestamp'] = current_time("timestamp");
-		$ret['ticket_end_date_timestamp'] = 0;
 		$ret['is_date_set'] = true;
+
+		if ($codeObj != null && $ret['is_daychooser']) {
+			// use date of the codeObj
+			$codeObj = $this->MAIN->getCore()->setMetaObj($codeObj);
+			$metaObj = $codeObj['metaObj'];
+			$is_daychooser = intval($metaObj["wc_ticket"]["is_daychooser"]);
+			$day_per_ticket = $metaObj["wc_ticket"]["day_per_ticket"];
+			if ($is_daychooser == 1 && !empty($day_per_ticket)) {
+				if (empty($ret['ticket_start_time'])) {
+					$ret['ticket_start_time'] = "00:00:00";
+				}
+				$ret['ticket_start_date'] = $day_per_ticket;
+				$ret['ticket_end_date'] = $day_per_ticket;
+				$ret['is_daychooser_value_set'] = true;
+			}
+		}
+
 		if (empty($ret['ticket_start_date']) && empty($ret['ticket_start_time'])) { // date not set
-			$ret['is_date_set'] = false;
+			$ret['is_date_set'] = false; // indicates that the ticket start date is not set, and the values are calculated
 		}
-		if (empty($ret['ticket_start_date']) && !empty($ret['ticket_start_time'])) {
-			$ret['ticket_start_date'] = current_time("timestamp");
+		if (empty($ret['ticket_start_date'])) {
+			$ret['ticket_start_date'] = date("Y-m-d", current_time("timestamp"));
 		}
-		if (!empty($ret['ticket_start_date'])) {
-			$ret['ticket_start_date_timestamp'] = strtotime(trim($ret['ticket_start_date']." ".$ret['ticket_start_time']));
-		}
-		if (empty($ret['ticket_end_date']) && !empty($ret['ticket_end_time'])) {
+		$ret['ticket_start_date_timestamp'] = strtotime(trim($ret['ticket_start_date']." ".$ret['ticket_start_time']));
+
+		if (empty($ret['ticket_end_date'])) {
 			$ret['ticket_end_date'] = $ret['ticket_start_date'];
 		}
-		$ticket_end_time = $ret['ticket_end_time'];
-		if (empty($ticket_end_time)) {
-			$ticket_end_time = "23:59:59";
+
+		if (empty($ret['ticket_end_time'])) {
+			$$ret['ticket_end_time'] = "23:59:59";
 		}
-		$ret['ticket_end_date_timestamp'] = strtotime(trim($ret['ticket_end_date']." ".$ticket_end_time));
+		$ret['ticket_end_date_timestamp'] = strtotime(trim($ret['ticket_end_date']." ".$ret['ticket_end_time']));
 
 		$redeem_allowed_from = current_time("timestamp");
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDontAllowRedeemTicketBeforeStart')) {
@@ -606,7 +632,7 @@ final class sasoEventtickets_Ticket {
 		$ret['server_time_timestamp'] = current_time("timestamp"); // timezone is removed or added
 		$ret['redeem_allowed_too_late'] = $ret['ticket_end_date_timestamp'] < $ret['server_time_timestamp'];
 		$ret['server_time'] = date("Y-m-d H:i:s", current_time("timestamp")); // normal timestamp, because the function will do it the add/remove timezone also
-		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_calcDateStringAllowedRedeemFrom', $ret, $product_id );
+		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_calcDateStringAllowedRedeemFrom', $ret, $product_id, $codeObj );
 		return $ret;
 	}
 
@@ -618,6 +644,11 @@ final class sasoEventtickets_Ticket {
 	public function getLabelValuePerTicket($product_id) {
 		$t = trim(get_post_meta($product_id, "saso_eventtickets_request_value_per_ticket_label", true));
         if (empty($t)) $t = "Please choose a value #{count}:";
+		return $t;
+	}
+	public function getLabelDaychooserPerTicket($product_id) {
+		$t = trim(get_post_meta($product_id, "saso_eventtickets_request_daychooser_per_ticket_label", true));
+		if (empty($t)) $t = "Please choose a day #{count}:";
 		return $t;
 	}
 
@@ -765,7 +796,7 @@ final class sasoEventtickets_Ticket {
 		return $this->parts;
 	}
 
-	static public function generateICSFile($product) {
+	public function generateICSFile($product, $codeObj = null) {
 		$product_id = $product->get_id();
 		$titel = $product->get_name();
 		$short_desc = "";
@@ -783,10 +814,12 @@ final class sasoEventtickets_Ticket {
 		$ticket_info = trim(get_post_meta( $product->get_id(), 'saso_eventtickets_ticket_is_ticket_info', true ));
 		if (!empty($short_desc) && !empty($ticket_info)) $short_desc .= "\n\n";
 		$short_desc .= trim($ticket_info);
-		$ticket_start_date = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_start_date', true ));
-		$ticket_start_time = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_start_time', true ));
-		$ticket_end_date = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_end_date', true ));
-		$ticket_end_time = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_end_time', true ));
+
+		$ticket_times = $this->calcDateStringAllowedRedeemFrom($product_id, $codeObj);
+		$ticket_start_date = $ticket_times['ticket_start_date'];
+		$ticket_start_time = $ticket_times['ticket_start_time'];
+		$ticket_end_date = $ticket_times['ticket_end_date'];
+		$ticket_end_time = $ticket_times['ticket_end_time'];
 
 		if (empty($ticket_start_date) && !empty($ticket_start_time)) {
 			$ticket_start_date = date("Y-m-d", current_time("timestamp"));
@@ -963,17 +996,10 @@ final class sasoEventtickets_Ticket {
 				$metaObj = $codeObj["metaObj"];
 
 				$ticket_id = $this->getCore()->getTicketId($codeObj, $metaObj);
-				$ticket_start_date = trim(get_post_meta( $metaObj['woocommerce']['product_id'], 'saso_eventtickets_ticket_start_date', true ));
-				$ticket_start_time = trim(get_post_meta( $metaObj['woocommerce']['product_id'], 'saso_eventtickets_ticket_start_time', true ));
-				$ticket_end_date = trim(get_post_meta( $metaObj['woocommerce']['product_id'], 'saso_eventtickets_ticket_end_date', true ));
-				$ticket_end_time = trim(get_post_meta( $metaObj['woocommerce']['product_id'], 'saso_eventtickets_ticket_end_time', true ));
-				if (empty($ticket_start_date) && !empty($ticket_start_time)) {
-					$ticket_start_date = date("Y-m-d", current_time("timestamp"));
-				}
-				if (empty($ticket_end_date) && !empty($ticket_end_time)) {
-					$ticket_end_date = $ticket_start_date;
-				}
-				$ticket_end_date_timestamp = strtotime($ticket_end_date." ".$ticket_end_time);
+
+				$ticket_times = $this->calcDateStringAllowedRedeemFrom($metaObj['woocommerce']['product_id'], $codeObj);
+				$ticket_end_date = $ticket_times['ticket_end_date'];
+				$ticket_end_date_timestamp = $ticket_times['ticket_end_date_timestamp'];
 				$color = 'green';
 				if ($ticket_end_date != "" && $ticket_end_date_timestamp < current_time("timestamp")) {
 					$color = 'orange';
@@ -1106,12 +1132,12 @@ final class sasoEventtickets_Ticket {
 		$metaObj = $codeObj['metaObj'];
 		do_action( $this->MAIN->_do_action_prefix.'trackIPForICSDownload', $codeObj );
 		$product_id = $metaObj['woocommerce']['product_id'];
-		$this->sendICSFileByProductId($product_id);
+		$this->sendICSFileByProductId($product_id, $codeObj);
 	}
 
-	public function sendICSFileByProductId($product_id) {
+	public function sendICSFileByProductId($product_id, $codeObj = null) { // null, because it could be called for the product
 		$product = $this->get_product( $product_id );
-		$contents = self::generateICSFile($product);
+		$contents = $this->generateICSFile($product, $codeObj);
 		SASO_EVENTTICKETS::sendeDaten($contents, "ics_".$product_id.".ics", "text/calendar");
 	}
 
@@ -1424,29 +1450,30 @@ final class sasoEventtickets_Ticket {
 		}
 	}
 
-	public static function displayTicketDateAsString($product, $date_format="Y/m/d", $time_format="H:i") {
+	public function displayTicketDateAsString($product, $date_format="Y/m/d", $time_format="H:i", $codeObj = null) {
 		$product_id = $product->get_id();
-		$ticket_start_date = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_start_date', true ));
-		$ticket_start_time = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_start_time', true ));
-		$ticket_end_date = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_end_date', true ));
-		$ticket_end_time = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_end_time', true ));
+		$ticket_times = $this->calcDateStringAllowedRedeemFrom($product_id, $codeObj);
+		$ticket_start_time = $ticket_times['ticket_start_time'];
+		$ticket_end_time = $ticket_times['ticket_end_time'];
+		$is_daychooser = $ticket_times['is_daychooser'];
+		$is_date_set = $ticket_times['is_date_set'];
 		$ret = "";
-		if (empty($ticket_start_date) && !empty($ticket_start_time)) {
-			$ticket_start_date = date("Y-m-d", current_time("timestamp"));
-		}
-		if (empty($ticket_end_date) && !empty($ticket_end_time)) {
-			$ticket_end_date = $ticket_start_date;
-		}
-		if (empty($ticket_end_time) && !empty($ticket_start_time)) $ticket_end_time = "23:59:59";
-
-		if (!empty($ticket_start_date)) {
-			$ticket_start_date_timestamp = strtotime($ticket_start_date." ".$ticket_start_time);
-			$ticket_end_date_timestamp = strtotime($ticket_end_date." ".$ticket_end_time);
-			$ret .= date($date_format, $ticket_start_date_timestamp);
-			if (!empty($ticket_start_time)) $ret .= " ".date($time_format, $ticket_start_date_timestamp);
-			if (!empty($ticket_end_date) || !empty($ticket_end_time)) $ret .= " - ";
-			if (!empty($ticket_end_date)) $ret .= date($date_format, $ticket_end_date_timestamp);
-			if (!empty($ticket_end_time)) $ret .= " ".date($time_format, $ticket_end_date_timestamp);
+		//if ($is_daychooser != 1) {
+		if ($codeObj != null) {
+			if ($is_date_set) {
+				$ticket_start_date_timestamp = $ticket_times['ticket_start_date_timestamp'];
+				$ticket_end_date = $ticket_times['ticket_end_date'];
+				$ticket_end_date_timestamp = $ticket_times['ticket_end_date_timestamp'];
+				$ret .= date($date_format, $ticket_start_date_timestamp);
+				if (!empty($ticket_start_time)) $ret .= " ".date($time_format, $ticket_start_date_timestamp);
+				if (!empty($ticket_end_date) || !empty($ticket_end_time)) $ret .= " - ";
+				if (!empty($ticket_end_date)) $ret .= date($date_format, $ticket_end_date_timestamp);
+				if (!empty($ticket_end_time)) $ret .= " ".date($time_format, $ticket_end_date_timestamp);
+			}
+		} else {
+			if (!empty($ticket_start_time)) $ret .= $ticket_start_time;
+			if (!empty($ticket_start_time) || !empty($ticket_end_time)) $ret .= " - ";
+			if (!empty($ticket_end_time)) $ret .= $ticket_end_time;
 		}
 		return $ret;
 	}
@@ -1537,7 +1564,7 @@ final class sasoEventtickets_Ticket {
 					$ticketObj['location'] = $location == "" ? "" : wp_kses_post($this->getAdminSettings()->getOptionValue("wcTicketTransLocation"))." <b>".wp_kses_post($location)."</b>";
 					$ticketObj['ticket_date'] = "";
 					if ($wcTicketHideDateOnPDF == false && !empty($ticket_start_date)) {
-						$ticketObj['ticket_date'] = self::displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat());
+						$ticketObj['ticket_date'] = $this->displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
 					}
 					$ticketObj['name_per_ticket'] = "";
 					if (!empty($metaObj['wc_ticket']['name_per_ticket'])) {
@@ -1669,7 +1696,7 @@ final class sasoEventtickets_Ticket {
 
 			// buttons
 			$vars = $ticketDesigner->getVariables();
-			$ticket_times = $this->calcDateStringAllowedRedeemFrom($vars["PRODUCT"]->get_id());
+			$ticket_times = $this->calcDateStringAllowedRedeemFrom($vars["PRODUCT"]->get_id(), $codeObj);
 			if ($vars["forPDFOutput"] == false) {
 				$is_expired = $this->getCore()->checkCodeExpired($codeObj);
 				if (!empty($vars["METAOBJ"]["wc_ticket"]["redeemed_date"])) {
@@ -1807,7 +1834,7 @@ final class sasoEventtickets_Ticket {
 				$tmp_prod = $product_parent;
 			}
 		}
-		$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id());
+		$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id(), $codeObj);
 		return $ret['redeem_allowed_from_timestamp'] >= $ret['server_time_timestamp'];
 	}
 	private function isRedeemOperationTooLateEventEnded($codeObj, $metaObj, $order) {
@@ -1826,7 +1853,7 @@ final class sasoEventtickets_Ticket {
 				$tmp_prod = $product_parent;
 			}
 		}
-		$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id());
+		$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id(), $codeObj);
 		return $ret['ticket_end_date_timestamp'] <= $ret['server_time_timestamp'];
 	}
 	private function isRedeemOperationTooLate($codeObj, $metaObj, $order) {
@@ -1846,7 +1873,7 @@ final class sasoEventtickets_Ticket {
 				$tmp_prod = $product_parent;
 			}
 		}
-		$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id());
+		$ret = $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id(), $codeObj);
 		return $ret['is_date_set'] && $ret['ticket_start_date_timestamp'] < $ret['server_time_timestamp'];
 	}
 	private function checkEventStart($codeObj, $metaObj, $order) {

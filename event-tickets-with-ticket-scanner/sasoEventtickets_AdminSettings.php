@@ -487,6 +487,16 @@ class sasoEventtickets_AdminSettings {
 				$is_changed = true;
 				$metaObj['wc_ticket']['name_per_ticket'] = $value;
 				break;
+			case "wc_ticket.day_per_ticket":
+				$is_changed = true;
+				$metaObj['wc_ticket']['day_per_ticket'] = $value;
+				break;
+			case "wc_ticket.is_daychooser":
+				$is_changed = true;
+				$value = intval($value);
+				if ($value < 0 || $value > 1) $value = 0;
+				$metaObj['wc_ticket']['is_daychooser'] = intval($value);
+				break;
 		}
 		if ($is_changed) {
 			$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
@@ -1166,13 +1176,17 @@ class sasoEventtickets_AdminSettings {
 						$codes = explode(",", $existingCodes);
 						$public_ticket_ids_value = wc_get_order_item_meta($item_id , '_saso_eventtickets_public_ticket_ids', true);
 						$existing_plublic_ticket_ids = explode(",", $public_ticket_ids_value);
+						$_saso_eventtickets_daychooser = wc_get_order_item_meta($item_id , '_saso_eventtickets_daychooser', true);
+						$existing_saso_eventtickets_daychooser = explode(",", $_saso_eventtickets_daychooser);
 						$public_ticket_ids = [];
+						$daychooser = [];
 						$new_codes = [];
 						foreach($codes as $idx => $code) {
 							if ($code != $codeObj["code"]) {
 								$new_codes[] = $code;
 								if(isset($existing_plublic_ticket_ids[$idx])) {
 									$public_ticket_ids[] = $existing_plublic_ticket_ids[$idx];
+									$daychooser[] = $existing_saso_eventtickets_daychooser[$idx];
 								}
 							}
 						}
@@ -1184,6 +1198,8 @@ class sasoEventtickets_AdminSettings {
 							wc_add_order_item_meta($item_id , '_saso_eventtickets_product_code', implode(",", $codes) );
 							wc_delete_order_item_meta( $item_id, "_saso_eventtickets_public_ticket_ids" );
 							wc_add_order_item_meta($item_id , "_saso_eventtickets_public_ticket_ids", implode(",", $public_ticket_ids) ) ;
+							wc_delete_order_item_meta( $item_id, "_saso_eventtickets_daychooser" );
+							wc_add_order_item_meta($item_id , "_saso_eventtickets_daychooser", implode(",", $daychooser) ) ;
 						}
 					}
 				}
@@ -1472,7 +1488,7 @@ class sasoEventtickets_AdminSettings {
 
 		return $this->setWoocommerceTicketInfoForCode($data['code']);
 	}
-	public function setWoocommerceTicketInfoForCode($code, $namePerTicket="", $valuePerTicket="") {
+	public function setWoocommerceTicketInfoForCode($code, $namePerTicket="", $valuePerTicket="", $dayPerTicket="") {
 		$codeObj = $this->getCore()->retrieveCodeByCode($code);
 		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
@@ -1484,6 +1500,11 @@ class sasoEventtickets_AdminSettings {
 		$valuePerTicket = trim($valuePerTicket);
 		if (!empty($valuePerTicket)) {
 			$metaObj['wc_ticket']['value_per_ticket'] = substr($valuePerTicket, 0, 140);
+		}
+		$dayPerTicket = trim($dayPerTicket);
+		if (!empty($dayPerTicket)) {
+			$metaObj['wc_ticket']['is_daychooser'] = 1;
+			$metaObj['wc_ticket']['day_per_ticket'] = substr($dayPerTicket, 0, 10); // 9 should be fine too
 		}
 		if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".current_time("timestamp"));
 		$metaObj['wc_ticket']['_url'] = $this->getCore()->getTicketURL($codeObj, $metaObj);

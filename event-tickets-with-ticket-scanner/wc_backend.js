@@ -162,6 +162,10 @@ function SasoEventticketsValidator_WC_backend($, phpObject) {
 		});
 	}
 
+	function _addHandlerToTheInputFields() {
+		//console.log(phpObject);
+	}
+
 	function getCodeObjectMeta(codeObj) {
 		if (!codeObj.metaObj) codeObj.metaObj = JSON.parse(codeObj.meta);
 		return codeObj.metaObj;
@@ -185,6 +189,7 @@ function SasoEventticketsValidator_WC_backend($, phpObject) {
 		} else {
 			renderFormatterFields();
 			_addHandlerToTheCodeFields();
+			_addHandlerToTheInputFields();
 		}
 	}
 

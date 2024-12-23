@@ -68,7 +68,7 @@ class sasoEventtickets_TicketDesigner {
 		$tmp_product = $product_parent;
 		if (!$saso_eventtickets_is_date_for_all_variants) $tmp_product = $product; // unter Umständen die Variante
         $ticket['timezone_id'] = wp_timezone_string();
-        $ticket_times = $this->MAIN->getTicketHandler()->calcDateStringAllowedRedeemFrom($tmp_product->get_id());
+        $ticket_times = $this->MAIN->getTicketHandler()->calcDateStringAllowedRedeemFrom($tmp_product->get_id(), $codeObj);
         $ticket["start_date"] = $ticket_times["ticket_start_date"];
         $ticket["start_time"] = $ticket_times["ticket_start_time"];
         $ticket['start_date_timestamp'] = $ticket_times["ticket_start_date_timestamp"];
@@ -81,44 +81,9 @@ class sasoEventtickets_TicketDesigner {
         $ticket["redeem_allowed_until_timestamp"] = $ticket_times["redeem_allowed_until_timestamp"];
         $ticket["redeem_allowed_until"] = $ticket_times["redeem_allowed_until"];
         $ticket["is_event_over"] =  $ticket_times["is_date_set"] && $ticket_times["ticket_end_date_timestamp"] < $ticket_times["server_time_timestamp"];
+        $ticket["is_daychooser"] = $ticket_times["is_daychooser"];
         $ticket["is_expired"] = $this->MAIN->getCore()->checkCodeExpired($codeObj); // prem expiration
-        /*
-		$ticket["start_date"] = trim(get_post_meta( $tmp_product->get_id(), 'saso_eventtickets_ticket_start_date', true ));
-        $ticket["start_time"] = trim(get_post_meta( $tmp_product->get_id(), 'saso_eventtickets_ticket_start_time', true ));
-        $ticket['start_date_timestamp'] = 0;
-		$ticket["end_date"] = trim(get_post_meta( $tmp_product->get_id(), 'saso_eventtickets_ticket_end_date', true ));
-		$ticket["end_time"] = trim(get_post_meta( $tmp_product->get_id(), 'saso_eventtickets_ticket_end_time', true ));
-		$ticket["end_date_timestamp"] = 0;
-        if (empty($ticket["start_date"]) && !empty($ticket["start_time"])) {
-            $ticket["start_date"] = date("Y-m-d", current_time("timestamp"));
-        }
-        if (empty($ticket["end_date"]) && !empty($ticket["end_time"])) {
-            $ticket["end_date"] = $ticket["start_date"];
-        }
-
-        $date_str = "";
-        if (!empty($ticket["start_date"])) {
-            $date_str = trim($ticket["start_date"]);
-            if (!empty($ticket["start_time"])) {
-                $date_str .= " ".trim($ticket["start_time"]);
-            }
-        }
-        if (!empty($date_str)) {
-            $ticket["start_date_timestamp"] = strtotime($date_str);
-        }
-        $date_str = "";
-        if (!empty($ticket["end_date"])) {
-            $date_str = trim($ticket["end_date"]);
-            if (!empty($ticket["end_time"])) {
-                $date_str .= " ".trim($ticket["end_time"]);
-            }
-        }
-        if (!empty($date_str)) {
-            $ticket["end_date_timestamp"] = strtotime($date_str);
-        }
-        */
-
-        $ticket["date_as_string"] = sasoEventtickets_Ticket::displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat());
+        $ticket["date_as_string"] = $this->MAIN->getTicketHandler()->displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
         $ticket["short_desc"] = $is_variation ? $product_parent->get_short_description() : $product->get_short_description();
         $ticket["info"] = trim(get_post_meta( $product_parent->get_id(), 'saso_eventtickets_ticket_is_ticket_info', true ));
 
@@ -155,6 +120,16 @@ class sasoEventtickets_TicketDesigner {
             $label = str_replace("{count}", $ticket["value_per_ticket_pos"], $label);
         }
 		$ticket['value_per_ticket_label'] = $label;
+
+        $label = $this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product_parent->get_id());
+        $ticket["day_per_ticket_pos"] = "";
+        if (strpos(" ".$label, "{count}") > 0) {
+            // ermittel ticket pos
+            $codes = explode(",", $order_item->get_meta("_saso_eventtickets_product_code", true));
+            $ticket["day_per_ticket_pos"] = $this->MAIN->getTicketHandler()->ermittelCodePosition($codeObj["code_display"], $codes);
+            $label = str_replace("{count}", $ticket["day_per_ticket_pos"], $label);
+        }
+		$ticket['day_per_ticket_label'] = $label;
 
         $options = [];
         foreach($this->MAIN->getOptions()->getOptionsKeys() as $key) {
@@ -374,6 +349,10 @@ class sasoEventtickets_TicketDesigner {
 
             {%- if METAOBJ.user.value is not empty and OPTIONS.wcTicketDisplayTicketUserValue -%}
                 <p>{{ OPTIONS.wcTicketTransDisplayTicketUserValue|escape(\'wp_kses_post\') }} {{ METAOBJ.user.value|escape }}</p>
+            {%- endif -%}
+
+            {%- if METAOBJ.wc_ticket.is_daychooser == 1 and METAOBJ.wc_ticket.day_per_ticket is not empty -%}
+                <p>{{ TICKET.day_per_ticket_label ~ " " ~ METAOBJ.wc_ticket.day_per_ticket }}</p>
             {%- endif -%}
 
             {%- if METAOBJ.wc_ticket.name_per_ticket is not empty -%}

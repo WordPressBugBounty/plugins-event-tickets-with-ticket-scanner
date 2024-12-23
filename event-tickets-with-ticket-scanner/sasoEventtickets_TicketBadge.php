@@ -307,7 +307,7 @@ class sasoEventtickets_TicketBadge {
         if (strpos($html, "{SITE_URL}")) $html = str_replace("{SITE_URL}", site_url(), $html);
         if (strpos($html, "{TICKET.")) {
             $metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
-            $codeObj['meta'] = $metaObj;
+            $codeObj['metaObj'] = $metaObj;
 
             $product_id = intval($metaObj['woocommerce']['product_id']);
             $product = wc_get_product( $product_id );
@@ -321,7 +321,7 @@ class sasoEventtickets_TicketBadge {
             }
             $product_for_dates = $product_parent;
             if (!$saso_eventtickets_is_date_for_all_variants) $product_for_dates = $product; // unter Umständen die Variante
-            $product_dates = $this->MAIN->getTicketHandler()->calcDateStringAllowedRedeemFrom($product_for_dates->get_id());
+            $product_dates = $this->MAIN->getTicketHandler()->calcDateStringAllowedRedeemFrom($product_for_dates->get_id(), $codeObj);
 
             $matches = [];
             if (preg_match_all('/\{TICKET\.PRODUCT\..*?\}/', $html, $matches)) {

@@ -2910,6 +2910,65 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 
 			div.html("");
 			let metaObj = getCodeObjectMeta(codeObj);
+			if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.day_per_ticket != "undefined") {
+				div.append($('<div>').html('<b>Date per Ticket (choosen by customer):</b> '+metaObj.wc_ticket.day_per_ticket +" ").append(
+					$("<button>").html("Edit").on("click", ()=>{
+
+						let _options = {
+							title: 'Edit Ticket Date',
+							modal: true,
+							minWidth: 400,
+							minHeight: 200,
+							buttons: [
+								{
+									id: 'okBtn',
+									text: "Ok",
+									click: function() {
+										___submitForm();
+									}
+								},
+								{
+									text: "Cancel",
+									click: function() {
+										$( this ).dialog( "close" );
+										$( this ).html('');
+									}
+								}
+							]
+						};
+						let dlg = $('<div />');
+						let form = $('<form />').appendTo(dlg);
+
+						let elem_input = $('<input type="date" value="'+metaObj.wc_ticket.day_per_ticket+'" />');
+						$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
+							.html('Date per Ticket (yyyy-mm-dd).<br><b>Very important to not break the date format and syntax, if you want to change the date!</b><br>')
+							.append(elem_input)
+							.appendTo(form);
+
+						dlg.dialog(_options);
+
+						form.on("submit", function(event) {
+							event.preventDefault();
+							___submitForm();
+						});
+						function ___submitForm() {
+							let v = elem_input.val().trim();
+							dlg.html(_getSpinnerHTML());
+							let _data = {"value":v, "key":'wc_ticket.day_per_ticket'};
+							form[0].reset();
+							_data.code = codeObj.code;
+							$('#okBtn').remove();
+							_makeGet('editTicketMetaEntry', _data, _codeObj=>{
+								//tabelle.ajax.reload();
+								__getData(_codeObj);
+								closeDialog(dlg);
+							}, function() {
+								closeDialog(dlg);
+							});
+						}
+					})
+				));
+			}
 			if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.name_per_ticket != "undefined") {
 				div.append($('<div>').html('<b>Name per Ticket (product detail setting):</b> '+metaObj.wc_ticket.name_per_ticket +" ").append(
 					$("<button>").html("Edit").on("click", ()=>{

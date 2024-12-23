@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.4.4
+Stable tag: 2.5.0
 Tested up to: 6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -112,6 +112,8 @@ https://youtu.be/ls_Lkf08n9I
 * Allow multiple redeem times for multi usage tickets
 * Ticket badge designer for maximum control of the look and feel
 
+== Technical Requirments ==
+Wordpress, Woocommerce, php-curl, php-imagick
 
 == GETTING STARTED ==
 
@@ -322,7 +324,19 @@ New Javascript library for the ticket scanner. If you need to use the old ticket
 = 2.4.1 =
 New default value for the option to allow access to the admin area of the tickets - now it is false, only administrator, until you set it otherwise.
 
+= 2.5.0 =
+Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
+
 == Changelog ==
+= 2.5.0 - 2024-12-23 =
+* Tested with PHP 8.3 - DO NOT RELY ON PHP8 yet if possible. To use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
+* Add new feature Date Picker for tickets. You can now setup the product to have a start and end time and the day can be choosen by your customer at the cart view.
+* Exclude days for the date picker on product level
+* New label for the error message with the date picker - wcTicketLabelCartForDaychooser and wcTicketLabelCartForDaychooserInvalidDate
+* Displaying the value per ticket, name per ticket and day choosen per ticket to the order email.
+* Fix for label of the value chosen by the dropdown within the cart
+* Adjusted the default ticket template to reflect the day choosen for date picker tickets.
+
 = 2.4.4 - 2024-12-02 =
 * Added french language file for the backend. Big thanks to Maxime.
 * Remove HTML from the description of the auth token
