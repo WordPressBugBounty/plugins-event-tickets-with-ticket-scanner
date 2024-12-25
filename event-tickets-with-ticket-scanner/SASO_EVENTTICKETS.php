@@ -296,6 +296,7 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			return $datetime->getTimestamp();
 		}
 		public static function date($format, $timestamp=0, $timezone=null) {
+			// wp_date( $format, $timestamp, $timezone );
 			if (empty($timezone)) $timezone = wp_timezone();
 			$datetime = new DateTime( 'now', $timezone );
 			if ($timestamp > 1) {

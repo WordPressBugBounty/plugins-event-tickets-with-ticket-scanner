@@ -782,7 +782,7 @@ class sasoEventtickets_WC {
 											$this->MAIN->getAdmin()->logErrorToDB($e);
 											continue;
 										}
-										$contents = $this->generateICSFile($product, $codeObj);
+										$contents = $this->MAIN->getTicketHandler()->generateICSFile($product, $codeObj);
 										// save file
 										$file = $dirname."ics_".$product_id."_".$code.".ics";
 										$ret = file_put_contents( $file, $contents );
@@ -790,7 +790,7 @@ class sasoEventtickets_WC {
 										$this->_attachments[] = $file;
 									}
 								} else {
-									$contents = $this->generateICSFile($product);
+									$contents = $this->MAIN->getTicketHandler()->generateICSFile($product);
 									// save file
 									$file = $dirname."ics_".$product_id.".ics";
 									$ret = file_put_contents( $file, $contents );

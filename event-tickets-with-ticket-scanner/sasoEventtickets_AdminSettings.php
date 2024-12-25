@@ -218,7 +218,7 @@ class sasoEventtickets_AdminSettings {
 
 		do_action( $this->MAIN->_do_action_prefix.'db_repairTables', $d );
 
-		return "tables repair executed at ".date("Y/m/d H:i:s", current_time("timestamp"));
+		return "tables repair executed at ".wp_date("Y/m/d H:i:s", current_time("timestamp"));
 	}
 
 	private function getMediaData($data) {
@@ -303,7 +303,7 @@ class sasoEventtickets_AdminSettings {
 			$versions["date_default_timezone"] = date_default_timezone_get();
 			$versions["date_WP_timezone"] = wp_timezone_string();
 			$versions["date_WP_timezone_time"] = $this->wpdocs_custom_timezone_string();
-			$versions["date_default_timezone_time"] = date("Y-m-d H:i:s", current_time("timestamp"));
+			$versions["date_default_timezone_time"] = wp_date("Y-m-d H:i:s", current_time("timestamp"));
 			$timezone = new DateTimeZone("UTC");
 			$dt = new DateTime('now', $timezone);
 			$versions["date_UTC_timezone_time"] = $dt->format("Y-m-d H:i:s");
@@ -416,7 +416,7 @@ class sasoEventtickets_AdminSettings {
 		$metaObj['user']['reg_ip'] = $this->getCore()->getRealIpAddr();
 		$metaObj['user']['reg_approved'] = 1; // auto approval
 		if (empty($metaObj['user']['reg_request'])) {
-			$metaObj['user']['reg_request'] = date("Y-m-d H:i:s", current_time("timestamp"));
+			$metaObj['user']['reg_request'] = wp_date("Y-m-d H:i:s", current_time("timestamp"));
 			$metaObj['user']['reg_request_tz'] = wp_timezone_string();
 		}
 		if (isset($data['reg_userid'])) $metaObj['user']['reg_userid'] = intval($data['reg_userid']);
@@ -460,7 +460,7 @@ class sasoEventtickets_AdminSettings {
 		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		$metaObj['used']['reg_ip'] = $this->getCore()->getRealIpAddr();
 		if (empty($metaObj['used']['reg_request'])) {
-			$metaObj['used']['reg_request'] = date("Y-m-d H:i:s", current_time("timestamp"));
+			$metaObj['used']['reg_request'] = wp_date("Y-m-d H:i:s", current_time("timestamp"));
 			$metaObj['used']['reg_request_tz'] = wp_timezone_string();
 		}
 		if (isset($data['reg_userid'])) $metaObj['used']['reg_userid'] = intval($data['reg_userid']);
@@ -590,7 +590,7 @@ class sasoEventtickets_AdminSettings {
 		$listObj = ['meta'=>''];
 		$metaObj = $this->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
 
-		$felder = ["name"=>$data['name'], "aktiv"=>1, "time"=>date("Y-m-d H:i:s", current_time("timestamp"))];
+		$felder = ["name"=>$data['name'], "aktiv"=>1, "time"=>wp_date("Y-m-d H:i:s", current_time("timestamp"))];
 
 		$metaObj = $this->_setMetaDataForList($data, $metaObj);
 
@@ -914,7 +914,7 @@ class sasoEventtickets_AdminSettings {
 			$this->getCore()->retrieveCodeByCode($code, false);
 		} catch(Exception $e) { // not found -> add new
 			$this->getCore()->checkCodesSize();
-			$felder = ["code"=>$code, "code_display"=>$newcode, "cvv"=>$cvv, "aktiv"=>1, "time"=>date("Y-m-d H:i:s", current_time("timestamp")), "meta"=>"", "list_id"=>$list_id];
+			$felder = ["code"=>$code, "code_display"=>$newcode, "cvv"=>$cvv, "aktiv"=>1, "time"=>wp_date("Y-m-d H:i:s", current_time("timestamp")), "meta"=>"", "list_id"=>$list_id];
 			$this->MAIN->getBase()->increaseGlobalTicketCounter();
 			return $this->getDB()->insert("codes", $felder);
 		}

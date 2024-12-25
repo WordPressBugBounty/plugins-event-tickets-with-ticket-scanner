@@ -90,8 +90,8 @@ class sasoEventtickets_TicketDesigner {
         //$ticket["date_time_format"] = str_replace("Y","yyyy", str_replace("i", "mm", str_replace("H", "kk", str_replace("d", "dd", str_replace("m", "MM", $date_time_format)))));
         $ticket["date_time_format"] = $date_time_format;
 
-        $ticket["order_date_paid_text"] = empty($order->get_date_paid()) ? "-" : date($date_time_format, strtotime($order->get_date_paid()));
-        $ticket["order_date_completed_text"] = empty($order->get_date_completed()) ? "-" : date($date_time_format, strtotime($order->get_date_completed()));
+        $ticket["order_date_paid_text"] = empty($order->get_date_paid()) ? "-" : wp_date($date_time_format, strtotime($order->get_date_paid()));
+        $ticket["order_date_completed_text"] = empty($order->get_date_completed()) ? "-" : wp_date($date_time_format, strtotime($order->get_date_completed()));
         $ticket["order_item_pos"] = 1;
         $ticket["codes"] = explode(",", $order_item->get_meta('_saso_eventtickets_product_code', true));
         if (count($ticket["codes"]) > 1) {
