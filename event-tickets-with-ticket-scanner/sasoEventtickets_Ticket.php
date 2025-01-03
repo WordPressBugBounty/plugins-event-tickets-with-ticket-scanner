@@ -611,7 +611,7 @@ final class sasoEventtickets_Ticket {
 		}
 
 		if (empty($ret['ticket_end_time'])) {
-			$$ret['ticket_end_time'] = "23:59:59";
+			$ret['ticket_end_time'] = "23:59:59";
 		}
 		$ret['ticket_end_date_timestamp'] = strtotime(trim($ret['ticket_end_date']." ".$ret['ticket_end_time']));
 

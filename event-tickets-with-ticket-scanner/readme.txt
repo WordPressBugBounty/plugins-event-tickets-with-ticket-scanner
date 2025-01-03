@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 Tested up to: 6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -328,6 +328,9 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.5.2 - 2025-01-03 =
+* Bug fix for "expired" warning for tickets on the ticket scanner
+
 = 2.5.1 - 2024-12-25 =
 * Bug fix for attaching ICS file to the order mail
 * Bug fix display woocommerce order date on PDF and ticket
