@@ -758,7 +758,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                     div.append('<div style="color:red;">'+error_msg+'</div>');
                 }
                 if (_isRedeemTooLate == false && _isRedeemTooLateEndEvent == false && data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart) {
-                    if (typeof data._ret.redeem_allowed_from != "undefined") {
+                    if (typeof data._ret.redeem_allowed_from != "undefined" && typeof data._ret.is_date_set != "undefined" && data._ret.is_date_set) {
                         div.append("<div>Redeem allowed from: <b>"+data._ret.redeem_allowed_from+"</b></div>");
                     }
                 }
@@ -787,12 +787,12 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         }
 
         let div2 = $('<div style="width:50%;display:inline-block;">');
-        if (data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart) {
+        if (data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart && typeof data._ret.is_date_set != "undefined" && data._ret.is_date_set) {
             //if (data._ret._options.isRedeemOperationTooEarly) {
                 div2.append($('<div>').html(sprintf(/* translators: %s: date */__('Redeemable from %s', 'event-tickets-with-ticket-scanner'), data._ret.redeem_allowed_from)));
             //}
         }
-        if (typeof data._ret.redeem_allowed_until != "undefined") {
+        if (typeof data._ret.redeem_allowed_until != "undefined" && typeof data._ret.is_date_set != "undefined" && data._ret.is_date_set) {
             div2.append($('<div>').html(sprintf(/* translators: %s: date */__('Redeemable until %s', 'event-tickets-with-ticket-scanner'), data._ret.redeem_allowed_until)));
         }
 
@@ -817,7 +817,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         let div3 = $('<div>');
         if (typeof data._ret.product !== "undefined") {
             div3.css("margin-top", "10px").html(__('<b>Product information</b>', 'event-tickets-with-ticket-scanner'))
-                .append('<div>'+sprintf(__('#%s, %s', 'event-tickets-with-ticket-scanner'), data._ret.product.id, data._ret.product.name + ' '+ data._ret.product.name_variant)+'</div>');
+                .append('<div>'+sprintf(__('#%s - %s', 'event-tickets-with-ticket-scanner'), data._ret.product.id, data._ret.product.name + ' '+ data._ret.product.name_variant)+'</div>');
             if (data._ret.product.sku != "") {
                 div3.append('<div>'+sprintf(__('SKU: %s', 'event-tickets-with-ticket-scanner'), data._ret.product.sku)+'</div>');
             }
@@ -1137,10 +1137,12 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                     div.append("Server timezone: "+data._ret._server.timezone.timezone+" Offset: "+data._ret._server.timezone.timezone+"<br>");
                     div.append("Server time: "+data._ret._server.time+"<br>");
                     div.append("UTC time: "+data._ret._server.UTC_time+"<br>");
-                    let date = new Date(data._ret.redeem_allowed_from);
-                    div.append("Redeem allowed from: "+date+"<br>");
-                    date = new Date(data._ret.redeem_allowed_until);
-                    div.append("Redeem allowed until: "+date+"<br>");
+                    if (typeof data._ret.is_date_set != "undefined" && data._ret.is_date_set) {
+                        let date = new Date(data._ret.redeem_allowed_from);
+                        div.append("Redeem allowed from: "+date+"<br>");
+                        date = new Date(data._ret.redeem_allowed_until);
+                        div.append("Redeem allowed until: "+date+"<br>");
+                    }
                 } catch(e) {
                     //console.log(e);
                 }

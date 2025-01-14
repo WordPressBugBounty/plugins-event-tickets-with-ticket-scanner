@@ -1080,7 +1080,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					let pcbf = null;
 					let value = (""+v.value) !== "" ? (""+v.value).trim() : ""+v.default;
 
-					v.label = v.label + ' <span style="color:grey;">{OPTIONS.'+v.key+'}</span>';
+					v.label = v.label + ' <span style="color:grey;">{'+v.key+'}</span>';
 					if (typeof v._doc_video !== "undefined" && v._doc_video != "") {
 						v.label += ' <span class="dashicons dashicons-external"></span> <a href="'+v._doc_video+'" target="_blank">Video Help</a>';
 					}

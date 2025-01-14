@@ -33,6 +33,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				isStoring = true;
 				let cart_item_id = elem.attr('data-cart-item-id');
 				let cart_item_count = elem.attr('data-cart-item-count');
+				let nonce = phpObject.nonce;
 		 		$.ajax(
 		 			{
 		 				type: 'GET',
@@ -40,7 +41,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		 				data: {
 		 					action: phpObject.action,
 		 					a: 'updateSerialCodeToCartItem',
-		 					security: $('#woocommerce-cart-nonce').val(),
+		 					security: nonce,
 		 					cart_item_id: cart_item_id,
 							cart_item_count: cart_item_count,
 							type: type,
@@ -141,6 +142,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 
 		$('body').find('input[data-input-type="daychooser"][data-plugin="event"]').each((idx, input) => {
 			let elem = $(input);
+			elem.attr('placeholder', __('YYYY-MM-DD'));
 			let data_offset_start = 0;
 			let data_offset_end = 0;
 			try {
@@ -160,6 +162,10 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			elem.on('change',()=>{
 				let code = elem.val().trim();
 				isChanged = true;
+				// remove the related error message on the cart
+				let data_cart_item_id = elem.attr('data-cart-item-id');
+				let data_cart_item_count = elem.attr('data-cart-item-count');
+				//$('li[data-cart-item-id="'+data_cart_item_id+'"][data-cart-item-count="'+data_cart_item_count+'"]').remove();
 				sendCode(elem, code, "saso_eventtickets_request_daychooser");
 			})
 			.datepicker({

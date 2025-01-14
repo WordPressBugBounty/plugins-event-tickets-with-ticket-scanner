@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.5.2
+ * Version: 2.5.3
  * Author: Saso Nikolov
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.5.2');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.5.3');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -30,7 +30,7 @@ class sasoEventtickets_fakeprem{}
 class sasoEventtickets {
 	private $_js_version;
 	private $_js_file = 'saso-eventtickets-validator.js';
-	private $_js_nonce = 'sasoEventtickets';
+	public $_js_nonce = 'sasoEventtickets';
 	public $_do_action_prefix = 'saso_eventtickets_';
 	public $_add_filter_prefix = 'saso_eventtickets_';
 	protected $_prefix = 'sasoEventtickets';
@@ -318,6 +318,8 @@ class sasoEventtickets {
 	}
 	public function WooCommercePluginLoaded() {
 		//$this->getWC(); // um die wc handler zu laden
+		add_action('woocommerce_review_order_after_cart_contents', [$this, 'relay_woocommerce_review_order_after_cart_contents']);
+		add_action('woocommerce_checkout_process', [$this, 'relay_woocommerce_checkout_process']);
 		add_action('woocommerce_before_cart_table', [$this, 'relay_woocommerce_before_cart_table']);
 		add_action('woocommerce_cart_updated', [$this, 'relay_woocommerce_cart_updated']);
 		add_filter('woocommerce_email_attachments', [$this, 'relay_woocommerce_email_attachments'], 10, 3);
@@ -365,6 +367,12 @@ class sasoEventtickets {
 		});
 
 		do_action( $this->_do_action_prefix.'main_WooCommercePluginLoaded' );
+	}
+	public function relay_woocommerce_review_order_after_cart_contents() {
+		$this->getWC()->woocommerce_review_order_after_cart_contents();
+	}
+	public function relay_woocommerce_checkout_process() {
+		$this->getWC()->woocommerce_checkout_process();
 	}
 	public function relay_woocommerce_before_cart_table() {
 		$this->getWC()->woocommerce_before_cart_table();

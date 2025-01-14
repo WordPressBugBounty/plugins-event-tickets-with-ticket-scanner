@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 Tested up to: 6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -328,6 +328,14 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.5.3 - 2025-01-14 =
+* Add error handling if the product is missing during generation of the ticket PDF
+* Improved the error messaging on the cart view for the day picker tickets
+* New option to add input field, dropdown and date picker to the checkout page - wcTicketShowInputFieldsOnCheckoutPage
+* Bug fix for the ticket scanner. The redeem until message is only shown if the date is also set.
+* Removed the prefix OPTIONS from the option - effects only display options name
+* Bug fix for badge PDF - the public ticket number is displayed correctly again
+
 = 2.5.2 - 2025-01-03 =
 * Bug fix for "expired" warning for tickets on the ticket scanner
 

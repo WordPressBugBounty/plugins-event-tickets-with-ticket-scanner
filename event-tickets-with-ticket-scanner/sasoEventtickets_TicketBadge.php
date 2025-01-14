@@ -341,6 +341,17 @@ class sasoEventtickets_TicketBadge {
             }
 
             $matches = [];
+            if (preg_match_all('/\{TICKET\.meta\..*?\}/', $html, $matches)) {
+                foreach($matches[0] as $item) {
+                    $key = substr(substr($item, 8), 0, -1);
+                    $value = $this->getValueOfArrayByPlaceholder($key, $metaObj);
+                    $html = str_replace($item, wp_kses_post($value), $html);
+                }
+            }
+
+            $cobj = $codeObj;
+            $cobj['meta'] = $metaObj; // if special meta values are needed . ticket.meta.....
+            $matches = [];
             if (preg_match_all('/\{TICKET\..*?\}/', $html, $matches)) {
                 foreach($matches[0] as $item) {
                     $key = substr(substr($item, 8), 0, -1);
@@ -349,6 +360,7 @@ class sasoEventtickets_TicketBadge {
                 }
             }
         }
+
         if (strpos($html, "{ORDER.")) {
             if ($order == null) {
                 $order_id = intval($codeObj['order_id']);

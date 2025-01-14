@@ -1256,6 +1256,8 @@ final class sasoEventtickets_Ticket {
 		}
 
 		$product = $order_item->get_product();
+		if ($product == null) throw new Exception("#8020 ".esc_html__("Product not found for the PDF ticket", 'event-tickets-with-ticket-scanner'));
+
 		$product_id = $product->get_id();
 		$product_parent_id = $product->get_parent_id();
 		$is_variation = $product->get_type() == "variation" ? true : false;

@@ -2052,6 +2052,20 @@ class sasoEventtickets_WC {
 		return $this->_containsProductsWithRestrictions;
 	}
 
+	function woocommerce_review_order_after_cart_contents() {
+		if ($this->getOptions()->isOptionCheckboxActive('wcTicketShowInputFieldsOnCheckoutPage')) {
+			// load wc_frontend.js to the checkout view
+			if ( ! is_ajax() ) { // prevent rendering for ajax call
+				$this->addJSFileAndHandler();
+				// render the input fields.
+				$cart_items = WC()->cart->get_cart();
+				foreach($cart_items as $cart_item_key => $cart_item) {
+					$this->woocommerce_after_cart_item_name( $cart_item, $cart_item_key );
+				}
+			}
+			echo '<p class="sasoEventtickets_cart_spacer_bottom">&nbsp;</p>';
+		}
+	}
 	// add all filter and actions, if we are displaying the cart, checkout and have products with restrictions
 	function woocommerce_before_cart_table() {
 		add_action( 'woocommerce_after_cart_item_name', [$this, 'woocommerce_after_cart_item_name'], 10, 2 );
@@ -2090,7 +2104,8 @@ class sasoEventtickets_WC {
  			[
  				'ajaxurl' => admin_url( 'admin-ajax.php' ),
  				'inputType' => $this->js_inputType,
- 				'action' => $this->getPrefix().'_executeWCFrontend'
+ 				'action' => $this->getPrefix().'_executeWCFrontend',
+				'nonce' => wp_create_nonce( $this->MAIN->_js_nonce ),
  			] // werte in der js variable
  			);
       	wp_enqueue_script('SasoEventticketsValidator_WC_frontend');
@@ -2100,7 +2115,9 @@ class sasoEventtickets_WC {
 		// nun nicht mehr nur für restriction
 		//if ($this->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
 			// Do a nonce check
-			if( ! SASO_EVENTTICKETS::issetRPara('security') || ! wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('security'), 'woocommerce-cart') ) {
+			//$nonce_mode = 'woocommerce-cart';
+			$nonce_mode = $this->MAIN->_js_nonce;
+			if( ! SASO_EVENTTICKETS::issetRPara('security') || ! wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('security'), $nonce_mode) ) {
 				wp_send_json( ['nonce_fail' => 1] );
 				exit;
 			}
@@ -2141,7 +2158,7 @@ class sasoEventtickets_WC {
 				])) {
 			$k = 'saso_eventtickets_request_name_per_ticket';
 		}
- 		$code = trim(SASO_EVENTTICKETS::getRequestPara('code'));
+ 		$code = trim(SASO_EVENTTICKETS::getRequestPara('code')); // is any value that was send to this function
 
 		$check_values = [];
 		if (empty($cart_item_id)) {
@@ -2281,7 +2298,7 @@ class sasoEventtickets_WC {
 							'data-plugin'=>'event',
 							'data-cart-item-id'=>$cart_item_key,
 							'data-cart-item-count'=>$a,
-							'disabled'=>true,
+							//'disabled'=>true,
 							'style'=>'width:auto;'
 						],
 						'id'=>'saso_eventtickets_request_daychooser['.$cart_item_key.']['.$a.']',
@@ -2430,26 +2447,26 @@ class sasoEventtickets_WC {
 		return $ret;
 	}
 
-	function woocommerce_check_cart_items() {
+	private function check_cart_item_and_add_warnings() {
 		$cart_items = WC()->cart->get_cart();
 		if ($this->containsProductsWithRestrictions()) {
 		    // loop through cart items and check if a restriction is set
-		    foreach($cart_items as $cart_item ) {
+		    foreach($cart_items as $item_id => $cart_item ) {
 				$code = isset( $cart_item[$this->meta_key_codelist_restriction_order_item] ) ? $cart_item[$this->meta_key_codelist_restriction_order_item] : '';
 				$code = strtoupper($code);
 				switch($this->check_code_for_cartitem($cart_item, $code)) {
 					case 0:
-						wc_add_notice( sprintf(/* translators: %s: name of product */ __('The product "%s" requires a restriction code for checkout.', 'event-tickets-with-ticket-scanner'), esc_html($cart_item['data']->get_name()) ), 'error' );
+						wc_add_notice( sprintf(/* translators: %s: name of product */ __('The product "%s" requires a restriction code for checkout.', 'event-tickets-with-ticket-scanner'), esc_html($cart_item['data']->get_name()) ), 'error', ["cart-item-id"=>$item_id] );
 						break;
 					case 1: // valid
 						break;
 					case 2:
-						wc_add_notice( sprintf(/* translators: 1: restriction code number 2: name of product */ __('The restriction code "%1$s" for product "%2$s" is already used.', 'event-tickets-with-ticket-scanner'), esc_attr($code), esc_html($cart_item['data']->get_name()) ), 'error' );
+						wc_add_notice( sprintf(/* translators: 1: restriction code number 2: name of product */ __('The restriction code "%1$s" for product "%2$s" is already used.', 'event-tickets-with-ticket-scanner'), esc_attr($code), esc_html($cart_item['data']->get_name()) ), 'error', ["cart-item-id"=>$item_id] );
 						break;
 					case 3: // not valid
 					case 4: // no code list
 					default:
-						wc_add_notice( sprintf(/* translators: 1: restriction code number 2: name of product */ __('The restriction code "%1$s" for product "%2$s" is not valid.', 'event-tickets-with-ticket-scanner'), esc_attr($code), esc_html($cart_item['data']->get_name()) ), 'error' );
+						wc_add_notice( sprintf(/* translators: 1: restriction code number 2: name of product */ __('The restriction code "%1$s" for product "%2$s" is not valid.', 'event-tickets-with-ticket-scanner'), esc_attr($code), esc_html($cart_item['data']->get_name()) ), 'error', ["cart-item-id"=>$item_id] );
 				}
 
 		    } // end loop cart item
@@ -2457,7 +2474,7 @@ class sasoEventtickets_WC {
 
 		// check if ticket name and dropdown value is needed and mandatory
 		$valueArray = WC()->session->get("saso_eventtickets_request_name_per_ticket");
-		foreach($cart_items as $cart_item ) {
+		foreach($cart_items as $item_id => $cart_item ) {
 			$saso_eventtickets_request_name_per_ticket = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_name_per_ticket", true) == "yes";
 			if ($saso_eventtickets_request_name_per_ticket) {
 				$saso_eventtickets_request_name_per_ticket_mandatory = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_name_per_ticket_mandatory", true) == "yes";
@@ -2473,7 +2490,7 @@ class sasoEventtickets_WC {
 									$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForName');
 									$label = str_replace("{PRODUCT_NAME}", "%s", $label);
 									//wc_add_notice( sprintf(/* translators: %s: name of product */ __('The product "%s" requires a value for checkout.', 'event-tickets-with-ticket-scanner'), esc_html($cart_item['data']->get_name()) ), 'error' );
-									wc_add_notice( wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name())) ), 'error' );
+									wc_add_notice( wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name())) ), 'error', ["cart-item-id"=>$item_id, ""] );
 									break;
 								}
 							}
@@ -2482,7 +2499,7 @@ class sasoEventtickets_WC {
 			}
 		}
 		$valueArray = WC()->session->get("saso_eventtickets_request_value_per_ticket");
-		foreach($cart_items as $cart_item ) {
+		foreach($cart_items as $item_id => $cart_item ) {
 			$saso_eventtickets_request_value_per_ticket = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_value_per_ticket", true) == "yes";
 			if ($saso_eventtickets_request_value_per_ticket) {
 				$saso_eventtickets_request_value_per_ticket_mandatory = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_value_per_ticket_mandatory", true) == "yes";
@@ -2498,7 +2515,7 @@ class sasoEventtickets_WC {
 									$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForValue');
 									$label = str_replace("{PRODUCT_NAME}", "%s", $label);
 									//wc_add_notice( sprintf(/* translators: %s: name of product */ __('The product "%s" requires a value from the dropdown for checkout.', 'event-tickets-with-ticket-scanner'), esc_html($cart_item['data']->get_name()) ), 'error' );
-									wc_add_notice( wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name())) ), 'error' );
+									wc_add_notice( wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name())) ), 'error', ["cart-item-id"=>$item_id, "cart-item-count"=>$a] );
 									break;
 								}
 							}
@@ -2508,7 +2525,7 @@ class sasoEventtickets_WC {
 		}
 
 		$valueArray = WC()->session->get("saso_eventtickets_request_daychooser");
-		foreach($cart_items as $cart_item ) {
+		foreach($cart_items as $item_id => $cart_item ) {
 			$saso_eventtickets_is_daychooser = get_post_meta($cart_item['product_id'], "saso_eventtickets_is_daychooser", true) == "yes";
 			if ($saso_eventtickets_is_daychooser) {
 				$anzahl = intval($cart_item["quantity"]);
@@ -2521,23 +2538,45 @@ class sasoEventtickets_WC {
 						if (empty($value)) {
 							$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForDaychooser');
 							$label = str_replace("{PRODUCT_NAME}", "%s", $label);
-							wc_add_notice( wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name())) ), 'error' );
-							break;
+							$label = str_replace("{count}", "%d", $label);
+							wc_add_notice( wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name()), $a+1) ), 'error', ["cart-item-id"=>$item_id, "cart-item-count"=>$a] );
+							//break;
 						} else {
 							// test if the date is a date
 							$date = DateTime::createFromFormat('Y-m-d', $value);
 							if (!$date || $date->format('Y-m-d') !== $value) {
 								$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForDaychooserInvalidDate');
 								$label = str_replace("{PRODUCT_NAME}", "%s", $label);
-								wc_add_notice(wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name()))), 'error');
-								break;
+								$label = str_replace("{count}", "%d", $label);
+								wc_add_notice(wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name()), $a+1)), 'error', ["cart-item-id"=>$item_id, "cart-item-count"=>$a]);
+								//break;
 							}
 						}
 					}
 				}
 			}
 		}
+	}
 
+	function woocommerce_checkout_process() {
+		$this->check_cart_item_and_add_warnings();
+	}
+	function woocommerce_check_cart_items() {
+		// check option wcTicketShowInputFieldsOnCheckoutPage if the check should be executed on the cart page
+		if ($this->getOptions()->isOptionCheckboxActive('wcTicketShowInputFieldsOnCheckoutPage')) {
+			/*
+			$is_checkout = is_checkout();
+			$is_cart = is_cart();
+			if ($is_cart == true) {
+				return "";
+			}
+			if ($is_checkout == true) {
+				return "";
+			}
+			*/
+		} else {
+			$this->check_cart_item_and_add_warnings();
+		}
 	}
 
 	private function setTicketValuesToOrderItem($item, $cart_item_key) {
