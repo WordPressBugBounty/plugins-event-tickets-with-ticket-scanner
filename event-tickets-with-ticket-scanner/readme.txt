@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.5.3
+Stable tag: 2.5.4
 Tested up to: 6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -328,6 +328,14 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.5.4 - 2025-01-20 =
+* Some labels and description improvements on the option page
+* Fixed output on the product detail to display the start and end date correctly
+* Changed code to display the correct variant product date
+* Added support for the day chooser on variable products
+* Added more NONCE check to prevent CRFS issues
+* Small fix for the event flyer layout
+
 = 2.5.3 - 2025-01-14 =
 * Add error handling if the product is missing during generation of the ticket PDF
 * Improved the error messaging on the cart view for the day picker tickets

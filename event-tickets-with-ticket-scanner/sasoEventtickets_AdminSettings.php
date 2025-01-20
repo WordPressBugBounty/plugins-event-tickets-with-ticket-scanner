@@ -19,9 +19,20 @@ class sasoEventtickets_AdminSettings {
 	private function getDB() {
 		return $this->MAIN->getDB();
 	}
-	public function executeJSON($a, $data=[], $just_ret=false) {
+	public function executeJSON($a, $data=[], $just_ret=false, $skipNonceTest=true) {
 		$ret = "";
 		$justJSON = false;
+
+		if (!$skipNonceTest) {
+			$nonce_mode = $this->MAIN->_js_nonce;
+			if (!wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('nonce'), $nonce_mode)) {
+				if (!wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('nonce'), 'wp_rest')) { // coming from the ticket scanner - for now
+					if ($just_ret) throw new Exception("Security check failed");
+					return wp_send_json_error ("Security check failed");
+				}
+			}
+		}
+
 		try {
 			switch (trim($a)) {
 				case "getAuthtokens":

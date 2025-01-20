@@ -279,7 +279,7 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			try {
 				$a = isset($_REQUEST['action']) ? $_REQUEST['action'] : "";
 				global $sasoEventtickets;
-				$sasoEventtickets->getAdmin()->executeJSON($a, $_REQUEST, true);
+				$sasoEventtickets->getAdmin()->executeJSON($a, $_REQUEST, true, false);
 			} catch (Exception $e) {
 				wp_send_json_error($e->getMessage());
 			}

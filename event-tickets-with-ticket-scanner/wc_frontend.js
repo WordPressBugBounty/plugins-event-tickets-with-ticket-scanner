@@ -145,15 +145,22 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			elem.attr('placeholder', __('YYYY-MM-DD'));
 			let data_offset_start = 0;
 			let data_offset_end = 0;
+			console.log(elem);
 			try {
 				data_offset_start =	parseInt(elem.attr('data-offset-start'));
 			} catch (error) {
 				//console.log(error);
 			}
+			if (elem.attr('min') && elem.attr('min').length > 0) {
+				data_offset_start = elem.attr('min');
+			}
 			try {
 				data_offset_end = parseInt(elem.attr('data-offset-end'));
 			} catch (error) {
 				//console.log(error);
+			}
+			if (elem.attr('max') && elem.attr('max').length > 0) {
+				data_offset_end = elem.attr('max');
 			}
 			//let today = new Date();
 			//let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() + data_offset_start);

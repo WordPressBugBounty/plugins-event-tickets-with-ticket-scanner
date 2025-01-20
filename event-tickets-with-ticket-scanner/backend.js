@@ -46,6 +46,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		_data.action = myAjax._action;
 		_data.a_sngmbh = action;
 		_data.t = new Date().getTime();
+		_data.nonce = DATA.nonce;
 		pcbf && pcbf();
 		for(var key in myData) _data['data['+key+']'] = myData[key];
         $.post( myAjax.url, _data, function( response ) {
@@ -64,6 +65,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		_data.action = myAjax._action;
 		_data.a_sngmbh = action;
 		_data.t = new Date().getTime();
+		_data.nonce = DATA.nonce;
 		pcbf && pcbf();
 		for(var key in myData) _data['data['+key+']'] = myData[key];
         $.get( myAjax.url, _data, function( response ) {
@@ -88,6 +90,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		_data.action = myAjax._action;
 		_data.a_sngmbh = action;
 		_data.t = new Date().getTime();
+		_data.nonce = DATA.nonce;
 		pcbf && pcbf();
 		for(var key in myData) _data['data['+key+']'] = myData[key];
 		let params = "";

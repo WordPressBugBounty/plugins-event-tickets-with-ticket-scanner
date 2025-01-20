@@ -57,7 +57,7 @@ class sasoEventtickets_WC {
 	}
 
     private function getPrefix() {
-        return $this->getMain()->getPrefix();
+        return $this->MAIN->getPrefix();
     }
     public function setProduct($product) {
         $this->_product = $product;
@@ -234,9 +234,9 @@ class sasoEventtickets_WC {
 
 		wp_register_script(
 			'SasoEventticketsValidator_WC_backend',
-			trailingslashit( plugin_dir_url( __FILE__ ) ) . 'wc_backend.js?_v='.$this->getMain()->getPluginVersion(),
+			trailingslashit( plugin_dir_url( __FILE__ ) ) . 'wc_backend.js?_v='.$this->MAIN->getPluginVersion(),
 			array( 'jquery', 'jquery-blockui', 'wp-i18n'),
-			(current_user_can("administrator") ? current_time("timestamp") : $this->getMain()->getPluginVersion()),
+			(current_user_can("administrator") ? current_time("timestamp") : $this->MAIN->getPluginVersion()),
 			true );
 		wp_localize_script(
  			'SasoEventticketsValidator_WC_backend',
@@ -244,17 +244,17 @@ class sasoEventtickets_WC {
  			[
  				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'_plugin_home_url' =>plugins_url( "",__FILE__ ),
-				'prefix'=>$this->getMain()->getPrefix(),
-				'nonce' => wp_create_nonce( $this->getMain()->getPrefix() ),
- 				'action' => $this->getMain()->getPrefix().'_executeWCBackend',
+				'prefix'=>$this->MAIN->getPrefix(),
+				'nonce' => wp_create_nonce( $this->MAIN->_js_nonce ),
+ 				'action' => $this->MAIN->getPrefix().'_executeWCBackend',
 				'product_id'=>isset($_GET['post']) ? intval($_GET['post']) : 0,
 				'order_id'=>0,
 				'scope'=>'product',
 				'_doNotInit'=>true,
-            	'_max'=>$this->getMain()->getBase()->getMaxValues(),
-            	'_isPremium'=>$this->getMain()->isPremium(),
+            	'_max'=>$this->MAIN->getBase()->getMaxValues(),
+            	'_isPremium'=>$this->MAIN->isPremium(),
             	'_isUserLoggedin'=>is_user_logged_in(),
-            	'_backendJS'=>trailingslashit( plugin_dir_url( __FILE__ ) ) . 'backend.js?_v='.$this->getMain()->getPluginVersion(),
+            	'_backendJS'=>trailingslashit( plugin_dir_url( __FILE__ ) ) . 'backend.js?_v='.$this->MAIN->getPluginVersion(),
             	'_premJS'=>$prem_JS_file,
             	'_divAreaId'=>'saso_eventtickets_list_format_area',
             	'formatterInputFieldDataId'=>'saso_eventtickets_list_formatter_values'
@@ -270,12 +270,12 @@ class sasoEventtickets_WC {
 			array('jquery', 'jquery-ui-dialog')
 		);
 
-		wp_enqueue_style($this->getMain()->getPrefix()."_backendcss", plugins_url( "",__FILE__ ).'/css/styles_backend.css');
+		wp_enqueue_style($this->MAIN->getPrefix()."_backendcss", plugins_url( "",__FILE__ ).'/css/styles_backend.css');
 
 		echo '<div id="saso_eventtickets_wc_product_data" class="panel woocommerce_options_panel hidden">';
 
-		if (!$this->getMain()->isPremium()) {
-			$mv = $this->getMain()->getMV();
+		if (!$this->MAIN->isPremium()) {
+			$mv = $this->MAIN->getMV();
 			echo '<p style="color:red;">'.sprintf(/* translators: %d: amount of maximum ticket that can be created */__('With the free basic plugin, you can only <b>create up to %d tickets!</b><br>Make sure your are not selling more tickets :)', 'event-tickets-with-ticket-scanner'), intval($mv['codes_total'])).'<br>'.sprintf(/* translators: 1: start of a-tag 2: end of a-tag */__('Here you can purchase the %1$spremium plugin%2$s for unlimited tickets.', 'event-tickets-with-ticket-scanner'), '<a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/">', '</a>').'</p>';
 		}
 
@@ -395,7 +395,7 @@ class sasoEventtickets_WC {
 			'label'       		=> __('Offset days for start date', 'event-tickets-with-ticket-scanner'),
 			'type'				=> 'number',
 			'custom_attributes'	=> ['step'=>'1', 'min'=>'0'],
-			'description' 		=> __('This will set how many days to skip before you allow your customer to choose a date. 0 means starting from the same day, 1 means from tomorrow on and so on.', 'event-tickets-with-ticket-scanner'),
+			'description' 		=> __('This will set how many days to skip before you allow your customer to choose a date. 0 means starting from the same day, 1 means from tomorrow on and so on. If you set a start date, the the start date will be considered as a minimum starting date.', 'event-tickets-with-ticket-scanner'),
 			'desc_tip'    		=> true
 		]);
 		// input field for offset last day to choose from in days
@@ -405,7 +405,7 @@ class sasoEventtickets_WC {
 			'label'       		=> __('Offset days for end date', 'event-tickets-with-ticket-scanner'),
 			'type'				=> 'number',
 			'custom_attributes'	=> ['step'=>'1', 'min'=>'0'],
-			'description' 		=> __('This will set how many days in the future do you allow your customer to choose a date. 0 unlimited into the future, 1 means until tomorrow on and so on.', 'event-tickets-with-ticket-scanner'),
+			'description' 		=> __('This will set how many days in the future do you allow your customer to choose a date. 0 unlimited into the future, 1 means until tomorrow on and so on. If a end date is set, then this option is ignored and the end date is used.', 'event-tickets-with-ticket-scanner'),
 			'desc_tip'    		=> true
 		]);
 		woocommerce_wp_text_input([
@@ -919,7 +919,7 @@ class sasoEventtickets_WC {
 			}
 		}
 
-		$_attachments = apply_filters( $this->getMain()->_add_filter_prefix.'woocommerce_email_attachments', $attachments, $email_id, $order );
+		$_attachments = apply_filters( $this->MAIN->_add_filter_prefix.'woocommerce_email_attachments', $attachments, $email_id, $order );
 		if (count($_attachments) > 0) {
 			$this->_attachments = array_merge($this->_attachments, $_attachments);
 		}
@@ -1595,7 +1595,7 @@ class sasoEventtickets_WC {
 		<p>Display all Tickets Infos</p>
 		<button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_download_ticket_infos"); ?>" class="button button-primary">Print Ticket Infos</button>
         <?php
-		do_action( $this->getMain()->_do_action_prefix.'wc_product_display_side_box', [] );
+		do_action( $this->MAIN->_do_action_prefix.'wc_product_display_side_box', [] );
     }
 
 	public function wc_order_display_side_box() {
@@ -1607,7 +1607,7 @@ class sasoEventtickets_WC {
 		<p>Remove all non-tickets from the order</p>
         <button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_remove_non_tickets"); ?>" class="button button-danger">Remove Ticket Placeholders</button>
 		<?php
-		do_action( $this->getMain()->_do_action_prefix.'wc_order_display_side_box', [] );
+		do_action( $this->MAIN->_do_action_prefix.'wc_order_display_side_box', [] );
 	}
 
 	private function wc_order_addJSFileAndHandlerBackend($order) {
@@ -1615,29 +1615,29 @@ class sasoEventtickets_WC {
 		wp_enqueue_style("wp-jquery-ui-dialog");
 		wp_enqueue_media(); // damit der media chooser von wordpress geladen wird
 		wp_register_script(
-			$this->getMain()->getPrefix().'WC_Order_Ajax_Backend_Basic',
-			trailingslashit( plugin_dir_url( __FILE__ ) ) . 'wc_backend.js?_v='.$this->getMain()->getPluginVersion(),
+			$this->MAIN->getPrefix().'WC_Order_Ajax_Backend_Basic',
+			trailingslashit( plugin_dir_url( __FILE__ ) ) . 'wc_backend.js?_v='.$this->MAIN->getPluginVersion(),
 			array( 'jquery', 'jquery-ui-dialog', 'jquery-blockui', 'wp-i18n' ),
-			(current_user_can("administrator") ? current_time("timestamp") : $this->getMain()->getPluginVersion()),
+			(current_user_can("administrator") ? current_time("timestamp") : $this->MAIN->getPluginVersion()),
 			true );
-		wp_set_script_translations($this->getMain()->getPrefix().'WC_Order_Ajax_Backend_Basic', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
+		wp_set_script_translations($this->MAIN->getPrefix().'WC_Order_Ajax_Backend_Basic', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
 		wp_localize_script(
-			$this->getMain()->getPrefix().'WC_Order_Ajax_Backend_Basic',
+			$this->MAIN->getPrefix().'WC_Order_Ajax_Backend_Basic',
 			'Ajax_sasoEventtickets_wc', // name der js variable
  			[
 				'ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'_plugin_home_url' =>plugins_url( "",__FILE__ ),
-				'prefix'=>$this->getMain()->getPrefix(),
-				'nonce' => wp_create_nonce( $this->getMain()->getPrefix() ),
-				'action' => $this->getMain()->getPrefix().'_executeWCBackend',
+				'prefix'=>$this->MAIN->getPrefix(),
+				'nonce' => wp_create_nonce( $this->MAIN->_js_nonce ),
+				'action' => $this->MAIN->getPrefix().'_executeWCBackend',
 				'product_id'=>0,
  				'order_id'=>isset($_GET['post']) ? intval($_GET['post']) : 0,
 				'scope'=>'order',
-				'_backendJS'=>trailingslashit( plugin_dir_url( __FILE__ ) ) . 'backend.js?_v='.$this->getMain()->getPluginVersion(),
+				'_backendJS'=>trailingslashit( plugin_dir_url( __FILE__ ) ) . 'backend.js?_v='.$this->MAIN->getPluginVersion(),
 				'tickets'=>$tickets
  			] // werte in der js variable
  			);
-      	wp_enqueue_script($this->getMain()->getPrefix().'WC_Order_Ajax_Backend_Basic');
+      	wp_enqueue_script($this->MAIN->getPrefix().'WC_Order_Ajax_Backend_Basic');
  	}
 
 	function add_serialcode_to_order($order_id) {
@@ -1850,24 +1850,17 @@ class sasoEventtickets_WC {
 		return $ret;
 	}
 
-	private function getMain() {
-		if ($this->MAIN == null) {
-			global $sasoEventtickets;
-			$this->MAIN = $sasoEventtickets;
-		}
-		return $this->MAIN;
-	}
 	private function getAdmin() {
-		return $this->getMain()->getAdmin();
+		return $this->MAIN->getAdmin();
 	}
 	private function getFrontend() {
-		return $this->getMain()->getFrontend();
+		return $this->MAIN->getFrontend();
 	}
 	private function getCore() {
-		return $this->getMain()->getCore();
+		return $this->MAIN->getCore();
 	}
 	private function getOptions() {
-		return $this->getMain()->getOptions();
+		return $this->MAIN->getOptions();
 	}
 
 	private function downloadAllTicketsAsOnePDF($data, $filemode="I") {
@@ -1970,13 +1963,23 @@ class sasoEventtickets_WC {
 		if (!empty($wcTicketFlyerBanner) && intval($wcTicketFlyerBanner) >0) {
 			$option_wcTicketFlyerBanner = $this->getOptions()->getOption('wcTicketFlyerBanner');
 			$mediaData = SASO_EVENTTICKETS::getMediaData($wcTicketFlyerBanner);
-			$width = "600";
+			/*$width = "600";
 			if (isset($option_wcTicketFlyerBanner['additional']) && isset($option_wcTicketFlyerBanner['additional']['min']) && isset($option_wcTicketFlyerBanner['additional']['min']['width'])) {
 				$width = $option_wcTicketFlyerBanner['additional']['min']['width'];
-			}
+			}*/
 			//if (!empty($mediaData['location']) && file_exists($mediaData['location'])) {
 			if (!empty($mediaData['for_pdf'])) {
-				$pdf->addPart('<img width="21cm" src="'.$mediaData['for_pdf'].'"><br>');
+				$pdf->addPart('<div style="text-align:center;"><img src="'.$mediaData['for_pdf'].'"></div>');
+				if (isset($mediaData['meta']) && isset($mediaData['meta']['height']) && floatval($mediaData['meta']['height']) > 0) {
+					$dpiY = 96;
+					if (function_exists("getimagesize")) {
+						$imageInfo = getimagesize($mediaData['location']);
+						// DPI-Werte aus den EXIF-Daten extrahieren
+						$dpiY = isset($imageInfo['dpi_y']) ? $imageInfo['dpi_y'] : $dpiY;
+					}
+					$units = $pdf->convertPixelIntoMm($mediaData['meta']['height'] + 10, $dpiY);
+					$pdf->setQRParams(['pos'=>['y'=>$units]]);
+				}
 			}
 		}
 		$pdf->addPart('<h1 style="text-align:center;">'.esc_html($titel).'</h1>');
@@ -1984,10 +1987,11 @@ class sasoEventtickets_WC {
 			$pdf->addPart($event_date);
 		}
 		if (!empty($location)) {
-			$pdf->addPart(wp_kses_post($this->getOptions()->getOptionValue("wcTicketTransLocation"))." <b>".wp_kses_post($location)."</b>");
+			$pdf->addPart('<p>'.wp_kses_post($this->getOptions()->getOptionValue("wcTicketTransLocation"))." <b>".wp_kses_post($location)."</b></p>");
 		}
+
 		$pdf->addPart('{QRCODE_INLINE}');
-		$pdf->addPart('<p style="font-size:9pt;text-align:center;">'.esc_url($event_url).'</p>');
+		$pdf->addPart('<br><p style="font-size:9pt;text-align:center;">'.esc_url($event_url).'</p>');
 		$pdf->addPart('<br><p style="text-align:center;">'.wp_kses_post($short_desc).'</p>');
 		$wcTicketFlyerDontDisplayPrice = $this->getOptions()->isOptionCheckboxActive('wcTicketFlyerDontDisplayPrice');
 		if (!$wcTicketFlyerDontDisplayPrice) {
@@ -2020,7 +2024,8 @@ class sasoEventtickets_WC {
 		}
 		$pdf->addPart('<br><p style="text-align:center;font-size:9pt;">powered by Event Tickets With Ticket Scanner Plugin for Wordpress</p>');
 
-		$pdf->setQRParams(['style'=>['position'=>'C']]);
+		//$pdf->setQRParams(['style'=>['position'=>'C']]);
+		$pdf->setQRParams(['style'=>['position'=>'C'],'align'=>'N']);
 		$qrTicketPDFPadding = intval($this->getOptions()->getOptionValue('qrTicketPDFPadding'));
 		$pdf->setQRCodeContent(["text"=>$event_url, "style"=>["vpadding"=>$qrTicketPDFPadding, "hpadding"=>$qrTicketPDFPadding]]);
 		$wcTicketFlyerBG = $this->getOptions()->getOptionValue('wcTicketFlyerBG');
@@ -2093,9 +2098,9 @@ class sasoEventtickets_WC {
 		wp_enqueue_style("jquery-ui-datepicker");
 		wp_register_script(
 			'SasoEventticketsValidator_WC_frontend',
-			trailingslashit( plugin_dir_url( __FILE__ ) ) . 'wc_frontend.js?_v='.$this->getMain()->getPluginVersion(),
+			trailingslashit( plugin_dir_url( __FILE__ ) ) . 'wc_frontend.js?_v='.$this->MAIN->getPluginVersion(),
 			array( 'jquery', 'jquery-ui-dialog', 'jquery-blockui', 'jquery-ui-datepicker', 'wp-i18n' ),
-			(current_user_can("administrator") ? current_time("timestamp") : $this->getMain()->getPluginVersion()),
+			(current_user_can("administrator") ? current_time("timestamp") : $this->MAIN->getPluginVersion()),
 			true );
 		wp_set_script_translations('SasoEventticketsValidator_WC_frontend', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
 		wp_localize_script(
@@ -2277,9 +2282,14 @@ class sasoEventtickets_WC {
 			if ($anzahl > 0) {
 				$valueArray = WC()->session->get("saso_eventtickets_request_daychooser");
 
-				$saso_eventtickets_daychooser_offset_start = intval(get_post_meta( $cart_item['product_id'], 'saso_eventtickets_daychooser_offset_start', true ));
-				$saso_eventtickets_daychooser_offset_end = intval(get_post_meta( $cart_item['product_id'], 'saso_eventtickets_daychooser_offset_end', true ));
-				$saso_eventtickets_daychooser_exclude_wdays = get_post_meta( $cart_item['product_id'], 'saso_eventtickets_daychooser_exclude_wdays', true );
+				$product_id = $cart_item['product_id'];
+				$dates = $this->MAIN->getTicketHandler()->getCalcDateStringAllowedRedeemFromCorrectProduct($product_id);
+				$saso_eventtickets_daychooser_offset_start = $dates['daychooser_offset_start'];
+				$saso_eventtickets_daychooser_offset_end = $dates['daychooser_offset_end'];
+				$saso_eventtickets_daychooser_exclude_wdays = $dates['daychooser_exclude_wdays'];
+				$saso_eventtickets_ticket_start_date = $dates['ticket_start_date'];
+				$saso_eventtickets_ticket_end_date = $dates['ticket_end_date'];
+
 				if (!is_array($saso_eventtickets_daychooser_exclude_wdays)) {
 					$saso_eventtickets_daychooser_exclude_wdays = [];
 				}
@@ -2310,10 +2320,26 @@ class sasoEventtickets_WC {
 					$params['custom_attributes']['data-offset-end'] = $saso_eventtickets_daychooser_offset_end;
 					$params['custom_attributes']['data-exclude-wdays'] = implode(",", $saso_eventtickets_daychooser_exclude_wdays);
 
-					if ($saso_eventtickets_daychooser_offset_start > 0) {
-						$params['custom_attributes']['min'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_start." days"));
+					if ($saso_eventtickets_ticket_start_date != "") {
+						$params['custom_attributes']['min'] = $saso_eventtickets_ticket_start_date;
 					}
-					if ($saso_eventtickets_daychooser_offset_end > 0) {
+					if ($saso_eventtickets_daychooser_offset_start > 0) {
+						// if the start date is not set, then we set it to the start today + days offset
+						if (!isset($params['custom_attributes']['min'])) {
+							$params['custom_attributes']['min'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_start." days"));
+						} else {
+							// if the start date + offset days is set before the ticket start date then use the start date
+							if (current_time("timestamp") < strtotime($params['custom_attributes']['min']." -".$saso_eventtickets_daychooser_offset_start." days")) {
+								$params['custom_attributes']['min'] = $saso_eventtickets_ticket_start_date;
+							} else {
+								$params['custom_attributes']['min'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_start." days"));
+							}
+						}
+					}
+					if ($saso_eventtickets_ticket_end_date != "") {
+						$params['custom_attributes']['max'] = $saso_eventtickets_ticket_end_date;
+					}
+					if (!isset($params['custom_attributes']['max']) && $saso_eventtickets_daychooser_offset_end > 0) {
 						$params['custom_attributes']['max'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_end." days"));
 					}
 

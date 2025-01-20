@@ -398,9 +398,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function _getURLAndDateForAjax(action, myData, pcbf) {
         let _data = {};
         _data.action = action;
-        //if (system.nonce != '') _data._wpnonce = system.nonce;
-        //if (system.nonce != '') _data._ajax_nonce = system.nonce;
         _data.t = new Date().getTime();
+        //if (system.nonce != '') _data._wpnonce = system.nonce;
+        if (system.nonce != '') _data.nonce = system.nonce;
         pcbf && pcbf();
         //if (myData) for(var key in myData) _data['data['+key+']'] = myData[key];
         if (myData) for(var key in myData) _data[key] = myData[key];
@@ -452,11 +452,15 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
 	}
     function _makeGet(action, myData, cbf, ecbf, pcbf) {
         let call_data = _getURLAndDateForAjax(action, myData, pcbf);
+        console.log(call_data);
         $.get( call_data.url, call_data.data, response=>{
-            //if (response.data && response.data.nonce) system.nonce = response.data.nonce;
+            if (response && response.data && response.data.nonce) system.nonce = response.data.nonce;
             if (!response.success) {
                 if (ecbf) ecbf(response);
-                else renderFatalError(response.data);
+                else {
+                    let msg = (response.data.status ? response.data.status : '') + " " + (response.data.message ? response.data.message : '');
+                    renderFatalError(msg.trim());
+                }
             } else {
                 cbf && cbf(response.data);
             }
@@ -472,10 +476,13 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function _makePost(action, myData, cbf, ecbf, pcbf) {
         let call_data = _getURLAndDateForAjax(action, myData, pcbf);
         $.post( call_data.url, call_data.data, response=>{
-            //if (response.data && response.data.nonce) system.nonce = response.data.nonce;
+            if (response && response.data && response.data.nonce) system.nonce = response.data.nonce;
             if (!response.success) {
                 if (ecbf) ecbf(response);
-                else renderFatalError(response.data);
+                else {
+                    let msg = (response.data.status ? response.data.status : '') + " " + (response.data.message ? response.data.message : '');
+                    renderFatalError(msg.trim());
+                }
             } else {
                 cbf && cbf(response.data);
             }
@@ -1110,7 +1117,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         $('#ticket_scanner_info_area').html(content);
         if (toBool(myAjax.ticketScannerDisplayTimes)) {
             let data = system.data;
-            if (typeof data._ret != "undefined" && typeof data._ret._server != "undefined") {
+            if (data != null && typeof data != "undefined" && typeof data._ret != "undefined" && typeof data._ret._server != "undefined") {
                 let div = $('<div style="padding-top:30px;">');
                 div.append("Server: "+data._ret._server.time+" "+data._ret._server.timezone.timezone+" Offset: "+data._ret._server.timezone.timezone+"<br>");
                 let date = new Date();
