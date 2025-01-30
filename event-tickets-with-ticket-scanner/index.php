@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.5.4
+ * Version: 2.5.5
  * Author: Saso Nikolov
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.5.4');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.5.5');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -56,6 +56,7 @@ class sasoEventtickets {
 		$this->_js_version = $this->getPluginVersion();
 		$this->initHandlers();
 	}
+
 	public function initHandlers() {
 		add_action( 'init', [$this, 'load_plugin_textdomain'] );
 		add_action( 'upgrader_process_complete', [$this, 'listener_upgrader_process_complete'], 10, 2 );
@@ -259,7 +260,7 @@ class sasoEventtickets {
 	public function wc_checkTicketDetailPage() {
 		if( is_404() ){
 			include_once("SASO_EVENTTICKETS.php");
-			// /wp-content/plugins/serial-codes-generator-and-validator/ticket/
+			// /wp-content/plugins/event-tickets-with-ticket-scanner/ticket/
 			$p = $this->getCore()->getTicketURLPath(true);
 			$t = explode("/", $_SERVER["REQUEST_URI"]);
 			if (count($t) > 1) {

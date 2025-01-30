@@ -1287,7 +1287,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 									$('<button class="button button-primary" id="wcTicketDesignerTemplateTest_button_PDF">')
 										.html(__('Preview Test Template Code as PDF', 'event-tickets-with-ticket-scanner')).
 										appendTo(ticket_test_chooser).on("click", ()=>{
-											iframe.attr("src", ticket_test_select.find(":selected").attr("data-url-pdf")+'?pdf&testDesigner=1');
+											iframe.attr("src", ticket_test_select.find(":selected").attr("data-url-pdf")+'?pdf&testDesigner=1&nonce='+DATA.nonce);
 											iframe
 												.css("width", "80%")
 												.css("height", "500px")

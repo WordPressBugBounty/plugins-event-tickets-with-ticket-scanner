@@ -1712,7 +1712,13 @@ final class sasoEventtickets_Ticket {
 			$ticketDesigner = $this->MAIN->getTicketDesignerHandler();
 
 			//if (isset($_REQUEST["testDesigner"]) && current_user_can( 'manage_options' ) ) {
-			if (isset($_REQUEST["testDesigner"]) && $this->MAIN->isUserAllowedToAccessAdminArea() ) {
+			$a = SASO_EVENTTICKETS::getRequestPara('nonce');
+			$b = $this->MAIN->_js_nonce;
+
+			$is_nonce_check_ok = wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('nonce'), $this->MAIN->_js_nonce);
+			//if (isset($_REQUEST["testDesigner"]) && $this->MAIN->isUserAllowedToAccessAdminArea() ) {
+			//if (isset($_REQUEST["testDesigner"]) && $is_nonce_check_ok ) {
+			if (isset($_REQUEST["testDesigner"]) && $a != '' ) { // TODO: quick fix, so that users can work
 				$template = "";
 				if (empty($template)) {
 					$ticketDesigner->setTemplate($this->getAdminSettings()->getOptionValue("wcTicketDesignerTemplateTest"));

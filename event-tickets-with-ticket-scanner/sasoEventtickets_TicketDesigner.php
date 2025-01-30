@@ -267,7 +267,7 @@ class sasoEventtickets_TicketDesigner {
                             <p>
                             {%- for item in PRODUCT.get_attributes -%}
                                 {% if item is not iterable %}
-                                    {{- item|striptags -}}
+                                    {{- item|striptags -}}&nbsp;
                                 {% endif %}
                             {%- endfor -%}
                             </p>
@@ -509,7 +509,7 @@ class sasoEventtickets_TicketDesigner {
                             <p>
                             {%- for item in PRODUCT.get_attributes -%}
                                 {% if item is not iterable %}
-                                    {{- item|striptags -}}
+                                    {{- item|striptags -}}&nbsp;
                                 {% endif %}
                             {%- endfor -%}
                             </p>
