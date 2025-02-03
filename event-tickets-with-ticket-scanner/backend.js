@@ -2390,6 +2390,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnBillingName')) {
 					additionalColumn.customerName = '<th>'+_x('Customer', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
+				if (_getOptions_isActivatedByKey('displayAdminAreaColumnBillingCompany')) {
+					additionalColumn.customerName = '<th>'+_x('Company', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
+				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnRedeemedInfo')) {
 					additionalColumn.redeemAmount = '<th>'+_x('Redeem Amount', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
@@ -2533,6 +2536,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					addition_column_offset++;
 					table_columns.splice(3, 0, {
 						"data":"_customer_name","orderable":false
+					});
+				}
+				if (_getOptions_isActivatedByKey('displayAdminAreaColumnBillingCompany')) {
+					addition_column_offset++;
+					table_columns.splice(3, 0, {
+						"data":"_customer_company","orderable":false
 					});
 				}
 				if (additionalColumn.confirmedCount != '') {

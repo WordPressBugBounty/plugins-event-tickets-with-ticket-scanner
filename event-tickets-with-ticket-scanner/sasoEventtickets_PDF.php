@@ -214,6 +214,7 @@ class sasoEventtickets_PDF {
 		if ($this->filemode == "F") {
 			$pdf->Output($this->filepath.$this->filename, $this->filemode);
 		} else {
+			header_remove();
 			$pdf->Output($this->filename, $this->filemode);
 		}
 	}

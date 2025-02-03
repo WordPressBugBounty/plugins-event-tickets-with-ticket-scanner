@@ -454,17 +454,20 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         let call_data = _getURLAndDateForAjax(action, myData, pcbf);
         //console.log(call_data);
         $.get( call_data.url, call_data.data, response=>{
+            if (typeof response == "string") {
+				response = JSON.parse(response);
+			}
             if (response && response.data && response.data.nonce) system.nonce = response.data.nonce;
             if (!response.success) {
                 if (ecbf) ecbf(response);
                 else {
-                    let msg = (response.data.status ? response.data.status : '') + " " + (response.data.message ? response.data.message : '');
+                    let msg = (typeof response.data !== "undefined" && response.data.status ? response.data.status : '') + " " + (response.data.message ? response.data.message : '');
                     renderFatalError(msg.trim());
                 }
             } else {
                 cbf && cbf(response.data);
             }
-        }).always(jqXHR=>{
+        }, "json").always(jqXHR=>{
             if(jqXHR.status == 401 || jqXHR.status == 403) {
                 renderFatalError(__("Access rights missing. Please login first.", 'event-tickets-with-ticket-scanner') + " "+(jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : '') );
             }
@@ -476,6 +479,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function _makePost(action, myData, cbf, ecbf, pcbf) {
         let call_data = _getURLAndDateForAjax(action, myData, pcbf);
         $.post( call_data.url, call_data.data, response=>{
+            if (typeof response == "string") {
+				response = JSON.parse(response);
+			}
             if (response && response.data && response.data.nonce) system.nonce = response.data.nonce;
             if (!response.success) {
                 if (ecbf) ecbf(response);
@@ -486,7 +492,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             } else {
                 cbf && cbf(response.data);
             }
-        }).always(jqXHR=>{
+        }, "json").always(jqXHR=>{
             if(jqXHR.status == 401 || jqXHR.status == 403) {
                 renderFatalError(__("Access rights missing. Please login first.", 'event-tickets-with-ticket-scanner') + " " + (jqXHR.responseJSON && jqXHR.responseJSON.message ? jqXHR.responseJSON.message : '') );
             }

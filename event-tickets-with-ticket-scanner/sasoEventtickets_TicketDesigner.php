@@ -200,6 +200,19 @@ class sasoEventtickets_TicketDesigner {
             $twig->addFunction($filter_get_field);
         }
 
+        //$twig->addTest(new \Twig\TwigTest('object', [$this, 'isObject'])); // make inline
+        $twig->addTest(new \Twig\TwigTest('object', function ($object){
+            return is_object($object);
+        }));
+        $twig->addTest(new \Twig\TwigTest('array', function ($value) {
+            return is_array($value);
+        }));
+        $twig->addTest(new \Twig\TwigTest('numeric', function ($value) {
+            return is_numeric($value);
+        }));
+        $twig->addTest(new \Twig\TwigTest('string', function ($value) {
+            return is_string($value);
+        }));
         global $wpdb;
 
         $this->variables = [
@@ -263,12 +276,16 @@ class sasoEventtickets_TicketDesigner {
             <table style="width:100%;padding:0;margin:0;" class="ticket_content_upper">
                 <tr valign="top">
                     <td style="{% if forPDFOutput %}width:70%;{% endif %}padding:0;margin:0;{% if not forPDFOutput %}background-color:white;border:0;{% endif %}">
-                        {%- if OPTIONS.wcTicketPDFDisplayVariantName and PRODUCT.get_attributes|length > 0 -%}
+                        {%- if OPTIONS.wcTicketPDFDisplayVariantName and is_variation and PRODUCT.get_attributes|length > 0 -%}
                             <p>
                             {%- for item in PRODUCT.get_attributes -%}
-                                {% if item is not iterable %}
-                                    {{- item|striptags -}}&nbsp;
-                                {% endif %}
+                                {%- if item is not empty -%}
+                                    {%- if item is string -%}
+                                        {{- item|striptags -}}&nbsp;
+                                    {%- else -%}
+                                        {{- item|json_encode() -}}
+                                    {% endif %}
+                                {%- endif -%}
                             {%- endfor -%}
                             </p>
                         {%- endif -%}

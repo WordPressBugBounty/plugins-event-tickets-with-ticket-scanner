@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.5.5
+Stable tag: 2.5.6
 Tested up to: 6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -328,6 +328,16 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.5.6 - 2025-02-03 =
+* New column Billing Company for the ticket list within the plugin admin - option displayAdminAreaColumnBillingCompany
+* Key check for error log, to prevent errors if the line is not available
+* Support for daychooser to exclude specific dates, that were added with premium 1.4.4
+* Fix the ugly display of the ticket information within the order for public ticket number and choosen days.
+* Changed the default template to handle the string in product.get_attributes better
+* Added new TWIG tests. object, array, string and numeric. You can use it like: {% if item is array %}.
+* Ticket scanner is now checking the REST API result and parsing it to json in case your server sends the wrong content type.
+* Add header_remove() before sending the PDF to prevent issues from other plugins.
+
 = 2.5.5 - 2025-01-22 =
 * Fix test template preview - using again the test template
 * Adjusted default ticket template to display the variant names with a space

@@ -702,10 +702,12 @@ class sasoEventtickets_AdminSettings {
 
 		$displayAdminAreaColumnRedeemedInfo = $this->isOptionCheckboxActive('displayAdminAreaColumnRedeemedInfo');
 		$displayAdminAreaColumnBillingName = $this->isOptionCheckboxActive('displayAdminAreaColumnBillingName');
+		$displayAdminAreaColumnBillingCompany = $this->isOptionCheckboxActive('displayAdminAreaColumnBillingCompany');
 
 		if (isset($request['order'])) {
 			$order_columns = array('', '', 'code');
 			if ($displayAdminAreaColumnBillingName) $order_columns[] = '';
+			if ($displayAdminAreaColumnBillingCompany) $order_columns[] = '';
 			$order_columns[] = 'list_name';
 			$order_columns[] = 'time';
 			$order_columns[] = 'redeemed';
@@ -855,6 +857,11 @@ class sasoEventtickets_AdminSettings {
 				$daten[$key]['_customer_name'] = $this->getCustomerName($item['order_id']);
 			}
 		}
+		if ($displayAdminAreaColumnBillingCompany) {
+			foreach($daten as $key => $item) {
+				$daten[$key]['_customer_company'] = $this->getCompanyName($item['order_id']);
+			}
+		}
 		if ($displayAdminAreaColumnRedeemedInfo) {
 			$products_max_redeem_amounts = []; // cache
 			foreach($daten as $key => $item) {
@@ -882,11 +889,25 @@ class sasoEventtickets_AdminSettings {
 			try {
 				$order = wc_get_order( $order_id );
 				if ($order != null) {
-					$ret = $order->get_billing_first_name()." ".$order->get_billing_last_name();
+					$ret = $order->get_billing_company()." ".$order->get_billing_last_name();
 				}
 			} catch (Exception $e) {}
 		}
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'admin_getCustomerName', $ret, $order_id);
+		return $ret;
+	}
+	public function getCompanyName($order_id) {
+		$ret = "";
+		$order_id = intval($order_id);
+		if ($order_id > 0) {
+			try {
+				$order = wc_get_order( $order_id );
+				if ($order != null) {
+					$ret = $order->get_billing_company();
+				}
+			} catch (Exception $e) {}
+		}
+		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'admin_getCompanyName', $ret, $order_id);
 		return $ret;
 	}
 	public function getRedeemAmount($codeObj, $cache=[]) {
@@ -1193,7 +1214,7 @@ class sasoEventtickets_AdminSettings {
 						$daychooser = [];
 						$new_codes = [];
 						foreach($codes as $idx => $code) {
-							if ($code != $codeObj["code"]) {
+							if ($code != $codeObj["code"]) { // do not re-add the ticket number, that need to be removed
 								$new_codes[] = $code;
 								if(isset($existing_plublic_ticket_ids[$idx])) {
 									$public_ticket_ids[] = $existing_plublic_ticket_ids[$idx];
@@ -1639,10 +1660,12 @@ class sasoEventtickets_AdminSettings {
 
 		$displayAdminAreaColumnRedeemedInfo = $this->isOptionCheckboxActive('displayAdminAreaColumnRedeemedInfo');
 		$displayAdminAreaColumnBillingName = $this->isOptionCheckboxActive('displayAdminAreaColumnBillingName');
+		$displayAdminAreaColumnBillingCompany = $this->isOptionCheckboxActive('displayAdminAreaColumnBillingCompany');
 
 		$field_options = [
 			"displayAdminAreaColumnRedeemedInfo"=>$displayAdminAreaColumnRedeemedInfo,
 			"displayAdminAreaColumnBillingName"=>$displayAdminAreaColumnBillingName,
+			"displayAdminAreaColumnBillingCompany"=>$displayAdminAreaColumnBillingCompany,
 		];
 		$fields = $this->getExportColumnFields($field_options);
 
@@ -1696,6 +1719,9 @@ class sasoEventtickets_AdminSettings {
 		if ($options != null && is_array($options)) {
 			if (isset($options["displayAdminAreaColumnBillingName"])) {
 				$fields[] = "displayAdminAreaColumnBillingName";
+			}
+			if (isset($options["displayAdminAreaColumnBillingCompany"])) {
+				$fields[] = "displayAdminAreaColumnBillingCompany";
 			}
 		}
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getExportColumnFields')) {
@@ -1775,6 +1801,10 @@ class sasoEventtickets_AdminSettings {
 						if (!empty($metaObj['wc_ticket']['_username'])) $row['displayAdminAreaColumnBillingName'] = $metaObj['wc_ticket']['_username'];
 						$row['meta_wc_ticket_customer_name'] = $this->getCustomerName($metaObj['woocommerce']['order_id']);
 					}
+					if (isset($options["displayAdminAreaColumnBillingCompany"]) && $options["displayAdminAreaColumnBillingCompany"]) {
+						if (!empty($metaObj['wc_ticket']['_company'])) $row['displayAdminAreaColumnBillingCompany'] = $metaObj['wc_ticket']['_company'];
+						$row['meta_wc_ticket_customer_company'] = $this->getCompanyName($metaObj['woocommerce']['order_id']);
+					}
 				}
 			}
 		}
@@ -1845,11 +1875,13 @@ class sasoEventtickets_AdminSettings {
 			if (isset($item["class"])) {
 				$msg .= $item["class"]."->";
 			}
-			$msg .= $item["function"]." Line: ".$item["line"];
+			if (isset($item["line"])) {
+				$msg .= $item["function"]." Line: ".$item["line"];
+			}
 		}
 		if (!is_string($caller_name) || empty($caller_name) || $caller_name == null) {
 			$caller_name = "";
-			if (count($trace) > 0) {
+			if (count($trace) > 1) {
 				$caller_name = $trace[1]["class"]."->".$trace[1]["function"];
 			}
 		}

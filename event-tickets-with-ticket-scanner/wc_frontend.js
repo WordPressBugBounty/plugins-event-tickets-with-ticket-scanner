@@ -145,7 +145,6 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			elem.attr('placeholder', __('YYYY-MM-DD'));
 			let data_offset_start = 0;
 			let data_offset_end = 0;
-			console.log(elem);
 			try {
 				data_offset_start =	parseInt(elem.attr('data-offset-start'));
 			} catch (error) {
@@ -188,16 +187,32 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				beforeShowDay: function(date) { // https://api.jqueryui.com/datepicker/#option-beforeShow
 					let day = date.getDay();
 					let data_exclude_wdays = this._sasoevent_input_field.attr('data-exclude-wdays');
+					let selectable = true;
+					let cssClass = '';
+					let toolTipp = '';
 					if (data_exclude_wdays && data_exclude_wdays.length > 0) {
-
 						let excludedDays = data_exclude_wdays.split(',');
-						let selectable = excludedDays.indexOf(day.toString()) == -1;
+						selectable = excludedDays.indexOf(day.toString()) == -1;
 
-						let cssClass = selectable ? '' : 'ui-datepicker-unselectable';
-						let toolTipp = selectable ? '' : __('This day is not selectable');
-						return [selectable, cssClass, toolTipp];
+						cssClass = selectable ? '' : 'ui-datepicker-unselectable';
+						toolTipp = selectable ? '' : __('This day is not selectable');
 					}
-					return [true, ''];
+					if (selectable) {
+						let data_exclude_dates = this._sasoevent_input_field.attr('data-exclude-dates');
+						if (data_exclude_dates && data_exclude_dates.length > 0) {
+							let excludedDates = data_exclude_dates.split(',');
+							let y = date.getFullYear();
+							let m = date.getMonth() + 1;
+							let d = date.getDate();
+							let dateStr = y + '-' + (m < 10 ? '0' : '') + m + '-' + (d < 10 ? '0' : '') + d;
+							selectable = excludedDates.indexOf(dateStr) == -1;
+
+							cssClass = selectable ? '' : 'ui-datepicker-unselectable';
+							toolTipp = selectable ? '' : __('This day is not selectable');
+						}
+					}
+					return [selectable, cssClass, toolTipp];
+					//return [true, ''];
 				}
 			})
 			.removeAttr('disabled');
