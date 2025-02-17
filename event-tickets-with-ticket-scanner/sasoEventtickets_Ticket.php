@@ -242,10 +242,10 @@ final class sasoEventtickets_Ticket {
 		return $ret;
 	}
 	function rest_retrieve_ticket($web_request) {
-		if (!isset($_GET['code'])) {
+		if (!SASO_EVENTTICKETS::issetRPara('code')) {
 			return wp_send_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
 		}
-		$code = trim($_GET['code']);
+		$code = trim(SASO_EVENTTICKETS::getRequestPara('code'));
 		if ($this->is_ticket_code_orderticket($code)) {
 			return $this->retrieve_order_ticket($code);
 		}
@@ -491,13 +491,13 @@ final class sasoEventtickets_Ticket {
 		];
 	}
 	function rest_redeem_ticket(WP_REST_Request $web_request) {
-		if (!isset($_REQUEST['code'])) wp_send_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
+		if (!SASO_EVENTTICKETS::issetRPara('code')) wp_send_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
 		$ret = null;
-		if ($this->is_ticket_code_orderticket($_REQUEST['code'])) {
-			$ret = $this->redeem_order_ticket($_REQUEST['code']);
+		if ($this->is_ticket_code_orderticket(SASO_EVENTTICKETS::getRequestPara('code'))) {
+			$ret = $this->redeem_order_ticket(SASO_EVENTTICKETS::getRequestPara('code'));
 		}
 		if ($ret == null) {
-			$ret = $this->redeem_ticket($_REQUEST['code']);
+			$ret = $this->redeem_ticket(SASO_EVENTTICKETS::getRequestPara('code'));
 		}
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_rest_redeem_ticket', $ret, $web_request );
 		return $ret;
@@ -1031,7 +1031,7 @@ final class sasoEventtickets_Ticket {
 					$color = 'red';
 				}
 
-				if (isset($_POST['action']) && $_POST['action'] == "redeem") {
+				if (SASO_EVENTTICKETS::issetRPara('action') && SASO_EVENTTICKETS::getRequestPara('action') == "redeem") {
 					$pfad = plugins_url( "img/",__FILE__ );
 					if ($this->redeem_successfully) {
 						echo '<p style="text-align:center;color:green"><img src="'.$pfad.'button_ok.png"><br><b>'.__("Successfully redeemed", 'event-tickets-with-ticket-scanner').'</b></p>';
@@ -1305,7 +1305,7 @@ final class sasoEventtickets_Ticket {
 		//if (get_post_meta( $metaObj['woocommerce']['product_id'], 'saso_eventtickets_ticket_is_RTL', true ) == "yes") {
 			//$pdf->setRTL(true);
 		//}
-		if (isset($_REQUEST["testDesigner"]) && $this->getOptions()->isOptionCheckboxActive('wcTicketPDFisRTLTest')) {
+		if (SASO_EVENTTICKETS::issetRPara('testDesigner') && $this->getOptions()->isOptionCheckboxActive('wcTicketPDFisRTLTest')) {
 			$pdf->setRTL(true);
 		} else if($this->getOptions()->isOptionCheckboxActive('wcTicketPDFisRTL')) {
 			$pdf->setRTL(true);
@@ -1326,7 +1326,7 @@ final class sasoEventtickets_Ticket {
 		}
 
 		$marginZero = false;
-		if (isset($_REQUEST["testDesigner"])) {
+		if (SASO_EVENTTICKETS::issetRPara('testDesigner')) {
 			if ($this->getOptions()->isOptionCheckboxActive('wcTicketPDFZeroMarginTest')) {
 				$marginZero = true;
 			}
@@ -1340,7 +1340,7 @@ final class sasoEventtickets_Ticket {
 		$width = 210;
         $height = 297;
 		$qr_code_size = 0; // takes default then
-		if (isset($_REQUEST["testDesigner"])) {
+		if (SASO_EVENTTICKETS::issetRPara('testDesigner')) {
 			$width = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeWidthTest", 0);
 			$height = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeHeightTest", 0);
 			$qr_code_size = intval($this->MAIN->getOptions()->getOptionValue("wcTicketQRSizeTest", 0));
@@ -1380,18 +1380,27 @@ final class sasoEventtickets_Ticket {
 				$width = $option_wcTicketTicketBanner['additional']['min']['width'];
 			}*/
 			//if (!empty($mediaData['location']) && file_exists($mediaData['location'])) {
-			if (!empty($mediaData['for_pdf'])) {
-				$pdf->addPart('<div style="text-align:center;"><img src="'.$mediaData['for_pdf'].'"></div>');
-				if (isset($mediaData['meta']) && isset($mediaData['meta']['height']) && floatval($mediaData['meta']['height']) > 0) {
-					$dpiY = 96;
-					if (function_exists("getimagesize")) {
-						$imageInfo = getimagesize($mediaData['location']);
-						// DPI-Werte aus den EXIF-Daten extrahieren
-						$dpiY = isset($imageInfo['dpi_y']) ? $imageInfo['dpi_y'] : $dpiY;
-					}
-					$units = $pdf->convertPixelIntoMm($mediaData['meta']['height'] + 10, $dpiY);
-					$pdf->setQRParams(['pos'=>['y'=>$units]]);
+			$has_banner = false;
+			if ($this->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityUseURL')) {
+				if (!empty($mediaData['url'])) {
+					$pdf->addPart('<div style="text-align:center;"><img src="'.$mediaData['url'].'"></div>');
+					$has_banner = true;
 				}
+			} else {
+				if (!empty($mediaData['for_pdf'])) {
+					$pdf->addPart('<div style="text-align:center;"><img src="'.$mediaData['for_pdf'].'"></div>');
+					$has_banner = true;
+				}
+			}
+			if ($has_banner && isset($mediaData['meta']) && isset($mediaData['meta']['height']) && floatval($mediaData['meta']['height']) > 0) {
+				$dpiY = 96;
+				if (function_exists("getimagesize")) {
+					$imageInfo = getimagesize($mediaData['location']);
+					// DPI-Werte aus den EXIF-Daten extrahieren
+					$dpiY = isset($imageInfo['dpi_y']) ? $imageInfo['dpi_y'] : $dpiY;
+				}
+				$units = $pdf->convertPixelIntoMm($mediaData['meta']['height'] + 10, $dpiY);
+				$pdf->setQRParams(['pos'=>['y'=>$units]]);
 			}
 		}
 
@@ -1432,8 +1441,14 @@ final class sasoEventtickets_Ticket {
 				$width = $option_wcTicketTicketLogo['additional']['max']['width'];
 			}
 			//if (!empty($mediaData['location']) && file_exists($mediaData['location'])) {
-			if (!empty($mediaData['for_pdf'])) {
-				$pdf->addPart('<br><br><p style="text-align:center;"><img width="'.$width.'" src="'.$mediaData['for_pdf'].'"></p>');
+			if ($this->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityUseURL')) {
+				if (!empty($mediaData['url'])) {
+					$pdf->addPart('<br><br><p style="text-align:center;"><img width="'.$width.'" src="'.$mediaData['url'].'"></p>');
+				}
+			} else {
+				if (!empty($mediaData['for_pdf'])) {
+					$pdf->addPart('<br><br><p style="text-align:center;"><img width="'.$width.'" src="'.$mediaData['for_pdf'].'"></p>');
+				}
 			}
 		}
 		$brandingHidePluginBannerText = $this->getOptions()->isOptionCheckboxActive('brandingHidePluginBannerText');
@@ -1445,9 +1460,14 @@ final class sasoEventtickets_Ticket {
 		$wcTicketTicketBG = apply_filters( $this->MAIN->_add_filter_prefix.'wcTicketTicketBG', $wcTicketTicketBG, $product_id);
 		if (!empty($wcTicketTicketBG) && intval($wcTicketTicketBG) >0) {
 			$mediaData = SASO_EVENTTICKETS::getMediaData($wcTicketTicketBG);
-			//if (!empty($mediaData['location']) && file_exists($mediaData['location'])) {
-			if (!empty($mediaData['for_pdf'])) {
-				$pdf->setBackgroundImage($mediaData['for_pdf']);
+			if ($this->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityUseURL')) {
+				if (!empty($mediaData['url'])) {
+					$pdf->setBackgroundImage($mediaData['url']);
+				}
+			} else {
+				if (!empty($mediaData['for_pdf'])) {
+					$pdf->setBackgroundImage($mediaData['for_pdf']);
+				}
 			}
 		}
 
@@ -1711,14 +1731,15 @@ final class sasoEventtickets_Ticket {
 		if ($display_the_ticket) {
 			$ticketDesigner = $this->MAIN->getTicketDesignerHandler();
 
-			//if (isset($_REQUEST["testDesigner"]) && current_user_can( 'manage_options' ) ) {
+			//if (SASO_EVENTTICKETS::issetRPara('testDesigner') && current_user_can( 'manage_options' ) ) {
 			$a = SASO_EVENTTICKETS::getRequestPara('nonce');
 			$b = $this->MAIN->_js_nonce;
 
 			$is_nonce_check_ok = wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('nonce'), $this->MAIN->_js_nonce);
-			//if (isset($_REQUEST["testDesigner"]) && $this->MAIN->isUserAllowedToAccessAdminArea() ) {
-			//if (isset($_REQUEST["testDesigner"]) && $is_nonce_check_ok ) {
-			if (isset($_REQUEST["testDesigner"]) && $a != '' ) { // TODO: quick fix, so that users can work
+			//if (SASO_EVENTTICKETS::issetRPara('testDesigner') && $this->MAIN->isUserAllowedToAccessAdminArea() ) {
+			//if (SASO_EVENTTICKETS::issetRPara('testDesigner') && $is_nonce_check_ok ) {
+			//TODO: fix the nonce check
+			if (SASO_EVENTTICKETS::issetRPara('testDesigner') ) { // TODO: quick fix, so that users can work
 				$template = "";
 				if (empty($template)) {
 					$ticketDesigner->setTemplate($this->getAdminSettings()->getOptionValue("wcTicketDesignerTemplateTest"));
@@ -1787,7 +1808,7 @@ final class sasoEventtickets_Ticket {
 						}
 					}
 				}
-				if (isset($_REQUEST["displaytime"])) {
+				if (SASO_EVENTTICKETS::issetRPara('displaytime')) {
 					echo '<p>Server time: '.date("Y-m-d H:i", current_time("timestamp")).'</p>';
 					print_r($ticket_times);
 				}
@@ -1945,8 +1966,8 @@ final class sasoEventtickets_Ticket {
 	}
 
 	private function executeRequestScanner() {
-		if (isset($_POST['action']) && $_POST['action'] == "redeem" || (isset($_GET['redeemauto']) && isset($_GET['code']))) {
-			if (!isset($_POST['code']) && !isset($_GET['code']) ) throw new Exception("#8008 ".esc_html__('Ticket number to redeem is missing', 'event-tickets-with-ticket-scanner'));
+		if (SASO_EVENTTICKETS::issetRPara('action') && SASO_EVENTTICKETS::getRequestPara('action') == "redeem" || (SASO_EVENTTICKETS::issetRPara('redeemauto') && SASO_EVENTTICKETS::issetRPara('code'))) {
+			if (!SASO_EVENTTICKETS::issetRPara('code')) throw new Exception("#8008 ".esc_html__('Ticket number to redeem is missing', 'event-tickets-with-ticket-scanner')); // hmm, seems that this will never be called
 			$this->redeemTicket();
 			$this->codeObj = null;
 		}
@@ -1956,7 +1977,7 @@ final class sasoEventtickets_Ticket {
 		global $sasoEventtickets;
 		// auswerten $this->getParts()['_request']
 		//if ($this->getParts()['_request'] == "action=redeem") {
-		if (isset($_POST['action']) && $_POST['action'] == "redeem") {
+		if (SASO_EVENTTICKETS::issetRPara('action') && SASO_EVENTTICKETS::getRequestPara('action') == "redeem") {
 			// redeem ausführen
 			$order = $this->getOrder();
 			if ($this->isPaid($order)) {

@@ -3,6 +3,7 @@ include_once(plugin_dir_path(__FILE__)."init_file.php");
 if (!class_exists('SASO_EVENTTICKETS', false)) {
     class SASO_EVENTTICKETS {
 		static $DB;
+		static $REQUEST_DATA;
 		/**
 		 * @param $plugin_dir_path plugin_dir_path(__FILE__)
 		 */
@@ -36,24 +37,36 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 		public static function getRESTPrefixURL() {
 			return basename(dirname(__FILE__));
 		}
+		// use SASO_EVENTTICKETS::getRequestPara(
 		public static function getRequestPara($name, $def=null) {
-			$ret = null;
-			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-				if (isset($_POST[$name])) $ret = $_POST[$name];
-				if ($ret == null && isset($_GET[$name])) $ret = $_GET[sanitize_text_field($name)];
-			}
-			if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-				if (isset($_GET[$name])) $ret = $_GET[sanitize_text_field($name)];
-			}
-			if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-				$putdata = fopen("php://input", "r");
-				$para = [];
-				parse_str($putdata, $para);
-				if (isset($para[$name])) $ret = $para[sanitize_text_field($name)];
-				else $ret = $para;
-			}
-			return $ret;
+			$request = self::getRequest();
+			return isset($request[$name]) ? $request[$name] : $def;
 		}
+		public static function getRequest() {
+			if (self::$REQUEST_DATA == null) {
+				$ret = null;
+				switch ($_SERVER['REQUEST_METHOD']) {
+					case 'POST':
+						$ret = $_POST;
+						if (empty($ret)) {
+							$ret = $_GET;
+						} else {
+							$ret = array_merge($ret, $_GET);
+						}
+						break;
+					case 'GET':
+						$ret = $_GET;
+						break;
+					case 'PUT':
+						$putdata = file_get_contents("php://input");
+						parse_str($putdata, $ret);
+						break;
+				}
+				self::$REQUEST_DATA = $ret;
+			}
+			return self::$REQUEST_DATA;
+		}
+		// use SASO_EVENTTICKETS::issetRPara(
 		public static function issetRPara($name) {
 			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				if (isset($_POST[$name])) return true;
@@ -277,9 +290,13 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 		}
 		public static function rest_downloadPDFTicketBadge($web_request) {
 			try {
-				$a = isset($_REQUEST['action']) ? $_REQUEST['action'] : "";
+				$a = SASO_EVENTTICKETS::issetRPara('action') ? SASO_EVENTTICKETS::getRequestPara('action') : "";
 				global $sasoEventtickets;
-				$sasoEventtickets->getAdmin()->executeJSON($a, $_REQUEST, true, false);
+				if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+					$sasoEventtickets->getAdmin()->executeJSON($a, $_POST, true, false);
+				} else {
+					$sasoEventtickets->getAdmin()->executeJSON($a, $_GET, true, false);
+				}
 			} catch (Exception $e) {
 				wp_send_json_error($e->getMessage());
 			}

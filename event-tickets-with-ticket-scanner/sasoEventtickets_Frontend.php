@@ -276,7 +276,7 @@ class sasoEventtickets_Frontend {
 
 			if ($this->MAIN->getOptions()->isOptionCheckboxActive('displayCodeInfoFirstCheck')) {
 				$label = $this->MAIN->getOptions()->getOptionValue('displayCodeInfoFirstCheckLabel');
-				if (strpos($label, '{VALIDATION-FIRST_SUCCESS}') === false ) {
+				if (!empty($label) && strpos($label, '{VALIDATION-FIRST_SUCCESS}') === false ) {
 					$label .= " {VALIDATION-FIRST_SUCCESS}";
 				}
 				$label = str_replace('{VALIDATION-FIRST_SUCCESS}', date($date_format, strtotime($metaObj['validation']['first_success'])), $label);
@@ -286,7 +286,7 @@ class sasoEventtickets_Frontend {
 
 			if ($this->MAIN->getOptions()->isOptionCheckboxActive('displayCodeInfoLastCheck')) {
 				$label = $this->MAIN->getOptions()->getOptionValue('displayCodeInfoLastCheckLabel');
-				if (strpos($label, '{VALIDATION-LAST_SUCCESS}') === false ) {
+				if (!empty($label) && strpos($label, '{VALIDATION-LAST_SUCCESS}') === false ) {
 					$label .= " {VALIDATION-LAST_SUCCESS}";
 				}
 				$label = str_replace('{VALIDATION-LAST_SUCCESS}', date($date_format, strtotime($metaObj['validation']['last_success'])), $label);
@@ -296,7 +296,7 @@ class sasoEventtickets_Frontend {
 
 			if ($this->MAIN->getOptions()->isOptionCheckboxActive('displayCodeInfoConfirmedCount')) {
 				$label = $this->MAIN->getOptions()->getOptionValue('displayCodeInfoConfirmedCountLabel');
-				if (strpos($label, '{CONFIRMEDCOUNT}') === false ) {
+				if (!empty($label) && strpos($label, '{CONFIRMEDCOUNT}') === false ) {
 					$label .= " {CONFIRMEDCOUNT}";
 				}
 				$label = str_replace('{CONFIRMEDCOUNT}', intval($metaObj['confirmedCount']), $label);

@@ -36,7 +36,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				let nonce = phpObject.nonce;
 		 		$.ajax(
 		 			{
-		 				type: 'GET',
+		 				type: 'POST',
 		 				url: phpObject.ajaxurl,
 		 				data: {
 		 					action: phpObject.action,
@@ -168,11 +168,31 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			elem.on('change',()=>{
 				let code = elem.val().trim();
 				isChanged = true;
-				// remove the related error message on the cart
+				let to_be_changed = [elem];
+				// update the other date pickers if no value is set to use this date
 				let data_cart_item_id = elem.attr('data-cart-item-id');
+				$('body').find('input[data-input-type="daychooser"][data-plugin="event"][id^="saso_eventtickets_request_daychooser['+data_cart_item_id+']"]').each((idx, input) => {
+					let input_elem = $(input);
+					let v = input_elem.val().trim();
+					if (!v) {
+						console.log(input_elem.attr("id")+'set value to: '+code);
+						input_elem.val(code);
+						to_be_changed.push(input_elem);
+					}
+				});
+
+				// remove the related error message on the cart
 				let data_cart_item_count = elem.attr('data-cart-item-count');
 				//$('li[data-cart-item-id="'+data_cart_item_id+'"][data-cart-item-count="'+data_cart_item_count+'"]').remove();
-				sendCode(elem, code, "saso_eventtickets_request_daychooser");
+				// send data to the server
+				wait = 0;
+				to_be_changed.forEach(input => {
+					console.log(input.attr("id")+'send code: '+code);
+					window.setTimeout(()=>{
+						sendCode(input, code, "saso_eventtickets_request_daychooser");
+					}, wait);
+					if (wait == 0) wait = 250;
+				});
 			})
 			.datepicker({
 				dateFormat: 'yy-mm-dd',

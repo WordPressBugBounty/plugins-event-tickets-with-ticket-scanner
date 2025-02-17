@@ -66,7 +66,7 @@ class sasoEventtickets_AdminSettings {
 					$ret = $this->removeList($data);
 					break;
 				case "getCodes":
-					$ret = $this->getCodes($data, $_POST);
+					$ret = $this->getCodes($data, SASO_EVENTTICKETS::getRequest());
 					$justJSON = true;
 					break;
 				case "addCode":
@@ -94,7 +94,7 @@ class sasoEventtickets_AdminSettings {
 					$ret = $this->exportTableCodes($data);
 					break;
 				case "getErrorLogs":
-					$ret = $this->getErrorLogs($data, $_REQUEST);
+					$ret = $this->getErrorLogs($data, SASO_EVENTTICKETS::getRequest());
 					$justJSON = true;
 					break;
 				case "emptyTableErrorLogs":
@@ -853,13 +853,33 @@ class sasoEventtickets_AdminSettings {
 		}
 
 		if ($displayAdminAreaColumnBillingName) {
+			$had_error = false;
 			foreach($daten as $key => $item) {
-				$daten[$key]['_customer_name'] = $this->getCustomerName($item['order_id']);
+				if ($item['order_id'] > 0) {
+					try {
+						$daten[$key]['_customer_name'] = $this->getCustomerName($item['order_id']);
+					} catch (Exception $e) {
+						if ($had_error == false) {
+							$this->logErrorToDB($e->getMessage());
+						}
+						$had_error = true;
+					}
+				}
 			}
 		}
 		if ($displayAdminAreaColumnBillingCompany) {
+			$had_error = false;
 			foreach($daten as $key => $item) {
-				$daten[$key]['_customer_company'] = $this->getCompanyName($item['order_id']);
+				if ($item['order_id'] > 0) {
+					try {
+						$daten[$key]['_customer_company'] = $this->getCompanyName($item['order_id']);
+					} catch (Exception $e) {
+						if ($had_error == false) {
+							$this->logErrorToDB($e->getMessage());
+						}
+						$had_error = true;
+					}
+				}
 			}
 		}
 		if ($displayAdminAreaColumnRedeemedInfo) {

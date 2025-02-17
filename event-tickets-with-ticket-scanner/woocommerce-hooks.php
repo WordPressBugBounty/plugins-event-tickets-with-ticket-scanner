@@ -171,9 +171,10 @@ class sasoEventtickets_WC {
 	}
 
 	public function woocommerce_save_product_variation($variation_id, $i) {
+		$R = SASO_EVENTTICKETS::getRequest();
 		// checkbox
 		$key = '_saso_eventtickets_is_not_ticket';
-		if( isset($_POST[$key]) && isset($_POST[$key][$i]) ) {
+		if( isset($R[$key]) && isset($R[$key][$i]) ) {
 			update_post_meta( $variation_id, $key, 'yes');
 		} else {
 			delete_post_meta( $variation_id, $key );
@@ -185,16 +186,16 @@ class sasoEventtickets_WC {
 			'saso_eventtickets_ticket_end_date',
 			'saso_eventtickets_ticket_end_time'];
 		foreach($keys as $key) {
-			if( isset($_POST[$key]) && isset($_POST[$key][$i]) ) {
-				update_post_meta( $variation_id, $key, sanitize_text_field($_POST[$key][$i]) );
+			if( isset($R[$key]) && isset($R[$key][$i]) ) {
+				update_post_meta( $variation_id, $key, sanitize_text_field($R[$key][$i]) );
 			} else {
 				delete_post_meta( $variation_id, $key );
 			}
 		}
 		// numbers
 		$key = 'saso_eventtickets_ticket_amount_per_item';
-		if( isset($_POST[$key]) && isset($_POST[$key][$i]) ) {
-			$value = intval($_POST[$key][$i]);
+		if( isset($R[$key]) && isset($R[$key][$i]) ) {
+			$value = intval($R[$key][$i]);
 			if ($value < 1) $value = 1;
 			update_post_meta( $variation_id, $key, $value );
 		} else {
@@ -567,10 +568,12 @@ class sasoEventtickets_WC {
 	}
 
 	public function woocommerce_process_product_meta( $id, $post ) {
+		$R = SASO_EVENTTICKETS::getRequest();
+
 		$key = 'saso_eventtickets_list';
-		if (isset($_POST[$key])) {
-			if( !empty( $_POST[$key] ) ) {
-				update_post_meta( $id, $key, sanitize_text_field($_POST[$key]) );
+		if (isset($R[$key])) {
+			if( !empty( $R[$key] ) ) {
+				update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
 			} else {
 				delete_post_meta( $id, $key );
 			}
@@ -579,9 +582,9 @@ class sasoEventtickets_WC {
 		// damit nicht alte Eintragungen gelöscht werden - so kann der kunde upgrade machen und alles ist noch da
 		if (version_compare( WC_VERSION, SASO_EVENTTICKETS_PLUGIN_MIN_WC_VER, '>=' )) {
 			$key = 'saso_eventtickets_list_sale_restriction';
-			if (isset($_POST[$key])) {
-				if( $_POST[$key] == '0' || !empty( $_POST[$key] ) ) {
-					update_post_meta( $id, $key, sanitize_text_field($_POST[$key]) );
+			if (isset($R[$key])) {
+				if( $R[$key] == '0' || !empty( $R[$key] ) ) {
+					update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
 				} else {
 					delete_post_meta( $id, $key );
 				}
@@ -600,8 +603,8 @@ class sasoEventtickets_WC {
 			'saso_eventtickets_list_formatter'
 		];
 		foreach($keys_checkbox as $key) {
-			if (isset($_POST[$key])) {
-				if( isset( $_POST[$key] ) ) {
+			if (isset($R[$key])) {
+				if( isset( $R[$key] ) ) {
 					update_post_meta( $id, $key, 'yes' );
 				} else {
 					delete_post_meta( $id, $key );
@@ -622,9 +625,9 @@ class sasoEventtickets_WC {
 			'saso_eventtickets_request_daychooser_per_ticket_label'
 		];
 		foreach($keys_inputfields as $key) {
-			if (isset($_POST[$key])) {
-				if( !empty( $_POST[$key] ) ) {
-					update_post_meta( $id, $key, sanitize_text_field($_POST[$key]) );
+			if (isset($R[$key])) {
+				if( !empty( $R[$key] ) ) {
+					update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
 				} else {
 					delete_post_meta( $id, $key );
 				}
@@ -632,9 +635,9 @@ class sasoEventtickets_WC {
 		}
 
 		$key = 'saso_eventtickets_daychooser_exclude_wdays';
-		if (isset($_POST[$key])) {
+		if (isset($R[$key])) {
 			$array_to_save = [];
-			foreach($_POST[$key] as $v) {
+			foreach($R[$key] as $v) {
 				$v = sanitize_text_field($v);
 				$array_to_save[] = $v;
 			}
@@ -648,9 +651,9 @@ class sasoEventtickets_WC {
 			'saso_eventtickets_daychooser_offset_end'
 		];
 		foreach($keys_number as $key) {
-			if (isset($_POST[$key])) {
-				if( !empty($_POST[$key]) || $_POST[$key] == "0" ) {
-					$value = intval($_POST[$key]);
+			if (isset($R[$key])) {
+				if( !empty($R[$key]) || $R[$key] == "0" ) {
+					$value = intval($R[$key]);
 					if ($value < 0) $value = 1;
 					update_post_meta( $id, $key, $value );
 				} else {
@@ -660,18 +663,18 @@ class sasoEventtickets_WC {
 		}
 
 		$key = 'saso_eventtickets_ticket_is_ticket_info';
-		if (isset($_POST[$key])) {
-			if( !empty( $_POST[$key] ) ) {
-				update_post_meta( $id, $key, wp_kses_post($_POST[$key]) );
+		if (isset($R[$key])) {
+			if( !empty( $R[$key] ) ) {
+				update_post_meta( $id, $key, wp_kses_post($R[$key]) );
 			} else {
 				delete_post_meta( $id, $key );
 			}
 		}
 		$key = 'saso_eventtickets_request_value_per_ticket_values';
-		if (isset($_POST[$key])) {
-			if( !empty( $_POST[$key] ) ) {
+		if (isset($R[$key])) {
+			if( !empty( $R[$key] ) ) {
 				$v = [];
-				foreach(explode("\n", $_POST[$key]) as $entry) {
+				foreach(explode("\n", $R[$key]) as $entry) {
 					$t = explode("|", $entry);
 					if (count($t) > 0) {
 						$t[0] = sanitize_key(trim($t[0]));
@@ -1392,9 +1395,9 @@ class sasoEventtickets_WC {
 						}
 					}
 
-					$labelNamePerTicket = null;
-					$labelValuePerTicket = null;
-					$labelDayChooser = null;
+					$labelNamePerTicket_label = null;
+					$labelValuePerTicket_label = null;
+					$labelDayChooser_label = null;
 
 					$a = 0;
 					foreach($code_ as $c) {
@@ -1431,37 +1434,40 @@ class sasoEventtickets_WC {
 								}
 								$name_per_ticket = $metaObj['wc_ticket']['name_per_ticket'];
 								if (!empty($name_per_ticket)) {
-									if ($labelNamePerTicket == null) {
-										$labelNamePerTicket = esc_attr($this->MAIN->getTicketHandler()->getLabelNamePerTicket($product->get_id()));
+									if ($labelNamePerTicket_label == null) {
+										$labelNamePerTicket_label = esc_attr($this->MAIN->getTicketHandler()->getLabelNamePerTicket($product->get_id()));
 									}
-									$labelNamePerTicket = str_replace("{count}", $a, $labelNamePerTicket);
-									$ticket_info_text = $labelNamePerTicket." ".$name_per_ticket;
+									$labelNamePerTicket = str_replace("{count}", $a, $labelNamePerTicket_label);
+									$ticket_info_text = $labelNamePerTicket." ".esc_html($name_per_ticket);
 								}
 								$value_per_ticket = $metaObj['wc_ticket']['value_per_ticket'];
 								if (!empty($value_per_ticket)) {
-									if ($labelValuePerTicket == null) {
-										$labelValuePerTicket = esc_attr($this->MAIN->getTicketHandler()->getLabelValuePerTicket($product->get_id()));
+									if ($labelValuePerTicket_label == null) {
+										$labelValuePerTicket_label = esc_attr($this->MAIN->getTicketHandler()->getLabelValuePerTicket($product->get_id()));
 									}
-									$labelValuePerTicket = str_replace("{count}", $a, $labelValuePerTicket);
-									if (!empty($ticket_info_text)) $ticket_info_text .= "<br>";
-									$ticket_info_text .= $labelValuePerTicket." ".$value_per_ticket;
+									$labelValuePerTicket = str_replace("{count}", $a, $labelValuePerTicket_label);
+									if ($ticket_info_text != "") $ticket_info_text .= "<br>";
+									$ticket_info_text .= $labelValuePerTicket." ".esc_html($value_per_ticket);
 								}
 								$day_chooser = $metaObj['wc_ticket']['day_per_ticket'];
 								if (!empty($day_chooser) && $metaObj['wc_ticket']['is_daychooser'] == 1) {
-									if ($labelDayChooser == null) {
-										$labelDayChooser = esc_attr($this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product->get_id()));
+									if ($labelDayChooser_label == null) {
+										$labelDayChooser_label = esc_attr($this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product->get_id()));
 									}
 									if (!empty($ticket_info_text)) $ticket_info_text .= "<br>";
-									$labelDayChooser = str_replace("{count}", $a, $labelDayChooser);
-									$ticket_info_text .= $labelDayChooser." ".$day_chooser;
+									$labelDayChooser = str_replace("{count}", $a, $labelDayChooser_label);
+									if ($ticket_info_text != "") $ticket_info_text .= "<br>";
+									$ticket_info_text .= $labelDayChooser." ".esc_html($day_chooser);
 								}
 							}
 
+							//$is_thankyoupage = is_wc_endpoint_url( 'order-received' );
+
 							if ($plain_text) {
-								echo "\n".esc_html($preText).' '.esc_attr($c);
 								if (!empty($ticket_info_text)) {
 									echo "\n".esc_html(str_replace($ticket_info_text, "<br>", "\n"));
 								}
+								echo "\n".esc_html($preText).' '.esc_attr($c);
 								if (!empty($cvv) && !$wcassignmentDoNotPutCVVOnEmail) {
 									echo "\nCVV: ".esc_html($cvv);
 								}
@@ -1477,27 +1483,29 @@ class sasoEventtickets_WC {
 									echo "\n" . esc_html($dlnbtnlabel) . " " . esc_url($url).$parameter_add.'badge';
 								}
 							} else {
-								echo '<div class="product-serial-code">';
+								echo '<div class="product-serial-code" style="padding-bottom:15px;">';
 								if (!empty($ticket_info_text)) {
-									echo esc_html($ticket_info_text)."<br>";
-								}
-								if (!empty($url) && !$wcTicketDontDisplayPDFButtonOnMail) {
-									$dlnbtnlabel = $this->getOptions()->getOptionValue('wcTicketLabelPDFDownload');
-									echo '<a target="_blank" href="'.esc_url($url).$parameter_add.'pdf"><b>'.esc_html($dlnbtnlabel).'</b></a> ';
+									echo $ticket_info_text."<br>";
 								}
 								echo esc_html($preText)." ";
 								if (empty($url) || $wcTicketDontDisplayDetailLinkOnMail) {
 									echo esc_html($c);
 								} else {
-									echo '<a target="_blank" href="'.esc_url($url).'">'.esc_html($c).'</a> ';
+									echo '<br><a target="_blank" href="'.esc_url($url).'">'.esc_html($c).'</a> ';
 								}
 								if (!empty($cvv) && !$wcassignmentDoNotPutCVVOnEmail) {
 									echo "CVV: ".esc_html($cvv);
 								}
+								echo '<p>';
+								if (!empty($url) && !$wcTicketDontDisplayPDFButtonOnMail) {
+									$dlnbtnlabel = $this->getOptions()->getOptionValue('wcTicketLabelPDFDownload');
+									echo '<br><a target="_blank" href="'.esc_url($url).$parameter_add.'pdf"><b>'.esc_html($dlnbtnlabel).'</b></a>';
+								}
 								if (!empty($url) && $wcTicketBadgeAttachLinkToMail ) {
 									$dlnbtnlabel = $this->getOptions()->getOptionValue('wcTicketBadgeLabelDownload');
-									echo '<a target="_blank" href="'.esc_url($url).$parameter_add.'badge"><b>'.esc_html($dlnbtnlabel).'</b></a> ';
+									echo '<br><a target="_blank" href="'.esc_url($url).$parameter_add.'badge"><b>'.esc_html($dlnbtnlabel).'</b></a>';
 								}
+								echo '</p>';
 								echo '</div>';
 							}
 						}
@@ -1698,7 +1706,10 @@ class sasoEventtickets_WC {
 			$create_tickets = in_array($order_status, $ok_order_statuses);
 		}
 		if ($create_tickets == false) {
-			if (isset($_REQUEST['a_sngmbh']) && $_REQUEST['a_sngmbh'] == "premium" && isset($_REQUEST['data']) && isset($_REQUEST['data']['c']) && $_REQUEST['data']['c'] == "requestSerialsForOrder") {
+			$param_data = SASO_EVENTTICKETS::getRequestPara('data');
+			if (SASO_EVENTTICKETS::issetRPara('a_sngmbh') && SASO_EVENTTICKETS::getRequestPara('a_sngmbh') == "premium"
+				&& $param_data != null && isset($param_data['c'])
+				&& $param_data['c'] == "requestSerialsForOrder") {
 				// premium add btn on order details overwrite the false
 				$create_tickets = true;
 			} else {
@@ -2004,16 +2015,27 @@ class sasoEventtickets_WC {
 		$pdf->setFilemode('I');
 
 		$wcTicketFlyerBanner = $this->getOptions()->getOptionValue('wcTicketFlyerBanner');
-		if (!empty($wcTicketFlyerBanner) && intval($wcTicketFlyerBanner) >0) {
-			$option_wcTicketFlyerBanner = $this->getOptions()->getOption('wcTicketFlyerBanner');
+		if (!empty($wcTicketFlyerBanner) && intval($wcTicketFlyerBanner) > 0) {
 			$mediaData = SASO_EVENTTICKETS::getMediaData($wcTicketFlyerBanner);
-			/*$width = "600";
+			/*
+			$option_wcTicketFlyerBanner = $this->getOptions()->getOption('wcTicketFlyerBanner');
+			$width = "600";
 			if (isset($option_wcTicketFlyerBanner['additional']) && isset($option_wcTicketFlyerBanner['additional']['min']) && isset($option_wcTicketFlyerBanner['additional']['min']['width'])) {
 				$width = $option_wcTicketFlyerBanner['additional']['min']['width'];
 			}*/
-			//if (!empty($mediaData['location']) && file_exists($mediaData['location'])) {
-			if (!empty($mediaData['for_pdf'])) {
-				$pdf->addPart('<div style="text-align:center;"><img src="'.$mediaData['for_pdf'].'"></div>');
+			$has_banner = false;
+			if ($this->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityUseURL')) {
+				if (!empty($mediaData['url'])) {
+					$pdf->addPart('<div style="text-align:center;"><img src="'.$mediaData['url'].'"></div>');
+					$has_banner = true;
+				}
+			} else {
+				if (!empty($mediaData['for_pdf'])) {
+					$pdf->addPart('<div style="text-align:center;"><img src="'.$mediaData['for_pdf'].'"></div>');
+					$has_banner = true;
+				}
+			}
+			if ($has_banner) {
 				if (isset($mediaData['meta']) && isset($mediaData['meta']['height']) && floatval($mediaData['meta']['height']) > 0) {
 					$dpiY = 96;
 					if (function_exists("getimagesize")) {
@@ -2061,9 +2083,15 @@ class sasoEventtickets_WC {
 			if (isset($option_wcTicketFlyerLogo['additional']) && isset($option_wcTicketFlyerLogo['additional']['max']) && isset($option_wcTicketFlyerLogo['additional']['max']['width'])) {
 				$width = $option_wcTicketFlyerLogo['additional']['max']['width'];
 			}
-			//if (!empty($mediaData['location']) && file_exists($mediaData['location'])) {
-			if (!empty($mediaData['for_pdf'])) {
-				$pdf->addPart('<br><br><p style="text-align:center;"><img width="'.$width.'" src="'.$mediaData['for_pdf'].'"></p>');
+
+			if ($this->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityUseURL')) {
+				if (!empty($mediaData['url'])) {
+					$pdf->addPart('<br><br><p style="text-align:center;"><img width="'.$width.'" src="'.$mediaData['url'].'"></p>');
+				}
+			} else {
+				if (!empty($mediaData['for_pdf'])) {
+					$pdf->addPart('<br><br><p style="text-align:center;"><img width="'.$width.'" src="'.$mediaData['for_pdf'].'"></p>');
+				}
 			}
 		}
 		$pdf->addPart('<br><p style="text-align:center;font-size:9pt;">powered by Event Tickets With Ticket Scanner Plugin for Wordpress</p>');
@@ -2075,9 +2103,14 @@ class sasoEventtickets_WC {
 		$wcTicketFlyerBG = $this->getOptions()->getOptionValue('wcTicketFlyerBG');
 		if (!empty($wcTicketFlyerBG) && intval($wcTicketFlyerBG) >0) {
 			$mediaData = SASO_EVENTTICKETS::getMediaData($wcTicketFlyerBG);
-			//if (!empty($mediaData['location']) && file_exists($mediaData['location'])) {
-			if (!empty($mediaData['for_pdf'])) {
-				$pdf->setBackgroundImage($mediaData['for_pdf']);
+			if ($this->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityUseURL')) {
+				if (!empty($mediaData['url'])) {
+					$pdf->setBackgroundImage($mediaData['url']);
+				}
+			} else {
+				if (!empty($mediaData['for_pdf'])) {
+					$pdf->setBackgroundImage($mediaData['for_pdf']);
+				}
 			}
 		}
 		$pdf->render();
@@ -2269,17 +2302,18 @@ class sasoEventtickets_WC {
 
 	// speicher custom field aus dem cart - wird auch aufgerufen, wenn man den warenkorb aufruft und warenkorb updates macht
 	function woocommerce_cart_updated( ) {
+		$R = SASO_EVENTTICKETS::getRequest();
 		$session_keys = ['saso_eventtickets_request_name_per_ticket', 'saso_eventtickets_request_value_per_ticket', 'saso_eventtickets_request_daychooser'];
 		$cart = null;
 		foreach($session_keys as $k) {
-			if ( isset( $_POST[$k] ) ) { // wenn der warenkorb aktualisiert wird und das feld gesendet wird
+			if ( isset( $R[$k] ) ) { // wenn der warenkorb aktualisiert wird und das feld gesendet wird
 				$values = [];
 				if ($cart == null) {
 					$cart = WC()->cart;
 				}
 				foreach( $cart->get_cart() as $cart_item ) {
-					if (isset($_POST[$k][$cart_item['key']])) {
-						$value = $_POST[$k][$cart_item['key']];
+					if (isset($R[$k][$cart_item['key']])) {
+						$value = $R[$k][$cart_item['key']];
 						$values[$cart_item['key']] = $value;
 					}
 				}

@@ -205,25 +205,19 @@ class sasoEventtickets_TicketBadge {
 		$wcTicketBadgeBG = apply_filters( $this->MAIN->_add_filter_prefix.'wcTicketBadgeBG', $wcTicketBadgeBG, $product_id);
 		if (!empty($wcTicketBadgeBG) && intval($wcTicketBadgeBG) >0) {
 			$mediaData = SASO_EVENTTICKETS::getMediaData($wcTicketBadgeBG);
-			//if (!empty($mediaData['location']) && file_exists($mediaData['location'])) {
-            if (!empty($mediaData['for_pdf'])) {
-				$pdf->setBackgroundImage($mediaData['for_pdf']);
-			}
+            if ($this->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityUseURL')) {
+                if (!empty($mediaData['url'])) {
+                    $pdf->setBackgroundImage($mediaData['url']);
+                }
+            } else {
+                if (!empty($mediaData['for_pdf'])) {
+				    $pdf->setBackgroundImage($mediaData['for_pdf']);
+			    }
+            }
 		}
 
 
         $pdf->addPart($html);
-        /*
-        $teile = explode("{QRCODE_INLINE}", $html);
-		$pdf->addPart($teile[0]);
-        if (strpos(" ".$html, "{QRCODE_INLINE}")) {
-		    $pdf->addPart("{QRCODE_INLINE}");
-        }
-		if (count($teile) > 1) {
-			$teile[0] = "";
-			$pdf->addPart(trim(join("", $teile)));
-		}
-        */
         $qrTicketPDFPadding = intval($this->MAIN->getOptions()->getOptionValue('qrTicketPDFPadding'));
 		$pdf->setQRCodeContent(["text"=>$ticket_id, "style"=>["vpadding"=>$qrTicketPDFPadding, "hpadding"=>$qrTicketPDFPadding]]);
 		$pdf->setSize($width, $height);
@@ -304,8 +298,8 @@ class sasoEventtickets_TicketBadge {
         $metaObj = null;
         $product = null;
 
-        if (strpos($html, "{SITE_URL}")) $html = str_replace("{SITE_URL}", site_url(), $html);
-        if (strpos($html, "{TICKET.")) {
+        if (!empty($html) && strpos($html, "{SITE_URL}")) $html = str_replace("{SITE_URL}", site_url(), $html);
+        if (!empty($html) && strpos($html, "{TICKET.")) {
             $metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
             $codeObj['metaObj'] = $metaObj;
 
@@ -361,7 +355,7 @@ class sasoEventtickets_TicketBadge {
             }
         }
 
-        if (strpos($html, "{ORDER.")) {
+        if (!empty($html) && strpos($html, "{ORDER.")) {
             if ($order == null) {
                 $order_id = intval($codeObj['order_id']);
                 $order = wc_get_order($order_id);
@@ -384,7 +378,7 @@ class sasoEventtickets_TicketBadge {
                 }
             }
         }
-        if (strpos($html, "{PRODUCT.")) {
+        if (!empty($html) && strpos($html, "{PRODUCT.")) {
             if ($product == null) {
                 if ($metaObj == null) {
                     $metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);

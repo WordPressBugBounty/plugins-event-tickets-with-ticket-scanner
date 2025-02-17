@@ -40,6 +40,13 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		return t;
 	}
 
+	function _requestURL(action, myData) {
+		let paras = '?action='+myAjax._action+'&a_sngmbh='+action+'&t='+time();
+		for(let key in myData) paras += '&data['+key+']='+encodeURIComponent(myData[key]);
+		for(let key in DATA) paras += '&'+key+'='+encodeURIComponent(DATA[key]);
+		return myAjax.url + paras;
+	}
+
 	function _makePost(action, myData, cbf, ecbf, pcbf) {
 		if (FATAL_ERROR) return;
 		let _data = Object.assign({}, DATA);
@@ -314,13 +321,6 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		return format;
 	}
 
-	function _requestURL(action, myData) {
-		let paras = '?action='+myAjax._action+'&a_sngmbh='+action;
-		for(let key in myData) paras += '&data['+key+']='+encodeURIComponent(myData[key]);
-		for(let key in DATA) paras += '&'+key+'='+encodeURIComponent(DATA[key]);
-		return myAjax.url + paras;
-	}
-
 	function _getMediaData(mediaid, cbf) {
 		_makeGet('getMediaData', {'mediaid':mediaid}, (ret)=>{
 			cbf && cbf(ret);
@@ -371,7 +371,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 	function _displayAuthTokensArea() {
 		STATE = 'authtokens';
 		DIV.html('');
-		DIV.append(_getBackButtonDiv());
+		DIV.append(getBackButtonDiv());
 
 		DIV.append('<h3>'+_x('Auth Token', 'label', 'event-tickets-with-ticket-scanner')+'</h3>');
 		$('<p>').html(__('You can add auth tokens, that can be used to access your ticket scanner. Create an auth token and pass the QR code to the user or let the user scan it from your admin area. The used auth token will bypass any access restricton settings for the ticket scanner that are set in the options.', 'event-tickets-with-ticket-scanner')).appendTo(DIV);
@@ -637,12 +637,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 			let f1 = $('<div style="display:none;padding-bottom:15px;">').html(v.t).appendTo(div2);
 		});
 
-		DIV.html(_getBackButtonDiv());
+		DIV.html(getBackButtonDiv());
 		DIV.append(div);
 	}
 	function _displaySeatingplanArea() {
 		STATE = 'seatingplan';
-		DIV.html(_getBackButtonDiv());
+		DIV.html(getBackButtonDiv());
 
 		let is_plan_loaded = false;
 		let div = $('<div>');
@@ -773,7 +773,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 			let data = reply.options; // options values
 			let versions = reply.versions;
 
-			DIV.html(_getBackButtonDiv());
+			DIV.html(getBackButtonDiv());
 
 			// zeige support email
 			DIV.append(getUseFulVideosHTML);
@@ -951,6 +951,36 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		});
 	}
 
+	/**
+	 * returns 0 if the versions are the same, 1 if version1 is greater, -1 if version2 is greater
+	 */
+	function compareVersions(version1, version2) {
+		const v1 = version1.split('.').map(Number);
+		const v2 = version2.split('.').map(Number);
+
+		for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+			const num1 = v1[i] || 0;
+			const num2 = v2[i] || 0;
+
+			if (num1 > num2) return 1;
+			if (num1 < num2) return -1;
+		}
+
+		/*
+		// Example usage:
+		const result = compareVersions('5.8.1', '5.8.2');
+		if (result > 0) {
+			console.log('Version 5.8.1 is greater than 5.8.2');
+		} else if (result < 0) {
+			console.log('Version 5.8.1 is less than 5.8.2');
+		} else {
+			console.log('Both versions are equal');
+		}
+		*/
+
+		return 0;
+	}
+
 	function _displayOptionsArea() {
 		STATE = 'options';
 		DIV.html(_getSpinnerHTML());
@@ -958,14 +988,36 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 			let data = reply.options; // options values
 			let meta_tags_keys = reply.meta_tags_keys;
 
-			DIV.html(_getBackButtonDiv());
+			DIV.html(getBackButtonDiv());
 
+			// Create tabs
+			let tabs = $('<div class="tabs"/>');
+			let tabOptions = $('<div id="tab-options" class="tab-content"/>');
+
+			// Create tab navigation
+			let tabNav = $('<ul class="tab-nav"/>');
+			tabNav.append('<li><a href="#tab-options">Options</a></li>');
+			if (isPremium() && typeof PREMIUM.displayOptionsArea_Templates !== "undefined") {
+				tabNav.append(PREMIUM.displayOptionsArea_Tab);
+			}
+
+			tabs.append(tabNav);
+			tabs.append(tabOptions);
+			if (isPremium() && typeof PREMIUM.displayOptionsArea_Templates !== "undefined") {
+				//if (BASIC._compareVersions(prem_version, '1.5.0') < 0) { // check the version
+				//	div_template.append("This is a premium feature is available with Premium Version 1.5.0. You need to update your premium plugin.");
+				//}
+				tabs.append(PREMIUM.displayOptionsArea_Templates(_getOptions_Versions_getByKey('premium')));
+			}
+			DIV.append(tabs);
+
+			// Populate Options tab
 			let div_options = $('<div/>');
 			let div_infos = $('<div style="padding-top: 50px;"/>');
 			let resetOption_div = $('<div class="reset_option_wrap" style="padding-top: 20px;"/>');
-			DIV.append(div_options);
-			DIV.append('<hr>');
-			DIV.append(resetOption_div);
+			tabOptions.append(div_options);
+			tabOptions.append('<hr>');
+			tabOptions.append(resetOption_div);
 			$('<button class="button reset_btn_actn">').html(_x('Reset All Options', 'label', 'event-tickets-with-ticket-scanner'))
 				.on('click', ()=>{
 					LAYOUT.renderYesNo(_x('Reset All Options', 'title', 'event-tickets-with-ticket-scanner'), __('Do you really want to reset all the option?', 'event-tickets-with-ticket-scanner'), ()=>{
@@ -976,14 +1028,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 						});
 					});
 				}).appendTo(resetOption_div);
-			DIV.append(div_infos);
+			tabOptions.append(div_infos);
 			div_infos.append('<a name="replacementtags"></a><h3>'+_x('Replacement Tags', 'title', 'event-tickets-with-ticket-scanner')+'</h3>').append('<p>'+__('You can use these replacement tags in your text messages and URLs for the meta ticket values', 'event-tickets-with-ticket-scanner')+'</p>');
 			meta_tags_keys.forEach(v=>{
 				let t = '<p><b>{'+v.key+'}</b>: '+v.label+'</p>';
 				div_infos.append(t);
 			});
 
-			div_options.append('<h3>'+_x('Options', 'title', 'event-tickets-with-ticket-scanner')+'</h3>');
+			//div_options.append('<h3>'+_x('Options', 'title', 'event-tickets-with-ticket-scanner')+'</h3>');
 			div_options.append('<p><span class="dashicons dashicons-external"></span><a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/" target="_blank">Click here, to visit the documentation.</a></p>');
 			div_options.append(getUseFulVideosHTML());
 
@@ -1003,6 +1055,22 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 				$('<a href="#'+v.key+'" style="padding:5px;padding-left:0;margin-right:10px;">').html(v.label).appendTo(menu_band);
 			});
 			$('<a href="#topMenu" style="text-decoration:none;position:fixed;bottom:50px;right:10px;background-color:#b225cb;color:white;border-radius:15px;border:1 px solid blue;display:inline-block;padding:10px;">').html('<i class="dashicons dashicons-arrow-up"></i> Top').appendTo(div_options);
+
+			// Add jQuery for tab functionality
+			$('.tab-nav a').on('click', function(e) {
+				e.preventDefault();
+				$('.tab-content').hide();
+				$($(this).attr('href')).show();
+				$('.tab-nav a').removeClass('active');
+				$(this).addClass('active');
+			});
+
+			// Show the first tab by default
+			if (typeof PARAS.subdisplay !== "undefined" && PARAS.subdisplay == 'templates') {
+				$('.tab-nav a').eq(1).click();
+			} else {
+				$('.tab-nav a:first').click();
+			}
 
 			function __createTicketTemplateChooserBox(ticket_template, editor) {
 				return $('<div style="width:250px;display:inline-block;margin-right:5px;text-align:center;">')
@@ -1033,6 +1101,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 								});
 						}));
 			}
+
 			// render die input felder
 			function __getOptionByKey(key) {
 				for(let a=0;a<data.length;a++) {
@@ -1056,6 +1125,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 				});
 
 			}
+
 			let editor = {}; // for ace editor
 			data.forEach(v=>{
 				if (typeof v.additional !== "undefined" && v.additional.doNotRender) return;
@@ -1257,7 +1327,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 							let ticket_test_chooser = $('<div>');
 							let ticket_template_chooser = $('<div style="padding-top:5px;padding-bottom:20px;">').html('<b>Templates</b><br>You can choose from the templates below to have a starting point.<br>').appendTo(ticket_test_chooser);
 							let ticket_test_select = $('<select>').appendTo(ticket_test_chooser);
-
+							let ticket_test_direct_input = $('<input type="text" style="width:180px;" placeholder="or enter a public ticket number">');
 							// display the template thumbnails
 							for(let a=0;a<reply.ticket_templates.length;a++) {
 								let ticket_template = reply.ticket_templates[a];
@@ -1284,10 +1354,16 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 											.attr("data-url-pdf", item.m.wc_ticket._url)
 											.appendTo(ticket_test_select);
 									}
+									ticket_test_direct_input.appendTo(ticket_test_chooser);
 									$('<button class="button button-primary" id="wcTicketDesignerTemplateTest_button_PDF">')
 										.html(__('Preview Test Template Code as PDF', 'event-tickets-with-ticket-scanner')).
 										appendTo(ticket_test_chooser).on("click", ()=>{
-											iframe.attr("src", ticket_test_select.find(":selected").attr("data-url-pdf")+'?pdf&testDesigner=1&nonce='+DATA.nonce);
+											let ticket_url = ticket_test_select.find(":selected").attr("data-url-pdf");
+											let v = ticket_test_direct_input.val().trim();
+											if (v != "") {
+												ticket_url = reply.infos.ticket.ticket_base_url + v; // myAjax.ticket_base_url
+											}
+											iframe.attr("src", ticket_url+'?pdf&testDesigner=1&t='+time()+'&nonce='+DATA.nonce);
 											iframe
 												.css("width", "80%")
 												.css("height", "500px")
@@ -1411,7 +1487,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		image_frame.open();
 	} // ende openmediachooser
 
-	function _getBackButtonDiv() {
+	function getBackButtonDiv() {
 		let div_buttons = $('<div style="display:flex;justify-content:space-between;">');
 		let div = $('<div/>').append($('<button/>').addClass("button-primary").html(_x('Back', 'label', 'event-tickets-with-ticket-scanner')).css("margin-bottom", "10px").on("click", function(){
 			LAYOUT.renderAdminPageLayout();
@@ -1836,7 +1912,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					return [Object.keys(uniq), versuche];
 				} // __generateCodes
 
-				let div = $('<div>').append(_getBackButtonDiv());
+				let div = $('<div>').append(getBackButtonDiv());
 				// eingabe generator options
 				let div_generator = $('<div/>').css("padding", "10px").css("border","1px solid black").html('<h3>'+_x('1. Ticket number generator (optional step)', 'title', 'event-tickets-with-ticket-scanner')+'</h3>').appendTo(div);
 				div_generator.append($('<p>').html(__("You can generate ticket numbers.", 'event-tickets-with-ticket-scanner')));
@@ -3487,6 +3563,51 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		}
 	}
 
+	function addTabCSS() {
+		$('<style>')
+		.prop('type', 'text/css')
+		.html(`
+			.tabs {
+				width: 100%;
+				display: block;
+			}
+			.tab-nav {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				display: flex;
+				border-bottom: 1px solid #ccc;
+			}
+			.tab-nav li {
+				margin: 0;
+			}
+			.tab-nav a {
+				display: block;
+				padding: 10px 20px;
+				text-decoration: none;
+				color: #333;
+				border: 1px solid #ccc;
+				border-bottom: none;
+				background: #f9f9f9;
+				margin-right: 5px;
+				border-radius: 5px 5px 0 0;
+			}
+			.tab-nav a.active {
+				background: #fff;
+				border-bottom: 1px solid #fff;
+				font-weight: bold;
+			}
+			.tab-content {
+				display: none;
+				padding: 20px;
+				border: 1px solid #ccc;
+				border-radius: 0 5px 5px 5px;
+				background: #fff;
+			}
+		`)
+		.appendTo('head');
+	}
+
 	function getHelperFunktions() {
 		return {
 			_getSpinnerHTML:_getSpinnerHTML,
@@ -3501,7 +3622,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 			_OPTIONS:function(){ return OPTIONS;},
 			_updateCodeObject:updateCodeObject,
 			_getCodeObjectMeta:getCodeObjectMeta,
-			_DateTime2Text:DateTime2Text
+			_DateTime2Text:DateTime2Text,
+			_compareVersions:compareVersions,
+			_getBackButtonDiv:getBackButtonDiv
 		};
 	}
 
@@ -3510,6 +3633,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		addStyleTag(myAjax._plugin_home_url+'/css/styles_backend.css');
 
 		addScriptTag(myAjax._plugin_home_url+'/3rd/ace/ace.js');
+
+		addTabCSS();
 
     	DIV = $('#'+myAjax.divId);
     	DIV.html(_getSpinnerHTML());

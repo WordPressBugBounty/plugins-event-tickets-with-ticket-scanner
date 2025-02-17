@@ -531,7 +531,7 @@ class sasoEventtickets_Core {
 		$url = str_replace("{USERID}", $userid, $url);
 
 		$listname = "";
-		if (isset($codeObj['list_id']) && $codeObj['list_id'] > 0 && strpos($url, "{LIST}") !== false) {
+		if (isset($codeObj['list_id']) && $codeObj['list_id'] > 0 && strpos(" ".$url, "{LIST}") !== false) {
 			try {
 				$listObj = $this->_getCachedList($codeObj['list_id']);
 				$listname = $listObj['name'];
@@ -541,7 +541,7 @@ class sasoEventtickets_Core {
 		$url = str_replace("{LIST}", urlencode($listname), $url);
 
 		$listdesc = "";
-		if (isset($codeObj['list_id']) && $codeObj['list_id'] > 0 && strpos($url, "{LIST_DESC}") !== false) {
+		if (isset($codeObj['list_id']) && $codeObj['list_id'] > 0 && strpos(" ".$url, "{LIST_DESC}") !== false) {
 			try {
 				$listObj = $this->_getCachedList($codeObj['list_id']);
 				$metaObj = [];
@@ -684,8 +684,8 @@ class sasoEventtickets_Core {
 			$foundcode = $teil;
 			break;
 		}
-		if (isset($_GET['code'])) { // overwrites any found code, if parameter is available
-			$foundcode = trim($_GET['code']);
+		if (SASO_EVENTTICKETS::issetRPara('code')) { // overwrites any found code, if parameter is available
+			$foundcode = trim(SASO_EVENTTICKETS::getRequestPara('code'));
 			$parts = explode("-", $foundcode);
 			$t = explode("?", $url);
 			if (count($t) > 1) {
@@ -711,9 +711,9 @@ class sasoEventtickets_Core {
 				unset($t[0]);
 				$request = join("&", $t);
 			}
-			$is_pdf_request = in_array("pdf", $t) || isset($_GET['pdf']);
-			$is_ics_request = in_array("ics", $t) || isset($_GET['ics']);
-			$is_badge_request = in_array("badge", $t) || isset($_GET['badge']);
+			$is_pdf_request = in_array("pdf", $t) || SASO_EVENTTICKETS::issetRPara('pdf');
+			$is_ics_request = in_array("ics", $t) || SASO_EVENTTICKETS::issetRPara('ics');
+			$is_badge_request = in_array("badge", $t) || SASO_EVENTTICKETS::issetRPara('badge');
 		}
 		if (count($parts) != 3) throw new Exception("#9302 ticket id not correct - cannot create ticket url components");
 		$parts[2] = str_replace("?pdf", "", $parts[2]);
@@ -762,6 +762,7 @@ class sasoEventtickets_Core {
 	public function parser_search_loop($text) {
         // search for loop
         // {{LOOP ORDER.items AS item}} loop-content {{LOOPEND}}
+		if (empty($text)) return false;
         $pos = strpos($text, "{{LOOP ");
 		if ($pos !== false) {
 			$pos_end = strpos($text, "{{LOOPEND}}", $pos);

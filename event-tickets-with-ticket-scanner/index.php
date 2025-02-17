@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.5.6
+ * Version: 2.5.7
  * Author: Saso Nikolov
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.5.6');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.5.7');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -271,9 +271,12 @@ class sasoEventtickets {
 						$wcTicketCompatibilityModeURLPath = trim($this->getOptions()->getOptionValue('wcTicketCompatibilityModeURLPath'));
 						$wcTicketCompatibilityModeURLPath = trim(trim($wcTicketCompatibilityModeURLPath, "/"));
 						if (!empty($wcTicketCompatibilityModeURLPath)) {
-							$pos = strpos($_SERVER["REQUEST_URI"], $wcTicketCompatibilityModeURLPath);
-							if ($pos > 0) {
-								$this->getTicketHandler()->initFilterAndActions();
+							$uri = trim($_SERVER["REQUEST_URI"]);
+							if (!empty($uri)) {
+								$pos = strpos($uri, $wcTicketCompatibilityModeURLPath);
+								if ($pos > 0) {
+									$this->getTicketHandler()->initFilterAndActions();
+								}
 							}
 						}
 					}
@@ -287,9 +290,12 @@ class sasoEventtickets {
 						$wcTicketCompatibilityModeURLPath = trim($this->getOptions()->getOptionValue('wcTicketCompatibilityModeURLPath'));
 						$wcTicketCompatibilityModeURLPath = trim(trim($wcTicketCompatibilityModeURLPath, "/"));
 						if (!empty($wcTicketCompatibilityModeURLPath)) {
-							$pos = strpos($_SERVER["REQUEST_URI"], $wcTicketCompatibilityModeURLPath."/scanner/");
-							if ($pos > 0) {
-								$this->getTicketHandler()->initFilterAndActionsTicketScanner();
+							$uri = trim($_SERVER["REQUEST_URI"]);
+							if (!empty($uri)) {
+								$pos = strpos($_SERVER["REQUEST_URI"], $wcTicketCompatibilityModeURLPath."/scanner/");
+								if ($pos > 0) {
+									$this->getTicketHandler()->initFilterAndActionsTicketScanner();
+								}
 							}
 						}
 					}
@@ -571,6 +577,7 @@ class sasoEventtickets {
 			'_isUserLoggedin'=>is_user_logged_in(),
 			'_premJS'=>$this->isPremium() && method_exists($this->getPremiumFunctions(), "getJSBackendFile") ? $this->getPremiumFunctions()->getJSBackendFile() : '',
 			'url'   => admin_url( 'admin-ajax.php' ),
+			'ticket_url' => $this->getCore()->getTicketURLPath(),
 			'nonce' => wp_create_nonce( $this->_js_nonce ),
 			'ajaxActionPrefix' => $this->_prefix,
 			'divPrefix' => $this->_prefix,

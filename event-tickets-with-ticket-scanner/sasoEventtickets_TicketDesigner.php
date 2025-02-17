@@ -51,7 +51,12 @@ class sasoEventtickets_TicketDesigner {
 		$order_item = $this->MAIN->getTicketHandler()->getOrderItem($order, $metaObj);
 		if ($order_item == null) throw new Exception("#7002 Order not found");
 		$product = $order_item->get_product();
-		$is_variation = $product->get_type() == "variation" ? true : false;
+        $is_variation = false;
+        try {
+		    $is_variation = $product->get_type() == "variation" ? true : false;
+        } catch(Exception $e) {
+            $this->MAIN->getAdmin()->logErrorToDB($e);
+        }
 		$product_parent = $product;
 		$product_parent_id = $product->get_parent_id();
 		$saso_eventtickets_is_date_for_all_variants = true;

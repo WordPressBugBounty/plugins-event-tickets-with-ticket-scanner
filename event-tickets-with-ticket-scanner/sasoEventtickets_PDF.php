@@ -385,24 +385,7 @@ class sasoEventtickets_PDF {
 							$qr = $this->getDefaultQRValues();
 							$pdf->write2DBarcode($this->qr['text'], $this->qr['type'], $this->qr['pos']['x'], $this->qr['pos']['y'], $this->qr['size']['width'], $this->qr['size']['height'], $qr['style'], $qr['align']);
 						}
-					/*} else if ($teil == "{QRCODE_INLINE}") {
-						if (!empty($this->qr['text'])) {
-							$pdf->write2DBarcode($this->qr['text'], $this->qr['type'], '', '', $this->qr['size']['width'], $this->qr['size']['height'], $this->qr['style'], $this->qr['align']);
-						}*/
 					} else {
-						/*
-						$pos = strpos($teil,"{QRCODE_INLINE}");
-						if ($pos !== false) {
-							$pdf->writeHTML(substr($teil,0,$pos), false, false, true, false, '');
-							if (!empty($this->qr['text'])) {
-								$pdf->write2DBarcode($this->qr['text'], $this->qr['type'], null, null, $this->qr['size']['width'], $this->qr['size']['height']);
-							}
-							$pdf->writeHTML(substr($teil, $pos+15), false, false, true, false, '');
-						} else {
-							//$pdf->writeHTMLCell(0, 0, '', '', $teil, 0, 1, 0, true, '', true);
-							$pdf->writeHTML($teil, false, false, true, false, '');
-						}
-						*/
 						$pdf->writeHTML($teil, false, false, true, false, '');
 					}
 				}
