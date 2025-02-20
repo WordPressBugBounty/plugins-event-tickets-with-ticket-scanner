@@ -2,6 +2,8 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 if (!defined('SASO_EVENTTICKETS_PLUGIN_MIN_WC_VER')) define( 'SASO_EVENTTICKETS_PLUGIN_MIN_WC_VER', '4.0' );
 
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
+
 class sasoEventtickets_WC {
 	private $MAIN;
 	private $meta_key_codelist_restriction = 'saso_eventtickets_list_sale_restriction';
@@ -1611,30 +1613,32 @@ class sasoEventtickets_WC {
 		global $post_type;
 		global $post;
 
-		if( $post_type == 'product' ) {
-        	if( $this->isTicket() == false ) return;
+		$screen = $post_type;
+		if ($screen == null) { // add HPOS support from woocommerce
+			$screen = class_exists( '\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController' ) && wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()
+			? wc_get_page_screen_id( 'shop-order' )
+			: 'shop_order';
+		}
 
+		if( $screen == 'product' ) {
+        	if( $this->isTicket() == false ) return;
 			add_meta_box(
 				$this->getPrefix()."_wc_product_webhook", // Unique ID
 				esc_html_x('Event Tickets', 'title', 'event-tickets-with-ticket-scanner'),  // Box title
 				[$this, 'wc_product_display_side_box'],  // Content callback, must be of type callable
-				$post_type,
+				$screen,
 				'side',
 				'high'
 			);
-		} elseif ($post_type == "shop_order") {
-			$order = wc_get_order( $post->ID );
-			if ($this->hasTicketsInOrder($order)) {
-				$this->wc_order_addJSFileAndHandlerBackend($order);
-				add_meta_box(
-					$this->getPrefix()."_wc_order_webhook_basic", // Unique ID
-					esc_html_x('Event Tickets', 'title', 'event-tickets-with-ticket-scanner'),  // Box title
-					[$this, 'wc_order_display_side_box'],  // Content callback, must be of type callable
-					$post_type,
-					'side',
-					'high'
-				);
-			}
+		} elseif ($screen == "shop_order" || $screen == "woocommerce_page_wc-orders") {
+			add_meta_box(
+				$this->getPrefix()."_wc_order_webhook_basic", // Unique ID
+				esc_html_x('Event Tickets', 'title', 'event-tickets-with-ticket-scanner'),  // Box title
+				[$this, 'wc_order_display_side_box'],  // Content callback, must be of type callable
+				$screen,
+				'side',
+				'high'
+			);
 		}
     }
 
@@ -1650,16 +1654,24 @@ class sasoEventtickets_WC {
 		do_action( $this->MAIN->_do_action_prefix.'wc_product_display_side_box', [] );
     }
 
-	public function wc_order_display_side_box() {
-		?>
-        <p>Download All Tickets in one PDF</p>
-        <button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_download_alltickets_one_pdf"); ?>" class="button button-primary">Download Tickets</button>
-		<p>Remove all tickets from the order</p>
-        <button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_remove_tickets"); ?>" class="button button-danger">Remove Tickets</button>
-		<p>Remove all non-tickets from the order</p>
-        <button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_remove_non_tickets"); ?>" class="button button-danger">Remove Ticket Placeholders</button>
-		<?php
-		do_action( $this->MAIN->_do_action_prefix.'wc_order_display_side_box', [] );
+	public function wc_order_display_side_box( $post_or_order_object ) {
+		$order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+		if ($order && $this->hasTicketsInOrder($order)) {
+			$this->wc_order_addJSFileAndHandlerBackend($order);
+			?>
+			<p>Download All Tickets in one PDF</p>
+			<button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_download_alltickets_one_pdf"); ?>" class="button button-primary">Download Tickets</button>
+			<p>Remove all tickets from the order</p>
+			<button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_remove_tickets"); ?>" class="button button-danger">Remove Tickets</button>
+			<p>Remove all non-tickets from the order</p>
+			<button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_remove_non_tickets"); ?>" class="button button-danger">Remove Ticket Placeholders</button>
+			<?php
+			do_action( $this->MAIN->_do_action_prefix.'wc_order_display_side_box', [] );
+		} else {
+			?>
+			<p>No tickets in this order</p>
+			<?php
+		}
 	}
 
 	private function wc_order_addJSFileAndHandlerBackend($order) {
@@ -1683,7 +1695,7 @@ class sasoEventtickets_WC {
 				'nonce' => wp_create_nonce( $this->MAIN->_js_nonce ),
 				'action' => $this->MAIN->getPrefix().'_executeWCBackend',
 				'product_id'=>0,
- 				'order_id'=>isset($_GET['post']) ? intval($_GET['post']) : 0,
+ 				'order_id'=>$order != null ? $order->get_id() : 0,
 				'scope'=>'order',
 				'_backendJS'=>trailingslashit( plugin_dir_url( __FILE__ ) ) . 'backend.js?_v='.$this->MAIN->getPluginVersion(),
 				'tickets'=>$tickets
@@ -1924,6 +1936,9 @@ class sasoEventtickets_WC {
 			$order = wc_get_order( $order_id );
 			$ticketHandler = $this->MAIN->getTicketHandler();
 			$ticketHandler->outputPDFTicketsForOrder($order);
+			exit;
+		} else {
+			echo "ORDER ID IS WRONG";
 			exit;
 		}
 	}
@@ -2303,6 +2318,9 @@ class sasoEventtickets_WC {
 	// speicher custom field aus dem cart - wird auch aufgerufen, wenn man den warenkorb aufruft und warenkorb updates macht
 	function woocommerce_cart_updated( ) {
 		$R = SASO_EVENTTICKETS::getRequest();
+		if (isset($R["action"]) && strtolower($R["action"]) == "heartbeat") {
+			return;
+		}
 		$session_keys = ['saso_eventtickets_request_name_per_ticket', 'saso_eventtickets_request_value_per_ticket', 'saso_eventtickets_request_daychooser'];
 		$cart = null;
 		foreach($session_keys as $k) {

@@ -1278,6 +1278,8 @@ final class sasoEventtickets_Ticket {
 			do_action( $this->MAIN->_do_action_prefix.'trackIPForPDFView', $codeObj );
 		}
 
+		$ticket_template = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_outputTicketInfo_template', null, $codeObj );
+
 		$product = $order_item->get_product();
 		if ($product == null) throw new Exception("#8020 ".esc_html__("Product not found for the PDF ticket", 'event-tickets-with-ticket-scanner'));
 
@@ -1302,14 +1304,20 @@ final class sasoEventtickets_Ticket {
 		$pdf = $this->MAIN->getNewPDFObject();
 
 		// RTL product approach
-		//if (get_post_meta( $metaObj['woocommerce']['product_id'], 'saso_eventtickets_ticket_is_RTL', true ) == "yes") {
-			//$pdf->setRTL(true);
-		//}
-		if (SASO_EVENTTICKETS::issetRPara('testDesigner') && $this->getOptions()->isOptionCheckboxActive('wcTicketPDFisRTLTest')) {
-			$pdf->setRTL(true);
-		} else if($this->getOptions()->isOptionCheckboxActive('wcTicketPDFisRTL')) {
-			$pdf->setRTL(true);
+		$rtl = false;
+		if ($ticket_template != null) {
+			$rtl = $ticket_template['metaObj']['wcTicketPDFisRTL'] == true || intval($ticket_template['metaObj']['wcTicketPDFisRTL']) == 1;
+		} else {
+			//if (get_post_meta( $metaObj['woocommerce']['product_id'], 'saso_eventtickets_ticket_is_RTL', true ) == "yes") {
+				//$rtl = true;
+			//}
+			if (SASO_EVENTTICKETS::issetRPara('testDesigner') && $this->getOptions()->isOptionCheckboxActive('wcTicketPDFisRTLTest')) {
+				$rtl = true;
+			} else if($this->getOptions()->isOptionCheckboxActive('wcTicketPDFisRTL')) {
+				$rtl = true;
+			}
 		}
+		$pdf->setRTL($rtl);
 
 		$pdf->setQRParams(['style'=>['position'=>'C'],'align'=>'N']);
 		//$pdf->setQRParams(['style'=>['position'=>'R','vpadding'=>0,'hpadding'=>0], 'align'=>'C']);
@@ -1326,13 +1334,17 @@ final class sasoEventtickets_Ticket {
 		}
 
 		$marginZero = false;
-		if (SASO_EVENTTICKETS::issetRPara('testDesigner')) {
-			if ($this->getOptions()->isOptionCheckboxActive('wcTicketPDFZeroMarginTest')) {
-				$marginZero = true;
-			}
+		if ($ticket_template != null) {
+			$marginZero = $ticket_template['metaObj']['wcTicketPDFZeroMargin'] == true || intval($ticket_template['metaObj']['wcTicketPDFZeroMargin']) == 1;
 		} else {
-			if ($this->getOptions()->isOptionCheckboxActive('wcTicketPDFZeroMargin')) {
-				$marginZero = true;
+			if (SASO_EVENTTICKETS::issetRPara('testDesigner')) {
+				if ($this->getOptions()->isOptionCheckboxActive('wcTicketPDFZeroMarginTest')) {
+					$marginZero = true;
+				}
+			} else {
+				if ($this->getOptions()->isOptionCheckboxActive('wcTicketPDFZeroMargin')) {
+					$marginZero = true;
+				}
 			}
 		}
 		$pdf->marginsZero = $marginZero;
@@ -1340,14 +1352,20 @@ final class sasoEventtickets_Ticket {
 		$width = 210;
         $height = 297;
 		$qr_code_size = 0; // takes default then
-		if (SASO_EVENTTICKETS::issetRPara('testDesigner')) {
-			$width = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeWidthTest", 0);
-			$height = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeHeightTest", 0);
-			$qr_code_size = intval($this->MAIN->getOptions()->getOptionValue("wcTicketQRSizeTest", 0));
+		if ($ticket_template != null) {
+			$width = intval($ticket_template['metaObj']['wcTicketSizeWidth']);
+			$height = intval($ticket_template['metaObj']['wcTicketSizeHeight']);
+			$qr_code_size = intval($ticket_template['metaObj']['wcTicketQRSize']);
 		} else {
-			$width = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeWidth", 0);
-			$height = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeHeight", 0);
-			$qr_code_size = intval($this->MAIN->getOptions()->getOptionValue("wcTicketQRSize", 0));
+			if (SASO_EVENTTICKETS::issetRPara('testDesigner')) {
+				$width = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeWidthTest", 0);
+				$height = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeHeightTest", 0);
+				$qr_code_size = intval($this->MAIN->getOptions()->getOptionValue("wcTicketQRSizeTest", 0));
+			} else {
+				$width = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeWidth", 0);
+				$height = $this->MAIN->getOptions()->getOptionValue("wcTicketSizeHeight", 0);
+				$qr_code_size = intval($this->MAIN->getOptions()->getOptionValue("wcTicketQRSize", 0));
+			}
 		}
 
         $width = $width > 0 ? $width : 210;
@@ -1731,26 +1749,32 @@ final class sasoEventtickets_Ticket {
 		if ($display_the_ticket) {
 			$ticketDesigner = $this->MAIN->getTicketDesignerHandler();
 
+			// !!! nonce test is not working, because this function is also called from the other methods
 			//if (SASO_EVENTTICKETS::issetRPara('testDesigner') && current_user_can( 'manage_options' ) ) {
-			$a = SASO_EVENTTICKETS::getRequestPara('nonce');
-			$b = $this->MAIN->_js_nonce;
+			//$a = SASO_EVENTTICKETS::getRequestPara('nonce');
+			//$b = $this->MAIN->_js_nonce;
 
-			$is_nonce_check_ok = wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('nonce'), $this->MAIN->_js_nonce);
+			//$is_nonce_check_ok = wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('nonce'), $this->MAIN->_js_nonce);
 			//if (SASO_EVENTTICKETS::issetRPara('testDesigner') && $this->MAIN->isUserAllowedToAccessAdminArea() ) {
 			//if (SASO_EVENTTICKETS::issetRPara('testDesigner') && $is_nonce_check_ok ) {
-			//TODO: fix the nonce check
+
+			$template = "";
+			$ticket_template = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_outputTicketInfo_template', null, $codeObj );
+			if ($ticket_template != null) {
+				$template = $ticket_template['template'];
+			}
 			if (SASO_EVENTTICKETS::issetRPara('testDesigner') ) { // TODO: quick fix, so that users can work
-				$template = "";
 				if (empty($template)) {
-					$ticketDesigner->setTemplate($this->getAdminSettings()->getOptionValue("wcTicketDesignerTemplateTest"));
+					$template = $this->getAdminSettings()->getOptionValue("wcTicketDesignerTemplateTest");
 				}
 			} else {
-				if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketTemplateUseDefault')) {
-					$ticketDesigner->setTemplate("");
-				} else {
-					$ticketDesigner->setTemplate($this->getAdminSettings()->getOptionValue("wcTicketDesignerTemplate"));
+				if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketTemplateUseDefault') == false) {
+					if (empty($template)) {
+						$template = $this->getAdminSettings()->getOptionValue("wcTicketDesignerTemplate");
+					}
 				}
 			}
+			$ticketDesigner->setTemplate($template);
 			echo $ticketDesigner->renderHTML($codeObj, $forPDFOutput);
 
 			// buttons

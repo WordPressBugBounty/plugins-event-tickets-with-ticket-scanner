@@ -41,8 +41,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 	}
 
 	function _requestURL(action, myData) {
-		let paras = '?action='+myAjax._action+'&a_sngmbh='+action+'&t='+time();
-		for(let key in myData) paras += '&data['+key+']='+encodeURIComponent(myData[key]);
+		let paras = '?action='+myAjax._action+'&a_sngmbh='+action+'&nonce='+ DATA.nonce+'&t='+time();
+		if (myData) {
+			for(let key in myData) paras += '&data['+key+']='+encodeURIComponent(myData[key]);
+		}
 		for(let key in DATA) paras += '&'+key+'='+encodeURIComponent(DATA[key]);
 		return myAjax.url + paras;
 	}
@@ -336,7 +338,18 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 	}
 
 	function getCodeObjectMeta(codeObj) {
-		if (!codeObj.metaObj) codeObj.metaObj = JSON.parse(codeObj.meta);
+		if (codeObj.metaObj) return codeObj.metaObj;
+		try {
+			if (typeof codeObj.meta == "undefined" || codeObj.meta == "") {
+				codeObj.metaObj = null;
+			} else {
+				codeObj.metaObj = JSON.parse(codeObj.meta);
+			}
+		} catch(e) {
+			// new empty tickets have no meta
+			//console.log("Error should not happen. Meta is broken. ", codeObj);
+			codeObj.metaObj = null;
+		}
 		return codeObj.metaObj;
 	}
 
@@ -2459,7 +2472,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 
 				__renderTabelleListen();
 
-				let additionalColumn = {customerName:'',redeemAmount:'',confirmedCount:''};
+				let additionalColumn = {customerName:'',customerCompany:'',redeemAmount:'',confirmedCount:''};
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnConfirmedCount')) {
 					additionalColumn.confirmedCount = '<th>'+_x('Confirmed Count', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
@@ -2467,13 +2480,19 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					additionalColumn.customerName = '<th>'+_x('Customer', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnBillingCompany')) {
-					additionalColumn.customerName = '<th>'+_x('Company', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
+					additionalColumn.customerCompany = '<th>'+_x('Company', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnRedeemedInfo')) {
 					additionalColumn.redeemAmount = '<th>'+_x('Redeem Amount', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
 
-				tabelle_codes.html('<thead><tr><th style="text-align:left;padding-left:10px;"><input type="checkbox" data-id="checkAll"></th><th>&nbsp;</th><th align="left">'+_x('Ticket', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.customerName+'<th align="left">'+_x('List', 'label', 'event-tickets-with-ticket-scanner')+'</th><th align="left">'+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.confirmedCount+'<th align="left">'+_x('Redeemed', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.redeemAmount+'<th>'+_x('OrderId', 'label', 'event-tickets-with-ticket-scanner')+'</th><th>CVV</th><th>'+_x('Status', 'label', 'event-tickets-with-ticket-scanner')+'</th><th></th></tr></thead><tfoot><th colspan="10" style="text-align:left;font-weight:normal;padding-left:0;padding-bottom:0;"></th></tfoot>');
+				tabelle_codes.html('<thead><tr><th style="text-align:left;padding-left:10px;"><input type="checkbox" data-id="checkAll"></th><th>&nbsp;</th><th align="left">'
+					+_x('Ticket', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.customerName+additionalColumn.customerCompany+'<th align="left">'
+					+_x('List', 'label', 'event-tickets-with-ticket-scanner')+'</th><th align="left">'
+					+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.confirmedCount+'<th align="left">'
+					+_x('Redeemed', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.redeemAmount+'<th>'
+					+_x('OrderId', 'label', 'event-tickets-with-ticket-scanner')+'</th><th>CVV</th><th>'
+					+_x('Status', 'label', 'event-tickets-with-ticket-scanner')+'</th><th></th></tr></thead><tfoot><th colspan="10" style="text-align:left;font-weight:normal;padding-left:0;padding-bottom:0;"></th></tfoot>');
 				tabelle_codes.find('input[data-id="checkAll"]').on('click', (e)=> {
 					let isChecked = $(e.currentTarget).prop('checked');
 					let found = false;
@@ -2620,21 +2639,24 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 						"data":"_customer_company","orderable":false
 					});
 				}
-				if (additionalColumn.confirmedCount != '') {
+				if (_getOptions_isActivatedByKey('displayAdminAreaColumnConfirmedCount')) {
 					addition_column_offset++;
 					table_columns.splice(4+addition_column_offset, 0, {
 						"data":null,"orderable":false,"defaultContent":'',"className":"dt-center",
 						"render":function(data,type,row) {
-							let ret = '';
+							let ret = 0;
 							let metaObj = getCodeObjectMeta(data);
-							ret = metaObj.confirmedCount;
+							if(!metaObj) return ret;
+							if (typeof metaObj.confirmedCount != "undefined") {
+								ret = metaObj.confirmedCount;
+							}
 							return ret;
 						}
 					});
 				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnRedeemedInfo')) {
 					addition_column_offset++;
-					table_columns.splice(5+addition_column_offset, 0, {
+					table_columns.splice(4+addition_column_offset, 0, {
 						"data":null,"orderable":false,"defaultContent":'',"className":"dt-center",
 						"render":function(data,type,row) {
 							let ret = '';
@@ -2663,8 +2685,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 	    			"serverSide": true,
 	    			"stateSave": false,
 					"ajax": {
-						url: _requestURL('getCodes'),
-						type: 'POST',
+						"url": _requestURL('getCodes'),
+						"type": 'POST'
 					},
 	    			"order": [[ 4 + (additionalColumn.customerName != "" ? 1 : 0), "desc" ]],
 	    			"columns": table_columns,
@@ -2900,7 +2922,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					}
 				}
 				let btngrp = $('<div style="margin-top:10px;">');
-				if (typeof metaObj['used'] !== "undefined") {
+				if (typeof metaObj.used !== "undefined") {
 					div.append("<h3>Code marked as used</h3>");
 					if (metaObj.used.reg_request !== "") {
 						div.append($("<div>").html("<b>Request from:</b> ").append($('<span>').text(DateTime2Text(metaObj.used.reg_request)+' ('+metaObj.used.reg_request+')')));
@@ -2998,266 +3020,268 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 
 			div.html("");
 			let metaObj = getCodeObjectMeta(codeObj);
-			if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.day_per_ticket != "undefined") {
-				div.append($('<div>').html('<b>Date per Ticket (choosen by customer):</b> '+metaObj.wc_ticket.day_per_ticket +" ").append(
-					$("<button>").html("Edit").on("click", ()=>{
+			if(metaObj) {
+				if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.day_per_ticket != "undefined") {
+					div.append($('<div>').html('<b>Date per Ticket (choosen by customer):</b> '+metaObj.wc_ticket.day_per_ticket +" ").append(
+						$("<button>").html("Edit").on("click", ()=>{
 
-						let _options = {
-							title: 'Edit Ticket Date',
-							modal: true,
-							minWidth: 400,
-							minHeight: 200,
-							buttons: [
-								{
-									id: 'okBtn',
-									text: "Ok",
-									click: function() {
-										___submitForm();
+							let _options = {
+								title: 'Edit Ticket Date',
+								modal: true,
+								minWidth: 400,
+								minHeight: 200,
+								buttons: [
+									{
+										id: 'okBtn',
+										text: "Ok",
+										click: function() {
+											___submitForm();
+										}
+									},
+									{
+										text: "Cancel",
+										click: function() {
+											$( this ).dialog( "close" );
+											$( this ).html('');
+										}
 									}
-								},
-								{
-									text: "Cancel",
-									click: function() {
-										$( this ).dialog( "close" );
-										$( this ).html('');
-									}
-								}
-							]
-						};
-						let dlg = $('<div />');
-						let form = $('<form />').appendTo(dlg);
+								]
+							};
+							let dlg = $('<div />');
+							let form = $('<form />').appendTo(dlg);
 
-						let elem_input = $('<input type="date" value="'+metaObj.wc_ticket.day_per_ticket+'" />');
-						$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
-							.html('Date per Ticket (yyyy-mm-dd).<br><b>Very important to not break the date format and syntax, if you want to change the date!</b><br>')
-							.append(elem_input)
-							.appendTo(form);
+							let elem_input = $('<input type="date" value="'+metaObj.wc_ticket.day_per_ticket+'" />');
+							$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
+								.html('Date per Ticket (yyyy-mm-dd).<br><b>Very important to not break the date format and syntax, if you want to change the date!</b><br>')
+								.append(elem_input)
+								.appendTo(form);
 
-						dlg.dialog(_options);
+							dlg.dialog(_options);
 
-						form.on("submit", function(event) {
-							event.preventDefault();
-							___submitForm();
-						});
-						function ___submitForm() {
-							let v = elem_input.val().trim();
-							dlg.html(_getSpinnerHTML());
-							let _data = {"value":v, "key":'wc_ticket.day_per_ticket'};
-							form[0].reset();
-							_data.code = codeObj.code;
-							$('#okBtn').remove();
-							_makeGet('editTicketMetaEntry', _data, _codeObj=>{
-								//tabelle.ajax.reload();
-								__getData(_codeObj);
-								closeDialog(dlg);
-							}, function() {
-								closeDialog(dlg);
+							form.on("submit", function(event) {
+								event.preventDefault();
+								___submitForm();
 							});
-						}
-					})
-				));
-			}
-			if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.name_per_ticket != "undefined") {
-				div.append($('<div>').html('<b>Name per Ticket (product detail setting):</b> '+metaObj.wc_ticket.name_per_ticket +" ").append(
-					$("<button>").html("Edit").on("click", ()=>{
-
-						let _options = {
-							title: 'Edit Ticket Name',
-							modal: true,
-							minWidth: 400,
-							minHeight: 200,
-							buttons: [
-								{
-									id: 'okBtn',
-									text: "Ok",
-									click: function() {
-										___submitForm();
-									}
-								},
-								{
-									text: "Cancel",
-									click: function() {
-										$( this ).dialog( "close" );
-										$( this ).html('');
-									}
-								}
-							]
-						};
-						let dlg = $('<div />');
-						let form = $('<form />').appendTo(dlg);
-
-						let elem_input = $('<input type="text" value="'+metaObj.wc_ticket.name_per_ticket+'" />');
-						$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
-							.html('Name per Ticket<br>')
-							.append(elem_input)
-							.appendTo(form);
-
-						dlg.dialog(_options);
-
-						form.on("submit", function(event) {
-							event.preventDefault();
-							___submitForm();
-						});
-						function ___submitForm() {
-							let v = elem_input.val().trim();
-							dlg.html(_getSpinnerHTML());
-							let _data = {"value":v, "key":'wc_ticket.name_per_ticket'};
-							form[0].reset();
-							_data.code = codeObj.code;
-							$('#okBtn').remove();
-							_makeGet('editTicketMetaEntry', _data, _codeObj=>{
-								//tabelle.ajax.reload();
-								__getData(_codeObj);
-								closeDialog(dlg);
-							}, function() {
-								closeDialog(dlg);
-							});
-						}
-					})
-				));
-			}
-			if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.value_per_ticket != "undefined") {
-				div.append($('<div>').html('<b>Value per Ticket (product detail setting):</b> '+metaObj.wc_ticket.value_per_ticket +" ").append(
-					$("<button>").html("Edit").on("click", ()=>{
-
-						let _options = {
-							title: 'Edit Ticket Value',
-							modal: true,
-							minWidth: 400,
-							minHeight: 200,
-							buttons: [
-								{
-									id: 'okBtn',
-									text: "Ok",
-									click: function() {
-										___submitForm();
-									}
-								},
-								{
-									text: "Cancel",
-									click: function() {
-										$( this ).dialog( "close" );
-										$( this ).html('');
-									}
-								}
-							]
-						};
-						let dlg = $('<div />');
-						let form = $('<form />').appendTo(dlg);
-
-						let elem_input = $('<input type="text" value="'+metaObj.wc_ticket.value_per_ticket+'" />');
-						$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
-							.html('Value per Ticket<br>')
-							.append(elem_input)
-							.appendTo(form);
-
-						dlg.dialog(_options);
-
-						form.on("submit", function(event) {
-							event.preventDefault();
-							___submitForm();
-						});
-						function ___submitForm() {
-							let v = elem_input.val().trim();
-							dlg.html(_getSpinnerHTML());
-							let _data = {"value":v, "key":'wc_ticket.value_per_ticket'};
-							form[0].reset();
-							_data.code = codeObj.code;
-							$('#okBtn').remove();
-							_makeGet('editTicketMetaEntry', _data, _codeObj=>{
-								//tabelle.ajax.reload();
-								__getData(_codeObj);
-								closeDialog(dlg);
-							}, function() {
-								closeDialog(dlg);
-							});
-						}
-					})
-				));
-			}
-			if (typeof metaObj['woocommerce'] !== "undefined" && metaObj.woocommerce.order_id !== 0 && typeof metaObj.wc_ticket !== "undefined") {
-				if (metaObj.wc_ticket.set_by_admin > 0) {
-					div.append($("<div>").html("<b>Ticket set by admin user:</b> ").append($('<span>').text(metaObj.wc_ticket._set_by_admin_username+' ('+metaObj.wc_ticket.set_by_admin+') '+metaObj.wc_ticket.set_by_admin_date)));
+							function ___submitForm() {
+								let v = elem_input.val().trim();
+								dlg.html(_getSpinnerHTML());
+								let _data = {"value":v, "key":'wc_ticket.day_per_ticket'};
+								form[0].reset();
+								_data.code = codeObj.code;
+								$('#okBtn').remove();
+								_makeGet('editTicketMetaEntry', _data, _codeObj=>{
+									//tabelle.ajax.reload();
+									__getData(_codeObj);
+									closeDialog(dlg);
+								}, function() {
+									closeDialog(dlg);
+								});
+							}
+						})
+					));
 				}
-				if (metaObj.wc_ticket.redeemed_date != '') {
-					div.append($("<div>").html("<b>Redeemed at:</b> ").append($('<span>').text(DateTime2Text(metaObj.wc_ticket.redeemed_date)+' ('+metaObj.wc_ticket.redeemed_date+')')));
-					div.append($("<div>").html("<b>Redeemed by wordpress userid:</b> ").append($('<span>').text(metaObj.wc_ticket.userid)));
-					if (metaObj.wc_ticket._username) div.append($("<div>").html("<b>Redeemed by wordpress user:</b> ").append($('<span>').text(metaObj.wc_ticket._username)));
-					div.append($("<div>").html("<b>IP while redeemed:</b> ").append($('<span>').text(metaObj.wc_ticket.ip)));
-					if (metaObj.wc_ticket.redeemed_by_admin > 0) {
-						div.append($("<div>").html("<b>Redeemed by admin user:</b> ").append($('<span>').text(metaObj.wc_ticket._redeemed_by_admin_username+' ('+metaObj.wc_ticket.redeemed_by_admin+')')));
+				if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.name_per_ticket != "undefined") {
+					div.append($('<div>').html('<b>Name per Ticket (product detail setting):</b> '+metaObj.wc_ticket.name_per_ticket +" ").append(
+						$("<button>").html("Edit").on("click", ()=>{
+
+							let _options = {
+								title: 'Edit Ticket Name',
+								modal: true,
+								minWidth: 400,
+								minHeight: 200,
+								buttons: [
+									{
+										id: 'okBtn',
+										text: "Ok",
+										click: function() {
+											___submitForm();
+										}
+									},
+									{
+										text: "Cancel",
+										click: function() {
+											$( this ).dialog( "close" );
+											$( this ).html('');
+										}
+									}
+								]
+							};
+							let dlg = $('<div />');
+							let form = $('<form />').appendTo(dlg);
+
+							let elem_input = $('<input type="text" value="'+metaObj.wc_ticket.name_per_ticket+'" />');
+							$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
+								.html('Name per Ticket<br>')
+								.append(elem_input)
+								.appendTo(form);
+
+							dlg.dialog(_options);
+
+							form.on("submit", function(event) {
+								event.preventDefault();
+								___submitForm();
+							});
+							function ___submitForm() {
+								let v = elem_input.val().trim();
+								dlg.html(_getSpinnerHTML());
+								let _data = {"value":v, "key":'wc_ticket.name_per_ticket'};
+								form[0].reset();
+								_data.code = codeObj.code;
+								$('#okBtn').remove();
+								_makeGet('editTicketMetaEntry', _data, _codeObj=>{
+									//tabelle.ajax.reload();
+									__getData(_codeObj);
+									closeDialog(dlg);
+								}, function() {
+									closeDialog(dlg);
+								});
+							}
+						})
+					));
+				}
+				if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.value_per_ticket != "undefined") {
+					div.append($('<div>').html('<b>Value per Ticket (product detail setting):</b> '+metaObj.wc_ticket.value_per_ticket +" ").append(
+						$("<button>").html("Edit").on("click", ()=>{
+
+							let _options = {
+								title: 'Edit Ticket Value',
+								modal: true,
+								minWidth: 400,
+								minHeight: 200,
+								buttons: [
+									{
+										id: 'okBtn',
+										text: "Ok",
+										click: function() {
+											___submitForm();
+										}
+									},
+									{
+										text: "Cancel",
+										click: function() {
+											$( this ).dialog( "close" );
+											$( this ).html('');
+										}
+									}
+								]
+							};
+							let dlg = $('<div />');
+							let form = $('<form />').appendTo(dlg);
+
+							let elem_input = $('<input type="text" value="'+metaObj.wc_ticket.value_per_ticket+'" />');
+							$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
+								.html('Value per Ticket<br>')
+								.append(elem_input)
+								.appendTo(form);
+
+							dlg.dialog(_options);
+
+							form.on("submit", function(event) {
+								event.preventDefault();
+								___submitForm();
+							});
+							function ___submitForm() {
+								let v = elem_input.val().trim();
+								dlg.html(_getSpinnerHTML());
+								let _data = {"value":v, "key":'wc_ticket.value_per_ticket'};
+								form[0].reset();
+								_data.code = codeObj.code;
+								$('#okBtn').remove();
+								_makeGet('editTicketMetaEntry', _data, _codeObj=>{
+									//tabelle.ajax.reload();
+									__getData(_codeObj);
+									closeDialog(dlg);
+								}, function() {
+									closeDialog(dlg);
+								});
+							}
+						})
+					));
+				}
+				if (typeof metaObj['woocommerce'] !== "undefined" && metaObj.woocommerce.order_id !== 0 && typeof metaObj.wc_ticket !== "undefined") {
+					if (metaObj.wc_ticket.set_by_admin > 0) {
+						div.append($("<div>").html("<b>Ticket set by admin user:</b> ").append($('<span>').text(metaObj.wc_ticket._set_by_admin_username+' ('+metaObj.wc_ticket.set_by_admin+') '+metaObj.wc_ticket.set_by_admin_date)));
 					}
-				}
-				if (metaObj.wc_ticket.is_ticket == 1) {
+					if (metaObj.wc_ticket.redeemed_date != '') {
+						div.append($("<div>").html("<b>Redeemed at:</b> ").append($('<span>').text(DateTime2Text(metaObj.wc_ticket.redeemed_date)+' ('+metaObj.wc_ticket.redeemed_date+')')));
+						div.append($("<div>").html("<b>Redeemed by wordpress userid:</b> ").append($('<span>').text(metaObj.wc_ticket.userid)));
+						if (metaObj.wc_ticket._username) div.append($("<div>").html("<b>Redeemed by wordpress user:</b> ").append($('<span>').text(metaObj.wc_ticket._username)));
+						div.append($("<div>").html("<b>IP while redeemed:</b> ").append($('<span>').text(metaObj.wc_ticket.ip)));
+						if (metaObj.wc_ticket.redeemed_by_admin > 0) {
+							div.append($("<div>").html("<b>Redeemed by admin user:</b> ").append($('<span>').text(metaObj.wc_ticket._redeemed_by_admin_username+' ('+metaObj.wc_ticket.redeemed_by_admin+')')));
+						}
+					}
+					if (metaObj.wc_ticket.is_ticket == 1) {
+						let _max_redeem_amount = typeof metaObj.wc_ticket._max_redeem_amount !== "undefined" ? metaObj.wc_ticket._max_redeem_amount : 1;
+						$("<div>").html("<b>Ticket number: </b>"+codeObj.code_display).appendTo(div);
+						$("<div>").html("<b>Public Ticket number: </b>"+metaObj.wc_ticket._public_ticket_id).appendTo(div);
+						$("<div>").html("<b>Redeem usage: </b>"+metaObj.wc_ticket.stats_redeemed.length + ' of ' + (_max_redeem_amount == 0 ? 'unlimited' : _max_redeem_amount)).appendTo(div);
+						$("<div>").html('<b>Ticket Page:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'">Open Ticket Detail Page</a>').appendTo(div);
+						$("<div>").html('<b>Ticket Page Testmode:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?testDesigner=1">Open Ticket Detail Page with template test code</a>').appendTo(div);
+						$("<div>").html('<b>Ticket PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?pdf">Open Ticket PDF</a>').appendTo(div);
+						$("<div>").html('<b>Ticket PDF Testmode:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?pdf&testDesigner=1">Open Ticket PDF with template test code</a>').appendTo(div);
+						$("<div>").html('<b>Order Ticket Page:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_page_url+'">Open Order Ticket Page</a>').appendTo(div);
+						$("<div>").html('<b>Order PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_url+'">Open Order Ticket PDF</a>').appendTo(div);
+					}
+
+					let btngrp = $('<div style="margin-top:10px;">').appendTo(div);
+					if (metaObj.wc_ticket.is_ticket == 1) {
+						$('<button>').html("Download PDF").appendTo(btngrp).on("click", ()=>{
+							_downloadFile('downloadPDFTicket', {'code':codeObj.code}, "eventticket_"+codeObj.code+".pdf");
+							return false;
+						});
+						$('<button>').html("Download Ticket Badge").appendTo(btngrp).on("click", ()=>{
+							_downloadFile('downloadPDFTicketBadge', {'code':codeObj.code}, "eventticket_badge_"+codeObj.code+".pdf");
+							return false;
+						});
+						$('<button>').html("Display QR with URL to PDF").appendTo(btngrp).on("click", e=>{
+							let id = 'qrcode_'+codeObj.code+'_'+time();
+							let content = 'This QR image contains:<br><b>'+codeObj.code+'</b><br><br><div id="'+id+'" style="text-align:center;"></div><script>jQuery("#'+id+'").qrcode("'+metaObj.wc_ticket._url+'?pdf");</script>';
+							LAYOUT.renderInfoBox('QR with URL to PDF', content);
+						});
+					}
+					if (metaObj.wc_ticket.is_ticket == 0) {
+						$('<button>').html("Set as ticket sale").on("click", ()=>{
+							LAYOUT.renderYesNo('Set as a ticket', 'Do you want to set this purchased ticket number as a ticket sale?', ()=>{
+								_makeGet('setWoocommerceTicketForCode', {'code':codeObj.code}, _codeObj=>{
+									__getData(_codeObj);
+								});
+							});
+						}).appendTo(btngrp);
+					}
+					let btn_redeem = $('<button>').addClass("button-delete").html('Redeem ticket').on("click", ()=>{
+						let reg_userid = (metaObj.user && metaObj.user.reg_userid) ? metaObj.user.reg_userid : 0;
+						LAYOUT.renderYesNo('Redeem ticket', 'Do you really want to redeem the ticket number "'+codeObj.code_display+'"? Click OK to redeem the ticket.', ()=>{
+							let userid = prompt('Optional. You can enter a userid you redeem the ticket for', reg_userid);
+							_makeGet('redeemWoocommerceTicketForCode', {'code':codeObj.code, 'userid':userid}, _codeObj=>{
+								__getData(_codeObj);
+							});
+						});
+					}).appendTo(btngrp);
 					let _max_redeem_amount = typeof metaObj.wc_ticket._max_redeem_amount !== "undefined" ? metaObj.wc_ticket._max_redeem_amount : 1;
-					$("<div>").html("<b>Ticket number: </b>"+codeObj.code_display).appendTo(div);
-					$("<div>").html("<b>Public Ticket number: </b>"+metaObj.wc_ticket._public_ticket_id).appendTo(div);
-					$("<div>").html("<b>Redeem usage: </b>"+metaObj.wc_ticket.stats_redeemed.length + ' of ' + (_max_redeem_amount == 0 ? 'unlimited' : _max_redeem_amount)).appendTo(div);
-					$("<div>").html('<b>Ticket Page:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'">Open Ticket Detail Page</a>').appendTo(div);
-					$("<div>").html('<b>Ticket Page Testmode:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?testDesigner=1">Open Ticket Detail Page with template test code</a>').appendTo(div);
-					$("<div>").html('<b>Ticket PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?pdf">Open Ticket PDF</a>').appendTo(div);
-					$("<div>").html('<b>Ticket PDF Testmode:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?pdf&testDesigner=1">Open Ticket PDF with template test code</a>').appendTo(div);
-					$("<div>").html('<b>Order Ticket Page:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_page_url+'">Open Order Ticket Page</a>').appendTo(div);
-					$("<div>").html('<b>Order PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_url+'">Open Order Ticket PDF</a>').appendTo(div);
-				}
+					if (metaObj.wc_ticket.is_ticket == 0 || _max_redeem_amount == 0 || metaObj.wc_ticket.stats_redeemed.length >= _max_redeem_amount) {
+						btn_redeem.attr("disabled", true);
+					}
 
-				let btngrp = $('<div style="margin-top:10px;">').appendTo(div);
-				if (metaObj.wc_ticket.is_ticket == 1) {
-					$('<button>').html("Download PDF").appendTo(btngrp).on("click", ()=>{
-						_downloadFile('downloadPDFTicket', {'code':codeObj.code}, "eventticket_"+codeObj.code+".pdf");
-						return false;
-					});
-					$('<button>').html("Download Ticket Badge").appendTo(btngrp).on("click", ()=>{
-						_downloadFile('downloadPDFTicketBadge', {'code':codeObj.code}, "eventticket_badge_"+codeObj.code+".pdf");
-						return false;
-					});
-					$('<button>').html("Display QR with URL to PDF").appendTo(btngrp).on("click", e=>{
-						let id = 'qrcode_'+codeObj.code+'_'+time();
-						let content = 'This QR image contains:<br><b>'+codeObj.code+'</b><br><br><div id="'+id+'" style="text-align:center;"></div><script>jQuery("#'+id+'").qrcode("'+metaObj.wc_ticket._url+'?pdf");</script>';
-						LAYOUT.renderInfoBox('QR with URL to PDF', content);
-					});
-				}
-				if (metaObj.wc_ticket.is_ticket == 0) {
-					$('<button>').html("Set as ticket sale").on("click", ()=>{
-						LAYOUT.renderYesNo('Set as a ticket', 'Do you want to set this purchased ticket number as a ticket sale?', ()=>{
-							_makeGet('setWoocommerceTicketForCode', {'code':codeObj.code}, _codeObj=>{
+					let btn_unredeem = $('<button>').addClass("button-delete").html('Delete redeem information').on("click", ()=>{
+						LAYOUT.renderYesNo('Remove ticket information', 'Do you really want to remove the information that the ticket number "'+codeObj.code_display+'" is redeemed? Click OK to un-redeem the ticket and allow your customer to use the ticket again.', ()=>{
+							_makeGet('removeRedeemWoocommerceTicketForCode', {'code':codeObj.code}, _codeObj=>{
 								__getData(_codeObj);
 							});
 						});
 					}).appendTo(btngrp);
-				}
-				let btn_redeem = $('<button>').addClass("button-delete").html('Redeem ticket').on("click", ()=>{
-					let reg_userid = (metaObj.user && metaObj.user.reg_userid) ? metaObj.user.reg_userid : 0;
-					LAYOUT.renderYesNo('Redeem ticket', 'Do you really want to redeem the ticket number "'+codeObj.code_display+'"? Click OK to redeem the ticket.', ()=>{
-						let userid = prompt('Optional. You can enter a userid you redeem the ticket for', reg_userid);
-						_makeGet('redeemWoocommerceTicketForCode', {'code':codeObj.code, 'userid':userid}, _codeObj=>{
-							__getData(_codeObj);
-						});
-					});
-				}).appendTo(btngrp);
-				let _max_redeem_amount = typeof metaObj.wc_ticket._max_redeem_amount !== "undefined" ? metaObj.wc_ticket._max_redeem_amount : 1;
-				if (metaObj.wc_ticket.is_ticket == 0 || _max_redeem_amount == 0 || metaObj.wc_ticket.stats_redeemed.length >= _max_redeem_amount) {
-					btn_redeem.attr("disabled", true);
-				}
-
-				let btn_unredeem = $('<button>').addClass("button-delete").html('Delete redeem information').on("click", ()=>{
-					LAYOUT.renderYesNo('Remove ticket information', 'Do you really want to remove the information that the ticket number "'+codeObj.code_display+'" is redeemed? Click OK to un-redeem the ticket and allow your customer to use the ticket again.', ()=>{
-						_makeGet('removeRedeemWoocommerceTicketForCode', {'code':codeObj.code}, _codeObj=>{
-							__getData(_codeObj);
-						});
-					});
-				}).appendTo(btngrp);
-				if (metaObj.wc_ticket.is_ticket == 0 || metaObj.wc_ticket.redeemed_date == "") {
-					btn_unredeem.attr("disabled", true);
-				}
-				if (metaObj.wc_ticket.is_ticket == 1 && metaObj.wc_ticket.redeemed_date == "") {
-					$('<button>').addClass("button-delete").html("Unset Ticket").on("click", ()=>{
-						LAYOUT.renderYesNo('Remove ticket', 'Do you really want to remove the ticket info from this ticket number? The WooCommerce sale will be set and you need to remove it manually.', ()=>{
-							_makeGet('removeWoocommerceTicketForCode', {'code':codeObj.code}, _codeObj=>{
-								__getData(_codeObj);
+					if (metaObj.wc_ticket.is_ticket == 0 || metaObj.wc_ticket.redeemed_date == "") {
+						btn_unredeem.attr("disabled", true);
+					}
+					if (metaObj.wc_ticket.is_ticket == 1 && metaObj.wc_ticket.redeemed_date == "") {
+						$('<button>').addClass("button-delete").html("Unset Ticket").on("click", ()=>{
+							LAYOUT.renderYesNo('Remove ticket', 'Do you really want to remove the ticket info from this ticket number? The WooCommerce sale will be set and you need to remove it manually.', ()=>{
+								_makeGet('removeWoocommerceTicketForCode', {'code':codeObj.code}, _codeObj=>{
+									__getData(_codeObj);
+								});
 							});
-						});
-					}).appendTo(btngrp);
+						}).appendTo(btngrp);
+					}
 				}
 			}
 		}

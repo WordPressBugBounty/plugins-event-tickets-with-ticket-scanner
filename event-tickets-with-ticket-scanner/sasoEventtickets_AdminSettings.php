@@ -855,6 +855,7 @@ class sasoEventtickets_AdminSettings {
 		if ($displayAdminAreaColumnBillingName) {
 			$had_error = false;
 			foreach($daten as $key => $item) {
+				$daten[$key]['_customer_name'] = "";
 				if ($item['order_id'] > 0) {
 					try {
 						$daten[$key]['_customer_name'] = $this->getCustomerName($item['order_id']);
@@ -870,6 +871,7 @@ class sasoEventtickets_AdminSettings {
 		if ($displayAdminAreaColumnBillingCompany) {
 			$had_error = false;
 			foreach($daten as $key => $item) {
+				$daten[$key]['_customer_company'] = "";
 				if ($item['order_id'] > 0) {
 					try {
 						$daten[$key]['_customer_company'] = $this->getCompanyName($item['order_id']);

@@ -3,8 +3,8 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.5.7
- * Author: Saso Nikolov
+ * Version: 2.5.8
+ * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
   *
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.5.7');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.5.8');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -202,16 +202,22 @@ class sasoEventtickets {
 		if ($this->_isPrem == null && $this->PREMFUNCTIONS == null) {
 			$this->_isPrem = false;
 			$this->PREMFUNCTIONS = new sasoEventtickets_fakeprem();
-			$premPluginFolder = $this->getPremiumPluginFolder();
-			if (!empty($premPluginFolder)) {
-				$file = $premPluginFolder.$this->_premium_function_file;
-				$premiumFile = plugin_dir_path(__FILE__)."../".$file;
-				if (file_exists($premiumFile)) { // check ob active ist nicht nötig, das das getPremiumPluginFolder schon macht
-					if (!class_exists('sasoEventtickets_PremiumFunctions')) {
-						include_once $premiumFile;
+			if (class_exists('sasoEventtickets_PremiumFunctions')) {
+				$this->PREMFUNCTIONS = new sasoEventtickets_PremiumFunctions($this, plugin_dir_path(__FILE__), $this->_prefix, $this->getDB());
+				$this->_isPrem = $this->PREMFUNCTIONS->isPremium();
+			} else { // old approach before v 2.5.7
+				// this is causing issues with base_dir set
+				$premPluginFolder = $this->getPremiumPluginFolder();
+				if (!empty($premPluginFolder)) {
+					$file = $premPluginFolder.$this->_premium_function_file;
+					$premiumFile = plugin_dir_path(__FILE__)."../".$file;
+					if (file_exists($premiumFile)) { // check ob active ist nicht nötig, das das getPremiumPluginFolder schon macht
+						if (!class_exists('sasoEventtickets_PremiumFunctions')) {
+							include_once $premiumFile;
+						}
+						$this->PREMFUNCTIONS = new sasoEventtickets_PremiumFunctions($this, plugin_dir_path(__FILE__), $this->_prefix, $this->getDB());
+						$this->_isPrem = $this->PREMFUNCTIONS->isPremium();
 					}
-					$this->PREMFUNCTIONS = new sasoEventtickets_PremiumFunctions($this, plugin_dir_path(__FILE__), $this->_prefix, $this->getDB());
-					$this->_isPrem = $this->PREMFUNCTIONS->isPremium();
 				}
 			}
 		}
@@ -359,6 +365,7 @@ class sasoEventtickets {
 			add_action('woocommerce_product_data_panels', [$this, 'relay_woocommerce_product_data_panels'] );
 			add_action('woocommerce_process_product_meta', [$this, 'relay_woocommerce_process_product_meta'], 10, 2 );
 			add_action('add_meta_boxes', [$this, 'relay_add_meta_boxes']);
+			add_action( 'woocommerce_process_shop_order_meta', 'relay_woocommerce_process_shop_order_meta', 10 );
 			add_filter('manage_edit-product_columns', [$this, 'relay_manage_edit_product_columns']);
 			add_action('manage_product_posts_custom_column', [$this, 'relay_manage_product_posts_custom_column'], 2);
 			add_filter("manage_edit-product_sortable_columns", [$this, 'relay_manage_edit_product_sortable_columns']);
