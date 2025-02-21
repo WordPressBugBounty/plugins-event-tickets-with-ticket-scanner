@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.5.8
+Stable tag: 2.5.9
 Tested up to: 6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -328,6 +328,9 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.5.9 - 2025-02-21 =
+* Bug fix unused action that causes woocommerce to crash
+
 = 2.5.8 - 2025-02-20 =
 * Added support for Woocommerce high performance order storage (HPOS) to display the meta boxes on the order and product.
 * Bugfix for option displayAdminAreaColumnConfirmedCount. The list was not displayed if you had new tickets without an order to it.
