@@ -411,8 +411,8 @@ class sasoEventtickets_Options {
 		$this->_options[] = $this->getOptionsObject('wcassignmentReuseNotusedCodes', __("Reuse ticket from the ticket list assigned to the woocommerce product, that are not already used by a woocommerce purchase.", 'event-tickets-with-ticket-scanner'),__("If active, the system will try to use an existing ticket from the ticket list that is free. If no free ticket number could be found, a new ticket will be created and assigned to the purchase.", 'event-tickets-with-ticket-scanner'), "checkbox", true, []);
 		$this->_options[] = $this->getOptionsObject('wcassignmentDoNotPutCVVOnEmail', __("Do not print the ticket number CVV on the confirmation to the customer.", 'event-tickets-with-ticket-scanner'), __("If active, the assigned CVV will not be printed on the email", 'event-tickets-with-ticket-scanner'), "checkbox", "", []);
 		$this->_options[] = $this->getOptionsObject('wcassignmentDoNotPutCVVOnPDF', __("Do not print the ticket number CVV on the PDF invoice woocommerce purchase.", 'event-tickets-with-ticket-scanner'), __("If active, the assigned CVV will not be printed on the PDF", 'event-tickets-with-ticket-scanner'), "checkbox", "", []);
-		//$this->_options[] = $this->getOptionsObject('wcassignmentDoNotPutOnEmail', __("Do not put the ticket in the emails to the customer", 'event-tickets-with-ticket-scanner'), __("If active, the assigned ticket number and other ticket related information will not be put in the email", 'event-tickets-with-ticket-scanner'), "checkbox", "", []);
-		//$this->_options[] = $this->getOptionsObject('wcassignmentDoNotPutOnPDF', __("Do not print the ticket on the PDF invoice woocommerce purchase.", 'event-tickets-with-ticket-scanner'), __("If active, the assigned ticket will not be printed on the PDF", 'event-tickets-with-ticket-scanner'), "checkbox", "", []);
+		$this->_options[] = $this->getOptionsObject('wcassignmentDoNotPutOnEmail', __("Do not put the ticket in the emails to the customer", 'event-tickets-with-ticket-scanner'), __("If active, the assigned ticket number and other ticket related information will not be put in the email", 'event-tickets-with-ticket-scanner'), "checkbox", "", []);
+		$this->_options[] = $this->getOptionsObject('wcassignmentDoNotPutOnPDF', __("Do not print the ticket on the PDF invoice woocommerce purchase.", 'event-tickets-with-ticket-scanner'), __("If active, the assigned ticket will not be printed on the PDF", 'event-tickets-with-ticket-scanner'), "checkbox", "", []);
 		$this->_options[] = $this->getOptionsObject('wcassignmentUseGlobalSerialFormatter', __("Set the ticket number formatter pattern for new sales.", 'event-tickets-with-ticket-scanner'), __("If active, the a new ticket will generated using the following settings", 'event-tickets-with-ticket-scanner'), "checkbox", "", []);
 		$this->_options[] = $this->getOptionsObject('wcassignmentUseGlobalSerialFormatter_values', "","", "text", "", ["doNotRender"=>1]);
 
@@ -560,6 +560,8 @@ class sasoEventtickets_Options {
 	}
 	private function _getOptionValue($option) {
 		$ret = "";
+		if ($option == null) return $ret;
+
 		if (is_array($option['value'])) {
 			$ret = $option['value'];
 			if (count($option['value']) == "") $ret = $option['default'];
@@ -570,7 +572,9 @@ class sasoEventtickets_Options {
 	}
 	public function isOptionCheckboxActive($optionname) {
 		$option = $this->getOption($optionname);
-		if ($option == null || intval($this->_getOptionValue($option)) != 1) return false;
+		if ($option == null) return false;
+		$val = $this->_getOptionValue($option);
+		if (intval($val) != 1 || (boolval($val) && $val != "true" && $val != "yes")) return false;
 		return true;
 	}
 

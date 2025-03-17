@@ -573,23 +573,19 @@ class sasoEventtickets_WC {
 		$R = SASO_EVENTTICKETS::getRequest();
 
 		$key = 'saso_eventtickets_list';
-		if (isset($R[$key])) {
-			if( !empty( $R[$key] ) ) {
-				update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
-			} else {
-				delete_post_meta( $id, $key );
-			}
+		if( isset($R[$key]) && !empty( $R[$key] ) ) {
+			update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
+		} else {
+			delete_post_meta( $id, $key );
 		}
 
 		// damit nicht alte Eintragungen gelöscht werden - so kann der kunde upgrade machen und alles ist noch da
 		if (version_compare( WC_VERSION, SASO_EVENTTICKETS_PLUGIN_MIN_WC_VER, '>=' )) {
 			$key = 'saso_eventtickets_list_sale_restriction';
-			if (isset($R[$key])) {
-				if( $R[$key] == '0' || !empty( $R[$key] ) ) {
-					update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
-				} else {
-					delete_post_meta( $id, $key );
-				}
+			if( isset($R[$key]) && ($R[$key] == '0' || !empty( $R[$key] )) ) {
+				update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
+			} else {
+				delete_post_meta( $id, $key );
 			}
 		}
 
@@ -605,12 +601,10 @@ class sasoEventtickets_WC {
 			'saso_eventtickets_list_formatter'
 		];
 		foreach($keys_checkbox as $key) {
-			if (isset($R[$key])) {
-				if( isset( $R[$key] ) ) {
-					update_post_meta( $id, $key, 'yes' );
-				} else {
-					delete_post_meta( $id, $key );
-				}
+			if( isset( $R[$key] ) ) {
+				update_post_meta( $id, $key, 'yes' );
+			} else {
+				delete_post_meta( $id, $key );
 			}
 		}
 
@@ -627,12 +621,10 @@ class sasoEventtickets_WC {
 			'saso_eventtickets_request_daychooser_per_ticket_label'
 		];
 		foreach($keys_inputfields as $key) {
-			if (isset($R[$key])) {
-				if( !empty( $R[$key] ) ) {
-					update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
-				} else {
-					delete_post_meta( $id, $key );
-				}
+			if( isset($R[$key]) && !empty( $R[$key] ) ) {
+				update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
+			} else {
+				delete_post_meta( $id, $key );
 			}
 		}
 
@@ -644,6 +636,8 @@ class sasoEventtickets_WC {
 				$array_to_save[] = $v;
 			}
 			update_post_meta( $id, $key, $array_to_save );
+		} else {
+			delete_post_meta( $id, $key );
 		}
 
 		$keys_number = [
@@ -653,43 +647,37 @@ class sasoEventtickets_WC {
 			'saso_eventtickets_daychooser_offset_end'
 		];
 		foreach($keys_number as $key) {
-			if (isset($R[$key])) {
-				if( !empty($R[$key]) || $R[$key] == "0" ) {
-					$value = intval($R[$key]);
-					if ($value < 0) $value = 1;
-					update_post_meta( $id, $key, $value );
-				} else {
-					delete_post_meta( $id, $key );
-				}
+			if( isset($R[$key]) && !empty($R[$key]) || $R[$key] == "0" ) {
+				$value = intval($R[$key]);
+				if ($value < 0) $value = 1;
+				update_post_meta( $id, $key, $value );
+			} else {
+				delete_post_meta( $id, $key );
 			}
 		}
 
 		$key = 'saso_eventtickets_ticket_is_ticket_info';
-		if (isset($R[$key])) {
-			if( !empty( $R[$key] ) ) {
-				update_post_meta( $id, $key, wp_kses_post($R[$key]) );
-			} else {
-				delete_post_meta( $id, $key );
-			}
+		if( isset($R[$key]) && !empty( $R[$key] ) ) {
+			update_post_meta( $id, $key, wp_kses_post($R[$key]) );
+		} else {
+			delete_post_meta( $id, $key );
 		}
 		$key = 'saso_eventtickets_request_value_per_ticket_values';
-		if (isset($R[$key])) {
-			if( !empty( $R[$key] ) ) {
-				$v = [];
-				foreach(explode("\n", $R[$key]) as $entry) {
-					$t = explode("|", $entry);
-					if (count($t) > 0) {
-						$t[0] = sanitize_key(trim($t[0]));
-						if (count($t) > 1) {
-							$t[1] = sanitize_key(trim($t[1]));
-						}
-						$v[] = join("|", $t);
+		if( isset($R[$key]) && !empty( $R[$key] ) ) {
+			$v = [];
+			foreach(explode("\n", $R[$key]) as $entry) {
+				$t = explode("|", $entry);
+				if (count($t) > 0) {
+					$t[0] = sanitize_key(trim($t[0]));
+					if (count($t) > 1) {
+						$t[1] = sanitize_key(trim($t[1]));
 					}
+					$v[] = join("|", $t);
 				}
-				update_post_meta( $id, $key, join("\n", $v));
-			} else {
-				delete_post_meta( $id, $key );
 			}
+			update_post_meta( $id, $key, join("\n", $v));
+		} else {
+			delete_post_meta( $id, $key );
 		}
 
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'saso_eventtickets_wc_save_fields')) {
@@ -1197,7 +1185,7 @@ class sasoEventtickets_WC {
 			$code = wc_get_order_item_meta($item['item_id'] , '_saso_eventtickets_product_code',true);
 			if (!empty($code)) {
 
-				if (!$this->getOptions()->isOptionCheckboxActive('wcassignmentDoNotPutOnPDF')) {
+				if ($this->getOptions()->isOptionCheckboxActive('wcassignmentDoNotPutOnPDF') == false) {
 					$code_ = explode(",", $code);
 					array_walk($code_, "trim");
 
@@ -1355,7 +1343,7 @@ class sasoEventtickets_WC {
 			$displaySerial = false;
 			$code = "";
 			$preText = "";
-			if (!$this->getOptions()->isOptionCheckboxActive('wcassignmentDoNotPutOnEmail')) {
+			if ($this->getOptions()->isOptionCheckboxActive('wcassignmentDoNotPutOnEmail') == false) {
 				$isTicket = wc_get_order_item_meta($item_id , '_saso_eventtickets_is_ticket',true) == 1 ? true : false;
 				if ($isTicket) {
 					$code = wc_get_order_item_meta($item_id , '_saso_eventtickets_product_code',true);
@@ -2167,7 +2155,7 @@ class sasoEventtickets_WC {
 	function woocommerce_before_cart_table() {
 		add_action( 'woocommerce_after_cart_item_name', [$this, 'woocommerce_after_cart_item_name'], 10, 2 );
 		$added = false;
-		if ($this->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
+		if ($this->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) { // not in use anymore. But maybe with old installations
 			if ($this->containsProductsWithRestrictions()) {
 				$this->addJSFileAndHandler();
 				$added = true;
@@ -2209,8 +2197,8 @@ class sasoEventtickets_WC {
  	}
 
 	public function executeWCFrontend() {
-		// nun nicht mehr nur für restriction
-		//if ($this->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
+		// not anymore just for restrict purchase
+		//if ($this->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) { // not in use anymore. But maybe with old installations
 			// Do a nonce check
 			//$nonce_mode = 'woocommerce-cart';
 			$nonce_mode = $this->MAIN->_js_nonce;
@@ -2784,7 +2772,7 @@ class sasoEventtickets_WC {
 	}
 
 	function woocommerce_checkout_update_order_meta($order_id, $address_data) {
-		if ($this->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
+		if ($this->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) { // not in use anymore. But maybe with old installations
 			if ($this->containsProductsWithRestrictions()) {
 				$order = wc_get_order( $order_id );
 				$items = $order->get_items();

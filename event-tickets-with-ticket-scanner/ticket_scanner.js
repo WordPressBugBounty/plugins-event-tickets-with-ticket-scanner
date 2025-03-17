@@ -566,7 +566,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         ];
 		var formate = {'d':d.getDate()<10?'0'+d.getDate():d.getDate(),
 				'j':d.getDate(),'D':tage[d.getDay()],'w':d.getDate(),'m':d.getMonth()+1<10?'0'+(d.getMonth()+1):d.getMonth()+1,'M':monate[d.getMonth()],
-				'n':d.getMonth()+1,'Y':d.getFullYear(),'y':d.getYear()>100?d.getYear().toString().substr(d.getYear().toString().length-2):d.getYear(),
+				'n':d.getMonth()+1,'Y':d.getFullYear(),'y':d.getYear()>100?d.getYear().toString().substring(d.getYear().toString().length-2):d.getYear(),
 				'H':d.getHours()<10?'0'+d.getHours():d.getHours(),'h':d.getHours()>12?d.getHours()-12:d.getHours(),
 				'i':d.getMinutes()<10?'0'+d.getMinutes():d.getMinutes(),'s':d.getSeconds()<10?'0'+d.getSeconds():d.getSeconds()
 				};
@@ -610,8 +610,8 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 if (pos < 0) {
                     parawerte[teile[a]] = true;
                 } else {
-                    var key = teile[a].substr(0,pos);
-                    parawerte[key] = decodeURIComponent(teile[a].substr(pos+1));
+                    var key = teile[a].substring(0,pos);
+                    parawerte[key] = decodeURIComponent(teile[a].substring(pos+1));
                 }
             }
         }
@@ -635,17 +635,17 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
 
         // check if the code is URL
         if (code.length > 12) {
-            if (code.substr(0,5).toLowerCase() == "https") {
-                if (code.substr(0,8).toLowerCase() == "https://" || (code.length > 14 && code.substr(0,14).toLowerCase() == "https%3A%2F%2F")) {
+            if (code.substring(0,5).toLowerCase() == "https") {
+                if (code.substring(0,8).toLowerCase() == "https://" || (code.length > 14 && code.substring(0,14).toLowerCase() == "https%3A%2F%2F")) {
                     // extract code from URL
                     let url = code;
                     let pos = url.lastIndexOf("code=");
                     if (pos > 0) {
-                        code = url.substr(pos + 5);
+                        code = url.substring(pos + 5);
                     } else {
                         pos = url.toLowerCase().lastIndexOf("code%3d");
                         if (pos > 0) {
-                            code = url.substr(pos + 7);
+                            code = url.substring(pos + 7);
                         }
                     }
                 }
@@ -671,10 +671,14 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
 
             if (typeof data.order_infos !== "undefined" && data.order_infos.is_order_ticket) {
                 system.format_datetime = data.option_displayDateTimeFormat;
+                system.format_date = data.option_displayDateFormat;
+                system.format_time = data.option_displayTimeFormat;
                 displayOrderTicketInfo(data);
                 showScanNextTicketButton();
             } else {
                 system.format_datetime = data._ret.option_displayDateTimeFormat;
+                system.format_date = data._ret.option_displayDateFormat;
+                system.format_time = data._ret.option_displayTimeFormat;
                 displayTicketInfo(data);
                 displayTicketRetrievedInfo(data);
                 displayTicketAdditionalInfos(data);
@@ -829,8 +833,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
 
         let div3 = $('<div>');
         if (typeof data._ret.product !== "undefined") {
+            let product_name = data._ret.product.name + (data._ret.product.name_variant != "" ? " - "+data._ret.product.name_variant : "");
             div3.css("margin-top", "10px").html(__('<b>Product information</b>', 'event-tickets-with-ticket-scanner'))
-                .append('<div>'+sprintf(__('#%s - %s', 'event-tickets-with-ticket-scanner'), data._ret.product.id, data._ret.product.name + ' '+ data._ret.product.name_variant)+'</div>');
+                .append('<div>'+sprintf(__('#%s - %s', 'event-tickets-with-ticket-scanner'), data._ret.product.id, product_name)+'</div>');
             if (data._ret.product.sku != "") {
                 div3.append('<div>'+sprintf(__('SKU: %s', 'event-tickets-with-ticket-scanner'), data._ret.product.sku)+'</div>');
             }
@@ -1004,9 +1009,14 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         div.css("border", "1px solid "+border_color);
 
         $('<h3 style="color:black !important;text-align:center;">').html(ret.ticket_heading).appendTo(div);
-        $('<h4 style="color:black !important;">').html(ret.ticket_title).appendTo(div);
+        $('<h4 style="color:black !important;margin-bottom:0;">').html(ret.ticket_title).appendTo(div);
+        /* // ?? is the same like ret.ticiet_sub_title
+        if (data._ret.product.name_variant != "") {
+            $('<h5 style="color:black !important;margin-top:0;padding-top:0;">').html(data._ret.product.name_variant).appendTo(div);
+        }
+        */
         if (ret.ticket_sub_title != "") {
-            $('<p>').html(ret.ticket_sub_title).appendTo(div);
+            $('<h5 style="color:black !important;margin-top:0;padding-top:0;">').html(ret.ticket_sub_title).appendTo(div);
         }
         $('<p>').html(ret.ticket_date_as_string).appendTo(div);
         if (ret.ticket_location != "") {
@@ -1166,6 +1176,12 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         }
         return div;
     }
+    function cleanPublicTicketNumber(code) {
+        if (code) {
+            return code.replace(/'/g, "-").trim();
+        }
+        return '';
+    }
     function addInputField() {
         let div = $('<div>').css('text-align', 'center');
         $('<label for="barcode_scanner_input" class="form-label" style="color:#837878">').html(__('For QR code barcode scanner', 'event-tickets-with-ticket-scanner')).appendTo(div);
@@ -1173,20 +1189,26 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         let inputField = $('<input style="width:70%;" name="barcode_scanner_input" placeholder="'+_x('Type in the ticket number and hit ENTER (optional to scanning)', 'attr', 'event-tickets-with-ticket-scanner')+'" type="text">')
             .appendTo(div)
             .on("change", ()=>{
-                clearOrderInfos();
-                retrieveTicket(inputField.val().trim(), false, ()=>{
-                    inputField.focus();
-                    inputField.select();
-                });
-            })
-            .on("keypress", event=>{
-                if (event.key === "Enter") {
-                    event.preventDefault();
+                let code = cleanPublicTicketNumber(inputField.val());
+                if (code != "") {
                     clearOrderInfos();
-                    retrieveTicket(inputField.val().trim(), false, ()=>{
+                    retrieveTicket(code, false, ()=>{
                         inputField.focus();
                         inputField.select();
                     });
+                }
+            })
+            .on("keypress", event=>{
+                if (event.key === "Enter") {
+                    let code = cleanPublicTicketNumber(inputField.val());
+                    if (code != "") {
+                        event.preventDefault();
+                        clearOrderInfos();
+                        retrieveTicket(code, false, ()=>{
+                            inputField.focus();
+                            inputField.select();
+                        });
+                    }
                 }
             });
         system.INPUTFIELD = div;

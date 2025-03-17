@@ -261,8 +261,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 	            if (pos < 0) {
 	                parawerte[teile[a]] = true;
 	            } else {
-	                var key = teile[a].substr(0,pos);
-	                parawerte[key] = decodeURIComponent(teile[a].substr(pos+1));
+	                var key = teile[a].substring(0,pos);
+	                parawerte[key] = decodeURIComponent(teile[a].substring(pos+1));
 	            }
 	        }
 	    }
@@ -311,7 +311,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
         ];
 		var formate = {'d':d.getDate()<10?'0'+d.getDate():d.getDate(),
 				'j':d.getDate(),'D':tage[d.getDay()],'w':d.getDate(),'m':d.getMonth()+1<10?'0'+(d.getMonth()+1):d.getMonth()+1,'M':monate[d.getMonth()],
-				'n':d.getMonth()+1,'Y':d.getFullYear(),'y':d.getYear()>100?d.getYear().toString().substr(d.getYear().toString().length-2):d.getYear(),
+				'n':d.getMonth()+1,'Y':d.getFullYear(),'y':d.getYear()>100?d.getYear().toString().substring(d.getYear().toString().length-2):d.getYear(),
 				'H':d.getHours()<10?'0'+d.getHours():d.getHours(),'h':d.getHours()>12?d.getHours()-12:d.getHours(),
 				'i':d.getMinutes()<10?'0'+d.getMinutes():d.getMinutes(),'s':d.getSeconds()<10?'0'+d.getSeconds():d.getSeconds()
 				};

@@ -686,7 +686,11 @@ class sasoEventtickets_Core {
 		}
 		if (SASO_EVENTTICKETS::issetRPara('code')) { // overwrites any found code, if parameter is available
 			$foundcode = trim(SASO_EVENTTICKETS::getRequestPara('code'));
-			$parts = explode("-", $foundcode);
+			if (strpos($foundcode, "'") === false) {
+				$parts = explode("-", $foundcode);
+			} else {
+				$parts = explode("'", $foundcode);
+			}
 			$t = explode("?", $url);
 			if (count($t) > 1) {
 				unset($t[0]);

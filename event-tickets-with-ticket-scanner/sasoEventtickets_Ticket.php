@@ -133,12 +133,17 @@ final class sasoEventtickets_Ticket {
 				'post_status' => 'publish',
 				'posts_per_page' => -1, // -1 zeigt alle Produkte an
 				'meta_query' => array(
-					array(
+					/*array(
 						'key' => '_visibility',
 						'value' => array('catalog', 'visible'), // Produkte, die nicht als "Privat" gelten
 						'compare' => 'IN',
-					),
-				),
+					),*/
+					[
+					'key' => 'saso_eventtickets_is_ticket',
+					'value' => 'yes',
+					'compare' => '='
+					]
+				)
 			);
 
 			$products = get_posts($products_args);
@@ -147,7 +152,7 @@ final class sasoEventtickets_Ticket {
 				foreach ($products as $product) {
 					// check if ticket
 					$product_id = $product->ID; //$product->get_id();
-					if ($this->MAIN->getWC()->isTicketByProductId($product_id) ) {
+					//if ($this->MAIN->getWC()->isTicketByProductId($product_id) ) {
 						// check if event date end is set
 						$dates = $this->calcDateStringAllowedRedeemFrom($product_id);
 						if (!empty($dates['ticket_end_date_orig'])) { // only if end date is also set
@@ -161,7 +166,7 @@ final class sasoEventtickets_Ticket {
 								wp_update_post($product_data);
 							}
 						}
-					}
+					//}
 				}
 			}
 
@@ -321,6 +326,7 @@ final class sasoEventtickets_Ticket {
 		$ret['option_displayDateFormat'] = $this->MAIN->getOptions()->getOptionDateFormat();
 		$ret['option_displayTimeFormat'] = $this->MAIN->getOptions()->getOptionTimeFormat();
 		$ret['option_displayDateTimeFormat'] = $date_time_format;
+
 		$ret['is_paid'] = $this->isPaid($order);
 		$ret['allow_redeem_only_paid'] = $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemOnlyPaid');
 		$ret['order_status'] = $order->get_status();
@@ -328,7 +334,8 @@ final class sasoEventtickets_Ticket {
 		$ret['ticket_heading'] = esc_html($this->getAdminSettings()->getOptionValue("wcTicketHeading"));
 		$ret['ticket_title'] = esc_html($product_parent->get_Title());
 		$ret['ticket_sub_title'] = "";
-		if ($is_variation && $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketPDFDisplayVariantName') && count($product->get_attributes()) > 0) {
+		//if ($is_variation && $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketPDFDisplayVariantName') && count($product->get_attributes()) > 0) {
+		if ($is_variation && count($product->get_attributes()) > 0) {
 			foreach($product->get_attributes() as $k => $v){
 				$ret['ticket_sub_title'] .= $v." ";
 			}
@@ -388,7 +395,8 @@ final class sasoEventtickets_Ticket {
 		$ret['product']['parent_id'] = $product_parent->get_id();
 		$ret['product']['name'] = esc_html($product_parent->get_Title());
 		$ret['product']['name_variant'] = "";
-		if ($is_variation && $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketPDFDisplayVariantName') && count($product->get_attributes()) > 0) {
+		//if ($is_variation && $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketPDFDisplayVariantName') && count($product->get_attributes()) > 0) {
+		if ($is_variation && count($product->get_attributes()) > 0) {
 			foreach($product->get_attributes() as $k => $v){
 				$ret['product']['name_variant'] .= $v." ";
 			}
@@ -572,15 +580,17 @@ final class sasoEventtickets_Ticket {
 
 	public function getCalcDateStringAllowedRedeemFromCorrectProduct($product_id, $codeObj = null) {
 		$product = $this->get_product( $product_id );
-		$is_variation = $product->get_type() == "variation" ? true : false;
+		$is_variation = $product->get_type() == "variation";
 		$product_parent = $product;
-		$product_parent_id = $product->get_parent_id();
 		$tmp_prod = $product;
-		if ($is_variation && $product_parent_id > 0) {
-			$product_parent = $this->get_product( $product_parent_id );
-			$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
-			if ($saso_eventtickets_is_date_for_all_variants) {
-				$tmp_prod = $product_parent;
+		if ($is_variation) {
+			$product_parent_id = $product->get_parent_id();
+			if ($product_parent_id > 0) {
+				$product_parent = $this->get_product( $product_parent_id );
+				$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes";
+				if ($saso_eventtickets_is_date_for_all_variants) {
+					$tmp_prod = $product_parent;
+				}
 			}
 		}
 		return $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id(), $codeObj);
@@ -591,6 +601,7 @@ final class sasoEventtickets_Ticket {
 		$ret['is_daychooser_value_set'] = false;
 		$ret['is_date_for_all_variants'] = get_post_meta( $product_id, 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
 		$ret['is_date_set'] = true;
+		$ret['is_end_date_set'] = true;
 		$ret['is_end_time_set'] = false;
 
 		$ret['ticket_start_date'] = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_start_date', true ));
@@ -602,6 +613,13 @@ final class sasoEventtickets_Ticket {
 		$ret['daychooser_offset_start'] = intval(get_post_meta( $product_id, 'saso_eventtickets_daychooser_offset_start', true ));
 		$ret['daychooser_offset_end'] = intval(get_post_meta( $product_id, 'saso_eventtickets_daychooser_offset_end', true ));
 		$ret['daychooser_exclude_wdays'] = get_post_meta( $product_id, 'saso_eventtickets_daychooser_exclude_wdays', true );
+		if ($ret['daychooser_exclude_wdays'] == "") $ret['daychooser_exclude_wdays'] = [];
+
+		$ret['daychooser_exclude_dates'] = [];
+		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getDayChooserExclusionDates')) {
+			$ret['daychooser_exclude_dates'] = $this->MAIN->getPremiumFunctions()->getDayChooserExclusionDates($product_id);
+			if (!is_array($ret['daychooser_exclude_dates'])) $ret['daychooser_exclude_dates'] = [];
+		}
 
 		if ($codeObj != null && $ret['is_daychooser']) {
 			// use date of the codeObj
@@ -626,9 +644,16 @@ final class sasoEventtickets_Ticket {
 			$ret['ticket_start_date'] = date("Y-m-d", current_time("timestamp"));
 		}
 		$ret['ticket_start_date_timestamp'] = strtotime(trim($ret['ticket_start_date']." ".$ret['ticket_start_time']));
+		$ret['ticket_start_p_date'] = date("d", $ret['ticket_start_date_timestamp']);
+		$ret['ticket_start_p_month'] = date("m", $ret['ticket_start_date_timestamp']);
+		$ret['ticket_start_p_year'] = date("Y", $ret['ticket_start_date_timestamp']);
+		$ret['ticket_start_p_hour'] = date("H", $ret['ticket_start_date_timestamp']);
+		$ret['ticket_start_p_min'] = date("i", $ret['ticket_start_date_timestamp']);
+		$ret['ticket_start_p_sec'] = date("s", $ret['ticket_start_date_timestamp']);
 
 		if (empty($ret['ticket_end_date'])) {
 			$ret['ticket_end_date'] = $ret['ticket_start_date'];
+			$ret['is_end_date_set'] = false;
 		}
 
 		if (empty($ret['ticket_end_time'])) {
@@ -637,6 +662,12 @@ final class sasoEventtickets_Ticket {
 			$ret['is_end_time_set'] = true;
 		}
 		$ret['ticket_end_date_timestamp'] = strtotime(trim($ret['ticket_end_date']." ".$ret['ticket_end_time']));
+		$ret['ticket_end_p_date'] = date("d", $ret['ticket_end_date_timestamp']);
+		$ret['ticket_end_p_month'] = date("m", $ret['ticket_end_date_timestamp']);
+		$ret['ticket_end_p_year'] = date("Y", $ret['ticket_end_date_timestamp']);
+		$ret['ticket_end_p_hour'] = date("H", $ret['ticket_end_date_timestamp']);
+		$ret['ticket_end_p_min'] = date("i", $ret['ticket_end_date_timestamp']);
+		$ret['ticket_end_p_sec'] = date("s", $ret['ticket_end_date_timestamp']);
 
 		$redeem_allowed_from = current_time("timestamp");
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDontAllowRedeemTicketBeforeStart')) {

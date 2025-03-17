@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.5.9
+ * Version: 2.6.0
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.5.9');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.6.0');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -36,6 +36,7 @@ class sasoEventtickets {
 	protected $_prefix = 'sasoEventtickets';
 	protected $_shortcode = 'sasoEventTicketsValidator';
 	protected $_shortcode_mycode = 'sasoEventTicketsValidator_code';
+	protected $_shortcode_eventviews = 'sasoEventTicketsValidator_eventsview';
 	protected $_shortcode_ticket_scanner = 'sasoEventTicketsValidator_ticket_scanner';
 	protected $_divId = 'sasoEventtickets';
 
@@ -313,6 +314,7 @@ class sasoEventtickets {
 		add_shortcode($this->_shortcode, [$this, 'replacingShortcode']);
 		add_shortcode($this->_shortcode_mycode, [$this, 'replacingShortcodeMyCode']);
 		add_shortcode($this->_shortcode_ticket_scanner, [$this, 'replacingShortcodeTicketScanner']);
+		add_shortcode($this->_shortcode_eventviews, [$this, 'replacingShortcodeEventViews']);
 		do_action( $this->_do_action_prefix.'main_init_frontend' );
 	}
 	private function init_backend() {
@@ -648,6 +650,14 @@ class sasoEventtickets {
 					<li><b>jsafter</b><br>jsafter="function-name". The function will be called. The input parameter will be the result JSON object from the server.</li>
 				</ul>
 				-->
+				<h3><?php _e('Shortcode to display the event calendar form within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
+				<b>[<?php echo esc_html($this->_shortcode_eventviews); ?>]</b>
+				<p><?php _e('The event calendar form will be displayed. You can add the following parameters to change the output:', 'event-tickets-with-ticket-scanner'); ?></p>
+				<ul>
+					<!--<li>view<br>Values: calendar, list or calendar|list<br>Default: list</li>-->
+					<li>months_to_show<br>Values can be a number higher than 0. Default: 3</li>
+				</ul>
+				<p>CSS file: <a href="<?php echo plugins_url( "",__FILE__ ); ?>/css/calendar.css" target="_blank">calendar.css</a></p>
 				<h3><?php _e('Shortcode to display the assigned tickets and codes of an user within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
 				<b>[<?php echo esc_html($this->_shortcode_mycode); ?>]</b>
 				<p>
@@ -982,6 +992,146 @@ class sasoEventtickets {
 		}
 	}
 
+	public function replacingShortcodeEventViews($attr=[], $content = null, $tag = '') {
+		// iterate over all woocommerce products and check if they are an event
+		$view = "calendar|list";
+		if (isset($attr["view"])) {
+			$view = strtolower(trim(sanitize_key($attr["view"])));
+		}
+		$months_to_show = 3;
+		if (isset($attr["months_to_show"])) {
+			$m = intval($attr["months_to_show"]);
+			if ($m > 0) $months_to_show = $m;
+		}
+
+		$month_start = strtotime(date("Y-m-1 00:00:00"));
+		//$month_end = strtotime(date("Y-m-t 23:59:59"));
+		$month_end = strtotime(date("Y-m-1 23:59:59", strtotime("+".$months_to_show." month", $month_start)));
+
+		$products_args = array(
+			'post_type' => 'product',
+			'post_status' => 'publish',
+			'posts_per_page' => -1, // -1 zeigt alle Produkte an
+			'meta_query' => array(
+				[
+					'key' => 'saso_eventtickets_is_ticket',
+					'value' => 'yes',
+					'compare' => '='
+				]
+			)
+		);
+		$posts = get_posts($products_args); // get only ticket products
+
+		$list_infos = [
+			'months_to_show'=>$months_to_show,
+			'month_start'=>$month_start,
+			'month_end'=>$month_end,
+			'view'=>$view
+		];
+		$products_to_show = [];
+		// Ergebnisse überprüfen
+		foreach ($posts as $post) {
+			$product_ids = [];
+			$product = wc_get_product( $post->ID );
+
+			// check if event is variant product
+			$is_variable = $product->get_type() == "variable";
+			if ($is_variable) {
+				// check if event dates are the same for all variants
+				$date_is_for_all_variants = get_post_meta( $product_id, 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
+				if ($date_is_for_all_variants == false) {
+					// if not add also the variants
+					$childs = $product->get_children();
+					foreach ($childs as $child_id) {
+						if (get_post_meta($child_id, '_saso_eventtickets_is_not_ticket', true) == "yes") {
+							continue;
+						}
+						$product_ids[] = $child_id;
+					}
+				}
+			} else {
+				$product_ids[] = $product->get_id();
+			}
+
+			foreach ($product_ids as $product_id) {
+				$product = wc_get_product( $product_id );
+				$dates = $this->getTicketHandler()->calcDateStringAllowedRedeemFrom($product_id);
+				//if ($dates['ticket_end_date_timestamp'] > $month_start && $dates['ticket_start_date_timestamp'] < $month_end) {
+				if ($dates['ticket_end_date_timestamp'] >= $month_start || ($dates['ticket_start_date_timestamp'] >= $month_start && $dates['ticket_start_date_timestamp'] <= $month_end)) {
+					// set product to hidden
+					$product_data = array(
+						'ID' => $product_id,
+						'dates' => $dates,
+						'event'=> [
+							'location' => trim(get_post_meta( $product_id, 'saso_eventtickets_event_location', true )),
+							'location_label' => wp_kses_post(trim($this->getAdmin()->getOptionValue("wcTicketTransLocation")))
+						],
+						'product' => [
+							'title' => $product->get_name(),
+							'url' => get_permalink($product_id),
+							'price' =>$product->get_price(),
+							'price_html' => $product->get_price_html(),
+							'type' => $product->get_type(),
+						]
+					);
+					$products_to_show[] = $product_data;
+				}
+			}
+		}
+
+		$divId = "sasoEventTicketsValidator_eventsview";
+
+		// add js for the events
+		wp_enqueue_style("wp-jquery-ui-dialog");
+
+		$js_url = "ticket_events.js?_v=".$this->getPluginVersion();
+		if (defined('WP_DEBUG')) $js_url .= '&t='.current_time("timestamp");
+		$js_url = plugins_url( $js_url,__FILE__ );
+		wp_register_script('ajax_script_ticket_events', $js_url, array('jquery', 'jquery-ui-dialog', 'wp-i18n'));
+		wp_enqueue_script('ajax_script_ticket_events');
+		wp_set_script_translations('ajax_script_ticket_events', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
+		wp_enqueue_style("ticket_events_css", plugins_url( "",__FILE__ ).'/css/calendar.css');
+
+		// add all events as an array for max 3 months??? or config parameter
+		$vars = [
+			'root' => esc_url_raw( rest_url() ),
+			'_plugin_home_url' =>plugins_url( "",__FILE__ ),
+			'_action' => $this->_prefix.'_executeFrontendEvents',
+			'_isPremium'=>$this->isPremium(),
+			'_isUserLoggedin'=>is_user_logged_in(),
+			'_userId'=>get_current_user_id(),
+			'_premJS'=>$this->isPremium() && method_exists($this->getPremiumFunctions(), "getJSFrontEventFile") ? $this->getPremiumFunctions()->getJSFrontEventFile() : '',
+			'_siteUrl'=>get_site_url(),
+			'events' => $products_to_show,
+			'list_infos' => $list_infos,
+			'format_date' => $this->getOptions()->getOptionDateFormat(),
+			'format_time' => $this->getOptions()->getOptionTimeFormat(),
+			'format_datetime' => $this->getOptions()->getOptionDateTimeFormat(),
+			'url'   => admin_url( 'admin-ajax.php' ),
+			'nonce' => wp_create_nonce( $this->_js_nonce ),
+			'ajaxActionPrefix' => $this->_prefix,
+			'divId' => $divId
+		];
+		$vars = apply_filters( $this->_add_filter_prefix.'main_setTicketEventJS', $vars );
+        wp_localize_script(
+            'ajax_script_ticket_events',
+            'Ajax_ticket_events_'.$this->_prefix, // name der injected variable
+			$vars
+        );
+
+		do_action( $this->_do_action_prefix.'main_setTicketEventJS', $js_url );
+
+		$ret = '';
+        if (!isset($attr['divid']) || trim($attr['divid']) == "") {
+        	$ret .= '<div id="'.$divId.'">'.__('...loading...', 'event-tickets-with-ticket-scanner').'</div>';
+        }
+
+		$ret = apply_filters( $this->_add_filter_prefix.'main_replacingShortcodeEventViews', $ret );
+		do_action( $this->_do_action_prefix.'main_replacingShortcodeEventViews', $vars, $ret );
+
+		return $ret;
+	}
+
 	public function replaceShortcode($attr=[], $content = null, $tag = '') {
 		// einbinden das js starter skript
 		$js_url = $this->_js_file."?_v=".$this->_js_version;
@@ -1031,7 +1181,7 @@ class sasoEventtickets {
         );
         $ret = '';
         if (!isset($attr['divid']) || trim($attr['divid']) == "") {
-        	$ret = '<div id="'.$this->_divId.'">'.__('...loading...', 'event-tickets-with-ticket-scanner').'</div>';
+        	$ret .= '<div id="'.$this->_divId.'">'.__('...loading...', 'event-tickets-with-ticket-scanner').'</div>';
         }
 
 		$ret = apply_filters( $this->_add_filter_prefix.'main_replaceShortcode_2', $ret );

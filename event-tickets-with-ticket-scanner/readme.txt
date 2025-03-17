@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.5.9
+Stable tag: 2.6.0
 Tested up to: 6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -328,6 +328,16 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.6.0 - 2025-03-17 =
+* Bug fix for unchecking of product checkboxes in the event tickets tab
+* New shortcode [sasoEventTicketsValidator_eventsview]. Add event calendar view for events with an start date. Missing end date will be treated like same day.
+* Option wcassignmentDoNotPutOnEmail re-added :)
+* Option wcassignmentDoNotPutOnPDF re-added :)
+* Small optimizations on options call and find products to make them private after expired
+* Format for date and time is also passed to the outputs
+* Ticket scanner is showing now always the variant name at the top - even if the option is deactivated. For the ticket view and PDF it is still the same.
+* Ticket scanner text input field for hardware qr code scanner excepts also "'" as divider of the public ticket number.
+
 = 2.5.9 - 2025-02-21 =
 * Bug fix unused action that causes woocommerce to crash
 

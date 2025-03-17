@@ -338,9 +338,20 @@ class sasoEventtickets_AdminSettings {
 
 			$tickets_for_testing = $this->getTicketsForTesting();
 			$ticket_templates = $this->MAIN->getTicketDesignerHandler()->getTemplateList();
+			$option_displayTimeFormat = $this->MAIN->getOptions()->getOptionTimeFormat();
+			$option_displayDateFormat = $this->MAIN->getOptions()->getOptionDateFormat();
 			$option_displayDateTimeFormat = $this->MAIN->getOptions()->getOptionDateTimeFormat();
 
-			$ret = ['options'=>$options, 'options_special'=>['option_displayDateTimeFormat'=>$option_displayDateTimeFormat], 'meta_tags_keys'=>$tags, 'versions'=>$versions, 'infos'=>$infos, 'tickets_for_testing'=>$tickets_for_testing, 'ticket_templates'=>$ticket_templates];
+			$options_special = [
+				'format_date'=>$option_displayDateFormat,
+				'format_time'=>$option_displayTimeFormat,
+				'format_datetime'=>$option_displayDateTimeFormat,
+				'option_displayTimeFormat'=>$option_displayTimeFormat,
+				'option_displayDateFormat'=>$option_displayDateFormat,
+				'option_displayDateTimeFormat'=>$option_displayDateTimeFormat
+			];
+
+			$ret = ['options'=>$options, 'options_special'=>$options_special, 'meta_tags_keys'=>$tags, 'versions'=>$versions, 'infos'=>$infos, 'tickets_for_testing'=>$tickets_for_testing, 'ticket_templates'=>$ticket_templates];
 		}
 
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'admin_getOptions', $ret );
