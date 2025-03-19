@@ -574,8 +574,8 @@ class sasoEventtickets_Options {
 		$option = $this->getOption($optionname);
 		if ($option == null) return false;
 		$val = $this->_getOptionValue($option);
-		if (intval($val) != 1 || (boolval($val) && $val != "true" && $val != "yes")) return false;
-		return true;
+		if (intval($val) == 1 || boolval($val)  == true || $val == "true" || $val == "yes") return true;
+		return false;
 	}
 
 	public function getOptionDateFormat() {
