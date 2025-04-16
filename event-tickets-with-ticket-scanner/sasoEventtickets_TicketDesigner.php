@@ -13,7 +13,9 @@ class sasoEventtickets_TicketDesigner {
 		static $inst = null;
         if ($inst === null) {
             $inst = new self($main, $html);
-            require_once __DIR__.'/vendors/twig/autoload.php';
+            if (function_exists("twig_cycle") == false) {
+                require_once __DIR__.'/vendors/twig/autoload.php';
+            }
         }
         return $inst;
 	}

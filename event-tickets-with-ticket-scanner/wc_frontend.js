@@ -218,6 +218,20 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 						toolTipp = selectable ? '' : __('This day is not selectable');
 					}
 					if (selectable) {
+						// check if the date is in the past
+						let today = new Date();
+						let y = date.getFullYear();
+						let m = date.getMonth() + 1;
+						let d = date.getDate();
+						let dateStr = y + '-' + (m < 10 ? '0' : '') + m + '-' + (d < 10 ? '0' : '') + d;
+						let todayStr = today.getFullYear() + '-' + (today.getMonth() + 1 < 10 ? '0' : '') + (today.getMonth() + 1) + '-' + (today.getDate() < 10 ? '0' : '') + today.getDate();
+						if (dateStr < todayStr) {
+							selectable = false;
+							cssClass = 'ui-datepicker-unselectable';
+							toolTipp = __('This day is not selectable');
+						}
+					}
+					if (selectable) {
 						let data_exclude_dates = this._sasoevent_input_field.attr('data-exclude-dates');
 						if (data_exclude_dates && data_exclude_dates.length > 0) {
 							let excludedDates = data_exclude_dates.split(',');

@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.6.1
+Stable tag: 2.6.3
 Tested up to: 6.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -45,7 +45,7 @@ You can even import your own ticket numbers, but it will generate them also on t
 The best is to try it out. So many options. Don't be shy, give it a try - you have nothing to loose :D
 
 
-**Shop:** Sell event and party tickets with your normal products. The plugin will create the ticket number on the fly or use unused ticket numbers from your ticket number list for each sold item.
+**Shop:** Sell event and party tickets with your normal products. The plugin will create the ticket number on the fly or use unused ticket numbers from your ticket number list for each sold item. You can also sell membership tickets and other kind of tickets by adjusting the options (over 200 options available to customize it to your needs).
 
 **Validation of ticket numbers:** You customer can validate a ticket number on your page. The ticket number generator gives you a flexible pattern to generate ticket numbers upfront. You can also **import your existing codes**.
 
@@ -198,6 +198,10 @@ Your customer will receive a specific URL to the ticket detail page. You can con
 The ticket will contain a QR code, that can be scanned by you or your team (no loggin to WordPress needed) and redeem the ticket.
 [Watch the video for it](https://vollstart.com/event-tickets-with-ticket-scanner/docs/#quickstart)
 
+= Frontend event list
+You can use the shortcode [sasoEventTicketsValidator_eventsview] to display the upcoming events. Default is to start for the whole month and the next 2 months.
+You can add the parameter months_to_show to control how many months you want to show. Eg. months_to_show="3"
+
 = Frontent to validate the ticket number =
 * Use the shortcode **[sasoEventTicketsValidator]**
 * Create a page or use an existing one and add the shortcode to the page
@@ -328,6 +332,19 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.6.3 - 2025-04-16=
+* Datatables in the admin made width=100%.
+* Add checks for used 3rd party php classes, so that they will not be re-added to php - what could cause conflicts.
+* Display customer name is now using $order->get_formatted_billing_full_name.
+
+= 2.6.2 - 2025-04-07 =
+* Two columns added to the export: is_daychooser and day_per_ticket.
+* Preparation to display the redeemed and not redeemed tickets at the ticket scanner - with premium 1.5.2 available.
+* Changing title of the admin area from Event Tickets with Woocommerce to Event Tickets with Ticket Scanner
+* Fixed the default value for Date2Text Javascript function on the ticket.
+* Ticket scanner is now checking at least every 4 minutes for a new nonce security token, to prevent access error message.
+* Fix for the date chooser - it will prevent allowing to choose a date before today.
+
 = 2.6.1 - 2025-03-18 =
 * Bug fix new check of the option value is active
 

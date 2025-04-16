@@ -1597,10 +1597,7 @@ class sasoEventtickets_WC {
 		}
 	}
 
-    public function add_meta_boxes() {
-		global $post_type;
-		global $post;
-
+    public function add_meta_boxes($post_type, $post) {
 		$screen = $post_type;
 		if ($screen == null) { // add HPOS support from woocommerce
 			$screen = class_exists( '\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController' ) && wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled()

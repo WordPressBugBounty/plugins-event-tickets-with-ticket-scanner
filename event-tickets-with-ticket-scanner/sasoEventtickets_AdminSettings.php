@@ -3,6 +3,8 @@ include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventtickets_AdminSettings {
 	private $MAIN;
 
+	private $_CACHE = [];
+
 	public function __construct($MAIN) {
 		$this->MAIN = $MAIN;
 	}
@@ -686,15 +688,9 @@ class sasoEventtickets_AdminSettings {
 		$sql .= " order by a.time";
 		$daten = $this->getDB()->_db_datenholen($sql);
 		foreach($daten as $key => $item) {
-			$daten[$key]['_customer_name'] = "";
 			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($item['meta']);
 			$order_id = intval($metaObj['woocommerce']['order_id']);
-			if ($order_id > 0) {
-				$order = wc_get_order( $order_id );
-				if ($order != null) {
-					$daten[$key]['_customer_name'] = $order->get_billing_first_name()." ".$order->get_billing_last_name();
-				}
-			}
+			$daten[$key]['_customer_name'] = $this->getCustomerName($order_id);
 		}
 		return $daten;
 	}
@@ -919,13 +915,30 @@ class sasoEventtickets_AdminSettings {
 		$ret = "";
 		$order_id = intval($order_id);
 		if ($order_id > 0) {
-			try {
-				$order = wc_get_order( $order_id );
-				if ($order != null) {
-					$ret = $order->get_billing_company()." ".$order->get_billing_last_name();
+			if (!isset($this->_CACHE['order'])) {
+				$this->_CACHE['order'] = ['getCustomerName'=> [] ];
+			}
+			if (!isset($this->_CACHE['order']['getCustomerName'])) {
+				$this->_CACHE['order']['getCustomerName'] = [];
+			}
+			if (isset($this->_CACHE['order']['getCustomerName'][$order_id])) {
+				$ret = $this->_CACHE['order']['getCustomerName'][$order_id];
+			} else {
+				try {
+					$order = wc_get_order( $order_id );
+					if ($order != null) {
+						//$ret = $order->get_billing_company()." ".$order->get_billing_last_name();
+						$ret = $order->get_formatted_billing_full_name();
+					} else {
+						$ret = __('Order not found', 'event-tickets-with-ticket-scanner');
+					}
+				} catch (Exception $e) {
+					//$this->logErrorToDB($e->getMessage());
 				}
-			} catch (Exception $e) {}
+				$this->_CACHE['order']['getCustomerName'][$order_id] = $ret;
+			}
 		}
+
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'admin_getCustomerName', $ret, $order_id);
 		return $ret;
 	}
@@ -1828,6 +1841,8 @@ class sasoEventtickets_AdminSettings {
 				if (!empty($metaObj['wc_ticket']['stats_redeemed'])) $row['meta_wc_ticket_stats_redeemed'] = $this->getCore()->json_encode_with_error_handling($metaObj['wc_ticket']['stats_redeemed']);
 				if (!empty($metaObj['wc_ticket']['_public_ticket_id'])) $row['meta_wc_ticket_public_ticket_id'] = $metaObj['wc_ticket']['_public_ticket_id'];
 				if (!empty($metaObj['wc_ticket']['name_per_ticket'])) $row['meta_wc_ticket_name_per_ticket'] = $metaObj['wc_ticket']['name_per_ticket'];
+				if (!empty($metaObj['wc_ticket']['is_daychooser'])) $row['meta_wc_ticket_is_daychooser'] = $metaObj['wc_ticket']['is_daychooser'];
+				if (!empty($metaObj['wc_ticket']['day_per_ticket'])) $row['meta_wc_ticket_day_per_ticket'] = $metaObj['wc_ticket']['day_per_ticket'];
 
 				if ($options != null && is_array($options)) {
 					if (isset($options["displayAdminAreaColumnBillingName"]) && $options["displayAdminAreaColumnBillingName"]) {

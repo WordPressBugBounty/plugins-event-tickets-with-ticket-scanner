@@ -1,6 +1,6 @@
 jQuery(document).ready(()=>{
     const { __, _x, _n, sprintf } = wp.i18n;
-    let system = {code:0, nonce:'', data:null, redeemed_successfully:false, img_pfad:'', last_scanned_ticket:{code:'', timestamp:0, auto_redeem:false}};
+    let system = {code:0, nonce:'', data:null, redeemed_successfully:false, img_pfad:'', last_scanned_ticket:{code:'', timestamp:0, auto_redeem:false}, last_nonce_check:0};
 	let myAjax;
     if (typeof IS_PRETTY_PERMALINK_ACTIVATED === "undefined") {
         IS_PRETTY_PERMALINK_ACTIVATED = false;
@@ -457,7 +457,10 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             if (typeof response == "string") {
 				response = JSON.parse(response);
 			}
-            if (response && response.data && response.data.nonce) system.nonce = response.data.nonce;
+            if (response && response.data && response.data.nonce) {
+                system.last_nonce_check = new Date().getTime();
+                system.nonce = response.data.nonce;
+            }
             if (!response.success) {
                 if (ecbf) ecbf(response);
                 else {
@@ -482,7 +485,10 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             if (typeof response == "string") {
 				response = JSON.parse(response);
 			}
-            if (response && response.data && response.data.nonce) system.nonce = response.data.nonce;
+            if (response && response.data && response.data.nonce) {
+                system.last_nonce_check = new Date().getTime();
+                system.nonce = response.data.nonce;
+            }
             if (!response.success) {
                 if (ecbf) ecbf(response);
                 else {
@@ -535,7 +541,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
 	}
 	function Date2Text(millisek, format, timezone_id) {
 		if (!millisek)
-			millisek = time(timezone_id);
+			millisek = time(timezone_id) * 1000;
 		var d = new Date(millisek);
 		if (!format)
 			//format = system.format_date ? system.format_date : "%d.%m.%Y";
@@ -1124,10 +1130,26 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         $('#ticket_info_btns').html(div);
     }
     function displayRedeemedTicketsInfo(data) {
-        if (!data._ret.tickets_redeemed_show) return "";
-        let div = $('<div style="padding:10px;">').css('text-align', 'center');
-        $('<h5 style="color:black !important">').html(sprintf(/* translators: %d: amount redeemed tickets */__('%d tickets of this event (product) redeemed already', 'event-tickets-with-ticket-scanner'), data._ret.tickets_redeemed)).appendTo(div);
-        return div;
+        let div = $('<div>');
+        let show = false;
+        if (data._ret.tickets_redeemed_show) {
+            show = true;
+            $('<div style="color:black !important">').html(sprintf(/* translators: %d: amount redeemed tickets */__('%d tickets of this event (product) redeemed already by stats', 'event-tickets-with-ticket-scanner'), data._ret.tickets_redeemed)).appendTo(div);
+        }
+        if (data._ret.tickets_redeemed_show_c) {
+            show = true;
+            $('<div style="color:black !important">').html(sprintf(/* translators: %d: amount redeemed tickets */__('%d tickets of this event (product) redeemed already', 'event-tickets-with-ticket-scanner'), data._ret.tickets_redeemed_by_codes)).appendTo(div);
+        }
+        if (data._ret.tickets_redeemed_show_cn) {
+            show = true;
+            $('<div style="color:black !important">').html(sprintf(/* translators: %d: amount redeemed tickets */__('%d tickets of this event (product) not redeemed yet', 'event-tickets-with-ticket-scanner'), data._ret.tickets_redeemed_not_by_codes)).appendTo(div);
+        }
+        if (show) {
+            div.css('text-align', 'center');
+            div.css("padding-top", "10px");
+            return div;
+        }
+        return '';
     }
     function updateTicketScannerInfoArea(content) {
         $('#ticket_scanner_info_area').html(content);
@@ -1242,6 +1264,21 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         content += '@media screen and (min-width: 720px) { button.button-ticket-options{width:50%;} }';
         addStyleCode(content);
     }
+    function refreshNoncePeriodically() {
+        // check if the last check of nonce is older than 4 minutes
+        // do a ping to get the new nonce
+        setInterval(()=>{
+            let last_check = system.last_nonce_check;
+            if (last_check == null || last_check == "") {
+                last_check = 0;
+            }
+            let now = new Date().getTime();
+            if (now - last_check > 240000) {
+                _makeGet('ping', [], data=>{
+                });
+            }
+        }, 60000);
+    }
     function starten() {
         $ = jQuery;
         initStyle();
@@ -1273,6 +1310,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             addClearCamDeviceButton();
             addRemoveAuthTokenButton();
             showScanOptions();
+            refreshNoncePeriodically();
             if (system.PARA.code) {
                 system.code = system.PARA.code;
                 retrieveTicket(system.code);

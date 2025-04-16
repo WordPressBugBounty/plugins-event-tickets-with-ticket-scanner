@@ -173,29 +173,37 @@ class sasoEventtickets_PDF {
 
     private function _loadLibs() {
 		// always load alternative config file for examples
+
+		//require_once('vendors/TCPDF/config/tcpdf_config_alt.php');
 		require_once('vendors/TCPDF/config/tcpdf_config.php');
 
 		// Include the main TCPDF library (search the library on the following directories).
-		$tcpdf_include_dirs = array(
-			plugin_dir_path(__FILE__).'vendors/TCPDF/tcpdf.php',
-			realpath(dirname(__FILE__) . '/vendors/TCPDF/tcpdf.php'),// True source file
-			realpath('vendors/TCPDF/tcpdf.php'),// Relative from $PWD
-			'/usr/share/php/tcpdf/tcpdf.php',
-			'/usr/share/tcpdf/tcpdf.php',
-			'/usr/share/php-tcpdf/tcpdf.php',
-			'/var/www/tcpdf/tcpdf.php',
-			'/var/www/html/tcpdf/tcpdf.php',
-			'/usr/local/apache2/htdocs/tcpdf/tcpdf.php'
-		);
-		foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
-			if (@file_exists($tcpdf_include_path)) {
-				require_once($tcpdf_include_path);
-				break;
+		if (!class_exists('TCPDF')) {
+			$tcpdf_include_dirs = array(
+				plugin_dir_path(__FILE__).'vendors/TCPDF/tcpdf.php',
+				realpath(dirname(__FILE__) . '/vendors/TCPDF/tcpdf.php'),// True source file
+				realpath('vendors/TCPDF/tcpdf.php'),// Relative from $PWD
+				'/usr/share/php/tcpdf/tcpdf.php',
+				'/usr/share/tcpdf/tcpdf.php',
+				'/usr/share/php-tcpdf/tcpdf.php',
+				'/var/www/tcpdf/tcpdf.php',
+				'/var/www/html/tcpdf/tcpdf.php',
+				'/usr/local/apache2/htdocs/tcpdf/tcpdf.php'
+			);
+			foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
+				if (@file_exists($tcpdf_include_path)) {
+					require_once($tcpdf_include_path);
+					break;
+				}
 			}
 		}
 
-		require_once('vendors/FPDI-2.3.7/src/autoload.php');
-		require_once("vendors/fpdf185/fpdf.php");
+		if (!class_exists('FPDI')) {
+			require_once('vendors/FPDI-2.3.7/src/autoload.php');
+		}
+		if (!class_exists('FPDF')) {
+			require_once("vendors/fpdf185/fpdf.php");
+		}
 	}
 
 	private function prepareOutputBuffer() {

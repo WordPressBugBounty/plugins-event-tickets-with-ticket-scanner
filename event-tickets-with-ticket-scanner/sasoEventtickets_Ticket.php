@@ -203,13 +203,33 @@ final class sasoEventtickets_Ticket {
 		$metaObj = $metaObj = $codeObj['metaObj'];
 		$ret = [];
 		$ret['tickets_redeemed'] = 0;
+		$ret['tickets_redeemed_by_codes'] = 0;
+		$ret['tickets_redeemed_not_by_codes'] = 0;
 		$ret['tickets_redeemed_show'] = false;
-		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDisplayRedeemedAtScanner') == false) {
-			$ret['tickets_redeemed_show'] = true;
-			if (isset($metaObj['woocommerce']) && isset($metaObj['woocommerce']['product_id'])) {
+		$ret['tickets_redeemed_show_c'] = false;
+		$ret['tickets_redeemed_show_cn'] = false;
+		if (isset($metaObj['woocommerce']) && isset($metaObj['woocommerce']['product_id'])) {
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDisplayRedeemedAtScanner') == false) {
+				$ret['tickets_redeemed_show'] = true;
 				if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getTicketStats')) {
 					if (method_exists($this->MAIN->getPremiumFunctions()->getTicketStats(), 'getEntryAmountForProductId')) {
 						$ret['tickets_redeemed'] = $this->MAIN->getPremiumFunctions()->getTicketStats()->getEntryAmountForProductId($metaObj['woocommerce']['product_id']);
+					}
+				}
+			}
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDisplayRedeemedByCodesAtScanner') == true) {
+				$ret['tickets_redeemed_show_c'] = true;
+				if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getTicketStats')) {
+					if (method_exists($this->MAIN->getPremiumFunctions()->getTicketStats(), 'getEntryAmountForProductIdRedeemed')) {
+						$ret['tickets_redeemed_by_codes'] = $this->MAIN->getPremiumFunctions()->getTicketStats()->getEntryAmountForProductIdRedeemed($metaObj['woocommerce']['product_id']);
+					}
+				}
+			}
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDisplayRedeemedNotByCodesAtScanner') == true) {
+				$ret['tickets_redeemed_show_cn'] = true;
+				if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getTicketStats')) {
+					if (method_exists($this->MAIN->getPremiumFunctions()->getTicketStats(), 'getEntryAmountForProductIdNotRedeemed')) {
+						$ret['tickets_redeemed_not_by_codes'] = $this->MAIN->getPremiumFunctions()->getTicketStats()->getEntryAmountForProductIdNotRedeemed($metaObj['woocommerce']['product_id']);
 					}
 				}
 			}

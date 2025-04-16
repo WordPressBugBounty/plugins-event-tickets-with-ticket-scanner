@@ -506,6 +506,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					let table = $('#'+table_id);
 					$(table).DataTable().clear().destroy();
 					tabelle_authtokens_datatable = $(table).DataTable({
+						"responsive": true,
 						"visible": true,
 						"searching": true,
 						"ordering": true,
@@ -537,6 +538,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 							}
 						]
 					});
+					tabelle.css("width", "100%");
 					table.on('click', 'button[data-type="edit"]', e=>{
 						let data = tabelle_authtokens_datatable.row( $(e.target).parents('tr') ).data();
 						__showMaskAuthtoken(data);
@@ -925,6 +927,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 				let table = $('#'+table_id);
 				$(table).DataTable().clear().destroy();
 				tabelle_errorlogs_datatable = $(table).DataTable({
+					"responsive": true,
 					"searching": true,
 					"ordering": true,
 					"processing": true,
@@ -943,6 +946,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 						{"data":"caller_name", "orderable":true},
 					]
 				});
+				tabelle.css("width", "100%");
 				$('#'+table_id+' tbody').on('click', 'td.details-control', e=>{
 					var tr = $(e.target).parents('tr');
 					var row = tabelle_errorlogs_datatable.row( tr );
@@ -2405,6 +2409,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					let table = $('#'+id_liste);
 					$(table).DataTable().clear().destroy();
 					tabelle_liste_datatable = $(table).DataTable({
+						"responsive": true,
 						"visible": true,
 						"searching": true,
 		    			"ordering": true,
@@ -2427,6 +2432,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		                	}
 		    			]
 					});
+					tabelle_liste.css("width", "100%");
 					table.on('click', 'button[data-type="showCodes"]', e=>{
 						let data = tabelle_liste_datatable.row( $(e.target).parents('tr') ).data();
 		        		tabelle_codes_datatable.search("LIST:"+data.id).draw();
@@ -2447,6 +2453,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 					});
 				}); // end of loading lists
 			} // __renderTabelleListen
+			tabelle_codes.css("width", "100%");
 
 			STATE = 'admin';
 			DIV.html(_getSpinnerHTML());
@@ -2671,6 +2678,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 				}
 
 				tabelle_codes_datatable = $(this.div_codes).find('#'+id_codes).DataTable({
+					"responsive": true,
 					"search": {
 						"search": typeof PARAS.code !== "undefined" ? encodeURIComponent(PARAS.code.trim()) : ''
 					},
@@ -3215,7 +3223,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 						let _max_redeem_amount = typeof metaObj.wc_ticket._max_redeem_amount !== "undefined" ? metaObj.wc_ticket._max_redeem_amount : 1;
 						$("<div>").html("<b>Ticket number: </b>"+codeObj.code_display).appendTo(div);
 						$("<div>").html("<b>Public Ticket number: </b>"+metaObj.wc_ticket._public_ticket_id).appendTo(div);
-						$("<div>").html("<b>Redeem usage: </b>"+metaObj.wc_ticket.stats_redeemed.length + ' of ' + (_max_redeem_amount == 0 ? 'unlimited' : _max_redeem_amount)).appendTo(div);
+						if (typeof metaObj.wc_ticket.stats_redeemed !== "undefined") {
+							$("<div>").html("<b>Redeem usage: </b>"+metaObj.wc_ticket.stats_redeemed.length + ' of ' + (_max_redeem_amount == 0 ? 'unlimited' : _max_redeem_amount)).appendTo(div);
+						}
 						$("<div>").html('<b>Ticket Page:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'">Open Ticket Detail Page</a>').appendTo(div);
 						$("<div>").html('<b>Ticket Page Testmode:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?testDesigner=1">Open Ticket Detail Page with template test code</a>').appendTo(div);
 						$("<div>").html('<b>Ticket PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?pdf">Open Ticket PDF</a>').appendTo(div);
