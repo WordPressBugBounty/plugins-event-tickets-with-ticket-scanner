@@ -2,8 +2,8 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.6.3
-Tested up to: 6.7
+Stable tag: 2.6.4
+Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -282,6 +282,12 @@ If you have a 404 page for ticket detail page or ticket scanner page, then set u
 
 **For more help and your first steps, please [visit our website](https://vollstart.com/event-tickets-with-ticket-scanner/docs/)**
 
+== Third party libraries ==
+* TWIG - template engine: https://twig.symfony.com/ (3.x)
+* Javascript QR code scanner: https://github.com/nimiq/qr-scanner (1.4.2)
+* Javascript Datatable: https://datatables.net/ (1.10.21)
+* Javascript Raphael: http://raphaeljs.com/ (2.3.0)
+
 == Screenshots ==
 
 1. **Ticket Details Mobile** The ticket details are also optimized for mobile devices.
@@ -332,6 +338,10 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.6.4 - 2025-04-24 =
+* Basic WPML plugin support added.
+* Optimized the plugin speed a little bit.
+
 = 2.6.3 - 2025-04-16=
 * Datatables in the admin made width=100%.
 * Add checks for used 3rd party php classes, so that they will not be re-added to php - what could cause conflicts.
@@ -357,104 +367,3 @@ Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs i
 * Format for date and time is also passed to the outputs
 * Ticket scanner is showing now always the variant name at the top - even if the option is deactivated. For the ticket view and PDF it is still the same.
 * Ticket scanner text input field for hardware qr code scanner excepts also "'" as divider of the public ticket number.
-
-= 2.5.9 - 2025-02-21 =
-* Bug fix unused action that causes woocommerce to crash
-
-= 2.5.8 - 2025-02-20 =
-* Added support for Woocommerce high performance order storage (HPOS) to display the meta boxes on the order and product.
-* Bugfix for option displayAdminAreaColumnConfirmedCount. The list was not displayed if you had new tickets without an order to it.
-* Added support for premium feature multi ticket templates available with prem version 1.5.0
-
-= 2.5.7 - 2025-02-17 =
-* Option wcassignmentDoNotPutOnEmail is removed - makes no sense and was not used.
-* Option wcassignmentDoNotPutOnPDF is removed - makes no sense and was not used.
-* Replaced $_REQUEST with the $_POST or $_GET approach, in case the super globals are off.
-* Option wcTicketCompatibilityUseURL to use the file location of an image for the PDF instead of the URL - some installations have issues with the firewall.
-* You can now enter any public ticket number to test the ticket template design. So you can choose from the dropdown or enter the number in the textfield next to the dropdown.
-* Date picker of the same cart item will update all empty date picker to the same date, to speed up entering the values.
-* Add more error handling, if the order do not exists or is not assigned while reading the customer company name for the ticket list in the admin.
-
-= 2.5.6 - 2025-02-03 =
-* New column Billing Company for the ticket list within the plugin admin - option displayAdminAreaColumnBillingCompany
-* Key check for error log, to prevent errors if the line is not available
-* Support for daychooser to exclude specific dates, that were added with premium 1.4.4
-* Fix the ugly display of the ticket information within the order for public ticket number and choosen days.
-* Changed the default template to handle the string in product.get_attributes better
-* Added new TWIG tests. object, array, string and numeric. You can use it like: {% if item is array %}.
-* Ticket scanner is now checking the REST API result and parsing it to json in case your server sends the wrong content type.
-* Add header_remove() before sending the PDF to prevent issues from other plugins.
-
-= 2.5.5 - 2025-01-22 =
-* Fix test template preview - using again the test template
-* Adjusted default ticket template to display the variant names with a space
-
-= 2.5.4 - 2025-01-20 =
-* Some labels and description improvements on the option page
-* Fixed output on the product detail to display the start and end date correctly
-* Changed code to display the correct variant product date
-* Added support for the day chooser on variable products
-* Added more NONCE check to prevent CRFS issues
-* Small fix for the event flyer layout
-
-= 2.5.3 - 2025-01-14 =
-* Add error handling if the product is missing during generation of the ticket PDF
-* Improved the error messaging on the cart view for the day picker tickets
-* New option to add input field, dropdown and date picker to the checkout page - wcTicketShowInputFieldsOnCheckoutPage
-* Bug fix for the ticket scanner. The redeem until message is only shown if the date is also set.
-* Removed the prefix OPTIONS from the option - effects only display options name
-* Bug fix for badge PDF - the public ticket number is displayed correctly again
-
-= 2.5.2 - 2025-01-03 =
-* Bug fix for "expired" warning for tickets on the ticket scanner
-
-= 2.5.1 - 2024-12-25 =
-* Bug fix for attaching ICS file to the order mail
-* Bug fix display woocommerce order date on PDF and ticket
-
-= 2.5.0 - 2024-12-23 =
-* Tested with PHP 8.3 - DO NOT RELY ON PHP8 yet if possible. To use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
-* Add new feature Date Picker for tickets. You can now setup the product to have a start and end time and the day can be chosen by your customer at the cart view.
-* Exclude days for the date picker on product level
-* New label for the error message with the date picker - wcTicketLabelCartForDaychooser and wcTicketLabelCartForDaychooserInvalidDate
-* Displaying the value per ticket, name per ticket and day chosen per ticket to the order email.
-* Fix for label of the value chosen by the dropdown within the cart
-* Adjusted the default ticket template to reflect the day choosen for date picker tickets.
-
-= 2.4.4 - 2024-12-02 =
-* Added french language file for the backend. Big thanks to Maxime.
-* Remove HTML from the description of the auth token
-* Remove HTML from the product id list of the auth token
-
-= 2.4.3 - 2024-11-12 =
-* On the badge the event date will not be shown if the value at the event is not set. {TICKET.PRODUCT.XYZ}. Properties are ticket_start_date, ticket_end_date, ticket_start_time and ticket_end_time
-* New option to remove tickets from partially refunded order items - wcassignmentOrderItemRefund
-* In order view, the public ticket ids are listed more easier to read
-* Bug fix for additional ticket numbers to an order item. Now the values are corrected and the amount of tickets is correct.
-* Bug fix for delete order - the tickets are removed now
-
-= 2.4.2 - 2024-10-29 =
-* Fix wrong error message, if you have no values selected in option adminAreaAllowedRoles.
-* Fix default ordering over the created date if you display additional columns.
-* Preventing and removing "/" from the ticket number formatter prefix value, because this can cause issues on some installations due to the database search. The "/" will be replaced by "-".
-* Redeemable from info at the ticket scanner only displayed if the option wcTicketDontAllowRedeemTicketBeforeStart is activated.
-* Ticket scanner is not rescanning the same ticket for 10 seconds - this prevents double redeem operation in fast mode.
-* Removed most of the time calculation at the ticket scanner and using calculated times from the server
-* New label for the status "Event ended already" - wcTicketTransTicketNotValidToLateEndEvent
-* Default label value changed from "Redeemed at:" to "Last Redeemed:" - wcTicketTransRedeemDate
-* Fix of some misleading redeem messages. It is now more clear, if the ticket expired, the event did not start yet and it is too late to redeem the ticket.
-
-= 2.4.1 - 2024-10-21 =
-* Rework the whole date calculation - again. I hope this time for the last time - tested in Manila and Zurich.
-* New option to display server time and local time to the ticket scanner - option ticketScannerDisplayTimes.
-* Optimize JS file including and added loading the translation to the order detail script.
-* Added the functionality to have the order detail view translated.
-* New column "confirmed count" added to the admin area - option displayAdminAreaColumnConfirmedCount to show it.
-* New default values for the ticket number formatter if not set at all - 21 letter, use also numbers and delimiter with "-" after 7 letters - this makes sure you have enough ticket numbers for the future.
-* New default value for option allowOnlySepcificRoleAccessToAdmin - it was set to false and allowed everyone with access to the backend access to the ticket admin.
-
-= 2.4.0 - 2024-09-25 =
-* New option for the QR code. You can now add a padding, to separate the QR code image from a background on your PDF - qrTicketPDFPadding
-* New ticket scanner library - if you want to use the old scanner, then you can add the URL parameter &useoldticketscanner=1 to the ticket scanner URL
-* Increase the speed of the old ticket scanner - just in case
-* Moved the video help link to the option title and more helper videos added

@@ -61,19 +61,37 @@ class sasoEventtickets_TicketDesigner {
         }
 		$product_parent = $product;
 		$product_parent_id = $product->get_parent_id();
-		$saso_eventtickets_is_date_for_all_variants = true;
+
 		if ($is_variation && $product_parent_id > 0) {
 			$product_parent = $this->MAIN->getTicketHandler()->get_product( $product_parent_id );
-			$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
+		}
+
+        $product_original = $product;
+        $product_parent_original = $product_parent;
+
+        $product_original_id = apply_filters( 'wpml_object_id', $product->get_id(), 'product', true );
+        if ($product_original_id != $product->get_id()) {
+            $product_original = $this->MAIN->getTicketHandler()->get_product($product_original_id);
+        }
+        if ($product_parent_id > 0) {
+            $product_parent_original_id = apply_filters( 'wpml_object_id', $product_parent_id, 'product', true );
+            if ($product_parent_original_id != $product_parent_id) {
+                $product_parent_original = $this->MAIN->getTicketHandler()->get_product($product_parent_original_id);
+            }
+        }
+
+		$saso_eventtickets_is_date_for_all_variants = true;
+        if ($is_variation && $product_parent_id > 0) {
+			$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
 		}
 
         $ticket = [];
         $ticket["public_ticket_number"] = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
 		$date_time_format = $this->MAIN->getOptions()->getOptionDateTimeFormat();
-		$ticket["location"] = trim(get_post_meta( $product_parent->get_id(), 'saso_eventtickets_event_location', true ));
+		$ticket["location"] = trim(get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_event_location', true ));
 		// zeige datum
-		$tmp_product = $product_parent;
-		if (!$saso_eventtickets_is_date_for_all_variants) $tmp_product = $product; // unter Umständen die Variante
+		$tmp_product = $product_parent_original;
+		if (!$saso_eventtickets_is_date_for_all_variants) $tmp_product = $product_original; // unter Umständen die Variante
         $ticket['timezone_id'] = wp_timezone_string();
         $ticket_times = $this->MAIN->getTicketHandler()->calcDateStringAllowedRedeemFrom($tmp_product->get_id(), $codeObj);
         $ticket["start_date"] = $ticket_times["ticket_start_date"];
@@ -91,9 +109,9 @@ class sasoEventtickets_TicketDesigner {
         $ticket["is_daychooser"] = $ticket_times["is_daychooser"];
         $ticket["is_expired"] = $this->MAIN->getCore()->checkCodeExpired($codeObj); // prem expiration
         $ticket["date_as_string"] = $this->MAIN->getTicketHandler()->displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
-        $ticket["short_desc"] = $is_variation ? $product_parent->get_short_description() : $product->get_short_description();
-        $ticket["info"] = trim(get_post_meta( $product_parent->get_id(), 'saso_eventtickets_ticket_is_ticket_info', true ));
-
+        //$ticket["short_desc"] = $is_variation ? $product_parent->get_short_description() : $product->get_short_description();
+        $ticket["short_desc"] = $product_parent->get_short_description();
+        $ticket["info"] = wp_kses_post(nl2br(trim(get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_ticket_is_ticket_info', true ))));
         //$ticket["date_time_format"] = str_replace("Y","yyyy", str_replace("i", "mm", str_replace("H", "kk", str_replace("d", "dd", str_replace("m", "MM", $date_time_format)))));
         $ticket["date_time_format"] = $date_time_format;
 
@@ -108,7 +126,7 @@ class sasoEventtickets_TicketDesigner {
         $ticket["text_redeem_amount"] = $this->MAIN->getTicketHandler()->getRedeemAmountText($codeObj, $metaObj, $forPDFOutput);
         $ticket["qrCodeContent"] = $this->MAIN->getCore()->getQRCodeContent($codeObj, $metaObj);
 
-        $label = $this->MAIN->getTicketHandler()->getLabelNamePerTicket($product_parent->get_id());
+        $label = $this->MAIN->getTicketHandler()->getLabelNamePerTicket($product_parent_original->get_id());
         $ticket["name_per_ticket_pos"] = "";
         if (strpos(" ".$label, "{count}") > 0) {
             // ermittel ticket pos
@@ -118,7 +136,7 @@ class sasoEventtickets_TicketDesigner {
         }
 		$ticket['name_per_ticket_label'] = $label;
 
-        $label = $this->MAIN->getTicketHandler()->getLabelValuePerTicket($product_parent->get_id());
+        $label = $this->MAIN->getTicketHandler()->getLabelValuePerTicket($product_parent_original->get_id());
         $ticket["value_per_ticket_pos"] = "";
         if (strpos(" ".$label, "{count}") > 0) {
             // ermittel ticket pos
@@ -128,7 +146,7 @@ class sasoEventtickets_TicketDesigner {
         }
 		$ticket['value_per_ticket_label'] = $label;
 
-        $label = $this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product_parent->get_id());
+        $label = $this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product_parent_original->get_id());
         $ticket["day_per_ticket_pos"] = "";
         if (strpos(" ".$label, "{count}") > 0) {
             // ermittel ticket pos
@@ -225,6 +243,8 @@ class sasoEventtickets_TicketDesigner {
         $this->variables = [
             'PRODUCT' => $product,
             'PRODUCT_PARENT' => $product_parent,
+            'PRODUCT_ORIGINAL' => $product_original,
+            'PRODUCT_PARENT_ORIGINAL' => $product_parent_original,
             'OPTIONS' => $options,
             'TICKET' => $ticket,
             'ORDER' => $order,

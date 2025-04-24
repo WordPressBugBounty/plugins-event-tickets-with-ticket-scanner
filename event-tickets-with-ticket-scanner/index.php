@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.6.3
+ * Version: 2.6.4
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.6.3');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.6.4');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -53,13 +53,21 @@ class sasoEventtickets {
 
 	private $isAllowedAccess = null;
 
+	public static function Instance() {
+		static $inst = null;
+        if ($inst === null) {
+            $inst = new self();
+		}
+        return $inst;
+	}
+
 	public function __construct() {
 		$this->_js_version = $this->getPluginVersion();
 		$this->initHandlers();
 	}
 
 	public function initHandlers() {
-		//add_action( 'init', [$this, 'load_plugin_textdomain'] ); // to be removed with WP 6.8
+		add_action( 'init', [$this, 'load_plugin_textdomain'] );
 		add_action( 'upgrader_process_complete', [$this, 'listener_upgrader_process_complete'], 10, 2 );
 		//add_action('admin_init', [$this, 'initialize_plugin']);
 		if (is_admin()) { // called in backend admin, admin-ajax!
@@ -1190,5 +1198,5 @@ class sasoEventtickets {
 		return $ret;
 	}
 }
-$sasoEventtickets = new sasoEventtickets();
+$sasoEventtickets = sasoEventtickets::Instance();
 ?>

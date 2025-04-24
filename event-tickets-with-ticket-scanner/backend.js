@@ -1,4 +1,4 @@
-function sasoEventtickets(_myAjaxVar, doNotInit){
+function sasoEventtickets(_myAjaxVar, doNotInit) {
 	const { __, _x, _n, sprintf } = wp.i18n;
 	let myAjax = _myAjaxVar;
 	let self = this;
@@ -10,7 +10,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
         nonce: myAjax.nonce
     };
 
-	var system = {is_debug:false, DYNJS:{}};
+	var system = {is_debug:false, DYNJS:{}, DYNJS_CACHE:{}};
 	var FATAL_ERROR = false;
     var DIV = null;
     var LAYOUT = null;
@@ -655,118 +655,35 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		DIV.html(getBackButtonDiv());
 		DIV.append(div);
 	}
+
+	function _load_seatingplanJS(paras, cbj) {
+		let filename = 'js_seatingplan';
+		if (typeof system.DYNJS === "undefined") system.DYNJS = {};
+		if (false && system.DYNJS[filename]) {
+			//eval(system.DYNJS[filename]);
+			sasoEventtickets_js_seatingplan(paras);
+			cbj && cbj();
+		} else {
+			$.getScript( myAjax._plugin_home_url+'/'+filename+".js", ( data, textStatus, jqxhr ) =>{
+				system.DYNJS[filename] = data;
+
+				eval(data); // inject code into the global scope
+				//addScriptCode(data, filename); // function is unaware of the global scope
+
+				sasoEventtickets_js_seatingplan(paras);
+				cbj && cbj();
+			});
+		}
+	}
+
 	function _displaySeatingplanArea() {
 		STATE = 'seatingplan';
 		DIV.html(getBackButtonDiv());
 
-		let is_plan_loaded = false;
-		let div = $('<div>');
-		div.append("<h2>FAQ</h2>");
-		let div2 = $('<div style="background:white;padding:15px;border-radius:15px;">').appendTo(div);
-		div2.html(_getSpinnerHTML());
+		let div = $('<div>').html(_getSpinnerHTML());
 
-		_loadingJSSeatingPlan(()=>{
-			// https://dmitrybaranovskiy.github.io/raphael/reference.html#Paper.setSize
-			div2.html("");
-			let div_drawing_area_id = myAjax.divPrefix + '_div_drawing_area';
-			let div_drawing_area = $('<div style="border:2px solid black;width:80%;height:400px;background-color:white;" id="'+div_drawing_area_id+'"></div>')
-
-			let btn_grp = $('<div style="margin-bottom:15px;">').appendTo(div2);
-			let btn_grp_2 = $('<div style="margin-bottom:15px;visibility:hidden;">').appendTo(div2);
-			let info = $('<div>').appendTo(div2);
-
-			let input_pre = $('<input type="checkbox">');
-			let input_x = $('<input type="number" placeholder="x-offset">');
-			let input_y = $('<input type="number" placeholder="y-offset">');
-			if (PARAS.calibrate) {
-				input_pre.appendTo(div2);
-				input_x.appendTo(div2);
-				input_y.appendTo(div2);
-			}
-
-			div_drawing_area.appendTo(div2);
-
-			function Seat(svgObject, typeName) {
-				this.svgObject = svgObject;
-				this.typeName = typeName;
-				this.attr = {};
-			}
-			let seats = [];
-			let paper;
-
-			$('<button>').text("Add new Seating plan").on("click", e=>{
-				if (is_plan_loaded) {
-					if (confirm("Overwrite plan?")) {
-						__renderArea();
-					}
-				} else {
-					__renderArea();
-				}
-				function __renderArea() {
-					is_plan_loaded = true;
-					btn_grp_2.css("visibility", "visible");
-					div_drawing_area.html("");
-					paper = Raphael(div_drawing_area[0], "100%", 400);
-					paper.text(50,10, "Seating plan");
-					//console.log(div_drawing_area.html());
-				}
-			}).addClass("button-primary").appendTo(btn_grp);
-
-			$('<button>').text("Add new Seat Box").on("click", e=>{
-				let circle;
-				let drag_start_x = 50;
-				let drag_start_y = 40;
-				//circle = paper.circle(50, 40, 10);
-				circle = paper.rect(drag_start_x, drag_start_y, 40, 40);
-				seats.push(new Seat(circle, "rect"));
-				let color = "#f00";
-				circle.attr("fill", color);
-				circle.attr("stroke", "#fff");
-				circle.drag((dx,dy,x,y,elem)=>{ // onmove
-					circle.attr("x", dx+drag_start_x);
-					circle.attr("y", dy+drag_start_y);
-				}, (x,y,elem)=>{ // onstart
-					circle.attr("opacity", 0.7);
-					circle.attr("fill", "#f55");
-				}, (x,y,elem)=>{ // onend
-					drag_start_x = circle.attr("x");
-					drag_start_y = circle.attr("y");
-					circle.attr("opacity", 1);
-					circle.attr("fill", color);
-				});
-				circle.dblclick(()=>{
-					console.log("double clicked");
-					console.log(seats);
-				})
-			}).addClass("button-primary").appendTo(btn_grp_2);
-			$('<button>').text("Add new Seat Circle").on("click", e=>{
-				let circle;
-				let drag_start_x = 50;
-				let drag_start_y = 40;
-				circle = paper.circle(drag_start_x, drag_start_y, 20);
-				seats.push(new Seat(circle, "circle"));
-				let color = "#f00";
-				circle.attr("fill", color);
-				circle.attr("stroke", "#fff");
-				circle.drag((dx,dy,x,y,elem)=>{ // onmove
-					circle.attr("cx", dx+drag_start_x);
-					circle.attr("cy", dy+drag_start_y);
-				}, (x,y,elem)=>{ // onstart
-					circle.attr("opacity", 0.7);
-					circle.attr("fill", "#f55");
-				}, (x,y,elem)=>{ // onend
-					drag_start_x = circle.attr("x");
-					drag_start_y = circle.attr("y");
-					circle.attr("opacity", 1);
-					circle.attr("fill", color);
-				});
-				circle.dblclick(()=>{
-					console.log("double clicked");
-					console.log(seats);
-				})
-			}).addClass("button-primary").appendTo(btn_grp_2);
-
-
+		_load_seatingplanJS({div:div}, ()=>{
+			//console.log("seatingplan loaded");
 		});
 
 		DIV.append(div);
@@ -1536,13 +1453,13 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 				_displayFAQArea();
 			})
 			.appendTo(btn_grp);
-			/*
-		$('<button/>').addClass("button-primary").html(_x("Seating Plans", 'label', 'event-tickets-with-ticket-scanner'))
-			.on("click", ()=>{
-				_displaySeatingplanArea();
-			})
-			.appendTo(btn_grp);
-			*/
+		if (typeof PARAS.seatingplan !== "undefined" && PARAS.seatingplan) {
+			$('<button/>').addClass("button-primary").html(_x("Seating Plans", 'label', 'event-tickets-with-ticket-scanner'))
+				.on("click", ()=>{
+					_displaySeatingplanArea();
+				})
+				.appendTo(btn_grp);
+		}
 		//if (_getOptions_Versions_isActivatedByKey('is_wc_available')) {
 			$('<button/>').addClass("button-primary").html(_x("Ticket Scanner", 'label', 'event-tickets-with-ticket-scanner'))
 			.on("click", ()=>{
@@ -3446,7 +3363,23 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 	  if (typeof onloadfkt !== "undefined") script.onload = onloadfkt;
 	  document.getElementsByTagName("head")[0].appendChild(script);
 	}
-
+	function addScriptCode(content, id) {
+		if (typeof system.DYNJS_CACHE.scriptCodeElements === "undefined") {
+			system.DYNJS_CACHE.scriptCodeElements = {};
+		}
+		let c;
+		if (id && typeof system.DYNJS_CACHE.scriptCodeElements[id] !== "undefined") {
+			c = system.DYNJS_CACHE.scriptCodeElements[id];
+			document.getElementsByTagName("head")[0].removeChild(c);
+		} else {
+			c = document.createElement('script');
+		}
+		c.innerHTML = content;
+		if (id) {
+			system.DYNJS_CACHE.scriptCodeElements[id] = c;
+		}
+		document.getElementsByTagName("head")[0].appendChild(c);
+	}
 	function addScriptTag(url, id, onloadfkt, attrListe, loadLatest) {
 	  	var head    = document.getElementsByTagName("head")[0];
 	  	var script  = document.createElement('script');
@@ -3471,12 +3404,6 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 
 	function _getSpinnerHTML() {
 		return '<span class="lds-dual-ring"></span>';
-	}
-
-	function _loadingJSSeatingPlan(cbf) {
-		addScriptTag(myAjax._plugin_home_url+"/3rd/raphael/raphael_2.3.0.min.js", 'jquery_dataTables', ()=>{
-			cbf && cbf();
-		}, {'crossorigin':"anonymous", "charset":"utf8"});
 	}
 
 	function _loadingJSDatatables(cbf) {
@@ -3706,28 +3633,6 @@ function sasoEventtickets(_myAjaxVar, doNotInit){
 		init: init,
 		form_fields_serial_format:_form_fields_serial_format
 	};
-
-
-// prep for dynamic JS
-	// bic detail
-	function _bic_detail_ladenUndAnzeigen(elemId, menuId, templateName) {
-		let filename = 'ws_bicdetail';
-		if (typeof system.DYNJS === "undefined") system.DYNJS = {};
-		if (system.DYNJS[filename]) {
-			eval(system.DYNJS[filename]);
-			ws_bicdetail_ladenUndAnzeigen(elemId, menuId, templateName);
-		} else {
-			$.getScript( _JSPFAD+filename+".js", function( data, textStatus, jqxhr ){
-				if (!system.is_debug) {
-					system.DYNJS[filename] = data;
-				}
-				eval(data);
-				ws_bicdetail_ladenUndAnzeigen(elemId, menuId, templateName);
-				// or window[templateName](); if template name is also the loaded function name for a dynamic approach
-			});
-		}
-	} // bic detail
-
 
 }
 if (typeof Ajax_sasoEventtickets !== "undefined") {

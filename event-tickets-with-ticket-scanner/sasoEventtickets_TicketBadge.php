@@ -308,6 +308,7 @@ class sasoEventtickets_TicketBadge {
             $is_variation = $product->get_type() == "variation" ? true : false;
             $product_parent = $product;
             $product_parent_id = $product->get_parent_id();
+
             $saso_eventtickets_is_date_for_all_variants = true;
             if ($is_variation && $product_parent_id > 0) {
                 $product_parent = wc_get_product( $product_parent_id );
@@ -397,6 +398,7 @@ class sasoEventtickets_TicketBadge {
             $is_variation = $product->get_type() == "variation" ? true : false;
             $product_parent = $product;
             $product_parent_id = $product->get_parent_id();
+
             $saso_eventtickets_is_date_for_all_variants = true;
             if ($is_variation && $product_parent_id > 0) {
                 $product_parent = wc_get_product( $product_parent_id );
@@ -441,6 +443,17 @@ class sasoEventtickets_TicketBadge {
     }
 
     private function getValueOfWCObject($key, $object) {
+        if (method_exists($object, "get_id")) {
+            $product_original_id = apply_filters( 'wpml_object_id', $object->get_id(), 'product', true );
+            $product_original = null;
+            if ($product_original_id != $object->get_id()) {
+                $product_original = $this->MAIN->getTicketHandler()->get_product($product_original_id);
+            }
+            if ($product_original != null) {
+                $object = $product_original;
+            }
+        }
+
         $value = "";
         $method = "get_".str_replace(".", "_", $key);
         //if (method_exists($object, $method) && is_callable($object, $method)) {

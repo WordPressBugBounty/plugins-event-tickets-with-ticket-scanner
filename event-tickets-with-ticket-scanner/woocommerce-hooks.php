@@ -1794,12 +1794,16 @@ class sasoEventtickets_WC {
 	function add_serialcode_to_order_forItem($order_id, $order, $item_id, $item, $saso_eventtickets_list, $codeName, $codeListName) {
 		$ret = [];
 		$product_id = $item->get_product_id();
+		$product_original_id = apply_filters( 'wpml_object_id', $product_id, 'product', true );
+		$item_variation_id = $item->get_variation_id();
+		$item_variation_original_id = apply_filters( 'wpml_object_id', $item_variation_id, 'product', true );
+
 		if ($saso_eventtickets_list) {
 
 			if ($item->get_variation_id() > 0) {
-				$saso_eventtickets_ticket_amount_per_item = intval(get_post_meta( $item->get_variation_id(), 'saso_eventtickets_ticket_amount_per_item', true ));
+				$saso_eventtickets_ticket_amount_per_item = intval(get_post_meta( $item_variation_original_id, 'saso_eventtickets_ticket_amount_per_item', true ));
 			} else {
-				$saso_eventtickets_ticket_amount_per_item = intval(get_post_meta( $product_id, 'saso_eventtickets_ticket_amount_per_item', true ));
+				$saso_eventtickets_ticket_amount_per_item = intval(get_post_meta( $product_original_id, 'saso_eventtickets_ticket_amount_per_item', true ));
 			}
 			if ($saso_eventtickets_ticket_amount_per_item < 1) {
 				$saso_eventtickets_ticket_amount_per_item = 1;
@@ -1819,8 +1823,8 @@ class sasoEventtickets_WC {
 			if ($quantity > 0) {
 
 				$product_formatter_values = "";
-				if (get_post_meta($product_id, 'saso_eventtickets_list_formatter', true) == "yes") {
-					$product_formatter_values = get_post_meta( $product_id, 'saso_eventtickets_list_formatter_values', true );
+				if (get_post_meta($product_original_id, 'saso_eventtickets_list_formatter', true) == "yes") {
+					$product_formatter_values = get_post_meta( $product_original_id, 'saso_eventtickets_list_formatter_values', true );
 				}
 
 				$values = [];
