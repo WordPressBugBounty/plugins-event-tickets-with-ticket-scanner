@@ -321,6 +321,23 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			}
 			return $datetime->format( $format );
 		}
+		public static function is_assoc_array($array) {
+			if (!is_array($array)) {
+				return false;
+			}
+			if ($array === []) {
+				return true;
+			}
+			if (function_exists('array_is_list')) {
+				// PHP 8.1+
+				return !array_is_list($array);
+			} else {
+				return count(array_filter(array_keys($array), 'is_string')) > 0;
+				/*
+				return array_keys($array) === range(0, count($array) - 1);
+				*/
+			}
+		}
 	}
 }
 ?>

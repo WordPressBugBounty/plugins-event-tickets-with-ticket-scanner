@@ -336,6 +336,15 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             }).appendTo(div);
             chkbox_ticketScannerStartCamWithoutButtonClicked.prop("checked", ticket_scanner_operating_option.ticketScannerStartCamWithoutButtonClicked);
             div.append(' Start cam to scan next ticket immediately');
+            div.append("<br>");
+
+            $('<input type="checkbox">').on("click", e=>{
+                window.location.href = "?code="+encodeURIComponent(system.code)
+                    + (ticket_scanner_operating_option.redeem_auto ? "&redeemauto=1" : "")
+                    + (system.PARA.useoldticketscanner ? "" : "&useoldticketscanner=1");
+            }).prop("checked", system.PARA.useoldticketscanner).appendTo(div);
+            div.append(' Use old ticket scanner library - compatibility mode');
+
         }
 
         $('<div style="margin-top:40px;">').append(system.INPUTFIELD).appendTo(div);

@@ -7,7 +7,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 	var PARAS = basics_ermittelURLParameter();
 	var DATA = {
         /*action: '',*/
-        nonce: myAjax.nonce
+        nonce: myAjax.nonce,
+		last_nonce_check: 0
     };
 
 	var system = {is_debug:false, DYNJS:{}, DYNJS_CACHE:{}};
@@ -59,6 +60,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		pcbf && pcbf();
 		for(var key in myData) _data['data['+key+']'] = myData[key];
         $.post( myAjax.url, _data, function( response ) {
+			if (response && response.data && response.data.nonce) {
+                DATA.last_nonce_check = new Date().getTime();
+                DATA.nonce = response.data.nonce;
+            }
             if (!response.success) {
             	if (ecbf) ecbf(response);
             	else LAYOUT.renderFatalError(response.data);
@@ -78,6 +83,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		pcbf && pcbf();
 		for(var key in myData) _data['data['+key+']'] = myData[key];
         $.get( myAjax.url, _data, function( response ) {
+			if (response && response.data && response.data.nonce) {
+                DATA.last_nonce_check = new Date().getTime();
+                DATA.nonce = response.data.nonce;
+            }
             if (!response.success) {
 				if (ecbf) ecbf(response);
             	else LAYOUT.renderFatalError(response.data);
@@ -766,6 +775,22 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 			let div_tabelle = $('<div style="margin-bottom:20px;">').appendTo(DIV);
 
+			let label_version = _x('Version', 'label', 'event-tickets-with-ticket-scanner');
+			DIV.append('<h3 style="margin-bottom:10px;">Used Libraries</h3>');
+			DIV.append('<p>'+__('The following libraries are used in the plugin.', 'event-tickets-with-ticket-scanner')+'</p>');
+			DIV.append('<p>'+__('The libraries are used in the frontend and backend.', 'event-tickets-with-ticket-scanner')+'</p>');
+			DIV.append('<ul>');
+			DIV.append('<li><b>jQuery</b> - '+label_version+': '+jQuery.fn.jquery+'</li>');
+			DIV.append('<li><b>jQuery UI</b> - '+label_version+': '+jQuery.ui.version+'</li>');
+			DIV.append('<li><b>jQuery UI CSS</b> - '+label_version+': '+jQuery.ui.version+'</li>');
+			DIV.append('<li><b>PHP TWIG template engine</b> https://twig.symfony.com/ - '+label_version+': 3.x</li>');
+			DIV.append('<li><b>PHP QR Code</b> http://sourceforge.net/projects/phpqrcode/ - '+label_version+': 1.1.4</li>');
+			DIV.append('<li><b>Javascript QR code scanner:</b> https://github.com/nimiq/qr-scanner - '+label_version+': 1.4.2</li>');
+			DIV.append('<li><b>Javascript Datatable:</b> https://datatables.net/ - '+label_version+': 1.10.21</li>');
+			DIV.append('<li><b>Javascript Raphael:</b> http://raphaeljs.com/ - '+label_version+': 2.3.0</li>');
+			DIV.append('<li><b>Javascript Ace Editor</b></li>');
+			DIV.append('<li><b>html5-qrcode:</b> https://github.com/mebjas/html5-qrcode/ - '+label_version+': 2.3.8</li>');
+
 			DIV.append('<h3 style="margin-bottom:10px;">Options</h3>');
 			// liste alle optionen mit wert auf
 			data.forEach(v=>{
@@ -1063,13 +1088,13 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let editor = {}; // for ace editor
 			data.forEach(v=>{
 				if (typeof v.additional !== "undefined" && v.additional.doNotRender) return;
-				if (v.type === "heading") {
+				if (v.type == "heading") {
 					let desc = v.desc;
 					if (typeof v._doc_video !== "undefined" && v._doc_video != "") {
 						desc += ' <span class="dashicons dashicons-external"></span> <a href="'+v._doc_video+'" target="_blank">Video Help</a>';
 					}
-					div_options.append('<hr>').append('<h3 id="'+v.key+'" '+(v.desc !== "" ? ' style="margin-bottom:0;"' : '')+'>'+v.label+'</h3>').append(v.desc !== "" ? '<div style="margin-bottom:15px;"><i>'+desc+'</i></div>':'');
-				} else if (v.type === "desc") {
+					div_options.append('<hr>').append('<h3 id="'+v.key+'" '+(desc !== "" ? ' style="margin-bottom:0;"' : '')+'>'+v.label+'</h3>').append(desc !== "" ? '<div style="margin-bottom:15px;"><i>'+desc+'</i></div>':'');
+				} else if (v.type =="desc") {
 					let desc = v.desc;
 					if (typeof v._doc_video !== "undefined" && v._doc_video != "") {
 						desc += ' <span class="dashicons dashicons-external"></span> <a href="'+v._doc_video+'" target="_blank">Video Help</a>';
@@ -3589,6 +3614,22 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		};
 	}
 
+	function refreshNoncePeriodically() {
+        // check if the last check of nonce is older than 4 minutes
+        // do a ping to get the new nonce
+        setInterval(()=>{
+            let last_check = DATA.last_nonce_check;
+            if (last_check == null || last_check == "") {
+                last_check = 0;
+            }
+            let now = new Date().getTime();
+            if (now - last_check > 240000) {
+                _makeGet('ping', [], data=>{
+                });
+            }
+        }, 60000);
+    }
+
 	function init() {
 		addStyleCode('.lds-dual-ring {display:inline-block;width:64px;height:64px;}.lds-dual-ring:after {content:" ";display:block;width:46px;height:46px;margin:1px;border-radius:50%;border:5px solid #fff;border-color:#2e74b5 transparent #2e74b5 transparent;animation:lds-dual-ring 0.6s linear infinite;}@keyframes lds-dual-ring {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}');
 		addStyleTag(myAjax._plugin_home_url+'/css/styles_backend.css');
@@ -3627,6 +3668,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			_init();
     	}
 		$('#wpfooter').css('display', 'none');
+		refreshNoncePeriodically();
 	}
 	if (!doNotInit) init();
 	return {

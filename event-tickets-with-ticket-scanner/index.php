@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.6.4
+ * Version: 2.6.6
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.6.4');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.6.6');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -358,7 +358,7 @@ class sasoEventtickets {
 		add_action('woocommerce_product_after_variable_attributes', [$this, 'relay_woocommerce_product_after_variable_attributes'], 10, 3);
 		add_action('woocommerce_save_product_variation',[$this, 'relay_woocommerce_save_product_variation'], 10 ,2 );
 		add_action('woocommerce_email_order_meta', [$this, 'relay_woocommerce_email_order_meta'], 10, 4 );
-		add_action('woocommerce_thankyou_', [$this, 'relay_woocommerce_thankyou_'], 5);
+		add_action('woocommerce_thankyou', [$this, 'relay_woocommerce_thankyou'], 5);
 		if (wp_doing_ajax()) {
 			// erlaube ajax nonpriv und registriere handler
 			add_action('wp_ajax_nopriv_'.$this->getPrefix().'_executeWCFrontend', [$this,'relay_executeWCFrontend']); // nicht angemeldete user, sollen eine antwort erhalten
@@ -510,9 +510,9 @@ class sasoEventtickets {
 		$args = func_get_args();
 		$this->getWC()->woocommerce_email_order_meta(...$args);
 	}
-	public function relay_woocommerce_thankyou_() {
+	public function relay_woocommerce_thankyou() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_thankyou_(...$args);
+		$this->getWC()->woocommerce_thankyou(...$args);
 	}
 	public function relay_sasoEventtickets_cronjob_daily() {
 		$this->getTicketHandler()->cronJobDaily();

@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.6.4
+Stable tag: 2.6.6
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -112,7 +112,7 @@ https://youtu.be/ls_Lkf08n9I
 * Allow multiple redeem times for multi usage tickets
 * Ticket badge designer for maximum control of the look and feel
 
-== Technical Requirments ==
+== Technical Requirements ==
 Wordpress, Woocommerce, php-curl, php-imagick
 
 == GETTING STARTED ==
@@ -282,11 +282,9 @@ If you have a 404 page for ticket detail page or ticket scanner page, then set u
 
 **For more help and your first steps, please [visit our website](https://vollstart.com/event-tickets-with-ticket-scanner/docs/)**
 
-== Third party libraries ==
-* TWIG - template engine: https://twig.symfony.com/ (3.x)
-* Javascript QR code scanner: https://github.com/nimiq/qr-scanner (1.4.2)
-* Javascript Datatable: https://datatables.net/ (1.10.21)
-* Javascript Raphael: http://raphaeljs.com/ (2.3.0)
+== Plugin support ==
+* WPML plugin
+* PDF Invoices & Packing Slips for WooCommerce
 
 == Screenshots ==
 
@@ -338,6 +336,17 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.6.6 - 2025-05-06 =
+* Added more help videos to the options
+
+= 2.6.5 - 2025-05-05 =
+* Added list of third party libraries to the support information area.
+* Ticket scanner has a new option to use the old QR code scanner library for compatibility mode in case your iphone is not working as expected.
+* Admin area is refreshing the security code (nonce) automatically if open.
+* Add an newline to put the date on the next line in the order items table.
+* Thank you page uses now the new WooCommerce hook.
+* Added font for PDF Roboto and Newsreader to support more languages.
+
 = 2.6.4 - 2025-04-24 =
 * Basic WPML plugin support added.
 * Optimized the plugin speed a little bit.

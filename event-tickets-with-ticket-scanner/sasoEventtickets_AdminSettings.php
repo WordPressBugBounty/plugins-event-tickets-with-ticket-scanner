@@ -189,6 +189,9 @@ class sasoEventtickets_AdminSettings {
 				case "expose_desctables":
 					$ret = $this->expose("tables", $data);
 					break;
+				case "ping":
+					$ret = $this->ping($data);
+					break;
 				default:
 					throw new Exception(sprintf(esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'), $a));
 			}
@@ -200,7 +203,15 @@ class sasoEventtickets_AdminSettings {
 		}
 		if ($just_ret) return $ret;
 		if ($justJSON) return wp_send_json($ret);
-		else return wp_send_json_success( $ret );
+		else {
+			if (is_array($ret) && SASO_EVENTTICKETS::is_assoc_array($ret) && !isset($ret['nonce'])) {
+				$ret['nonce'] = wp_create_nonce( $this->MAIN->_js_nonce );
+			}
+			return wp_send_json_success( $ret );
+		}
+	}
+	private function ping($data) {
+		return ["ret"=>"pong", "timestamp"=>current_time("timestamp"), "date"=>wp_date("Y-m-d H:i:s", current_time("timestamp"))];
 	}
 	private function executeJSONPremium($data) {
 		if (!$this->MAIN->isPremium() && !method_exists($this->MAIN->getPremiumFunctions(), "executeJSON")) throw new Exception("#9001 premium is not active");

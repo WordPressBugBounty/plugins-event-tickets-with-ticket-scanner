@@ -1209,7 +1209,7 @@ class sasoEventtickets_WC {
 							// check if the product is a day chooser
 							if (!$is_daychooser) {
 								$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product);
-								if (!empty($date_str)) echo $date_str."<br>";
+								if (!empty($date_str)) echo "<br>".$date_str."<br>";
 							}
 						}
 
@@ -1381,7 +1381,7 @@ class sasoEventtickets_WC {
 						// check if the product is a day chooser
 						if (!$is_daychooser) {
 							$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product);
-							if (!empty($date_str)) echo $date_str."<br>";
+							if (!empty($date_str)) echo "<br>".$date_str."<br>";
 						}
 					}
 
@@ -2872,7 +2872,7 @@ class sasoEventtickets_WC {
 	function deleteRestrictionEntryOnOrderItem($item_id) {
 		wc_delete_order_item_meta( $item_id, $this->meta_key_codelist_restriction_order_item );
 	}
-	function woocommerce_thankyou_($order_id=0) {
+	function woocommerce_thankyou($order_id=0) {
 		$order_id = intval($order_id);
 		if ( $order_id > 0) {
 
