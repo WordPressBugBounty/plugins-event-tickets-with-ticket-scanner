@@ -45,6 +45,9 @@ class sasoEventtickets_WC {
 				case "removeAllNonTicketsFromOrder":
 					$ret = $this->removeAllNonTicketsFromOrder($data);
 					break;
+				case "downloadPDFTicketBadge":
+					$ret = $this->downloadPDFTicketBadge($data);
+					break;
 				default:
 					throw new Exception("#6000 ".sprintf(/* translators: %s: name of called function */esc_html__('function "%s" in wc backend not implemented', 'event-tickets-with-ticket-scanner'), $a));
 			}
@@ -1646,10 +1649,13 @@ class sasoEventtickets_WC {
 			?>
 			<p>Download All Tickets in one PDF</p>
 			<button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_download_alltickets_one_pdf"); ?>" class="button button-primary">Download Tickets</button>
+			<p>Download Ticket Badge</p>
+			<button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_download_badge"); ?>" class="button button-primary">Download Ticket Badge</button>
 			<p>Remove all tickets from the order</p>
 			<button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_remove_tickets"); ?>" class="button button-danger">Remove Tickets</button>
 			<p>Remove all non-tickets from the order</p>
 			<button disabled data-id="<?php echo esc_attr($this->getPrefix()."btn_remove_non_tickets"); ?>" class="button button-danger">Remove Ticket Placeholders</button>
+
 			<?php
 			do_action( $this->MAIN->_do_action_prefix.'wc_order_display_side_box', [] );
 		} else {
@@ -1991,6 +1997,11 @@ class sasoEventtickets_WC {
 	private function downloadICSFile($data) {
 		$product_id = intval($data['product_id']);
 		$this->MAIN->getTicketHandler()->sendICSFileByProductId($product_id);
+		exit;
+	}
+
+	private function downloadPDFTicketBadge($data) {
+		$this->MAIN->getAdmin()->downloadPDFTicketBadge($data);
 		exit;
 	}
 
@@ -2399,6 +2410,7 @@ class sasoEventtickets_WC {
 						'id'=>'saso_eventtickets_request_daychooser['.$cart_item_key.']['.$a.']',
 						'class'=> array( 'form-row-first input-text text' ),
 						'label' => esc_attr(str_replace("{count}", $a+1, $label)),
+						//'placeholder'=>esc_attr($this->getOptions()->getOptionValue('displayDateFormatDatePicker')),
 						'required' => true, // Or false
 					];
 					$params['custom_attributes']['data-offset-start'] = $saso_eventtickets_daychooser_offset_start;

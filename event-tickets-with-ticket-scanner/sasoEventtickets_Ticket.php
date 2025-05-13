@@ -1700,7 +1700,7 @@ final class sasoEventtickets_Ticket {
 					if ($product_original_id != $product->get_id()) {
 						$product_original = $this->get_product($product_original_id);
 					}
-					if ($product_parent_original_id != $product_parent->get_id()) {
+					if ($product_parent_original_id > 0 && $product_parent_original_id != $product_parent->get_id()) {
 						$product_parent_original = $this->get_product($product_parent_original_id);
 					}
 

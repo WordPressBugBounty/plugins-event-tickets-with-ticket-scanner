@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.6.6
+Stable tag: 2.6.8
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -336,6 +336,15 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.6.8 - 2025-05-13 =
+* Fix issue with variable products on the order view.
+
+= 2.6.7 - 2025-05-13 =
+* Add is_daychooser and day_per_ticket to the export. You have the meta information now direct as a column: meta_wc_ticket_is_daychooser, meta_wc_ticket_day_per_ticket.
+* Add new filter for ticket numbers in the admin to search for a choosen date on the tickets. Search value is DAYPERTICKET:YYYY-MM-DD. You can also search for YYYY-MM or just YYYY.
+* You can now add and & to the search within the ticket admin to search for more than one filter. But limited to filters and one normal search. E.g. PRODUCTID:123 & ORDERID:123 & ticketnumber.
+* You can cownload the ticket badges from within the order now
+
 = 2.6.6 - 2025-05-06 =
 * Added more help videos to the options
 

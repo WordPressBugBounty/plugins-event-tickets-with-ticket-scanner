@@ -2518,8 +2518,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				drop_search.append('<option value="USERID:">'+_x('Filter for registered user id', 'option value', 'event-tickets-with-ticket-scanner')+'</option>');
 				drop_search.append('<option value="CUSTOMER:">'+_x('Filter for customer name in billing first and last name', 'option value', 'event-tickets-with-ticket-scanner')+'</option>');
 				drop_search.append('<option value="PRODUCTID:">'+_x('Filter for product id', 'option value', 'event-tickets-with-ticket-scanner')+'</option>');
+				drop_search.append('<option value="DAYPERTICKET:">'+_x('Filter for choosen date (enter YYYY-MM-DD)', 'option value', 'event-tickets-with-ticket-scanner')+'</option>');
 				drop_search.on("change", e=>{
-					tabelle_codes_datatable.search(drop_search.val());
+					let old_search = tabelle_codes_datatable.search().trim();
+					let search = drop_search.val();
+					if (old_search && old_search.length > 0) {
+						search = old_search + " & " + search;
+					}
+					tabelle_codes_datatable.search(search);
 				});
 				this.div_codes
 					.html($('<div/>').css('text-align', 'right').css('margin-bottom','10px')
@@ -2636,7 +2642,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 	    			"stateSave": false,
 					"ajax": {
 						"url": _requestURL('getCodes'),
-						"type": 'POST'
+						"type": 'GET'
 					},
 	    			"order": [[ 4 + (additionalColumn.customerName != "" ? 1 : 0), "desc" ]],
 	    			"columns": table_columns,

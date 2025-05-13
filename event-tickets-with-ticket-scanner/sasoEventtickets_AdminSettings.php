@@ -257,7 +257,7 @@ class sasoEventtickets_AdminSettings {
 		die();
 	}
 
-	private function downloadPDFTicketBadge($data) {
+	public function downloadPDFTicketBadge($data) {
 		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
 		$badgeHandler = $this->MAIN->getTicketBadgeHandler();
 		$badgeHandler->downloadPDFTicketBadge($codeObj);
@@ -744,95 +744,105 @@ class sasoEventtickets_AdminSettings {
 		if ($search != "") {
 			$sql .= " where 1=1 ";
 
-			$nomatch = true;
+			$search_elements = explode("&", $search);
+			foreach($search_elements as $search_element) {
+				$nomatch = true;
+				$search_element = trim($search_element);
+				$orig_search_element = $search_element;
 
-			$matches = [];
-			preg_match('/\s?LIST:\s*([0-9]*)/', $search, $matches);
-			if ($matches && count($matches) > 1) {
-				$search = str_replace($matches[0], "", $search);
-				$list_id = intval($matches[1]);
-				$where .= " and a.list_id = ".$list_id." ";
-				$nomatch = false;
-			} else {
-				preg_match('/\s?LIST:\s*\*/', $search, $matches);
+				$matches = [];
+				preg_match('/\s?LIST:\s*([0-9]*)/', $search_element, $matches);
 				if ($matches && count($matches) > 1) {
-					$search = str_replace($matches[0], "", $search);
-					$where .= " and a.list_id > 0 ";
-					$nomatch = false;
-				}
-			}
-			preg_match('/\s?ORDERID:\s*([0-9]+)/', $search, $matches);
-			if ($matches && count($matches) > 1) {
-				$search = str_replace($matches[0], "", $search);
-				$order_id = intval($matches[1]);
-				$where .= " and a.order_id = ".$order_id." ";
-				$nomatch = false;
-			} else {
-				preg_match('/\s?ORDERID:\s*\*/', $search, $matches);
-				if ($matches && count($matches) > 0) {
-					$search = str_replace($matches[0], "", $search);
-					$where .= " and a.order_id > 0 ";
-					$nomatch = false;
-				}
-			}
-			preg_match('/\s?CVV:\s*([^\s]*)/', $search, $matches);
-			if ($matches && count($matches) > 1) {
-				$search = str_replace($matches[0], "", $search);
-				$cvv = $matches[1];
-				$where .= " and a.cvv = '".sanitize_text_field($cvv)."' ";
-				$nomatch = false;
-			}
-			preg_match('/\s?STATUS:\s*([0-9]*)/', $search, $matches);
-			if ($matches && count($matches) > 1) {
-				$search = str_replace($matches[0], "", $search);
-				$status = intval($matches[1]);
-				$where .= " and a.aktiv = ".$status." ";
-				$nomatch = false;
-			}
-			preg_match('/\s?REDEEMED:\s*([0-1]*)/', $search, $matches);
-			if ($matches && count($matches) > 1) {
-				$search = str_replace($matches[0], "", $search);
-				$status = intval($matches[1]);
-				$where .= " and a.redeemed = ".$status." ";
-				$nomatch = false;
-			}
-			preg_match('/\s?USERID:\s*([0-9]*)/', $search, $matches);
-			if ($matches && count($matches) > 1) {
-				$search = str_replace($matches[0], "", $search);
-				$user_id = intval($matches[1]);
-				$where .= " and a.user_id = ".$user_id." ";
-				$nomatch = false;
-			}
-			preg_match('/\s?CUSTOMER:\s*([^\s]*)/', $search, $matches);
-			if ($matches && count($matches) > 1) {
-				$search = str_replace($matches[0], "", $search);
-				$user_ids = $this->MAIN->getCore()->getUserIdsForCustomerName($matches[1]);
-				if (count($user_ids) > 0) {
-					$where .= " and json_extract(a.meta, '$.woocommerce.user_id') in (".join(",", $user_ids).")";
+					$search_element = str_replace($matches[0], "", $search_element);
+					$list_id = intval($matches[1]);
+					$where .= " and a.list_id = ".$list_id." ";
 					$nomatch = false;
 				} else {
-					$where .= " and json_extract(a.meta, '$.woocommerce.user_id') = -1";
+					preg_match('/\s?LIST:\s*\*/', $search_element, $matches);
+					if ($matches && count($matches) > 1) {
+						$search_element = str_replace($matches[0], "", $search_element);
+						$where .= " and a.list_id > 0 ";
+						$nomatch = false;
+					}
+				}
+				preg_match('/\s?ORDERID:\s*([0-9]+)/', $search_element, $matches);
+				if ($matches && count($matches) > 1) {
+					$search_element = str_replace($matches[0], "", $search_element);
+					$order_id = intval($matches[1]);
+					$where .= " and a.order_id = ".$order_id." ";
+					$nomatch = false;
+				} else {
+					preg_match('/\s?ORDERID:\s*\*/', $search_element, $matches);
+					if ($matches && count($matches) > 0) {
+						$search_element = str_replace($matches[0], "", $search_element);
+						$where .= " and a.order_id > 0 ";
+						$nomatch = false;
+					}
+				}
+				preg_match('/\s?CVV:\s*([^\s]*)/', $search_element, $matches);
+				if ($matches && count($matches) > 1) {
+					$search_element = str_replace($matches[0], "", $search_element);
+					$cvv = $matches[1];
+					$where .= " and a.cvv = '".sanitize_text_field($cvv)."' ";
 					$nomatch = false;
 				}
-			}
-			preg_match('/\s?PRODUCTID:\s*([0-9]*)/', $search, $matches);
-			if ($matches && count($matches) > 1) {
-				$search = str_replace($matches[0], "", $search);
-				$product_id = intval($matches[1]);
-				$where .= " and json_extract(a.meta, '$.woocommerce.product_id') = ".$product_id." ";
-				$nomatch = false;
-			}
+				preg_match('/\s?STATUS:\s*([0-9]*)/', $search_element, $matches);
+				if ($matches && count($matches) > 1) {
+					$search_element = str_replace($matches[0], "", $search_element);
+					$status = intval($matches[1]);
+					$where .= " and a.aktiv = ".$status." ";
+					$nomatch = false;
+				}
+				preg_match('/\s?REDEEMED:\s*([0-1]*)/', $search_element, $matches);
+				if ($matches && count($matches) > 1) {
+					$search_element = str_replace($matches[0], "", $search_element);
+					$status = intval($matches[1]);
+					$where .= " and a.redeemed = ".$status." ";
+					$nomatch = false;
+				}
+				preg_match('/\s?USERID:\s*([0-9]*)/', $search_element, $matches);
+				if ($matches && count($matches) > 1) {
+					$search_element = str_replace($matches[0], "", $search_element);
+					$user_id = intval($matches[1]);
+					$where .= " and a.user_id = ".$user_id." ";
+					$nomatch = false;
+				}
+				preg_match('/\s?CUSTOMER:\s*([^\s]*)/', $search_element, $matches);
+				if ($matches && count($matches) > 1) {
+					$search_element = str_replace($matches[0], "", $search_element);
+					$user_ids = $this->MAIN->getCore()->getUserIdsForCustomerName($matches[1]);
+					if (count($user_ids) > 0) {
+						$where .= " and json_extract(a.meta, '$.woocommerce.user_id') in (".join(",", $user_ids).")";
+						$nomatch = false;
+					} else {
+						$where .= " and json_extract(a.meta, '$.woocommerce.user_id') = -1";
+						$nomatch = false;
+					}
+				}
+				preg_match('/\s?PRODUCTID:\s*([0-9]*)/', $search_element, $matches);
+				if ($matches && count($matches) > 1) {
+					$search_element = str_replace($matches[0], "", $search_element);
+					$product_id = intval($matches[1]);
+					$where .= " and json_extract(a.meta, '$.woocommerce.product_id') = ".$product_id." ";
+					$nomatch = false;
+				}
+				preg_match('/\s?DAYPERTICKET:\s*([^\s]*)/', $search_element, $matches);
+				if ($matches && count($matches) > 1) {
+					$search_element = str_replace($matches[0], "", $search_element);
+					$json_search_value = $matches[1];
+					$where .= " and json_extract(a.meta, '$.wc_ticket.is_daychooser') = 1 and json_unquote(json_extract(a.meta, '$.wc_ticket.day_per_ticket')) like '".sanitize_text_field($json_search_value)."%' ";
+					$nomatch = false;
+				}
 
-			$where .= apply_filters( $this->MAIN->_add_filter_prefix.'admin_getCodes_searchword', "", $search, $where);
+				$where .= apply_filters( $this->MAIN->_add_filter_prefix.'admin_getCodes_searchword', "", $orig_search_element, $where);
 
-			if ($nomatch == false) {
-				if (strpos("_".$search, " ")) { // and sub filter
-					$nomatch = true;
-					$search = trim($search);
+				if ($nomatch == false) {
+					$search = str_replace($orig_search_element, "", $search);
 				}
 			}
+			$search = trim(str_replace("&", "", $search));
 
-			if ($nomatch) {
+			if ($search != "") {
 				$where .= " and (a.code like '%".$this->getCore()->clearCode($search)."%' or b.name like '%".$search."%' or a.time like '%".$search."%' ";
 				if (intval($search) > 0) {
 					$where .= " or a.order_id = ".intval($search)." ";
@@ -1771,7 +1781,7 @@ class sasoEventtickets_AdminSettings {
 			'meta_confirmedCount',
 			'meta_woocommerce', 'meta_woocommerce_order_id', 'meta_woocommerce_product_id', 'meta_woocommerce_creation_date', 'meta_woocommerce_creation_date_tz', 'meta_woocommerce_item_id', 'meta_woocommerce_user_id',
 			'meta_wc_rp', 'meta_wc_rp_order_id', 'meta_wc_rp_product_id', 'meta_wc_rp_creation_date', 'meta_wc_rp_creation_date_tz', 'meta_wc_rp_item_id',
-			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket'
+			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket'
 			];
 		if ($options != null && is_array($options)) {
 			if (isset($options["displayAdminAreaColumnBillingName"])) {

@@ -95,7 +95,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 					setWaitingTimeout(elem, code);
 					*/
 				})
-				.on('paste', ()=>{
+				.on('paste', event=>{
 					isStoring = false;
 					let elem = $(event.srcElement);
 					let code = (event.clipboardData || window.clipboardData).getData('text');
@@ -142,7 +142,10 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 
 		$('body').find('input[data-input-type="daychooser"][data-plugin="event"]').each((idx, input) => {
 			let elem = $(input);
-			elem.attr('placeholder', __('YYYY-MM-DD'));
+			let dateFormat = elem.attr('placeholder');
+			dateFormat = dateFormat != null ? dateFormat.trim() : '';
+			dateFormat = dateFormat ? dateFormat : 'YYYY-MM-DD';
+			elem.attr('placeholder', __(dateFormat));
 			let data_offset_start = 0;
 			let data_offset_end = 0;
 			try {
@@ -182,7 +185,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				});
 
 				// remove the related error message on the cart
-				let data_cart_item_count = elem.attr('data-cart-item-count');
+				//let data_cart_item_count = elem.attr('data-cart-item-count');
 				//$('li[data-cart-item-id="'+data_cart_item_id+'"][data-cart-item-count="'+data_cart_item_count+'"]').remove();
 				// send data to the server
 				wait = 0;
@@ -196,6 +199,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			})
 			.datepicker({
 				dateFormat: 'yy-mm-dd',
+				//dateFormat: dateFormat,
 				showWeek: true,
 				firstDay: 1,
 				hideIfNoPrevNext : true,

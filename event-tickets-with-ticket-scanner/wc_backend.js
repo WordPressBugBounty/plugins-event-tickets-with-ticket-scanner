@@ -2,6 +2,7 @@ function SasoEventticketsValidator_WC_backend($, phpObject) {
 	const { __, _x, _n, sprintf } = wp.i18n;
 	let _self = this;
 	let _sasoEventtickets;
+	let DATA = {};
 
 	function renderFormatterFields() {
 		let hiddenValueField = $('input[data-id="'+phpObject.formatterInputFieldDataId+'"]');
@@ -64,6 +65,47 @@ function SasoEventticketsValidator_WC_backend($, phpObject) {
 								window.location.reload(true);
 							}
 						});
+					}
+					return false;
+				});
+				$('body').find('button[data-id="'+phpObject.prefix+'btn_download_badge"]').prop('disabled', false).on('click', event=>{
+					event.preventDefault();
+					// check how many tickets are in the order
+					// if more than 1, show a list of tickets
+					// if only 1, show the ticket
+
+					let ticket_numbers = [];
+					for(var key in phpObject.tickets) {
+						let ticket = phpObject.tickets[key];
+						if (ticket.codes != "") {
+							let codes = ticket.codes.split(',');
+							for(let i=0;i<codes.length;i++) {
+								let code = codes[i].trim();
+								if (code != "") {
+									ticket_numbers.push(code);
+								}
+							}
+						}
+					}
+
+					if (ticket_numbers.length > 1) {
+						let ticketList = $('<div>');
+						for(let i=0;i<ticket_numbers.length;i++) {
+							let ticket_number = ticket_numbers[i];
+							let elem = $('<div>').appendTo(ticketList);
+							elem.append($('<h4>').html('#'+(i+1)+'. '+ticket_number));
+							elem.append($('<button>').html('Download').addClass('button button-primary')).on('click', event=>{
+								event.preventDefault();
+								_downloadFile('downloadPDFTicketBadge', {'code':ticket_number});
+								return false;
+							});
+							elem.append('<hr>');
+							elem.appendTo(ticketList);
+						}
+						renderInfoBox(ticketList, 'Select a ticket badge to download');
+
+					} else {
+						_downloadFile('downloadPDFTicketBadge', {'code':ticket_numbers[0]});
 					}
 					return false;
 				});
@@ -169,6 +211,47 @@ function SasoEventticketsValidator_WC_backend($, phpObject) {
 	function getCodeObjectMeta(codeObj) {
 		if (!codeObj.metaObj) codeObj.metaObj = JSON.parse(codeObj.meta);
 		return codeObj.metaObj;
+	}
+
+	function _downloadFile(action, myData, filenameToStore, cbf, ecbf, pcbf) {
+		let _data = Object.assign({}, DATA);
+		_data.action = phpObject.action;
+		_data.a_sngmbh = action;
+		_data.t = new Date().getTime();
+		_data.nonce = phpObject.nonce;
+		pcbf && pcbf();
+		for(var key in myData) _data['data['+key+']'] = myData[key];
+		let params = "";
+		for(var key in _data) params += key+"="+_data[key]+"&";
+		let url = phpObject.ajaxurl+'?'+params;
+		let window_name = myData.code ? myData.code : '_blank';
+		let new_window = window.open(url, window_name);
+		//window.location.href = url;
+		//ajax_downloadFile(url, filenameToStore, cbf);
+	}
+
+	function renderInfoBox(content, myTitle) {
+		let dlg = $('<div/>').html(content);
+		let _options = {
+			title: myTitle ? myTitle : 'Info',
+			modal: true,
+			minWidth: 400,
+			minHeight: 200,
+			buttons: [{text:'Ok', click:()=>{
+				closeDialog(dlg);
+			}}]
+		};
+		dlg.dialog(_options);
+		return dlg;
+	}
+
+	function closeDialog(dlg) {
+		$(dlg).dialog( "close" );
+		$(dlg).html('');
+		$(dlg).dialog("destroy").remove();
+		$(dlg).empty();
+		$(dlg).remove();
+		$('.ui-dialog-content').dialog('destroy');
 	}
 
 	function addStyleCode(content, d) {
