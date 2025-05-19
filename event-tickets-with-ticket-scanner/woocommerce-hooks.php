@@ -780,16 +780,19 @@ class sasoEventtickets_WC {
 							if (!empty($ticket_start_date)) {
 								$is_daychooser = get_post_meta( $product_id, 'saso_eventtickets_is_daychooser', true ) == "yes" ? true : false;
 								if ($is_daychooser) {
-									$codeObj = $this->getCore()->retrieveCodeByOrderItemId($ticket["order_item_id"]);
 									$codes = [];
 									if (!empty($ticket['codes'])) {
 										$codes = explode(",", $ticket['codes']);
 									}
 									foreach($codes as $code) {
+										$codeObj = null;
 										try {
 											$codeObj = $this->getCore()->retrieveCodeByCode($code);
 										} catch (Exception $e) {
 											$this->MAIN->getAdmin()->logErrorToDB($e);
+											continue;
+										}
+										if ($codeObj == null) {
 											continue;
 										}
 										$contents = $this->MAIN->getTicketHandler()->generateICSFile($product, $codeObj);
@@ -1740,11 +1743,11 @@ class sasoEventtickets_WC {
 									$quantity = $item->get_quantity();
 									for($a=0;$a<$quantity;$a++) {
 										if (isset($daychooser[$a])) {
-											$days_per_ticket = $daychooser[$a];
+											$days_per_ticket[] = $daychooser[$a];
 										}
 									}
 									wc_delete_order_item_meta( $item_id, "_saso_eventtickets_daychooser" );
-									wc_add_order_item_meta($item_id , "_saso_eventtickets_daychooser", implode(",", $days_per_ticket) ) ;
+									wc_add_order_item_meta($item_id , "_saso_eventtickets_daychooser", is_array($days_per_ticket) ? implode(",", $days_per_ticket) : $days_per_ticket ) ;
 								}
 							}
 						}
@@ -1898,7 +1901,7 @@ class sasoEventtickets_WC {
 					wc_delete_order_item_meta( $item_id, $codeListName );
 					wc_add_order_item_meta($item_id , $codeListName, $saso_eventtickets_list ) ;
 					wc_delete_order_item_meta( $item_id, "_saso_eventtickets_daychooser" );
-					wc_add_order_item_meta($item_id , "_saso_eventtickets_daychooser", implode(",", $days_per_ticket) ) ;
+					wc_add_order_item_meta($item_id , "_saso_eventtickets_daychooser", is_array($days_per_ticket) ? implode(",", $days_per_ticket) : $days_per_ticket ) ;
 				}
 				if (count($public_ticket_ids) > 0) {
 					wc_delete_order_item_meta( $item_id, "_saso_eventtickets_public_ticket_ids" );
@@ -2405,7 +2408,8 @@ class sasoEventtickets_WC {
 							'data-cart-item-id'=>$cart_item_key,
 							'data-cart-item-count'=>$a,
 							//'disabled'=>true,
-							'style'=>'width:auto;'
+							'style'=>'width:auto;',
+							'onClick'=>'window.SasoEventticketsValidator_WC_frontend._addHandlerToTheCodeFields();',
 						],
 						'id'=>'saso_eventtickets_request_daychooser['.$cart_item_key.']['.$a.']',
 						'class'=> array( 'form-row-first input-text text' ),
@@ -2415,7 +2419,7 @@ class sasoEventtickets_WC {
 					];
 					$params['custom_attributes']['data-offset-start'] = $saso_eventtickets_daychooser_offset_start;
 					$params['custom_attributes']['data-offset-end'] = $saso_eventtickets_daychooser_offset_end;
-					$params['custom_attributes']['data-exclude-wdays'] = implode(",", $saso_eventtickets_daychooser_exclude_wdays);
+					$params['custom_attributes']['data-exclude-wdays'] = is_array($saso_eventtickets_daychooser_exclude_wdays) ? implode(",", $saso_eventtickets_daychooser_exclude_wdays) : $saso_eventtickets_daychooser_exclude_wdays;
 
 					if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getDayChooserExclusionDates')) {
 						$exclusionDates = $this->MAIN->getPremiumFunctions()->getDayChooserExclusionDates($product_id);

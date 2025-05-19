@@ -145,6 +145,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			let dateFormat = elem.attr('placeholder');
 			dateFormat = dateFormat != null ? dateFormat.trim() : '';
 			dateFormat = dateFormat ? dateFormat : 'YYYY-MM-DD';
+			dateFormat = 'YYYY-MM-DD';
 			elem.attr('placeholder', __(dateFormat));
 			let data_offset_start = 0;
 			let data_offset_end = 0;
@@ -179,7 +180,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 					let v = input_elem.val().trim();
 					if (!v) {
 						console.log(input_elem.attr("id")+'set value to: '+code);
-						input_elem.val(code);
+						//input_elem.val(code); // is not working somehow, so skip this step for now. The value is shown and send to the server, but on the checkout the other fields are empty
 						to_be_changed.push(input_elem);
 					}
 				});
@@ -260,10 +261,14 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 	}
 
 	init();
+
+	return {
+		_addHandlerToTheCodeFields: _addHandlerToTheCodeFields,
+	};
 }
 
 (function($){
  	$(document).ready(function(){
- 		SasoEventticketsValidator_WC_frontend($, SasoEventticketsValidator_phpObject);
+ 		window.SasoEventticketsValidator_WC_frontend = SasoEventticketsValidator_WC_frontend($, SasoEventticketsValidator_phpObject);
  	});
 })(jQuery);
