@@ -302,6 +302,9 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			}
 		}
 		public static function isOrderPaid($order) {
+			if ($order === null || !is_object($order) || !is_a($order, 'WC_Order')) {
+				return false;
+			}
 			$order_status = $order->get_status();
 			$ok_order_statuses = wc_get_is_paid_statuses(); // array( 'processing', 'completed' )
 			return in_array($order_status, $ok_order_statuses);

@@ -1,6 +1,12 @@
 jQuery(document).ready(()=>{
     const { __, _x, _n, sprintf } = wp.i18n;
-    let system = {code:0, nonce:'', data:null, redeemed_successfully:false, img_pfad:'', last_scanned_ticket:{code:'', timestamp:0, auto_redeem:false}, last_nonce_check:0};
+    let system = {code:0 /* public ticket number */,
+                nonce:'', data:null /* retrieved data */, redeemed_successfully:false,
+                img_pfad:'',
+                last_scanned_ticket:{code:'', timestamp:0, auto_redeem:false, data:null},
+                last_nonce_check:0,
+                status:'ready' /* ready, retrieved, redeemed */
+            };
 	let myAjax;
     if (typeof IS_PRETTY_PERMALINK_ACTIVATED === "undefined") {
         IS_PRETTY_PERMALINK_ACTIVATED = false;
@@ -36,6 +42,7 @@ jQuery(document).ready(()=>{
     system.TIMEAREA;
 
     function toBool(v) {
+        if (!v) return false;
         if (v == "1") return true;
         if (v == 1) return true;
         if (v.toLowerCase() == "yes") return true;
@@ -45,6 +52,7 @@ jQuery(document).ready(()=>{
     var ticket_scanner_operating_option = {
         redeem_auto: false,
         distract_free: false,
+        distract_free_show_short_desc: false,
         auth:"",
         ticketScannerDontRememberCamChoice:toBool(myAjax.ticketScannerDontRememberCamChoice),
         ticketScannerStartCamWithoutButtonClicked:false,
@@ -95,6 +103,14 @@ jQuery(document).ready(()=>{
             ticket_scanner_operating_option.distract_free = !ticket_scanner_operating_option.distract_free;
         }
         _storeValue("ticket_scanner_operating_option.distract_free", ticket_scanner_operating_option.distract_free ? 1 : 0);
+    }
+    function setDistractFreeShowShortDesc(value) {
+        if (typeof value != "undefined") {
+            ticket_scanner_operating_option.distract_free_show_short_desc = value;
+        } else {
+            ticket_scanner_operating_option.distract_free_show_short_desc = !ticket_scanner_operating_option.distract_free_show_short_desc;
+        }
+        _storeValue("ticket_scanner_operating_option.distract_free_show_short_desc", ticket_scanner_operating_option.distract_free_show_short_desc ? 1 : 0);
     }
     function initAuthToken() {
         let text = _loadValue("ticket_scanner_operating_option.auth");
@@ -299,6 +315,14 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 clearOrderInfos();
                 startScanner();
             }).appendTo(btngrp);
+            if (system.status == "retrieved") {
+                let btn_redeem = $('<button class="button-ticket-options">').html(_x('Redeem Ticket', 'label', 'event-tickets-with-ticket-scanner')).css("background-color", 'gray').css('color', 'white').prop("disabled", true).on('click', e=>{
+                    redeemTicket(system.code);
+                }).appendTo(btngrp);
+                if (canTicketBeRedeemed(system.last_scanned_ticket.data)) {
+                    btn_redeem.prop("disabled", false).css('background-color','green');
+                }
+            }
             if (qrScanner != null) {
                 $('<button class="button-ticket-options">').html(__("Stop camera", 'event-tickets-with-ticket-scanner')).on("click", e=>{
                     qrScanner.stop();
@@ -330,6 +354,19 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             if (ticket_scanner_operating_option.distract_free) chkbox_distractfree.prop("checked", true);
             div.append(' Hide ticket information');
             div.append("<br>");
+
+            let chkbox_distractfree_showshortdesc = $('<input type="checkbox">').on("click", e=>{
+                setDistractFreeShowShortDesc();
+                if (system.status == "retrieved") {
+                    displayTicketRetrievedInfo(system.last_scanned_ticket.data);
+                } else if (system.status == "redeemed") {
+                    displayTicketRedeemedInfo(system.data);
+                }
+            }).appendTo(div);
+            if (ticket_scanner_operating_option.distract_free_show_short_desc) chkbox_distractfree_showshortdesc.prop("checked", true);
+            div.append(' Display short description if ticket information is hidden');
+            div.append("<br>");
+
 
             let chkbox_ticketScannerStartCamWithoutButtonClicked = $('<input type="checkbox">').on("click", e=>{
                 setStartCamWithoutButtonClicked(!ticket_scanner_operating_option.ticketScannerStartCamWithoutButtonClicked);
@@ -681,7 +718,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             if (ticket_scanner_operating_option.distract_free) {
                 div.css("display", "none");
             }
+            system.status = "retrieved";
             system.data = data;
+            system.last_scanned_ticket.data = data;
             system.code = code; // falls per code überschrieben wurde
 
             if (typeof data.order_infos !== "undefined" && data.order_infos.is_order_ticket) {
@@ -777,6 +816,24 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 }
             }
 
+            if (ticket_scanner_operating_option.distract_free) {
+                // display ticket title and subtitle
+                if (typeof data._ret.ticket_title != "undefined" && data._ret.ticket_title != "") {
+                    div.append('<h4>'+data._ret.ticket_title+'</h4>');
+                }
+                if (typeof data._ret.ticket_subtitle != "undefined" && data._ret.ticket_subtitle != "") {
+                    div.append('<h5>'+data._ret.ticket_subtitle+'</h5>');
+                }
+
+                // display short description and ticket_info
+                if (ticket_scanner_operating_option.distract_free_show_short_desc && typeof data._ret.short_desc != "undefined" && data._ret.short_desc != "") {
+                    div.append('<div>'+data._ret.short_desc+'</div>');
+                }
+                if (typeof data._ret.ticket_info != "undefined" && data._ret.ticket_info != "") {
+                    //div.append('<div>'+data._ret.ticket_info+'</div>');
+                }
+                console.log(data._ret);
+            }
             if (is_expired == false) {
                 let _isRedeemTooLate = isRedeemTooLate(data);
                 let _isRedeemTooLateEndEvent = isRedeemTooLateEndEvent(data);
@@ -791,7 +848,8 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 }
                 if (_isRedeemTooLate == false && _isRedeemTooLateEndEvent == false && data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart) {
                     if (typeof data._ret.redeem_allowed_from != "undefined" && typeof data._ret.is_date_set != "undefined" && data._ret.is_date_set) {
-                        div.append("<div>Redeem allowed from: <b>"+data._ret.redeem_allowed_from+"</b></div>");
+                        //div.append("<div>Redeem allowed from: <b>"+data._ret.redeem_allowed_from+"</b></div>");
+                        div.append('<div style="display: flex;flex-wrap: wrap;flex-direction: column;"><div>Redeem allowed from: </div><div style="font-weight:bold;">'+data._ret.redeem_allowed_from+'</div></div>');
                     }
                 }
             }
@@ -857,13 +915,14 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         }
         let content = "";
         if (ticket_scanner_operating_option.distract_free) {
-            content = '<center>'+system.code+'</center>';
+            content = '<div style="display:flex;text-align:center;flex-wrap: nowrap;flex-direction: row;justify-content: center;flex-basis: auto;">'+system.code+'</div>';
         }
         $('#ticket_add_info').html(content)
             .append( $('<div style="padding-top:10px;width:100%;">').append(div).append(div2) )
             .append(div3);
     }
     function displayRedeemedInfo(code, data) {
+        system.status = "redeemed";
         system.redeemed_successfully = data.redeem_successfully;
         displayTicketRedeemedInfo(data);
         if(ticket_scanner_operating_option.redeem_auto) {
@@ -877,13 +936,28 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function displayTicketRedeemedInfo(data) {
         showScanNextTicketButton();
         // zeige retrieved info an
-        let content = $('<div>').html('<center>'+system.code+'</center>');
+        let content = $('<div>').html('<div style="display:flex;text-align:center;flex-wrap: nowrap;flex-direction: row;justify-content: center;flex-basis: auto;">'+system.code+'</div>');
         if (system.redeemed_successfully) {
             content.append('<h3 style="color:green !important;text-align:center;">'+__('Redeemed', 'event-tickets-with-ticket-scanner')+'</h3>');
-            content.append('<p style="text-align:center;color:green"><img src="'+system.img_pfad+'button_ok.png"><br><b>'+__('Successfully redeemed', 'event-tickets-with-ticket-scanner')+'</b></p>');
+            //content.append('<p style="text-align:center;color:green"><img src="'+system.img_pfad+'button_ok.png"><br><b>'+__('Successfully redeemed', 'event-tickets-with-ticket-scanner')+'</b></p>');
+            content.append('<p style="text-align:center;color:green"><img src="'+system.img_pfad+'button_ok.png"></p>');
         } else {
             content.append('<h3 style="color:red !important;text-align:center;">'+__('NOT REDEEMED - see reason below', 'event-tickets-with-ticket-scanner')+'</h3>');
-            content.append('<p style="text-align:center;color:red;"><img src="'+system.img_pfad+'button_cancel.png"><br><b>'+__('Failed to redeem', 'event-tickets-with-ticket-scanner')+'</b></p>');
+            //content.append('<p style="text-align:center;color:red;"><img src="'+system.img_pfad+'button_cancel.png"><br><b>'+__('Failed to redeem', 'event-tickets-with-ticket-scanner')+'</b></p>');
+            content.append('<p style="text-align:center;color:red;"><img src="'+system.img_pfad+'button_cancel.png"></p>');
+        }
+        if (typeof system.last_scanned_ticket.data != null && system.last_scanned_ticket.data._ret && system.last_scanned_ticket.data._ret.ticket_title && system.last_scanned_ticket.data._ret.ticket_title != "") {
+            content.append('<h4 style="text-align:center;">'+system.last_scanned_ticket.data._ret.ticket_title+'</h4>');
+        }
+        if (typeof system.last_scanned_ticket.data._ret.ticket_subtitle != "undefined" && system.last_scanned_ticket.data._ret && system.last_scanned_ticket.data._ret.ticket_subtitle && system.last_scanned_ticket.data._ret.ticket_subtitle != "") {
+            content.append('<h5 style="text-align:center;">'+system.last_scanned_ticket.data._ret.ticket_subtitle+'</h5>');
+        }
+        if (ticket_scanner_operating_option.distract_free_show_short_desc && typeof system.last_scanned_ticket.data._ret.short_desc != "undefined" && system.last_scanned_ticket.data._ret.short_desc != "") {
+            content.append('<div>'+system.last_scanned_ticket.data._ret.short_desc+'</div>');
+        }
+
+        if (typeof system.last_scanned_ticket.data != null && system.last_scanned_ticket.data.metaObj && system.last_scanned_ticket.data.metaObj.wc_ticket && system.last_scanned_ticket.data.metaObj.wc_ticket.redeemed_date && system.last_scanned_ticket.data.metaObj.wc_ticket.redeemed_date != "") {
+            content.append('<div style="text-align:center;">'+system.last_scanned_ticket.data._ret.redeemed_date_label+' '+system.last_scanned_ticket.data.metaObj.wc_ticket.redeemed_date+'</div>');
         }
         updateTicketScannerInfoArea(content);
     }
@@ -1089,6 +1163,28 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         div_ticket_info_area = $('#ticket_info').html(div);
         displayTicketInfoButtons(data);
     }
+    function canTicketBeRedeemed(data) {
+        let allow_redeem = false;
+        if (data._ret.allow_redeem_only_paid) {
+            if (data._ret.is_paid) {
+                allow_redeem = true;
+            }
+        } else {
+            allow_redeem = true;
+        }
+        if (allow_redeem) {
+            if (data.metaObj['wc_ticket']['redeemed_date'] != "") {
+                allow_redeem = false;
+            }
+            if (data._ret.max_redeem_amount > 1 && data.metaObj.wc_ticket.stats_redeemed.length < data._ret.max_redeem_amount) {
+                allow_redeem = true;
+            }
+            if (allow_redeem) {
+                allow_redeem = canTicketBeRedeemedNow(data);
+            }
+        }
+        return allow_redeem;
+    }
     function displayTicketInfoButtons(data) {
         let div = $('<div>').css('text-align', 'center');
         if (!data._ret.is_paid) {
@@ -1111,26 +1207,8 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 return false;
             });
         }
-        let allow_redeem = false;
-        if (data._ret.allow_redeem_only_paid) {
-            if (data._ret.is_paid) {
-                allow_redeem = true;
-            }
-        } else {
-            allow_redeem = true;
-        }
-        if (allow_redeem) {
-            if (data.metaObj['wc_ticket']['redeemed_date'] != "") {
-                allow_redeem = false;
-            }
-            if (data._ret.max_redeem_amount > 1 && data.metaObj.wc_ticket.stats_redeemed.length < data._ret.max_redeem_amount) {
-                allow_redeem = true;
-            }
-            if (allow_redeem) {
-                allow_redeem = canTicketBeRedeemedNow(data);
-            }
-        }
-        if (allow_redeem) {
+
+        if (canTicketBeRedeemed(data)) {
             btn_redeem.prop("disabled", false).css('background-color','green');
         }
 
@@ -1193,7 +1271,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                     div.append("UTC time: "+data._ret._server.UTC_time+"<br>");
                     if (typeof data._ret.is_date_set != "undefined" && data._ret.is_date_set) {
                         let date = new Date(data._ret.redeem_allowed_from);
-                        div.append("Redeem allowed from: "+date+"<br>");
+                        div.append('Redeem allowed from: '+date+'<br>');
                         date = new Date(data._ret.redeem_allowed_until);
                         div.append("Redeem allowed until: "+date+"<br>");
                     }
@@ -1309,6 +1387,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 if (system.PARA.distractfree || _loadValue("ticket_scanner_operating_option.distract_free") == "1" || toBool(myAjax.ticketScannerHideTicketInformation)) {
                     setDistractFree(true);
                 }
+                if (system.PARA.distractfreeshowshortdesc || _loadValue("ticket_scanner_operating_option.distract_free_show_short_desc") == "1" || toBool(myAjax.ticketScannerHideTicketInformationShowShortDesc)) {
+                    setDistractFreeShowShortDesc(true);
+                }
                 if (system.PARA.startcam || _loadValue("ticket_scanner_operating_option.ticketScannerStartCamWithoutButtonClicked") == "1" || toBool(myAjax.ticketScannerStartCamWithoutButtonClicked)) {
                     setStartCamWithoutButtonClicked(true);
                 }
@@ -1322,7 +1403,11 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             refreshNoncePeriodically();
             if (system.PARA.code) {
                 system.code = system.PARA.code;
-                retrieveTicket(system.code);
+                if (system.code != "") {
+                    system.code = cleanPublicTicketNumber(system.code);
+                    system.INPUTFIELD.val(system.code);
+                    retrieveTicket(system.code);
+                }
             } else {
                 startScanner();
                 //showScanNextTicketButton();

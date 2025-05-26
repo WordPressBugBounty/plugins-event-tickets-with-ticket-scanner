@@ -1704,6 +1704,7 @@ class sasoEventtickets_WC {
 
 		// Getting an instance of the order object
 		$order = wc_get_order( $order_id );
+		if ( ! $order ) return;
 
 		$create_tickets = SASO_EVENTTICKETS::isOrderPaid($order);
 		$ok_order_statuses = $this->getOptions()->getOptionValue('wcTicketAddToOrderOnlyWithOrderStatus');

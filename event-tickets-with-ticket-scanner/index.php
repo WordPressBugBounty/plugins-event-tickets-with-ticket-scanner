@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.6.9
+ * Version: 2.6.10
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -38,6 +38,7 @@ class sasoEventtickets {
 	protected $_shortcode_mycode = 'sasoEventTicketsValidator_code';
 	protected $_shortcode_eventviews = 'sasoEventTicketsValidator_eventsview';
 	protected $_shortcode_ticket_scanner = 'sasoEventTicketsValidator_ticket_scanner';
+	protected $_shortcode_feature_list = 'sasoEventTicketsValidator_feature_list';
 	protected $_divId = 'sasoEventtickets';
 
 	private $_isPrem = null;
@@ -323,6 +324,7 @@ class sasoEventtickets {
 		add_shortcode($this->_shortcode_mycode, [$this, 'replacingShortcodeMyCode']);
 		add_shortcode($this->_shortcode_ticket_scanner, [$this, 'replacingShortcodeTicketScanner']);
 		add_shortcode($this->_shortcode_eventviews, [$this, 'replacingShortcodeEventViews']);
+		add_shortcode($this->_shortcode_feature_list, [$this, 'replacingShortcodeFeatureList']);
 		do_action( $this->_do_action_prefix.'main_init_frontend' );
 	}
 	private function init_backend() {
@@ -828,6 +830,7 @@ class sasoEventtickets {
 			'ticketScannerDontShowOptionControls' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDontShowOptionControls'),
 			'ticketScannerScanAndRedeemImmediately' => $this->getOptions()->isOptionCheckboxActive('ticketScannerScanAndRedeemImmediately'),
 			'ticketScannerHideTicketInformation' => $this->getOptions()->isOptionCheckboxActive('ticketScannerHideTicketInformation'),
+			'ticketScannerHideTicketInformationShowShortDesc' => $this->getOptions()->isOptionCheckboxActive('ticketScannerHideTicketInformationShowShortDesc'),
 			'ticketScannerDontShowBtnPDF' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDontShowBtnPDF'),
 			'ticketScannerDontShowBtnBadge' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDontShowBtnBadge'),
 			'ticketScannerDisplayTimes' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDisplayTimes')
@@ -998,6 +1001,53 @@ class sasoEventtickets {
 		} else {
 			return $this->getMyCodeText($user_id, $attr, $content, $tag);
 		}
+	}
+
+	public function replacingShortcodeFeatureList($attr=[], $content = null, $tag = '') {
+		//$features = $this->getAdmin()->getOptions();
+		//$options = $features["options"];
+ 		$options = $this->getOptions()->getOptions();
+		$features = [];
+		$act_heading = "";
+		foreach ($options as $option) {
+			if ($option["key"] == "serial") continue;
+			if ($option["type"] == "heading") {
+				$act_heading = $option["key"];
+				$features[$act_heading] = ["heading"=>$option, "options"=>[]];
+			} else {
+				if ($act_heading != "") {
+					$features[$act_heading]["options"][] = $option;
+				}
+			}
+		}
+
+		$ret = "";
+		uasort($features, function($a, $b) {
+			return strnatcasecmp($a["heading"]["label"], $b["heading"]["label"]);
+		});
+		foreach ($features as $key => $feature) {
+			$ret .= '<h3>'.$feature["heading"]["label"].'</h3>';
+			$video = $feature["heading"]["_doc_video"] != "" ? ' <a href="'.$feature["heading"]["_doc_video"].'" target="_blank"><span class="dashicons dashicons-video-alt3"></span> Introduction video</a>' : "";
+			$ret .= '<p>'.trim($feature["heading"]["desc"].$video).'</p>';
+			if (count($feature["options"]) > 0) {
+				$ret .= '<ul>';
+				foreach ($feature["options"] as $option) {
+					$label = $option["label"];
+					$desc = $option["desc"];
+					$desc .= $option["_doc_video"] != "" ? ' <a href="'.$option["_doc_video"].'" target="_blank"><span class="dashicons dashicons-video-alt3"></span> Introduction video</a>' : "";
+					$desc = trim($desc);
+					if ($desc != "") {
+						$desc = '<p>'.$desc.'</p>';
+					}
+					$label = '<span class="dashicons dashicons-yes"></span> '.$label;
+					$ret .= '<li>'.$label.$desc.'</li>';
+				}
+				$ret .= '</ul>';
+			}
+			$ret .= '<hr>';
+		}
+
+		return $ret;
 	}
 
 	public function replacingShortcodeEventViews($attr=[], $content = null, $tag = '') {
