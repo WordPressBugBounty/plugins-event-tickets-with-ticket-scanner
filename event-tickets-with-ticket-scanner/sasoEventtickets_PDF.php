@@ -207,7 +207,7 @@ class sasoEventtickets_PDF {
 	}
 
 	private function prepareOutputBuffer() {
-		if ($this->filemode != "F") ob_clean();
+		if ($this->filemode != "F" && ob_get_length() !== false) ob_clean();
 		if ($this->filemode != "F") ob_start();
 	}
 	private function cleanOutputBuffer() {

@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
 Requires PHP: 7.0
-Stable tag: 2.6.10
+Stable tag: 2.6.11
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -336,6 +336,12 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.6.11 - 2025-05-28 =
+* Fix PDF ob_clean notice.
+* Fix wrong version number.
+* Fix cart (datepicker, text-value, option-value) value saving within the cart view and checkout.
+* Fix update all dates on the cart view and checkout.
+
 = 2.6.10 - 2025-05-26 =
 * Add shortcode to display all options/features.
 * Added ticket title and sub title (variation name) above the buttons for the distract free view of the scanned ticket.
