@@ -204,7 +204,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					let today = new Date();
 					if (expirationDate <= today || toCheck >= expirationDate) {
 						let msg = typeof expiration.message !== "undefined" && expiration.message != "" ? '<br>'+expiration.message : '';
-						let info_box = $('<div style="background-color:red;color:white;padding:10px;">').html("Your premium serial expires soon, at the "+expiration.expiration_date+ ' '+expiration.timezone+'<br>It will work, but no updates are possible for the premium plugin after the expiration date.<br>'+msg+'You can <a target="_blank" style="color:white;font-weight:bold;" href="https://vollstart.com/shop/support-update-plugin-event-tickets-with-ticket-scanner-1-year/">renew your license here</a>.');
+						let info_box = $('<div style="background-color:red;color:white;padding:10px;">').html("Your premium license expires soon, at the "+expiration.expiration_date+ ' '+expiration.timezone+'<br>It will work, but no updates are possible for the premium plugin after the expiration date.<br>'+msg+'You can <a target="_blank" style="color:white;font-weight:bold;" href="https://vollstart.com/event-tickets-with-ticket-scanner/">renew your premium license here</a>.');
 						$('body').find('div[data-id="plugin_info_area"').html(info_box);
 					}
 				}

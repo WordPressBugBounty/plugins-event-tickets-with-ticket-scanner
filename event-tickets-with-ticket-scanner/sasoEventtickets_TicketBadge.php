@@ -167,6 +167,7 @@ class sasoEventtickets_TicketBadge {
     private function renderPDF($filemode="I") {
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($this->codeObj['meta'], $this->codeObj);
 		$ticket_id = $this->MAIN->getCore()->getTicketId($this->codeObj, $metaObj);
+        $qr_content = $this->MAIN->getCore()->getTicketQRContent($this->codeObj, $metaObj);
 
         $width = $this->size_width > 0 ? $this->size_width : 80;
         $height = $this->size_height > 0 ? $this->size_height : 120;
@@ -219,7 +220,7 @@ class sasoEventtickets_TicketBadge {
 
         $pdf->addPart($html);
         $qrTicketPDFPadding = intval($this->MAIN->getOptions()->getOptionValue('qrTicketPDFPadding'));
-		$pdf->setQRCodeContent(["text"=>$ticket_id, "style"=>["vpadding"=>$qrTicketPDFPadding, "hpadding"=>$qrTicketPDFPadding]]);
+		$pdf->setQRCodeContent(["text"=>$qr_content, "style"=>["vpadding"=>$qrTicketPDFPadding, "hpadding"=>$qrTicketPDFPadding]]);
 		$pdf->setSize($width, $height);
 		$pdf->render();
         if ($pdf->getFilemode() == "F") {

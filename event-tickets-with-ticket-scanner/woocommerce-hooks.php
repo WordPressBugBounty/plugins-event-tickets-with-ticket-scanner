@@ -896,13 +896,13 @@ class sasoEventtickets_WC {
 										continue;
 									}
 									$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
-									$ticket_id = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
+									$qr_content = $this->MAIN->getCore()->getQRCodeContent($codeObj, $metaObj);
 									try {
 										if($qrAttachQRImageToEmail){
-											$attachments_qrcodes_images[] = $qrHandler->renderPNG($ticket_id, "F");
+											$attachments_qrcodes_images[] = $qrHandler->renderPNG($qr_content, "F");
 										}
 										if($qrAttachQRPdfToEmail){
-											$attachments_qrcodes_pdf[] = $qrHandler->renderPDF($ticket_id, "F");
+											$attachments_qrcodes_pdf[] = $qrHandler->renderPDF($qr_content, "F");
 										}
 									} catch (Exception $e) {
 										$this->MAIN->getAdmin()->logErrorToDB($e);
@@ -2164,7 +2164,7 @@ class sasoEventtickets_WC {
 					$this->woocommerce_after_cart_item_name( $cart_item, $cart_item_key );
 				}
 			}
-			echo '<p class="sasoEventtickets_cart_spacer_bottom">&nbsp;</p>';
+			//echo '<p class="sasoEventtickets_cart_spacer_bottom">&nbsp;</p>';
 		}
 	}
 	// add all filter and actions, if we are displaying the cart, checkout and have products with restrictions
@@ -2813,11 +2813,16 @@ class sasoEventtickets_WC {
 		if (!empty($code)) {
 			$data = ['code'=>$code];
 			// remove used info
-			$this->getAdmin()->removeUsedInformationFromCode($data);
-			$this->getAdmin()->removeWoocommerceOrderInfoFromCode($data);
-			$this->getAdmin()->removeWoocommerceRstrPurchaseInfoFromCode($data);
-			// nur zur sicherheit
-			$this->deleteRestrictionEntryOnOrderItem($item_get_id);
+			try {
+				$this->getAdmin()->removeUsedInformationFromCode($data);
+				$this->getAdmin()->removeWoocommerceOrderInfoFromCode($data);
+				$this->getAdmin()->removeWoocommerceRstrPurchaseInfoFromCode($data);
+				// nur zur sicherheit
+				$this->deleteRestrictionEntryOnOrderItem($item_get_id);
+			} catch (Exception $e) {
+				$this->MAIN->getAdmin()->logErrorToDB($e);
+				throw new Exception(esc_html__('Error while deleting restriction code from order item. '.$e->getMessage(), 'event-tickets-with-ticket-scanner'));
+			}
 			// add note to order
 			$order_id = wc_get_order_id_by_order_item_id($item_get_id);
 			$order = wc_get_order( $order_id );
@@ -2857,7 +2862,13 @@ class sasoEventtickets_WC {
 		if ($order) {
 			$items = $order->get_items();
 			foreach ( $items as $item_id => $item ) {
-				$this->woocommerce_delete_order_item($item_id);
+				try {
+					$this->woocommerce_delete_order_item($item_id);
+				} catch (Exception $e) {
+					// remove the meta data, even if this was maybe already done - fix issues with missing tickets.
+					//$this->deleteCodesEntryOnOrderItem($item_id);
+				}
+				$this->deleteCodesEntryOnOrderItem($item_id);
 			}
 		}
 	}
@@ -2881,6 +2892,7 @@ class sasoEventtickets_WC {
 	}
 
 	function deleteCodesEntryOnOrderItem($item_id) {
+		wc_delete_order_item_meta( $item_id, '_saso_eventtickets_is_ticket' );
 		wc_delete_order_item_meta( $item_id, '_saso_eventtickets_product_code' );
 		wc_delete_order_item_meta( $item_id, '_saso_eventticket_code_list' );
 		wc_delete_order_item_meta( $item_id, '_saso_eventtickets_public_ticket_ids' );

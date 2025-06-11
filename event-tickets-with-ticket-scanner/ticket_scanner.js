@@ -138,6 +138,7 @@ jQuery(document).ready(()=>{
         if (!doNotUpdateScanOption) showScanOptions();
     }
     function onScanSuccess(decodedText, decodedResult) {
+        //if (decodedText) decodedText = decodedText.trim();
         if (system.last_scanned_ticket.code == decodedText && system.last_scanned_ticket.timestamp + 10 > time()) {
             return;
         }
@@ -174,24 +175,49 @@ jQuery(document).ready(()=>{
                     showScanNextTicketButton();
                 }, 350);
             } else {
-                renderInfoBox("QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.");
+                renderInfoBox("Scan error", "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.", showScanNextTicketButton);
             }
         } else {
-            retrieveTicket(decodedText);
+            /* not working with html5-qrcode? or the other scanner
+            // extract the public ticket number from the token. format is CRC32(TIMESTAMP)-ORDERID-TICKETNUMBER.
+            // the public ticket number can be part of text in the qr code, so we need to extract it.
+            if (decodedText.length > 12) {
+                debugger;
+                // format: NUMBER-NUMBER-TICKETNUMBER , TICKETNUMBER can be text and numbers
+                // example: 2523448324-671-ticket_2025052808_dc_XYJBSSAZGZBHENY
+                reg = /(\d{10,})-(\d+)-([a-zA-Z0-9_]+)/;
+                console.log("decodedText: "+decodedText);
+                let matches = decodedText.match(reg);
+                if (matches && matches.length > 3) {
+                    decodedText = matches[0]; // the ticket number is the third match
+                }
+                console.log("extracted ticket number from QR code: "+decodedText);
+                retrieveTicket(decodedText);
+            } else {
+                if (decodedText != "") {
+                    renderInfoBox("Scan error", "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.", showScanNextTicketButton);
+                }
+            }
+            */
+            if (decodedText != "") {
+                renderInfoBox("Scan error", "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.", showScanNextTicketButton);
+            } else {
+                retrieveTicket(decodedText);
+            }
         }
 
-        window.setTimeout(()=>{
-            if (html5QrcodeScanner != null) {
-                html5QrcodeScanner.clear().then((ignore) => {
-                    // QR Code scanning is stopped.
-                    // reload the page with the ticket info and redeem button
-                    //console.log("stop success");
-                }).catch((err) => {
-                    // Stop failed, handle it.
-                    //console.log("stop failed");
-                });
-            }
-        }, 250);
+        if (html5QrcodeScanner != null) {
+            window.setTimeout(()=>{
+                    html5QrcodeScanner.clear().then((ignore) => {
+                        // QR Code scanning is stopped.
+                        // reload the page with the ticket info and redeem button
+                        //console.log("stop success");
+                    }).catch((err) => {
+                        // Stop failed, handle it.
+                        //console.log("stop failed");
+                    });
+            }, 250);
+        }
       }
 
     function startScanner() {
@@ -629,7 +655,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         }
 		return format;
 	}
-    function renderInfoBox(title, content) {
+    function renderInfoBox(title, content, cbf) {
         let _options = {
             title: title,
             modal: true,
@@ -641,6 +667,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 clearAreas();
                 $('#ticket_info').html(content);
                 $('#reader').html("");
+                if (cbf) cbf();
             }}]
         };
         if (typeof content !== "string") content = JSON.stringify(content);
@@ -648,8 +675,8 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         dlg.dialog(_options);
         return dlg;
     }
-    function renderFatalError(content) {
-        return renderInfoBox('Error', content);
+    function renderFatalError(content, cbf) {
+        return renderInfoBox('Error', content, cbf);
     }
     function basics_ermittelURLParameter() {
         var parawerte = {};

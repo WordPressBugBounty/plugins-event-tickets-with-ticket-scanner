@@ -1,8 +1,8 @@
 === Event Tickets with Ticket Scanner ===
 Contributors: sasonikolov
-Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce, venue tickets
+Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce
 Requires PHP: 7.0
-Stable tag: 2.6.11
+Stable tag: 2.7.0
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -12,74 +12,65 @@ Sell tickets for your event or party with WooCommerce. Scan the tickets at the e
 You can scan the tickets of your customer from the QR code on their mobile devices or the printed PDF ticket.
 
 == Description ==
-Selling event or party tickets, member entrance with any expiration date, multipass tickets, family tickets and more. Selling different kind of tickets and redeeming them was never so easy.
-Optional create your own ticket look and feel with the ticket designer. The built-in anti-double-redeem-protection protects you for fake tickets beeing used.
-Use the built-in browser-based ticket scanner or your own ticket scanner. Hand out badges as PDF to your customers and much more.
+**Sell, Scan, Succeed – Event Ticketing Made Easy**
 
+Easily sell digital tickets for events, clubs, or memberships with the **Event Tickets with Ticket Scanner** plugin for WooCommerce. Turn any product into a scannable ticket with a unique QR code and downloadable PDF – ready to redeem at the entrance.
 
 https://youtu.be/uWSdKdOyn70
 
 [Whats in for you](https://youtu.be/KKLp1Lwqj_U)
 
-Sell tickets for your event or party and redeem the ticket at the entrance with the free Tickets with WooCommerce plugin, from the team behind the Serial Code Validator in WordPress.
+**Perfect for:**
+* Concerts, parties, and festivals
+* Spas, clubs, gyms, theme parks
+* Community events and memberships
 
-You can make your tickets look unique by adding a banner, logo and background image. The same applies also for the event or party flyer.
-You can offer event badges for your event. So your customer can wear them during the event. With the badge editor you can controll the look and fell.
-
-The QR code on the ticket can be customized, so that you can use your own ticket scanner and software if needed.
-Your third party solution can be informed once a ticket is redeemed by a webhook.
-You can give other person access to your ticket scanner with Auth Token System.
+**Key Benefits:**
+* Built-in **browser-based ticket scanner** (mobile ready)
+* Design your own ticket & badge with logo, banner & background
+* Sell multi-entry, family, and time-limited tickets
+* Supports WooCommerce variants and product bundles
+* Offline fallback options available for big events
 
 https://youtu.be/KKLp1Lwqj_U
 
-[Quick start video](https://youtu.be/KKLp1Lwqj_U)
-
-This plugin makes it easy to sell tickets and redeem them at the event location entrance for you in-person or virtual events. It integrates easely with your WooCommerce products.
-
-Install the plugin and set your products to be a event ticket product. That's it.
-
-The plugin will generate a secure ticket number and add them to the mail to your clients. It will also generate a PDF with the ticket information and QR code. The built-in ticket scanner allows you and your team to redeem the tickets by scanning the QR-code. You can also use an external keyboard scanner by using the text input field on the ticket scanner page.
-
-You can even import your own ticket numbers, but it will generate them also on the fly. The freedom is in your hands.
-
-The best is to try it out. So many options. Don't be shy, give it a try - you have nothing to loose :D
+A Quick start is shown in this [Quick start video](https://vollstart.com/event-tickets-with-ticket-scanner/docs/#quickstart).
 
 
-**Shop:** Sell event and party tickets with your normal products. The plugin will create the ticket number on the fly or use unused ticket numbers from your ticket number list for each sold item. You can also sell membership tickets and other kind of tickets by adjusting the options (over 200 options available to customize it to your needs).
+**Flexible Setup:**
+* Automatically generate secure ticket numbers or import your own
+* **Free version:** Email includes download link to ticket PDF and (optional) QR code with ticket number
+* **Premium only:** Attach ticket as PDF file directly to email
+* Show ticket detail page with QR code and PDF download
+* Use webhooks to notify third-party systems on redeem
+* Built-in protection against fake tickets or double redemption
 
-**Validation of ticket numbers:** You customer can validate a ticket number on your page. The ticket number generator gives you a flexible pattern to generate ticket numbers upfront. You can also **import your existing codes**.
+**Advanced Features (Premium):**
+* PDF ticket file as attachment in order email
+* Team scanner access via Auth Tokens
+* Calendar invites (ICS files)
+* Custom flyers and multipage PDF options
+* CVV check and brute-force IP block
+* Shortcodes for displaying and validating ticket numbers
 
-**Validation of tickets:** You customer will get a link to a detail page and a PDF for each sold ticket.
+**Get Started in 3 Steps:**
+1. Install the plugin
+2. Create a ticket list under “Event Tickets”
+3. Enable “Ticket Sales” in your WooCommerce product
 
-**Build your own stolen ticket number database:** Support your customer and yourself to protect stolen ticket numbers to be sold or used to others. Mark reported ticket numbers as stolen and let others check the ticket numbers with the ticket number validator.
+Customers get a unique ticket number, QR code, and download link. Redeem tickets via QR scanner or input field.
 
-**How can you setup the ticket numbers?**
-The ticket numbers will be generated by the plugin automatically, if you do not set up ticket numbers upfront.
-You can enter your ticket numbers within the WP admin area in the ticket number section (a new menu point in the wordpress amdin area).
-You can generate your own ticket numbers manually using the ticket number generator or import existing ticket numbers.
-And you are also able to add your own ticket numbers by just entering them to the generated ticket numbers below the ticket number generator.
-If needed you can assign the ticket (numbers) to a list which helps you to organize the tickets. The ticket list need to be assigned to a WooCommerce product.
-Create one or more ticket lists to use the WooCommerce functionality.
-Create bundle products - determine how many ticket numbers should be created with the sale of one product.
+**Try it now for free.** Upgrade to Premium for high-volume event features and PDF delivery control.
 
-**How the ticket number works**
-You define your look and feel for your ticket numbers. The generated ticket numbers will be unique. After you are satisfied with the generated ticket numbers, you can start the adding step.
-The ticket adding step will check if the ticket number is unique on the server before adding it.
-If the ticket number exists already on the server, it will not be added.
+== Links ==
 
-= The ticket number generator provides a lot of features: =
-- Ticket number prefix - you can enter a fixed prefix to each ticket number
-- Length of ticket number
-- Only letters
-- Uppercase, Lowercase or both
-- Exclusion of letters that are easy to missread (i,l,o,q,p)
-- Delimiter possible: [None, -, :, SPACE] - you decide after how many letters within the ticket number
-- CVV code generation (only numbers)
-
-Yes, this is a fork of the serial code validator plugin. We decided to make it an own plugin out of it. So to add more and more features that are not related to serial codes but to event tickets.
+* [Quickstart video](https://youtu.be/KKLp1Lwqj_U)
+* [Documentation & Premium](https://vollstart.com/event-tickets-with-ticket-scanner)
+* [Support](mailto:support@vollstart.com)
+* [Event Tickets with WooCommerce Premium](https://vollstart.com/event-tickets-with-ticket-scanner/)
 
 == Features ==
-At the bottom of this page you will find a complete list of all features.
+Here you can find all available options listed: [Display all options]](https://vollstart.com/event-tickets-with-ticket-scanner/docs/event-tickets-with-ticket-scanner-feature-list/)
 
 https://youtu.be/ls_Lkf08n9I
 
@@ -135,16 +126,6 @@ Optional: If you need a validation form for your users, to check the ticket numb
 
 Try it out first, before you go Premium! ["Here you can find the premium plugin"](https://vollstart.com/event-tickets-with-ticket-scanner).
 
-== Build your own Stolen products database ==
-You can set the status of a ticket number to be marked as stolen. This way you can offer your customers a way to report a stolen product. Other buyers of used products can validate the ticket number on your website and will be notified with a "Product is stolen" warning.
-This could increase sales and help reducing theft of your products.
-The check behaviour will be like "inactive codes" but with the stolen message. You can change the stolen message within the options area of the serial code admin.
-
-== Protection with CVV ==
-You can set a code verification value (CVV) to protect your tickets. The validation check will ask the user to enter both for a valid check.
-That way you increase the security of your ticket numbers and prevent stealing the numbers (If you are able hide the CVV on your packaging).
-If you use a CVV on a ticket number, then the user will be asked to enter this CVV too during the validation. If the CVV on your ticket number is not set or empty it will be ignored and your customer is not asked for it.
-
 == Woocommerce support for auto-generating tickets ==
 **Supports version 6+**
 **You can use this plugin to auto-generate tickets and codes for your woocommerce products**
@@ -183,7 +164,7 @@ This way your business is not harmed and your customer can contact you to get a 
 If you use ["WooCommerce PDF Invoices"](https://en-gb.wordpress.org/plugins/woocommerce-pdf-invoices-packing-slips/), then the generated ticket numbers/codes are displayed on the generated PDFs too!
 The supported PDF plugin is from Ewout Fernhout.
 
-== WooCommer Ticket Sale ==
+== WooCommerce Ticket Sale ==
 You can add a list to your product and sell tickets. The ticket will be added to the sale informations for you and your client.
 The client will also have a link to check the ticket and mark the ticket as used, only if the order is set to completed. This will mark the ticket as redeemed.
 You can check the entrance by letting your customer show the confirmation page and hit on the "redeem"-button.
@@ -236,29 +217,6 @@ Each ticket number is unique. The list is for your organisation and for your Woo
 Write to support@vollstart.com for support request.
 For both plugins: The basic free and for the premium plugin.
 We are here to help you.
-
-== Premium Features ==
-The **premium plugin** is now available with a lifetime license and 1 year support.
-
-= Your benefits =
-* Remove branding banner from ticket footer
-* Unlimited ticket numbers (the basic allows you 50 tickets)
-* Unlimited Lists
-* Save IP address of user using the ticket number validation check on your page
-* Block IPs after x retries within 60 minutes - prevent brute force
-* One time usage overuled by list settings
-* Enter expiration date for tickets
-* Enter expiration date for ticket number lists (ticket number overrule list expiration date)
-* Attach PDF tickets to the purchase email
-* Assign tickets to existing WooCommerce orders
-* See the redeemed ticket amount on the product detail view and on the ticket scanner
-* Download the redeemed ticket logs
-* Overwrite ticket banner, logo and background image on product level
-* De- and re-activate ticket number
-* **Security:** Block IPs after x retries within 60 minutes - prevent brute force
-* User JS redirects on product level
-
-**Checkout the premium plugin and planned features: [Event Tickets with WooCommerce Premium](https://vollstart.com/event-tickets-with-ticket-scanner/)**
 
 == Installation ==
 
@@ -336,6 +294,12 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.7.0 - 2025-06-11 =
+* Fix removing the ticket numbers from the order item, even if the tickets are already deleted.
+* Changed the premium license link.
+* Fix wrong QR code on QR code image and PDF if you use your own qr code content with option qrOwnQRContent.
+* Fix wrong QR code on ticket badge if you use your own qr code content with option qrOwnQRContent.
+
 = 2.6.11 - 2025-05-28 =
 * Fix PDF ob_clean notice.
 * Fix wrong version number.
