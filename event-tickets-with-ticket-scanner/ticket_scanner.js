@@ -200,9 +200,9 @@ jQuery(document).ready(()=>{
             }
             */
             if (decodedText != "") {
-                renderInfoBox("Scan error", "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.", showScanNextTicketButton);
-            } else {
                 retrieveTicket(decodedText);
+            } else {
+                renderInfoBox("Scan error", "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.", showScanNextTicketButton);
             }
         }
 
