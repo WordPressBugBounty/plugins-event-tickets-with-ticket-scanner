@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce
 Requires PHP: 7.0
-Stable tag: 2.7.1
+Stable tag: 2.7.2
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -294,6 +294,9 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.7.2 - 2025-06-17 =
+* Fix qr content on ticket badge
+
 = 2.7.1 - 2025-06-12 =
 * Fix ticket scanner - it was prepared by accident to have a bit of code that is new approach.
 

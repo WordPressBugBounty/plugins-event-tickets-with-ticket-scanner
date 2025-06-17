@@ -178,14 +178,14 @@ jQuery(document).ready(()=>{
                 renderInfoBox("Scan error", "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.", showScanNextTicketButton);
             }
         } else {
-            /* not working with html5-qrcode? or the other scanner
+            /* not working with QRScanner? or the other scanner
             // extract the public ticket number from the token. format is CRC32(TIMESTAMP)-ORDERID-TICKETNUMBER.
             // the public ticket number can be part of text in the qr code, so we need to extract it.
             if (decodedText.length > 12) {
                 debugger;
                 // format: NUMBER-NUMBER-TICKETNUMBER , TICKETNUMBER can be text and numbers
                 // example: 2523448324-671-ticket_2025052808_dc_XYJBSSAZGZBHENY
-                reg = /(\d{10,})-(\d+)-([a-zA-Z0-9_]+)/;
+                reg = /\b\d+-\d+-[A-Za-z0-9_]+\b/g;
                 console.log("decodedText: "+decodedText);
                 let matches = decodedText.match(reg);
                 if (matches && matches.length > 3) {
