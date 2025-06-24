@@ -1,5 +1,5 @@
 {
-    "translation-revision-date": "2025-06-23 11:00+01:00",
+    "translation-revision-date": "2025-06-23 11:12+01:00",
     "generator": "WP-CLI\/2.7.1",
     "source": "ticket_scanner.js",
     "domain": "event-tickets-with-ticket-scanner",
@@ -7,224 +7,218 @@
         "event-tickets-with-ticket-scanner": {
             "": {
                 "domain": "event-tickets-with-ticket-scanner",
-                "lang": "hu_HU",
+                "lang": "pt_PT",
                 "plural-forms": "nplurals=2; plural=(n != 1);"
             },
             "...loading...": [
-                "...betöltés..."
+                "...a carregar..."
             ],
             "%d tickets of this event (product) redeemed already": [
-                "%d jegy beváltva ehhez az eseményhez"
+                "%d bilhetes deste evento (produto) já resgatados"
             ],
             "%s Products, %s Tickets": [
-                "%s termék, %s jegy"
+                "%s produtos, %s bilhetes"
             ],
             "Access rights missing. Please login first.": [
-                "Hozzáférési jogosultság hiányzik. Kérjük, először jelentkezzen be."
+                "Faltam direitos de acesso. Por favor, inicie sessão primeiro."
             ],
             "Auth Token Set": [
-                "Hitelesítő token beállítva"
+                "Token de autenticação definido"
             ],
             "attr\u0004Type in the ticket number and hit ENTER (optional to scanning)": [
-                "Írja be a jegy számát és nyomja meg az ENTER billentyűt (opcionális a szkenneléshez)"
+                "Introduza o número do bilhete e prima ENTER (opcional para leitura)"
             ],
             "Bought at %s": [
-                "Vásárlás ideje: %s"
+                "Comprado em %s"
             ],
             "cal\u0004Apr": [
-                "Ápr"
+                "Abr"
             ],
             "cal\u0004Aug": [
-                "Aug"
+                "Ago"
             ],
             "cal\u0004Dec": [
-                "Dec"
+                "Dez"
             ],
             "cal\u0004Feb": [
-                "Feb"
+                "Fev"
             ],
             "cal\u0004Fri": [
-                "Pé"
+                "Sex"
             ],
             "cal\u0004Jan": [
                 "Jan"
             ],
             "cal\u0004Jul": [
-                "Júl"
+                "Jul"
             ],
             "cal\u0004Jun": [
-                "Jún"
+                "Jun"
             ],
             "cal\u0004Mar": [
-                "Már"
+                "Mar"
             ],
             "cal\u0004May": [
-                "Máj"
+                "Mai"
             ],
             "cal\u0004Mon": [
-                "Hé"
+                "Seg"
             ],
             "cal\u0004Nov": [
                 "Nov"
             ],
             "cal\u0004Oct": [
-                "Okt"
+                "Out"
             ],
             "cal\u0004Sat": [
-                "Szo"
+                "Sáb"
             ],
             "cal\u0004Sep": [
-                "Szept"
+                "Set"
             ],
             "cal\u0004Sun": [
-                "Vas"
+                "Dom"
             ],
             "cal\u0004Thu": [
-                "Csü"
+                "Qui"
             ],
             "cal\u0004Tue": [
-                "Ke"
+                "Ter"
             ],
             "cal\u0004Wed": [
-                "Sze"
+                "Qua"
             ],
             "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
-                "Nem található a nyilvános jegyszám a QR kódban. Kérjük, próbáljon meg egy jegy QR kódját."
+                "Não foi possível encontrar o número do bilhete público no código QR. Por favor, tente um código QR de um bilhete."
             ],
             "Confirmed status validation check counter: <b>%s<\/b>": [
-                "Megerősített státusz ellenőrzési számláló: <b>%s<\/b>"
+                "Contador de verificação de validação de estado confirmado: <b>%s<\/b>"
             ],
             "Display short description if ticket information is hidden": [
-                "Rövid leírás megjelenítése, ha a jegyinformációk rejtettek"
+                "Exibir breve descrição se a informação do bilhete estiver oculta"
             ],
             "Expiration at %s": [
-                "Lejárat ideje: %s"
+                "Expira em %s"
             ],
             "Expires after %1$d days (%2$s)": [
-                "Lejár %1$d nap múlva (%2$s)"
+                "Expira após %1$d dias (%2$s)"
             ],
             "Failed to redeem": [
-                "Sikertelen beváltás"
+                "Falha ao resgatar"
             ],
             "For QR code barcode scanner": [
-                "QR kódolvasóhoz"
+                "Para leitor de código de barras QR"
             ],
             "found %s": [
-                "%s találat"
+                "encontrado %s"
             ],
             "Hide ticket information": [
-                "Jegyinformációk elrejtése"
+                "Ocultar informação do bilhete"
             ],
             "label\u0004Close": [
-                "Bezár"
+                "Fechar"
             ],
             "label\u0004Completed": [
-                "Befejezett"
+                "Concluído"
             ],
             "label\u0004Created": [
-                "Létrehozva"
+                "Criado"
             ],
             "label\u0004Download PDF": [
-                "PDF letöltése"
+                "Descarregar PDF"
             ],
             "label\u0004Includes": [
-                "Tartalmazza"
+                "Inclui"
             ],
             "label\u0004Ok": [
                 "Ok"
             ],
             "label\u0004Order ID": [
-                "Rendelés azonosító"
+                "ID da Encomenda"
             ],
             "label\u0004Order Ticket": [
-                "Rendelés jegy"
+                "Bilhete de Encomenda"
             ],
             "label\u0004Paid": [
-                "Fizetve"
+                "Pago"
             ],
             "label\u0004Redeem Complete Order": [
-                "Teljes rendelés beváltása"
+                "Resgatar Encomenda Completa"
             ],
             "label\u0004Redeem Ticket": [
-                "Jegy beváltása"
-            ],
-            "label\u0004Reload": [
-                "Frissítés"
+                "Resgatar Bilhete"
             ],
             "Max Redeem Amount for this ticket: <b>%s<\/b>": [
-                "Max. beváltások száma: <b>%s<\/b>"
-            ],
-            "NOT REDEEMED - see reason below": [
-                "NINCS BEVÁLTVA - lásd alább az okot"
+                "Valor Máximo de Resgate para este bilhete: <b>%s<\/b>"
             ],
             "no code found": [
-                "nincs kód találat"
+                "nenhum código encontrado"
             ],
             "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
-                "Ismeretlen QR kód tartalom. Nem lehet az adatokat helyesen kinyerni. Kérjük, próbáljon meg egy jegy QR kódját."
+                "Conteúdo do código QR desconhecido. Não é possível extrair os dados corretamente. Por favor, tente um código QR de um bilhete."
             ],
             "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
-                "Beváltások: <b>%1$d<\/b> / <b>%2$d<\/b>"
+                "Utilização do resgate: <b>%1$d<\/b> de <b>%2$d<\/b>"
             ],
             "Redeemable from %s": [
-                "Beváltás kezdete: %s"
+                "Resgatável a partir de %s"
             ],
             "Redeemed": [
-                "Beváltva"
+                "Resgatado"
             ],
             "Scan and Redeem immediately": [
-                "Azonnali szkennelés és beváltás"
+                "Digitalizar e Resgatar imediatamente"
             ],
             "Scan error": [
-                "Szkennelési hiba"
+                "Erro de leitura"
             ],
             "Scan next Ticket": [
-                "Következő jegy szkennelése"
+                "Digitalizar próximo Bilhete"
             ],
             "start redeem ticket...loading...": [
-                "Jegy beváltása ...betöltés..."
+                "iniciar resgate de bilhete...a carregar..."
             ],
             "Start cam to scan next ticket immediately": [
-                "Kamera indítása a következő jegy azonnali szkenneléséhez"
+                "Iniciar câmara para digitalizar o próximo bilhete imediatamente"
             ],
             "Start Camera": [
-                "Kamera indítása"
+                "Iniciar Câmara"
             ],
             "Stop camera": [
-                "Kamera leállítása"
+                "Parar câmara"
             ],
             "Successfully redeemed": [
-                "Sikeres beváltás"
+                "Resgatado com sucesso"
             ],
             "TICKET NOT REDEEMED - see reason below": [
-                "JEGY NINCS BEVÁLTVA - lásd alább az okot"
+                "BILHETE NÃO RESGATADO - ver razão abaixo"
             ],
             "TICKET OK - Redeemed": [
-                "JEGY RENDBEN - Beváltva"
+                "BILHETE OK - Resgatado"
             ],
             "Ticket NOT paid": [
-                "Jegy NINCS kifizetve"
+                "Bilhete NÃO pago"
             ],
             "Ticket NOT redeemed": [
-                "Jegy NINCS beváltva"
+                "Bilhete NÃO resgatado"
             ],
             "Ticket is NOT paid (%s).": [
-                "Jegy NINCS kifizetve (%s)."
+                "O bilhete NÃO está pago (%s)."
             ],
             "Ticket is already redeemed": [
-                "Jegyet már beváltották"
+                "O bilhete já foi resgatado"
             ],
             "Ticket not redeemed": [
-                "Jegy nincs beváltva"
+                "Bilhete não resgatado"
             ],
             "Ticket paid": [
-                "Jegy kifizetve"
+                "Bilhete pago"
             ],
             "Ticket redeemed": [
-                "Jegy beváltva"
+                "Bilhete resgatado"
             ],
             "Use old ticket scanner library - compatibility mode": [
-                "Régi jegyolvasó könyvtár használata - kompatibilitási mód"
+                "Usar biblioteca antiga do leitor de bilhetes - modo de compatibilidade"
             ]
         }
     }

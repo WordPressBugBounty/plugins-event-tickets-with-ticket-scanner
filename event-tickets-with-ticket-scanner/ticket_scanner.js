@@ -170,15 +170,16 @@ jQuery(document).ready(()=>{
                 setAuthToken(token);
                 clearAreas();
                 $("#reader_output").html('');
-                updateTicketScannerInfoArea('<h1 style="color:green !important;">Auth Token Set</h3>');
+                updateTicketScannerInfoArea('<h1 style="color:green !important;">'+__("Auth Token Set", 'event-tickets-with-ticket-scanner')+'</h3>');
                 window.setTimeout(()=>{
                     showScanNextTicketButton();
                 }, 350);
             } else {
-                renderInfoBox("Scan error", "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.", showScanNextTicketButton);
+                renderInfoBox(__("Scan error", 'event-tickets-with-ticket-scanner'), __("QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.", 'event-tickets-with-ticket-scanner'), showScanNextTicketButton);
             }
         } else {
-            /* not working with QRScanner? or the other scanner
+            /*
+            // not working with QRScanner? or the other scanner. Somehow content is not recognized correctly or not send. maybe a config value to be set. Because with text in it, the scanner is returning an empty string
             // extract the public ticket number from the token. format is CRC32(TIMESTAMP)-ORDERID-TICKETNUMBER.
             // the public ticket number can be part of text in the qr code, so we need to extract it.
             if (decodedText.length > 12) {
@@ -195,14 +196,14 @@ jQuery(document).ready(()=>{
                 retrieveTicket(decodedText);
             } else {
                 if (decodedText != "") {
-                    renderInfoBox("Scan error", "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.", showScanNextTicketButton);
+                    renderInfoBox(__("Scan error", 'event-tickets-with-ticket-scanner'), "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.", showScanNextTicketButton);
                 }
             }
             */
             if (decodedText != "") {
                 retrieveTicket(decodedText);
             } else {
-                renderInfoBox("Scan error", "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.", showScanNextTicketButton);
+                renderInfoBox(__("Scan error", 'event-tickets-with-ticket-scanner'), __("Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.", 'event-tickets-with-ticket-scanner'), showScanNextTicketButton);
             }
         }
 
@@ -265,7 +266,7 @@ qrScanner.turnFlashOff(); // turn the flash off if supported; async
 qrScanner.toggleFlash(); // toggle the flash if supported; async.
 */
 
-            let btn_start = $('<button class="button-ticket-options button-primary" style="display:none;">').text("Start Camera").appendTo($('#reader')).on("click", event=>{
+            let btn_start = $('<button class="button-ticket-options button-primary" style="display:none;">').text(__("Start Camera", 'event-tickets-with-ticket-scanner')).appendTo($('#reader')).on("click", event=>{
                 btn_start.css("display", "none");
                 btn.css("display", "block");
                 startScanner();
@@ -366,7 +367,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 setRedeemImmediately();
             }).appendTo(div);
             if (ticket_scanner_operating_option.redeem_auto) chkbox_redeem_imediately.prop("checked", true);
-            div.append(' Scan and Redeem immediately');
+            div.append(' '+__("Scan and Redeem immediately", 'event-tickets-with-ticket-scanner'));
             div.append("<br>");
 
             let chkbox_distractfree = $('<input type="checkbox">').on("click", e=>{
@@ -378,7 +379,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 }
             }).appendTo(div);
             if (ticket_scanner_operating_option.distract_free) chkbox_distractfree.prop("checked", true);
-            div.append(' Hide ticket information');
+            div.append(' '+__("Hide ticket information", 'event-tickets-with-ticket-scanner'));
             div.append("<br>");
 
             let chkbox_distractfree_showshortdesc = $('<input type="checkbox">').on("click", e=>{
@@ -390,7 +391,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 }
             }).appendTo(div);
             if (ticket_scanner_operating_option.distract_free_show_short_desc) chkbox_distractfree_showshortdesc.prop("checked", true);
-            div.append(' Display short description if ticket information is hidden');
+            div.append(' '+__("Display short description if ticket information is hidden", 'event-tickets-with-ticket-scanner'));
             div.append("<br>");
 
 
@@ -398,7 +399,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 setStartCamWithoutButtonClicked(!ticket_scanner_operating_option.ticketScannerStartCamWithoutButtonClicked);
             }).appendTo(div);
             chkbox_ticketScannerStartCamWithoutButtonClicked.prop("checked", ticket_scanner_operating_option.ticketScannerStartCamWithoutButtonClicked);
-            div.append(' Start cam to scan next ticket immediately');
+            div.append(' '+__("Start cam to scan next ticket immediately", 'event-tickets-with-ticket-scanner'));
             div.append("<br>");
 
             $('<input type="checkbox">').on("click", e=>{
@@ -406,8 +407,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                     + (ticket_scanner_operating_option.redeem_auto ? "&redeemauto=1" : "")
                     + (system.PARA.useoldticketscanner ? "" : "&useoldticketscanner=1");
             }).prop("checked", system.PARA.useoldticketscanner).appendTo(div);
-            div.append(' Use old ticket scanner library - compatibility mode');
-
+            div.append(' '+__("Use old ticket scanner library - compatibility mode", 'event-tickets-with-ticket-scanner'));
         }
 
         $('<div style="margin-top:40px;">').append(system.INPUTFIELD).appendTo(div);
@@ -731,7 +731,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             }
         }
         if (code == "") {
-            alert("no code found");
+            alert(__("no code found", 'event-tickets-with-ticket-scanner'));
             showScanNextTicketButton();
             return;
         }
@@ -1059,15 +1059,14 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function displayOrderTicketInfo(data) {
         let div = $('<div>').css('padding', '10px');
 
-        div.html('<h3 style="text-align:center;color:black !important;">Order Ticket</h3>');
+        div.html('<h3 style="text-align:center;color:black !important;">'+_x("Order Ticket", 'label', 'event-tickets-with-ticket-scanner')+'</h3>');
         div.append($('<div style="text-align:center;">').html(data.order_infos.code));
-        div.append("<b>Includes: </b>"+data.order_infos.products.length+' Products, ');
-        div.append(data.ticket_infos.length+' Tickets<br>');
-        div.append('<b>Order ID: </b>#'+data.order_infos.id+'<br>');
-        div.append('<b>Created: </b>'+data.order_infos.date_created+'<br>');
-        div.append('<b>Completed: </b>'+data.order_infos.date_completed+'<br>');
-        div.append('<b>Paid: </b>'+data.order_infos.date_paid+'<br>');
-        div.append($('<button class="button-ticket-options button-primary">').html("Redeem Complete Order").on("click", e=>{
+        div.append("<b>"+_x("Includes", 'label', 'event-tickets-with-ticket-scanner')+": </b>"+sprintf(__('%s Products, %s Tickets', 'event-tickets-with-ticket-scanner'), data.order_infos.products.length, data.ticket_infos.length)+'<br>');
+        div.append('<b>'+_x("Order ID", 'label', 'event-tickets-with-ticket-scanner')+': </b>#'+data.order_infos.id+'<br>');
+        div.append('<b>'+_x("Created", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_created+'<br>');
+        div.append('<b>'+_x("Created", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_completed+'<br>');
+        div.append('<b>'+_x("Paid", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_paid+'<br>');
+        div.append($('<button class="button-ticket-options button-primary">').html(_x("Redeem Complete Order", 'label', 'event-tickets-with-ticket-scanner')).on("click", e=>{
             redeemTicket(data.order_infos.code);
         }));
         let div_tickets = $('<div style="padding-top:15px;text-align:left;">');

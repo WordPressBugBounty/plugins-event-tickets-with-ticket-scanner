@@ -7,59 +7,59 @@
         "event-tickets-with-ticket-scanner": {
             "": {
                 "domain": "event-tickets-with-ticket-scanner",
-                "lang": "de",
+                "lang": "es_ES",
                 "plural-forms": "nplurals=2; plural=(n != 1);"
             },
             "...loading...": [
-                "...lade..."
+                "...cargando..."
             ],
             "Access rights missing. Please login first.": [
-                "Zugriffsrechte fehlen. Bitter erst einloggen."
+                "Faltan derechos de acceso. Por favor, inicie sesión primero."
             ],
             "Auth Token Set": [
-                "Auth Token Set"
+                "Token de autenticación establecido"
             ],
             "attr\u0004Type in the ticket number and hit ENTER (optional to scanning)": [
-                "Ticketnummer eingeben und EINGABE dr\u00fccken (optional f\u00fcr das Scannen)"
+                "Introduce el número de ticket y pulsa ENTER (opcional al escaneo)"
             ],
             "Bought at %s": [
-                "Gekauft am %s"
+                "Comprado el %s"
             ],
             "cal\u0004Sun": [
-                "So"
+                "Dom"
             ],
             "cal\u0004Mon": [
-                "Mo"
+                "Lun"
             ],
             "cal\u0004Tue": [
-                "Di"
+                "Mar"
             ],
             "cal\u0004Wed": [
-                "Mi"
+                "Mié"
             ],
             "cal\u0004Thu": [
-                "Do"
+                "Jue"
             ],
             "cal\u0004Fri": [
-                "Fr"
+                "Vie"
             ],
             "cal\u0004Sat": [
-                "Sa"
+                "Sáb"
             ],
             "cal\u0004Jan": [
-                "Jan"
+                "Ene"
             ],
             "cal\u0004Feb": [
                 "Feb"
             ],
             "cal\u0004Mar": [
-                "M\u00e4r"
+                "Mar"
             ],
             "cal\u0004Apr": [
-                "Apr"
+                "Abr"
             ],
             "cal\u0004May": [
-                "Mai"
+                "May"
             ],
             "cal\u0004Jun": [
                 "Jun"
@@ -68,145 +68,145 @@
                 "Jul"
             ],
             "cal\u0004Aug": [
-                "Aug"
+                "Ago"
             ],
             "cal\u0004Sep": [
                 "Sep"
             ],
             "cal\u0004Oct": [
-                "Okt"
+                "Oct"
             ],
             "cal\u0004Nov": [
                 "Nov"
             ],
             "cal\u0004Dec": [
-                "Dez"
+                "Dic"
             ],
             "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
-                "Kann die \u00f6ffentliche Ticketnummer im QR-Code nicht finden. Bitte versuche einen QR-Code eines Tickets."
+                "No se puede encontrar el número de ticket público en el código QR. Por favor, pruebe con un código QR de un ticket."
             ],
             "Confirmed status validation check counter: <b>%s<\/b>": [
-                "Best\u00e4tigte Statuschecks-Z\u00e4hler: <b>(%s)<\/b>"
+                "Contador de verificación de validación de estado confirmado: <b>%s<\/b>"
             ],
             "Display short description if ticket information is hidden": [
-                "Kurze Produktbeschreibung anzeigen, wenn Ticketinformationen ausgeblendet sind"
+                "Mostrar descripción corta si la información del ticket está oculta"
             ],
             "Expiration at %s": [
-                "Verfall am %s"
+                "Expiración el %s"
             ],
             "Expires after %1$d days (%2$s)": [
-                "Verf\u00e4llt nach %1$d Tagen (%2$s)"
+                "Expira después de %1$d días (%2$s)"
             ],
             "Failed to redeem": [
-                "Fehler beim Entwerten"
+                "Fallo al canjear"
             ],
             "For QR code barcode scanner": [
-                "Für Barcodescanner"
+                "Para escáner de código de barras QR"
             ],
             "found %s": [
-                "gefunden %s"
+                "encontrado %s"
             ],
             "Hide ticket information": [
-                "Ticketinformationen ausblenden"
+                "Ocultar información del ticket"
             ],
             "label\u0004Created": [
-                "Erstellt"
+                "Creado"
             ],
             "label\u0004Close": [
-                "Schliessen"
+                "Cerrar"
             ],
             "label\u0004Completed": [
-                "Abgeschlossen"
+                "Completado"
             ],
             "label\u0004Download PDF": [
-                "Download PDF"
+                "Descargar PDF"
             ],
             "label\u0004Includes": [
-                "Enth\u00e4lt"
+                "Incluye"
             ],
             "label\u0004Ok": [
                 "Ok"
             ],
             "label\u0004Order ID": [
-                "Bestell-ID"
+                "ID de pedido"
             ],
             "label\u0004Order Ticket": [
-                "Bestellung Ticket"
+                "Ticket de pedido"
             ],
             "label\u0004Paid": [
-                "Bezahlt"
+                "Pagado"
             ],
             "label\u0004Redeem Complete Order": [
-                "Entwerte komplette Bestellung"
+                "Canjear pedido completo"
             ],
             "label\u0004Redeem Ticket": [
-                "Entwerte Ticket"
+                "Canjear ticket"
             ],
             "Max Redeem Amount for this ticket: <b>%s<\/b>": [
-                "Maximale Anzahl an m\u00f6glichen Entwertungen: <b>%s<\/b>"
+                "Cantidad máxima de canjes para este ticket: <b>%s<\/b>"
             ],
             "no code found": [
-                "Kein Code gefunden"
+                "no se encontró código"
             ],
             "%s Products, %s Tickets": [
-                "%s Produkte, %s Tickets"
+                "%s productos, %s tickets"
             ],
             "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
-                "Entwertungen: <b>%1$d<\/b> von <b>%2$d<\/b>"
+                "Uso de canje: <b>%1$d<\/b> de <b>%2$d<\/b>"
             ],
             "start redeem ticket...loading...": [
-                "Entwerte Ticket ...lade..."
+                "iniciar canje de ticket...cargando..."
             ],
             "Start cam to scan next ticket immediately": [
-                "Starte Kamera, um das n\u00e4chste Ticket sofort zu scannen"
+                "Iniciar cámara para escanear el siguiente ticket inmediatamente"
             ],
             "Scan and Redeem immediately": [
-                "Scannen und sofort entwerten"
+                "Escanear y canjear inmediatamente"
             ],
             "Scan error": [
-                "Scan-Fehler"
+                "Error de escaneo"
             ],
             "Scan next Ticket": [
-                "N\u00e4chstes Ticket scannen"
+                "Escanear siguiente ticket"
             ],
             "Successfully redeemed": [
-                "Erfolgreich entwertet"
+                "Canjeado con éxito"
             ],
             "Start Camera": [
-                "Kamera starten"
+                "Iniciar cámara"
             ],
             "Stop camera": [
-                "Kamera stoppen"
+                "Detener cámara"
             ],
             "%d tickets of this event (product) redeemed already": [
-                "%d Tickets von diesem Event (Produkt) bereits entwertet"
+                "%d tickets de este evento (producto) ya canjeados"
             ],
             "Ticket redeemed": [
-                "Ticket entwertet"
+                "Ticket canjeado"
             ],
             "TICKET NOT REDEEMED - see reason below": [
-                "TICKET NICHT ENTWERTET - Gr\u00fcnde daf\u00fcr stehen nachfolgend"
+                "TICKET NO CANJEADO - ver motivo a continuación"
             ],
             "TICKET OK - Redeemed": [
-                "TICKET OK - Entwertet"
+                "TICKET OK - Canjeado"
             ],
             "Ticket is NOT paid (%s).": [
-                "Ticket nicht NICHT bezahlt (%s)."
+                "El ticket NO está pagado (%s)."
             ],
             "Ticket paid": [
-                "Ticket bezahlt"
+                "Ticket pagado"
             ],
             "Ticket NOT paid": [
-                "Ticket NICHT bezahlt"
+                "Ticket NO pagado"
             ],
             "Ticket NOT redeemed": [
-                "Ticket NICHT entwertet"
+                "Ticket NO canjeado"
             ],
             "Use old ticket scanner library - compatibility mode": [
-                "Alte Ticket-Scanner-Variante verwenden - Kompatibilit\u00e4tsmodus"
+                "Usar la antigua librería del escáner de tickets - modo compatibilidad"
             ],
             "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
-                "QR-Code-Inhalt unbekannt. Kann die Daten nicht korrekt extrahieren. Bitte versuche einen QR-Code eines Tickets."
+                "Contenido del código QR desconocido. No se pueden extraer los datos correctamente. Por favor, pruebe con un código QR de un ticket."
             ]
         }
     }

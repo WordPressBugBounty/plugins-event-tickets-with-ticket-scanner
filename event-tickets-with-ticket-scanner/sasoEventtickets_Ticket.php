@@ -327,15 +327,28 @@ final class sasoEventtickets_Ticket {
 
 		$product_original = $product; // original product, due to wpml
 		$product_parent_original = $product_parent; // original product parent, due to wpml
+		$product_original_id = $product->get_id();
 
-		$product_original_id = apply_filters( 'wpml_object_id', $product->get_id(), 'product', true );
-		if ($product_original_id != $product->get_id()) {
+		// load a possible language based product
+		$product_original_id = intval(apply_filters( 'wpml_object_id', $product_original_id, 'product', true ));
+		if ($product_original_id < 1) {
+			$product_original_id = $product->get_id(); // repair the product id
+		} else {
 			$product_original = $this->get_product($product_original_id);
+			if ($product_original_id > 0 && $product_original_id != $product->get_id()) {
+				$product_original = $this->get_product($product_original_id);
+			}
+			if ($product_original == null || $product_original instanceof WC_Product == false) {
+				return wp_send_json_error(esc_html__("original product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+			}
 		}
 		if ($product_parent_id > 0) {
-			$product_parent_original_id = apply_filters( 'wpml_object_id', $product_parent_id, 'product', true );
-			if ($product_parent_original_id != $product_parent_id) {
+			$product_parent_original_id = intval(apply_filters( 'wpml_object_id', $product_parent_id, 'product', true ));
+			if ($product_parent_original_id > 0 && $product_parent_original_id != $product_parent_id) {
 				$product_parent_original = $this->get_product($product_parent_original_id);
+			}
+			if ($product_parent_original == null || $product_parent_original instanceof WC_Product == false) {
+				return wp_send_json_error(esc_html__("original parent product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
 			}
 		}
 
