@@ -206,7 +206,7 @@ class sasoEventtickets_TicketBadge {
 		$wcTicketBadgeBG = apply_filters( $this->MAIN->_add_filter_prefix.'wcTicketBadgeBG', $wcTicketBadgeBG, $product_id);
 		if (!empty($wcTicketBadgeBG) && intval($wcTicketBadgeBG) >0) {
 			$mediaData = SASO_EVENTTICKETS::getMediaData($wcTicketBadgeBG);
-            if ($this->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityUseURL')) {
+            if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityUseURL')) {
                 if (!empty($mediaData['url'])) {
                     $pdf->setBackgroundImage($mediaData['url']);
                 }
