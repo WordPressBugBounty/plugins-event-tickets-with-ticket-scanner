@@ -1,0 +1,213 @@
+{
+    "translation-revision-date": "2025-06-23 10:56+01:00",
+    "generator": "WP-CLI\/2.7.1",
+    "source": "ticket_scanner.js",
+    "domain": "event-tickets-with-ticket-scanner",
+    "locale_data": {
+        "event-tickets-with-ticket-scanner": {
+            "": {
+                "domain": "event-tickets-with-ticket-scanner",
+                "lang": "fr",
+                "plural-forms": "nplurals=2; plural=(n > 1);"
+            },
+            "...loading...": [
+                "...chargement..."
+            ],
+            "Access rights missing. Please login first.": [
+                "Droits d'accès manquants. Veuillez d'abord vous connecter."
+            ],
+            "Auth Token Set": [
+                "Jeton d'authentification défini"
+            ],
+            "attr\u0004Type in the ticket number and hit ENTER (optional to scanning)": [
+                "Saisissez le numéro de billet et appuyez sur ENTRÉE (facultatif pour la numérisation)"
+            ],
+            "Bought at %s": [
+                "Acheté le %s"
+            ],
+            "cal\u0004Sun": [
+                "Dim"
+            ],
+            "cal\u0004Mon": [
+                "Lun"
+            ],
+            "cal\u0004Tue": [
+                "Mar"
+            ],
+            "cal\u0004Wed": [
+                "Mer"
+            ],
+            "cal\u0004Thu": [
+                "Jeu"
+            ],
+            "cal\u0004Fri": [
+                "Ven"
+            ],
+            "cal\u0004Sat": [
+                "Sam"
+            ],
+            "cal\u0004Jan": [
+                "Janv"
+            ],
+            "cal\u0004Feb": [
+                "Févr"
+            ],
+            "cal\u0004Mar": [
+                "Mars"
+            ],
+            "cal\u0004Apr": [
+                "Avr"
+            ],
+            "cal\u0004May": [
+                "Mai"
+            ],
+            "cal\u0004Jun": [
+                "Juin"
+            ],
+            "cal\u0004Jul": [
+                "Juil"
+            ],
+            "cal\u0004Aug": [
+                "Août"
+            ],
+            "cal\u0004Sep": [
+                "Sept"
+            ],
+            "cal\u0004Oct": [
+                "Oct"
+            ],
+            "cal\u0004Nov": [
+                "Nov"
+            ],
+            "cal\u0004Dec": [
+                "Déc"
+            ],
+            "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
+                "Impossible de trouver le numéro de billet public dans le code QR. Veuillez essayer un code QR d'un billet."
+            ],
+            "Confirmed status validation check counter: <b>%s<\/b>": [
+                "Compteur de vérification de validation du statut confirmé : <b>%s<\/b>"
+            ],
+            "Display short description if ticket information is hidden": [
+                "Afficher une courte description si les informations du billet sont masquées"
+            ],
+            "Expiration at %s": [
+                "Expiration le %s"
+            ],
+            "Expires after %1$d days (%2$s)": [
+                "Expire après %1$d jours (%2$s)"
+            ],
+            "Failed to redeem": [
+                "Échec de l'échange"
+            ],
+            "For QR code barcode scanner": [
+                "Pour lecteur de code-barres QR"
+            ],
+            "found %s": [
+                "trouvé %s"
+            ],
+            "Hide ticket information": [
+                "Masquer les informations du billet"
+            ],
+            "label\u0004Created": [
+                "Créé"
+            ],
+            "label\u0004Close": [
+                "Fermer"
+            ],
+            "label\u0004Completed": [
+                "Terminé"
+            ],
+            "label\u0004Download PDF": [
+                "Télécharger le PDF"
+            ],
+            "label\u0004Includes": [
+                "Comprend"
+            ],
+            "label\u0004Ok": [
+                "Ok"
+            ],
+            "label\u0004Order ID": [
+                "ID de commande"
+            ],
+            "label\u0004Order Ticket": [
+                "Billet de commande"
+            ],
+            "label\u0004Paid": [
+                "Payé"
+            ],
+            "label\u0004Redeem Complete Order": [
+                "Échanger la commande complète"
+            ],
+            "label\u0004Redeem Ticket": [
+                "Échanger le billet"
+            ],
+            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
+                "Montant maximum d'échange pour ce billet : <b>%s<\/b>"
+            ],
+            "no code found": [
+                "aucun code trouvé"
+            ],
+            "%s Products, %s Tickets": [
+                "%s produits, %s billets"
+            ],
+            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
+                "Utilisation de l'échange : <b>%1$d<\/b> sur <b>%2$d<\/b>"
+            ],
+            "start redeem ticket...loading...": [
+                "Démarrage de l'échange du billet...chargement..."
+            ],
+            "Start cam to scan next ticket immediately": [
+                "Démarrer la caméra pour scanner le prochain billet immédiatement"
+            ],
+            "Scan and Redeem immediately": [
+                "Scanner et échanger immédiatement"
+            ],
+            "Scan error": [
+                "Erreur de numérisation"
+            ],
+            "Scan next Ticket": [
+                "Scanner le prochain billet"
+            ],
+            "Successfully redeemed": [
+                "Échangé avec succès"
+            ],
+            "Start Camera": [
+                "Démarrer la caméra"
+            ],
+            "Stop camera": [
+                "Arrêter la caméra"
+            ],
+            "%d tickets of this event (product) redeemed already": [
+                "%d billets de cet événement (produit) déjà échangés"
+            ],
+            "Ticket redeemed": [
+                "Billet échangé"
+            ],
+            "TICKET NOT REDEEMED - see reason below": [
+                "BILLET NON ÉCHANGÉ - voir la raison ci-dessous"
+            ],
+            "TICKET OK - Redeemed": [
+                "BILLET OK - Échangé"
+            ],
+            "Ticket is NOT paid (%s).": [
+                "Le billet N'EST PAS payé (%s)."
+            ],
+            "Ticket paid": [
+                "Billet payé"
+            ],
+            "Ticket NOT paid": [
+                "Billet NON payé"
+            ],
+            "Ticket NOT redeemed": [
+                "Billet NON échangé"
+            ],
+            "Use old ticket scanner library - compatibility mode": [
+                "Utiliser l'ancienne bibliothèque de scanner de billets - mode de compatibilité"
+            ],
+            "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
+                "Contenu du code QR inconnu. Impossible d'extraire les données correctement. Veuillez essayer un code QR d'un billet."
+            ]
+        }
+    }
+}

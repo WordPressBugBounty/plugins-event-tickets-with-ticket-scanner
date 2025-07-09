@@ -1,0 +1,231 @@
+{
+    "translation-revision-date": "2025-06-23 11:00+01:00",
+    "generator": "WP-CLI\/2.7.1",
+    "source": "ticket_scanner.js",
+    "domain": "event-tickets-with-ticket-scanner",
+    "locale_data": {
+        "event-tickets-with-ticket-scanner": {
+            "": {
+                "domain": "event-tickets-with-ticket-scanner",
+                "lang": "hu_HU",
+                "plural-forms": "nplurals=2; plural=(n != 1);"
+            },
+            "...loading...": [
+                "...betöltés..."
+            ],
+            "%d tickets of this event (product) redeemed already": [
+                "%d jegy beváltva ehhez az eseményhez"
+            ],
+            "%s Products, %s Tickets": [
+                "%s termék, %s jegy"
+            ],
+            "Access rights missing. Please login first.": [
+                "Hozzáférési jogosultság hiányzik. Kérjük, először jelentkezzen be."
+            ],
+            "Auth Token Set": [
+                "Hitelesítő token beállítva"
+            ],
+            "attr\u0004Type in the ticket number and hit ENTER (optional to scanning)": [
+                "Írja be a jegy számát és nyomja meg az ENTER billentyűt (opcionális a szkenneléshez)"
+            ],
+            "Bought at %s": [
+                "Vásárlás ideje: %s"
+            ],
+            "cal\u0004Apr": [
+                "Ápr"
+            ],
+            "cal\u0004Aug": [
+                "Aug"
+            ],
+            "cal\u0004Dec": [
+                "Dec"
+            ],
+            "cal\u0004Feb": [
+                "Feb"
+            ],
+            "cal\u0004Fri": [
+                "Pé"
+            ],
+            "cal\u0004Jan": [
+                "Jan"
+            ],
+            "cal\u0004Jul": [
+                "Júl"
+            ],
+            "cal\u0004Jun": [
+                "Jún"
+            ],
+            "cal\u0004Mar": [
+                "Már"
+            ],
+            "cal\u0004May": [
+                "Máj"
+            ],
+            "cal\u0004Mon": [
+                "Hé"
+            ],
+            "cal\u0004Nov": [
+                "Nov"
+            ],
+            "cal\u0004Oct": [
+                "Okt"
+            ],
+            "cal\u0004Sat": [
+                "Szo"
+            ],
+            "cal\u0004Sep": [
+                "Szept"
+            ],
+            "cal\u0004Sun": [
+                "Vas"
+            ],
+            "cal\u0004Thu": [
+                "Csü"
+            ],
+            "cal\u0004Tue": [
+                "Ke"
+            ],
+            "cal\u0004Wed": [
+                "Sze"
+            ],
+            "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
+                "Nem található a nyilvános jegyszám a QR kódban. Kérjük, próbáljon meg egy jegy QR kódját."
+            ],
+            "Confirmed status validation check counter: <b>%s<\/b>": [
+                "Megerősített státusz ellenőrzési számláló: <b>%s<\/b>"
+            ],
+            "Display short description if ticket information is hidden": [
+                "Rövid leírás megjelenítése, ha a jegyinformációk rejtettek"
+            ],
+            "Expiration at %s": [
+                "Lejárat ideje: %s"
+            ],
+            "Expires after %1$d days (%2$s)": [
+                "Lejár %1$d nap múlva (%2$s)"
+            ],
+            "Failed to redeem": [
+                "Sikertelen beváltás"
+            ],
+            "For QR code barcode scanner": [
+                "QR kódolvasóhoz"
+            ],
+            "found %s": [
+                "%s találat"
+            ],
+            "Hide ticket information": [
+                "Jegyinformációk elrejtése"
+            ],
+            "label\u0004Close": [
+                "Bezár"
+            ],
+            "label\u0004Completed": [
+                "Befejezett"
+            ],
+            "label\u0004Created": [
+                "Létrehozva"
+            ],
+            "label\u0004Download PDF": [
+                "PDF letöltése"
+            ],
+            "label\u0004Includes": [
+                "Tartalmazza"
+            ],
+            "label\u0004Ok": [
+                "Ok"
+            ],
+            "label\u0004Order ID": [
+                "Rendelés azonosító"
+            ],
+            "label\u0004Order Ticket": [
+                "Rendelés jegy"
+            ],
+            "label\u0004Paid": [
+                "Fizetve"
+            ],
+            "label\u0004Redeem Complete Order": [
+                "Teljes rendelés beváltása"
+            ],
+            "label\u0004Redeem Ticket": [
+                "Jegy beváltása"
+            ],
+            "label\u0004Reload": [
+                "Frissítés"
+            ],
+            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
+                "Max. beváltások száma: <b>%s<\/b>"
+            ],
+            "NOT REDEEMED - see reason below": [
+                "NINCS BEVÁLTVA - lásd alább az okot"
+            ],
+            "no code found": [
+                "nincs kód találat"
+            ],
+            "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
+                "Ismeretlen QR kód tartalom. Nem lehet az adatokat helyesen kinyerni. Kérjük, próbáljon meg egy jegy QR kódját."
+            ],
+            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
+                "Beváltások: <b>%1$d<\/b> / <b>%2$d<\/b>"
+            ],
+            "Redeemable from %s": [
+                "Beváltás kezdete: %s"
+            ],
+            "Redeemed": [
+                "Beváltva"
+            ],
+            "Scan and Redeem immediately": [
+                "Azonnali szkennelés és beváltás"
+            ],
+            "Scan error": [
+                "Szkennelési hiba"
+            ],
+            "Scan next Ticket": [
+                "Következő jegy szkennelése"
+            ],
+            "start redeem ticket...loading...": [
+                "Jegy beváltása ...betöltés..."
+            ],
+            "Start cam to scan next ticket immediately": [
+                "Kamera indítása a következő jegy azonnali szkenneléséhez"
+            ],
+            "Start Camera": [
+                "Kamera indítása"
+            ],
+            "Stop camera": [
+                "Kamera leállítása"
+            ],
+            "Successfully redeemed": [
+                "Sikeres beváltás"
+            ],
+            "TICKET NOT REDEEMED - see reason below": [
+                "JEGY NINCS BEVÁLTVA - lásd alább az okot"
+            ],
+            "TICKET OK - Redeemed": [
+                "JEGY RENDBEN - Beváltva"
+            ],
+            "Ticket NOT paid": [
+                "Jegy NINCS kifizetve"
+            ],
+            "Ticket NOT redeemed": [
+                "Jegy NINCS beváltva"
+            ],
+            "Ticket is NOT paid (%s).": [
+                "Jegy NINCS kifizetve (%s)."
+            ],
+            "Ticket is already redeemed": [
+                "Jegyet már beváltották"
+            ],
+            "Ticket not redeemed": [
+                "Jegy nincs beváltva"
+            ],
+            "Ticket paid": [
+                "Jegy kifizetve"
+            ],
+            "Ticket redeemed": [
+                "Jegy beváltva"
+            ],
+            "Use old ticket scanner library - compatibility mode": [
+                "Régi jegyolvasó könyvtár használata - kompatibilitási mód"
+            ]
+        }
+    }
+}

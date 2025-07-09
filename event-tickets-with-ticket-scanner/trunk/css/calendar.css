@@ -1,0 +1,106 @@
+.sasoEventTicketsValidator_calendar {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.sasoEventTicketsValidator_calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2e74b5;
+    color: #fff;
+    padding: 10px;
+}
+
+.sasoEventTicketsValidator_calendar-header-month {
+    font-size: 1.5em;
+}
+
+.sasoEventTicketsValidator_calendar-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.sasoEventTicketsValidator_calendar-row {
+    display: flex;
+}
+
+.sasoEventTicketsValidator_calendar-cell {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+}
+
+.sasoEventTicketsValidator_calendar-day {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.sasoEventTicketsValidator_empty {
+    background-color: #fff;
+}
+
+.sasoEventTicketsValidator_event {
+    background-color: #2e74b5;
+    color: #fff;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 3px;
+    font-size: 0.8em;
+}
+
+.sasoEventTicketsValidator_calendar-cell:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.sasoEventTicketsValidator_list {
+}
+.sasoEventTicketsValidator_list_events {
+    display: block;
+}
+.sasoEventTicketsValidator_list_events-header {
+    font-weight: bold;
+    padding: 10px;
+    padding-bottom: 0;
+    font-size: 1.2em;
+}
+.sasoEventTicketsValidator_list_event {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+    padding: 10px;
+}
+.sasoEventTicketsValidator_event-title {
+    font-weight: bold;
+}
+.sasoEventTicketsValidator_event-date {
+}
+.sasoEventTicketsValidator_event-time {
+}
+.sasoEventTicketsValidator_event-location {
+}
+.sasoEventTicketsValidator_event-description {
+    padding-top: 5px;
+}
+.sasoEventTicketsValidator_event-info {
+    text-align: right;
+}
+.sasoEventTicketsValidator_list_calendar-row {
+    padding: 10px;
+}
+.sasoEventTicketsValidator_list_calendar-row-today {
+    background-color: #f0f0f0;
+}
+.sasoEventTicketsValidator_list_calendar-header {
+}
+.sasoEventTicketsValidator_list_calendar-header-today {
+    background-color: #f0f0f0;
+}

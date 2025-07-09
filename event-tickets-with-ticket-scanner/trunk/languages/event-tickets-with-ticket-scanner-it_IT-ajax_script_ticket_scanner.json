@@ -1,0 +1,213 @@
+{
+    "translation-revision-date": "2025-06-23 11:00+01:00",
+    "generator": "WP-CLI\/2.7.1",
+    "source": "ticket_scanner.js",
+    "domain": "event-tickets-with-ticket-scanner",
+    "locale_data": {
+        "event-tickets-with-ticket-scanner": {
+            "": {
+                "domain": "event-tickets-with-ticket-scanner",
+                "lang": "it_IT",
+                "plural-forms": "nplurals=2; plural=(n != 1);"
+            },
+            "...loading...": [
+                "...caricamento..."
+            ],
+            "Access rights missing. Please login first.": [
+                "Diritti di accesso mancanti. Effettua prima il login."
+            ],
+            "Auth Token Set": [
+                "Token di autenticazione impostato"
+            ],
+            "attr\u0004Type in the ticket number and hit ENTER (optional to scanning)": [
+                "Digita il numero del biglietto e premi INVIO (opzionale alla scansione)"
+            ],
+            "Bought at %s": [
+                "Acquistato il %s"
+            ],
+            "cal\u0004Sun": [
+                "Dom"
+            ],
+            "cal\u0004Mon": [
+                "Lun"
+            ],
+            "cal\u0004Tue": [
+                "Mar"
+            ],
+            "cal\u0004Wed": [
+                "Mer"
+            ],
+            "cal\u0004Thu": [
+                "Gio"
+            ],
+            "cal\u0004Fri": [
+                "Ven"
+            ],
+            "cal\u0004Sat": [
+                "Sab"
+            ],
+            "cal\u0004Jan": [
+                "Gen"
+            ],
+            "cal\u0004Feb": [
+                "Feb"
+            ],
+            "cal\u0004Mar": [
+                "Mar"
+            ],
+            "cal\u0004Apr": [
+                "Apr"
+            ],
+            "cal\u0004May": [
+                "Mag"
+            ],
+            "cal\u0004Jun": [
+                "Giu"
+            ],
+            "cal\u0004Jul": [
+                "Lug"
+            ],
+            "cal\u0004Aug": [
+                "Ago"
+            ],
+            "cal\u0004Sep": [
+                "Set"
+            ],
+            "cal\u0004Oct": [
+                "Ott"
+            ],
+            "cal\u0004Nov": [
+                "Nov"
+            ],
+            "cal\u0004Dec": [
+                "Dic"
+            ],
+            "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
+                "Impossibile trovare il numero pubblico del biglietto nel codice QR. Prova un codice QR di un biglietto."
+            ],
+            "Confirmed status validation check counter: <b>%s<\/b>": [
+                "Contatore di verifica validazione stato confermato: <b>%s<\/b>"
+            ],
+            "Display short description if ticket information is hidden": [
+                "Mostra la descrizione breve se le informazioni del biglietto sono nascoste"
+            ],
+            "Expiration at %s": [
+                "Scadenza il %s"
+            ],
+            "Expires after %1$d days (%2$s)": [
+                "Scade dopo %1$d giorni (%2$s)"
+            ],
+            "Failed to redeem": [
+                "Riscatto fallito"
+            ],
+            "For QR code barcode scanner": [
+                "Per scanner di codice a barre QR"
+            ],
+            "found %s": [
+                "trovato %s"
+            ],
+            "Hide ticket information": [
+                "Nascondi informazioni sul biglietto"
+            ],
+            "label\u0004Created": [
+                "Creato"
+            ],
+            "label\u0004Close": [
+                "Chiudi"
+            ],
+            "label\u0004Completed": [
+                "Completato"
+            ],
+            "label\u0004Download PDF": [
+                "Scarica PDF"
+            ],
+            "label\u0004Includes": [
+                "Include"
+            ],
+            "label\u0004Ok": [
+                "Ok"
+            ],
+            "label\u0004Order ID": [
+                "ID Ordine"
+            ],
+            "label\u0004Order Ticket": [
+                "Biglietto Ordine"
+            ],
+            "label\u0004Paid": [
+                "Pagato"
+            ],
+            "label\u0004Redeem Complete Order": [
+                "Riscatta Ordine Completo"
+            ],
+            "label\u0004Redeem Ticket": [
+                "Riscatta Biglietto"
+            ],
+            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
+                "Quantità massima di riscatti per questo biglietto: <b>%s<\/b>"
+            ],
+            "no code found": [
+                "nessun codice trovato"
+            ],
+            "%s Products, %s Tickets": [
+                "%s prodotti, %s biglietti"
+            ],
+            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
+                "Utilizzo riscatto: <b>%1$d<\/b> di <b>%2$d<\/b>"
+            ],
+            "start redeem ticket...loading...": [
+                "avvio riscatto biglietto...caricamento..."
+            ],
+            "Start cam to scan next ticket immediately": [
+                "Avvia la fotocamera per scansionare immediatamente il prossimo biglietto"
+            ],
+            "Scan and Redeem immediately": [
+                "Scansiona e Riscatta immediatamente"
+            ],
+            "Scan error": [
+                "Errore di scansione"
+            ],
+            "Scan next Ticket": [
+                "Scansiona il prossimo biglietto"
+            ],
+            "Successfully redeemed": [
+                "Riscattato con successo"
+            ],
+            "Start Camera": [
+                "Avvia Fotocamera"
+            ],
+            "Stop camera": [
+                "Ferma fotocamera"
+            ],
+            "%d tickets of this event (product) redeemed already": [
+                "%d biglietti di questo evento (prodotto) già riscattati"
+            ],
+            "Ticket redeemed": [
+                "Biglietto riscattato"
+            ],
+            "TICKET NOT REDEEMED - see reason below": [
+                "BIGLIETTO NON RISCATTATO - vedi motivo sotto"
+            ],
+            "TICKET OK - Redeemed": [
+                "BIGLIETTO OK - Riscattato"
+            ],
+            "Ticket is NOT paid (%s).": [
+                "Il biglietto NON è pagato (%s)."
+            ],
+            "Ticket paid": [
+                "Biglietto pagato"
+            ],
+            "Ticket NOT paid": [
+                "Biglietto NON pagato"
+            ],
+            "Ticket NOT redeemed": [
+                "Biglietto NON riscattato"
+            ],
+            "Use old ticket scanner library - compatibility mode": [
+                "Usa la vecchia libreria scanner biglietti - modalità compatibilità"
+            ],
+            "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
+                "Contenuto del codice QR sconosciuto. Impossibile estrarre i dati correttamente. Prova un codice QR di un biglietto."
+            ]
+        }
+    }
+}

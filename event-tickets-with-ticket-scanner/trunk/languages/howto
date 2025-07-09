@@ -1,0 +1,3 @@
+# https://developer.wordpress.org/plugins/internationalization/security/
+
+msgfmt -cv -o /path/to/output.mo /path/to/input.po

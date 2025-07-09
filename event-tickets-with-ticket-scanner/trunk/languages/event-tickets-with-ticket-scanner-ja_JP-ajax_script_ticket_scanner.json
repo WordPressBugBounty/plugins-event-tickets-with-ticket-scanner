@@ -1,0 +1,213 @@
+{
+    "translation-revision-date": "2025-06-23 11:00+01:00",
+    "generator": "WP-CLI\/2.7.1",
+    "source": "ticket_scanner.js",
+    "domain": "event-tickets-with-ticket-scanner",
+    "locale_data": {
+        "event-tickets-with-ticket-scanner": {
+            "": {
+                "domain": "event-tickets-with-ticket-scanner",
+                "lang": "ja",
+                "plural-forms": "nplurals=1; plural=0;"
+            },
+            "...loading...": [
+                "...読み込み中..."
+            ],
+            "Access rights missing. Please login first.": [
+                "アクセス権限がありません。まずログインしてください。"
+            ],
+            "Auth Token Set": [
+                "認証トークンが設定されました"
+            ],
+            "attr\u0004Type in the ticket number and hit ENTER (optional to scanning)": [
+                "チケット番号を入力してEnterキーを押してください（スキャンはオプションです）"
+            ],
+            "Bought at %s": [
+                "%sに購入"
+            ],
+            "cal\u0004Sun": [
+                "日"
+            ],
+            "cal\u0004Mon": [
+                "月"
+            ],
+            "cal\u0004Tue": [
+                "火"
+            ],
+            "cal\u0004Wed": [
+                "水"
+            ],
+            "cal\u0004Thu": [
+                "木"
+            ],
+            "cal\u0004Fri": [
+                "金"
+            ],
+            "cal\u0004Sat": [
+                "土"
+            ],
+            "cal\u0004Jan": [
+                "1月"
+            ],
+            "cal\u0004Feb": [
+                "2月"
+            ],
+            "cal\u0004Mar": [
+                "3月"
+            ],
+            "cal\u0004Apr": [
+                "4月"
+            ],
+            "cal\u0004May": [
+                "5月"
+            ],
+            "cal\u0004Jun": [
+                "6月"
+            ],
+            "cal\u0004Jul": [
+                "7月"
+            ],
+            "cal\u0004Aug": [
+                "8月"
+            ],
+            "cal\u0004Sep": [
+                "9月"
+            ],
+            "cal\u0004Oct": [
+                "10月"
+            ],
+            "cal\u0004Nov": [
+                "11月"
+            ],
+            "cal\u0004Dec": [
+                "12月"
+            ],
+            "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
+                "QRコードに公開チケット番号が見つかりません。チケットのQRコードをお試しください。"
+            ],
+            "Confirmed status validation check counter: <b>%s<\/b>": [
+                "確認済みステータス検証カウンター: <b>%s<\/b>"
+            ],
+            "Display short description if ticket information is hidden": [
+                "チケット情報が非表示の場合、簡単な説明を表示する"
+            ],
+            "Expiration at %s": [
+                "有効期限: %s"
+            ],
+            "Expires after %1$d days (%2$s)": [
+                "%1$d日後 (%2$s) に期限切れ"
+            ],
+            "Failed to redeem": [
+                "引き換えに失敗しました"
+            ],
+            "For QR code barcode scanner": [
+                "QRコードバーコードスキャナー用"
+            ],
+            "found %s": [
+                "%s件見つかりました"
+            ],
+            "Hide ticket information": [
+                "チケット情報を隠す"
+            ],
+            "label\u0004Created": [
+                "作成済み"
+            ],
+            "label\u0004Close": [
+                "閉じる"
+            ],
+            "label\u0004Completed": [
+                "完了済み"
+            ],
+            "label\u0004Download PDF": [
+                "PDFをダウンロード"
+            ],
+            "label\u0004Includes": [
+                "含む"
+            ],
+            "label\u0004Ok": [
+                "OK"
+            ],
+            "label\u0004Order ID": [
+                "注文ID"
+            ],
+            "label\u0004Order Ticket": [
+                "注文チケット"
+            ],
+            "label\u0004Paid": [
+                "支払い済み"
+            ],
+            "label\u0004Redeem Complete Order": [
+                "注文全体を引き換える"
+            ],
+            "label\u0004Redeem Ticket": [
+                "チケットを引き換える"
+            ],
+            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
+                "このチケットの最大引き換え数: <b>%s<\/b>"
+            ],
+            "no code found": [
+                "コードが見つかりません"
+            ],
+            "%s Products, %s Tickets": [
+                "%s 製品, %s チケット"
+            ],
+            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
+                "引き換え使用状況: <b>%1$d<\/b> / <b>%2$d<\/b>"
+            ],
+            "start redeem ticket...loading...": [
+                "チケットの引き換えを開始...読み込み中..."
+            ],
+            "Start cam to scan next ticket immediately": [
+                "カメラを起動して次のチケットをすぐにスキャンする"
+            ],
+            "Scan and Redeem immediately": [
+                "すぐにスキャンして引き換える"
+            ],
+            "Scan error": [
+                "スキャンエラー"
+            ],
+            "Scan next Ticket": [
+                "次のチケットをスキャン"
+            ],
+            "Successfully redeemed": [
+                "正常に引き換えられました"
+            ],
+            "Start Camera": [
+                "カメラを起動"
+            ],
+            "Stop camera": [
+                "カメラを停止"
+            ],
+            "%d tickets of this event (product) redeemed already": [
+                "このイベント（製品）のチケットはすでに%d枚引き換えられています"
+            ],
+            "Ticket redeemed": [
+                "チケット引き換え済み"
+            ],
+            "TICKET NOT REDEEMED - see reason below": [
+                "チケットは引き換えられていません - 以下の理由を参照してください"
+            ],
+            "TICKET OK - Redeemed": [
+                "チケットOK - 引き換え済み"
+            ],
+            "Ticket is NOT paid (%s).": [
+                "チケットは未払い (%s) です。"
+            ],
+            "Ticket paid": [
+                "チケット支払い済み"
+            ],
+            "Ticket NOT paid": [
+                "チケット未払い"
+            ],
+            "Ticket NOT redeemed": [
+                "チケット引き換えなし"
+            ],
+            "Use old ticket scanner library - compatibility mode": [
+                "古いチケットスキャナーライブラリを使用 - 互換モード"
+            ],
+            "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
+                "QRコードの内容が不明です。データを正しく抽出できません。チケットのQRコードをお試しください。"
+            ]
+        }
+    }
+}

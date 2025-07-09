@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce
 Requires PHP: 7.0
-Stable tag: 2.7.4
+Stable tag: 2.7.5
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -294,6 +294,11 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.7.5 =
+* Add check of the user input for the date picker. If the start and end date is set on the product, then the validation will make sure, the date is entered and also within the date range.
+* New option to prevent downloads of tickets (secured downloads), badges and ICS files if the user is not logged in. To use this, activate wcTicketAllowOnlyLoggedinToDownload.
+* New option if you want to redirect not logged in users during the secured download - wcTicketAllowOnlyLoggedinToDownloadRedirectURL.
+
 = 2.7.4 - 2025-07-01 =
 * Fix background image for ticket badges.
 
