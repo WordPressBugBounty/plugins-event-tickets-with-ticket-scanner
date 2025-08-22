@@ -92,6 +92,14 @@ class sasoEventtickets_Options {
 				'additional'=>$additional,
 				'isPublic'=>false
 				];
+		$options[] = [
+				'key'=>'ticketScannerSetOrderStatusAfterTicketView',
+				'label'=>__("Choose the new order status if your customer view the ticket details and/or download the PDF ticket", 'event-tickets-with-ticket-scanner'),
+				'desc'=>__("In doubt, do not play with it. :) If an order status is choosen and the ticket is viewed online or the PDF is downloaded, then the order status will be set to your choice. This includes the order detail view and the download of the order PDF ticket. If none is selected then nothing happens with the order. <b>Warning: </b> If you change the order to eg. refunded and the option is activate, then the order will be set to your new order, just because your customer was downloading the PDF ticket! For almost all uses cases this option makes no sense - it is just for a few special use cases needed.", 'event-tickets-with-ticket-scanner'),
+				'type'=>"dropdown",
+				'additional'=>$additional,
+				'isPublic'=>false
+				];
 		$options[] = ['key'=>'ticketScannerDisplayTimes', 'label'=>__('Display server and ticket times on the ticket scannner', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, then the server time, time zone and ticket times are displayed additional to the ticket scanner info. Ticket times, only if available.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox'];
 
 		$options[] = [
@@ -143,11 +151,19 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketPDFFontSize', 'label'=>__("Font size for text on the ticket PDF", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Please choose a font size between 6pt and 16pt.", 'event-tickets-with-ticket-scanner'), 'type'=>"dropdown", 'def'=>10, "additional"=>[ "values"=>[["label"=>"6pt", "value"=>6], ["label"=>"7pt", "value"=>7], ["label"=>"8pt", "value"=>8], ["label"=>"9pt", "value"=>9], ["label"=>"10pt", "value"=>10], ["label"=>"11pt", "value"=>11], ["label"=>"12pt", "value"=>12], ["label"=>"13pt", "value"=>13], ["label"=>"14pt", "value"=>14], ["label"=>"15pt", "value"=>15], ["label"=>"16pt", "value"=>16]]], '_doc_video'=>'https://youtu.be/dhdPDE_zuwY'];
 
 		$font_families = $this->MAIN->getNewPDFObject()->getPossibleFontFamiles();
+		$font_infos = $this->MAIN->getNewPDFObject()->getFontInfos();
 		$font_def = $font_families["default"];
 		$additional = [ "values"=>[] ];
 		sort($font_families["fonts"]);
 		foreach($font_families["fonts"] as $font) {
-			$additional['values'][] = ["label"=>$font, "value"=>$font];
+			$label = ["label"=>$font, "value"=>$font];
+			if (isset($font_infos[$font]) && isset($font_infos[$font]['name'])) {
+				$label['label'] .= " (".$font_infos[$font]['name'].")";
+			}
+			if (isset($font_infos[$font]) && isset($font_infos[$font]['lang_support']) && !empty($font_infos[$font]['lang_support'])) {
+				$label['label'] .= " - ".$font_infos[$font]['lang_support'];
+			}
+			$additional['values'][] = $label;
 		}
 		$options[] = ['key'=>'wcTicketPDFFontFamily', 'label'=>__("Font family for text on the ticket PDF", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If you need special characters you might change the font.", 'event-tickets-with-ticket-scanner'), 'type'=>"dropdown", 'def'=>$font_def, "additional"=>$additional, '_doc_video'=>'https://youtu.be/e-8tS_kv3SU' ];
 		$options[] = ['key'=>'wcTicketPDFStripHTML', 'label'=>__("Strip HTML from text", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If you experience issues with the rendered PDF, then you can change the settings here to strip some not garanteed supported elements or choose even to display the HTML code (helps for debug purpose).", 'event-tickets-with-ticket-scanner'), 'type'=>"dropdown", 'def'=>2, "additional"=>[ "values"=>[["label"=>__("No HTML strip", 'event-tickets-with-ticket-scanner'), "value"=>1], ["label"=>__("Remove unsupported HTML (default)", 'event-tickets-with-ticket-scanner'), "value"=>2], ["label"=>__("Show HTML Tags as text (Debugging)", 'event-tickets-with-ticket-scanner'), "value"=>3]]], '_doc_video'=>'https://youtu.be/nLKu9cxH95w' ];

@@ -623,6 +623,7 @@ class sasoEventtickets_WC {
 			'saso_eventtickets_list_formatter_values',
 			'saso_eventtickets_request_daychooser_per_ticket_label'
 		];
+
 		foreach($keys_inputfields as $key) {
 			if( isset($R[$key]) && !empty( $R[$key] ) ) {
 				update_post_meta( $id, $key, sanitize_text_field($R[$key]) );

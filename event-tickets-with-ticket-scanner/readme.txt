@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce
 Requires PHP: 7.0
-Stable tag: 2.7.5
+Stable tag: 2.7.6
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -294,7 +294,15 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
-= 2.7.5 =
+= 2.7.6 - 2025-08-22 =
+* Add name and language indicator to the font chooser option wcTicketPDFFontFamily
+* Listed more libraries in the support area
+* Removed the list with all available options from the support area
+* New option to set the order status if the ticket is viewed or downloaded. Warning, this is tricky, if you have no clue for what it could be used, please do not use it. Option: ticketScannerSetOrderStatusAfterTicketView.
+* Fix display order ticket paid date for non paid tickets.
+* Adopt ticket scanner to process also prefix "order-" as an order ticket number - fix bug before premum version 1.5.5.
+
+= 2.7.5 - 2025-07-09 =
 * Add check of the user input for the date picker. If the start and end date is set on the product, then the validation will make sure, the date is entered and also within the date range.
 * New option to prevent downloads of tickets (secured downloads), badges and ICS files if the user is not logged in. To use this, activate wcTicketAllowOnlyLoggedinToDownload.
 * New option if you want to redirect not logged in users during the secured download - wcTicketAllowOnlyLoggedinToDownloadRedirectURL.

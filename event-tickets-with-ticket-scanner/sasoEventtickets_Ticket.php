@@ -1397,6 +1397,7 @@ final class sasoEventtickets_Ticket {
 
 		if ($filemode == "I") {
 			do_action( $this->MAIN->_do_action_prefix.'trackIPForPDFView', $codeObj );
+			$this->setOrderStatusAfterViewOperation($order);
 		}
 
 		$ticket_template = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_outputTicketInfo_template', null, $codeObj );
@@ -1823,8 +1824,8 @@ final class sasoEventtickets_Ticket {
 				"qrcode_content"=>$qrcode_content,
 				"option_displayDateTimeFormat"=>$option_displayDateTimeFormat,
 				"date_created"=>date($option_displayDateTimeFormat, strtotime($order->get_date_created())),
-				"date_paid"=>date($option_displayDateTimeFormat, strtotime($order->get_date_paid())),
-				"date_completed"=>date($option_displayDateTimeFormat, strtotime($order->get_date_completed())),
+				"date_paid"=> $order->get_date_paid() != null ? date($option_displayDateTimeFormat, strtotime($order->get_date_paid())) : "-",
+				"date_completed"=>$order->get_date_completed() != null ? date($option_displayDateTimeFormat, strtotime($order->get_date_completed())) : "-",
 				"total"=>$order->get_formatted_order_total(),
 				"customer_id"=>$order->get_customer_id(),
 				"billing_name"=>$order->get_formatted_billing_full_name(),
@@ -1851,6 +1852,9 @@ final class sasoEventtickets_Ticket {
 
 		$infos = $this->getOrderTicketsInfos($parts['order_id'], $parts['code']);
 		$order = $infos["order"];
+
+		$this->setOrderStatusAfterViewOperation($order);
+
 		$order_infos = $infos["order_infos"];
 		$ticket_infos = $infos["ticket_infos"];
 
@@ -2091,6 +2095,17 @@ final class sasoEventtickets_Ticket {
 		}
 		return $order;
 	}
+	private function setOrderStatusAfterViewOperation($order) {
+		$ticketScannerSetOrderStatusAfterTicketView = $this->MAIN->getOptions()->getOptionValue("ticketScannerSetOrderStatusAfterTicketView");
+		if (strlen($ticketScannerSetOrderStatusAfterTicketView) > 1) { // no status change = "1"
+			if ($order != null) {
+				if ($order->get_status() != $ticketScannerSetOrderStatusAfterTicketView) {
+					$order->update_status($ticketScannerSetOrderStatusAfterTicketView);
+				}
+			}
+		}
+		return $order;
+	}
 	private function redeemTicket($codeObj = null) {
 		$this->redeem_successfully = false;
 		if ($codeObj == null) {
@@ -2279,6 +2294,7 @@ final class sasoEventtickets_Ticket {
 			$order = wc_get_order($order_id);
 			$idcode = $order->get_meta('_saso_eventtickets_order_idcode');
 			if (!empty($idcode) && $idcode == $parts['code']) {
+				$this->setOrderStatusAfterViewOperation($order);
 				$this->outputPDFTicketsForOrder($order);
 			} else {
 				echo "Wrong ticket code";
@@ -2350,6 +2366,10 @@ final class sasoEventtickets_Ticket {
 							$this->outputOrderTicketsInfos();
 						} else {
 							$this->outputTicketInfo();
+							$order = $this->getOrder();
+							if ($order != null) {
+								$this->setOrderStatusAfterViewOperation($order);
+							}
 						}
 					}
 				} catch(Exception $e) {

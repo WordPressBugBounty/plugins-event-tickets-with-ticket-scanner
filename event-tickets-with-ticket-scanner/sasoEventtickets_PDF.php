@@ -32,6 +32,146 @@ class sasoEventtickets_PDF {
         $this->_loadLibs();
     }
 
+    private function _loadLibs() {
+		// always load alternative config file for examples
+
+		//require_once('vendors/TCPDF/config/tcpdf_config_alt.php');
+		require_once('vendors/TCPDF/config/tcpdf_config.php');
+
+		// Include the main TCPDF library (search the library on the following directories).
+		if (!class_exists('TCPDF')) {
+			$tcpdf_include_dirs = array(
+				plugin_dir_path(__FILE__).'vendors/TCPDF/tcpdf.php',
+				realpath(dirname(__FILE__) . '/vendors/TCPDF/tcpdf.php'),// True source file
+				realpath('vendors/TCPDF/tcpdf.php'),// Relative from $PWD
+				'/usr/share/php/tcpdf/tcpdf.php',
+				'/usr/share/tcpdf/tcpdf.php',
+				'/usr/share/php-tcpdf/tcpdf.php',
+				'/var/www/tcpdf/tcpdf.php',
+				'/var/www/html/tcpdf/tcpdf.php',
+				'/usr/local/apache2/htdocs/tcpdf/tcpdf.php'
+			);
+			foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
+				if (@file_exists($tcpdf_include_path)) {
+					require_once($tcpdf_include_path);
+					break;
+				}
+			}
+		}
+
+		if (!class_exists('Fpdi')) {
+			require_once('vendors/FPDI-2.3.7/src/autoload.php');
+		}
+		if (!class_exists('FPDF')) {
+			require_once("vendors/fpdf185/fpdf.php");
+		}
+	}
+
+	public function getFontInfos() {
+		// Returns an array with font names and their descriptions
+		// The array contains the font name as key and an array with "name", "lang_support" and "desc" as values
+		// "name" is the display name
+		// "lang_support" is a string with language codes that the font supports (e.g. "en, de, fr")
+		// "desc" is a description of the font
+		// The array is sorted by the font name
+		// The font names are the same as in the TCPDF library, so you can use them directly in the SetFont() method
+		// The font names are case-sensitive, so you must use the exact name as in the array
+		// the font names are in the folder vendors/TCPDF/fonts
+		// The array is used to populate a dropdown list in the settings page of the plugin
+		$infos = [
+			'aealarabiya'=>["name"=>'AE Al Arabiya', "lang_support"=>"ar", "desc"=>"AE Al Arabiya is a font family that supports Arabic characters."],
+			'aefurat'=>["name"=>'AE Furat', "lang_support"=>"ar", "desc"=>"AE Furat is a font family that supports Arabic characters."],
+			'cid0jp'=>["name"=>'CID0JP', "lang_support"=>"ja", "desc"=>"CID0JP is a font family that supports Japanese characters."],
+			'cid0kr'=>["name"=>'CID0KR', "lang_support"=>"ko", "desc"=>"CID0KR is a font family that supports Korean characters."],
+			'cid0cn'=>["name"=>'CID0CN', "lang_support"=>"zh", "desc"=>"CID0CN is a font family that supports Chinese characters."],
+			'cid0tw'=>["name"=>'CID0TW', "lang_support"=>"zh", "desc"=>"CID0TW is a font family that supports Traditional Chinese characters."],
+			'cid0vn'=>["name"=>'CID0VN', "lang_support"=>"vi", "desc"=>"CID0VN is a font family that supports Vietnamese characters."],
+			'cid0th'=>["name"=>'CID0TH', "lang_support"=>"th", "desc"=>"CID0TH is a font family that supports Thai characters."],
+			'cid0cs'=>["name"=>'CID0CS', "lang_support"=>"cn", "desc"=>"CID0CS is a font family that supports chinese simplified characters."],
+			'cid0ct'=>["name"=>'CID0CT', "lang_support"=>"cn", "desc"=>"CID0CT is a font family that supports chinese traditional characters."],
+			'cid0arabic'=>["name"=>'CID0Arabic', "lang_support"=>"ar", "desc"=>"CID0Arabic is a font family that supports Arabic characters."],
+			'cid0hebrew'=>["name"=>'CID0Hebrew', "lang_support"=>"he", "desc"=>"CID0Hebrew is a font family that supports Hebrew characters."],
+			'cid0cyrillic'=>["name"=>'CID0Cyrillic', "lang_support"=>"ru", "desc"=>"CID0Cyrillic is a font family that supports Cyrillic characters."],
+			'cid0greek'=>["name"=>'CID0Greek', "lang_support"=>"el", "desc"=>"CID0Greek is a font family that supports Greek characters."],
+			'cid0thai'=>["name"=>'CID0Thai', "lang_support"=>"th", "desc"=>"CID0Thai is a font family that supports Thai characters."],
+			'cid0vietnamese'=>["name"=>'CID0Vietnamese', "lang_support"=>"vi", "desc"=>"CID0Vietnamese is a font family that supports Vietnamese characters."],
+			'cid0latin'=>["name"=>'CID0Latin', "lang_support"=>"", "desc"=>"CID0Latin is a font family that supports Latin characters."],
+			'cid0latinext'=>["name"=>'CID0Latin Extended', "lang_support"=>"", "desc"=>"CID0Latin Extended is a font family that supports Latin characters with extended glyphs."],
+			'cid0cyrillicext'=>["name"=>'CID0Cyrillic Extended', "lang_support"=>"", "desc"=>"CID0Cyrillic Extended is a font family that supports Cyrillic characters with extended glyphs."],
+			'cid0greekext'=>["name"=>'CID0Greek Extended', "lang_support"=>"", "desc"=>"CID0Greek Extended is a font family that supports Greek characters with extended glyphs."],
+			'cid0arabicext'=>["name"=>'CID0Arabic Extended', "lang_support"=>"", "desc"=>"CID0Arabic Extended is a font family that supports Arabic characters with extended glyphs."],
+			'courier'=>["name"=>'Courier', "lang_support"=>"", "desc"=>"Courier is a monospaced font that is widely used for programming and technical documents."],
+			'courierb'=>["name"=>'Courier Bold', "lang_support"=>"", "desc"=>"Courier Bold is a bold version of the Courier font."],
+			'courieri'=>["name"=>'Courier Italic', "lang_support"=>"", "desc"=>"Courier Italic is an italic version of the Courier font."],
+			'courierbi'=>["name"=>'Courier Bold Italic', "lang_support"=>"", "desc"=>"Courier Bold Italic is a bold italic version of the Courier font."],
+			'dejavusans'=>["name"=>'DejaVu Sans', "lang_support"=>"", "desc"=>"DejaVu Sans is a font family based on the Bitstream Vera Fonts with a wider range of characters."],
+			'dejavusansb'=>["name"=>'DejaVu Sans Bold', "lang_support"=>"", "desc"=>"DejaVu Sans Bold is a bold version of the DejaVu Sans font."],
+			'dejavusansi'=>["name"=>'DejaVu Sans Italic', "lang_support"=>"", "desc"=>"DejaVu Sans Italic is an italic version of the DejaVu Sans font."],
+			'dejavusansbi'=>["name"=>'DejaVu Sans Bold Italic', "lang_support"=>"", "desc"=>"DejaVu Sans Bold Italic is a bold italic version of the DejaVu Sans font."],
+			'dejavusanscondensed'=>["name"=>'DejaVu Sans Condensed', "lang_support"=>"", "desc"=>"DejaVu Sans Condensed is a font family based on the Bitstream Vera Fonts with a wider range of characters."],
+			'dejavusanscondensedb'=>["name"=>'DejaVu Sans Condensed Bold', "lang_support"=>"", "desc"=>"DejaVu Sans Condensed Bold is a bold version of the DejaVu Sans Condensed font."],
+			'dejavusanscondensedi'=>["name"=>'DejaVu Sans Condensed Italic', "lang_support"=>"", "desc"=>"DejaVu Sans Condensed Italic is an italic version of the DejaVu Sans Condensed font."],
+			'dejavusanscondensedbi'=>["name"=>'DejaVu Sans Condensed Bold Italic', "lang_support"=>"", "desc"=>"DejaVu Sans Condensed Bold Italic is a bold italic version of the DejaVu Sans Condensed font."],
+			'dejavusansextralight'=>["name"=>'DejaVu Sans ExtraLight', "lang_support"=>"", "desc"=>"DejaVu Sans ExtraLight is a font family based on the Bitstream Vera Fonts with a wider range of characters."],
+			'dejavusansi'=>["name"=>'DejaVu Sans ExtraLight Italic', "lang_support"=>"", "desc"=>"DejaVu Sans ExtraLight Italic is an italic version of the DejaVu Sans ExtraLight font."],
+			'dejavusansmono'=>["name"=>'DejaVu Sans Mono', "lang_support"=>"", "desc"=>"DejaVu Sans Mono is a font family based on the Bitstream Vera Fonts with a wider range of characters."],
+			'dejavusansmonob'=>["name"=>'DejaVu Sans Mono Bold', "lang_support"=>"", "desc"=>"DejaVu Sans Mono Bold is a bold version of the DejaVu Sans Mono font."],
+			'dejavusansmonoi'=>["name"=>'DejaVu Sans Mono Italic', "lang_support"=>"", "desc"=>"DejaVu Sans Mono Italic is an italic version of the DejaVu Sans Mono font."],
+			'dejavusansmonobi'=>["name"=>'DejaVu Sans Mono Bold Italic', "lang_support"=>"", "desc"=>"DejaVu Sans Mono Bold Italic is a bold italic version of the DejaVu Sans Mono font."],
+			'dejavuserif'=>["name"=>'DejaVu Serif', "lang_support"=>"", "desc"=>"DejaVu Serif is a font family based on the Bitstream Vera Fonts with a wider range of characters."],
+			'dejavuserifcondensed'=>["name"=>'DejaVu Serif Condensed', "lang_support"=>"", "desc"=>"DejaVu Serif Condensed is a font family based on the Bitstream Vera Fonts with a wider range of characters."],
+			'dejavuserifmono'=>["name"=>'DejaVu Serif Mono', "lang_support"=>"", "desc"=>"DejaVu Serif Mono is a font family based on the Bitstream Vera Fonts with a wider range of characters."],
+			'freemono'=>["name"=>'FreeMono', "lang_support"=>"", "desc"=>"FreeMono is a monospaced font that is widely used for programming and technical documents."],
+			'freemonob'=>["name"=>'FreeMono Bold', "lang_support"=>"", "desc"=>"FreeMono Bold is a bold version of the FreeMono font."],
+			'freemonoi'=>["name"=>'FreeMono Italic', "lang_support"=>"", "desc"=>"FreeMono Italic is an italic version of the FreeMono font."],
+			'freemonobi'=>["name"=>'FreeMono Bold Italic', "lang_support"=>"", "desc"=>"FreeMono Bold Italic is a bold italic version of the FreeMono font."],
+			'freesans'=>["name"=>'FreeSans', "lang_support"=>"", "desc"=>"FreeSans is a sans-serif font that is widely used for general-purpose documents."],
+			'freesansb'=>["name"=>'FreeSans Bold', "lang_support"=>"", "desc"=>"FreeSans Bold is a bold version of the FreeSans font."],
+			'freesansi'=>["name"=>'FreeSans Italic', "lang_support"=>"", "desc"=>"FreeSans Italic is an italic version of the FreeSans font."],
+			'freesansbi'=>["name"=>'FreeSans Bold Italic', "lang_support"=>"", "desc"=>"FreeSans Bold Italic is a bold italic version of the FreeSans font."],
+			'freeserif'=>["name"=>'FreeSerif', "lang_support"=>"", "desc"=>"FreeSerif is a serif font that is widely used for general-purpose documents."],
+			'freeserifb'=>["name"=>'FreeSerif Bold', "lang_support"=>"", "desc"=>"FreeSerif Bold is a bold version of the FreeSerif font."],
+			'freeserifi'=>["name"=>'FreeSerif Italic', "lang_support"=>"", "desc"=>"FreeSerif Italic is an italic version of the FreeSerif font."],
+			'freeserifbi'=>["name"=>'FreeSerif Bold Italic', "lang_support"=>"", "desc"=>"FreeSerif Bold Italic is a bold italic version of the FreeSerif font."],
+			'helvetica'=>["name"=>'Helvetica', "lang_support"=>"", "desc"=>"Helvetica is a widely used sans-serif font that is known for its clean and modern appearance."],
+			'helveticab'=>["name"=>'Helvetica Bold', "lang_support"=>"", "desc"=>"Helvetica Bold is a bold version of the Helvetica font."],
+			'helveticai'=>["name"=>'Helvetica Italic', "lang_support"=>"", "desc"=>"Helvetica Italic is an italic version of the Helvetica font."],
+			'helveticabi'=>["name"=>'Helvetica Bold Italic', "lang_support"=>"", "desc"=>"Helvetica Bold Italic is a bold italic version of the Helvetica font."],
+			'hysmyeongjostdmedium'=>["name"=>'HYSMyeongJoStd-Medium', "lang_support"=>"ko", "desc"=>"HYSMyeongJoStd-Medium is a font family that supports Korean characters."],
+			'kozgopromedium'=>["name"=>'KoZGoPro-Medium', "lang_support"=>"ko", "desc"=>"KoZGoPro-Medium is a font family that supports Korean characters."],
+			'kozminproregular'=>["name"=>'KoZMinPro-Regular', "lang_support"=>"ja", "desc"=>"KoZMinPro-Regular is a font family that supports Japanese characters."],
+			'msungstdlight'=>["name"=>'MyeongJoStd-Light', "lang_support"=>"ko", "desc"=>"MyeongJoStd-Light is a font family that supports Korean characters."],
+			'pdfacourier'=>["name"=>'PDFa Courier', "lang_support"=>"", "desc"=>"PDFa Courier is a monospaced font that is widely used for programming and technical documents."],
+			'pdfacourierb'=>["name"=>'PDFa Courier Bold', "lang_support"=>"", "desc"=>"PDFa Courier Bold is a bold version of the PDFa Courier font."],
+			'pdfacourieri'=>["name"=>'PDFa Courier Italic', "lang_support"=>"", "desc"=>"PDFa Courier Italic is an italic version of the PDFa Courier font."],
+			'pdfacourierbi'=>["name"=>'PDFa Courier Bold Italic', "lang_support"=>"", "desc"=>"PDFa Courier Bold Italic is a bold italic version of the PDFa Courier font."],
+			'pdfahelvetica'=>["name"=>'PDFa Helvetica', "lang_support"=>"", "desc"=>"PDFa Helvetica is a widely used sans-serif font that is known for its clean and modern appearance."],
+			'pdfahelveticab'=>["name"=>'PDFa Helvetica Bold', "lang_support"=>"", "desc"=>"PDFa Helvetica Bold is a bold version of the PDFa Helvetica font."],
+			'pdfahelveticai'=>["name"=>'PDFa Helvetica Italic', "lang_support"=>"", "desc"=>"PDFa Helvetica Italic is an italic version of the PDFa Helvetica font."],
+			'pdfahelveticabi'=>["name"=>'PDFa Helvetica Bold Italic', "lang_support"=>"", "desc"=>"PDFa Helvetica Bold Italic is a bold italic version of the PDFa Helvetica font."],
+			'pdfasymbol'=>["name"=>'PDFa Symbol', "lang_support"=>"", "desc"=>"PDFa Symbol is a font family that supports mathematical symbols and special characters."],
+			'pdfatimes'=>["name"=>'PDFa Times', "lang_support"=>"", "desc"=>"PDFa Times is a serif font that is widely used for general-purpose documents."],
+			'pdfatimesb'=>["name"=>'PDFa Times Bold', "lang_support"=>"", "desc"=>"PDFa Times Bold is a bold version of the PDFa Times font."],
+			'pdfatimesi'=>["name"=>'PDFa Times Italic', "lang_support"=>"", "desc"=>"PDFa Times Italic is an italic version of the PDFa Times font."],
+			'pdfatimesbi'=>["name"=>'PDFa Times Bold Italic', "lang_support"=>"", "desc"=>"PDFa Times Bold Italic is a bold italic version of the PDFa Times font."],
+			'pdfazapfdingbats'=>["name"=>'PDFa ZapfDingbats', "lang_support"=>"", "desc"=>"PDFa ZapfDingbats is a font family that supports various symbols and icons."],
+			'roboto'=>["name"=>'Roboto', "lang_support"=>"", "desc"=>"Roboto is a sans-serif font that is widely used for general-purpose documents."],
+			'stsongstdlight'=>["name"=>'STSongStd-Light', "lang_support"=>"zh", "desc"=>"STSongStd-Light is a font family that supports Simplified Chinese characters."],
+			'symbol'=>["name"=>'Symbol', "lang_support"=>"", "desc"=>"Symbol is a font family that supports mathematical symbols and special characters."],
+			'times'=>["name"=>'Times', "lang_support"=>"", "desc"=>"Times is a serif font that is widely used for general-purpose documents."],
+			'timesb'=>["name"=>'Times Bold', "lang_support"=>"", "desc"=>"Times Bold is a bold version of the Times font."],
+			'timesi'=>["name"=>'Times Italic', "lang_support"=>"", "desc"=>"Times Italic is an italic version of the Times font."],
+			'timesbi'=>["name"=>'Times Bold Italic', "lang_support"=>"", "desc"=>"Times Bold Italic is a bold italic version of the Times font."],
+			'uni2cid_ac15'=>["name"=>'Uni2CID_AC15', "lang_support"=>"", "desc"=>"Uni2CID_AC15 is a font family that supports various characters and symbols."],
+			'uni2cid_ag15'=>["name"=>'Uni2CID_AG15', "lang_support"=>"", "desc"=>"Uni2CID_AG15 is a font family that supports various characters and symbols."],
+			'uni2cid_aj16'=>["name"=>'Uni2CID_AJ16', "lang_support"=>"", "desc"=>"Uni2CID_AJ16 is a font family that supports various characters and symbols."],
+			'uni2cid_ak12'=>["name"=>'Uni2CID_AK12', "lang_support"=>"", "desc"=>"Uni2CID_AK12 is a font family that supports various characters and symbols."],
+			'zapfdingbats'=>["name"=>'ZapfDingbats', "lang_support"=>"", "desc"=>"ZapfDingbats is a font family that supports various symbols and icons."],
+		];
+		// sort by name
+		ksort($infos);
+		return $infos;
+	}
 	public function getPossibleFontFamiles() {
 		$ret = ["default"=>'dejavusans', "fonts"=>[]];
 		if ($handle = opendir(__DIR__.'/vendors/TCPDF/fonts')) {
@@ -171,41 +311,6 @@ class sasoEventtickets_PDF {
 		return $this->parts;
 	}
 
-    private function _loadLibs() {
-		// always load alternative config file for examples
-
-		//require_once('vendors/TCPDF/config/tcpdf_config_alt.php');
-		require_once('vendors/TCPDF/config/tcpdf_config.php');
-
-		// Include the main TCPDF library (search the library on the following directories).
-		if (!class_exists('TCPDF')) {
-			$tcpdf_include_dirs = array(
-				plugin_dir_path(__FILE__).'vendors/TCPDF/tcpdf.php',
-				realpath(dirname(__FILE__) . '/vendors/TCPDF/tcpdf.php'),// True source file
-				realpath('vendors/TCPDF/tcpdf.php'),// Relative from $PWD
-				'/usr/share/php/tcpdf/tcpdf.php',
-				'/usr/share/tcpdf/tcpdf.php',
-				'/usr/share/php-tcpdf/tcpdf.php',
-				'/var/www/tcpdf/tcpdf.php',
-				'/var/www/html/tcpdf/tcpdf.php',
-				'/usr/local/apache2/htdocs/tcpdf/tcpdf.php'
-			);
-			foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
-				if (@file_exists($tcpdf_include_path)) {
-					require_once($tcpdf_include_path);
-					break;
-				}
-			}
-		}
-
-		if (!class_exists('FPDI')) {
-			require_once('vendors/FPDI-2.3.7/src/autoload.php');
-		}
-		if (!class_exists('FPDF')) {
-			require_once("vendors/fpdf185/fpdf.php");
-		}
-	}
-
 	private function prepareOutputBuffer() {
 		if ($this->filemode != "F" && ob_get_length() !== false) ob_clean();
 		if ($this->filemode != "F") ob_start();
@@ -259,7 +364,7 @@ class sasoEventtickets_PDF {
 		$this->prepareOutputBuffer();
 		$this->checkFilePath();
 		$format = $this->getFormat();
-		$pdf = new FPDI($this->orientation, PDF_UNIT, $format, true, 'UTF-8', false, false);
+		$pdf = new Fpdi($this->orientation, PDF_UNIT, $format, true, 'UTF-8', false, false);
 		$pdf = $this->attachPDFs($pdf, $pdf_filelocations);
 
 		$this->cleanOutputBuffer();
@@ -275,7 +380,7 @@ class sasoEventtickets_PDF {
 			$this->orientation = "L";
 		}
 
-		$pdf = new FPDI($this->orientation, PDF_UNIT, $format, true, 'UTF-8', false, false);
+		$pdf = new Fpdi($this->orientation, PDF_UNIT, $format, true, 'UTF-8', false, false);
 		//$pdf->error = function ($msg) {throw new Exception("PDF-Parser: ".$msg);};
 
         $preferences = [

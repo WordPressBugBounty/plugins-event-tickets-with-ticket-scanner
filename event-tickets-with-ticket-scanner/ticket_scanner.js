@@ -736,6 +736,11 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             return;
         }
 
+        // check if the code is an order, then transform it to ordertickets
+        if (code.startsWith("order-")) {
+            code = "ordertickets-" + code.substring(6);
+        }
+
         let redeem = ticket_scanner_operating_option.redeem_auto;
         if (redeemed == true) {
             redeem = false; // is already redeemed
@@ -1064,7 +1069,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         div.append("<b>"+_x("Includes", 'label', 'event-tickets-with-ticket-scanner')+": </b>"+sprintf(__('%s Products, %s Tickets', 'event-tickets-with-ticket-scanner'), data.order_infos.products.length, data.ticket_infos.length)+'<br>');
         div.append('<b>'+_x("Order ID", 'label', 'event-tickets-with-ticket-scanner')+': </b>#'+data.order_infos.id+'<br>');
         div.append('<b>'+_x("Created", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_created+'<br>');
-        div.append('<b>'+_x("Created", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_completed+'<br>');
+        div.append('<b>'+_x("Completed", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_completed+'<br>');
         div.append('<b>'+_x("Paid", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_paid+'<br>');
         div.append($('<button class="button-ticket-options button-primary">').html(_x("Redeem Complete Order", 'label', 'event-tickets-with-ticket-scanner')).on("click", e=>{
             redeemTicket(data.order_infos.code);

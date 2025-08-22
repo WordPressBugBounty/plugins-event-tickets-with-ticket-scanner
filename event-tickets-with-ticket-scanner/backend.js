@@ -785,6 +785,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			DIV.append('<li><b>jQuery UI CSS</b> - '+label_version+': '+jQuery.ui.version+'</li>');
 			DIV.append('<li><b>PHP TWIG template engine</b> https://twig.symfony.com/ - '+label_version+': 3.x</li>');
 			DIV.append('<li><b>PHP QR Code</b> http://sourceforge.net/projects/phpqrcode/ - '+label_version+': 1.1.4</li>');
+			DIV.append('<li><b>FPDI</b> '+label_version+': 2.3.7</li>');
+			DIV.append('<li><b>FPDF</b> '+label_version+': 1.8.5</li>');
+			DIV.append('<li><b>TCPDF</b> http://www.tcpdf.org - '+label_version+': 6.4.4</li>');
 			DIV.append('<li><b>Javascript QR code scanner:</b> https://github.com/nimiq/qr-scanner - '+label_version+': 1.4.2</li>');
 			DIV.append('<li><b>Javascript Datatable:</b> https://datatables.net/ - '+label_version+': 1.10.21</li>');
 			DIV.append('<li><b>Javascript Raphael:</b> http://raphaeljs.com/ - '+label_version+': 2.3.0</li>');
@@ -809,13 +812,15 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				}
 			});
 
+			/*
 			DIV.append('<h3 style="margin-bottom:0;">All available Options</h3>');
 			let list_elem = $('<div>').appendTo(DIV);
 			data.forEach(v=>{
 				if (v.type != 'heading' && v.key != "serial" && v.type != "desc") {
 					if (v.additional && v.additional.doNotRender && v.additional.doNotRender === 1) {}
 					else {
-						list_elem.append('-');
+						list_elem.append(v.key);
+						list_elem.append(' - ');
 						list_elem.append(v.label);
 						if (v.desc != "") {
 							list_elem.append(`${newline}`).append(v.desc);
@@ -834,6 +839,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					}
 				}
 			});
+			*/
 
 			// helper buttons
 			$('<button/>').css("margin-top", "30px").addClass("sngmbh_btn-delete").html(_x("Repair tables", 'label', 'event-tickets-with-ticket-scanner')).appendTo(DIV).on("click", ()=>{
