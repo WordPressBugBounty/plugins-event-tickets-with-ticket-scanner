@@ -132,15 +132,16 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketDisplayDownloadAllTicketsPDFButtonOnOrderdetail', 'label'=>__("Display all tickets in one PDF download button/link on the order detail view", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, a link to download all tickets as one PDF on the order detail page below the tickets will be placed. Only if the purchase has tickets.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>""];
 		$options[] = ['key'=>'wcTicketDontDisplayPDFButtonOnMail', 'label'=>__("Hide the PDF download button/link on purchase order email", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, it will not display the PDF download option for a single ticket on the purchase email to the client. But the PDF can still be generated with the URL.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/8ZttYE1RFWY'];
 		$options[] = ['key'=>'wcTicketDontDisplayDetailLinkOnMail', 'label'=>__("Hide the ticket detail page link on purchase order email", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, it will not display the URWeL to the ticket detail page on the purchase email to the client.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/yIiiI3qRKWY'];
-		$options[] = ['key'=>'wcTicketLabelPDFDownloadHeading', 'label'=>__("Heading for the Ticket Download section within the purchase order email", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If left empty, default will be 'Download Tickets' as the heading for the section below the order details table.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__("Download Tickets", 'event-tickets-with-ticket-scanner'), '_doc_video'=>'https://youtu.be/9B0X8OunLyE'];
+		$options[] = ['key'=>'wcTicketLabelPDFDownloadHeading', 'label'=>__("Heading for the Ticket Download section within the purchase order email", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If left empty, default will be 'Download Tickets' as the heading for the section below the order details table.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__("Download Tickets", 'event-tickets-with-ticket-scanner'), '_doc_video'=>'https://youtu.be/9B0X8OunLyE', '_do_not_trim'=>true];
 		$options[] = ['key'=>'wcTicketLabelPDFDownload', 'label'=>__("Text that will be added as the PDF Ticket download label", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If left empty, default will be 'Download PDF Ticket' on the button and on the link within the purchase email.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__("Download PDF Ticket", 'event-tickets-with-ticket-scanner'), '_doc_video'=>'https://youtu.be/TDo86oywJpw'];
 		$options[] = ['key'=>'wcTicketLabelOrderDetailView', 'label'=>__("Text that will be added as the Order Ticket detail view label", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If left empty, default will be 'Open Tickets' on the link within the purchase email.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__("Open Tickets", 'event-tickets-with-ticket-scanner'), '_doc_video'=>'https://youtu.be/p2OslJXaOQk'];
 		$options[] = ['key'=>'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets', 'label'=>__("Set the order automatically to completed, if all purchased products are tickets", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active and all items of the order are tickets, then it will set the order status to completed if the order status is 'processing' and all purchased items in the order are tickets.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/roFt6yf7V6Y'];
 		$options[] = ['key'=>'wcTicketHideTicketAfterEventEnd', 'label'=>__("Hide ticket product after the event", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, then the plugin will search, once per day at 0:05, all ticket products that are public. Checks if the event date is set and expireed, and then set it to 'hidden' if so. <b>Important: this is not working for day chooser tickets date, where your customer can select the event date! The system will use the end date, that is set on the end date value, to hide the product.</b>", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/vKQjVjfUnGc'];
 		$options[] = ['key'=>'wcTicketLabelCartForName', 'label'=>__("Label for error message on cart for missing text value", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a value for checkout.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" requires a value for checkout.', 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketLabelCartForValue', 'label'=>__("Label for error message on cart for not choosen dropdown value", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a value from the dropdown for checkout.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" requires a value from the dropdown for checkout.', 'event-tickets-with-ticket-scanner')];
-		$options[] = ['key'=>'wcTicketLabelCartForDaychooser', 'label'=>__("Label for error message on cart for not choosen a date", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a value from the dropdown for checkout.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" on position {count} requires a valid date.', 'event-tickets-with-ticket-scanner')];
-		$options[] = ['key'=>'wcTicketLabelCartForDaychooserInvalidDate', 'label'=>__("Label for error message on cart for wrong date", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a value from the dropdown for checkout.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" on position {count} requires a valid date.', 'event-tickets-with-ticket-scanner')];
+		$options[] = ['key'=>'wcTicketLabelCartForDaychooser', 'label'=>__("Label for error message on cart for not choosen a date", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} and {count} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a value from the dropdown for checkout.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" requires a valid date.', 'event-tickets-with-ticket-scanner')];
+		$options[] = ['key'=>'wcTicketLabelCartForDaychooserInvalidDate', 'label'=>__("Label for error message on cart for wrong date", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} and {count} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a valid date.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" requires a valid date.', 'event-tickets-with-ticket-scanner')];
+		$options[] = ['key'=>'wcTicketLabelCartForDaychooserPassedDate', 'label'=>__("Label for error message on cart if the date is in the past", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} and {count} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a date from today or in the future.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product {PRODUCT_NAME} requires a date from today or in the future.', 'event-tickets-with-ticket-scanner')];
 
 		$options[] = [
 			'key'=>'h12b2',
@@ -358,7 +359,8 @@ class sasoEventtickets_Options {
 				isset($o['def']) ? $o['def'] : null,
 				isset($o['additional']) ? $o['additional'] : [],
 				isset($o['isPublic']) ? $o['isPublic'] : false,
-				isset($o['_doc_video']) ? $o['_doc_video'] : ''
+				isset($o['_doc_video']) ? $o['_doc_video'] : '',
+				isset($o['_do_not_trim']) ? $o['_do_not_trim'] : ''
 			);
 		}
 
@@ -455,7 +457,7 @@ class sasoEventtickets_Options {
 			$this->_options = $this->MAIN->getPremiumFunctions()->_initOptions($this->_options);
 		}
 	}
-	public function getOptionsObject($key, $label, $desc="",$type="checkbox",$def=null,$additional=[], $isPublic=false, $doc_video='') {
+	public function getOptionsObject($key, $label, $desc="",$type="checkbox",$def=null,$additional=[], $isPublic=false, $doc_video='', $do_not_trim=false) {
 		if ($def == null) {
 			switch($type) {
 				case "number":
@@ -466,7 +468,20 @@ class sasoEventtickets_Options {
 					$def = "";
 			}
 		}
-		return ['key'=>$key,'id'=>$this->_prefix.$key,'label'=>$label,'desc'=>$desc,'value'=>0,'type'=>$type,'default'=>$def,'additional'=>$additional, 'isPublic'=>$isPublic, '_isLoaded'=>false, '_doc_video'=>$doc_video];
+		return [
+			'key'=>$key,
+			'id'=>$this->_prefix.$key,
+			'label'=>$label,
+			'desc'=>$desc,
+			'value'=>0,
+			'type'=>$type,
+			'default'=>$def,
+			'additional'=>$additional,
+			'isPublic'=>$isPublic,
+			'_isLoaded'=>false,
+			'_doc_video'=>$doc_video,
+			'_do_not_trim'=>$do_not_trim
+		];
 	}
 	public function loadOptionFromWP($option_id, $default=null, $prefix=null) {
 		if ($prefix == null) $prefix = $this->_prefix;
@@ -564,7 +579,11 @@ class sasoEventtickets_Options {
 				if (is_array($data['value'])) {
 					array_walk($data['value'], "trim");
 				} else {
-					$data['value'] = trim($data['value']);
+					if (isset($option['_do_not_trim']) && $option['_do_not_trim']) {
+						$data['value'] = $data['value'];
+					} else {
+						$data['value'] = trim($data['value']);
+					}
 				}
 				$v = $data['value'];
 			}
@@ -586,7 +605,11 @@ class sasoEventtickets_Options {
 			$ret = $option['value'];
 			if (count($option['value']) == "") $ret = $option['default'];
 		} else {
-			$ret = trim($option['value']) == "" ? $option['default'] : $option['value'];
+			if (isset($option['_do_not_trim']) && $option['_do_not_trim']) {
+				$ret = $option['value'] == "" ? $option['default'] : $option['value'];
+			} else {
+				$ret = trim($option['value']) == "" ? $option['default'] : $option['value'];
+			}
 		}
 		return $ret;
 	}
@@ -623,7 +646,7 @@ class sasoEventtickets_Options {
 		try {
 			$d = date($date_format." ".$time_format, current_time("timestamp"));
 		} catch(Exception $e) {
-			$date_format = 'Y/m/d H:i';
+			$date_format = 'Y/m/d';
 		}
 		return $date_format." ".$time_format;
 	}

@@ -1101,9 +1101,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					}
 					div_options.append('<hr>').append('<h3 id="'+v.key+'" '+(desc !== "" ? ' style="margin-bottom:0;"' : '')+'>'+v.label+'</h3>').append(desc !== "" ? '<div style="margin-bottom:15px;"><i>'+desc+'</i></div>':'');
 				} else if (v.type =="desc") {
-					let desc = v.desc;
+					let desc = v.desc+" ";
+					if (typeof v._do_not_trim !== "undefined" && v._do_not_trim) {
+						desc += 'To leave this value blank, enter a space. ';
+					}
 					if (typeof v._doc_video !== "undefined" && v._doc_video != "") {
-						desc += ' <span class="dashicons dashicons-external"></span> <a href="'+v._doc_video+'" target="_blank">Video Help</a>';
+						desc += '<span class="dashicons dashicons-external"></span> <a href="'+v._doc_video+'" target="_blank">Video Help</a>';
 					}
 					div_options.append('<div/>').css({"margin-bottom": "15px","margin-right": "15px"}).append('<b>'+v.label+'</b><br>'+desc+"<br>");
 				} else {
@@ -1116,7 +1119,11 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 					let cbf = null;
 					let pcbf = null;
-					let value = (""+v.value) !== "" ? (""+v.value).trim() : ""+v.default;
+					let value = v.value;
+					if (typeof v._do_not_trim !== "undefined" && v._do_not_trim) {
+					} else {
+						value = (""+v.value) !== "" ? (""+v.value).trim() : ""+v.default;
+					}
 
 					v.label = v.label + ' <span style="color:grey;">{'+v.key+'}</span>';
 					if (typeof v._doc_video !== "undefined" && v._doc_video != "") {
@@ -1131,7 +1138,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							elem_input = $('<textarea>');
 							elem_input.attr("placeholder", v.default);
 							//elem_input.val(value);
-							elem_input.val(v.value.trim());
+							elem_input.val(value);
 							if (typeof v.additional !== "undefined" && typeof v.additional.rows !== "undefined") {
 								elem_input.attr("rows", v.additional.rows);
 							}
@@ -1219,7 +1226,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					if (v.type != "checkbox") {
 						if (v.type != "media") {
 							elem_div.html(v.label+'<br>').append(elem_input);
-							elem_div.append(v.desc !== "" ? '<br><i>'+v.desc+'</i>':'');
+							let desc = v.desc+" ";
+							if (typeof v._do_not_trim !== "undefined" && v._do_not_trim) {
+								desc += 'To leave this value blank, enter a space. ';
+							}
+							desc = desc.trim();
+							elem_div.append(desc !== "" ? '<br><i>'+desc+'</i>':'');
 						}
 						if (v.type != "number") {
 							elem_input.css({"width":"90%"});

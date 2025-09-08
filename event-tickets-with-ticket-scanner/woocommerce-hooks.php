@@ -11,6 +11,9 @@ class sasoEventtickets_WC {
 	private $_containsProductsWithRestrictions = null;
 	private $js_inputType = 'eventcoderestriction';
 
+	const FIELD_KEY = 'event_date';
+	const NONCE_KEY = 'saso_eventtickets_wc_datepicker_nonce';
+
 	private $_isTicket;
 	private $_product;
 
@@ -374,6 +377,12 @@ class sasoEventtickets_WC {
 			'label'       => __('Customer can choose the day', 'event-tickets-with-ticket-scanner'),
 			'description' => __('Activate this, to allow your customer to choose a date. If this option is active it will use the start and end date as limits, if provided. And use only the start and end time setting. If the start and end time is not set, then the entrance is allowed from 00:00 till 23:59.', 'event-tickets-with-ticket-scanner')
 		]);
+		woocommerce_wp_checkbox([
+			'id'          => 'saso_eventtickets_only_one_day_for_all_tickets',
+			'value'       => get_post_meta( get_the_ID(), 'saso_eventtickets_only_one_day_for_all_tickets', true ),
+			'label'       => __('Only one date picker', 'event-tickets-with-ticket-scanner'),
+			'description' => __('If this option is active, then only one date is allowed per purchase of this product. If your customer buys 2 or more of this ticket, than only one date picker will be shown for all the tickets. The default is to display for each product in the cart one separated date picker.', 'event-tickets-with-ticket-scanner')
+		]);
 		// checkboxes to exclude days of week
 		woocommerce_wp_select( array(
 			'id'          => 'saso_eventtickets_daychooser_exclude_wdays',
@@ -596,6 +605,7 @@ class sasoEventtickets_WC {
 			'saso_eventtickets_is_ticket',
 			'saso_eventtickets_is_date_for_all_variants',
 			'saso_eventtickets_is_daychooser',
+			'saso_eventtickets_only_one_day_for_all_tickets',
 			'saso_eventtickets_request_name_per_ticket',
 			'saso_eventtickets_request_name_per_ticket_mandatory',
 			'saso_eventtickets_request_value_per_ticket',
@@ -731,6 +741,7 @@ class sasoEventtickets_WC {
 		// check if order contains tickets
 		foreach($items as $item_id => $item) {
 			$product_id = $item->get_product_id();
+			$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
 			if (get_post_meta($product_id, 'saso_eventtickets_is_ticket', true) == "yes") {
 				$codes = wc_get_order_item_meta($item_id , '_saso_eventtickets_product_code',true);
 				$key = $product_id."_".$item_id;
@@ -971,6 +982,7 @@ class sasoEventtickets_WC {
 				$product = $item->get_product();
 				if( $product == null ) continue;
 				$product_id = $item->get_product_id();
+				$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
 
 				$isTicket = get_post_meta($product_id, 'saso_eventtickets_is_ticket', true) == "yes";
 				if ($isTicket == false) continue;
@@ -1205,6 +1217,8 @@ class sasoEventtickets_WC {
 
 					if ($isTicket) {
 						$product_id = $item['product_id'];
+						$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
+
 						$display_date = $this->getOptions()->isOptionCheckboxActive('wcTicketDisplayDateOnMail');
 						$is_daychooser = get_post_meta($product_id, "saso_eventtickets_is_daychooser", true) == "yes";
 
@@ -1212,10 +1226,9 @@ class sasoEventtickets_WC {
 							if (!class_exists("sasoEventtickets_Ticket")){
 								require_once("sasoEventtickets_Ticket.php");
 							}
-							$product = wc_get_product( $product_id );
 							// check if the product is a day chooser
 							if (!$is_daychooser) {
-								$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product);
+								$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product_id);
 								if (!empty($date_str)) echo "<br>".$date_str."<br>";
 							}
 						}
@@ -1244,9 +1257,18 @@ class sasoEventtickets_WC {
 									echo " CVV: <b>".esc_html($codeObj['cvv']).'</b>';
 								}
 
-								if ($display_date && $is_daychooser) {
-									$daychooser_date = $this->MAIN->getTicketHandler()->displayDayChooserDateAsString($product, $codeObj);
-									if (!empty($daychooser_date)) echo $daychooser_date."<br>";
+								$day_chooser = "";
+								if ($display_date) {
+									if ($metaObj['wc_ticket']['is_daychooser'] == 1) {
+										$day_chooser = $this->MAIN->getTicketHandler()->displayDayChooserDateAsString($codeObj, true);
+									}
+								}
+								if (!empty($day_chooser)) {
+									$ticket_info_text .= "<br>";
+									//$labelDayChooser_label = esc_attr($this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product_id));
+									//$labelDayChooser = str_replace("{count}", $a, $labelDayChooser_label);
+									//echo $labelDayChooser." ".esc_html($day_chooser)."<br>";
+									echo "<br>".esc_html($day_chooser)."<br>";
 								}
 
 								if (!$this->getOptions()->isOptionCheckboxActive('wcTicketDontDisplayDetailLinkOnMail')) {
@@ -1336,6 +1358,7 @@ class sasoEventtickets_WC {
 
 			$codeObjects_cache = [];
 			$product_id = $item->get_product_id();
+			$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
 
 			$sale_restriction_code = wc_get_order_item_meta($item_id , $this->meta_key_codelist_restriction_order_item, true);
 			if (!empty($sale_restriction_code)) {
@@ -1369,7 +1392,6 @@ class sasoEventtickets_WC {
 				}
 			}
 			if ($displaySerial) {
-				$product = null;
 				$code_ = explode(",", $code);
 				array_walk($code_, "trim");
 				if ($isTicket) {
@@ -1380,14 +1402,9 @@ class sasoEventtickets_WC {
 					$is_daychooser = get_post_meta($product_id, "saso_eventtickets_is_daychooser", true) == "yes";
 
 					if ($this->getOptions()->isOptionCheckboxActive('wcTicketDisplayDateOnMail')) {
-						if (!class_exists("sasoEventtickets_Ticket")){
-							require_once("sasoEventtickets_Ticket.php");
-						}
-
-						$product = $item->get_product();
 						// check if the product is a day chooser
 						if (!$is_daychooser) {
-							$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product);
+							$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product_id);
 							if (!empty($date_str)) echo "<br>".$date_str."<br>";
 						}
 					}
@@ -1426,13 +1443,10 @@ class sasoEventtickets_WC {
 
 							$ticket_info_text = "";
 							if ($metaObj != null) {
-								if ($product == null) {
-									$product = $item->get_product();
-								}
 								$name_per_ticket = $metaObj['wc_ticket']['name_per_ticket'];
 								if (!empty($name_per_ticket)) {
 									if ($labelNamePerTicket_label == null) {
-										$labelNamePerTicket_label = esc_attr($this->MAIN->getTicketHandler()->getLabelNamePerTicket($product->get_id()));
+										$labelNamePerTicket_label = esc_attr($this->MAIN->getTicketHandler()->getLabelNamePerTicket($product_id));
 									}
 									$labelNamePerTicket = str_replace("{count}", $a, $labelNamePerTicket_label);
 									$ticket_info_text = $labelNamePerTicket." ".esc_html($name_per_ticket);
@@ -1440,21 +1454,25 @@ class sasoEventtickets_WC {
 								$value_per_ticket = $metaObj['wc_ticket']['value_per_ticket'];
 								if (!empty($value_per_ticket)) {
 									if ($labelValuePerTicket_label == null) {
-										$labelValuePerTicket_label = esc_attr($this->MAIN->getTicketHandler()->getLabelValuePerTicket($product->get_id()));
+										$labelValuePerTicket_label = esc_attr($this->MAIN->getTicketHandler()->getLabelValuePerTicket($product_id));
 									}
 									$labelValuePerTicket = str_replace("{count}", $a, $labelValuePerTicket_label);
 									if ($ticket_info_text != "") $ticket_info_text .= "<br>";
 									$ticket_info_text .= $labelValuePerTicket." ".esc_html($value_per_ticket);
 								}
-								$day_chooser = $metaObj['wc_ticket']['day_per_ticket'];
-								if (!empty($day_chooser) && $metaObj['wc_ticket']['is_daychooser'] == 1) {
-									if ($labelDayChooser_label == null) {
-										$labelDayChooser_label = esc_attr($this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product->get_id()));
-									}
-									if (!empty($ticket_info_text)) $ticket_info_text .= "<br>";
-									$labelDayChooser = str_replace("{count}", $a, $labelDayChooser_label);
+								$day_chooser = "";
+								if ($metaObj['wc_ticket']['is_daychooser'] == 1) {
+									$day_chooser = $this->MAIN->getTicketHandler()->displayDayChooserDateAsString($codeObj, true);
+								}
+								if (!empty($day_chooser)) {
+									//if ($labelDayChooser_label == null) {
+									//	$labelDayChooser_label = esc_attr($this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product_id));
+									//}
+									//if (!empty($ticket_info_text)) $ticket_info_text .= "<br>";
+									//$labelDayChooser = str_replace("{count}", $a, $labelDayChooser_label);
 									if ($ticket_info_text != "") $ticket_info_text .= "<br>";
-									$ticket_info_text .= $labelDayChooser." ".esc_html($day_chooser);
+									//$ticket_info_text .= $labelDayChooser." ".esc_html($day_chooser);
+									$ticket_info_text .= esc_html($day_chooser);
 								}
 							}
 
@@ -1488,7 +1506,7 @@ class sasoEventtickets_WC {
 								if (empty($url) || $wcTicketDontDisplayDetailLinkOnMail) {
 									echo esc_html($c);
 								} else {
-									echo '<br><a target="_blank" href="'.esc_url($url).'">'.esc_html($c).'</a> ';
+									echo '<br><a target="_blank" data-plg="'.esc_attr($this->getPrefix()).'" href="'.esc_url($url).'">'.esc_html($c).'</a> ';
 								}
 								if (!empty($cvv) && !$wcassignmentDoNotPutCVVOnEmail) {
 									echo "CVV: ".esc_html($cvv);
@@ -1496,11 +1514,11 @@ class sasoEventtickets_WC {
 								echo '<p>';
 								if (!empty($url) && !$wcTicketDontDisplayPDFButtonOnMail) {
 									$dlnbtnlabel = $this->getOptions()->getOptionValue('wcTicketLabelPDFDownload');
-									echo '<br><a target="_blank" href="'.esc_url($url).$parameter_add.'pdf"><b>'.esc_html($dlnbtnlabel).'</b></a>';
+									echo '<br><a target="_blank" data-plg="'.esc_attr($this->getPrefix()).'" href="'.esc_url($url).$parameter_add.'pdf"><b>'.esc_html($dlnbtnlabel).'</b></a>';
 								}
 								if (!empty($url) && $wcTicketBadgeAttachLinkToMail ) {
 									$dlnbtnlabel = $this->getOptions()->getOptionValue('wcTicketBadgeLabelDownload');
-									echo '<br><a target="_blank" href="'.esc_url($url).$parameter_add.'badge"><b>'.esc_html($dlnbtnlabel).'</b></a>';
+									echo '<br><a target="_blank" data-plg="'.esc_attr($this->getPrefix()).'" href="'.esc_url($url).$parameter_add.'badge"><b>'.esc_html($dlnbtnlabel).'</b></a>';
 								}
 								echo '</p>';
 								echo '</div>';
@@ -1550,8 +1568,10 @@ class sasoEventtickets_WC {
 				if ($hasTickets) {
 					$url = $this->getCore()->getOrderTicketsURL($order);
 					$dlnbtnlabel = $this->getOptions()->getOptionValue('wcTicketLabelPDFDownload');
-					$dlnbtnlabelHeading = $this->getOptions()->getOptionValue('wcTicketLabelPDFDownloadHeading');
-					echo '<h2>'.esc_html($dlnbtnlabelHeading).'</h2>';
+					$dlnbtnlabelHeading = trim($this->getOptions()->getOptionValue('wcTicketLabelPDFDownloadHeading'));
+					if (!empty($dlnbtnlabelHeading)) {
+						echo '<h2>'.esc_html($dlnbtnlabelHeading).'</h2>';
+					}
 					echo '<p><a target="_blank" href="'.esc_url($url).'"><b>'.esc_html($dlnbtnlabel).'</b></a></p>';
 					$isHeaderAdded = true;
 				}
@@ -1566,8 +1586,10 @@ class sasoEventtickets_WC {
 					$url = $this->getCore()->getOrderTicketsURL($order, "ordertickets-");
 					$dlnbtnlabel = $this->getOptions()->getOptionValue('wcTicketLabelOrderDetailView');
 					if (!$isHeaderAdded) {
-						$dlnbtnlabelHeading = $this->getOptions()->getOptionValue('wcTicketLabelPDFDownloadHeading');
-						echo '<h2>'.esc_html($dlnbtnlabelHeading).'</h2>';
+						$dlnbtnlabelHeading = trim($this->getOptions()->getOptionValue('wcTicketLabelPDFDownloadHeading'));
+						if (!empty($dlnbtnlabelHeading)) {
+							echo '<h2>'.esc_html($dlnbtnlabelHeading).'</h2>';
+						}
 					}
 					echo '<p><a target="_blank" href="'.esc_url($url).'"><b>'.esc_html($dlnbtnlabel).'</b></a></p>';
 				}
@@ -1599,7 +1621,7 @@ class sasoEventtickets_WC {
 		if (WC() != null && WC()->session != null) {
 			WC()->session->__unset('saso_eventtickets_request_name_per_ticket');
 			WC()->session->__unset('saso_eventtickets_request_value_per_ticket');
-			WC()->session->__unset('saso_eventtickets_request_daychooser');
+			//WC()->session->__unset('saso_eventtickets_request_daychooser');
 			do_action( $this->MAIN->_do_action_prefix.'woocommerce-hooks_woocommerce_new_order', $order_id );
 		}
 	}
@@ -1726,6 +1748,7 @@ class sasoEventtickets_WC {
 				foreach ( $items as $item_id => $item ) {
 					$product_id = $item->get_product_id();
 					if( $product_id ){
+						$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
 						$isTicket = get_post_meta($product_id, 'saso_eventtickets_is_ticket', true) == "yes";
 						if ($isTicket) {
 							$variation_id = $item->get_variation_id();
@@ -1763,6 +1786,7 @@ class sasoEventtickets_WC {
 			foreach ( $items as $item_id => $item ) {
 				$product_id = $item->get_product_id();
 				if( $product_id ){
+					$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
 					$isTicket = get_post_meta($product_id, 'saso_eventtickets_is_ticket', true) == "yes";
 					if ($isTicket) {
 						$variation_id = $item->get_variation_id();
@@ -1782,7 +1806,7 @@ class sasoEventtickets_WC {
 		}
 
 		if (isset(WC()->session)) {
-			$session_keys = ['saso_eventtickets_request_name_per_ticket', 'saso_eventtickets_request_value_per_ticket', 'saso_eventtickets_request_daychooser'];
+			$session_keys = ['saso_eventtickets_request_name_per_ticket', 'saso_eventtickets_request_value_per_ticket'];
 			if (!WC()->session->has_session()) {
 				if (method_exists(WC()->session, '__unset')) {
 					foreach($session_keys as $k) {
@@ -1806,6 +1830,7 @@ class sasoEventtickets_WC {
 		$ret = [];
 		$product_id = $item->get_product_id();
 		$product_original_id = apply_filters( 'wpml_object_id', $product_id, 'product', true );
+
 		$item_variation_id = $item->get_variation_id();
 		$item_variation_original_id = apply_filters( 'wpml_object_id', $item_variation_id, 'product', true );
 
@@ -2022,7 +2047,7 @@ class sasoEventtickets_WC {
 		$short_desc = $product->get_short_description();
 		$location = trim(get_post_meta( $product_id, 'saso_eventtickets_event_location', true ));
 
-		$dateAsString = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product);
+		$dateAsString = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product_id);
 		$event_date = "";
 		if (!empty($dateAsString)) {
 			$event_date = '<br><p style="text-align:center;">';
@@ -2183,7 +2208,7 @@ class sasoEventtickets_WC {
 		}
 	}
 
-	private function addJSFileAndHandler() {
+	private function addJSFileAndHandler($additional_values=[]) {
 		// erstmal ist diese fkt nur für sales restriction
 		if (version_compare( WC_VERSION, SASO_EVENTTICKETS_PLUGIN_MIN_WC_VER, '<' )) return;
 
@@ -2200,15 +2225,19 @@ class sasoEventtickets_WC {
 			(current_user_can("administrator") ? current_time("timestamp") : $this->MAIN->getPluginVersion()),
 			true );
 		wp_set_script_translations('SasoEventticketsValidator_WC_frontend', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
-		wp_localize_script(
- 			'SasoEventticketsValidator_WC_frontend',
-			'SasoEventticketsValidator_phpObject', // name der js variable
- 			[
+		$values = [
  				'ajaxurl' => admin_url( 'admin-ajax.php' ),
  				'inputType' => $this->js_inputType,
  				'action' => $this->getPrefix().'_executeWCFrontend',
 				'nonce' => wp_create_nonce( $this->MAIN->_js_nonce ),
- 			] // werte in der js variable
+		]; // werte in der js variable
+		foreach($additional_values as $k=>$v) {
+			$values[$k] = $v;
+		}
+		wp_localize_script(
+ 			'SasoEventticketsValidator_WC_frontend',
+			'SasoEventticketsValidator_phpObject', // name der js variable
+			$values
  			);
       	wp_enqueue_script('SasoEventticketsValidator_WC_frontend');
  	}
@@ -2248,36 +2277,78 @@ class sasoEventtickets_WC {
 		//}
 	}
 
-	private function wc_frontend_updateSerialCodeToCartItem() {
-		// Save the code to the cart meta
- 		$cart_item_id = sanitize_key(SASO_EVENTTICKETS::getRequestPara('cart_item_id'));
-		$cart_item_count = intval(SASO_EVENTTICKETS::getRequestPara('cart_item_count'));
-		$k = sanitize_key(SASO_EVENTTICKETS::getRequestPara('type'));
-		if (!in_array($k, [
+	private function updateCartItemMeta($type, $cart_item_id, $cart_item_count, $value) {
+		if (!in_array($type, [
 				'saso_eventtickets_request_name_per_ticket',
 				'saso_eventtickets_request_value_per_ticket',
 				'saso_eventtickets_request_daychooser'
 				])) {
-			$k = 'saso_eventtickets_request_name_per_ticket';
+			$type = 'saso_eventtickets_request_name_per_ticket';
 		}
- 		$code = trim(SASO_EVENTTICKETS::getRequestPara('code')); // is any value that was send to this function
-
 		$check_values = [];
 		if (empty($cart_item_id)) {
 			$check_values["item_id_missing"] = true;
 		} else {
-			$valueArray = WC()->session->get($k);
-			if ($valueArray == null) {
-				$valueArray = [];
-			}
-			if (!isset($valueArray[$cart_item_id]) || !is_array($valueArray[$cart_item_id])) {
-				$valueArray[$cart_item_id] = [];
-			}
-			$valueArray[$cart_item_id][$cart_item_count] = $code;
-			WC()->session->set($k, $valueArray);
-	   	}
+			if ($type == 'saso_eventtickets_request_daychooser') { // store in cart item meta
+				// get the cart item
+				$line = null;
+				$cart = WC()->cart;
+				$date = sanitize_text_field($value);
+				try {
+					$line =& $cart->cart_contents[$cart_item_id];
+				} catch(Exception $e) {
+					$line = null;
 
- 		wp_send_json( ['success' => 1, 'code'=>esc_attr($code), 'check_values'=>$check_values, 'type'=>$k] );
+				}
+				if ($line == null) {
+					$check_values["item_not_in_cart"] = true;
+				} else {
+					$key = "_saso_eventtickets_request_daychooser";
+
+					if (!isset($line[$key]) || !is_array($line[$key])) {
+						$line[$key] = [];
+					}
+					if (count($line[$key]) < $cart_item_count) {
+						// fill the array with empty values
+						$line[$key] = array_pad($line[$key], $cart_item_count, $date);
+					}
+					$line[$key][$cart_item_count] = $date;
+
+					$product_id = $line['product_id'];
+					$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
+					$display_only_one_datepicker = get_post_meta($product_id, 'saso_eventtickets_only_one_day_for_all_tickets', true) == "yes";
+					if ($display_only_one_datepicker) {
+						// if only one datepicker for all tickets is selected, then set the same date for all tickets
+						$line[$key] = array_fill(0, $line["quantity"], $date);
+					}
+
+					WC()->cart->set_session();
+				}
+
+			} else { // store in session
+				$valueArray = WC()->session->get($type);
+				if ($valueArray == null) {
+					$valueArray = [];
+				}
+				if (!isset($valueArray[$cart_item_id]) || !is_array($valueArray[$cart_item_id])) {
+					$valueArray[$cart_item_id] = [];
+				}
+				$valueArray[$cart_item_id][$cart_item_count] = $value;
+				WC()->session->set($type, $valueArray);
+			}
+	   	}
+		return $check_values;
+	}
+	private function wc_frontend_updateSerialCodeToCartItem() {
+		// Save the code to the cart meta
+ 		$cart_item_id = sanitize_key(SASO_EVENTTICKETS::getRequestPara('cart_item_id'));
+		$cart_item_count = intval(SASO_EVENTTICKETS::getRequestPara('cart_item_count'));
+		$type = sanitize_key(SASO_EVENTTICKETS::getRequestPara('type'));
+ 		$code = trim(SASO_EVENTTICKETS::getRequestPara('code')); // is any value that was send to this function
+
+		$check_values = $this->updateCartItemMeta($type, $cart_item_id, $cart_item_count, $code);
+
+ 		wp_send_json( ['success' => 1, 'code'=>esc_attr($code), 'check_values'=>$check_values, 'type'=>$type] );
  		exit;
 	}
 
@@ -2326,7 +2397,7 @@ class sasoEventtickets_WC {
 		if (isset($R["action"]) && strtolower($R["action"]) == "heartbeat") {
 			return;
 		}
-		$session_keys = ['saso_eventtickets_request_name_per_ticket', 'saso_eventtickets_request_value_per_ticket', 'saso_eventtickets_request_daychooser'];
+		$session_keys = ['saso_eventtickets_request_name_per_ticket', 'saso_eventtickets_request_value_per_ticket'];
 		$cart = null;
 		foreach($session_keys as $k) {
 			if ( isset( $R[$k] ) ) { // wenn der warenkorb aktualisiert wird und das feld gesendet wird
@@ -2349,6 +2420,113 @@ class sasoEventtickets_WC {
 		}
 	}
 
+	/**
+	 * $a = cart item count. Count of the ticket for this cart item (0..n)
+	 */
+	private function addDatepickerHTML($cart_item_key, $a, $product_id, $value="", $label=null, $valueArray=null, $dates=null, $name=null, $custom_attributes=[]) {
+		$cart_item_key = sanitize_key($cart_item_key);
+		$product_id = intval($product_id);
+		$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
+		$value = sanitize_text_field($value);
+
+		$display_only_one_datepicker = get_post_meta($product_id, 'saso_eventtickets_only_one_day_for_all_tickets', true) == "yes";
+
+		if ($label === null) {
+			$label = esc_attr($this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product_id));
+		}
+		if ($valueArray == null) {
+			$key = "_saso_eventtickets_request_daychooser";
+			$cart = WC()->cart->get_cart();
+			if (isset($cart[$cart_item_key])) {
+				$cart_item = $cart[$cart_item_key];
+				$valueArray = isset($cart_item[$key]) ? $cart_item[$key] : null;
+			}
+		}
+		if (empty($value) && $valueArray != null && isset($valueArray[$a])) {
+			$value = $valueArray[$a];
+		}
+		if ($dates == null) {
+			$dates = $this->MAIN->getTicketHandler()->getCalcDateStringAllowedRedeemFromCorrectProduct($product_id);
+		}
+		$saso_eventtickets_daychooser_offset_start = $dates['daychooser_offset_start'];
+		$saso_eventtickets_daychooser_offset_end = $dates['daychooser_offset_end'];
+		$saso_eventtickets_daychooser_exclude_wdays = $dates['daychooser_exclude_wdays'];
+		$saso_eventtickets_ticket_start_date = $dates['ticket_start_date'];
+		$saso_eventtickets_ticket_end_date = $dates['ticket_end_date'];
+		if (!is_array($saso_eventtickets_daychooser_exclude_wdays)) {
+			$saso_eventtickets_daychooser_exclude_wdays = [];
+		}
+
+		$params = [
+			'type' => 'text',
+			'custom_attributes'	=> [
+				'data-input-type'=>'daychooser',
+				'data-plugin'=>'event',
+				'data-plg'=>esc_attr($this->getPrefix()),
+				'data-cart-item-id'=>$cart_item_key,
+				'data-cart-item-count'=>$a,
+				//'disabled'=>true,
+				"data-only-one-datepicker"=>$display_only_one_datepicker ? "1" : "0",
+				'style'=>'width:auto;',
+				'required'=>'required',
+				'onClick'=>'window.SasoEventticketsValidator_WC_frontend._addHandlerToTheCodeFields();',
+			],
+			'id'=>'saso_eventtickets_request_daychooser['.$cart_item_key.']['.$a.']',
+			'class'=> array( 'form-row-first input-text text' ),
+			//'placeholder'=>esc_attr($this->getOptions()->getOptionValue('displayDateFormatDatePicker')),
+			'required' => true, // Or false
+		];
+		if (!empty($custom_attributes) && is_array($custom_attributes)) {
+			foreach($custom_attributes as $k=>$v) {
+				$params['custom_attributes'][$k] = $v;
+			}
+		}
+		if ($label != null) {
+			$params['label'] = esc_attr(str_replace("{count}", $a+1, $label));
+		}
+		if ($name != null) {
+			$params['custom_attributes']['name'] = esc_attr($name);
+		} else {
+			$params['custom_attributes']['name'] = 'saso_eventtickets_request_daychooser['.$cart_item_key.'][]';
+		}
+		$params['custom_attributes']['data-offset-start'] = $saso_eventtickets_daychooser_offset_start;
+		$params['custom_attributes']['data-offset-end'] = $saso_eventtickets_daychooser_offset_end;
+		$params['custom_attributes']['data-exclude-wdays'] = is_array($saso_eventtickets_daychooser_exclude_wdays) ? implode(",", $saso_eventtickets_daychooser_exclude_wdays) : $saso_eventtickets_daychooser_exclude_wdays;
+
+		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getDayChooserExclusionDates')) {
+			$exclusionDates = $this->MAIN->getPremiumFunctions()->getDayChooserExclusionDates($product_id);
+			if (!empty($exclusionDates)) {
+				$params['custom_attributes']['data-exclude-dates'] = implode(",", $exclusionDates);
+			}
+		}
+
+		if ($saso_eventtickets_ticket_start_date != "") {
+			$params['custom_attributes']['min'] = $saso_eventtickets_ticket_start_date;
+		}
+		if ($saso_eventtickets_daychooser_offset_start > 0) {
+			// if the start date is not set, then we set it to the start today + days offset
+			if (!isset($params['custom_attributes']['min'])) {
+				$params['custom_attributes']['min'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_start." days"));
+			} else {
+				// if the start date + offset days is set before the ticket start date then use the start date
+				if (current_time("timestamp") < strtotime($params['custom_attributes']['min']." -".$saso_eventtickets_daychooser_offset_start." days")) {
+					$params['custom_attributes']['min'] = $saso_eventtickets_ticket_start_date;
+				} else {
+					$params['custom_attributes']['min'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_start." days"));
+				}
+			}
+		}
+		if ($saso_eventtickets_ticket_end_date != "") {
+			$params['custom_attributes']['max'] = $saso_eventtickets_ticket_end_date;
+		}
+		if (!isset($params['custom_attributes']['max']) && $saso_eventtickets_daychooser_offset_end > 0) {
+			$params['custom_attributes']['max'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_end." days"));
+		}
+
+		echo '<div id="datepicker-wrapper_'.$cart_item_key.'_'.$a.'">';
+		woocommerce_form_field('saso_eventtickets_request_daychooser['.$cart_item_key.'][]', $params, $value );
+	}
+
 	// zeige eingabe maske für das Produkt, wenn es eine purchase restriction mit codes hat
 	function woocommerce_after_cart_item_name( $cart_item, $cart_item_key ) {
  		$saso_eventtickets_list = get_post_meta($cart_item['product_id'], $this->meta_key_codelist_restriction, true);
@@ -2364,6 +2542,7 @@ class sasoEventtickets_WC {
 	 						data-input-type="%s"
 	 						data-cart-item-id="%s"
 							data-plugin="event"
+							data-plg="'.esc_attr($this->getPrefix()).'"
 	 						value="%s"
 	 						class="input-text text" /></div>';
 	 		printf(
@@ -2381,80 +2560,25 @@ class sasoEventtickets_WC {
 		if ($saso_eventtickets_is_daychooser) {
 			$anzahl = intval($cart_item["quantity"]);
 			if ($anzahl > 0) {
-				$valueArray = WC()->session->get("saso_eventtickets_request_daychooser");
+				$key = "_saso_eventtickets_request_daychooser";
+				$valueArray = isset($cart_item[$key]) ? $cart_item[$key] : null;
 
 				$product_id = $cart_item['product_id'];
-				$dates = $this->MAIN->getTicketHandler()->getCalcDateStringAllowedRedeemFromCorrectProduct($product_id);
-				$saso_eventtickets_daychooser_offset_start = $dates['daychooser_offset_start'];
-				$saso_eventtickets_daychooser_offset_end = $dates['daychooser_offset_end'];
-				$saso_eventtickets_daychooser_exclude_wdays = $dates['daychooser_exclude_wdays'];
-				$saso_eventtickets_ticket_start_date = $dates['ticket_start_date'];
-				$saso_eventtickets_ticket_end_date = $dates['ticket_end_date'];
+				$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
 
-				if (!is_array($saso_eventtickets_daychooser_exclude_wdays)) {
-					$saso_eventtickets_daychooser_exclude_wdays = [];
+				$dates = $this->MAIN->getTicketHandler()->getCalcDateStringAllowedRedeemFromCorrectProduct($product_id);
+				$label = esc_attr($this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($product_id));
+				$display_only_one_datepicker = get_post_meta($product_id, 'saso_eventtickets_only_one_day_for_all_tickets', true) == "yes";
+				if ($display_only_one_datepicker) {
+					$anzahl = 1; // force only one datepicker
 				}
 
-				$label = esc_attr($this->MAIN->getTicketHandler()->getLabelDaychooserPerTicket($cart_item['product_id']));
 				for ($a=0;$a<$anzahl;$a++) {
 					$value = "";
-					if ($valueArray != null && isset($valueArray[$cart_item_key]) && isset($valueArray[$cart_item_key][$a])) {
-						$value = trim($valueArray[$cart_item_key][$a]);
+					if ($valueArray != null && isset($valueArray[$a])) {
+						$value = trim($valueArray[$a]);
 					}
-
-					$params = [
-						'type' => 'text',
-						'custom_attributes'	=> [
-							'data-input-type'=>'daychooser',
-							'data-plugin'=>'event',
-							'data-cart-item-id'=>$cart_item_key,
-							'data-cart-item-count'=>$a,
-							//'disabled'=>true,
-							'style'=>'width:auto;',
-							'onClick'=>'window.SasoEventticketsValidator_WC_frontend._addHandlerToTheCodeFields();',
-						],
-						'id'=>'saso_eventtickets_request_daychooser['.$cart_item_key.']['.$a.']',
-						'class'=> array( 'form-row-first input-text text' ),
-						'label' => esc_attr(str_replace("{count}", $a+1, $label)),
-						//'placeholder'=>esc_attr($this->getOptions()->getOptionValue('displayDateFormatDatePicker')),
-						'required' => true, // Or false
-					];
-					$params['custom_attributes']['data-offset-start'] = $saso_eventtickets_daychooser_offset_start;
-					$params['custom_attributes']['data-offset-end'] = $saso_eventtickets_daychooser_offset_end;
-					$params['custom_attributes']['data-exclude-wdays'] = is_array($saso_eventtickets_daychooser_exclude_wdays) ? implode(",", $saso_eventtickets_daychooser_exclude_wdays) : $saso_eventtickets_daychooser_exclude_wdays;
-
-					if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getDayChooserExclusionDates')) {
-						$exclusionDates = $this->MAIN->getPremiumFunctions()->getDayChooserExclusionDates($product_id);
-						if (!empty($exclusionDates)) {
-							$params['custom_attributes']['data-exclude-dates'] = implode(",", $exclusionDates);
-						}
-					}
-
-					if ($saso_eventtickets_ticket_start_date != "") {
-						$params['custom_attributes']['min'] = $saso_eventtickets_ticket_start_date;
-					}
-					if ($saso_eventtickets_daychooser_offset_start > 0) {
-						// if the start date is not set, then we set it to the start today + days offset
-						if (!isset($params['custom_attributes']['min'])) {
-							$params['custom_attributes']['min'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_start." days"));
-						} else {
-							// if the start date + offset days is set before the ticket start date then use the start date
-							if (current_time("timestamp") < strtotime($params['custom_attributes']['min']." -".$saso_eventtickets_daychooser_offset_start." days")) {
-								$params['custom_attributes']['min'] = $saso_eventtickets_ticket_start_date;
-							} else {
-								$params['custom_attributes']['min'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_start." days"));
-							}
-						}
-					}
-					if ($saso_eventtickets_ticket_end_date != "") {
-						$params['custom_attributes']['max'] = $saso_eventtickets_ticket_end_date;
-					}
-					if (!isset($params['custom_attributes']['max']) && $saso_eventtickets_daychooser_offset_end > 0) {
-						$params['custom_attributes']['max'] = date("Y-m-d", strtotime("+".$saso_eventtickets_daychooser_offset_end." days"));
-					}
-
-					echo '<div id="datepicker-wrapper_'.$cart_item_key.'_'.$a.'">';
-					woocommerce_form_field('saso_eventtickets_request_daychooser['.$cart_item_key.'][]', $params, $value );
+					$this->addDatepickerHTML($cart_item_key, $a, $product_id, $value, $label, $valueArray, $dates);
 					echo '<br clear="all"></div>';
 				}
 			}
@@ -2479,6 +2603,7 @@ class sasoEventtickets_WC {
 								data-cart-item-id="%s"
 								data-cart-item-count="%s"
 								data-plugin="event"
+								data-plg="'.esc_attr($this->getPrefix()).'"
 								value="%s"
 								class="input-text text" /></div>';
 					printf(
@@ -2545,6 +2670,7 @@ class sasoEventtickets_WC {
 									data-cart-item-id="%s"
 									data-cart-item-count="%s"
 									data-plugin="event"
+									data-plg="'.esc_attr($this->getPrefix()).'"
 									class="dropdown">'.$html_options.'</select></div>';
 						printf(
 							str_replace("\n", "", $html),
@@ -2660,10 +2786,13 @@ class sasoEventtickets_WC {
 			}
 		}
 
-		$valueArray = WC()->session->get("saso_eventtickets_request_daychooser");
+		//$valueArray = WC()->session->get("saso_eventtickets_request_daychooser");
 		foreach($cart_items as $item_id => $cart_item ) {
 			$saso_eventtickets_is_daychooser = get_post_meta($cart_item['product_id'], "saso_eventtickets_is_daychooser", true) == "yes";
 			if ($saso_eventtickets_is_daychooser) {
+
+				$key = "_saso_eventtickets_request_daychooser";
+				$valueArray = isset($cart_item[$key]) ? $cart_item[$key] : null;
 
 				$dates = $this->MAIN->getTicketHandler()->getCalcDateStringAllowedRedeemFromCorrectProduct($cart_item['product_id']);
 				$saso_eventtickets_daychooser_offset_start = $dates['daychooser_offset_start'];
@@ -2676,23 +2805,17 @@ class sasoEventtickets_WC {
 				if ($anzahl > 0) {
 					for ($a=0;$a<$anzahl;$a++) {
 						$value = "";
-						if ($valueArray != null && isset($valueArray[$cart_item['key']]) && isset($valueArray[$cart_item['key']][$a])) {
-							$value = trim($valueArray[$cart_item['key']][$a]);
+						if ($valueArray != null && isset($valueArray[$a])) {
+							$value = trim($valueArray[$a]);
 						}
 						if (empty($value)) {
-							$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForDaychooser');
-							$label = str_replace("{PRODUCT_NAME}", "%s", $label);
-							$label = str_replace("{count}", "%d", $label);
-							wc_add_notice( wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name()), $a+1) ), 'error', ["cart-item-id"=>$item_id, "cart-item-count"=>$a] );
+							$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a);
 							continue;
 						} else {
 							// test if the date is a date
 							$date = DateTime::createFromFormat('Y-m-d', $value);
 							if (!$date || $date->format('Y-m-d') !== $value) {
-								$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForDaychooserInvalidDate');
-								$label = str_replace("{PRODUCT_NAME}", "%s", $label);
-								$label = str_replace("{count}", "%d", $label);
-								wc_add_notice(wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name()), $a+1)), 'error', ["cart-item-id"=>$item_id, "cart-item-count"=>$a]);
+								$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a);
 								continue;
 							}
 							// calc the start and end date
@@ -2713,17 +2836,11 @@ class sasoEventtickets_WC {
 							}
 							// test if the date is in the allowed range
 							if (!empty($saso_eventtickets_ticket_start_date) && strtotime($value) < strtotime($saso_eventtickets_ticket_start_date)) {
-								$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForDaychooserInvalidDate');
-								$label = str_replace("{PRODUCT_NAME}", "%s", $label);
-								$label = str_replace("{count}", "%d", $label);
-								wc_add_notice(wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name()), $a+1)), 'error', ["cart-item-id"=>$item_id, "cart-item-count"=>$a]);
+								$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a);
 								continue;
 							}
 							if (!empty($saso_eventtickets_ticket_end_date) && strtotime($value) > strtotime($saso_eventtickets_ticket_end_date)) {
-								$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForDaychooserInvalidDate');
-								$label = str_replace("{PRODUCT_NAME}", "%s", $label);
-								$label = str_replace("{count}", "%d", $label);
-								wc_add_notice(wp_kses_post(sprintf($label, esc_html($cart_item['data']->get_name()), $a+1)), 'error', ["cart-item-id"=>$item_id, "cart-item-count"=>$a]);
+								$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a, true);
 								continue;
 							}
 						}
@@ -2731,6 +2848,23 @@ class sasoEventtickets_WC {
 				}
 			}
 		}
+	}
+
+	private function getWarningDatePickerLabel($product_name, $item_id, $a, $in_the_past=false) {
+		// if the date is in the past, then use another label
+		$label = "";
+		if ($in_the_past) {
+			$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForDaychooserPassedDate');
+		} else {
+			$label = $this->getOptions()->getOptionValue('wcTicketLabelCartForDaychooserInvalidDate');
+		}
+		$label = str_replace("{PRODUCT_NAME}", "%s", $label);
+		$label = str_replace("{count}", "%d", $label);
+		return sprintf($label, esc_html($product_name), $a+1);
+	}
+	function displayWarningDatePicker($product_name, $item_id, $a, $in_the_past=false) {
+		$label = $this->getWarningDatePickerLabel($product_name, $item_id, $a, $in_the_past);
+		wc_add_notice(wp_kses_post($label), 'error', ["cart-item-id"=>$item_id, "cart-item-count"=>$a]);
 	}
 
 	function woocommerce_checkout_process() {
@@ -2754,14 +2888,255 @@ class sasoEventtickets_WC {
 		}
 	}
 
+	// the information into the order item meta data
 	private function setTicketValuesToOrderItem($item, $cart_item_key) {
 		if (WC() != null && WC()->session != null) {
-			$session_keys = ['saso_eventtickets_request_name_per_ticket', 'saso_eventtickets_request_value_per_ticket', 'saso_eventtickets_request_daychooser'];
+			$session_keys = [
+				'saso_eventtickets_request_name_per_ticket',
+				'saso_eventtickets_request_value_per_ticket'
+			];
 			foreach($session_keys as $k) {
 				$valueArray = WC()->session->get($k);
 				if ($valueArray != null && isset($valueArray[$cart_item_key]) && isset($valueArray[$cart_item_key])) {
 					$value = $valueArray[$cart_item_key];
 					$item->update_meta_data($k, $value);
+				}
+			}
+			// daychooser is stored in the cart item
+			$key = "_saso_eventtickets_request_daychooser";
+			$cart_item = WC()->cart->get_cart_item($cart_item_key);
+			if (isset($cart_item[$key])) {
+				$value = $cart_item[$key];
+				$item->update_meta_data('saso_eventtickets_request_daychooser', $value);
+			}
+		}
+	}
+
+	/** date picker at the product card */
+    public function woocommerce_after_shop_loop_item() {
+		if (!is_shop() && !is_product_category() && !is_product_tag()) return;
+
+        global $product;
+
+		if ( ! $product || ! $product->is_purchasable() ) {
+			return;
+		}
+
+        $product_id  = $product->get_id();
+		$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
+
+		$is_ticket = $this->isTicketByProductId($product_id);
+		if (!$is_ticket) {
+			return;
+		}
+
+		$isDaychooser = get_post_meta($product_id, 'saso_eventtickets_is_daychooser', true) == "yes";
+		if (!$isDaychooser) {
+			return;
+		}
+
+		// Optional: only for simple products
+        //if (!$product || $product->is_type('variable')) {
+        //    return; // Variations-Handling wäre gesondert
+        //}
+
+        $name = esc_attr(self::FIELD_KEY . '_' . $product_id);
+
+        // Nonce pro Seite (einmalig reicht)
+        wp_nonce_field('wcadr_add_to_cart', self::NONCE_KEY);
+
+		$this->addDatepickerHTML($name, 0, $product_id, "", "", null, null, $name, ["data-is-shop-page"=>"1"]);
+		// JS einbinden und Handler initialisieren
+		$label = $this->getWarningDatePickerLabel($product->get_name(), 0, 1); // correct, the translated name if wpml is used
+		$this->addJSFileAndHandler([
+			"has_daychooser"=>true,
+			"fieldDayChooserIndicator"=>"is_daychooser",
+			"fieldKey"=>self::FIELD_KEY,
+			"nonceKey"=>self::NONCE_KEY,
+			"daychooser_warning"=>wp_kses_post($label)
+		]);
+
+		// Optional: Stil anpassen
+		//echo '<style>.wcadr-date input { border:1px solid #ccc; padding:.25rem; }</style>';
+    }
+
+	public function woocommerce_before_add_to_cart_button() {
+		if (!is_product()) return;
+
+		global $product;
+
+		if ( ! $product || ! $product->is_purchasable() ) {
+			return;
+		}
+
+		$is_ticket = $this->isTicketByProductId($product->get_id());
+		if (!$is_ticket) {
+			return;
+		}
+
+		$isDaychooser = get_post_meta($product->get_id(), 'saso_eventtickets_is_daychooser', true) == "yes";
+		if (!$isDaychooser) {
+			return;
+		}
+
+		$product_id  = $product->get_id();
+		$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
+		$name = esc_attr(self::FIELD_KEY . '_' . $product_id);
+
+		// Nonce pro Seite (einmalig reicht)
+		wp_nonce_field('wcadr_add_to_cart', self::NONCE_KEY);
+
+		$this->addDatepickerHTML($name, 0, $product_id, "", "", null, null, $name, ["data-is-shop-page"=>"1"]);
+		// JS einbinden und Handler initialisieren
+		$label = $this->getWarningDatePickerLabel($product->get_name(), 0, 1);
+		$this->addJSFileAndHandler([
+			"has_daychooser"=>true,
+			"fieldDayChooserIndicator"=>"is_daychooser",
+			"fieldKey"=>self::FIELD_KEY,
+			"nonceKey"=>self::NONCE_KEY,
+			"daychooser_warning"=>wp_kses_post($label)
+		]);
+
+		// Optional: Stil anpassen
+		//echo '<style>.wcadr-date input { border:1px solid #ccc; padding:.25rem; }</style>';
+	}
+
+	/** server side mandatory check date picker */
+    public function woocommerce_add_to_cart_validation($passed, $product_id, $quantity) {
+		if (!isset($_REQUEST["is_daychooser"]) || $_REQUEST["is_daychooser"] != "1") { // is not a daychooser product or the user went back and the value is missing
+			return $passed;
+		}
+
+        // Nonce prüfen (falls vorhanden)
+        if (isset($_REQUEST[self::NONCE_KEY]) && !wp_verify_nonce($_REQUEST[self::NONCE_KEY], 'wcadr_add_to_cart')) {
+            wc_add_notice(__('Security check failed. Please reload page.', 'event-tickets-with-ticket-scanner'), 'error');
+            return false;
+        }
+
+		// need to check , if this is only if the request is coming from the shop page
+		if (isset($_REQUEST["wc-ajax"]) && $_REQUEST["wc-ajax"] == "add_to_cart") {
+
+		}
+
+		// date field is not send with it
+
+        $date = isset($_REQUEST[self::FIELD_KEY]) ? SASO_EVENTTICKETS::sanitize_date_from_datepicker($_REQUEST[self::FIELD_KEY]) : '';
+
+        if (empty($date)) {
+			$product = wc_get_product($product_id);
+			$this->displayWarningDatePicker($product->get_name(), 0, 1);
+            return false;
+        }
+
+        // Optional: vergangene Daten verbieten (zusätzlich zur min-UI)
+        if ($date < date('Y-m-d')) {
+			$product = wc_get_product($product_id);
+			$this->displayWarningDatePicker($product->get_name(), 0, 1, true);
+            return false;
+        }
+
+        return $passed;
+    }
+
+	function woocommerce_add_to_cart( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
+		if (isset($_REQUEST["is_daychooser"]) && $_REQUEST["is_daychooser"] == "1") {
+			$date = isset($_REQUEST[self::FIELD_KEY]) ? SASO_EVENTTICKETS::sanitize_date_from_datepicker($_REQUEST[self::FIELD_KEY]) : '';
+			if (!empty($date)) {
+				$cart = WC()->cart->cart_contents;
+				$key = "_saso_eventtickets_request_daychooser";
+
+				// check if the cart item key exists and add the date to the session
+				if (isset($cart[$cart_item_key])) {
+					$line =& WC()->cart->cart_contents[$cart_item_key];
+					if (!isset($line[$key]) || !is_array($line[$key])) {
+						$line[$key] = [];
+					}
+					for($i=0; $i<$quantity; $i++) {
+						$line[$key][] = $date;
+					}
+
+					$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
+					$display_only_one_datepicker = get_post_meta($product_id, 'saso_eventtickets_only_one_day_for_all_tickets', true) == "yes";
+					if ($display_only_one_datepicker) {
+						// if only one datepicker for all tickets is selected, then set the same date for all tickets
+						$line[$key] = array_fill(0, $quantity, $date);
+					}
+
+					WC()->cart->set_session();
+				} // else should not be possible
+
+			}
+		}
+	}
+
+	function woocommerce_cart_item_removed( $cart_item_key, $cart ) {
+		// remove the session data for the removed cart item
+		$session_keys = [
+			'saso_eventtickets_request_name_per_ticket',
+			'saso_eventtickets_request_value_per_ticket'
+		];
+		foreach($session_keys as $k) {
+			$valueArray = WC()->session->get($k);
+			if ($valueArray != null && isset($valueArray[$cart_item_key])) {
+				WC()->session->__unset($k);
+			}
+		}
+	}
+	function woocommerce_after_cart_item_quantity_update( $cart_item_key, $quantity, $old_quantity ) {
+		if ($quantity == $old_quantity) {
+			return;
+		}
+		if ($quantity < 1) { // should not happen, but just in case
+			$this->woocommerce_cart_item_removed($cart_item_key, null);
+			return;
+		}
+		$session_keys = [
+			'saso_eventtickets_request_name_per_ticket',
+			'saso_eventtickets_request_value_per_ticket'
+		];
+		if ($quantity > $old_quantity) { // increase
+			$value = null;
+			$diff = $quantity - $old_quantity;
+			foreach($session_keys as $k) {
+				$valueArray = WC()->session->get($k);
+				if ($valueArray != null && isset($valueArray[$cart_item_key])) {
+					if ($value == null) {
+						// get value from last entry to prefill the new entries
+						if (isset($valueArray[$cart_item_key]) && isset($valueArray[$cart_item_key][$old_quantity-1])) {
+							$value = trim($valueArray[$cart_item_key][$old_quantity-1]);
+						}
+					}
+					for($i=0; $i<$diff; $i++) {
+						$valueArray[$cart_item_key][] = $value;
+					}
+					WC()->session->set($k, $valueArray);
+				}
+			}
+			// check if the product is a daychooser product and add the date to the cart item data
+			$cart = WC()->cart->cart_contents;
+			$key = "_saso_eventtickets_request_daychooser";
+			if (isset($cart[$cart_item_key])) {
+				$line =& WC()->cart->cart_contents[$cart_item_key];
+				if (isset($line[$key]) && is_array($line[$key])) { // check if the key exists - product is a daychooser product
+					$value = null;
+					// get value from last entry to prefill the new entries
+					if (isset($line[$key]) && isset($line[$key][$old_quantity-1])) {
+						$value = trim($line[$key][$old_quantity-1]);
+					}
+					for($i=0; $i<$diff; $i++) {
+						$line[$key][] = $value;
+					}
+					WC()->cart->set_session();
+				}
+			}
+		} else { // decrease
+			$diff = $old_quantity - $quantity;
+			foreach($session_keys as $k) {
+				$valueArray = WC()->session->get($k);
+				if ($valueArray != null && isset($valueArray[$cart_item_key])) {
+					// shorten the array
+					array_splice($valueArray[$cart_item_key], $quantity, $diff);
+					WC()->session->set($k, $valueArray);
 				}
 			}
 		}
@@ -2820,11 +3195,14 @@ class sasoEventtickets_WC {
 				require_once("sasoEventtickets_Ticket.php");
 			}
 
+			$product_id = $product->get_id();
+			$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
+
 			// Retrieve WooCommerce date and time formats
 			$date_format = get_option('date_format'); // WooCommerce date format
 			$time_format = get_option('time_format'); // WooCommerce time format
 
-			$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product, $date_format, $time_format);
+			$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product_id, $date_format, $time_format);
 			if (!empty($date_str)) echo "<br>".$date_str;
 		}
 	}
@@ -2839,6 +3217,7 @@ class sasoEventtickets_WC {
 					// speicher orderid und order item id zum code
 					if (!empty($code)) {
 						$product_id = $item->get_product_id();
+						$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true ); // WPML fix
 						$order_id = $order->get_id();
 						$list_id = get_post_meta($product_id, $this->meta_key_codelist_restriction, true);
 						$this->getAdmin()->addRetrictionCodeToOrder($code, $list_id, $order_id, $product_id, $item_id);
@@ -2956,8 +3335,10 @@ class sasoEventtickets_WC {
 				if ($wcTicketDisplayDownloadAllTicketsPDFButtonOnCheckout) {
 					$url = $this->getCore()->getOrderTicketsURL($order);
 					$dlnbtnlabel = $this->getOptions()->getOptionValue('wcTicketLabelPDFDownload');
-					$dlnbtnlabelHeading = $this->getOptions()->getOptionValue('wcTicketLabelPDFDownloadHeading');
-					echo '<h2>'.esc_html($dlnbtnlabelHeading).'</h2>';
+					$dlnbtnlabelHeading = trim($this->getOptions()->getOptionValue('wcTicketLabelPDFDownloadHeading'));
+					if (!empty($dlnbtnlabelHeading)) {
+						echo '<h2>'.esc_html($dlnbtnlabelHeading).'</h2>';
+					}
 					echo '<p><a target="_blank" href="'.esc_url($url).'"><b>'.esc_html($dlnbtnlabel).'</b></a></p>';
 					$isHeaderAdded = true;
 				}
@@ -2967,8 +3348,10 @@ class sasoEventtickets_WC {
 					$url = $this->getCore()->getOrderTicketsURL($order, "ordertickets-");
 					$dlnbtnlabel = $this->getOptions()->getOptionValue('wcTicketLabelOrderDetailView');
 					if (!$isHeaderAdded) {
-						$dlnbtnlabelHeading = $this->getOptions()->getOptionValue('wcTicketLabelPDFDownloadHeading');
-						echo '<h2>'.esc_html($dlnbtnlabelHeading).'</h2>';
+						$dlnbtnlabelHeading = trim($this->getOptions()->getOptionValue('wcTicketLabelPDFDownloadHeading'));
+						if (!empty($dlnbtnlabelHeading)) {
+							echo '<h2>'.esc_html($dlnbtnlabelHeading).'</h2>';
+						}
 					}
 					echo '<p><a target="_blank" href="'.esc_url($url).'"><b>'.esc_html($dlnbtnlabel).'</b></a></p>';
 				}

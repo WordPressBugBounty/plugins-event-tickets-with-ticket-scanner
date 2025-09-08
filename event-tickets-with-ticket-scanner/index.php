@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.7.6
+ * Version: 2.7.7
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.7.6');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.7.7');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -391,7 +391,36 @@ class sasoEventtickets {
 			SASO_EVENTTICKETS::setRestRoutesTicket();
 		});
 
+		add_action('woocommerce_after_shop_loop_item', [$this, 'relay_woocommerce_after_shop_loop_item'], 9); // with 9 we are just before the add to cart button
+		add_filter('woocommerce_add_to_cart_validation', [$this, 'relay_woocommerce_add_to_cart_validation'], 10, 3);
+		add_action('woocommerce_add_to_cart', [$this, 'relay_woocommerce_add_to_cart'], 10, 6);
+		add_action('woocommerce_cart_item_removed', [$this, 'relay_woocommerce_cart_item_removed'], 10, 2);
+		add_action('woocommerce_after_cart_item_quantity_update', [$this, 'relay_woocommerce_after_cart_item_quantity_update'], 10, 4);
+		add_action('woocommerce_before_add_to_cart_button', [$this, 'relay_woocommerce_before_add_to_cart_button'], 15);
+
 		do_action( $this->_do_action_prefix.'main_WooCommercePluginLoaded' );
+	}
+	public function relay_woocommerce_after_shop_loop_item() {
+		$this->getWC()->woocommerce_after_shop_loop_item();
+	}
+	public function relay_woocommerce_add_to_cart_validation() {
+		$args = func_get_args();
+		return $this->getWC()->woocommerce_add_to_cart_validation(...$args);
+	}
+	public function relay_woocommerce_add_to_cart() {
+		$args = func_get_args();
+		return $this->getWC()->woocommerce_add_to_cart(...$args);
+	}
+	public function relay_woocommerce_cart_item_removed() {
+		$args = func_get_args();
+		$this->getWC()->woocommerce_cart_item_removed(...$args);
+	}
+	public function relay_woocommerce_after_cart_item_quantity_update() {
+		$args = func_get_args();
+		$this->getWC()->woocommerce_after_cart_item_quantity_update(...$args);
+	}
+	public function relay_woocommerce_before_add_to_cart_button() {
+		$this->getWC()->woocommerce_before_add_to_cart_button();
 	}
 	public function relay_woocommerce_review_order_after_cart_contents() {
 		$this->getWC()->woocommerce_review_order_after_cart_contents();

@@ -341,6 +341,13 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 				*/
 			}
 		}
+
+		/** Sichere Sanitisierung: nur YYYY-MM-DD zulassen */
+		public static function sanitize_date_from_datepicker($date) {
+			$date = substr((string)$date, 0, 10);
+			return preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ? $date : '';
+		}
+
 	}
 }
 ?>

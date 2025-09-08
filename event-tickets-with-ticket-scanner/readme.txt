@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce
 Requires PHP: 7.0
-Stable tag: 2.7.6
+Stable tag: 2.7.7
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -294,6 +294,18 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.7.7 - 2025-09-08 =
+* Add fix for WPML products for the order email.
+* Fix for display choosen date from the date picker to the WCPDF plugin if used.
+* Fix for format display of choosen date on the email.
+* Fix for format display of choosen date on the thank you page.
+* Add more support for WPML.
+* Add new label for the date picker. If the date is in the past then the value of option wcTicketLabelCartForDaychooserPassedDate will be shown.
+* Fix for cleaning up the session if an product is removed from the cart.
+* Add date picker to the shop page for day chooser products.
+* Add date picker to the product page for day chooser products.
+* Label wcTicketLabelPDFDownloadHeading can be excluded from rendering by entering an empty space.
+
 = 2.7.6 - 2025-08-22 =
 * Add name and language indicator to the font chooser option wcTicketPDFFontFamily
 * Listed more libraries in the support area

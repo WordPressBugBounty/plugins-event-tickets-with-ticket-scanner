@@ -5,6 +5,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 
 	function init() {
 		_addHandlerToTheCodeFields();
+		_addHandlerToAddToCartButtons(); // for shop and product pages
 	}
 
 	function addStyleCode(content) {
@@ -13,7 +14,117 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		document.getElementsByTagName("head")[0].appendChild(c);
 	}
 
-	// fkt nicht bei cart updates, da dies nicht neu initialisiert wird
+	function getPidFromAddToCartButton(btn){
+		return btn.data('product_id') || btn.attr('data-product_id') || btn.val() || null;
+	}
+
+	function _addHandlerToAddToCartButtons() {
+		if (!phpObject.fieldKey) return;
+		if (!phpObject.has_daychooser) return; // only if at least one product has a date picker
+
+		function findDateForPid(pid, $btn){
+			let input_id = phpObject.fieldKey+'_'+pid;
+
+			return $(document.body)
+				.find('input[data-input-type="daychooser"][data-plugin="event"][data-is-shop-page="1"][data-cart-item-id="'+input_id+'"]')
+				.first();
+		}
+
+		function checkDate(btn) {
+			var pid = getPidFromAddToCartButton(btn);
+			if (!pid) return; // manche Themes weichen ab; dann greift serverseitige Prüfung
+
+			var input = findDateForPid(pid, btn);
+			if (!input || !input.length) return; // kein Feld gefunden, dann greift serverseitige Prüfung
+
+			var val = (input && input.val ? (input.val()||'').trim() : '');
+
+			if (!val) {
+				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+				// Kurzes Feedback (ersetze gern durch eigenes Notice-System)
+				alert(phpObject.daychooser_warning ? phpObject.daychooser_warning : __('Please choose a valid date.', 'event-tickets-with-ticket-scanner'));
+				return false;
+			}
+			return true;
+		}
+
+		// product page
+		$(document).on('click', '.single_add_to_cart_button', function(e){
+			var btn = $(this);
+
+			if (!checkDate(btn)) {
+				return false;
+			}
+		});
+
+		// product page with AJAX add to cart
+		var form = document.querySelector('form.cart');
+		if (form) {
+			form.addEventListener('submit', function(e){
+				var btn = $(form).find('.single_add_to_cart_button').first();
+				if (!btn || btn.length == 0) return; // no button found, then server side check
+				if (!checkDate(btn)) {
+					return false;
+				}
+				var pid = getPidFromAddToCartButton(btn);
+				if (!pid) return; // manche Themes weichen ab; dann greift serverseitige Prüfung
+				var $input = findDateForPid(pid, btn);
+				if ($input && $input.length > 0) {
+					var val    = ($input && $input.val ? ($input.val()||'').trim() : '');
+					if (val == "") return false;
+					// add hidden input field to the form if not already present
+					var hiddenInput = form.querySelector('input[name="'+phpObject.fieldKey+'"]');
+					if (!hiddenInput) {
+						hiddenInput = document.createElement('input');
+						hiddenInput.type = 'hidden';
+						hiddenInput.name = phpObject.fieldKey;
+						form.appendChild(hiddenInput);
+					}
+					hiddenInput.value = val ? val : '';
+					// indicate that a day chooser was used
+					var hiddenInputIndicator = form.querySelector('input[name="'+phpObject.fieldDayChooserIndicator+'"]');
+					if (!hiddenInputIndicator) {
+						hiddenInputIndicator = document.createElement('input');
+						hiddenInputIndicator.type = 'hidden';
+						hiddenInputIndicator.name = phpObject.fieldDayChooserIndicator;
+						form.appendChild(hiddenInputIndicator);
+					}
+					hiddenInputIndicator.value = 1;
+				}
+			});
+		}
+
+		// shop page
+		$(document.body).on('click', '.add_to_cart_button', function(e){
+			var btn = $(this);
+			if (!btn.hasClass('ajax_add_to_cart')) return; // nur AJAX-Buttons
+
+			if (!checkDate(btn)) {
+				return false;
+			}
+		});
+
+		// shop page with AJAX add to cart
+		$(document.body).on('adding_to_cart', function(e, $button, data){
+			var pid = getPidFromAddToCartButton($button);
+			if (!pid) return;
+
+			var $input = findDateForPid(pid, $button);
+			if ($input && $input.length > 0) {
+				var val    = ($input && $input.val ? ($input.val()||'').trim() : '');
+				if (val == "") return false;
+				data[phpObject.fieldKey] = val ? val : '';
+				data[phpObject.fieldDayChooserIndicator] = 1;
+			}
+
+			var nonce = document.querySelector('input[name="'+phpObject.nonceKey+'"]');
+			data[phpObject.nonceKey] = nonce ? nonce.value : '';
+		});
+
+	}
+
 	function _addHandlerToTheCodeFields() {
 		let isStoring = false;
 		let waitingTimeout = null;
@@ -33,7 +144,6 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				isStoring = true;
 				let cart_item_id = elem.attr('data-cart-item-id');
 				let cart_item_count = elem.attr('data-cart-item-count');
-				//console.log('send code: '+code+' for cart item id: '+cart_item_id+' and count: '+cart_item_count);
 				let nonce = phpObject.nonce;
 		 		$.ajax(
 		 			{
@@ -254,6 +364,9 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			})
 			.on('change',event=>{
 				let elem_intern = $(event.target);
+
+				if (elem_intern.attr('data-is-shop-page') == "1") return; // only on cart and checkout page
+
 				//console.log('change datepicker', elem_intern.attr('id'));
 				let date_value = elem_intern.val().trim();
 				if (elem_intern.attr('data-previous-value') == date_value) return; // no change

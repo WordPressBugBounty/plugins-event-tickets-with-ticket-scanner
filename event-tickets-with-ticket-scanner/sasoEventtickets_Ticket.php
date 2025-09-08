@@ -152,6 +152,7 @@ final class sasoEventtickets_Ticket {
 				foreach ($products as $product) {
 					// check if ticket
 					$product_id = $product->ID; //$product->get_id();
+					$product_id = apply_filters('wpml_object_id', $product_id, 'product', true ); // wpml
 					//if ($this->MAIN->getWC()->isTicketByProductId($product_id) ) {
 						// check if event date end is set
 						$dates = $this->calcDateStringAllowedRedeemFrom($product_id);
@@ -631,6 +632,7 @@ final class sasoEventtickets_Ticket {
 	}
 
 	public function getCalcDateStringAllowedRedeemFromCorrectProduct($product_id, $codeObj = null) {
+		$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true );
 		$product = $this->get_product( $product_id );
 		$is_variation = $product->get_type() == "variation";
 		$product_parent = $product;
@@ -662,6 +664,7 @@ final class sasoEventtickets_Ticket {
 
 		$ret['ticket_start_date'] = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_start_date', true ));
 		$ret['ticket_start_time'] = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_start_time', true ));
+		$ret['is_start_time_set'] = !empty($ret['ticket_start_time']) ? true : false;
 		$ret['ticket_end_date'] = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_end_date', true ));
 		$ret['ticket_end_date_orig'] = $ret['ticket_end_date'];
 		$ret['ticket_end_time'] = trim(get_post_meta( $product_id, 'saso_eventtickets_ticket_end_time', true ));
@@ -747,16 +750,19 @@ final class sasoEventtickets_Ticket {
 	}
 
 	public function getLabelNamePerTicket($product_id) {
+		$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true );
 		$t = trim(get_post_meta($product_id, "saso_eventtickets_request_name_per_ticket_label", true));
         if (empty($t)) $t = "Name for the ticket #{count}:";
 		return $t;
 	}
 	public function getLabelValuePerTicket($product_id) {
+		$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true );
 		$t = trim(get_post_meta($product_id, "saso_eventtickets_request_value_per_ticket_label", true));
         if (empty($t)) $t = "Please choose a value #{count}:";
 		return $t;
 	}
 	public function getLabelDaychooserPerTicket($product_id) {
+		$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true );
 		$t = trim(get_post_meta($product_id, "saso_eventtickets_request_daychooser_per_ticket_label", true));
 		if (empty($t)) $t = "Please choose a day #{count}:";
 		return $t;
@@ -1635,8 +1641,47 @@ final class sasoEventtickets_Ticket {
 		}
 	}
 
-	public function displayTicketDateAsString($product, $date_format="Y/m/d", $time_format="H:i", $codeObj = null) {
-		$product_id = $product->get_id();
+	public function displayDayChooserDateAsString($codeObj, $withTime=false) {
+		if ($codeObj == null) return "";
+
+		// check of product is day chooser
+		$codeObj = $this->MAIN->getCore()->setMetaObj($codeObj);
+		$metaObj = $codeObj['metaObj'];
+		$is_daychooser = intval($metaObj["wc_ticket"]["is_daychooser"]);
+		if ($is_daychooser != 1) return "";
+
+		$day_per_ticket = $metaObj["wc_ticket"]["day_per_ticket"];
+		if (empty($day_per_ticket)) return "";
+
+		$date_string = "";
+
+		if ($withTime) {
+			$format = $this->MAIN->getOptions()->getOptionDateTimeFormat();
+
+			// get time from product
+			$product_id = intval($metaObj['woocommerce']['product_id']);
+			if ($product_id > 0) {
+				$ticket_times = $this->getCalcDateStringAllowedRedeemFromCorrectProduct($product_id, $codeObj);
+				if ($ticket_times['is_start_time_set']) {
+					$time_str = $day_per_ticket." ".$ticket_times['ticket_start_time'];
+					$date_string = date($format, strtotime($time_str));
+				}
+			}
+		}
+
+		if (empty($date_string)) {
+			// format day_per_ticket
+			$date_format = $this->MAIN->getOptions()->getOptionDateFormat();
+			$date_string = date($date_format, strtotime($day_per_ticket));
+		}
+
+		return $date_string;
+	}
+
+	public function displayTicketDateAsString($product_id, $date_format="Y/m/d", $time_format="H:i", $codeObj = null) {
+		$product_id = intval($product_id);
+		if ($product_id <= 0) throw new Exception("#8021 ".esc_html__("Product ID not valid for ticket date string", 'event-tickets-with-ticket-scanner'));
+
 		$ticket_times = $this->calcDateStringAllowedRedeemFrom($product_id, $codeObj);
 		$ticket_start_date = $ticket_times['ticket_start_date'];
 		$ticket_start_time = $ticket_times['ticket_start_time'];
@@ -1645,28 +1690,33 @@ final class sasoEventtickets_Ticket {
 		$is_daychooser = $ticket_times['is_daychooser'];
 		$is_date_set = $ticket_times['is_date_set'];
 		$is_end_time_set = $ticket_times['is_end_time_set'];
+		$is_start_time_set = $ticket_times['is_start_time_set'];
 		$ret = "";
-		//if ($is_daychooser != 1) {
-		if ($codeObj != null) {
-			if ($is_date_set) {
-				$ticket_start_date_timestamp = $ticket_times['ticket_start_date_timestamp'];
-				$ticket_end_date = $ticket_times['ticket_end_date'];
-				$ticket_end_date_timestamp = $ticket_times['ticket_end_date_timestamp'];
-				$ret .= date($date_format, $ticket_start_date_timestamp);
-				if (!empty($ticket_start_time)) $ret .= " ".date($time_format, $ticket_start_date_timestamp);
-				if (!empty($ticket_end_date) || !empty($ticket_end_time)) $ret .= " - ";
-				if (!empty($ticket_end_date)) $ret .= date($date_format, $ticket_end_date_timestamp);
-				if (!empty($ticket_end_time)) $ret .= " ".date($time_format, $ticket_end_date_timestamp);
-			}
-		} else {
-			$parts = [];
-			if (!empty($ticket_start_date)) $parts[] = $ticket_start_date;
-			if (!empty($ticket_start_time)) $parts[] = $ticket_start_time;
-			if (count($parts) > 0 && (!empty($ticket_end_time) || !empty($ticket_end_date))) $parts[] = "-";
-			if (!empty($ticket_end_date)) $parts[] = $ticket_end_date;
-			if (!empty($ticket_end_time) && $is_end_time_set) $parts[] = $ticket_end_time;
-			$ret .= implode(" ", $parts);
+
+		// not start day and time set
+		// then only display what is set
+		// to avoid something like " - 2024-12-12 14:00"
+		// or "2024-12-12 14:00 - "
+		// or " - 14:00"
+		// or "2024-12-12 - "
+		// or " - 2024-12-12"
+
+		if ($is_date_set) {
+			$ret .= date($date_format." ".$time_format, strtotime($ticket_start_date." ".$ticket_start_time));
+		} else if (!empty($ticket_start_date)) {
+			$ret .= date($date_format, strtotime($ticket_start_date));
+		} else if ($is_start_time_set) {
+			$ret .= date($time_format, strtotime($ticket_start_time));
 		}
+		if (!empty($ret) && !empty($ticket_end_date) || $is_end_time_set) $ret .= " - ";
+		if (!empty($ticket_end_date) && $is_end_time_set) {
+			$ret .= date($date_format." ".$time_format, strtotime($ticket_end_date." ".$ticket_end_time));
+		} else if (!empty($ticket_end_date)) {
+			$ret .= date($date_format, strtotime($ticket_end_date));
+		} else if ($is_end_time_set) {
+			$ret .= date($time_format, strtotime($ticket_end_time));
+		}
+
 		return $ret;
 	}
 
