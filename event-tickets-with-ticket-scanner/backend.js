@@ -2629,7 +2629,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnRedeemedInfo')) {
 					addition_column_offset++;
-					table_columns.splice(4+addition_column_offset, 0, {
+					table_columns.splice(5+addition_column_offset, 0, {
 						"data":null,"orderable":false,"defaultContent":'',"className":"dt-center",
 						"render":function(data,type,row) {
 							let ret = '';

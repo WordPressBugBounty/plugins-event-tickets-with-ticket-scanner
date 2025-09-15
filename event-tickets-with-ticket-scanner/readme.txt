@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce
 Requires PHP: 7.0
-Stable tag: 2.7.7
+Stable tag: 2.7.8
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -294,6 +294,10 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.7.8 - 2025-09-15 =
+* Fix the switched column value of redeemed and redeemed.
+* Fix the missing date on the ticket.
+
 = 2.7.7 - 2025-09-08 =
 * Add fix for WPML products for the order email.
 * Fix for display choosen date from the date picker to the WCPDF plugin if used.

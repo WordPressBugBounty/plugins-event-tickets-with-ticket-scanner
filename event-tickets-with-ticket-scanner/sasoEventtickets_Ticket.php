@@ -401,7 +401,7 @@ final class sasoEventtickets_Ticket {
 
 		$ret = array_merge($ret, $this->calcDateStringAllowedRedeemFrom($tmp_product->get_id(), $codeObj));
 
-		$ret['ticket_date_as_string'] = $this->displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
+		$ret['ticket_date_as_string'] = $this->displayTicketDateAsString($tmp_product->get_id(), $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
 		$ret['short_desc'] = "";
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDisplayShortDesc')) {
 			$ret['short_desc'] = wp_kses_post(trim($product_parent->get_short_description()));
@@ -1822,7 +1822,7 @@ final class sasoEventtickets_Ticket {
 					$ticketObj['location'] = $location == "" ? "" : wp_kses_post($this->getAdminSettings()->getOptionValue("wcTicketTransLocation"))." <b>".wp_kses_post($location)."</b>";
 					$ticketObj['ticket_date'] = "";
 					if ($wcTicketHideDateOnPDF == false && !empty($ticket_start_date)) {
-						$ticketObj['ticket_date'] = $this->displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
+						$ticketObj['ticket_date'] = $this->displayTicketDateAsString($tmp_product->get_id(), $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
 					}
 					$ticketObj['name_per_ticket'] = "";
 					if (!empty($metaObj['wc_ticket']['name_per_ticket'])) {

@@ -108,7 +108,7 @@ class sasoEventtickets_TicketDesigner {
         $ticket["is_event_over"] =  $ticket_times["is_date_set"] && $ticket_times["ticket_end_date_timestamp"] < $ticket_times["server_time_timestamp"];
         $ticket["is_daychooser"] = $ticket_times["is_daychooser"];
         $ticket["is_expired"] = $this->MAIN->getCore()->checkCodeExpired($codeObj); // prem expiration
-        $ticket["date_as_string"] = $this->MAIN->getTicketHandler()->displayTicketDateAsString($tmp_product, $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
+        $ticket["date_as_string"] = $this->MAIN->getTicketHandler()->displayTicketDateAsString($tmp_product->get_id(), $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
         //$ticket["short_desc"] = $is_variation ? $product_parent->get_short_description() : $product->get_short_description();
         $ticket["short_desc"] = $product_parent->get_short_description();
         $ticket["info"] = wp_kses_post(nl2br(trim(get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_ticket_is_ticket_info', true ))));
