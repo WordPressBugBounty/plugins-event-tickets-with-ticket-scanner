@@ -204,7 +204,7 @@ class sasoEventtickets_AdminSettings {
 		if ($just_ret) return $ret;
 		if ($justJSON) return wp_send_json($ret);
 		else {
-			if (is_array($ret) && SASO_EVENTTICKETS::is_assoc_array($ret) && !isset($ret['nonce'])) {
+			if (is_array($ret) && count($ret) > 0 && SASO_EVENTTICKETS::is_assoc_array($ret) && !isset($ret['nonce'])) {
 				$ret['nonce'] = wp_create_nonce( $this->MAIN->_js_nonce );
 			}
 			return wp_send_json_success( $ret );
@@ -1220,7 +1220,7 @@ class sasoEventtickets_AdminSettings {
 										]);
 		}
 	}
-	private function addWoocommerceInfoToCode($data) {
+	private function addWoocommerceInfoToCode($data, $trigger_webhooks = true) {
 		// $data = ['code'=>$data["code"], 'list_id'=>$list_id, 'order_id'=>$order_id, 'product_id'=>$product_id, 'item_id'=>$item_id]
 		if (!isset($data['code'])) throw new Exception("#9601 code parameter is missing");
 		if (!isset($data['order_id'])) throw new Exception("#9602 order id parameter is missing");
@@ -1243,7 +1243,9 @@ class sasoEventtickets_AdminSettings {
 		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
 		$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
 
-		$this->getCore()->triggerWebhooks(10, $codeObj);
+		if($trigger_webhooks) {
+			$this->getCore()->triggerWebhooks(10, $codeObj);
+		}
 
 		do_action( $this->MAIN->_do_action_prefix.'admin_addWoocommerceInfoToCode', $data, $codeObj );
 
@@ -1397,10 +1399,12 @@ class sasoEventtickets_AdminSettings {
 		}
 		return ["count"=>count($data['codes']), "ret"=>$ret];
 	}
-	private function removeRedeemWoocommerceTicketForCode($data) {
+	public function removeRedeemWoocommerceTicketForCode($data, $codeObj = null) {
 		if (!isset($data['code'])) throw new Exception("#9621 code parameter is missing");
 		// lade code
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		if ($codeObj === null) {
+			$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		}
 		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
 		// leere meta wc_ticket
@@ -1781,7 +1785,7 @@ class sasoEventtickets_AdminSettings {
 			'meta_confirmedCount',
 			'meta_woocommerce', 'meta_woocommerce_order_id', 'meta_woocommerce_product_id', 'meta_woocommerce_creation_date', 'meta_woocommerce_creation_date_tz', 'meta_woocommerce_item_id', 'meta_woocommerce_user_id',
 			'meta_wc_rp', 'meta_wc_rp_order_id', 'meta_wc_rp_product_id', 'meta_wc_rp_creation_date', 'meta_wc_rp_creation_date_tz', 'meta_wc_rp_item_id',
-			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket'
+			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket', 'meta_wc_ticket_subs'
 			];
 		if ($options != null && is_array($options)) {
 			if (isset($options["displayAdminAreaColumnBillingName"])) {
@@ -1864,6 +1868,7 @@ class sasoEventtickets_AdminSettings {
 				if (!empty($metaObj['wc_ticket']['name_per_ticket'])) $row['meta_wc_ticket_name_per_ticket'] = $metaObj['wc_ticket']['name_per_ticket'];
 				if (!empty($metaObj['wc_ticket']['is_daychooser'])) $row['meta_wc_ticket_is_daychooser'] = $metaObj['wc_ticket']['is_daychooser'];
 				if (!empty($metaObj['wc_ticket']['day_per_ticket'])) $row['meta_wc_ticket_day_per_ticket'] = $metaObj['wc_ticket']['day_per_ticket'];
+				if (!empty($metaObj['wc_ticket']['subs'])) $row['meta_wc_ticket_subs'] = $metaObj['wc_ticket']['subs'];
 
 				if ($options != null && is_array($options)) {
 					if (isset($options["displayAdminAreaColumnBillingName"]) && $options["displayAdminAreaColumnBillingName"]) {

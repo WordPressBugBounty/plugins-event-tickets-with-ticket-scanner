@@ -62,6 +62,14 @@ class sasoEventtickets_Core {
 		return $this->getBase()->_isMaxReachedForTickets($this->getDB()->getCodesSize()) == false;
 	}
 
+	// helpful if meta information is changed by  function and the following function might retrieve the inform from the database
+	public function saveMetaObject($codeObj, $metaObj) {
+		// convert meta object to json and save it
+		$codeObj['meta'] = $this->_json_encode_with_error_handling($metaObj);
+		$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+		return $codeObj;
+	}
+
 	public function retrieveCodeById($id, $mitListe=false) {
 		$id = intval($id);
 		if ($id == 0) throw new Exception("#220 id is wrong");
@@ -136,6 +144,7 @@ class sasoEventtickets_Core {
 				'value_per_ticket'=>'',
 				'is_daychooser'=>0,
 				'day_per_ticket'=>'',
+				'subs'=>$this->getDefaultMetaValueOfSubs(),
 				'_qr_content'=>''
 				] // ticket purchase ; stats_redeemed is only used if the ticket can be redeemed more than once
 			];
@@ -146,6 +155,10 @@ class sasoEventtickets_Core {
 
 		return $metaObj;
 	}
+	public function getDefaultMetaValueOfSubs() {
+		return [];
+	}
+
 	public function encodeMetaValuesAndFillObject($metaValuesString, $codeObj=null) {
 		$metaObj = $this->getMetaObject();
 		if (!empty($metaValuesString)) {

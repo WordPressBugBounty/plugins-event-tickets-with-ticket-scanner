@@ -148,6 +148,23 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			console.log(v);
 		}
 	}
+	function _saveOptionValue(key, value, cbf, pcbf) {
+		_makePost('changeOption', {'key':key, 'value':value},
+		()=>{
+			cbf && cbf();
+			if (key == "wcTicketDesignerTemplateTest") {
+				$("#wcTicketDesignerTemplateTest_button_PDF").prop("disabled", false).text(__('Preview Test Template Code as PDF', 'event-tickets-with-ticket-scanner'));
+			}
+		}, null,
+		()=>{
+			pcbf && pcbf();
+			if (key == "wcTicketDesignerTemplateTest") {
+				$("#wcTicketDesignerTemplateTest_button_PDF").prop("disabled", true).text(__('saving...', 'event-tickets-with-ticket-scanner'));
+			}
+		});
+
+	}
+
 	function _setOptions(optionData) {
 		OPTIONS.list = optionData.options;
 		for (let a=0;a<OPTIONS.list.length;a++) {
@@ -284,16 +301,24 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		return retv;
 	}
 
-	function DateTime2Text(millisek) {
-		return Date2Text(millisek, OPTIONS.options_special.format_datetime ? OPTIONS.options_special.format_datetime : "d.m.Y H:i");
+	function getDefaultDateFormat() {
+		return (OPTIONS?.options_special?.format_date) ? OPTIONS.options_special.format_date : "d.m.Y";
 	}
+	function getDefaultDateTimeFormat() {
+		return OPTIONS.options_special.format_datetime ? OPTIONS.options_special.format_datetime : "d.m.Y H:i";
+	}
+	function DateTime2Text(millisek) {
+		return Date2Text(millisek, getDefaultDateTimeFormat());
+	}
+	/*
 	function Date2Text(millisek, format, timezone_id) {
+		if (!timezone_id) timezone_id =  _getOptions_Versions_getByKey("date_WP_timezone");
 		if (!millisek)
 			millisek = time(timezone_id);
 		var d = new Date(millisek);
 		if (!format)
 			//format = system.format_date ? system.format_date : "%d.%m.%Y";
-            format = OPTIONS.options_special.format_date ? OPTIONS.options_special.format_date : "d.m.Y";
+            format = getDefaultDateFormat();
 			//format = "%d.%m.%Y %H:%i";
 		var tage = [
             _x('Sun', 'cal', 'event-tickets-with-ticket-scanner'),
@@ -331,7 +356,196 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
         }
 		return format;
 	}
+	*/
 
+	function DateFormatStringToDateTimeText(datestring, format, timezone_id) {
+		if (!format) format = getDefaultDateTimeFormat();
+		let millisek = parseToMillis(datestring, timezone_id);
+		return Date2Text(millisek, format, timezone_id);
+	}
+	function DateFormatStringToDateText(datestring, format, timezone_id) {
+		let millisek = parseToMillis(datestring, timezone_id);
+		return Date2Text(millisek, format, timezone_id);
+	}
+
+	function Date2Text(millisek, format, timezone_id) {
+		// 1) Timezone bestimmen (Fallback: UTC)
+		if (!timezone_id) {
+			timezone_id = _getOptions_Versions_getByKey("date_WP_timezone") || "UTC";
+		}
+
+		// 2) Timestamp normalisieren (PHP liefert oft Sekunden; JS braucht Millisekunden)
+		if (typeof millisek === "string") millisek = Number(millisek);
+		if (!millisek) {
+			// Deine bestehende Logik – falls du hier einen Unix-TS in Sekunden bekommst, bitte ggf. *1000 ergänzen
+			millisek = time(timezone_id);
+		}
+		if (String(Math.trunc(millisek)).length === 10) {
+			millisek = millisek * 1000;
+		}
+		const date = new Date(Number(millisek));
+
+		// 3) Defaults für Format
+		if (!format) {
+			format = getDefaultDateFormat();
+		}
+
+		// 4) Lokalisierte Kurzformen (nutzt deine _x-Übersetzungen)
+		const tage = [
+			_x('Sun', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Mon', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Tue', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Wed', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Thu', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Fri', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Sat', 'cal', 'event-tickets-with-ticket-scanner')
+		];
+		const monate = [
+			_x('Jan', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Feb', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Mar', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Apr', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('May', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Jun', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Jul', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Aug', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Sep', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Oct', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Nov', 'cal', 'event-tickets-with-ticket-scanner'),
+			_x('Dec', 'cal', 'event-tickets-with-ticket-scanner')
+		];
+
+		// 5) Teile in gewünschter Timezone extrahieren
+		const dtf = new Intl.DateTimeFormat("de-CH", {
+			timeZone: timezone_id,
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+			weekday: "short",
+			hour12: false
+		});
+		const parts = Object.fromEntries(dtf.formatToParts(date).map(p => [p.type, p.value]));
+
+		const monthNum = Number(parts.month);     // 1..12 (als "01".."12")
+		const dayNum   = Number(parts.day);       // 1..31
+		const hourNum  = Number(parts.hour);      // 0..23
+
+		// Wochentag-Index (0=Sun..6=Sat) in der angegebenen Timezone
+		const weekdayEn = new Intl.DateTimeFormat("en-US", { timeZone: timezone_id, weekday: "short" }).format(date);
+		const weekdayIndex = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(weekdayEn);
+
+		// 6) Token-Mapping (PHP-ähnlich)
+		const formate = {
+			'd': parts.day,                                   // 01..31
+			'j': String(dayNum),                              // 1..31
+			'D': tage[weekdayIndex],                          // So/Mo/... (aus _x oben, hier auf 'Sun'.. gemappt)
+			'w': String(weekdayIndex),                        // 0..6 (So=0)
+			'm': parts.month,                                 // 01..12
+			'M': monate[monthNum - 1],                        // Jan..Dec (aus _x oben)
+			'n': String(monthNum),                            // 1..12
+			'Y': parts.year,                                  // 2025
+			'y': parts.year.slice(-2),                        // 25
+			'H': parts.hour,                                  // 00..23
+			'h': String(((hourNum % 12) || 12)).padStart(2,'0'), // 01..12
+			'i': parts.minute,                                // 00..59
+			's': parts.second                                 // 00..59
+		};
+
+		// 7) Token ersetzen (ohne %; entspricht deiner aktuellen Logik)
+		for (const akey in formate) {
+			const rg = new RegExp(akey, "g");
+			format = format.replace(rg, formate[akey]);
+		}
+		return format;
+	}
+
+	// Hilfsfunktion: Offset-Minuten einer IANA-Zeitzone für einen UTC-Instant ermitteln.
+	// Nutzt Intl.DateTimeFormat mit timeZoneName:'shortOffset' (z.B. "GMT+2").
+	function _getTzOffsetMinutes(utcDate, timezone_id) {
+		const fmt = new Intl.DateTimeFormat('en-US', {
+			timeZone: timezone_id,
+			timeZoneName: 'shortOffset',
+			year: 'numeric', month: '2-digit', day: '2-digit',
+			hour: '2-digit', minute: '2-digit', second: '2-digit',
+			hour12: false
+		});
+		const parts = fmt.formatToParts(utcDate);
+		const z = parts.find(p => p.type === 'timeZoneName')?.value || 'GMT+0';
+		// Erwartete Form: "GMT+2" oder "GMT+02:00"
+		const m = z.match(/GMT([+-])(\d{1,2})(?::?(\d{2}))?/i);
+		if (!m) return 0;
+		const sign = m[1] === '-' ? -1 : 1;
+		const hours = parseInt(m[2], 10);
+		const mins  = m[3] ? parseInt(m[3], 10) : 0;
+		return sign * (hours * 60 + mins);
+	}
+
+	// Wandelt verschiedenste Eingaben in einen UTC-Millis-Timestamp.
+	// - Zahlen (Sekunden/Millis) -> normalisiert
+	// - ISO-Strings mit Z/±hh:mm -> nativ geparst
+	// - Naive Strings (z.B. "YYYY-MM-DD HH:mm:ss") -> als timezone_id-Wandzeit interpretiert
+	function parseToMillis(input, timezone_id) {
+		timezone_id = timezone_id || (typeof _getOptions_Versions_getByKey === 'function'
+			? _getOptions_Versions_getByKey("date_WP_timezone") : "UTC");
+
+		// 1) Direkt Number?
+		if (typeof input === 'number') {
+			// 10-stellige Sekunden -> *1000
+			if (String(Math.trunc(input)).length === 10) return input * 1000;
+			return input; // bereits Millisekunden
+		}
+
+		// 2) String -> trim
+		if (typeof input === 'string') {
+			const s = input.trim();
+
+			// 2a) Reine Ziffern -> Sekunden/Millis
+			if (/^\d+$/.test(s)) {
+				const n = Number(s);
+				return (s.length === 10) ? n * 1000 : n;
+			}
+
+			// 2b) ISO mit Z / Offset -> nativ (sicher)
+			if (/T.*(Z|[+-]\d{2}:\d{2})$/.test(s)) {
+				const d = new Date(s);
+				if (!isNaN(d)) return d.getTime();
+			}
+
+			// 2c) Naive Formate: "YYYY-MM-DD HH:mm:ss" | "YYYY/MM/DD HH:mm" | "YYYY-MM-DD"
+			// Wir parsen Komponenten und interpretieren sie als Wandzeit in timezone_id.
+			const m = s.match(
+				/^(\d{4})[-\/](\d{2})[-\/](\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/
+			);
+			if (m) {
+				const Y = parseInt(m[1], 10);
+				const Mo = parseInt(m[2], 10);
+				const D = parseInt(m[3], 10);
+				const H = m[4] ? parseInt(m[4], 10) : 0;
+				const I = m[5] ? parseInt(m[5], 10) : 0;
+				const S = m[6] ? parseInt(m[6], 10) : 0;
+
+				// Instant-Kandidat in UTC aus den "lokalen" Komponenten
+				// Idee: Komponenten als UTC annehmen -> Offset der Ziel-Zeitzone abziehen.
+				const utcGuess = new Date(Date.UTC(Y, Mo - 1, D, H, I, S));
+
+				// Offset der Ziel-Zone zum angegebenen Zeitpunkt holen (inkl. DST)
+				const offMin = _getTzOffsetMinutes(utcGuess, timezone_id);
+
+				// Echte UTC-Millis, wenn Y-M-D H:I:S die Wandzeit in timezone_id ist:
+				return utcGuess.getTime() - offMin * 60 * 1000;
+			}
+
+			// 2d) Fallback: Versuch natives Date (Browser-lokal) – nicht ideal, aber besser als NaN
+			const d = new Date(s.replace(' ', 'T'));
+			if (!isNaN(d)) return d.getTime();
+		}
+
+		// 3) Wenn alles fehlschlägt -> NaN (oder wirf Fehler je nach Policy)
+		return NaN;
+	}
 	function _getMediaData(mediaid, cbf) {
 		_makeGet('getMediaData', {'mediaid':mediaid}, (ret)=>{
 			cbf && cbf(ret);
@@ -718,6 +932,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 			// zeige support email
 			DIV.append(getUseFulVideosHTML);
+			DIV.append('<h3>BETA Chat bot for fast answers</h3><p>Use our new chat bot to get fast answers. The bot is trained with the FAQ and the documentation. It can help you to find answers faster. The bot is in BETA and we are using ChatGPT for now - you need to login to use it (sorry).</p><p><a class="button button-secondary" href="https://chatgpt.com/g/g-6819d8f68338819193a4be7e7973cce0-event-tickets-support-gpt" target="_blank">Open Chat Bot</a></p>');
+			DIV.append('<h3>Release notes</h3><p>You can find the release notes here: <span class="dashicons dashicons-external"></span><a href="https://vollstart.com/posts/category/eventticketupdates/" target="_blank">Release Notes</a></p>');
 			DIV.append('<h3>Support Email</h3><b>support@vollstart.com</b>');
 			DIV.append('<h3>Support Context Information</h3><p>'+__('Please copy the following information, so that we can support you better and faster. Remove any critical information if needed.', 'event-tickets-with-ticket-scanner')+'</p>');
 			DIV.append('<b>Ticket Counter: </b> '+reply.infos.ticket.counter+newline);
@@ -1060,7 +1276,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 									$('input[data-key="wcTicketSizeHeightTest"').val(ticket_template.wcTicketSizeHeightTest).trigger("change");
 									$('input[data-key="wcTicketQRSizeTest"').val(ticket_template.wcTicketQRSizeTest).trigger("change");
 									let value = editor.wcTicketDesignerTemplateTest_editor.getValue().trim();
-									__saveOptionValue("wcTicketDesignerTemplateTest", value);
+									_saveOptionValue("wcTicketDesignerTemplateTest", value);
 									editor.wcTicketDesignerTemplateTest_btn.prop("disabled", true);
 
 								});
@@ -1073,22 +1289,6 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					if (key == data[a].key) return data[a];
 				}
 				return null;
-			}
-			function __saveOptionValue(key, value, cbf, pcbf) {
-				_makePost('changeOption', {'key':key, 'value':value},
-				()=>{
-					cbf && cbf();
-					if (key == "wcTicketDesignerTemplateTest") {
-						$("#wcTicketDesignerTemplateTest_button_PDF").prop("disabled", false).text(__('Preview Test Template Code as PDF', 'event-tickets-with-ticket-scanner'));
-					}
-				}, null,
-				()=>{
-					pcbf && pcbf();
-					if (key == "wcTicketDesignerTemplateTest") {
-						$("#wcTicketDesignerTemplateTest_button_PDF").prop("disabled", true).text(__('saving...', 'event-tickets-with-ticket-scanner'));
-					}
-				});
-
 			}
 
 			let editor = {}; // for ace editor
@@ -1242,7 +1442,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						if (v.type != "editor") {
 							elem_input.on("change", ()=>{
 								let value = elem_input.val();
-								__saveOptionValue(v.key, value, cbf, pcbf);
+								_saveOptionValue(v.key, value, cbf, pcbf);
 							});
 						}
 					}
@@ -1283,7 +1483,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						editor[v.key+"_editor"] = null; // will be filled later
 						editor[v.key+"_btn"] = $('<button class="button button-primary">').prop("disabled", true).html(_x('Save Template Code', 'title', 'event-tickets-with-ticket-scanner')).on("click", evt=>{
 							let value = editor[v.key+"_editor"].getValue().trim();
-							__saveOptionValue(v.key, value, cbf, pcbf);
+							_saveOptionValue(v.key, value, cbf, pcbf);
 							editor[v.key+"_btn"].prop("disabled", true);
 						}).appendTo(btn_group);
 						$('<button class="button button-danger">').html(_x('Copy Template Code To Live Code', 'title', 'event-tickets-with-ticket-scanner')).on("click", evt=>{
@@ -1478,7 +1678,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		let url = _getOptions_Infos_getByKey('ticket').ticket_scanner_path;
 		let _urlpath = _getOptions_getValByKey("wcTicketCompatibilityModeURLPath");
 		if (_urlpath != "") {
-			url = OPTIONS.infos.site.home+"/"+_urlpath+'/scanner/';
+			url = OPTIONS.infos.site.home+"/"+_urlpath+'/scanner/?code=';
 		} else {
 			url = OPTIONS.infos.ticket.ticket_scanner_url;
 		}
@@ -1803,6 +2003,34 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		}).html(label+"<br>");
 	}
 
+	function __showFirstSteps() {
+		let infoBox = null;
+		// check if option displayFirstStepsHelp is set and active
+		if (_getOptions_isActivatedByKey("displayFirstStepsHelp")) {
+			// render info box with the first steps instructions.
+			infoBox = $('<div style="background:#f9f9f9;border:1px solid #ddd;border:2px solid blue;padding:15px;margin-top:20px;margin-bottom:20px;box-shadow: 0 2px 5px rgba(0,0,0,0.1);border-radius:10px;"/>');
+			infoBox.append($('<h3/>').html(_x('First Steps', 'title', 'event-tickets-with-ticket-scanner')));
+			$('<p/>').html(__('The basic steps to sell tickets, no matter which use case you have.', 'event-tickets-with-ticket-scanner')).appendTo(infoBox);
+			let ul = $('<ol/>').appendTo(infoBox);
+			$('<li/>').html(__('Create a list of tickets if none exists.<br>You can create different lists for different events or purposes. The ticket list need to be assigned to the product.', 'event-tickets-with-ticket-scanner')).appendTo(ul);
+			$('<li/>').html(__('Go to the WooCommerce products and add/change a product.', 'event-tickets-with-ticket-scanner')).appendTo(ul);
+			$('<li/>').html(__('Open the Event Ticket tab and activate the product to be a ticket and assign a ticket list.', 'event-tickets-with-ticket-scanner')).appendTo(ul);
+			$('<li/>').html(__('Adjust the ticket informations if needed.', 'event-tickets-with-ticket-scanner')).appendTo(ul);
+			$('<p/>').html(__('If you want to specialize your tickets, checkout our use case videos and also take a look at the options area with more than 200 options.', 'event-tickets-with-ticket-scanner')).appendTo(infoBox);
+			$('<p/>').html(__('If you need help, please contact us via email. The information is in "Support Info" area - button above.', 'event-tickets-with-ticket-scanner')).appendTo(infoBox);
+			infoBox.append(getUseFulVideosHTML());
+			let btn_dont_show = $('<button class="button button-secondary" style="margin-top:10px;"/>').html(_x("Don't show this again", 'label', 'event-tickets-with-ticket-scanner')).appendTo(infoBox);
+			btn_dont_show.on("click", function(){
+				_saveOptionValue("displayFirstStepsHelp", "0", ()=>{
+					infoBox.slideUp(300, function(){
+						infoBox.remove();
+					});
+				});
+			});
+		}
+		return infoBox; // jquery object
+	}
+
 	class Layout {
 		constructor(){
 			DIV.addClass("sngmbh_container");
@@ -1812,32 +2040,18 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			$("body").append(this.div_spinner);
 		}
 		renderMainBody() {
+			let infoBoxFirstSteps = __showFirstSteps();
 			let premium_status = '<div style="color:red;font-weight:bold;">'+_x('FREE version', 'label', 'event-tickets-with-ticket-scanner')+'</div>';
 			if (isPremium()) {
 				premium_status = '<div style="color:green;font-weight:bold;">'+_x('PREMIUM', 'label', 'event-tickets-with-ticket-scanner')+'</div>';
 			}
 			$('body').find('td[data-id=plugin_info_area_premium_status]').html(premium_status);
 
-			/*
-			$('body').find('div[data-id=plugin_addons]').html("")
-				.css("display", "flex")
-				.css("justify-content", "space-between")
-				.css("width", "100%")
-				.css("padding-bottom", "20px")
-				.css("padding-top", "20px")
-				.css("box-sizing", "border-box")
-				.append( $('<button style="flex-grow:1;margin-right:20px;background-color:cornflowerblue;border:none;color:white;padding:10px;">').html("How to start") )
-				.append( $('<button style="flex-grow:1;margin-right:20px;background-color:cornflowerblue;border:none;color:white;padding:10px;">').html("Quick start") )
-				.append( $('<button style="flex-grow:1;margin-right:20px;background-color:cornflowerblue;border:none;color:white;padding:10px;">').html("Ticket scanner") )
-				;
-			if (isPremium() == false) {
-				$('body').find('div[data-id=plugin_addons]')
-					.append( $('<button style="flex-grow:1;margin-right:20px;background-color:cornflowerblue;border:none;color:white;padding:10px;">').html("Upgrade now") );
-			}
-			*/
-
 			let div_body = $('<div/>');
 			div_body.append($('<div style="text-align:right;">').html(_displaySettingAreaButton()));
+			if (infoBoxFirstSteps) {
+				div_body.append(infoBoxFirstSteps);
+			}
 			div_body.append($('<h3/>').html(_x('List of tickets', 'title', 'event-tickets-with-ticket-scanner')));
 			div_body.append($('<p/>').html(__("Organize your tickets in lists. You can assign tickets to a list.", 'event-tickets-with-ticket-scanner')));
 			div_body.append(this.div_liste);
@@ -2369,6 +2583,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					let table = $('#'+id_liste);
 					$(table).DataTable().clear().destroy();
 					tabelle_liste_datatable = $(table).DataTable({
+						language: {
+        					emptyTable: '<b>You need a ticket list to assign it to the products in order to sell tickets.</b>'
+    					},
 						"responsive": true,
 						"visible": true,
 						"searching": true,
@@ -2474,10 +2691,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					}
 				});
 				let btn_codes_new = $('<button/>').addClass("button-primary").html(_x('Add', 'label', 'event-tickets-with-ticket-scanner')).on("click", ()=>{
-					if (!isPremium() && tabelle_codes_datatable.page.info().recordsTotal > myAjax._max.codes_total) {
-						alert(__("You reached maximum amount of tickets. You need to delete tickets before you can add more new tickets or buy the premium version to have unlimited tickets.", 'event-tickets-with-ticket-scanner'));
+					if (tabelle_liste_datatable.page.info().recordsTotal === 0) {
+						alert(__("You need to create a ticket list first before you can add tickets.", 'event-tickets-with-ticket-scanner'));
 					} else {
-						LAYOUT.renderAddCodes();
+						if (!isPremium() && tabelle_codes_datatable.page.info().recordsTotal > myAjax._max.codes_total) {
+							alert(__("You reached maximum amount of tickets. You need to delete tickets before you can add more new tickets or buy the premium version to have unlimited tickets.", 'event-tickets-with-ticket-scanner'));
+						} else {
+							LAYOUT.renderAddCodes();
+						}
 					}
 				});
 				let btn_codes_empty = $('<button/>').addClass("button-secondary").html(__('Empty table', 'event-tickets-with-ticket-scanner')).on("click", ()=>{
@@ -2644,6 +2865,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				}
 
 				tabelle_codes_datatable = $(this.div_codes).find('#'+id_codes).DataTable({
+					"language": {
+						emptyTable: '<div style="text-align:left;"><b>'+__('You have no tickets yet.', 'event-tickets-with-ticket-scanner')+'</b>'
+							+ '<p>Tickets (number) can be added by two ways.</p>'
+							+ '<ol>'
+							+ '<li>Automatically with each sale of a ticket product.<br>Please configure a woocommerce product to be a ticket product - recommended<br><a href="https://vollstart.com/event-tickets-quick-start-video" target="_blank">Check out the quick start video</a></li>'
+							+ '<li>Or add ticket numbers upfront to a ticket list<br>Click on the add button to import ticket numbers.<br>For this activate the option <b>wcassignmentReuseNotusedCodes</b></li></ol>'
+							+ '</div>'
+					},
 					"responsive": true,
 					"search": {
 						"search": typeof PARAS.code !== "undefined" ? encodeURIComponent(PARAS.code.trim()) : ''
@@ -2735,7 +2964,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 								div.append('<div/>');
 
 								// male die Inhalte
-								div.append('#'+d.id+'<br><b>'+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+':</b> '+DateTime2Text(d.time)+' ('+d.time+')<br><b>'+__('Ticket number', 'event-tickets-with-ticket-scanner')+':</b> '+d.code+'<br><b>'+__('Ticket display number', 'event-tickets-with-ticket-scanner')+':</b> '+d.code_display+'<br><b>'+_x('Code Verification Value (CVV)', 'label', 'event-tickets-with-ticket-scanner')+':</b> '+(d.cvv == "" ? '-' : d.cvv)+'<br><b>'+_x('is active', 'event-tickets-with-ticket-scanner')+':</b> '+(parseInt(d.aktiv,10) === 1?'True':'False'));
+								div.append('#'+d.id+'<br><b>'+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+':</b> '+DateFormatStringToDateTimeText(d.time)+' ('+d.time+')<br><b>'+__('Ticket number', 'event-tickets-with-ticket-scanner')+':</b> '+d.code+'<br><b>'+__('Ticket display number', 'event-tickets-with-ticket-scanner')+':</b> '+d.code_display+'<br><b>'+_x('Code Verification Value (CVV)', 'label', 'event-tickets-with-ticket-scanner')+':</b> '+(d.cvv == "" ? '-' : d.cvv)+'<br><b>'+_x('is active', 'event-tickets-with-ticket-scanner')+':</b> '+(parseInt(d.aktiv,10) === 1?'True':'False'));
 								div.append(_displayCodeDetails(d, metaObj, tabelle_codes_datatable));
 
 								div.append('<h3>'+_x('WooCommerce Order', 'title', 'event-tickets-with-ticket-scanner')+'</h3>');
@@ -2745,9 +2974,15 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 								div.append('<b>'+_x('OrderId', 'label', 'event-tickets-with-ticket-scanner')+':</b> ' + (parseInt(d.order_id) === 0 ? '-' : '#'+d.order_id+' <a target="_blank" href="post.php?post='+d.order_id+'&action=edit">'+_x('Show in WooCommerce Orders', 'label', 'event-tickets-with-ticket-scanner')+'</a>'));
 								if (typeof metaObj['woocommerce'] !== "undefined") {
 									if (metaObj.woocommerce.order_id !== 0) {
-										div.append($("<div>").html('<b>'+_x('Order from', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').text(DateTime2Text(metaObj.woocommerce.creation_date)+' ('+metaObj.woocommerce.creation_date+')')));
+										div.append($("<div>").html('<b>'+_x('Order from', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').text(DateFormatStringToDateTimeText(metaObj.woocommerce.creation_date)+' ('+metaObj.woocommerce.creation_date+')')));
 										div.append($("<div>").html('<b>'+_x('Product Id', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').html(metaObj.woocommerce.product_id+' <a target="_blank" href="post.php?post='+encodeURIComponent(metaObj.woocommerce.product_id)+'&action=edit">'+_x('Show Product', 'label', 'event-tickets-with-ticket-scanner')+'</a>')));
 									}
+								}
+								if (typeof metaObj.wc_ticket.subs !== "undefined" && metaObj.wc_ticket.subs.length > 0) {
+									div.append('<h4>'+__('Related Subscriptions', 'event-tickets-with-ticket-scanner')+'</h4>');
+									metaObj.wc_ticket.subs.forEach(sub=>{
+										div.append($("<div>").html('<b>'+_x('Subscription Id', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').html(sub.order_id+' <a target="_blank" href="post.php?post='+encodeURIComponent(sub.order_id)+'&action=edit">'+_x('Show Subscription', 'label', 'event-tickets-with-ticket-scanner')+'</a> ['+DateTime2Text(sub.date)+']')));
+									});
 								}
 								if (parseInt(d.order_id) > 0) {
 									div.append($('<div style="margin-top:10px;">').html($('<button>').addClass("button-delete").html(_x('Delete WooCommerce order info for this ticket', 'label', 'event-tickets-with-ticket-scanner')).on("click", ()=>{
@@ -2899,7 +3134,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				if (typeof metaObj.used !== "undefined") {
 					div.append("<h3>Code marked as used</h3>");
 					if (metaObj.used.reg_request !== "") {
-						div.append($("<div>").html("<b>Request from:</b> ").append($('<span>').text(DateTime2Text(metaObj.used.reg_request)+' ('+metaObj.used.reg_request+')')));
+						div.append($("<div>").html("<b>Request from:</b> ").append($('<span>').text(DateFormatStringToDateTimeText(metaObj.used.reg_request)+' ('+metaObj.used.reg_request+')')));
 						div.append($("<div>").html("<b>Request by wordpress user:</b> ").append($('<span>').text(metaObj.used.reg_userid)));
 						if (metaObj.used._reg_username) div.append($("<div>").html("<b>Request by wordpress user:</b> ").append($('<span>').text(metaObj.used._reg_username)));
 						div.append($("<div>").html("<b>Request from IP:</b> ").append($('<span>').text(metaObj.used.reg_ip)));
@@ -3177,7 +3412,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						div.append($("<div>").html("<b>Ticket set by admin user:</b> ").append($('<span>').text(metaObj.wc_ticket._set_by_admin_username+' ('+metaObj.wc_ticket.set_by_admin+') '+metaObj.wc_ticket.set_by_admin_date)));
 					}
 					if (metaObj.wc_ticket.redeemed_date != '') {
-						div.append($("<div>").html("<b>Redeemed at:</b> ").append($('<span>').text(DateTime2Text(metaObj.wc_ticket.redeemed_date)+' ('+metaObj.wc_ticket.redeemed_date+')')));
+						div.append($("<div>").html("<b>Redeemed at:</b> ").append($('<span>').text(DateFormatStringToDateTimeText(metaObj.wc_ticket.redeemed_date)+' ('+metaObj.wc_ticket.redeemed_date+')')));
 						div.append($("<div>").html("<b>Redeemed by wordpress userid:</b> ").append($('<span>').text(metaObj.wc_ticket.userid)));
 						if (metaObj.wc_ticket._username) div.append($("<div>").html("<b>Redeemed by wordpress user:</b> ").append($('<span>').text(metaObj.wc_ticket._username)));
 						div.append($("<div>").html("<b>IP while redeemed:</b> ").append($('<span>').text(metaObj.wc_ticket.ip)));
@@ -3196,6 +3431,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						$("<div>").html('<b>Ticket Page Testmode:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?testDesigner=1">Open Ticket Detail Page with template test code</a>').appendTo(div);
 						$("<div>").html('<b>Ticket PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?pdf">Open Ticket PDF</a>').appendTo(div);
 						$("<div>").html('<b>Ticket PDF Testmode:</b> <a target="_blank" href="'+metaObj.wc_ticket._url+'?pdf&testDesigner=1">Open Ticket PDF with template test code</a>').appendTo(div);
+						$("<div>").html('<b>Ticket Scanner:</b> <a target="_blank" href="'+_getTicketScannerURL()+encodeURIComponent(metaObj.wc_ticket._public_ticket_id)+'">Open Ticket Scanner with ticket</a>').appendTo(div);
 						$("<div>").html('<b>Order Ticket Page:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_page_url+'">Open Order Ticket Page</a>').appendTo(div);
 						$("<div>").html('<b>Order PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_url+'">Open Order Ticket PDF</a>').appendTo(div);
 					}
@@ -3274,7 +3510,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				metaObj.wc_ticket.stats_redeemed.forEach((v,idx)=>{
 					let tr = $('<tr>').appendTo(t);
 					$('<td>').html('#'+(idx+1)).appendTo(tr);
-					$('<td>').html(DateTime2Text(v.redeemed_date)+' ('+v.redeemed_date+')').appendTo(tr);
+					$('<td>').html(DateFormatStringToDateTimeText(v.redeemed_date)+' ('+v.redeemed_date+')').appendTo(tr);
 					$('<td>').html(v.ip).appendTo(tr);
 					$('<td>').html(v.redeemed_by_admin == 1 ? 'Yes' : 'No').appendTo(tr);
 					$('<td>').html(v.userid).appendTo(tr);

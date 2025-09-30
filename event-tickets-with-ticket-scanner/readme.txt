@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, party tickets, ticket scanner, redeem tickets, woocommerce
 Requires PHP: 7.0
-Stable tag: 2.7.8
+Stable tag: 2.7.9
 Tested up to: 6.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -294,6 +294,19 @@ New default value for the option to allow access to the admin area of the ticket
 Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
 
 == Changelog ==
+= 2.7.9 - 2025-09-30 =
+* Add an update checkout to reflect the changed input values if you use a single page for cart and checkout.
+* Add First Steps box to the admin area for new users.
+* Add link to the BETA chat bot for faster help - using ChatGPT for now.
+* Added a warning, if you try to add ticket numbers without having a ticket list.
+* Add info if the datatable for the ticket list is empty.
+* Add info if the datatabke for the tickets is empty.
+* Add release notes as link within the support area.
+* New option to allow subscription using the same ticket number as the parent order - wcassignmentExtendTicketWithSubscription.
+* Fix for ticket scanner url if option wcTicketCompatibilityModeURLPath is used.
+* Add ticket scanner URL with public ticket number to the ticket details in the admin area.
+* Adjust date and time output at the admin area to use your date and time format.
+
 = 2.7.8 - 2025-09-15 =
 * Fix the switched column value of redeemed and redeemed.
 * Fix the missing date on the ticket.

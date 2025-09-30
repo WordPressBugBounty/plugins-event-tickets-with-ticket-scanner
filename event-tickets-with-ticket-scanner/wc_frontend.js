@@ -393,14 +393,19 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 					//$('li[data-cart-item-id="'+data_cart_item_id+'"][data-cart-item-count="'+data_cart_item_count+'"]').remove();
 					// send data to the server
 
-					wait = 0;
+					let counter = 0;
+					let wait = 0;
 					to_be_changed.forEach(input => {
 						//console.log(input.attr("id")+'send code: '+date_value);
 						//console.log(input);
 						window.setTimeout(()=>{
 							sendCode(input, date_value, "saso_eventtickets_request_daychooser");
 						}, wait);
+						counter++;
 						if (wait == 0) wait = 250;
+						if (counter == to_be_changed.length) {
+							$(document.body).trigger('update_checkout');
+						}
 					});
 				} // end date_value
 			})

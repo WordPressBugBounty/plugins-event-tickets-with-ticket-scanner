@@ -1798,7 +1798,7 @@ class sasoEventtickets_WC {
 						}
 						$code_list_id = get_post_meta($product_id, 'saso_eventtickets_list', true);
 						if (!empty($code_list_id)) {
-							$this->add_serialcode_to_order_forItem($order_id, $order, $item_id, $item, $code_list_id, '_saso_eventtickets_product_code', '_saso_eventticket_code_list');
+							$this->add_serialcode_to_order_forItem($order_id, $order, $item_id, $item, $code_list_id);
 						}
 					}
 				}
@@ -1826,8 +1826,142 @@ class sasoEventtickets_WC {
 
 	}
 
-	function add_serialcode_to_order_forItem($order_id, $order, $item_id, $item, $saso_eventtickets_list, $codeName, $codeListName) {
+	// will check if the order is a subscription order and if yes, will try to get the tickets from the parent order
+	// if tickets are found, they will be assigned to the new order item
+	// return the ticket codes found or empty array
+	private function checkSubscriptionAndGetTicketsOfProduct($new_order, $product_id, $new_item) {
+		$codes = [];
+		if ($new_item == null) return $codes; // should not happen. No item found, so no tickets
+		if (!class_exists( 'WooCommerce' )) return $codes; // woocommerce not active, so no tickets
+		if (!class_exists( 'WC_Subscriptions_Product' )) return $codes; // woocommerce subscriptions not active, so no tickets
+		if (!$this->getOptions()->isOptionCheckboxActive('wcassignmentExtendTicketWithSubscription')) return $codes;
+
+		$product_id = apply_filters( 'wpml_object_id', $product_id, 'product', true );
+		$product = wc_get_product( $product_id );
+
+		if (WC_Subscriptions_Product::is_subscription( $product ) == false) return $codes; // not a subscription product
+
+		$subscriptions = wcs_get_subscriptions_for_order($new_order, ['order_type' => 'any']);
+		if (!is_array($subscriptions) || count($subscriptions) == 0) return $codes; // no subscriptions in the order - maybe the first order
+
+		$parent_order_id = 0;
+		$subscription = null;
+		foreach($subscriptions as $sub) {
+			if ($sub != null && is_a($sub, 'WC_Subscription') && in_array($sub->get_status(), ['active', 'on-hold'])) {
+				$parent_order_id = $sub->get_parent_id();
+				if ($parent_order_id == 0) return $codes; // no parent order
+				$subscription = $sub;
+				break;
+			}
+		}
+
+		if ($subscription == null) return $codes; // no active subscription in the order
+
+		$parent_order = wc_get_order($parent_order_id);
+		$products_with_codes = $this->getTicketsFromOrder($parent_order);
+		if (count($products_with_codes) == 0) return $codes; // no tickets in the parent order
+
+		$quantity = $new_item->get_quantity();
+
+		// find the product in the parent order with the same quantity
+		foreach($products_with_codes as $product_with_codes) {
+			if ($product_with_codes["product_id"] == $product_id && $product_with_codes["quantity"] == $quantity){
+				// found the product with the same quantity in the parent order - now get the tickets
+				$codes = explode(",", $product_with_codes["codes"]);
+				try {
+					foreach($codes as $code) {
+						$codeObj = $this->getCore()->retrieveCodeByCode($code);
+						// because we are reusing the ticket, no update on the date picker, name per ticket or value per ticket needed.
+						try {
+							$codeObj = $this->addOrderIdToTicketSubs($codeObj, $new_order->get_id(), $new_item->get_id());
+						} catch (Exception $e) {
+							$msg = "While processing subscription tickets, error happened updating ticket object with new order id and item id. Ticket: ".$code;
+							$this->MAIN->getAdmin()->logErrorToDB($e, "", $msg);
+							$new_order->add_order_note($msg);
+						}
+					}
+				} catch (Exception $e) {
+					$msg = "While processing subscription tickets, error happened retrieving ticket object. Tickets: ".implode(", ", $codes);
+					$this->MAIN->getAdmin()->logErrorToDB($e, "", $msg);
+					$new_order->add_order_note($msg);
+				}
+
+				// now get the infos from the old order_item and add them to the new order item
+				// remove the old values if any - happens, if the tickets were removed and added again (automatically or manually within the order details)
+				$old_item_id = $product_with_codes["order_item_id"];
+
+				// makes no sense with subscriptions - the dates are in the past :) - but then we have the code already , once we optimize it
+				$days_per_ticket = [];
+				$isDaychooser = get_post_meta($product_id, 'saso_eventtickets_is_daychooser', true) == "yes";
+				if ($isDaychooser) {
+					$daychooser = wc_get_order_item_meta($old_item_id, 'saso_eventtickets_request_daychooser', true); // somehow stored twice (_saso_eventtickets_daychooser) to the order item meta :( i did a mistake and need to be fixed one day. for now we leave it like this to prevent issues.
+					wc_delete_order_item_meta( $item_id, "saso_eventtickets_request_daychooser" ); // remove old value if any
+					wc_add_order_item_meta($item_id , "saso_eventtickets_request_daychooser", $daychooser ) ;
+					$days_per_ticket = $daychooser; // take the old value
+				}
+				$ticket_list_id = wc_get_order_item_meta($old_item_id , '_saso_eventticket_code_list', true);
+				$public_ticket_ids_value = wc_get_order_item_meta($old_item_id , '_saso_eventtickets_public_ticket_ids', true);
+				$public_ticket_ids = explode(",", $public_ticket_ids_value);
+
+				// save the values to the new order item meta
+				$this->addMetaToOrderItem($item_id, $codes, $ticket_list_id, $days_per_ticket, $public_ticket_ids);
+				break; // found the product, so break the loop
+			}
+		}
+		return $codes;
+	}
+
+	/**
+	 * Update the ticket with the new order id from the subscription and the new item id of the new order.
+	 * It also updates the expiration date and other stuff.
+	 * @param $codeObj
+	 * @param $order_id
+	 * @param $item_id
+	 * @return $codeObj
+	 */
+	private function addOrderIdToTicketSubs($codeObj, $new_order_id, $new_item_id) {
+		$old_order_id = $codeObj["order_id"];
+
+		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		if (!isset($metaObj["wc_ticket"]["subs"])) {
+			$metaObj["wc_ticket"]['subs'] = $this->MAIN->getCore()->getDefaultMetaValueOfSubs();
+		}
+		$order_info = [
+			"order_id"=>intval($new_order_id),
+			"item_id"=>$new_item_id,
+			"date"=>current_time("timestamp"),
+			"timezone"=>wp_timezone_string()
+		];
+		$metaObj["wc_ticket"]['subs'][] = $order_info;
+
+		// from the premium version - add expiration date and other stuff
+		if ($this->MAIN->isPremium()) {
+			$codeObj = $this->MAIN->getCore()->saveMetaObject($codeObj, $metaObj);
+			// need the new order for expiration date check, but the old order id is still needed for the public ticket number
+			if (method_exists($this->MAIN->getPremiumFunctions(), "executeJSON")) {
+				$codeObj = $this->MAIN->getPremiumFunctions()->executeJSON('removeExpirationFromCode', ['code'=>$codeObj["code"]] );
+			}
+			if (method_exists($this->MAIN->getPremiumFunctions(), "addCodeFromListForOrderAfter")) {
+				// let the expiration date and other stuff be updated with the new order information - if needed.
+				$codeObj['order_id'] = $new_order_id; // set the new order id, so the premium function can use it
+				$metaObj['woocommerce']['order_id'] = $new_order_id; // set the new order id, so the premium function can use it
+				$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
+				$codeObj = $this->MAIN->getPremiumFunctions()->addCodeFromListForOrderAfter($codeObj); // only if premium and only the premium call, otherwise the ticket information will be overwritten
+				$codeObj['order_id'] = $old_order_id; // restore the old order id for the public ticket number
+				$metaObj['woocommerce']['order_id'] = $old_order_id; // restore the old order id for the public ticket number
+			}
+		}
+		// reset redeem operations
+		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
+		$codeObj = $this->MAIN->getAdmin()->removeRedeemWoocommerceTicketForCode(['code'=>$codeObj["code"]], $codeObj);
+		$codeObj = $this->MAIN->getCore()->saveMetaObject($codeObj, $metaObj);
+
+		return $codeObj;
+	}
+
+	function add_serialcode_to_order_forItem($order_id, $order, $item_id, $item, $saso_eventtickets_list) {
 		$ret = [];
+		$codeListName =
 		$product_id = $item->get_product_id();
 		$product_original_id = apply_filters( 'wpml_object_id', $product_id, 'product', true );
 
@@ -1848,16 +1982,27 @@ class sasoEventtickets_WC {
 			$item_qty_refunded = $order->get_qty_refunded_for_item( $item_id );
 			$quantity = $item->get_quantity() + $item_qty_refunded;
 			$quantity *= $saso_eventtickets_ticket_amount_per_item;
+			$quantity_needed = $quantity;
 
-			$existingCode = wc_get_order_item_meta($item_id , $codeName, true);
 			$codes = [];
+			$existingCode = wc_get_order_item_meta($item_id , '_saso_eventtickets_product_code', true); // if called repeatly, do not overwrite existing codes
 			if (!empty($existingCode)) {
 				$codes = explode(",", $existingCode);
-				$quantity = $quantity - count($codes);
+				$quantity_needed = $quantity - count($codes);
 			}
 
-			if ($quantity > 0) {
+			// check if we should extend the ticket with a subscription
+			// only if there is a subscription product in the order
+			$subscription_codes = $this->checkSubscriptionAndGetTicketsOfProduct($order, $product_id, $item);
+			if (is_array($subscription_codes) && count($subscription_codes) > 0) {
+				//$codes = array_merge($codes, $subscription_codes);
+				//$quantity_needed = $quantity - count($subscription_codes);
+				// better overwrite the codes, so we do not have duplicates
+				$codes = $subscription_codes;
+				$quantity_needed = 0;
+			}
 
+			if ($quantity_needed > 0) {
 				$product_formatter_values = "";
 				if (get_post_meta($product_original_id, 'saso_eventtickets_list_formatter', true) == "yes") {
 					$product_formatter_values = get_post_meta( $product_original_id, 'saso_eventtickets_list_formatter_values', true );
@@ -1885,7 +2030,8 @@ class sasoEventtickets_WC {
 				$new_codes = [];
 				$days_per_ticket = [];
 				$offset = count($codes);
-				for($a=0;$a<$quantity;$a++) {
+
+				for($a=0;$a<$quantity_needed;$a++) {
 					$namePerTicket = "";
 					if (isset($values[$offset + $a])) {
 						$namePerTicket = $values[$offset + $a];
@@ -1919,26 +2065,33 @@ class sasoEventtickets_WC {
 					}
 					$new_codes[] = $newcode;
 					$days_per_ticket[] = $dayPerTicket;
-				} // end for quantity
+				} // end for quantity_needed
 				$codes = array_merge($codes, $new_codes);
-				if (count($codes) > 0) {
-					$ret = $codes;
-					wc_delete_order_item_meta( $item_id, $codeName );
-					wc_add_order_item_meta($item_id , $codeName, implode(",", $codes) ) ;
-					wc_delete_order_item_meta( $item_id, $codeListName );
-					wc_add_order_item_meta($item_id , $codeListName, $saso_eventtickets_list ) ;
-					wc_delete_order_item_meta( $item_id, "_saso_eventtickets_daychooser" );
-					wc_add_order_item_meta($item_id , "_saso_eventtickets_daychooser", is_array($days_per_ticket) ? implode(",", $days_per_ticket) : $days_per_ticket ) ;
-				}
-				if (count($public_ticket_ids) > 0) {
-					wc_delete_order_item_meta( $item_id, "_saso_eventtickets_public_ticket_ids" );
-					wc_add_order_item_meta($item_id , "_saso_eventtickets_public_ticket_ids", implode(",", $public_ticket_ids) ) ;
-				}
-
-				wc_delete_order_item_meta( $item_id, '_saso_eventtickets_is_ticket' );
-				wc_add_order_item_meta($item_id , '_saso_eventtickets_is_ticket', 1, true );
+				$ret = $this->addMetaToOrderItem($item_id, $codes, $saso_eventtickets_list, $days_per_ticket, $public_ticket_ids);
 			}
 		}
+		return $ret;
+	}
+
+	private function addMetaToOrderItem($item_id, $codes, $ticket_list_id, $days_per_ticket, $public_ticket_ids) {
+		$ret = [];
+		if (count($codes) > 0) {
+			$ret = $codes;
+			wc_delete_order_item_meta( $item_id, '_saso_eventtickets_product_code' );
+			wc_add_order_item_meta($item_id , '_saso_eventtickets_product_code', implode(",", $codes) ) ;
+			wc_delete_order_item_meta( $item_id, '_saso_eventticket_code_list' );
+			wc_add_order_item_meta($item_id , '_saso_eventticket_code_list', $ticket_list_id ) ;
+			wc_delete_order_item_meta( $item_id, "_saso_eventtickets_daychooser" );
+			wc_add_order_item_meta($item_id , "_saso_eventtickets_daychooser", is_array($days_per_ticket) ? implode(",", $days_per_ticket) : $days_per_ticket ) ;
+		}
+		if (count($public_ticket_ids) > 0) {
+			wc_delete_order_item_meta( $item_id, "_saso_eventtickets_public_ticket_ids" );
+			wc_add_order_item_meta($item_id , "_saso_eventtickets_public_ticket_ids", implode(",", $public_ticket_ids) ) ;
+		}
+
+		wc_delete_order_item_meta( $item_id, '_saso_eventtickets_is_ticket' );
+		wc_add_order_item_meta($item_id , '_saso_eventtickets_is_ticket', 1, true );
+
 		return $ret;
 	}
 
