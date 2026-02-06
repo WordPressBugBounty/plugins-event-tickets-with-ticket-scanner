@@ -30,19 +30,21 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				.first();
 		}
 
-		function checkDate(btn) {
+		function checkDate(btn, e) {
 			var pid = getPidFromAddToCartButton(btn);
-			if (!pid) return; // manche Themes weichen ab; dann greift serverseitige Prüfung
+			if (!pid) return true; // manche Themes weichen ab; dann greift serverseitige Prüfung
 
 			var input = findDateForPid(pid, btn);
-			if (!input || !input.length) return; // kein Feld gefunden, dann greift serverseitige Prüfung
+			if (!input || !input.length) return true; // kein Feld gefunden, dann greift serverseitige Prüfung
 
 			var val = (input && input.val ? (input.val()||'').trim() : '');
 
 			if (!val) {
-				e.preventDefault();
-				e.stopPropagation();
-				e.stopImmediatePropagation();
+				if (e) {
+					e.preventDefault();
+					e.stopPropagation();
+					e.stopImmediatePropagation();
+				}
 				// Kurzes Feedback (ersetze gern durch eigenes Notice-System)
 				alert(phpObject.daychooser_warning ? phpObject.daychooser_warning : __('Please choose a valid date.', 'event-tickets-with-ticket-scanner'));
 				return false;
@@ -54,7 +56,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		$(document).on('click', '.single_add_to_cart_button', function(e){
 			var btn = $(this);
 
-			if (!checkDate(btn)) {
+			if (!checkDate(btn, e)) {
 				return false;
 			}
 		});
@@ -65,7 +67,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			form.addEventListener('submit', function(e){
 				var btn = $(form).find('.single_add_to_cart_button').first();
 				if (!btn || btn.length == 0) return; // no button found, then server side check
-				if (!checkDate(btn)) {
+				if (!checkDate(btn, e)) {
 					return false;
 				}
 				var pid = getPidFromAddToCartButton(btn);
@@ -409,7 +411,12 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 					});
 				} // end date_value
 			})
-			.removeAttr('disabled');
+			.each(function() {
+				// Only remove disabled if not in a locked container (seats selected)
+				if (!$(this).closest('.saso-datepicker-locked').length) {
+					$(this).removeAttr('disabled');
+				}
+			});
 
 		//addStyleCode('#ui-datepicker-div > table {background-color: white;}');
 	}

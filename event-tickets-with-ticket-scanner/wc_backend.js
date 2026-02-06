@@ -58,6 +58,11 @@ function SasoEventticketsValidator_WC_backend($, phpObject) {
 							a_sngmbh:'removeAllTicketsFromOrder',
 							"data[order_id]":encodeURIComponent(phpObject.order_id)
 						};
+						// Pass through debug parameter if set in URL
+						var urlParams = new URLSearchParams(window.location.search);
+						if (urlParams.has('VollstartValidatorDebug')) {
+							_data['VollstartValidatorDebug'] = urlParams.get('VollstartValidatorDebug') || '1';
+						}
 						$.get( url, _data, function( response ) {
 							if (!response.success) {
 								alert(response);
@@ -121,6 +126,11 @@ function SasoEventticketsValidator_WC_backend($, phpObject) {
 							a_sngmbh:'removeAllNonTicketsFromOrder',
 							"data[order_id]":encodeURIComponent(phpObject.order_id)
 						};
+						// Pass through debug parameter if set in URL
+						var urlParams = new URLSearchParams(window.location.search);
+						if (urlParams.has('VollstartValidatorDebug')) {
+							_data['VollstartValidatorDebug'] = urlParams.get('VollstartValidatorDebug') || '1';
+						}
 						$.get( url, _data, function( response ) {
 							if (!response.success) {
 								alert(response);
@@ -167,6 +177,11 @@ function SasoEventticketsValidator_WC_backend($, phpObject) {
 				a_sngmbh:'downloadTicketInfosOfProduct',
 				"data[product_id]":encodeURIComponent(phpObject.product_id)
 			};
+			// Pass through debug parameter if set in URL
+			var urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.has('VollstartValidatorDebug')) {
+				_data['VollstartValidatorDebug'] = urlParams.get('VollstartValidatorDebug') || '1';
+			}
 			$.get( url, _data, function( response ) {
 				if (!response.success) {
 					alert(response);

@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.7.9
+ * Version: 2.8.5
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.7.9');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.8.5');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -34,11 +34,13 @@ class sasoEventtickets {
 	public $_do_action_prefix = 'saso_eventtickets_';
 	public $_add_filter_prefix = 'saso_eventtickets_';
 	protected $_prefix = 'sasoEventtickets';
+	public $_prefix_session = 'sasoEventtickets_';
 	protected $_shortcode = 'sasoEventTicketsValidator';
 	protected $_shortcode_mycode = 'sasoEventTicketsValidator_code';
 	protected $_shortcode_eventviews = 'sasoEventTicketsValidator_eventsview';
 	protected $_shortcode_ticket_scanner = 'sasoEventTicketsValidator_ticket_scanner';
 	protected $_shortcode_feature_list = 'sasoEventTicketsValidator_feature_list';
+	protected $_shortcode_ticket_detail = 'sasoEventTicketsValidator_ticket_detail';
 	protected $_divId = 'sasoEventtickets';
 
 	private $_isPrem = null;
@@ -50,7 +52,6 @@ class sasoEventtickets {
 	private $ADMIN = null;
 	private $FRONTEND = null;
 	private $OPTIONS = null;
-	private $WC = null;
 
 	private $isAllowedAccess = null;
 
@@ -82,6 +83,7 @@ class sasoEventtickets {
 			add_action('wp_ajax_nopriv_'.$this->_prefix.'_executeFrontend', [$this,'executeFrontend_a'], 10, 0); // nicht angemeldete user, sollen eine antwort erhalten
 			add_action('wp_ajax_'.$this->_prefix.'_executeFrontend', [$this,'executeFrontend_a'], 10, 0); // falls eingeloggt ist
 			add_action('wp_ajax_'.$this->_prefix.'_executeWCBackend', [$this,'executeWCBackend'], 10, 0); // falls eingeloggt ist
+			add_action('wp_ajax_'.$this->_prefix.'_downloadMyCodesAsPDF', [$this,'downloadMyCodesAsPDF'], 10, 0); // logged in users only
 		}
 		if (method_exists($this->getPremiumFunctions(), "initHandlers")) {
 			$this->getPremiumFunctions()->initHandlers();
@@ -112,7 +114,7 @@ class sasoEventtickets {
 			$ret['premium'] = SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION;
 		}
 		if (defined('WP_DEBUG') && WP_DEBUG) {
-			$ret['debug'] = '<span style="color:red;">'.esc_html__('is active', 'event-tickets-with-ticket-scanner').'</span>';
+			$ret['debug'] = esc_html__('is active', 'event-tickets-with-ticket-scanner');
 		}
 		return $ret;
 	}
@@ -181,12 +183,28 @@ class sasoEventtickets {
 			include_once __DIR__.'/'.$filename.'.php';
 		}
 	}
-	public function getWC() {
-		if ($this->WC == null) {
-			$this->loadOnce('sasoEventtickets_WC', "woocommerce-hooks");
-			$this->WC = new sasoEventtickets_WC($this);
+
+	/**
+	 * Load class from /includes/ folder structure
+	 *
+	 * @param string $className The class name to load
+	 * @param string $relativePath Path relative to plugin root (e.g., 'includes/woocommerce/class-base.php')
+	 * @return void
+	 */
+	private function loadClass(string $className, string $relativePath): void {
+		if (class_exists($className)) {
+			return; // Already loaded
 		}
-		return $this->WC;
+
+		$path = __DIR__ . '/' . $relativePath;
+
+		if (file_exists($path)) {
+			require_once $path;
+		}
+	}
+	public function getWC() {
+		$this->loadOnce('sasoEventtickets_WC', "woocommerce-hooks");
+		return sasoEventtickets_WC::Instance();
 	}
 	public function getTicketHandler() {
 		$this->loadOnce('sasoEventtickets_Ticket');
@@ -207,6 +225,10 @@ class sasoEventtickets {
 	public function getAuthtokenHandler() {
 		$this->loadOnce('sasoEventtickets_Authtoken');
 		return sasoEventtickets_Authtoken::Instance();
+	}
+	public function getSeating() {
+		$this->loadOnce('sasoEventtickets_Seating');
+		return sasoEventtickets_Seating::Instance($this);
 	}
 	public function getPremiumFunctions() {
 		if ($this->_isPrem == null && $this->PREMFUNCTIONS == null) {
@@ -252,9 +274,11 @@ class sasoEventtickets {
 		return $this->_prefix;
 	}
 	public function getMV() {
-		$v = ['storeip'=>false,'allowuserreg'=>false,'codes_total'=>0x13,'codes'=>0x12,'lists'=>5,'authtokens_total'=>0];
+		$v = ['storeip'=>false,'allowuserreg'=>false,'codes_total'=>0x13,'codes'=>0x12,'lists'=>5,'authtokens_total'=>3];
 		$v["codes"] = (int) hexdec(0x80 / 0x002) / 2;
 		$v["codes_total"] = (int) hexdec(0x80 / 0x002) / 2;
+		$v["seatingplans"] = (int) (0x04 >> 0x02);
+		$v["seats_per_plan"] = (int) (0x50 >> 0x02);
 		return $v;
 	}
 	public function listener_upgrader_process_complete( $upgrader_object, $options ) {
@@ -325,6 +349,7 @@ class sasoEventtickets {
 		add_shortcode($this->_shortcode_ticket_scanner, [$this, 'replacingShortcodeTicketScanner']);
 		add_shortcode($this->_shortcode_eventviews, [$this, 'replacingShortcodeEventViews']);
 		add_shortcode($this->_shortcode_feature_list, [$this, 'replacingShortcodeFeatureList']);
+		add_shortcode($this->_shortcode_ticket_detail, [$this, 'replacingShortcodeTicketDetail']);
 		do_action( $this->_do_action_prefix.'main_init_frontend' );
 	}
 	private function init_backend() {
@@ -334,14 +359,18 @@ class sasoEventtickets {
 		//register_uninstall_hook( __FILE__, 'sasoEventticketsDB::plugin_uninstall' );  // MUSS NOCH GETESTE WERDEN
 		add_action( 'plugins_loaded', [$this, 'plugins_loaded'] );
 		add_action( 'show_user_profile', [$this, 'show_user_profile'] );
+		add_action( 'admin_notices', [$this, 'showSubscriptionWarning'] );
+		add_action( 'admin_notices', [$this, 'showOutdatedPremiumWarning'] );
 
 		if (basename($_SERVER['SCRIPT_NAME']) == "admin-ajax.php") {
 			add_action('wp_ajax_'.$this->_prefix.'_executeAdminSettings', [$this,'executeAdminSettings_a'], 10, 0);
+			add_action('wp_ajax_'.$this->_prefix.'_executeSeatingAdmin', [$this,'executeSeatingAdmin_a'], 10, 0);
 		}
 
 		do_action( $this->_do_action_prefix.'main_init_backend' );
 	}
 	public function WooCommercePluginLoaded() {
+		// DON'T load WC here - let relay functions do lazy loading
 		//$this->getWC(); // um die wc handler zu laden
 		add_action('woocommerce_review_order_after_cart_contents', [$this, 'relay_woocommerce_review_order_after_cart_contents']);
 		add_action('woocommerce_checkout_process', [$this, 'relay_woocommerce_checkout_process']);
@@ -365,6 +394,9 @@ class sasoEventtickets {
 			// erlaube ajax nonpriv und registriere handler
 			add_action('wp_ajax_nopriv_'.$this->getPrefix().'_executeWCFrontend', [$this,'relay_executeWCFrontend']); // nicht angemeldete user, sollen eine antwort erhalten
 			add_action('wp_ajax_'.$this->getPrefix().'_executeWCFrontend', [$this,'relay_executeWCFrontend']); // nicht angemeldete user, sollen eine antwort erhalten
+			// Seating Frontend AJAX (seat selection in shop)
+			add_action('wp_ajax_nopriv_'.$this->getPrefix().'_executeSeatingFrontend', [$this,'relay_executeSeatingFrontend']);
+			add_action('wp_ajax_'.$this->getPrefix().'_executeSeatingFrontend', [$this,'relay_executeSeatingFrontend']);
 		}
 		if (is_admin()) {
 			add_action('woocommerce_delete_order', [$this, 'relay_woocommerce_delete_order'], 10, 1 );
@@ -372,7 +404,6 @@ class sasoEventtickets {
 			add_action('woocommerce_pre_delete_order_refund', [$this, 'relay_woocommerce_pre_delete_order_refund'], 10, 3);
 			add_action('woocommerce_delete_order_refund', [$this, 'relay_woocommerce_delete_order_refund'], 10, 1 );
 			add_action('woocommerce_order_partially_refunded', [$this, 'relay_woocommerce_order_partially_refunded'], 10, 2);
-			//add_action('woocommerce_update_order', [$this, 'relay_woocommerce_update_order'], 10, 2);
 			add_filter('woocommerce_product_data_tabs', [$this, 'relay_woocommerce_product_data_tabs'], 98 );
 			add_action('woocommerce_product_data_panels', [$this, 'relay_woocommerce_product_data_panels'] );
 			add_action('woocommerce_process_product_meta', [$this, 'relay_woocommerce_process_product_meta'], 10, 2 );
@@ -393,157 +424,166 @@ class sasoEventtickets {
 
 		add_action('woocommerce_after_shop_loop_item', [$this, 'relay_woocommerce_after_shop_loop_item'], 9); // with 9 we are just before the add to cart button
 		add_filter('woocommerce_add_to_cart_validation', [$this, 'relay_woocommerce_add_to_cart_validation'], 10, 3);
+		add_filter('woocommerce_add_cart_item_data', [$this, 'relay_woocommerce_add_cart_item_data'], 10, 3);
 		add_action('woocommerce_add_to_cart', [$this, 'relay_woocommerce_add_to_cart'], 10, 6);
 		add_action('woocommerce_cart_item_removed', [$this, 'relay_woocommerce_cart_item_removed'], 10, 2);
 		add_action('woocommerce_after_cart_item_quantity_update', [$this, 'relay_woocommerce_after_cart_item_quantity_update'], 10, 4);
+		add_filter('woocommerce_update_cart_validation', [$this, 'relay_woocommerce_update_cart_validation'], 10, 4);
 		add_action('woocommerce_before_add_to_cart_button', [$this, 'relay_woocommerce_before_add_to_cart_button'], 15);
 
 		do_action( $this->_do_action_prefix.'main_WooCommercePluginLoaded' );
 	}
 	public function relay_woocommerce_after_shop_loop_item() {
-		$this->getWC()->woocommerce_after_shop_loop_item();
+		$this->getWC()->getFrontendManager()->woocommerce_after_shop_loop_item_handler();
 	}
 	public function relay_woocommerce_add_to_cart_validation() {
 		$args = func_get_args();
-		return $this->getWC()->woocommerce_add_to_cart_validation(...$args);
+		return $this->getWC()->getFrontendManager()->woocommerce_add_to_cart_validation_handler(...$args);
+	}
+	public function relay_woocommerce_add_cart_item_data() {
+		$args = func_get_args();
+		return $this->getWC()->getFrontendManager()->woocommerce_add_cart_item_data_handler(...$args);
 	}
 	public function relay_woocommerce_add_to_cart() {
 		$args = func_get_args();
-		return $this->getWC()->woocommerce_add_to_cart(...$args);
+		return $this->getWC()->getFrontendManager()->woocommerce_add_to_cart_handler(...$args);
 	}
 	public function relay_woocommerce_cart_item_removed() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_cart_item_removed(...$args);
+		$this->getWC()->getFrontendManager()->woocommerce_cart_item_removed_handler(...$args);
 	}
 	public function relay_woocommerce_after_cart_item_quantity_update() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_after_cart_item_quantity_update(...$args);
+		$this->getWC()->getFrontendManager()->woocommerce_after_cart_item_quantity_update_handler(...$args);
+	}
+	public function relay_woocommerce_update_cart_validation() {
+		$args = func_get_args();
+		return $this->getWC()->getFrontendManager()->woocommerce_update_cart_validation_handler(...$args);
 	}
 	public function relay_woocommerce_before_add_to_cart_button() {
-		$this->getWC()->woocommerce_before_add_to_cart_button();
+		$this->getWC()->getFrontendManager()->woocommerce_before_add_to_cart_button_handler();
 	}
 	public function relay_woocommerce_review_order_after_cart_contents() {
-		$this->getWC()->woocommerce_review_order_after_cart_contents();
+		$this->getWC()->getFrontendManager()->woocommerce_review_order_after_cart_contents();
 	}
 	public function relay_woocommerce_checkout_process() {
-		$this->getWC()->woocommerce_checkout_process();
+		$this->getWC()->getFrontendManager()->woocommerce_checkout_process();
 	}
 	public function relay_woocommerce_before_cart_table() {
-		$this->getWC()->woocommerce_before_cart_table();
+		$this->getWC()->getFrontendManager()->woocommerce_before_cart_table();
 	}
 	public function relay_woocommerce_cart_updated() {
-		$this->getWC()->woocommerce_cart_updated();
+		$this->getWC()->getFrontendManager()->woocommerce_cart_updated_handler();
 	}
 	public function relay_woocommerce_email_attachments() {
 		$args = func_get_args();
-		return $this->getWC()->woocommerce_email_attachments(...$args);
+		return $this->getWC()->getEmailHandler()->woocommerce_email_attachments(...$args);
 	}
 	public function relay_woocommerce_checkout_create_order_line_item() {
 		$args = func_get_args();
-		return $this->getWC()->woocommerce_checkout_create_order_line_item(...$args);
+		return $this->getWC()->getOrderManager()->woocommerce_checkout_create_order_line_item(...$args);
 	}
 	public function relay_woocommerce_check_cart_items() {
-		$this->getWC()->woocommerce_check_cart_items();
+		$this->getWC()->getFrontendManager()->woocommerce_check_cart_items();
 	}
 	public function relay_woocommerce_new_order() {
 		$args = func_get_args();
-		return $this->getWC()->woocommerce_new_order(...$args);
+		return $this->getWC()->getOrderManager()->woocommerce_new_order(...$args);
 	}
 	public function relay_woocommerce_checkout_update_order_meta() {
 		$args = func_get_args();
-		return $this->getWC()->woocommerce_checkout_update_order_meta(...$args);
+		return $this->getWC()->getOrderManager()->woocommerce_checkout_update_order_meta(...$args);
 	}
 	public function relay_executeWCFrontend() {
-		return $this->getWC()->executeWCFrontend();
+		return $this->getWC()->getFrontendManager()->executeWCFrontend();
+	}
+	public function relay_executeSeatingFrontend() {
+		return $this->getSeating()->getFrontendManager()->executeSeatingFrontend();
 	}
 	public function relay_woocommerce_delete_order() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_delete_order(...$args);
+		$this->getWC()->getOrderManager()->woocommerce_delete_order(...$args);
 	}
 	public function relay_woocommerce_delete_order_item() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_delete_order_item(...$args);
+		$this->getWC()->getOrderManager()->woocommerce_delete_order_item(...$args);
 	}
 	public function relay_woocommerce_pre_delete_order_refund() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_pre_delete_order_refund(...$args);
+		$this->getWC()->getOrderManager()->woocommerce_pre_delete_order_refund(...$args);
 	}
 	public function relay_woocommerce_delete_order_refund() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_delete_order_refund(...$args);
+		$this->getWC()->getOrderManager()->woocommerce_delete_order_refund(...$args);
 	}
 	public function relay_woocommerce_product_data_tabs() {
 		$args = func_get_args();
-		return $this->getWC()->woocommerce_product_data_tabs(...$args);
+		return $this->getWC()->getProductManager()->woocommerce_product_data_tabs(...$args);
 	}
 	public function relay_woocommerce_product_data_panels() {
-		$this->getWC()->woocommerce_product_data_panels();
+		$this->getWC()->getProductManager()->woocommerce_product_data_panels();
 	}
 	public function relay_woocommerce_process_product_meta() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_process_product_meta(...$args);
+		$this->getWC()->getProductManager()->woocommerce_process_product_meta(...$args);
 	}
 	public function relay_add_meta_boxes(...$args) {
 		$this->getWC()->add_meta_boxes(...$args);
 	}
 	public function relay_manage_edit_product_columns() {
 		$args = func_get_args();
-		return $this->getWC()->manage_edit_product_columns(...$args);
+		return $this->getWC()->getProductManager()->manage_edit_product_columns(...$args);
 	}
 	public function relay_manage_product_posts_custom_column() {
 		$args = func_get_args();
-		$this->getWC()->manage_product_posts_custom_column(...$args);
+		$this->getWC()->getProductManager()->manage_product_posts_custom_column(...$args);
 	}
 	public function relay_manage_edit_product_sortable_columns() {
 		$args = func_get_args();
-		return $this->getWC()->manage_edit_product_sortable_columns(...$args);
+		return $this->getWC()->getProductManager()->manage_edit_product_sortable_columns(...$args);
 	}
 	public function relay_woocommerce_single_product_summary() {
-		$this->getWC()->woocommerce_single_product_summary();
+		$this->getWC()->getFrontendManager()->woocommerce_single_product_summary();
 	}
 	public function relay_woocommerce_order_status_changed() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_order_status_changed(...$args);
+		$this->getWC()->getOrderManager()->woocommerce_order_status_changed(...$args);
 	}
 	public function relay_woocommerce_order_partially_refunded() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_order_partially_refunded(...$args);
-	}
-	public function relay_woocommerce_update_order() {
-		$args = func_get_args();
-		$this->getWC()->woocommerce_update_order(...$args);
+		$this->getWC()->getOrderManager()->woocommerce_order_partially_refunded(...$args);
 	}
 	public function relay_woocommerce_order_item_display_meta_key() {
 		$args = func_get_args();
-		return $this->getWC()->woocommerce_order_item_display_meta_key(...$args);
+		return $this->getWC()->getOrderManager()->woocommerce_order_item_display_meta_key(...$args);
 	}
 	public function relay_woocommerce_order_item_display_meta_value() {
 		$args = func_get_args();
-		return $this->getWC()->woocommerce_order_item_display_meta_value(...$args);
+		return $this->getWC()->getOrderManager()->woocommerce_order_item_display_meta_value(...$args);
 	}
 	public function relay_wpo_wcpdf_after_item_meta() {
 		$args = func_get_args();
-		$this->getWC()->wpo_wcpdf_after_item_meta(...$args);
+		$this->getWC()->getOrderManager()->wpo_wcpdf_after_item_meta(...$args);
 	}
 	public function relay_woocommerce_order_item_meta_start() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_order_item_meta_start(...$args);
+		$this->getWC()->getOrderManager()->woocommerce_order_item_meta_start(...$args);
 	}
 	public function relay_woocommerce_product_after_variable_attributes() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_product_after_variable_attributes(...$args);
+		$this->getWC()->getProductManager()->woocommerce_product_after_variable_attributes(...$args);
 	}
 	public function relay_woocommerce_save_product_variation() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_save_product_variation(...$args);
+		$this->getWC()->getProductManager()->woocommerce_save_product_variation(...$args);
 	}
 	public function relay_woocommerce_email_order_meta() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_email_order_meta(...$args);
+		$this->getWC()->getEmailHandler()->woocommerce_email_order_meta(...$args);
 	}
 	public function relay_woocommerce_thankyou() {
 		$args = func_get_args();
-		$this->getWC()->woocommerce_thankyou(...$args);
+		$this->getWC()->getFrontendManager()->woocommerce_thankyou(...$args);
 	}
 	public function relay_sasoEventtickets_cronjob_daily() {
 		$this->getTicketHandler()->cronJobDaily();
@@ -618,6 +658,7 @@ class sasoEventtickets {
 		// damit im backend.js dann die richtige callback url genutzt werden kann
 		$vars = array(
 			'_plugin_home_url' =>plugins_url( "",__FILE__ ),
+			'_plugin_version' => $this->getPluginVersion(),
 			'_action' => $this->_prefix.'_executeAdminSettings',
 			'_max'=>$this->getBase()->getMaxValues(),
 			'_isPremium'=>$this->isPremium(),
@@ -645,23 +686,31 @@ class sasoEventtickets {
 		$version_tail_add = "";
 		if ($versions['debug'] != "") $version_tail_add .= 'DEBUG: '.$versions['debug'].', LANG: '.determine_locale();
 		?>
-		<div style="padding-top:10px;">
-			<table style="border:none;width:98%;margin-bottom:10px;">
-				<tr>
-					<td style="vertical-align:middle;width:195px;">
-						<img style="height:40px;" src="<?php echo plugins_url( "",__FILE__ ); ?>/img/logo_event-tickets-with-ticket-scanner.gif">
-					</td>
-					<td>
-						<h2 style="margin-top:0;padding-top:0;margin-bottom:5px;">Event Tickets with Ticket Scanner <?php esc_html_e('Version', 'event-tickets-with-ticket-scanner'); ?>: <?php echo $versions_tail; ?></h2>
-						<?php esc_html_e('If you like our plugin, then please give us a', 'event-tickets-with-ticket-scanner'); ?> <a target="_blank" href="https://wordpress.org/support/plugin/event-tickets-with-ticket-scanner/reviews?rate=5#new-post">★★★★★ 5-Star Rating</a>. <?php echo $version_tail_add; ?>
+		<div class="event-tickets-with-ticket-scanner-admin-page">
+			<div class="event-tickets-with-ticket-scanner-header">
+				<div class="event-tickets-with-ticket-scanner-header-left">
+					<img src="<?php echo plugins_url( "",__FILE__ ); ?>/img/logo_event-tickets-with-ticket-scanner.gif"
+						alt="Event Tickets"
+						class="event-tickets-with-ticket-scanner-header-logo">
+
+					<div class="event-tickets-with-ticket-scanner-header-title">
+						<div class="event-tickets-with-ticket-scanner-header-name">
+							Event Tickets with Ticket Scanner
 						</div>
-					</td>
-					<td style="font-size:20px;vertical-align:middle;text-align:right;" data-id="plugin_info_area_premium_status"></td>
-				</tr>
-			</table>
+						<div class="event-tickets-with-ticket-scanner-header-meta">
+							<?php esc_html_e('Version', 'event-tickets-with-ticket-scanner'); ?>: <?php echo $versions_tail; ?> <?php echo $version_tail_add; ?>
+						</div>
+					</div>
+				</div>
+
+				<div class="event-tickets-with-ticket-scanner-header-right" id="event-tickets-with-ticket-scanner-header-actions">
+					<!-- Button kommt via JS -->
+				</div>
+			</div>
+
 			<div style="clear:both;" data-id="plugin_addons"></div>
 			<div style="clear:both;" data-id="plugin_info_area"></div>
-			<div style="clear:both;" id="<?php echo esc_attr($this->_divId); ?>"></div>
+			<div style="clear:both;" id="<?php echo esc_attr($this->_divId); ?>">...loading...</div>
 			<div style="margin-top:100px;">
 				<hr>
 				<a name="shortcodedetails"></a>
@@ -699,17 +748,28 @@ class sasoEventtickets {
 				<p>CSS file: <a href="<?php echo plugins_url( "",__FILE__ ); ?>/css/calendar.css" target="_blank">calendar.css</a></p>
 				<h3><?php esc_html_e('Shortcode to display the assigned tickets and codes of an user within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
 				<b>[<?php echo esc_html($this->_shortcode_mycode); ?>]</b>
+				<p><?php esc_html_e('Displays tickets assigned to the current logged-in user (default) or tickets from a specific order.', 'event-tickets-with-ticket-scanner'); ?></p>
+				<ul>
+					<li><b>order_id</b> - <?php esc_html_e('Show tickets from a specific order instead of user tickets. Security: User must own the order or have valid order key in URL.', 'event-tickets-with-ticket-scanner'); ?><br>
+					<?php esc_html_e('Example:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_mycode); ?> order_id="123"]</li>
+					<li><b>format</b> - <?php esc_html_e('Output format. Values: json', 'event-tickets-with-ticket-scanner'); ?></li>
+					<li><b>display</b> - <?php esc_html_e('Fields to show (comma-separated). Values: codes, validation, user, used, confirmedCount, woocommerce, wc_rp, wc_ticket', 'event-tickets-with-ticket-scanner'); ?></li>
+					<li><b>download_all_pdf</b> - <?php esc_html_e('Show download button for all tickets as one PDF. Values: true/false', 'event-tickets-with-ticket-scanner'); ?></li>
+				</ul>
 				<p>
-					The list will be human readable in a table - default.<br>
-					You can add two parameter to change the output. <br>
-					format: only json for now possible.
-					display: one or more values. Values are seperated with a comma. Possible values: codes,validation,user,used,confirmedCount,woocommerce,wc_rp,wc_ticket<br>
-					e.g. [<?php echo esc_html($this->_shortcode_mycode); ?> format="json" display="code,wc_ticket"]<br>
-					The return value is a JSON string. So might want to add this shortcode within a Javascript HTML block to access the variable.
+					<?php esc_html_e('Example with JSON output:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_mycode); ?> format="json" display="code,wc_ticket"]
 				</p>
 				<h3><?php esc_html_e('Shortcode to display the ticket scanner within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
 				<?php esc_html_e('Useful if you cannot open the ticket scanner due to security issues.', 'event-tickets-with-ticket-scanner'); ?><br>
 				<b>[<?php echo esc_html($this->_shortcode_ticket_scanner); ?>]</b>
+				<h3><?php esc_html_e('Shortcode to display ticket detail view within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
+				<?php esc_html_e('Useful if the /ticket/ URL path does not work on your server.', 'event-tickets-with-ticket-scanner'); ?><br>
+				<b>[<?php echo esc_html($this->_shortcode_ticket_detail); ?>]</b>
+				<p>
+					<?php esc_html_e('Usage: Add the shortcode to a page and access it with ?ticket=YOUR-TICKET-CODE in the URL.', 'event-tickets-with-ticket-scanner'); ?><br>
+					<?php esc_html_e('Example:', 'event-tickets-with-ticket-scanner'); ?> yoursite.com/ticket-page/?ticket=ABC-123-XYZ<br>
+					<?php esc_html_e('Or use the code attribute:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_ticket_detail); ?> code="ABC-123-XYZ"]
+				</p>
 				<h3><?php esc_html_e('PHP Filters', 'event-tickets-with-ticket-scanner'); ?></h3>
 				<p><?php esc_html_e('You can use PHP code to register your filter functions for the validation check.', 'event-tickets-with-ticket-scanner'); ?>
 				<a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/#filters" target="_blank"><?php esc_html_e('Click here for more help about the functions', 'event-tickets-with-ticket-scanner'); ?></a>
@@ -753,7 +813,8 @@ class sasoEventtickets {
 				}
 			}
 		} else {
-			$this->isAllowedAccess = true;
+			// Standard: Only administrators have access
+			$this->isAllowedAccess = current_user_can('manage_options');
 		}
 		$this->isAllowedAccess = apply_filters( $this->_add_filter_prefix.'main_isUserAllowedToAccessAdminArea', $this->isAllowedAccess );
 		return $this->isAllowedAccess;
@@ -765,18 +826,39 @@ class sasoEventtickets {
 	}
 
 	public function executeAdminSettings($a=0, $data=null) {
-		if ($this->isUserAllowedToAccessAdminArea()) {
-			if ($a === 0 && !SASO_EVENTTICKETS::issetRPara('a_sngmbh')) return wp_send_json_success("a not provided");
-
-			if ($data == null) {
-				$data = SASO_EVENTTICKETS::issetRPara('data') ? SASO_EVENTTICKETS::getRequestPara('data') : [];
-			}
-			if ($a === 0 || empty($a) || trim($a) == "") {
-				$a = SASO_EVENTTICKETS::getRequestPara('a_sngmbh');
-			}
-			do_action( $this->_do_action_prefix.'executeAdminSettings', $a, $data );
-			return $this->getAdmin()->executeJSON($a, $data, false, false); // with nonce check
+		if (!$this->isUserAllowedToAccessAdminArea()) {
+			return wp_send_json_error("Access denied", 403);
 		}
+		if ($a === 0 && !SASO_EVENTTICKETS::issetRPara('a_sngmbh')) return wp_send_json_success("a not provided");
+
+		if ($data == null) {
+			$data = SASO_EVENTTICKETS::issetRPara('data') ? SASO_EVENTTICKETS::getRequestPara('data') : [];
+		}
+		if ($a === 0 || empty($a) || trim($a) == "") {
+			$a = SASO_EVENTTICKETS::getRequestPara('a_sngmbh');
+		}
+		do_action( $this->_do_action_prefix.'executeAdminSettings', $a, $data );
+		return $this->getAdmin()->executeJSON($a, $data, false, false); // with nonce check
+	}
+
+	public function executeSeatingAdmin_a() {
+		return $this->executeSeatingAdmin(SASO_EVENTTICKETS::getRequestPara('a'));
+	}
+
+	public function executeSeatingAdmin($a = '', $data = null) {
+		if (!$this->isUserAllowedToAccessAdminArea()) {
+			return wp_send_json_error('Access denied', 403);
+		}
+		if (empty($a) && !SASO_EVENTTICKETS::issetRPara('a')) {
+			return wp_send_json_error('a not provided');
+		}
+		if ($data === null) {
+			$data = SASO_EVENTTICKETS::getRequest();
+		}
+		if (empty($a)) {
+			$a = SASO_EVENTTICKETS::getRequestPara('a');
+		}
+		return $this->getSeating()->getAdminHandler()->executeSeatingJSON($a, $data);
 	}
 
 	public function executeFrontend_a() {
@@ -784,6 +866,9 @@ class sasoEventtickets {
 	}
 
 	public function executeWCBackend() {
+		if (!$this->isUserAllowedToAccessAdminArea()) {
+			return wp_send_json_error("Access denied", 403);
+		}
 		if (!SASO_EVENTTICKETS::issetRPara('a_sngmbh')) return wp_send_json_success("a_sngmbh not provided");
 		$data = SASO_EVENTTICKETS::issetRPara('data') ? SASO_EVENTTICKETS::getRequestPara('data') : [];
 		return $this->getWC()->executeJSON(SASO_EVENTTICKETS::getRequestPara('a_sngmbh'), $data);
@@ -829,7 +914,7 @@ class sasoEventtickets {
 		wp_enqueue_script('qr-scanner');
 
 		$js_url = "ticket_scanner.js?_v=".$this->getPluginVersion();
-		if (defined('WP_DEBUG')) $js_url .= '&t='.current_time("timestamp");
+		if (defined('WP_DEBUG')) $js_url .= '&t='.time();
 		$js_url = plugins_url( $js_url,__FILE__ );
 		wp_register_script('ajax_script_ticket_scanner', $js_url, array('jquery', 'jquery-ui-dialog', 'wp-i18n'));
 		wp_enqueue_script('ajax_script_ticket_scanner');
@@ -882,6 +967,33 @@ class sasoEventtickets {
         </div>
         </center>
 		';
+	}
+
+	/**
+	 * Shortcode to display ticket detail view on any page
+	 * Usage: [sasoEventTicketsValidator_ticket_detail] with ?ticket=CODE in URL
+	 * Or: [sasoEventTicketsValidator_ticket_detail code="TICKET-CODE"]
+	 */
+	public function replacingShortcodeTicketDetail($attr = [], $content = null, $tag = ''): string {
+		$code = '';
+		if (!empty($attr['code'])) {
+			$code = sanitize_text_field($attr['code']);
+		} elseif (isset($_GET['ticket'])) {
+			$code = sanitize_text_field($_GET['ticket']);
+		}
+
+		if (empty($code)) {
+			return '<p>' . esc_html__('No ticket code provided. Use ?ticket=YOUR-CODE in the URL.', 'event-tickets-with-ticket-scanner') . '</p>';
+		}
+
+		// Build a fake request URI for the ticket
+		$ticketPath = $this->getCore()->getTicketURLPath(true);
+		$fakeUri = $ticketPath . $code;
+
+		include_once plugin_dir_path(__FILE__) . "sasoEventtickets_Ticket.php";
+		$ticketInstance = sasoEventtickets_Ticket::Instance($fakeUri);
+
+		return $ticketInstance->renderTicketDetailForShortcode();
 	}
 
 	public function getCodesTextAsShortList($codes) {
@@ -937,17 +1049,50 @@ class sasoEventtickets {
 		return $ret;
 	}
 
-	public function getMyCodeText($user_id, $attr=[], $content = null, $tag = '') {
+	public function getMyCodeText($user_id, $attr=[], $content = null, $tag = '', $codes = null) {
 		$ret = '';
 		// check ob eingeloggt
 		$pre_text = $this->getOptions()->getOptionValue('userDisplayCodePrefix', '');
 		if (!empty($pre_text)) $pre_text .= " ";
 
-		if ($user_id > 0) {
-			// lade codes mit user_id
+		// If codes are provided (e.g., from order_id), use them; otherwise fetch by user_id
+		if ($codes === null && $user_id > 0) {
 			$codes = $this->getCore()->getCodesByRegUserId($user_id);
+		}
+
+		if ($codes !== null && count($codes) > 0) {
 			$ret .= "<b>".$pre_text."</b><br>";
 			$ret .= $this->getCodesTextAsShortList($codes);
+
+			// Download All as PDF button
+			$show_download_btn = isset($attr['download_all_pdf']) &&
+				in_array(strtolower($attr['download_all_pdf']), ['true', '1', 'yes'], true);
+
+			if ($show_download_btn && count($codes) > 0) {
+				$max_tickets = isset($attr['download_all_pdf_max']) ? intval($attr['download_all_pdf_max']) : 100;
+				$btn_label = isset($attr['download_all_pdf_label']) ?
+					sanitize_text_field($attr['download_all_pdf_label']) :
+					__('Download All Tickets as PDF', 'event-tickets-with-ticket-scanner');
+
+				$ticket_count = count($codes);
+				if ($ticket_count > $max_tickets) {
+					$ret .= '<p><em>' . sprintf(
+						/* translators: %d: maximum number of tickets */
+						esc_html__('Too many tickets (%1$d). Maximum %2$d tickets can be downloaded at once.', 'event-tickets-with-ticket-scanner'),
+						$ticket_count,
+						$max_tickets
+					) . '</em></p>';
+				} else {
+					// Generate secure download URL
+					$nonce = wp_create_nonce('download_my_codes_pdf_' . $user_id);
+					$download_url = admin_url('admin-ajax.php') . '?' . http_build_query([
+						'action' => $this->_prefix . '_downloadMyCodesAsPDF',
+						'nonce' => $nonce
+					]);
+					$ret .= '<p style="margin-top:10px;"><a href="' . esc_url($download_url) . '" class="button" target="_blank">' .
+						esc_html($btn_label) . ' (' . $ticket_count . ')</a></p>';
+				}
+			}
 		}
 		if (empty($ret) && $this->getOptions()->isOptionCheckboxActive('userDisplayCodePrefixAlways')) {
 			$ret .= $pre_text;
@@ -955,7 +1100,64 @@ class sasoEventtickets {
 		$ret = apply_filters( $this->_add_filter_prefix.'main_getMyCodeText', $ret, $user_id, $attr, $content, $tag);
 		return $ret;
 	}
-	public function getMyCodeFormatted($user_id, $attr=[], $content = null, $tag = '') {
+
+	/**
+	 * AJAX handler: Download all user's tickets as one PDF
+	 * Used by shortcode [sasoEventTicketsValidator_code download_all_pdf="true"]
+	 */
+	public function downloadMyCodesAsPDF(): void {
+		$user_id = get_current_user_id();
+
+		// Must be logged in
+		if ($user_id <= 0) {
+			wp_die(esc_html__('You must be logged in to download tickets.', 'event-tickets-with-ticket-scanner'), 403);
+		}
+
+		// Verify nonce
+		$nonce = isset($_GET['nonce']) ? sanitize_text_field($_GET['nonce']) : '';
+		if (!wp_verify_nonce($nonce, 'download_my_codes_pdf_' . $user_id)) {
+			wp_die(esc_html__('Security check failed. Please refresh the page and try again.', 'event-tickets-with-ticket-scanner'), 403);
+		}
+
+		// Get user's codes
+		$codes = $this->getCore()->getCodesByRegUserId($user_id);
+
+		if (empty($codes)) {
+			wp_die(esc_html__('No tickets found.', 'event-tickets-with-ticket-scanner'), 404);
+		}
+
+		// Limit to 100 tickets
+		$max_tickets = 100;
+		if (count($codes) > $max_tickets) {
+			wp_die(
+				sprintf(
+					/* translators: %d: maximum number of tickets */
+					esc_html__('Too many tickets. Maximum %d tickets can be downloaded at once.', 'event-tickets-with-ticket-scanner'),
+					$max_tickets
+				),
+				400
+			);
+		}
+
+		// Extract code strings
+		$code_strings = array_map(function($codeObj) {
+			return $codeObj['code'];
+		}, $codes);
+
+		// Generate merged PDF
+		$filename = 'my_tickets_' . wp_date('Ymd_Hi') . '.pdf';
+
+		try {
+			$this->getTicketHandler()->generateOnePDFForCodes($code_strings, $filename, 'I');
+		} catch (Exception $e) {
+			$this->getAdmin()->logErrorToDB($e, null, 'downloadMyCodesAsPDF');
+			wp_die(esc_html__('Error generating PDF. Please try again later.', 'event-tickets-with-ticket-scanner'), 500);
+		}
+
+		exit;
+	}
+
+	public function getMyCodeFormatted($user_id, $attr=[], $content = null, $tag = '', $codes = null) {
 		$format = "json";
 		if (isset($attr["format"])) {
 			$format = strtolower(trim(sanitize_key($attr["format"])));
@@ -976,7 +1178,10 @@ class sasoEventtickets {
 
 		$output = [];
 		//codes,validation,user,used,confirmedCount,woocommerce,wc_rp,wc_ticket
-		$codes = $this->getCore()->getCodesByRegUserId($user_id);
+		// If codes are provided (e.g., from order_id), use them; otherwise fetch by user_id
+		if ($codes === null) {
+			$codes = $this->getCore()->getCodesByRegUserId($user_id);
+		}
 		$metas = [];
 		foreach($codes as $codeObj) {
 			$metas[$codeObj["code"]]  = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
@@ -1024,12 +1229,59 @@ class sasoEventtickets {
 
 	public function replacingShortcodeMyCode($attr=[], $content = null, $tag = '') {
 		$user_id = get_current_user_id();
+		$codes = null; // Will be set if order_id is used
+
+		// Check if order_id parameter is provided
+		if (isset($attr['order_id']) && !empty($attr['order_id'])) {
+			$order_id = intval($attr['order_id']);
+			if ($order_id > 0) {
+				// Security check: can current user access this order?
+				if (!$this->canUserAccessOrder($order_id)) {
+					return '<p>' . esc_html__('You do not have permission to view tickets for this order.', 'event-tickets-with-ticket-scanner') . '</p>';
+				}
+				// Get codes by order_id
+				$codes = $this->getCore()->getCodesByOrderId($order_id);
+			}
+		}
 
 		if (count($attr) > 0 && isset($attr["format"])) {
-			return $this->getMyCodeFormatted($user_id, $attr, $content, $tag);
+			return $this->getMyCodeFormatted($user_id, $attr, $content, $tag, $codes);
 		} else {
-			return $this->getMyCodeText($user_id, $attr, $content, $tag);
+			return $this->getMyCodeText($user_id, $attr, $content, $tag, $codes);
 		}
+	}
+
+	/**
+	 * Check if current user can access a specific order's tickets
+	 *
+	 * @param int $order_id WooCommerce order ID
+	 * @return bool True if user can access, false otherwise
+	 */
+	private function canUserAccessOrder(int $order_id): bool {
+		$order = wc_get_order($order_id);
+		if (!$order) {
+			return false;
+		}
+
+		// 1. Admin/Shop-Manager can access all orders
+		if (current_user_can('manage_woocommerce')) {
+			return true;
+		}
+
+		$current_user_id = get_current_user_id();
+
+		// 2. Logged-in user owns this order
+		if ($current_user_id > 0 && $order->get_user_id() == $current_user_id) {
+			return true;
+		}
+
+		// 3. Valid order key in URL (WooCommerce thank-you page pattern)
+		$order_key_from_url = isset($_GET['key']) ? sanitize_text_field($_GET['key']) : '';
+		if (!empty($order_key_from_url) && $order->get_order_key() === $order_key_from_url) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public function replacingShortcodeFeatureList($attr=[], $content = null, $tag = '') {
@@ -1091,9 +1343,9 @@ class sasoEventtickets {
 			if ($m > 0) $months_to_show = $m;
 		}
 
-		$month_start = strtotime(date("Y-m-1 00:00:00"));
-		//$month_end = strtotime(date("Y-m-t 23:59:59"));
-		$month_end = strtotime(date("Y-m-1 23:59:59", strtotime("+".$months_to_show." month", $month_start)));
+		$month_start = strtotime(wp_date("Y-m-1 00:00:00"));
+		//$month_end = strtotime(wp_date("Y-m-t 23:59:59"));
+		$month_end = strtotime(wp_date("Y-m-1 23:59:59", strtotime("+".$months_to_show." month", $month_start)));
 
 		$products_args = array(
 			'post_type' => 'product',
@@ -1172,12 +1424,12 @@ class sasoEventtickets {
 		wp_enqueue_style("wp-jquery-ui-dialog");
 
 		$js_url = "ticket_events.js?_v=".$this->getPluginVersion();
-		if (defined('WP_DEBUG')) $js_url .= '&t='.current_time("timestamp");
+		if (defined('WP_DEBUG')) $js_url .= '&t='.time();
 		$js_url = plugins_url( $js_url,__FILE__ );
 		wp_register_script('ajax_script_ticket_events', $js_url, array('jquery', 'jquery-ui-dialog', 'wp-i18n'));
 		wp_enqueue_script('ajax_script_ticket_events');
 		wp_set_script_translations('ajax_script_ticket_events', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
-		wp_enqueue_style("ticket_events_css", plugins_url( "",__FILE__ ).'/css/calendar.css');
+		wp_enqueue_style("ticket_events_css", plugins_url( "",__FILE__ ).'/css/calendar.css', [], true);
 
 		// add all events as an array for max 3 months??? or config parameter
 		$vars = [
@@ -1275,6 +1527,132 @@ class sasoEventtickets {
 		do_action( $this->_do_action_prefix.'main_replaceShortcode', $vars, $ret );
 
 		return $ret;
+	}
+
+	/**
+	 * Show admin notice when premium subscription is about to expire or has expired
+	 *
+	 * - Warning: 14 days before expiration
+	 * - Error: After expiration (during grace period or after)
+	 *
+	 * @return void
+	 */
+	public function showSubscriptionWarning(): void {
+		// Only show for premium users
+		if (!$this->isPremium()) {
+			return;
+		}
+
+		// Only show in admin
+		if (!is_admin()) {
+			return;
+		}
+
+		// Only show to users who can manage options
+		if (!current_user_can('manage_options')) {
+			return;
+		}
+
+		$info = $this->getTicketHandler()->get_expiration();
+
+		// No expiration date or lifetime license - no warning needed
+		if (empty($info['timestamp']) || $info['timestamp'] <= 0 || $info['timestamp'] == -1) {
+			return;
+		}
+
+		// Lifetime subscription type - no warning needed
+		if (isset($info['subscription_type']) && $info['subscription_type'] === 'lifetime') {
+			return;
+		}
+
+		$days_left = ($info['timestamp'] - time()) / 86400;
+		$renewal_url = 'https://vollstart.com/product/event-tickets-with-ticket-scanner/';
+
+		// Warning 14 days before expiration
+		if ($days_left <= 14 && $days_left > 0) {
+			$date = date_i18n(get_option('date_format'), $info['timestamp']);
+			echo '<div class="notice notice-warning is-dismissible"><p>';
+			printf(
+				/* translators: %1$s: expiration date, %2$s: renewal URL */
+				esc_html__('Your Event-Tickets Premium subscription expires on %1$s. %2$sRenew now%3$s to keep all features.', 'event-tickets-with-ticket-scanner'),
+				'<strong>' . esc_html($date) . '</strong>',
+				'<a href="' . esc_url($renewal_url) . '" target="_blank">',
+				'</a>'
+			);
+			echo '</p></div>';
+		}
+
+		// Error after expiration
+		if ($days_left <= 0) {
+			$grace_days = isset($info['grace_period_days']) ? intval($info['grace_period_days']) : 7;
+			$grace_left = $grace_days + $days_left; // days_left is negative
+
+			echo '<div class="notice notice-error"><p>';
+			if ($grace_left > 0) {
+				printf(
+					/* translators: %1$d: days remaining in grace period, %2$s: renewal URL */
+					esc_html__('Your Premium subscription has expired. You have %1$d days remaining before features are disabled. %2$sReactivate now%3$s', 'event-tickets-with-ticket-scanner'),
+					ceil($grace_left),
+					'<a href="' . esc_url($renewal_url) . '" target="_blank">',
+					'</a>'
+				);
+			} else {
+				printf(
+					/* translators: %1$s: renewal URL */
+					esc_html__('Your Premium subscription has expired. Premium features are now limited. %1$sReactivate now%2$s', 'event-tickets-with-ticket-scanner'),
+					'<a href="' . esc_url($renewal_url) . '" target="_blank">',
+					'</a>'
+				);
+			}
+			echo '</p></div>';
+		}
+	}
+
+	/**
+	 * Show admin notice when premium plugin version is outdated
+	 *
+	 * Encourages users with old premium versions to upgrade
+	 *
+	 * @return void
+	 */
+	public function showOutdatedPremiumWarning(): void {
+		// Only show if premium plugin is active
+		if (!defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')) {
+			return;
+		}
+
+		// Only show in admin
+		if (!is_admin()) {
+			return;
+		}
+
+		// Only show to users who can manage options
+		if (!current_user_can('manage_options')) {
+			return;
+		}
+
+		// Only show on our plugin pages
+		$screen = get_current_screen();
+		if ($screen === null || strpos($screen->id, 'saso-event-tickets') === false) {
+			return;
+		}
+
+		// Minimum recommended premium version
+		$min_premium_version = '1.6.0';
+
+		if (version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<')) {
+			$upgrade_url = 'https://vollstart.com/product/event-tickets-with-ticket-scanner/';
+			echo '<div class="notice notice-warning is-dismissible"><p>';
+			printf(
+				/* translators: %1$s: current version, %2$s: recommended version, %3$s: upgrade URL */
+				esc_html__('Your Event-Tickets Premium plugin (v%1$s) is outdated. Version %2$s+ includes new features and improvements. %3$sUpgrade now%4$s', 'event-tickets-with-ticket-scanner'),
+				esc_html(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION),
+				esc_html($min_premium_version),
+				'<a href="' . esc_url($upgrade_url) . '" target="_blank">',
+				'</a>'
+			);
+			echo '</p></div>';
+		}
 	}
 }
 $sasoEventtickets = sasoEventtickets::Instance();

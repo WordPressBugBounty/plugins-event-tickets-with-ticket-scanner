@@ -82,11 +82,11 @@ class sasoEventtickets_Authtoken {
 		$tokenObj = ['meta'=>''];
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectAuthtoken($tokenObj['meta']);
 
-		$felder = ["name"=>strip_tags($data['name']), "time"=>date("Y-m-d H:i:s", current_time("timestamp"))];
-		$felder['code'] = strtoupper(base64_encode(get_site_url())."_".md5(current_time("timestamp")."-".uniqid()));
+		$felder = ["name"=>strip_tags($data['name']), "time"=>wp_date("Y-m-d H:i:s")];
+		$felder['code'] = strtoupper(base64_encode(get_site_url())."_".md5(time()."-".uniqid()));
 		$felder['areacode'] = "ticketscanner";
 		$felder['aktiv'] = isset($data['aktiv']) ? intval($data['aktiv']) : 1;
-		$felder['time'] = date("Y-m-d H:i:s", current_time("timestamp"));
+		$felder['time'] = wp_date("Y-m-d H:i:s");
 
 		$metaObj = $this->setMetaDataForAuthtokens($data, $metaObj);
 
@@ -119,7 +119,7 @@ class sasoEventtickets_Authtoken {
 
 		if (isset($data['name']) && trim($data['name']) != "") $felder["name"] = strip_tags($data['name']);
 		if (isset($data['aktiv'])) $felder["aktiv"] = intval($data['aktiv']);
-		$felder['changed'] = date("Y-m-d H:i:s", current_time("timestamp"));
+		$felder['changed'] = wp_date("Y-m-d H:i:s");
 
 		$metaObj = $this->setMetaDataForAuthtokens($data, $metaObj);
 

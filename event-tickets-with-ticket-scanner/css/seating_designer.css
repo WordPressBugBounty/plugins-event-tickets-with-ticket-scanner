@@ -1,0 +1,1429 @@
+/**
+ * Seating Visual Designer Styles
+ *
+ * Styles for the SVG-based seating plan designer.
+ *
+ * @package Event_Tickets_With_Ticket_Scanner
+ * @since 2.8.0
+ */
+
+/* =========================================================================
+   Designer Container & Header
+   ========================================================================= */
+
+.saso-designer-container {
+	padding: 10px 0;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.saso-designer-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #c3c4c7;
+}
+
+.saso-designer-header .header-left {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+}
+
+.saso-designer-header .header-left h2 {
+	margin: 0;
+	font-size: 1.3em;
+	font-weight: 600;
+}
+
+.saso-designer-header .saso-back-to-plans {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.saso-designer-header .saso-back-to-plans .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.saso-designer-header .header-right {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.saso-designer-header .saso-plan-status {
+	padding: 4px 12px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.saso-designer-header .saso-plan-status.active {
+	background: #edfaef;
+	color: #00a32a;
+}
+
+.saso-designer-header .saso-plan-status.inactive {
+	background: #f0f0f1;
+	color: #646970;
+}
+
+.saso-designer-header .saso-plan-status.published {
+	background: #e7f3ff;
+	color: #0073aa;
+}
+
+.saso-designer-header .saso-plan-status.draft {
+	background: #fcf0e8;
+	color: #b35c00;
+}
+
+.saso-designer-header .saso-plan-status .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+	vertical-align: middle;
+	margin-right: 2px;
+}
+
+.saso-designer-header .saso-status-date {
+	display: block;
+	font-size: 10px;
+	font-weight: 400;
+	opacity: 0.8;
+	margin-top: 2px;
+}
+
+/* Clickable badges for version toggle */
+.saso-designer-header .saso-plan-status.clickable {
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.saso-designer-header .saso-plan-status.clickable:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.saso-designer-header .saso-plan-status.viewing {
+	box-shadow: 0 0 0 2px currentColor;
+}
+
+.saso-designer-header .saso-plan-status.published.viewing {
+	background: #0073aa;
+	color: #fff;
+}
+
+.saso-designer-header .saso-plan-status.draft.viewing {
+	background: #b35c00;
+	color: #fff;
+}
+
+/* Version indicator overlay */
+.saso-version-indicator {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	background: linear-gradient(135deg, #0073aa 0%, #005a87 100%);
+	color: #fff;
+	padding: 10px 15px;
+	font-size: 13px;
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	z-index: 100;
+	border-radius: 4px 4px 0 0;
+}
+
+.saso-version-indicator .dashicons {
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+}
+
+.saso-version-indicator .saso-back-to-draft {
+	background: rgba(255,255,255,0.2);
+	border-color: rgba(255,255,255,0.3);
+	color: #fff;
+}
+
+.saso-version-indicator .saso-back-to-draft:hover {
+	background: rgba(255,255,255,0.3);
+}
+
+/* Canvas container position for overlay */
+.saso-designer-canvas-container {
+	position: relative;
+}
+
+/* Viewing published mode - read only indication */
+.saso-seating-admin-wrap.viewing-published .saso-designer-canvas-wrapper {
+	pointer-events: none;
+	opacity: 0.9;
+}
+
+.saso-seating-admin-wrap.viewing-published .saso-designer-sidebar {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.saso-seating-admin-wrap.viewing-published .saso-designer-tools {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* =========================================================================
+   Designer Layout
+   ========================================================================= */
+
+.saso-designer-wrap {
+	display: flex;
+	gap: 20px;
+	margin: 20px 0;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.saso-designer-main {
+	flex: 1;
+	min-width: 0;
+}
+
+.saso-designer-sidebar {
+	width: 280px;
+	flex-shrink: 0;
+}
+
+/* Notices Area - normal position for banners */
+.saso-designer-notices {
+	margin-bottom: 15px;
+}
+
+/* Toast container for short messages */
+.saso-toast-container {
+	position: fixed;
+	top: 50px;
+	right: 20px;
+	z-index: 100001;
+	max-width: 350px;
+	pointer-events: none;
+}
+
+/* =========================================================================
+   Toolbar
+   ========================================================================= */
+
+.saso-designer-toolbar {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 5px;
+	padding: 10px 15px;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+}
+
+.saso-tool-btn {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 6px 12px;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 13px;
+	color: #50575e;
+	transition: all 0.15s ease;
+}
+
+.saso-tool-btn:hover {
+	background: #f0f0f1;
+	border-color: #8c8f94;
+	color: #1d2327;
+}
+
+.saso-tool-btn.active {
+	background: #2271b1;
+	border-color: #2271b1;
+	color: #fff;
+}
+
+/* Primary tool (Seat) - highlighted */
+.saso-tool-btn.saso-tool-primary {
+	background: #00a32a;
+	border-color: #00a32a;
+	color: #fff;
+}
+
+.saso-tool-btn.saso-tool-primary:hover {
+	background: #008a20;
+	border-color: #008a20;
+}
+
+.saso-tool-btn.saso-tool-primary.active {
+	background: #006b18;
+	border-color: #006b18;
+	box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.saso-tool-btn .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.saso-tool-btn .tool-label {
+	display: none;
+}
+
+@media (min-width: 1200px) {
+	.saso-tool-btn .tool-label {
+		display: inline;
+	}
+}
+
+/* Toolbar Separator */
+.toolbar-separator {
+	width: 1px;
+	height: 24px;
+	background: #c3c4c7;
+	margin: 0 10px;
+}
+
+/* Grid Snap Toggle */
+.saso-grid-snap {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 13px;
+	color: #50575e;
+	cursor: pointer;
+}
+
+.saso-grid-snap input {
+	margin: 0;
+}
+
+/* Zoom Controls */
+.saso-zoom-level {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 50px;
+	padding: 0 8px;
+	font-size: 12px;
+	font-weight: 500;
+	color: #1d2327;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 3px;
+	height: 30px;
+}
+
+.saso-zoom-in,
+.saso-zoom-out,
+.saso-fit-view,
+.saso-reset-zoom {
+	padding: 6px 8px !important;
+}
+
+.saso-zoom-in .dashicons,
+.saso-zoom-out .dashicons,
+.saso-fit-view .dashicons,
+.saso-reset-zoom .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+}
+
+/* =========================================================================
+   Canvas Area
+   ========================================================================= */
+
+.saso-designer-canvas-area {
+	background: #e9e9e9;
+	border: 1px solid #c3c4c7;
+	border-top: none;
+	padding: 20px;
+	min-height: 400px;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	overflow: auto;
+}
+
+.saso-designer-canvas-wrapper {
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	background: #fff;
+}
+
+/* SVG Canvas */
+.saso-designer-svg {
+	display: block;
+}
+
+/* Panning cursor states */
+.saso-designer-svg.panning {
+	cursor: grabbing !important;
+}
+
+/* Elements */
+.saso-element {
+	cursor: move;
+	transition: opacity 0.15s ease;
+}
+
+.saso-element:hover {
+	opacity: 0.9;
+}
+
+.saso-element.selected {
+	stroke: #2271b1 !important;
+	stroke-width: 2px !important;
+	stroke-dasharray: 5, 3;
+}
+
+/* Text elements */
+.saso-element[data-type="text"] {
+	cursor: move;
+	user-select: none;
+}
+
+/* Line elements */
+.saso-element[data-type="line"] {
+	cursor: pointer;
+}
+
+.saso-element[data-type="line"].selected {
+	stroke: #2271b1 !important;
+}
+
+/* =========================================================================
+   Properties Panel
+   ========================================================================= */
+
+.saso-designer-properties {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	margin-bottom: 15px;
+}
+
+.saso-designer-properties h4 {
+	margin: 0;
+	padding: 12px 15px;
+	background: #f6f7f7;
+	border-bottom: 1px solid #c3c4c7;
+	font-size: 14px;
+	color: #1d2327;
+}
+
+.saso-props-content {
+	padding: 15px;
+}
+
+.saso-no-selection {
+	color: #646970;
+	font-style: italic;
+	text-align: center;
+	padding: 20px 0;
+	margin: 0;
+}
+
+/* Property Groups */
+.saso-prop-group {
+	margin-bottom: 12px;
+}
+
+.saso-prop-group:last-child {
+	margin-bottom: 0;
+}
+
+.saso-prop-group label {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-weight: 500;
+	color: #1d2327;
+}
+
+.saso-prop-group label.checkbox-label {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-weight: normal;
+	cursor: pointer;
+}
+
+.saso-prop-group .prop-value {
+	font-size: 13px;
+	color: #646970;
+	text-transform: capitalize;
+}
+
+.saso-prop-group input[type="text"],
+.saso-prop-group input[type="number"],
+.saso-prop-group textarea,
+.saso-prop-group select {
+	width: 100%;
+	padding: 6px 8px;
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+	font-size: 13px;
+}
+
+.saso-prop-group input[type="color"] {
+	width: 50px;
+	height: 30px;
+	padding: 2px;
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+/* Rotation Input */
+.saso-rotation-input {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+}
+
+.saso-rotation-input input[type="number"] {
+	width: 70px;
+	flex-shrink: 0;
+}
+
+.saso-rotation-unit {
+	color: #50575e;
+	font-size: 13px;
+}
+
+.saso-rotation-presets {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin-top: 4px;
+	width: 100%;
+}
+
+.saso-rotation-preset {
+	padding: 3px 8px;
+	font-size: 11px;
+	background: #f0f0f1;
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+	cursor: pointer;
+	color: #50575e;
+}
+
+.saso-rotation-preset:hover {
+	background: #2271b1;
+	border-color: #2271b1;
+	color: #fff;
+}
+
+/* Color Button (opens modal) */
+.saso-color-btn {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 8px;
+	background: #fff;
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 11px;
+	color: #50575e;
+}
+
+.saso-color-btn:hover {
+	border-color: #2271b1;
+}
+
+.saso-color-btn .saso-color-preview {
+	position: relative;
+	width: 20px;
+	height: 20px;
+	border-radius: 3px;
+	border: 1px solid rgba(0,0,0,0.2);
+	background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
+		linear-gradient(-45deg, #ccc 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #ccc 75%),
+		linear-gradient(-45deg, transparent 75%, #ccc 75%);
+	background-size: 8px 8px;
+	background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+	overflow: hidden;
+}
+
+.saso-color-btn .saso-color-swatch {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border-radius: 2px;
+}
+
+.saso-color-btn .saso-color-value {
+	min-width: 28px;
+	text-align: right;
+}
+
+/* Color Modal */
+.saso-color-modal {
+	position: fixed;
+	z-index: 100001;
+}
+
+.saso-color-modal-content {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 12px;
+	box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+	min-width: 180px;
+}
+
+.saso-color-modal-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.saso-color-modal .saso-modal-color {
+	width: 40px;
+	height: 40px;
+	padding: 2px;
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.saso-modal-opacity-wrap {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.saso-color-modal .saso-modal-opacity {
+	width: 100%;
+	height: 8px;
+	-webkit-appearance: none;
+	appearance: none;
+	background: linear-gradient(to right,
+		rgba(128,128,128,0) 0%,
+		rgba(128,128,128,1) 100%),
+		linear-gradient(45deg, #ccc 25%, transparent 25%),
+		linear-gradient(-45deg, #ccc 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #ccc 75%),
+		linear-gradient(-45deg, transparent 75%, #ccc 75%);
+	background-size: 100% 100%, 6px 6px, 6px 6px, 6px 6px, 6px 6px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.saso-color-modal .saso-modal-opacity::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width: 16px;
+	height: 16px;
+	background: #fff;
+	border: 2px solid #2271b1;
+	border-radius: 50%;
+	cursor: pointer;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.saso-color-modal .saso-modal-opacity::-moz-range-thumb {
+	width: 16px;
+	height: 16px;
+	background: #fff;
+	border: 2px solid #2271b1;
+	border-radius: 50%;
+	cursor: pointer;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.saso-modal-opacity-value {
+	font-size: 11px;
+	color: #646970;
+	text-align: center;
+}
+
+.saso-color-modal-preview {
+	margin-top: 10px;
+	text-align: center;
+}
+
+.saso-color-modal .saso-preview-box {
+	display: block;
+	position: relative;
+	width: 100%;
+	height: 24px;
+	border-radius: 3px;
+	border: 1px solid rgba(0,0,0,0.15);
+	background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
+		linear-gradient(-45deg, #ccc 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #ccc 75%),
+		linear-gradient(-45deg, transparent 75%, #ccc 75%);
+	background-size: 8px 8px;
+	background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+	overflow: hidden;
+}
+
+.saso-color-modal .saso-preview-swatch {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border-radius: 2px;
+}
+
+.saso-prop-group input:focus,
+.saso-prop-group textarea:focus,
+.saso-prop-group select:focus {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+	outline: none;
+}
+
+/* Property Row (side by side) */
+.saso-prop-row {
+	display: flex;
+	gap: 10px;
+}
+
+.saso-prop-group.half {
+	flex: 1;
+}
+
+/* Seat-specific properties */
+.saso-seat-props {
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px dashed #c3c4c7;
+}
+
+/* Property action buttons */
+.saso-prop-actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 15px;
+	padding-top: 15px;
+	border-top: 1px solid #c3c4c7;
+}
+
+.saso-prop-actions .button {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	font-size: 12px;
+	padding: 4px 8px;
+}
+
+.saso-prop-actions .button .dashicons {
+	/*font-size: 14px;
+	width: 14px;
+	height: 14px;*/
+}
+
+.saso-prop-actions .saso-delete-element {
+	color: #d63638;
+	border-color: #d63638;
+}
+
+.saso-prop-actions .saso-delete-element:hover {
+	background: #d63638;
+	color: #fff;
+}
+
+/* =========================================================================
+   Actions Panel
+   ========================================================================= */
+
+.saso-designer-actions-area {
+	margin-top: 15px;
+}
+
+.saso-designer-actions-wrap {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 15px;
+}
+
+.saso-element-counts {
+	display: flex;
+	gap: 20px;
+	margin-bottom: 15px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #c3c4c7;
+}
+
+.saso-element-counts .count-item {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 13px;
+	color: #50575e;
+}
+
+.saso-element-counts .count-item .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	color: #2271b1;
+}
+
+.saso-element-counts .count-seats .dashicons {
+	color: #00a32a;
+}
+
+.saso-element-counts .count-value {
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.saso-designer-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.saso-designer-actions .button {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.saso-designer-actions .button .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.saso-designer-actions .saso-save-draft {
+	position: relative;
+}
+
+.saso-designer-actions .saso-save-draft.has-changes::after {
+	content: '';
+	position: absolute;
+	top: -3px;
+	right: -3px;
+	width: 8px;
+	height: 8px;
+	background: #d63638;
+	border-radius: 50%;
+}
+
+.saso-designer-actions .saso-publish {
+	background: #00a32a;
+	border-color: #00a32a;
+	color: #fff;
+}
+
+.saso-designer-actions .saso-publish:hover {
+	background: #008a20;
+	border-color: #008a20;
+}
+
+.saso-designer-actions .saso-discard-draft {
+	color: #d63638;
+	border-color: #d63638;
+}
+
+.saso-designer-actions .saso-discard-draft:hover {
+	background: #d63638;
+	color: #fff;
+}
+
+/* =========================================================================
+   Warnings & Banners
+   ========================================================================= */
+
+.saso-unpublished-banner {
+	padding: 12px 15px;
+	background: #fcf9e8;
+	border-left: 4px solid #dba617;
+	border-radius: 0 4px 4px 0;
+}
+
+.saso-unpublished-banner .banner-content {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.saso-unpublished-banner .banner-text {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: 500;
+	color: #1d2327;
+}
+
+.saso-unpublished-banner .banner-text .dashicons {
+	color: #dba617;
+}
+
+.saso-unpublished-banner .publish-info {
+	color: #646970;
+	font-size: 12px;
+	margin-left: 10px;
+}
+
+.saso-unpublished-banner .banner-actions {
+	margin-left: auto;
+}
+
+.saso-unpublished-banner .saso-banner-publish {
+	white-space: nowrap;
+}
+
+.saso-unpublished-banner .saso-banner-publish .dashicons {
+	color: inherit;
+	margin-right: 3px;
+}
+
+.saso-active-sales-warning {
+	display: flex;
+	gap: 12px;
+	padding: 15px;
+	background: #fff8e5;
+	border: 1px solid #dba617;
+	border-radius: 4px;
+}
+
+.saso-active-sales-warning .dashicons {
+	color: #dba617;
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+}
+
+.saso-active-sales-warning .warning-content {
+	flex: 1;
+}
+
+.saso-active-sales-warning .warning-title {
+	font-weight: 600;
+	color: #1d2327;
+	margin-bottom: 5px;
+}
+
+.saso-active-sales-warning .warning-details {
+	font-size: 13px;
+	color: #50575e;
+}
+
+.saso-active-sales-warning .product-list {
+	margin: 8px 0 0 0;
+	padding-left: 18px;
+}
+
+.saso-active-sales-warning .product-list li {
+	margin-bottom: 3px;
+}
+
+/* =========================================================================
+   Notices
+   ========================================================================= */
+
+.saso-notice {
+	padding: 12px 16px;
+	border-left: 4px solid;
+	border-radius: 4px;
+	margin-bottom: 10px;
+	font-size: 13px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+	pointer-events: auto;
+	animation: saso-notice-slide-in 0.3s ease-out;
+}
+
+@keyframes saso-notice-slide-in {
+	from {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+.saso-notice-success {
+	background: #f0fff5;
+	border-color: #00a32a;
+	color: #00450b;
+}
+
+.saso-notice-error {
+	background: #fff5f5;
+	border-color: #d63638;
+	color: #5c0000;
+}
+
+.saso-notice-warning {
+	background: #fcf9e8;
+	border-color: #dba617;
+	color: #4a3800;
+}
+
+/* =========================================================================
+   Multi-Select
+   ========================================================================= */
+
+.saso-multi-select-header {
+	background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%);
+	border: none;
+	border-radius: 6px;
+	padding: 15px;
+	margin-bottom: 15px;
+	color: #fff;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	box-shadow: 0 2px 8px rgba(21, 101, 192, 0.3);
+}
+
+.saso-multi-badge {
+	background: #fff;
+	color: #1565c0;
+	font-size: 18px;
+	font-weight: 700;
+	padding: 6px 12px;
+	border-radius: 20px;
+	min-width: 24px;
+	text-align: center;
+}
+
+.saso-multi-select-header .dashicons {
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+/* Mixed value indicator */
+.saso-mixed-indicator {
+	color: #b35c00;
+	font-size: 11px;
+	font-style: italic;
+}
+
+/* Multi-select property inputs */
+.multi-prop {
+	border-color: #1976d2 !important;
+}
+
+.multi-prop:focus {
+	border-color: #1565c0 !important;
+	box-shadow: 0 0 0 1px #1565c0 !important;
+}
+
+/* Multi-select actions */
+.saso-multi-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 15px;
+	padding-top: 15px;
+	border-top: 1px solid #dcdcde;
+}
+
+.saso-multi-actions .button {
+	width: 100%;
+	justify-content: center;
+}
+
+.saso-multi-tip {
+	margin-top: 15px !important;
+	padding: 10px;
+	background: #f0f6fc;
+	border-radius: 4px;
+	font-size: 12px;
+}
+
+/* Enhanced selection outline for SVG elements */
+.saso-element.selected.multi-selected {
+	stroke: #1565c0 !important;
+	stroke-width: 3px !important;
+	stroke-dasharray: none !important;
+	filter: drop-shadow(0 0 4px rgba(21, 101, 192, 0.5));
+}
+
+/* Pulsing animation for multi-selected elements */
+@keyframes multiSelectPulse {
+	0%, 100% { stroke-opacity: 1; }
+	50% { stroke-opacity: 0.6; }
+}
+
+.saso-element.selected {
+	animation: multiSelectPulse 1.5s ease-in-out infinite;
+}
+
+/* =========================================================================
+   Responsive
+   ========================================================================= */
+
+@media (max-width: 1100px) {
+	.saso-designer-wrap {
+		flex-direction: column;
+	}
+
+	.saso-designer-sidebar {
+		width: 100%;
+		display: flex;
+		gap: 15px;
+		flex-wrap: wrap;
+	}
+
+	.saso-designer-properties {
+		flex: 1;
+		min-width: 250px;
+		margin-bottom: 0;
+	}
+
+	.saso-designer-actions-area {
+		flex: 1;
+		min-width: 250px;
+		margin-top: 0;
+	}
+}
+
+@media (max-width: 782px) {
+	.saso-designer-toolbar {
+		flex-wrap: wrap;
+	}
+
+	.saso-designer-canvas-area {
+		padding: 10px;
+	}
+
+	.saso-designer-sidebar {
+		flex-direction: column;
+	}
+
+	.saso-designer-properties,
+	.saso-designer-actions-area {
+		min-width: 100%;
+	}
+}
+
+/* =========================================================================
+   Element Labels (on canvas)
+   ========================================================================= */
+
+.saso-element-label {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	/* No shadow - using stroke for outline instead */
+}
+
+/* Seat indicator class */
+.saso-seat {
+	cursor: pointer;
+}
+
+/* =========================================================================
+   Resize Handles
+   ========================================================================= */
+
+.saso-resize-handle {
+	fill: #2271b1;
+	stroke: #ffffff;
+	stroke-width: 1;
+	transition: fill 0.1s ease;
+}
+
+.saso-resize-handle:hover {
+	fill: #135e96;
+}
+
+/* =========================================================================
+   Help Button & Modal
+   ========================================================================= */
+
+.saso-help-btn {
+	margin-left: 10px;
+	background: transparent !important;
+	border-color: transparent !important;
+	color: #646970 !important;
+}
+
+.saso-help-btn:hover {
+	color: #2271b1 !important;
+	background: transparent !important;
+	border-color: transparent !important;
+}
+
+.saso-help-btn .dashicons {
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+}
+
+/* Help Modal */
+.saso-help-modal .saso-modal-body {
+	max-height: 70vh;
+	overflow-y: auto;
+	padding: 20px;
+}
+
+.saso-help-modal h4 {
+	margin: 20px 0 10px 0;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #e0e0e0;
+	color: #1d2327;
+}
+
+.saso-help-modal h4:first-child {
+	margin-top: 0;
+}
+
+.saso-help-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 15px;
+}
+
+.saso-help-table td {
+	padding: 8px 10px;
+	border-bottom: 1px solid #f0f0f0;
+	vertical-align: top;
+	font-size: 13px;
+}
+
+.saso-help-table tr:last-child td {
+	border-bottom: none;
+}
+
+.saso-help-table td:first-child {
+	width: 140px;
+	white-space: nowrap;
+	color: #1d2327;
+}
+
+.saso-help-table td:last-child {
+	color: #50575e;
+}
+
+.saso-help-table .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+	margin-right: 5px;
+	color: #2271b1;
+}
+
+.saso-help-modal p {
+	margin: 0 0 15px 0;
+	color: #50575e;
+	line-height: 1.6;
+}
+
+.saso-help-modal ol {
+	margin: 0 0 15px 0;
+	padding-left: 20px;
+	color: #50575e;
+}
+
+.saso-help-modal ol li {
+	margin-bottom: 8px;
+	line-height: 1.5;
+}
+
+.saso-help-modal code {
+	background: #f0f0f1;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-size: 12px;
+}
+
+/* =========================================================================
+   Canvas Properties Panel
+   ========================================================================= */
+
+.saso-canvas-props .saso-prop-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 15px 0;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #c3c4c7;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.saso-canvas-props .saso-prop-title .dashicons {
+	color: #2271b1;
+}
+
+.saso-bg-image-preview {
+	margin: 10px 0;
+	padding: 5px;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: 3px;
+}
+
+.saso-bg-image-preview img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	border-radius: 2px;
+}
+
+.saso-canvas-props .saso-image-buttons {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.saso-canvas-props .saso-image-buttons .button {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+}
+
+.saso-canvas-props .saso-image-buttons .button .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+}
+
+.saso-canvas-props .saso-remove-bg-image {
+	color: #d63638;
+	border-color: #d63638;
+}
+
+.saso-canvas-props .saso-remove-bg-image:hover {
+	background: #d63638;
+	color: #fff;
+}
+
+.saso-canvas-props .description {
+	margin-top: 8px;
+	font-size: 12px;
+	color: #646970;
+	font-style: italic;
+}
+
+/* =========================================================================
+   Bulk Insert Modal
+   ========================================================================= */
+
+.saso-bulk-insert-modal .saso-modal-content {
+	width: 100%;
+}
+
+.saso-bulk-insert-modal .saso-modal-body {
+	padding: 20px;
+}
+
+.saso-bulk-form {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.saso-bulk-row {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.saso-bulk-row label {
+	font-weight: 500;
+	font-size: 13px;
+	color: #1d2327;
+}
+
+.saso-bulk-row label.checkbox-label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-weight: normal;
+	cursor: pointer;
+}
+
+.saso-bulk-row input[type="text"],
+.saso-bulk-row input[type="number"],
+.saso-bulk-row select {
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.saso-bulk-row input:focus,
+.saso-bulk-row select:focus {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+	outline: none;
+}
+
+.saso-bulk-grid-toggle {
+	padding-top: 10px;
+	border-top: 1px dashed #c3c4c7;
+}
+
+.saso-bulk-grid-options {
+	padding: 15px;
+	background: #f6f7f7;
+	border-radius: 4px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.saso-bulk-preview-info {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 15px;
+	background: #e7f3ff;
+	border-radius: 4px;
+	color: #0073aa;
+	font-size: 13px;
+}
+
+.saso-bulk-preview-info .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.saso-bulk-insert-modal .saso-modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	padding: 15px 20px;
+	background: #f6f7f7;
+	border-top: 1px solid #c3c4c7;
+	border-radius: 0 0 4px 4px;
+}
+
+.saso-bulk-insert-modal .saso-bulk-insert {
+	min-width: 120px;
+}

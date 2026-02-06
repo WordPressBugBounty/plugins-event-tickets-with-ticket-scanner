@@ -59,6 +59,11 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		_data.nonce = DATA.nonce;
 		pcbf && pcbf();
 		for(var key in myData) _data['data['+key+']'] = myData[key];
+		// Pass through debug parameter if set in URL
+		var urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.has('VollstartValidatorDebug')) {
+			_data['VollstartValidatorDebug'] = urlParams.get('VollstartValidatorDebug') || '1';
+		}
         $.post( myAjax.url, _data, function( response ) {
 			if (response && response.data && response.data.nonce) {
                 DATA.last_nonce_check = new Date().getTime();
@@ -82,6 +87,11 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		_data.nonce = DATA.nonce;
 		pcbf && pcbf();
 		for(var key in myData) _data['data['+key+']'] = myData[key];
+		// Pass through debug parameter if set in URL
+		var urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.has('VollstartValidatorDebug')) {
+			_data['VollstartValidatorDebug'] = urlParams.get('VollstartValidatorDebug') || '1';
+		}
         $.get( myAjax.url, _data, function( response ) {
 			if (response && response.data && response.data.nonce) {
                 DATA.last_nonce_check = new Date().getTime();
@@ -180,6 +190,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			}
 			OPTIONS.versions.mapKeys = optionData.versions;
 		}
+		system.is_debug = typeof optionData.versions.is_debug != "undefined" && optionData.versions.is_debug == 1 ? true : false;
 		if (optionData.meta_tags_keys) {
 			OPTIONS.meta_tags_keys.list = optionData.meta_tags_keys;
 			OPTIONS.meta_tags_keys.mapKeys = {};
@@ -747,7 +758,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							},
 							{"data":"time", "orderable":true, "width":80,
 								"render":function (data, type, row) {
-									return '<span style="display:none;">'+data+'</span>'+DateTime2Text(data);
+									return '<span style="display:none;">'+data+'</span>'+DateFormatStringToDateTimeText(data);
 								}
 							},
 							{"data":"areacode", "orderable":true, "className":"dt-center", "width":80},
@@ -879,37 +890,28 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		DIV.append(div);
 	}
 
-	function _load_seatingplanJS(paras, cbj) {
-		let filename = 'js_seatingplan';
-		if (typeof system.DYNJS === "undefined") system.DYNJS = {};
-		if (false && system.DYNJS[filename]) {
-			//eval(system.DYNJS[filename]);
-			sasoEventtickets_js_seatingplan(paras);
-			cbj && cbj();
-		} else {
-			$.getScript( myAjax._plugin_home_url+'/'+filename+".js", ( data, textStatus, jqxhr ) =>{
-				system.DYNJS[filename] = data;
-
-				eval(data); // inject code into the global scope
-				//addScriptCode(data, filename); // function is unaware of the global scope
-
-				sasoEventtickets_js_seatingplan(paras);
-				cbj && cbj();
-			});
-		}
-	}
-
 	function _displaySeatingplanArea() {
 		STATE = 'seatingplan';
-		DIV.html(getBackButtonDiv());
-
 		let div = $('<div>').html(_getSpinnerHTML());
+		const version = system.is_debug ? new Date().getTime() : myAjax._plugin_version;
+		const jsFile = 'js/seating_admin.js?v=' + version;
+		const cssFile = 'css/seating_admin';
 
-		_load_seatingplanJS({div:div}, ()=>{
-			//console.log("seatingplan loaded");
-		});
+		addStyleTag(myAjax._plugin_home_url + '/' + cssFile + '.css?v=' + version, 'saso_seating_admin_css');
 
-		DIV.append(div);
+		// Load JS if not already loaded (or always in debug mode)
+		if (!system.is_debug && system.DYNJS[jsFile]) {
+			sasoEventtickets_js_seating_admin(myAjax, getHelperFunktions()).initAdmin(div);
+		} else {
+			console.log('Loading seating admin JS: ' + jsFile);
+			$.getScript(myAjax._plugin_home_url + '/' + jsFile, (data) => {
+				system.DYNJS[jsFile] = data;
+				eval(data);
+				sasoEventtickets_js_seating_admin(myAjax, getHelperFunktions()).initAdmin(div);
+			});
+		}
+
+		return div;
 	}
 	function _displaySupportInfoArea() {
 		STATE = 'support';
@@ -999,7 +1001,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			DIV.append('<li><b>jQuery</b> - '+label_version+': '+jQuery.fn.jquery+'</li>');
 			DIV.append('<li><b>jQuery UI</b> - '+label_version+': '+jQuery.ui.version+'</li>');
 			DIV.append('<li><b>jQuery UI CSS</b> - '+label_version+': '+jQuery.ui.version+'</li>');
-			DIV.append('<li><b>PHP TWIG template engine</b> https://twig.symfony.com/ - '+label_version+': 3.x</li>');
+			DIV.append('<li><b>PHP TWIG template engine</b> https://twig.symfony.com/ - '+label_version+': 3.22.0</li>');
 			DIV.append('<li><b>PHP QR Code</b> http://sourceforge.net/projects/phpqrcode/ - '+label_version+': 1.1.4</li>');
 			DIV.append('<li><b>FPDI</b> '+label_version+': 2.3.7</li>');
 			DIV.append('<li><b>FPDF</b> '+label_version+': 1.8.5</li>');
@@ -1185,11 +1187,18 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			tabs.append(tabNav);
 			tabs.append(tabOptions);
 			if (isPremium() && typeof PREMIUM.displayOptionsArea_Templates !== "undefined") {
-				//if (BASIC._compareVersions(prem_version, '1.5.0') < 0) { // check the version
-				//	div_template.append("This is a premium feature is available with Premium Version 1.5.0. You need to update your premium plugin.");
-				//}
 				tabs.append(PREMIUM.displayOptionsArea_Templates(_getOptions_Versions_getByKey('premium')));
 			}
+
+			// seating plan tab
+			let tabNavSeatingplan = $('<li><a href="#tab-seatingplan">Seating Plans</a></li>');
+			tabNavSeatingplan.on("click", ()=>{
+				tabSeatingplan.html(_displaySeatingplanArea());
+			});
+			tabNav.append(tabNavSeatingplan);
+			let tabSeatingplan = $('<div id="tab-seatingplan" class="tab-content"/>');
+			tabs.append(tabSeatingplan);
+
 			DIV.append(tabs);
 
 			// Populate Options tab
@@ -1665,10 +1674,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 	} // ende openmediachooser
 
 	function getBackButtonDiv() {
-		let div_buttons = $('<div style="display:flex;justify-content:space-between;">');
-		let div = $('<div/>').append($('<button/>').addClass("button-primary").html(_x('Back', 'label', 'event-tickets-with-ticket-scanner')).css("margin-bottom", "10px").on("click", function(){
-			LAYOUT.renderAdminPageLayout();
-		}));
+		let div_buttons = $('<div class="event-tickets-with-ticket-scanner-topbar">');
+		let div = $('<div/>').addClass("event-tickets-with-ticket-scanner-topbar-left").append(
+			$('<button />')
+				.addClass("event-tickets-with-ticket-scanner-back-btn")
+				.html('<span class="event-tickets-with-ticket-scanner-back-icon">&lt;</span> ' + _x('Back', 'label', 'event-tickets-with-ticket-scanner'))
+				.on("click", ()=>{ LAYOUT.renderAdminPageLayout(); }
+			)
+		);
 		div_buttons.append(div);
 		div_buttons.append(_displaySettingAreaButton());
 		return div_buttons;
@@ -1685,42 +1698,47 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		return url;
 	}
 	function _displaySettingAreaButton() {
-		let btn_grp = $('<div id="topMenu"/>').addClass("btn-group");
-		$('<button/>').addClass("button-primary").html(_x("Support Info", 'label', 'event-tickets-with-ticket-scanner'))
-			.on("click", ()=>{
+		let btn_grp = $('<nav id="topMenu"/>')
+			.addClass("event-tickets-with-ticket-scanner-topmenu")
+			.attr("aria-label", "Event Tickets navigation");
+		$('<button/>')
+			.addClass('event-tickets-with-ticket-scanner-topmenu-item')
+			.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'support')
+			.html(_x("Support Info", 'label', 'event-tickets-with-ticket-scanner'))
+			.on("click", () => {
 				_displaySupportInfoArea();
 			})
 			.appendTo(btn_grp);
-		$('<button/>').addClass("button-primary").html(_x("FAQ", 'label', 'event-tickets-with-ticket-scanner'))
+		$('<button/>')
+			.addClass("event-tickets-with-ticket-scanner-topmenu-item")
+			.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'faq')
+			.html(_x("FAQ", 'label', 'event-tickets-with-ticket-scanner'))
 			.on("click", ()=>{
 				_displayFAQArea();
-			})
-			.appendTo(btn_grp);
-		if (typeof PARAS.seatingplan !== "undefined" && PARAS.seatingplan) {
-			$('<button/>').addClass("button-primary").html(_x("Seating Plans", 'label', 'event-tickets-with-ticket-scanner'))
-				.on("click", ()=>{
-					_displaySeatingplanArea();
-				})
-				.appendTo(btn_grp);
-		}
+			}).appendTo(btn_grp);
 		//if (_getOptions_Versions_isActivatedByKey('is_wc_available')) {
-			$('<button/>').addClass("button-primary").html(_x("Ticket Scanner", 'label', 'event-tickets-with-ticket-scanner'))
+			$('<button/>').addClass("event-tickets-with-ticket-scanner-topmenu-item").html(_x("Ticket Scanner", 'label', 'event-tickets-with-ticket-scanner'))
 			.on("click", ()=>{
 				let url = _getTicketScannerURL();
 				window.open(url, 'ticketscanner');
 			})
 			.appendTo(btn_grp);
 		//}
-		$('<button/>').addClass("button-primary").html(_x('Auth Token', 'label', 'event-tickets-with-ticket-scanner'))
-		.on("click", ()=>{
-			_displayAuthTokensArea();
-		})
-		.appendTo(btn_grp);
-		$('<button/>').addClass("button-primary").html(_x('Options', 'label', 'event-tickets-with-ticket-scanner'))
+		$('<button/>')
+			.addClass("event-tickets-with-ticket-scanner-topmenu-item")
+			.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'authtokens')
+			.html(_x('Auth Token', 'label', 'event-tickets-with-ticket-scanner'))
+			.on("click", ()=>{
+				_displayAuthTokensArea();
+			}).appendTo(btn_grp);
+		$('<button/>')
+			.addClass("event-tickets-with-ticket-scanner-topmenu-item")
+			.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'options')
+			.html(_x('Options', 'label', 'event-tickets-with-ticket-scanner'))
 			.on("click", ()=>{
 				_displayOptionsArea();
-			})
-			.appendTo(btn_grp);
+			}).appendTo(btn_grp);
+
 		if (isPremium()) {
 			btn_grp = PREMIUM.displaySettingAreaButton(btn_grp);
 		}
@@ -2041,14 +2059,23 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		}
 		renderMainBody() {
 			let infoBoxFirstSteps = __showFirstSteps();
-			let premium_status = '<div style="color:red;font-weight:bold;">'+_x('FREE version', 'label', 'event-tickets-with-ticket-scanner')+'</div>';
-			if (isPremium()) {
-				premium_status = '<div style="color:green;font-weight:bold;">'+_x('PREMIUM', 'label', 'event-tickets-with-ticket-scanner')+'</div>';
+
+			// display upgrade to premium link
+			if (!isPremium()) {
+				let btn_upgrade = $('<a/>')
+					.html('<img src="'+myAjax._plugin_home_url+'/img/button_premium_icon.gif" alt="" class="event-tickets-with-ticket-scanner-upgrade-icon">' + _x('Upgrade', 'label', 'event-tickets-with-ticket-scanner'))
+					.addClass("event-tickets-with-ticket-scanner-upgrade-btn")
+					.attr("href", getPremiumProductURL())
+					.attr("target", "_blank");
+				$('body').find('#event-tickets-with-ticket-scanner-header-actions').html(btn_upgrade);
 			}
-			$('body').find('td[data-id=plugin_info_area_premium_status]').html(premium_status);
 
 			let div_body = $('<div/>');
-			div_body.append($('<div style="text-align:right;">').html(_displaySettingAreaButton()));
+			div_body.append(
+				$('<div class="event-tickets-with-ticket-scanner-topbar">')
+					.html($('<div/>').addClass("event-tickets-with-ticket-scanner-topbar-left"))
+					.append(_displaySettingAreaButton())
+			);
 			if (infoBoxFirstSteps) {
 				div_body.append(infoBoxFirstSteps);
 			}
@@ -2432,7 +2459,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					form[0].elements['inputName'].value = editValues.name;
 					form[0].elements['inputName'].select();
 					if (typeof metaObj.desc !== "undefined") {
-						form[0].elements['desc'].value = metaObj.desc;
+						form[0].elements['desc'].value = metaObj.desc.replace(new RegExp("\\\\", "g"), "").trim();
 					}
 					if (typeof metaObj.formatter !== "undefined" && metaObj.formatter.active) {
 						form[0].elements['serialformatter'].checked = true;
@@ -2599,12 +2626,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		    				{"data":"name", "orderable":true},
 		    				{"data":"time", "orderable":true, "width":80,
 								"render":function (data, type, row) {
-									return '<span style="display:none;">'+data+'</span>'+DateTime2Text(data);
+									return '<span style="display:none;">'+data+'</span>'+DateFormatStringToDateTimeText(data);
 								}
 							},
-		    				{"data":null,"orderable":false,"defaultContent":'',"className":"buttons dt-right","width":110,
+		    				{"data":null,"orderable":false,"defaultContent":'',"className":"buttons dt-right","width":180,
 		    					"render": function ( data, type, row ) {
-		    						return '<button class="button-secondary" data-type="showCodes">'+_x('Tickets', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button>';
+		    						return '<button class="button-secondary" data-type="showCodes">'+_x('Tickets', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="deleteAllTickets" style="color:#b32d2e;">'+_x('Delete All Tickets', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button>';
 		                		}
 		                	}
 		    			]
@@ -2620,16 +2647,81 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					});
 					table.on('click', 'button[data-type="delete"]', e=>{
 		        		let data = tabelle_liste_datatable.row( $(e.target).parents('tr') ).data();
-		        		LAYOUT.renderYesNo(_x('Do you want to delete?', 'title', 'event-tickets-with-ticket-scanner'), __('Are you sure, you want to delete this list?', 'event-tickets-with-ticket-scanner')+'<br><p><b>'+data.name+'</b></p>'+__('No ticket will be deleted. Just the list.', 'event-tickets-with-ticket-scanner'), ()=>{
-		        			let _data = {'id':data.id};
+						let content = $('<div>');
+						content.append('<p>' + __('Are you sure, you want to delete this list?', 'event-tickets-with-ticket-scanner') + '</p>');
+						content.append('<p><b>' + data.name + '</b></p>');
+						content.append('<p>' + __('No ticket will be deleted. Just the list.', 'event-tickets-with-ticket-scanner') + '</p>');
+						content.append('<hr style="margin:15px 0;">');
+						let checkboxId = 'delete-list-check-products-' + data.id;
+						let checkboxWrapper = $('<label for="' + checkboxId + '" style="display:flex;align-items:center;gap:8px;cursor:pointer;">');
+						let checkbox = $('<input type="checkbox" id="' + checkboxId + '" checked>');
+						checkboxWrapper.append(checkbox);
+						checkboxWrapper.append(__('Check if list is used by products', 'event-tickets-with-ticket-scanner'));
+						content.append(checkboxWrapper);
+
+		        		LAYOUT.renderYesNo(_x('Do you want to delete?', 'title', 'event-tickets-with-ticket-scanner'), content, ()=>{
+		        			let _data = {
+								'id': data.id,
+								'skip_product_check': !checkbox.is(':checked')
+							};
 		        			_makePost('removeList', _data, result=>{
-								__renderTabelleListen();
-								tabelle_codes_datatable.ajax.reload();
+								if (result && result.error === 'list_in_use' && result.products) {
+									let errorContent = $('<div>');
+									errorContent.append('<p style="color:#b32d2e;font-weight:bold;">' + __('This list is still assigned to products:', 'event-tickets-with-ticket-scanner') + '</p>');
+									let productList = $('<ul style="margin:10px 0;padding-left:20px;">');
+									result.products.forEach(function(product) {
+										let li = $('<li style="margin:5px 0;">');
+										if (product.edit_url) {
+											li.append('<a href="' + product.edit_url + '" target="_blank">' + product.name + '</a> (ID: ' + product.id + ')');
+										} else {
+											li.append(product.name + ' (ID: ' + product.id + ')');
+										}
+										productList.append(li);
+									});
+									errorContent.append(productList);
+									errorContent.append('<p>' + __('Please reassign these products first, or uncheck the product check option.', 'event-tickets-with-ticket-scanner') + '</p>');
+									LAYOUT.renderInfoBox(__('Cannot delete list', 'event-tickets-with-ticket-scanner'), errorContent);
+								} else {
+									__renderTabelleListen();
+									tabelle_codes_datatable.ajax.reload();
+								}
 							});
 		        		});
 					});
-				}); // end of loading lists
-			} // __renderTabelleListen
+				table.on('click', 'button[data-type="deleteAllTickets"]', e=>{
+					let data = tabelle_liste_datatable.row( $(e.target).parents('tr') ).data();
+					LAYOUT.renderYesNo(
+						_x('Delete all tickets?', 'title', 'event-tickets-with-ticket-scanner'),
+						sprintf(__('Are you sure you want to delete ALL tickets from the list "%s"?', 'event-tickets-with-ticket-scanner'), '<b>'+data.name+'</b>') + '<br><br><span style="color:#b32d2e;">' + __('This action cannot be undone!', 'event-tickets-with-ticket-scanner') + '</span>',
+						()=>{
+							let content = $('<div>');
+							content.append('<p>' + __('To confirm deletion, type DELETE in the field below:', 'event-tickets-with-ticket-scanner') + '</p>');
+							let confirmInput = $('<input type="text" style="width:100%;" placeholder="DELETE">');
+							content.append(confirmInput);
+							LAYOUT.renderYesNo(
+								_x('Final confirmation', 'title', 'event-tickets-with-ticket-scanner'),
+								content,
+								()=>{
+									if (confirmInput.val().trim().toUpperCase() !== 'DELETE') {
+										alert(__('You must type DELETE to confirm.', 'event-tickets-with-ticket-scanner'));
+										return;
+									}
+									let btn = $(e.target);
+									btn.prop('disabled', true).text(__('Deleting...', 'event-tickets-with-ticket-scanner'));
+									_makePost('removeAllCodesFromList', {'list_id': data.id}, result=>{
+										btn.prop('disabled', false).text(_x('Delete All Tickets', 'label', 'event-tickets-with-ticket-scanner'));
+										tabelle_codes_datatable.ajax.reload();
+										if (result && result.deleted !== undefined) {
+											alert(sprintf(__('%d tickets have been deleted.', 'event-tickets-with-ticket-scanner'), result.deleted));
+										}
+									});
+								}
+							);
+						}
+					);
+				});
+			}); // end of loading lists
+		} // __renderTabelleListen
 			tabelle_codes.css("width", "100%");
 
 			STATE = 'admin';
@@ -2656,15 +2748,18 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 				__renderTabelleListen();
 
+				let additionalColumn_counter_before_created_field = 0;
 				let additionalColumn = {customerName:'',customerCompany:'',redeemAmount:'',confirmedCount:''};
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnConfirmedCount')) {
 					additionalColumn.confirmedCount = '<th>'+_x('Confirmed Count', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnBillingName')) {
 					additionalColumn.customerName = '<th>'+_x('Customer', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
+					additionalColumn_counter_before_created_field++;
 				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnBillingCompany')) {
 					additionalColumn.customerCompany = '<th>'+_x('Company', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
+					additionalColumn_counter_before_created_field++;
 				}
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnRedeemedInfo')) {
 					additionalColumn.redeemAmount = '<th>'+_x('Redeem Amount', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
@@ -2789,7 +2884,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					}},
 					{"data":"time", "className":"dt-center", "orderable":true,
 						"render":function (data, type, row) {
-							return '<span style="display:none;">'+data+'</span>'+DateTime2Text(data);
+							return '<span style="display:none;">'+data+'</span>'+DateFormatStringToDateTimeText(data);
 						}
 					},
 					{"data":"redeemed", "orderable":true, "className":"dt-center", "render":function(data, type, row) {
@@ -2891,7 +2986,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						"url": _requestURL('getCodes'),
 						"type": 'GET'
 					},
-	    			"order": [[ 4 + (additionalColumn.customerName != "" ? 1 : 0), "desc" ]],
+	    			"order": [[ 4 + additionalColumn_counter_before_created_field, "desc" ]],
 	    			"columns": table_columns,
 					"initComplete": function () {
 						LAYOUT.renderSpinnerHide();
@@ -3407,6 +3502,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						})
 					));
 				}
+				// Seat information
+				if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.seat_id != "undefined" && metaObj.wc_ticket.seat_id) {
+					let seatInfo = metaObj.wc_ticket.seat_label || metaObj.wc_ticket.seat_identifier || ('Seat #' + metaObj.wc_ticket.seat_id);
+					if (metaObj.wc_ticket.seat_category) {
+						seatInfo += ' (' + metaObj.wc_ticket.seat_category + ')';
+					}
+					div.append($('<div>').html('<b>'+__('Seat', 'event-tickets-with-ticket-scanner')+':</b> ' + seatInfo));
+				}
 				if (typeof metaObj['woocommerce'] !== "undefined" && metaObj.woocommerce.order_id !== 0 && typeof metaObj.wc_ticket !== "undefined") {
 					if (metaObj.wc_ticket.set_by_admin > 0) {
 						div.append($("<div>").html("<b>Ticket set by admin user:</b> ").append($('<span>').text(metaObj.wc_ticket._set_by_admin_username+' ('+metaObj.wc_ticket.set_by_admin+') '+metaObj.wc_ticket.set_by_admin_date)));
@@ -3683,8 +3786,11 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 	  head.appendChild(script);
 	}
 
+	function getPremiumProductURL() {
+		return 'https://vollstart.com/event-tickets-with-ticket-scanner/?utm_source=etwts_plugin&utm_medium=plugin_link&utm_campaign=etwts_upgrade_to_premium';
+	}
 	function getLabelPremiumOnly() {
-		return '[<a href="https://vollstart.com/event-tickets-with-ticket-scanner/">PREMIUM ONLY</a>]';
+		return '[<a href="'+getPremiumProductURL()+'">PREMIUM ONLY</a>]';
 	}
 
 	function _getSpinnerHTML() {
@@ -3859,6 +3965,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			_getSpinnerHTML:_getSpinnerHTML,
 			_makePost:_makePost,
 			_makeGet:_makeGet,
+			_getMediaData:_getMediaData,
 			_downloadFile:_downloadFile,
 			_requestURL:_requestURL,
 			_getLAYOUT:function(){ return LAYOUT;},
@@ -3866,11 +3973,15 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			_BulkActions:BulkActions,
 			_closeDialog:closeDialog,
 			_OPTIONS:function(){ return OPTIONS;},
+			_getVarSYSTEM:function(){ return system;},
 			_updateCodeObject:updateCodeObject,
 			_getCodeObjectMeta:getCodeObjectMeta,
 			_DateTime2Text:DateTime2Text,
+			_DateFormatStringToDateTimeText:DateFormatStringToDateTimeText,
+			_DateFormatStringToDateText:DateFormatStringToDateText,
 			_compareVersions:compareVersions,
-			_getBackButtonDiv:getBackButtonDiv
+			_getBackButtonDiv:getBackButtonDiv,
+			_addStyleTag:addStyleTag
 		};
 	}
 
@@ -3902,6 +4013,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
     	DIV.html(_getSpinnerHTML());
     	LAYOUT = new Layout();
 		function _init() {
+			document.body.style.background = "#ffffff";
 	 		_loadingJSDatatables(function() {
 				if (typeof PARAS.display !== "undefined" && PARAS.display == 'options') {
 					_displayOptionsArea();
@@ -3911,8 +4023,6 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					_displayAuthTokensArea();
 				} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'faq') {
 					_displayFAQArea();
-				} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'seatingplan') {
-					_displaySeatingplanArea();
 				} else {
 					LAYOUT.renderAdminPageLayout();
 				}
@@ -3933,7 +4043,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 	if (!doNotInit) init();
 	return {
 		init: init,
-		form_fields_serial_format:_form_fields_serial_format
+		form_fields_serial_format: _form_fields_serial_format,
+		makePost: _makePost,
+		getMediaData: _getMediaData
 	};
 
 }

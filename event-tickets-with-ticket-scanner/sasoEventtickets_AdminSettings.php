@@ -12,15 +12,6 @@ class sasoEventtickets_AdminSettings {
 		//delete_option
 		//delete tabellen
 	}
-	public function getCore() {
-		return $this->MAIN->getCore();
-	}
-	private function getBase() {
-		return $this->MAIN->getBase();
-	}
-	private function getDB() {
-		return $this->MAIN->getDB();
-	}
 	public function executeJSON($a, $data=[], $just_ret=false, $skipNonceTest=true) {
 		$ret = "";
 		$justJSON = false;
@@ -85,6 +76,9 @@ class sasoEventtickets_AdminSettings {
 					break;
 				case "removeCodes":
 					$ret = $this->removeCodes($data);
+					break;
+				case "removeAllCodesFromList":
+					$ret = $this->removeAllCodesFromList($data);
 					break;
 				case "emptyTableLists":
 					$ret = $this->emptyTableLists($data);
@@ -189,6 +183,9 @@ class sasoEventtickets_AdminSettings {
 				case "expose_desctables":
 					$ret = $this->expose("tables", $data);
 					break;
+				case "seating":
+					$ret = $this->executeJSONSeating($data);
+					break;
 				case "ping":
 					$ret = $this->ping($data);
 					break;
@@ -211,38 +208,45 @@ class sasoEventtickets_AdminSettings {
 		}
 	}
 	private function ping($data) {
-		return ["ret"=>"pong", "timestamp"=>current_time("timestamp"), "date"=>wp_date("Y-m-d H:i:s", current_time("timestamp"))];
+		return ["ret"=>"pong", "timestamp"=>time(), "date"=>wp_date("Y-m-d H:i:s")];
 	}
 	private function executeJSONPremium($data) {
-		if (!$this->MAIN->isPremium() && !method_exists($this->MAIN->getPremiumFunctions(), "executeJSON")) throw new Exception("#9001 premium is not active");
+		if (!$this->MAIN->isPremium() || !method_exists($this->MAIN->getPremiumFunctions(), "executeJSON")) {
+			throw new Exception("#9001 premium is not active");
+		}
 		if (!isset($data['c'])) throw new Exception("#9002 premium action paramter is missing");
 		return $this->MAIN->getPremiumFunctions()->executeJSON($data['c'], $data);
 	}
 
+	private function executeJSONSeating($data) {
+		if (!isset($data['c'])) throw new Exception("#8501 seating action parameter is missing");
+		return $this->MAIN->getSeating()->executeJSON($data['c'], $data);
+	}
+
 	private function repairTables() {
-		$this->getDB()->installiereTabellen(true);
+		$this->MAIN->getDB()->installiereTabellen(true);
 		do_action($this->MAIN->_do_action_prefix."repairTables", true);
 
 		// aktualisiere nicht erfasste userid für orders
-		$sql = "select * from ".$this->getDB()->getTabelle("codes")." where
+		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("codes")." where
 			order_id != 0 and
 			json_extract(meta, '$.wc_ticket.is_ticket') = 1 and
 			json_extract(meta, '$.woocommerce.user_id') is null
 		";
-		$d = $this->getDB()->_db_datenholen($sql);
+		$d = $this->MAIN->getDB()->_db_datenholen($sql);
 		if (count($d) > 0) {
 			foreach($d as $codeObj) {
-				$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+				$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 				$order = wc_get_order( $codeObj['order_id'] );
 				$metaObj['woocommerce']['user_id'] = intval($order->get_user_id());
-				$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
-				$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+				$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+				$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
 			}
 		}
 
 		do_action( $this->MAIN->_do_action_prefix.'db_repairTables', $d );
 
-		return "tables repair executed at ".wp_date("Y/m/d H:i:s", current_time("timestamp"));
+		return "tables repair executed at ".wp_date("Y/m/d H:i:s");
 	}
 
 	private function getMediaData($data) {
@@ -251,23 +255,23 @@ class sasoEventtickets_AdminSettings {
 	}
 
 	private function downloadPDFTicket($data) {
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		$this->MAIN->getTicketHandler()->setCodeObj($codeObj);
 		$this->MAIN->getTicketHandler()->outputPDF("I");
 		die();
 	}
 
 	public function downloadPDFTicketBadge($data) {
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		$badgeHandler = $this->MAIN->getTicketBadgeHandler();
 		$badgeHandler->downloadPDFTicketBadge($codeObj);
 		die();
 	}
 
 	private function getSupportInfos($data) {
-		$codes_size = $this->getDB()->getCodesSize();
-		$lists_size = $this->getDB()->_db_getRecordCountOfTable('lists');
-		$ips_size = $this->getDB()->_db_getRecordCountOfTable('ips');
+		$codes_size = $this->MAIN->getDB()->getCodesSize();
+		$lists_size = $this->MAIN->getDB()->_db_getRecordCountOfTable('lists');
+		$ips_size = $this->MAIN->getDB()->_db_getRecordCountOfTable('ips');
 		$ret = [
 			"amount"=>["codes"=>$codes_size, "lists"=>$lists_size, "ips"=>$ips_size]
 		];
@@ -298,7 +302,7 @@ class sasoEventtickets_AdminSettings {
 		global $wpdb, $wp_version ;
 		$options = $this->MAIN->getOptions()->getOptions();
 
-		$tags = $this->getCore()->getMetaObjectAllowedReplacementTags();
+		$tags = $this->MAIN->getCore()->getMetaObjectAllowedReplacementTags();
 
 		$ret = ['options'=>$options, 'meta_tags_keys'=>$tags, 'versions'=>[], 'infos'=>[]];
 		if (is_admin()) {
@@ -316,28 +320,30 @@ class sasoEventtickets_AdminSettings {
 				'php'=>phpversion(),
 				'wp'=>$wp_version,
 				'mysql'=>$mysql_version,
-				'db'=>$this->getDB()->dbversion,
+				'db'=>$this->MAIN->getDB()->dbversion,
 				'premium_db'=>$premium_db_version,
 				'basic'=>$pversions['basic'],
 				'premium'=>$pversions['premium'] != "" ? $pversions['premium'] : '',
+				'is_debug'=>isset($pversions['debug']) ? 1 : 0,
 				'premium_serial'=>$this->getOptionValue("serial", "-"),
 				'is_wc_available'=>class_exists( 'WooCommerce' ) ? 1 : 0,
-				'IS_PRETTY_PERMALINK_ACTIVATED' => get_option('permalink_structure') ? true :false
+				'IS_PRETTY_PERMALINK_ACTIVATED' => get_option('permalink_structure') ? true :false,
+				'plugin_version' => defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION') ? SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION : SASO_EVENTTICKETS_PLUGIN_VERSION
 			];
 			$versions["date_default_timezone"] = date_default_timezone_get();
 			$versions["date_WP_timezone"] = wp_timezone_string();
 			$versions["date_WP_timezone_time"] = $this->wpdocs_custom_timezone_string();
-			$versions["date_default_timezone_time"] = wp_date("Y-m-d H:i:s", current_time("timestamp"));
+			$versions["date_default_timezone_time"] = wp_date("Y-m-d H:i:s");
 			$timezone = new DateTimeZone("UTC");
 			$dt = new DateTime('now', $timezone);
 			$versions["date_UTC_timezone_time"] = $dt->format("Y-m-d H:i:s");
 
 			$infos = [
 				'ticket'=>[
-					'ticket_base_url'=>$this->getCore()->getTicketURLBase(true),
-					'ticket_detail_path'=>$this->getCore()->getTicketURLPath(true),
-					'ticket_scanner_path'=>$this->getCore()->getTicketURLPath(true).'scanner/',
-					'ticket_scanner_url'=>$this->getCore()->getTicketScannerURL(""),
+					'ticket_base_url'=>$this->MAIN->getCore()->getTicketURLBase(true),
+					'ticket_detail_path'=>$this->MAIN->getCore()->getTicketURLPath(true),
+					'ticket_scanner_path'=>$this->MAIN->getCore()->getTicketURLPath(true).'scanner/',
+					'ticket_scanner_url'=>$this->MAIN->getCore()->getTicketScannerURL(""),
 					'counter'=>$this->MAIN->getBase()->getOverallTicketCounterValue()
 				],
 				'site'=>[
@@ -389,9 +395,9 @@ class sasoEventtickets_AdminSettings {
 
 	public function getMetaOfCode($data) {
 		if (!isset($data['code'])) throw new Exception("#9101 ticket code parameter is missing - cannot load the meta object for the ticket");
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		$codeObj = apply_filters( $this->MAIN->_add_filter_prefix.'filter_updateExpirationInfo', $codeObj );
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
 		$max_redeem_amount = 1;
 		if (class_exists( 'WooCommerce' )) {
@@ -405,7 +411,7 @@ class sasoEventtickets_AdminSettings {
 
 		$url = $this->getOptionValue("qrDirectURL");
 		if (!empty($url)) {
-			$url = $this->getCore()->replaceURLParameters($url, $codeObj);
+			$url = $this->MAIN->getCore()->replaceURLParameters($url, $codeObj);
 			$metaObj['_QR']['directURL'] = trim($url);
 		}
 
@@ -414,13 +420,13 @@ class sasoEventtickets_AdminSettings {
 		if ($codeObj['order_id'] > 0) {
 			$order = wc_get_order( $codeObj['order_id'] );
 			if ($order != null) {
-				$url = $this->getCore()->getOrderTicketsURL($order);
-				$url2 = $this->getCore()->getOrderTicketsURL($order, "ordertickets-");
+				$url = $this->MAIN->getCore()->getOrderTicketsURL($order);
+				$url2 = $this->MAIN->getCore()->getOrderTicketsURL($order, "ordertickets-");
 			}
 		}
 		$metaObj["wc_ticket"]["_order_url"] = $url;
 		$metaObj["wc_ticket"]["_order_page_url"] = $url2;
-		$metaObj["wc_ticket"]["_qr_content"] = $this->getCore()->getQRCodeContent($codeObj);
+		$metaObj["wc_ticket"]["_qr_content"] = $this->MAIN->getCore()->getQRCodeContent($codeObj);
 
 		$metaObj = apply_filters( $this->MAIN->_add_filter_prefix.'admin_getMetaOfCode', $metaObj );
 
@@ -429,49 +435,49 @@ class sasoEventtickets_AdminSettings {
 
 	private function removeUserRegistrationFromCode($data) {
 		if(!isset($data['code'])) throw new Exception("#9221 code paramter missing - cannot remove user registration from the ticket");
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		$metaObj['user']['value'] = "";
 		$metaObj['user']['reg_ip'] = "";
 		$metaObj['user']['reg_approved'] = 0;
 		$metaObj['user']['reg_request'] = "";
 		$metaObj['user']['reg_request_tz'] = "";
 		$metaObj['user']['reg_userid'] = 0;
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
-		$this->getDB()->update("codes", ["meta"=>$codeObj['meta'], "user_id"=>0], ['id'=>$codeObj['id']]);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta'], "user_id"=>0], ['id'=>$codeObj['id']]);
 		do_action( $this->MAIN->_do_action_prefix.'removeUserRegistrationFromCode', $data, $codeObj );
 		return $codeObj;
 	}
 	private function editUseridForUserRegistrationFromCode($data) {
 		if(!isset($data['code'])) throw new Exception("#9222 code parameter missing - cannot edit user reg information");
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		// speicher neue registrierung
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		if (isset($data['value'])) $metaObj['user']['value'] = htmlentities(trim($data['value']));
-		$metaObj['user']['reg_ip'] = $this->getCore()->getRealIpAddr();
+		$metaObj['user']['reg_ip'] = $this->MAIN->getCore()->getRealIpAddr();
 		$metaObj['user']['reg_approved'] = 1; // auto approval
 		if (empty($metaObj['user']['reg_request'])) {
-			$metaObj['user']['reg_request'] = wp_date("Y-m-d H:i:s", current_time("timestamp"));
+			$metaObj['user']['reg_request'] = wp_date("Y-m-d H:i:s");
 			$metaObj['user']['reg_request_tz'] = wp_timezone_string();
 		}
 		if (isset($data['reg_userid'])) $metaObj['user']['reg_userid'] = intval($data['reg_userid']);
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
-		$this->getDB()->update("codes", ["meta"=>$codeObj['meta'], "user_id"=>$metaObj['used']['reg_userid']], ['id'=>$codeObj['id']]);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta'], "user_id"=>$metaObj['used']['reg_userid']], ['id'=>$codeObj['id']]);
 		// send webhook if activated
-		$this->getCore()->triggerWebhooks(7, $codeObj);
+		$this->MAIN->getCore()->triggerWebhooks(7, $codeObj);
 		do_action( $this->MAIN->_do_action_prefix.'editUseridForUserRegistrationFromCode', $data, $codeObj, $metaObj );
 		return $codeObj;
 	}
 	public function removeUsedInformationFromCode($data) {
 		if(!isset($data['code'])) throw new Exception("#9231 code parameter missing - cannot remove used information from the ticket");
-		$codeObj = $this->getCore($this->getDB())->retrieveCodeByCode($data['code']);
-		$metaObj = $this->getCore($this->getDB())->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		$metaObj['used']['reg_ip'] = "";
 		$metaObj['used']['reg_request'] = "";
 		$metaObj['used']['reg_request_tz'] = "";
 		$metaObj['confirmedCount'] = 0;
-		$codeObj['meta'] = $this->getCore($this->getDB())->json_encode_with_error_handling($metaObj);
-		$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
 		do_action( $this->MAIN->_do_action_prefix.'removeUsedInformationFromCode', $data, $codeObj );
 		return $codeObj;
 	}
@@ -490,19 +496,19 @@ class sasoEventtickets_AdminSettings {
 	}
 	private function editUseridForUsedInformationFromCode($data) {
 		if(!isset($data['code'])) throw new Exception("#9233 code parameter missing - cannot edit used information on the ticket");
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		// speicher neue registrierung
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
-		$metaObj['used']['reg_ip'] = $this->getCore()->getRealIpAddr();
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$metaObj['used']['reg_ip'] = $this->MAIN->getCore()->getRealIpAddr();
 		if (empty($metaObj['used']['reg_request'])) {
-			$metaObj['used']['reg_request'] = wp_date("Y-m-d H:i:s", current_time("timestamp"));
+			$metaObj['used']['reg_request'] = wp_date("Y-m-d H:i:s");
 			$metaObj['used']['reg_request_tz'] = wp_timezone_string();
 		}
 		if (isset($data['reg_userid'])) $metaObj['used']['reg_userid'] = intval($data['reg_userid']);
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
-		$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
 		// send webhook if activated
-		$this->getCore()->triggerWebhooks(6, $codeObj);
+		$this->MAIN->getCore()->triggerWebhooks(6, $codeObj);
 		do_action( $this->MAIN->_do_action_prefix.'editUseridForUsedInformationFromCode', $data, $codeObj );
 		return $codeObj;
 	}
@@ -510,8 +516,8 @@ class sasoEventtickets_AdminSettings {
 		if(!isset($data['code'])) throw new Exception("#9234 code parameter missing - cannot edit ticket meta");
 		$key = $data['key'];
 		$value = trim($data['value']);
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		$is_changed = false;
 		switch ($key) {
 			case "wc_ticket.value_per_ticket":
@@ -534,8 +540,8 @@ class sasoEventtickets_AdminSettings {
 				break;
 		}
 		if ($is_changed) {
-			$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
-			$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+			$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+			$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
 		}
 		return $codeObj;
 	}
@@ -599,8 +605,8 @@ class sasoEventtickets_AdminSettings {
 
 	public function _getList($data) {
 		if (!isset($data['id'])) throw new Exception("#104 ticket list id is missing");
-		$sql = "select * from ".$this->getDB()->getTabelle("lists")." where id = ".intval($data['id']);
-		$ret = $this->getDB()->_db_datenholen($sql);
+		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("lists")." where id = ".intval($data['id']);
+		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
 		if (count($ret) == 0) throw new Exception("#105 ticket list not found");
 		return $ret[0];
 	}
@@ -609,8 +615,8 @@ class sasoEventtickets_AdminSettings {
 		return apply_filters( $this->MAIN->_add_filter_prefix.'getList', $data );
 	}
 	public function _getLists() {
-		$sql = "select * from ".$this->getDB()->getTabelle("lists")." order by name asc";
-		return $this->getDB()->_db_datenholen($sql);
+		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("lists")." order by name asc";
+		return $this->MAIN->getDB()->_db_datenholen($sql);
 	}
 	public function getLists() {
 		add_filter( $this->MAIN->_add_filter_prefix.'getLists', [$this, '_getLists'], 10 );
@@ -619,13 +625,13 @@ class sasoEventtickets_AdminSettings {
 
 	public function _addList($data) {
 		if (!isset($data['name']) || trim($data['name']) == "") throw new Exception("#101 name parameter missing - cannot add ticket list");
-		if (!$this->getBase()->_isMaxReachedForList($this->getDB()->_db_getRecordCountOfTable('lists'))) throw new Exception("#108 too many codes. Unlimited codes only with premium possible");
+		if (!$this->MAIN->getBase()->_isMaxReachedForList($this->MAIN->getDB()->_db_getRecordCountOfTable('lists'))) throw new Exception("#108 too many codes. Unlimited codes only with premium possible");
 		$data['name'] = strip_tags($data['name']);
 
 		$listObj = ['meta'=>''];
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
 
-		$felder = ["name"=>$data['name'], "aktiv"=>1, "time"=>wp_date("Y-m-d H:i:s", current_time("timestamp"))];
+		$felder = ["name"=>$data['name'], "aktiv"=>1, "time"=>wp_date("Y-m-d H:i:s")];
 
 		$metaObj = $this->_setMetaDataForList($data, $metaObj);
 
@@ -635,10 +641,10 @@ class sasoEventtickets_AdminSettings {
 		if (isset($felder['meta']) && !empty($felder['meta'])) { // evtl gesetzt vom premium plugin
 			$metaObj = array_replace_recursive($metaObj, json_decode($felder['meta'], true));
 		}
-		$felder["meta"] = $this->getCore()->json_encode_with_error_handling($metaObj);
+		$felder["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 
 		try {
-			return $this->getDB()->insert("lists", $felder);
+			return $this->MAIN->getDB()->insert("lists", $felder);
 		} catch(Exception $e) {
 			throw new Exception(__("Could not create code list. Name exists already.", 'event-tickets-with-ticket-scanner'));
 		}
@@ -654,7 +660,7 @@ class sasoEventtickets_AdminSettings {
 		$data['name'] = strip_tags($data['name']);
 
 		$listObj = $this->getList($data);
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
 
 		$felder["name"] = $data['name'];
 
@@ -666,38 +672,83 @@ class sasoEventtickets_AdminSettings {
 		if (isset($felder['meta']) && !empty($felder['meta'])) { // evtl gesetzt vom premium plugin
 			$metaObj = array_replace_recursive($metaObj, json_decode($felder['meta'], true));
 		}
-		$felder["meta"] = $this->getCore()->json_encode_with_error_handling($metaObj);
+		$felder["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 
 		$where = ["id"=>intval($data['id'])];
-		return $this->getDB()->update("lists", $felder, $where);
+		return $this->MAIN->getDB()->update("lists", $felder, $where);
 	}
 	public function editList($data) {
 		add_filter( $this->MAIN->_add_filter_prefix.'editList', [$this, '_editList'], 10, 1 );
 		return apply_filters( $this->MAIN->_add_filter_prefix.'editList', $data);
 	}
 
-	private function removeList($data) {
+	private function removeList(array $data): array {
 		if (!isset($data['id'])) throw new Exception("#106 id parameter of the list is missing");
+		$list_id = intval($data['id']);
+
+		// Check for products using this list (default: check enabled)
+		$skip_check = isset($data['skip_product_check']) && $data['skip_product_check'] === true;
+		if (!$skip_check) {
+			$products = $this->getProductsUsingList($list_id);
+			if (!empty($products)) {
+				return [
+					'error' => 'list_in_use',
+					'products' => $products
+				];
+			}
+		}
+
 		$felder = ["list_id"=>0];
-		$where = ["list_id"=>intval($data['id'])];
-		$this->getDB()->update("codes", $felder, $where);
-		$sql = "delete from ".$this->getDB()->getTabelle("lists")." where id = ".intval($data['id']);
-		$ret = $this->getDB()->_db_query($sql);
+		$where = ["list_id"=>$list_id];
+		$this->MAIN->getDB()->update("codes", $felder, $where);
+		$sql = "delete from ".$this->MAIN->getDB()->getTabelle("lists")." where id = ".$list_id;
+		$this->MAIN->getDB()->_db_query($sql);
 		do_action( $this->MAIN->_do_action_prefix.'removeList', $data );
-		return $ret;
+		return ['success' => true];
+	}
+
+	/**
+	 * Get WooCommerce products that use a specific ticket list
+	 */
+	private function getProductsUsingList(int $list_id): array {
+		$products = [];
+		$args = [
+			'post_type' => 'product',
+			'post_status' => 'any',
+			'posts_per_page' => -1,
+			'meta_query' => [
+				[
+					'key' => 'saso_eventtickets_list',
+					'value' => $list_id,
+					'compare' => '='
+				]
+			],
+			'fields' => 'ids'
+		];
+		$product_ids = get_posts($args);
+
+		foreach ($product_ids as $product_id) {
+			$products[] = [
+				'id' => $product_id,
+				'name' => get_the_title($product_id),
+				'edit_url' => get_edit_post_link($product_id, 'raw')
+			];
+		}
+
+		return $products;
 	}
 
 	private function getCode($data) {
 		if (!isset($data['code']) || trim($data['code']) == "") throw new Exception("#202 code missing");
-		return $this->getCore()->retrieveCodeByCode($data['code'], true);
+		return $this->MAIN->getCore()->retrieveCodeByCode($data['code'], true);
 	}
 	public function getCodesByProductId($product_id) {
 		$sql = "select a.*, order_id as o, b.name as list_name ";
-		$sql .= " from ".$this->getDB()->getTabelle("codes")." a left join ".$this->getDB()->getTabelle("lists")." b on a.list_id = b.id";
+		$sql .= " from ".$this->MAIN->getDB()->getTabelle("codes")." a left join ".$this->MAIN->getDB()->getTabelle("lists")." b on a.list_id = b.id";
 		$sql .= " where";
 		$sql .= " a.meta != '' and json_extract(a.meta, '$.woocommerce.product_id') = ".intval($product_id);
 		$sql .= " order by a.time";
-		$daten = $this->getDB()->_db_datenholen($sql);
+		$daten = $this->MAIN->getDB()->_db_datenholen($sql);
 		foreach($daten as $key => $item) {
 			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($item['meta']);
 			$order_id = intval($metaObj['woocommerce']['order_id']);
@@ -707,7 +758,7 @@ class sasoEventtickets_AdminSettings {
 	}
 	private function getCodes($data, $request) {
 		$sql = "select a.*, order_id as o, b.name as list_name ";
-		$sql .= " from ".$this->getDB()->getTabelle("codes")." a left join ".$this->getDB()->getTabelle("lists")." b on a.list_id = b.id";
+		$sql .= " from ".$this->MAIN->getDB()->getTabelle("codes")." a left join ".$this->MAIN->getDB()->getTabelle("lists")." b on a.list_id = b.id";
 
 		// für datatables
 		$length = 0; // wieviele pro seite angezeigt werden sollen (limit)
@@ -738,7 +789,7 @@ class sasoEventtickets_AdminSettings {
 		$order_dir = "asc";
 		if (isset($request['order']) && $request['order'][0]['dir'] == 'desc') $order_dir = "desc";
 		$search = "";
-		if (isset($request['search'])) $search = $this->getDB()->reinigen_in($request['search']['value']);
+		if (isset($request['search'])) $search = $this->MAIN->getDB()->reinigen_in($request['search']['value']);
 
 		$where = "";
 		if ($search != "") {
@@ -810,12 +861,25 @@ class sasoEventtickets_AdminSettings {
 				preg_match('/\s?CUSTOMER:\s*([^\s]*)/', $search_element, $matches);
 				if ($matches && count($matches) > 1) {
 					$search_element = str_replace($matches[0], "", $search_element);
-					$user_ids = $this->MAIN->getCore()->getUserIdsForCustomerName($matches[1]);
-					if (count($user_ids) > 0) {
-						$where .= " and json_extract(a.meta, '$.woocommerce.user_id') in (".join(",", $user_ids).")";
+					$result = $this->MAIN->getCore()->getUserIdsForCustomerName($matches[1]);
+
+					$has_user_ids = count($result['user_ids']) > 0;
+					$has_order_ids = count($result['order_ids']) > 0;
+
+					if ($has_user_ids || $has_order_ids) {
+						$conditions = [];
+						if ($has_user_ids) {
+							$conditions[] = "json_extract(a.meta, '$.woocommerce.user_id') IN (".join(",", $result['user_ids']).")";
+						}
+						if ($has_order_ids) {
+							// Guest orders: search by order_id instead of user_id
+							$conditions[] = "json_extract(a.meta, '$.woocommerce.order_id') IN (".join(",", $result['order_ids']).")";
+						}
+						$where .= " AND (" . join(" OR ", $conditions) . ")";
 						$nomatch = false;
 					} else {
-						$where .= " and json_extract(a.meta, '$.woocommerce.user_id') = -1";
+						// No matches - return no results
+						$where .= " AND 1=0";
 						$nomatch = false;
 					}
 				}
@@ -843,7 +907,7 @@ class sasoEventtickets_AdminSettings {
 			$search = trim(str_replace("&", "", $search));
 
 			if ($search != "") {
-				$where .= " and (a.code like '%".$this->getCore()->clearCode($search)."%' or b.name like '%".$search."%' or a.time like '%".$search."%' ";
+				$where .= " and (a.code like '%".$this->MAIN->getCore()->clearCode($search)."%' or b.name like '%".$search."%' or a.time like '%".$search."%' ";
 				if (intval($search) > 0) {
 					$where .= " or a.order_id = ".intval($search)." ";
 				}
@@ -856,27 +920,27 @@ class sasoEventtickets_AdminSettings {
 		if ($length > 0)
 			$sql .= " limit ".$start.", ".$length;
 
-		$daten = $this->getDB()->_db_datenholen($sql);
-		$recordsTotal = $this->getDB()->_db_getRecordCountOfTable('codes');
+		$daten = $this->MAIN->getDB()->_db_datenholen($sql);
+		$recordsTotal = $this->MAIN->getDB()->_db_getRecordCountOfTable('codes');
 		$recordsTotalFilter = $recordsTotal;
 		if (!empty($where)) {
 			$sql = "select count(a.id) as anzahl
 					from
-					".$this->getDB()->getTabelle("codes")." a left join
-					".$this->getDB()->getTabelle("lists")." b on a.list_id = b.id
+					".$this->MAIN->getDB()->getTabelle("codes")." a left join
+					".$this->MAIN->getDB()->getTabelle("lists")." b on a.list_id = b.id
 					where 1=1 ".$where;
-			list($d) = $this->getDB()->_db_datenholen($sql);
+			list($d) = $this->MAIN->getDB()->_db_datenholen($sql);
 			$recordsTotalFilter = $d['anzahl'];
 		}
-		$redeemedRecordsTotal = $this->getDB()->_db_getRecordCountOfTable('codes', 'redeemed = 1');
+		$redeemedRecordsTotal = $this->MAIN->getDB()->_db_getRecordCountOfTable('codes', 'redeemed = 1');
 		$redeemedRecordsFiltered = $redeemedRecordsTotal;
 		if (!empty($where)) {
 			$sql = "select count(a.id) as anzahl
 			from
-			(select * from ".$this->getDB()->getTabelle("codes")." where redeemed = 1) a left join
-			".$this->getDB()->getTabelle("lists")." b on a.list_id = b.id
+			(select * from ".$this->MAIN->getDB()->getTabelle("codes")." where redeemed = 1) a left join
+			".$this->MAIN->getDB()->getTabelle("lists")." b on a.list_id = b.id
 			where 1=1 ".$where;
-			list($d) = $this->getDB()->_db_datenholen($sql);
+			list($d) = $this->MAIN->getDB()->_db_datenholen($sql);
 			$redeemedRecordsFiltered = $d['anzahl'];
 		}
 
@@ -916,7 +980,7 @@ class sasoEventtickets_AdminSettings {
 			$products_max_redeem_amounts = []; // cache
 			foreach($daten as $key => $item) {
 				if (!isset($item['meta']) || empty($item['meta'])) {
-					$daten[$key]['meta'] = $this->getCore()->json_encode_with_error_handling($this->MAIN->getCore()->getMetaObject());
+					$daten[$key]['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($this->MAIN->getCore()->getMetaObject());
 				}
 				$redeemAmount = $this->getRedeemAmount($item, $products_max_redeem_amounts);
 				$daten[$key]['_redeemed_counter'] = $redeemAmount['_redeemed_counter'];
@@ -1005,17 +1069,17 @@ class sasoEventtickets_AdminSettings {
 			$newcode = trim($teile[0]);
 			$cvv = trim($teile[1]);
 		}
-		$code = $this->getCore()->clearCode($newcode);
+		$code = $this->MAIN->getCore()->clearCode($newcode);
 		if (empty($code)) {
 			throw new Exception(__('Code is empty', 'event-tickets-with-ticket-scanner'));
 		}
 		try {
-			$this->getCore()->retrieveCodeByCode($code, false);
+			$this->MAIN->getCore()->retrieveCodeByCode($code, false);
 		} catch(Exception $e) { // not found -> add new
-			$this->getCore()->checkCodesSize();
-			$felder = ["code"=>$code, "code_display"=>$newcode, "cvv"=>$cvv, "aktiv"=>1, "time"=>wp_date("Y-m-d H:i:s", current_time("timestamp")), "meta"=>"", "list_id"=>$list_id];
+			$this->MAIN->getCore()->checkCodesSize();
+			$felder = ["code"=>$code, "code_display"=>$newcode, "cvv"=>$cvv, "aktiv"=>1, "time"=>wp_date("Y-m-d H:i:s"), "meta"=>"", "list_id"=>$list_id];
 			$this->MAIN->getBase()->increaseGlobalTicketCounter();
-			return $this->getDB()->insert("codes", $felder);
+			return $this->MAIN->getDB()->insert("codes", $felder);
 		}
 		throw new Exception("#205 ".__('code exists already', 'event-tickets-with-ticket-scanner'));
 	}
@@ -1035,27 +1099,27 @@ class sasoEventtickets_AdminSettings {
 			$rescueCounter = 0;
 			while($rescueCounter < 50) {
 				// get a code from the list with order_id = 0
-				$sql = "select id from ".$this->getDB()->getTabelle("codes")." where
+				$sql = "select id from ".$this->MAIN->getDB()->getTabelle("codes")." where
 						order_id = 0 and semaphorecode = '' and
 						list_id = ".$list_id."
 						limit 1";
-				$d = $this->getDB()->_db_datenholen($sql);
+				$d = $this->MAIN->getDB()->_db_datenholen($sql);
 				if (count($d) == 0) {
 					break; // if no unregistered code could be found => create a new one
 				} else {
 					//if (SASO_EVENTTICKETS::issetRPara('a') && SASO_EVENTTICKETS::getRequestPara('a') == 'testing') echo "<p>FOUND UNUSED</p>";
 					// update it with a random code if not already a code is assigned
-					$this->getDB()->update("codes", ['semaphorecode'=>$semaphorecode], ['id'=>$d[0]['id'], 'semaphorecode'=>'']);
+					$this->MAIN->getDB()->update("codes", ['semaphorecode'=>$semaphorecode], ['id'=>$d[0]['id'], 'semaphorecode'=>'']);
 					// retrieve the code again and check if the random code could be set
-					$sql = "select id, code_display, semaphorecode from ".$this->getDB()->getTabelle("codes")." where id = ".$d[0]['id'];
-					$d = $this->getDB()->_db_datenholen($sql);
+					$sql = "select id, code_display, semaphorecode from ".$this->MAIN->getDB()->getTabelle("codes")." where id = ".$d[0]['id'];
+					$d = $this->MAIN->getDB()->_db_datenholen($sql);
 					// if not managed to add the random code do it again
 					if ($d[0]['semaphorecode'] == $semaphorecode) {
 						if ($semaphorecode == "") break; // semaphorecode is empty => create a new serial
 						// set the $id
 						$id = intval($d[0]['id']);
 						$data['code'] = $d[0]['code_display'];
-						// too clean up again after the testing // $this->getDB()->update("codes", ['semaphorecode'=>''], ['id'=>$d[0]['id']]);
+						// too clean up again after the testing // $this->MAIN->getDB()->update("codes", ['semaphorecode'=>''], ['id'=>$d[0]['id']]);
 						break; // done
 					}
 				}
@@ -1066,14 +1130,14 @@ class sasoEventtickets_AdminSettings {
 			/*
 			echo(esc_html($id));
 			if ($id > 0) {
-				print_r($this->getCore()->retrieveCodeById($id, true));
+				print_r($this->MAIN->getCore()->retrieveCodeById($id, true));
 			}
 
-			$this->getDB()->update("codes", ['semaphorecode'=>""], ['list_id'=>$list_id, 'order_id'=>0]);
-			$sql = "select * from ".$this->getDB()->getTabelle("codes")." where
+			$this->MAIN->getDB()->update("codes", ['semaphorecode'=>""], ['list_id'=>$list_id, 'order_id'=>0]);
+			$sql = "select * from ".$this->MAIN->getDB()->getTabelle("codes")." where
 					order_id = 0 and
 					list_id = ".$list_id;
-			$d = $this->getDB()->_db_datenholen($sql);
+			$d = $this->MAIN->getDB()->_db_datenholen($sql);
 			print_r($d);
 			if ($id == 0) {
 				echo "no reusabel code found";
@@ -1085,7 +1149,7 @@ class sasoEventtickets_AdminSettings {
 		if ($id == 0 && empty($data['code'])) {
 			// check if serial code formatter is active
 			if (empty($formatterValues)) {
-				$metaObj = $this->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+				$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
 				if ($metaObj['formatter']['active'] == 1) {
 					$formatterValues = stripslashes($metaObj['formatter']['format']);
 				}
@@ -1122,14 +1186,14 @@ class sasoEventtickets_AdminSettings {
 				$codeObj = $this->MAIN->getPremiumFunctions()->addCodeFromListForOrderAfter($codeObj);
 			}
 
-			$this->getCore()->triggerWebhooks(17, $codeObj);
+			$this->MAIN->getCore()->triggerWebhooks(17, $codeObj);
 
 			return $data["code"];
 		}
 		throw new Exception("#601 ".__('code could not be generated and stored', 'event-tickets-with-ticket-scanner'));
 	}
 	private function generateCode($formatterValues="") {
-		$code = implode('-', str_split(substr(strtoupper(md5(current_time("timestamp")."_".rand())), 0, 20), 5));
+		$code = implode('-', str_split(substr(strtoupper(md5(time()."_".rand())), 0, 20), 5));
 		if (!empty($formatterValues) || $this->isOptionCheckboxActive("wcassignmentUseGlobalSerialFormatter")) {
 			if (empty($formatterValues)) {
 				$codeFormatterJSON = $this->getOptionValue('wcassignmentUseGlobalSerialFormatter_values');
@@ -1198,14 +1262,14 @@ class sasoEventtickets_AdminSettings {
 		return $code;
 	}
 	private function replacePlaceholderForCode($code) {
-		$time = current_time("timestamp");
+		$time = time();
 		$code = str_replace("{TIMESTAMP}", $time, $code);
-		$code = str_replace("{Y}", date("Y", $time), $code);
-		$code = str_replace("{m}", date("m", $time), $code);
-		$code = str_replace("{d}", date("d", $time), $code);
-		$code = str_replace("{H}", date("H", $time), $code);
-		$code = str_replace("{i}", date("i", $time), $code);
-		$code = str_replace("{s}", date("s", $time), $code);
+		$code = str_replace("{Y}", wp_date("Y", $time), $code);
+		$code = str_replace("{m}", wp_date("m", $time), $code);
+		$code = str_replace("{d}", wp_date("d", $time), $code);
+		$code = str_replace("{H}", wp_date("H", $time), $code);
+		$code = str_replace("{i}", wp_date("i", $time), $code);
+		$code = str_replace("{s}", wp_date("s", $time), $code);
 		return $code;
 	}
 	public function addRetrictionCodeToOrder($code, $list_id, $order_id, $product_id = 0, $item_id = 0) {
@@ -1226,8 +1290,8 @@ class sasoEventtickets_AdminSettings {
 		if (!isset($data['order_id'])) throw new Exception("#9602 order id parameter is missing");
 		//if (!isset($data['product_id'])) throw new Exception("#9603 product id is missing");
 		//if (!isset($data['item_id'])) throw new Exception("#9604 item id is missing"); // position within the order
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
 		$key = 'woocommerce';
 		if (isset($data['is_restriction_purchase']) && $data['is_restriction_purchase'] == 1) {
@@ -1235,16 +1299,16 @@ class sasoEventtickets_AdminSettings {
 		}
 
 		$order = wc_get_order( $data['order_id'] );
-		$metaObj[$key] = ['order_id'=>$data['order_id'], 'creation_date'=>date("Y-m-d H:i:s", current_time("timestamp")), 'creation_date_tz'=>wp_timezone_string()];
+		$metaObj[$key] = ['order_id'=>$data['order_id'], 'creation_date'=>wp_date("Y-m-d H:i:s"), 'creation_date_tz'=>wp_timezone_string()];
 		if (isset($data['product_id'])) $metaObj[$key]['product_id'] = $data['product_id'];
 		if (isset($data['item_id'])) $metaObj[$key]['item_id'] = $data['item_id'];
 		$metaObj[$key]['user_id'] = intval($order->get_user_id());
 
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
-		$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
 
 		if($trigger_webhooks) {
-			$this->getCore()->triggerWebhooks(10, $codeObj);
+			$this->MAIN->getCore()->triggerWebhooks(10, $codeObj);
 		}
 
 		do_action( $this->MAIN->_do_action_prefix.'admin_addWoocommerceInfoToCode', $data, $codeObj );
@@ -1264,8 +1328,8 @@ class sasoEventtickets_AdminSettings {
 			}
 		}
 		// lade code
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		if ($codeObj['order_id'] > 0 || $metaObj['woocommerce']['order_id'] > 0) {
 
 				// extrahiere item id
@@ -1292,7 +1356,7 @@ class sasoEventtickets_AdminSettings {
 							}
 						}
 						if (count($new_codes) == 0) {
-							$this->MAIN->getWC()->deleteCodesEntryOnOrderItem($item_id);
+							$this->MAIN->getWC()->getOrderManager()->deleteCodesEntryOnOrderItem($item_id);
 							$this->removeWoocommerceTicketForCode($data);
 						} else {
 							wc_delete_order_item_meta( $item_id, '_saso_eventtickets_product_code' );
@@ -1307,11 +1371,11 @@ class sasoEventtickets_AdminSettings {
 
 		}
 		// leere meta woocommerce
-		$defMeta = $this->getCore()->getMetaObject();
+		$defMeta = $this->MAIN->getCore()->getMetaObject();
 		$metaObj['woocommerce'] = $defMeta['woocommerce'];
 		$metaObj['wc_ticket'] = $defMeta['wc_ticket'];
 		$codeObj['order_id'] = 0;
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 
 		$felder = ['order_id'=>0, 'semaphorecode'=>'', "meta"=>$codeObj['meta']];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'removeWoocommerceOrderInfoFromCode')) {
@@ -1319,16 +1383,16 @@ class sasoEventtickets_AdminSettings {
 		}
 		$where = ['id'=>intval($codeObj['id'])];
 
-		$this->getDB()->update("codes", $felder, $where);
-		$this->getCore()->triggerWebhooks(11, $codeObj);
+		$this->MAIN->getDB()->update("codes", $felder, $where);
+		$this->MAIN->getCore()->triggerWebhooks(11, $codeObj);
 		do_action( $this->MAIN->_do_action_prefix.'admin_removeWoocommerceOrderInfoFromCode', $data, $codeObj );
 		return $codeObj;
 	}
 	public function removeWoocommerceRstrPurchaseInfoFromCode($data) {
 		if (!isset($data['code'])) throw new Exception("#9611 code parameter is missing");
 		// lade code
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
 		// purchase restrictions do not add an order_id to the code level
 		if ($metaObj['wc_rp']['order_id'] > 0) {
@@ -1343,15 +1407,15 @@ class sasoEventtickets_AdminSettings {
 				// extrahiere item id
 				$item_id = isset($metaObj['wc_rp']['item_id']) ? $metaObj['wc_rp']['item_id'] : 0;
 				if ($item_id > 0) {
-					$this->MAIN->getWC()->deleteRestrictionEntryOnOrderItem($item_id);
+					$this->MAIN->getWC()->getOrderManager()->deleteRestrictionEntryOnOrderItem($item_id);
 				}
 			}
 		}
 
 		// leere meta wc_rp
-		$defMeta = $this->getCore()->getMetaObject();
+		$defMeta = $this->MAIN->getCore()->getMetaObject();
 		$metaObj['wc_rp'] = $defMeta['wc_rp'];
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 
 		$felder = ["meta"=>$codeObj['meta']];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'removeWoocommerceRstrPurchaseInfoFromCode')) {
@@ -1359,7 +1423,7 @@ class sasoEventtickets_AdminSettings {
 		}
 		$where = ['id'=>intval($codeObj['id'])];
 
-		$this->getDB()->update("codes", $felder, $where);
+		$this->MAIN->getDB()->update("codes", $felder, $where);
 		do_action( $this->MAIN->_do_action_prefix.'admin_removeWoocommerceRstrPurchaseInfoFromCode', $data, $codeObj );
 		return $codeObj;
 	}
@@ -1384,7 +1448,7 @@ class sasoEventtickets_AdminSettings {
 		$felder = ["list_id"=>intval($data['list_id'])];
 		foreach($data['ids'] as $v) {
 			$where = ["id"=>intval($v)];
-			$ret[$v] = $this->getDB()->update("codes", $felder, $where);
+			$ret[$v] = $this->MAIN->getDB()->update("codes", $felder, $where);
 		}
 		return ["count"=>count($data['codes']), "ret"=>$ret];
 	}
@@ -1403,12 +1467,12 @@ class sasoEventtickets_AdminSettings {
 		if (!isset($data['code'])) throw new Exception("#9621 code parameter is missing");
 		// lade code
 		if ($codeObj === null) {
-			$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+			$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		}
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
 		// leere meta wc_ticket
-		$defMeta = $this->getCore()->getMetaObject();
+		$defMeta = $this->MAIN->getCore()->getMetaObject();
 		$metaObj['used'] = $defMeta['used'];
 		$metaObj['wc_ticket']['ip'] = "";
 		$metaObj['wc_ticket']['userid'] = 0;
@@ -1421,7 +1485,7 @@ class sasoEventtickets_AdminSettings {
 		$metaObj['wc_ticket']['set_by_admin_date_tz'] = "";
 		$metaObj['wc_ticket']['stats_redeemed'] = [];
 
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 
 		$felder = ["meta"=>$codeObj['meta'], "redeemed"=>0];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'removeRedeemWoocommerceTicketForCode')) {
@@ -1429,8 +1493,8 @@ class sasoEventtickets_AdminSettings {
 		}
 		$where = ['id'=>intval($codeObj['id'])];
 
-		$this->getDB()->update("codes", $felder, $where);
-		$this->getCore()->triggerWebhooks(14, $codeObj);
+		$this->MAIN->getDB()->update("codes", $felder, $where);
+		$this->MAIN->getCore()->triggerWebhooks(14, $codeObj);
 		return $codeObj;
 	}
 	public function removeWoocommerceTicketForCode($data) {
@@ -1445,8 +1509,8 @@ class sasoEventtickets_AdminSettings {
 			}
 		}
 		// lade code
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		if ($codeObj['order_id'] > 0 || $metaObj['woocommerce']['order_id'] > 0) {
 			if (class_exists( 'WooCommerce' )) {
 				// extrahiere item id
@@ -1469,11 +1533,11 @@ class sasoEventtickets_AdminSettings {
 		}
 
 		// leere meta woocommerce
-		$defMeta = $this->getCore()->getMetaObject();
+		$defMeta = $this->MAIN->getCore()->getMetaObject();
 		$idcode = $metaObj['wc_ticket']['idcode'];
 		$metaObj['wc_ticket'] = $defMeta['wc_ticket'];
 		$metaObj['wc_ticket']['idcode'] = $idcode;
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 
 		$felder = ["meta"=>$codeObj['meta']];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'removeWoocommerceTicketForCode')) {
@@ -1481,17 +1545,17 @@ class sasoEventtickets_AdminSettings {
 		}
 		$where = ['id'=>intval($codeObj['id'])];
 
-		$this->getDB()->update("codes", $felder, $where);
-		$this->getCore()->triggerWebhooks(15, $codeObj);
+		$this->MAIN->getDB()->update("codes", $felder, $where);
+		$this->MAIN->getCore()->triggerWebhooks(15, $codeObj);
 		do_action( $this->MAIN->_do_action_prefix.'admin_removeWoocommerceTicketForCode', $data, $codeObj );
 		return $codeObj;
 	}
 	private function redeemWoocommerceTicketForCode($data) {
 		if (!isset($data['code'])) throw new Exception("#9622 code parameter is missing");
 		// lade code
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		$codeObj = apply_filters( $this->MAIN->_add_filter_prefix.'filter_setExpirationDateFromDays', $codeObj );
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
 		$max_redeem_amount = $this->MAIN->getTicketHandler()->getMaxRedeemAmountOfTicket($codeObj);
 		if ($max_redeem_amount > 0) {
@@ -1505,9 +1569,9 @@ class sasoEventtickets_AdminSettings {
 
 		if (empty($metaObj['wc_ticket']['redeemed_date']) || $max_redeem_amount > 1) {
 			$stat_redeem = [];
-			$metaObj['wc_ticket']['redeemed_date'] = date("Y-m-d H:i:s", current_time("timestamp"));
+			$metaObj['wc_ticket']['redeemed_date'] = wp_date("Y-m-d H:i:s");
 			$metaObj['wc_ticket']['redeemed_date_tz'] = wp_timezone_string();
-			$metaObj['wc_ticket']['ip'] = $this->getCore()->getRealIpAddr();
+			$metaObj['wc_ticket']['ip'] = $this->MAIN->getCore()->getRealIpAddr();
 			if (isset($data['userid'])) $metaObj['wc_ticket']['userid'] = intval($data['userid']);
 			if (is_admin() || isset($data['redeemed_by_admin'])) {
 				// kann sein, dass der admin nicht eingeloggt ist (externer mitarbeiter)
@@ -1522,13 +1586,13 @@ class sasoEventtickets_AdminSettings {
 			$metaObj['wc_ticket']['stats_redeemed'][] = $stat_redeem;
 
 			// set the last usage
-			$metaObj['used']['reg_ip'] = $this->getCore()->getRealIpAddr();
+			$metaObj['used']['reg_ip'] = $this->MAIN->getCore()->getRealIpAddr();
 			$metaObj['used']['reg_request'] = $metaObj['wc_ticket']['redeemed_date'];
 			$metaObj['used']['reg_request_tz'] = $metaObj['wc_ticket']['redeemed_date_tz'];
 
 			if (isset($data['userid'])) $metaObj['used']['reg_userid'] = intval($data['userid']);
 
-			$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
+			$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 
 			$felder = ["meta"=>$codeObj['meta'], "redeemed"=>1];
 			if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'redeemWoocommerceTicketForCode')) {
@@ -1536,16 +1600,16 @@ class sasoEventtickets_AdminSettings {
 			}
 			$where = ['id'=>intval($codeObj['id'])];
 
-			$this->getDB()->update("codes", $felder, $where);
-			$this->getCore()->triggerWebhooks(13, $codeObj);
+			$this->MAIN->getDB()->update("codes", $felder, $where);
+			$this->MAIN->getCore()->triggerWebhooks(13, $codeObj);
 			do_action( $this->MAIN->_do_action_prefix.'admin_redeemWoocommerceTicketForCode', $data, $codeObj );
 		}
 		return $codeObj;
 	}
 	private function setWoocommerceTicketForCode($data) {
 		if (!isset($data['code'])) throw new Exception("#9623 code parameter is missing");
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
 		if ($metaObj['wc_ticket']['is_ticket'] == 1) return $codeObj; // früher abbruch
 
@@ -1576,10 +1640,10 @@ class sasoEventtickets_AdminSettings {
 		// set codeobj meta and set webhook trigger
 
 		$metaObj['wc_ticket']['set_by_admin'] = get_current_user_id();
-		$metaObj['wc_ticket']['set_by_admin_date'] = date("d.m.Y H:i:s", current_time("timestamp"));
+		$metaObj['wc_ticket']['set_by_admin_date'] = wp_date("d.m.Y H:i:s");
 		$metaObj['wc_ticket']['set_by_admin_date_tz'] = wp_timezone_string();
 
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 
 		$felder = ["meta"=>$codeObj['meta']];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'setWoocommerceTicketForCode')) {
@@ -1587,13 +1651,13 @@ class sasoEventtickets_AdminSettings {
 		}
 		$where = ['id'=>intval($codeObj['id'])];
 
-		$this->getDB()->update("codes", $felder, $where);
+		$this->MAIN->getDB()->update("codes", $felder, $where);
 
 		return $this->setWoocommerceTicketInfoForCode($data['code']);
 	}
-	public function setWoocommerceTicketInfoForCode($code, $namePerTicket="", $valuePerTicket="", $dayPerTicket="") {
-		$codeObj = $this->getCore()->retrieveCodeByCode($code);
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+	public function setWoocommerceTicketInfoForCode($code, $namePerTicket="", $valuePerTicket="", $dayPerTicket="", $seatData=null) {
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($code);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
 		$metaObj['wc_ticket']['is_ticket'] = 1;
 		$namePerTicket = trim($namePerTicket);
@@ -1609,11 +1673,18 @@ class sasoEventtickets_AdminSettings {
 			$metaObj['wc_ticket']['is_daychooser'] = 1;
 			$metaObj['wc_ticket']['day_per_ticket'] = substr($dayPerTicket, 0, 10); // 9 should be fine too
 		}
-		if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".current_time("timestamp"));
-		$metaObj['wc_ticket']['_url'] = $this->getCore()->getTicketURL($codeObj, $metaObj);
-		$metaObj['wc_ticket']['_public_ticket_id'] = $this->getCore()->getTicketId($codeObj, $metaObj);
+		// Seat data for seating plan integration
+		if (!empty($seatData) && is_array($seatData) && !empty($seatData['seat_id'])) {
+			$metaObj['wc_ticket']['seat_id'] = (int) $seatData['seat_id'];
+			$metaObj['wc_ticket']['seat_identifier'] = substr($seatData['seat_identifier'] ?? '', 0, 50);
+			$metaObj['wc_ticket']['seat_label'] = substr($seatData['seat_label'] ?? '', 0, 140);
+			$metaObj['wc_ticket']['seat_category'] = substr($seatData['seat_category'] ?? '', 0, 50);
+		}
+		if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".time());
+		$metaObj['wc_ticket']['_url'] = $this->MAIN->getCore()->getTicketURL($codeObj, $metaObj);
+		$metaObj['wc_ticket']['_public_ticket_id'] = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
 
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 
 		$felder = ["meta"=>$codeObj['meta']];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'setWoocommerceTicketInfoForCode')) {
@@ -1621,8 +1692,8 @@ class sasoEventtickets_AdminSettings {
 		}
 		$where = ['id'=>intval($codeObj['id'])];
 
-		$this->getDB()->update("codes", $felder, $where);
-		$this->getCore()->triggerWebhooks(12, $codeObj);
+		$this->MAIN->getDB()->update("codes", $felder, $where);
+		$this->MAIN->getCore()->triggerWebhooks(12, $codeObj);
 		do_action( $this->MAIN->_do_action_prefix.'admin_setWoocommerceTicketInfoForCode', $code, $codeObj );
 		return $codeObj;
 	}
@@ -1657,13 +1728,13 @@ class sasoEventtickets_AdminSettings {
 			} catch (Exception $e) {}
 		}
 
-		$ret['total_size'] = $this->getDB()->getCodesSize();
+		$ret['total_size'] = $this->MAIN->getDB()->getCodesSize();
 		return $ret;
 	}
 	private function editCode($data) {
 		if (!isset($data['code']) || trim($data['code']) == "") throw new Exception("#206 code parameter missing");
-		$data['code'] = $this->getCore()->clearCode($data['code']);
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		$data['code'] = $this->MAIN->getCore()->clearCode($data['code']);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		$felder = [];
 		if (isset($data['list_id'])) $felder['list_id'] = intval($data['list_id']);
 		if (isset($data['cvv'])) $felder['cvv'] = trim($data['cvv']);
@@ -1674,8 +1745,8 @@ class sasoEventtickets_AdminSettings {
 			$felder = $this->MAIN->getPremiumFunctions()->setFelderCodeEdit($felder, $data, $codeObj);
 		}
 		if (count($felder) > 0) {
-			$where = ["code"=>$this->getDB()->reinigen_in($data['code'])];
-			$ret = $this->getDB()->update("codes", $felder, $where);
+			$where = ["code"=>$this->MAIN->getDB()->reinigen_in($data['code'])];
+			$ret = $this->MAIN->getDB()->update("codes", $felder, $where);
 			do_action( $this->MAIN->_do_action_prefix.'admin_editCode', $data, $ret );
 			return $ret;
 		}
@@ -1692,10 +1763,10 @@ class sasoEventtickets_AdminSettings {
 		$this->removeWoocommerceOrderInfoFromCode($data); // remove order info
 		$this->removeWoocommerceRstrPurchaseInfoFromCode($data); // remove wc_rp info
 
-		$code = $this->getCore()->clearCode($data['code']);
-		//$sql = "delete from ".$this->getDB()->getTabelle("codes")." where code = '".$this->getDB()->reinigen_in($code)."'";
-		$sql = "delete from ".$this->getDB()->getTabelle("codes")." where id = ".intval($data['id']);
-		$ret = $this->getDB()->_db_query($sql);
+		$code = $this->MAIN->getCore()->clearCode($data['code']);
+		//$sql = "delete from ".$this->MAIN->getDB()->getTabelle("codes")." where code = '".$this->MAIN->getDB()->reinigen_in($code)."'";
+		$sql = "delete from ".$this->MAIN->getDB()->getTabelle("codes")." where id = ".intval($data['id']);
+		$ret = $this->MAIN->getDB()->_db_query($sql);
 
 		return $ret;
 	}
@@ -1703,21 +1774,68 @@ class sasoEventtickets_AdminSettings {
 		if (!isset($data['ids'])) throw new Exception("#209 ticket ids parameter is missing - cannot remove tickets");
 		if (!is_array($data['ids'])) throw new Exception("#210 ticket ids must be an array");
 		foreach($data['ids'] as $v) {
-			$sql = "delete from ".$this->getDB()->getTabelle("codes")." where id = '".intval($v)."'";
-			$this->getDB()->_db_query($sql);
+			$sql = "delete from ".$this->MAIN->getDB()->getTabelle("codes")." where id = '".intval($v)."'";
+			$this->MAIN->getDB()->_db_query($sql);
 		}
 		do_action( $this->MAIN->_do_action_prefix.'admin_removeCodes', $data );
 		return count($data['ids']);
 	}
+
+	/**
+	 * Remove all codes/tickets from a specific list
+	 * Uses removeCode() for each ticket to ensure proper cleanup of WooCommerce data
+	 *
+	 * @param array $data Must contain 'list_id'
+	 * @return array ['deleted' => int, 'errors' => int]
+	 */
+	private function removeAllCodesFromList(array $data): array {
+		if (!isset($data['list_id'])) {
+			throw new Exception("#211 list_id parameter is missing - cannot remove tickets");
+		}
+
+		$list_id = intval($data['list_id']);
+		if ($list_id <= 0) {
+			throw new Exception("#212 list_id must be a positive integer");
+		}
+
+		// Get all codes from this list
+		$sql = "SELECT id, code FROM " . $this->MAIN->getDB()->getTabelle("codes") . " WHERE list_id = " . $list_id;
+		$codes = $this->MAIN->getDB()->_db_select($sql);
+
+		$deleted = 0;
+		$errors = 0;
+
+		foreach ($codes as $codeRow) {
+			try {
+				// Use removeCode to properly clean up WooCommerce data
+				$this->removeCode(['id' => $codeRow['id'], 'code' => $codeRow['code']]);
+				$deleted++;
+			} catch (Exception $e) {
+				$errors++;
+				$this->MAIN->getCore()->logError("Error deleting code ID " . $codeRow['id'] . ": " . $e->getMessage());
+			}
+		}
+
+		// Log the bulk deletion
+		$this->MAIN->getCore()->logError(
+			sprintf("Bulk delete: %d tickets deleted from list ID %d (errors: %d)", $deleted, $list_id, $errors),
+			'info'
+		);
+
+		do_action($this->MAIN->_do_action_prefix . 'admin_removeAllCodesFromList', $data, $deleted, $errors);
+
+		return ['deleted' => $deleted, 'errors' => $errors];
+	}
+
 	private function emptyTableLists($data) {
-		$sql = "update ".$this->getDB()->getTabelle("codes")." set list_id = 0";
-		$this->getDB()->_db_query($sql);
-		$sql = "delete from ".$this->getDB()->getTabelle("lists");
-		return $this->getDB()->_db_query($sql);
+		$sql = "update ".$this->MAIN->getDB()->getTabelle("codes")." set list_id = 0";
+		$this->MAIN->getDB()->_db_query($sql);
+		$sql = "delete from ".$this->MAIN->getDB()->getTabelle("lists");
+		return $this->MAIN->getDB()->_db_query($sql);
 	}
 	private function emptyTableCodes($data) {
-		$sql = "delete from ".$this->getDB()->getTabelle("codes");
-		return $this->getDB()->_db_query($sql);
+		$sql = "delete from ".$this->MAIN->getDB()->getTabelle("codes");
+		return $this->MAIN->getDB()->_db_query($sql);
 	}
 	private function exportTableCodes($data) {
 		$delimiters = [',',';','|'];
@@ -1746,7 +1864,7 @@ class sasoEventtickets_AdminSettings {
 		if (isset($data['orderbydirection']) && isset($orderbydirections[$data['orderbydirection']-1])) $orderbydirection = $orderbydirections[$data['orderbydirection']-1];
 		set_time_limit(0);
 		// hole daten
-		$sql = "select a.*, b.name as list_name from ".$this->getDB()->getTabelle("codes")." a left join ".$this->getDB()->getTabelle("lists")." b on a.list_id = b.id";
+		$sql = "select a.*, b.name as list_name from ".$this->MAIN->getDB()->getTabelle("codes")." a left join ".$this->MAIN->getDB()->getTabelle("lists")." b on a.list_id = b.id";
 		if (isset($data['listchooser']) && !empty($data['listchooser']) && intval($data['listchooser']) > 0) {
 			$sql .= " where a.list_id = ".intval($data['listchooser']);
 		}
@@ -1757,12 +1875,12 @@ class sasoEventtickets_AdminSettings {
 				$sql .= ", ".intval($data['rangeamount']);
 			}
 		}
-		$daten = $this->getDB()->_db_datenholen($sql);
+		$daten = $this->MAIN->getDB()->_db_datenholen($sql);
 		foreach($daten as &$row) {
 			$row = $this->transformMetaObjectToExportColumn($row, $fields, $field_options);
 		}
 		// sende csv datei
-		$filename = "export_codes_sasoEventtickets_".date("YmdHis", current_time("timestamp")).$filesuffix;
+		$filename = "export_codes_sasoEventtickets_".wp_date("YmdHis").$filesuffix;
 
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'exportTableCodes')) {
 			$ret_ar = $this->MAIN->getPremiumFunctions()->exportTableCodes($data, $daten, $filename, $delimiter);
@@ -1785,7 +1903,7 @@ class sasoEventtickets_AdminSettings {
 			'meta_confirmedCount',
 			'meta_woocommerce', 'meta_woocommerce_order_id', 'meta_woocommerce_product_id', 'meta_woocommerce_creation_date', 'meta_woocommerce_creation_date_tz', 'meta_woocommerce_item_id', 'meta_woocommerce_user_id',
 			'meta_wc_rp', 'meta_wc_rp_order_id', 'meta_wc_rp_product_id', 'meta_wc_rp_creation_date', 'meta_wc_rp_creation_date_tz', 'meta_wc_rp_item_id',
-			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket', 'meta_wc_ticket_subs'
+			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket', 'meta_wc_ticket_subs', 'meta_wc_ticket_seat_id', 'meta_wc_ticket_seat_identifier', 'meta_wc_ticket_seat_label', 'meta_wc_ticket_seat_category'
 			];
 		if ($options != null && is_array($options)) {
 			if (isset($options["displayAdminAreaColumnBillingName"])) {
@@ -1809,7 +1927,7 @@ class sasoEventtickets_AdminSettings {
 		}
 		// nehme meta object
 		if (!empty($row['meta'])) {
-			$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($row['meta']);
+			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($row['meta']);
 			// zerlege das object und inhalte in einzelne spalten
 			if (isset($metaObj['validation'])) {
 				if (!empty($metaObj['validation']['first_success'])) $row['meta_validation_first_success'] = $metaObj['validation']['first_success'];
@@ -1863,12 +1981,17 @@ class sasoEventtickets_AdminSettings {
 				if (!empty($metaObj['wc_ticket']['set_by_admin_date'])) $row['meta_wc_ticket_set_by_admin_date'] = $metaObj['wc_ticket']['set_by_admin_date'];
 				if (!empty($metaObj['wc_ticket']['set_by_admin_date_tz'])) $row['meta_wc_ticket_set_by_admin_date_tz'] = $metaObj['wc_ticket']['set_by_admin_date_tz'];
 				if (!empty($metaObj['wc_ticket']['idcode'])) $row['meta_wc_ticket_idcode'] = $metaObj['wc_ticket']['idcode'];
-				if (!empty($metaObj['wc_ticket']['stats_redeemed'])) $row['meta_wc_ticket_stats_redeemed'] = $this->getCore()->json_encode_with_error_handling($metaObj['wc_ticket']['stats_redeemed']);
+				if (!empty($metaObj['wc_ticket']['stats_redeemed'])) $row['meta_wc_ticket_stats_redeemed'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj['wc_ticket']['stats_redeemed']);
 				if (!empty($metaObj['wc_ticket']['_public_ticket_id'])) $row['meta_wc_ticket_public_ticket_id'] = $metaObj['wc_ticket']['_public_ticket_id'];
 				if (!empty($metaObj['wc_ticket']['name_per_ticket'])) $row['meta_wc_ticket_name_per_ticket'] = $metaObj['wc_ticket']['name_per_ticket'];
 				if (!empty($metaObj['wc_ticket']['is_daychooser'])) $row['meta_wc_ticket_is_daychooser'] = $metaObj['wc_ticket']['is_daychooser'];
 				if (!empty($metaObj['wc_ticket']['day_per_ticket'])) $row['meta_wc_ticket_day_per_ticket'] = $metaObj['wc_ticket']['day_per_ticket'];
 				if (!empty($metaObj['wc_ticket']['subs'])) $row['meta_wc_ticket_subs'] = $metaObj['wc_ticket']['subs'];
+				// Seat data
+				if (!empty($metaObj['wc_ticket']['seat_id'])) $row['meta_wc_ticket_seat_id'] = $metaObj['wc_ticket']['seat_id'];
+				if (!empty($metaObj['wc_ticket']['seat_identifier'])) $row['meta_wc_ticket_seat_identifier'] = $metaObj['wc_ticket']['seat_identifier'];
+				if (!empty($metaObj['wc_ticket']['seat_label'])) $row['meta_wc_ticket_seat_label'] = $metaObj['wc_ticket']['seat_label'];
+				if (!empty($metaObj['wc_ticket']['seat_category'])) $row['meta_wc_ticket_seat_category'] = $metaObj['wc_ticket']['seat_category'];
 
 				if ($options != null && is_array($options)) {
 					if (isset($options["displayAdminAreaColumnBillingName"]) && $options["displayAdminAreaColumnBillingName"]) {
@@ -1890,22 +2013,33 @@ class sasoEventtickets_AdminSettings {
 
 	public function performJobsAfterDBUpgraded($dbversion="", $dbversion_pre="") {
 		if (empty($dbversion)) {
-			$dbversion = $this->getDB()->dbversion;
+			$dbversion = $this->MAIN->getDB()->dbversion;
 		}
 
 		if (version_compare( $dbversion, '1.0', '>' ) && version_compare( $dbversion, '2.0', '<' )) {
-			$sql = "select id, meta from ".$this->getDB()->getTabelle("codes")." where redeemed = 0 and meta != ''";
-			$d = $this->getDB()->_db_datenholen($sql);
+			$sql = "select id, meta from ".$this->MAIN->getDB()->getTabelle("codes")." where redeemed = 0 and meta != ''";
+			$d = $this->MAIN->getDB()->_db_datenholen($sql);
 			foreach($d as $codeObj) {
 				try {
-					$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+					$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 					if (!empty($metaObj['wc_ticket']['redeemed_date'])) {
 						// update code
-						$this->getDB()->update("codes", ["redeemed"=>1], ['id'=>$codeObj['id']]);
+						$this->MAIN->getDB()->update("codes", ["redeemed"=>1], ['id'=>$codeObj['id']]);
 					}
 				} catch (Exception $e) {
 					//var_dump($e->getMessage());
 				}
+			}
+		}
+
+		// v1.10: Add last_seen column to seat_blocks for heartbeat tracking
+		if (version_compare($dbversion, '1.10', '>=') && version_compare($dbversion_pre, '1.10', '<')) {
+			global $wpdb;
+			$table = $this->MAIN->getDB()->getTabelle('seat_blocks');
+			// Check if column exists before adding
+			$columns = $wpdb->get_col("DESCRIBE {$table}", 0);
+			if (!in_array('last_seen', $columns)) {
+				$wpdb->query("ALTER TABLE {$table} ADD COLUMN last_seen datetime DEFAULT NULL AFTER expires_at");
 			}
 		}
 
@@ -1927,30 +2061,33 @@ class sasoEventtickets_AdminSettings {
 		}
 		if ($this->isOptionCheckboxActive("wcTicketUserProfileDisplayBoughtNumbers")) {
 			echo "<h3>".__('Event Tickets Numbers', 'event-tickets-with-ticket-scanner')."</h3>";
-			$sql = "select * from ".$this->getDB()->getTabelle("codes")." where
+			$sql = "select * from ".$this->MAIN->getDB()->getTabelle("codes")." where
 				json_extract(meta, '$.wc_ticket.is_ticket') = 1 and
 				json_extract(meta, '$.woocommerce.user_id') = ".$user_id;
-			$codes = $this->getDB()->_db_datenholen($sql);
+			$codes = $this->MAIN->getDB()->_db_datenholen($sql);
 			echo $this->MAIN->getCodesTextAsShortList($codes);
 		}
 	}
 
 	public function logErrorToDB(Exception $e, $caller_name="", $msg="") {
 		$exception_msg = "";
+		$trace = [];
 		if ($e != null) {
 			$exception_msg = $e->getMessage();
 		}
-		//$trace = debug_backtrace();
-		$trace = $e->getTrace();
 		$msg = trim($msg);
-		for($a=0;$a<count($trace);$a++){
-			$item = $trace[$a];
-			$msg .= "\n";
-			if (isset($item["class"])) {
-				$msg .= $item["class"]."->";
-			}
-			if (isset($item["line"])) {
-				$msg .= $item["function"]." Line: ".$item["line"];
+		if (count($trace) > 0) {
+			//$trace = debug_backtrace();
+			$trace = $e->getTrace();
+			for($a=0;$a<count($trace);$a++){
+				$item = $trace[$a];
+				$msg .= "\n";
+				if (isset($item["class"])) {
+					$msg .= $item["class"]."->";
+				}
+				if (isset($item["line"])) {
+					$msg .= $item["function"]." Line: ".$item["line"];
+				}
 			}
 		}
 		if (!is_string($caller_name) || empty($caller_name) || $caller_name == null) {
@@ -1960,19 +2097,19 @@ class sasoEventtickets_AdminSettings {
 			}
 		}
 		$felder = [
-			"time"=>date("y-m-d H:i:s", current_time("timestamp")),
+			"time"=>wp_date("y-m-d H:i:s"),
 			"exception_msg"=>trim($exception_msg),
 			"msg"=>trim($msg),
 			"caller_name"=>trim($caller_name)
 		];
-		$id = $this->getDB()->insert("errorlogs", $felder);
+		$id = $this->MAIN->getDB()->insert("errorlogs", $felder);
 	}
 	private function emptyTableErrorLogs() {
-		$sql = "delete from ".$this->getDB()->getTabelle("errorlogs");
-		$this->getDB()->_db_query($sql);
+		$sql = "delete from ".$this->MAIN->getDB()->getTabelle("errorlogs");
+		$this->MAIN->getDB()->_db_query($sql);
 	}
 	private function getErrorLogs($data, $request) {
-		$sql = "select * from ".$this->getDB()->getTabelle("errorlogs");
+		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("errorlogs");
 
 		// für datatables
 		$length = 0; // wieviele pro seite angezeigt werden sollen (limit)
@@ -1990,22 +2127,22 @@ class sasoEventtickets_AdminSettings {
 		$order_dir = "asc";
 		if (isset($request['order']) && $request['order'][0]['dir'] == 'desc') $order_dir = "desc";
 		$search = "";
-		if (isset($request['search'])) $search = $this->getDB()->reinigen_in($request['search']['value']);
+		if (isset($request['search'])) $search = $this->MAIN->getDB()->reinigen_in($request['search']['value']);
 
 		$where = "";
 		if ($search != "") {
-			$where .= " caller_name like '%".$this->getCore()->clearCode($search)."%' or exception_msg like '%".$search."%' ";
+			$where .= " caller_name like '%".$this->MAIN->getCore()->clearCode($search)."%' or exception_msg like '%".$search."%' ";
 			$sql .= $where;
 		}
 
 		if ($order_column != "") $sql .= " order by ".$order_column." ".$order_dir;
 		if ($length > 0) $sql .= " limit ".$start.", ".$length;
 
-		$daten = $this->getDB()->_db_datenholen($sql);
-		$recordsTotal = $this->getDB()->_db_getRecordCountOfTable('errorlogs');
+		$daten = $this->MAIN->getDB()->_db_datenholen($sql);
+		$recordsTotal = $this->MAIN->getDB()->_db_getRecordCountOfTable('errorlogs');
 		$recordsTotalFilter = $recordsTotal;
 		if (!empty($where)) {
-			$recordsTotalFilter = $this->getDB()->_db_getRecordCountOfTable('errorlogs', $where);
+			$recordsTotalFilter = $this->MAIN->getDB()->_db_getRecordCountOfTable('errorlogs', $where);
 		}
 
 		return ["draw"=>$draw,
@@ -2018,23 +2155,23 @@ class sasoEventtickets_AdminSettings {
 		print_r($type);
 		print_r($data);
 		if ($type == "tables") {
-			foreach($this->getDB()->getTables() as $table) {
-				$sql = "desc ".$this->getDB()->getTabelle($table);
-				$ret = $this->getDB()->_db_datenholen($sql);
+			foreach($this->MAIN->getDB()->getTables() as $table) {
+				$sql = "desc ".$this->MAIN->getDB()->getTabelle($table);
+				$ret = $this->MAIN->getDB()->_db_datenholen($sql);
 				print_r($ret);
 			}
 		}
 	}
 
 	private function getTicketsForTesting() {
-		$sql = "select distinct order_id, a.* from ".$this->getDB()->getTabelle("codes")." a
+		$sql = "select distinct order_id, a.* from ".$this->MAIN->getDB()->getTabelle("codes")." a
 				where order_id > 0 and json_extract(meta, '$.wc_ticket._public_ticket_id') != '' and aktiv = 1
 				limit 10";
-		$d = $this->getDB()->_db_datenholen($sql);
+		$d = $this->MAIN->getDB()->_db_datenholen($sql);
 		$tickets = [];
 		foreach($d as $codeObj) {
 			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
-			$codeObj["meta"] = $this->getCore()->json_encode_with_error_handling($metaObj);
+			$codeObj["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 			$codeObj['_PRODUCT_NAME'] = "";
 			if (isset($metaObj['woocommerce']['product_id']) && intval($metaObj['woocommerce']['product_id']) > 0) {
 				$product = wc_get_product( intval($metaObj['woocommerce']['product_id']) );
@@ -2106,7 +2243,7 @@ class sasoEventtickets_AdminSettings {
 		//print_r($ret);
 		//print_r($this->MAIN->getOptions()->get_wcTicketAttachTicketToMailOf());
 
-		//print_r($this->getCore()->retrieveCodeByCode("UJDWTMEGC"));
+		//print_r($this->MAIN->getCore()->retrieveCodeByCode("UJDWTMEGC"));
 
 		//$this->performJobsAfterDBUpgraded("1.1", "1.0");
 
@@ -2115,7 +2252,7 @@ class sasoEventtickets_AdminSettings {
 
 		// formatter von code list
 		//$listObj = $this->getList(['id'=>1]);
-		//$metaObj = $this->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+		//$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
 		//$formatter = stripslashes($metaObj['formatter']['format']);
 		//return $metaObj['webhooks'];
 		//return $this->generateCode($formatter);
@@ -2125,12 +2262,12 @@ class sasoEventtickets_AdminSettings {
 
 		echo esc_html($code);
 		echo "<br>Display Code";
-		$sql = "select * from ".$this->getDB()->getTabelle("codes")." where
-				code = '". $this->getDB()->reinigen_in($code) ."'";
-		$d = $this->getDB()->_db_datenholen($sql);
+		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("codes")." where
+				code = '". $this->MAIN->getDB()->reinigen_in($code) ."'";
+		$d = $this->MAIN->getDB()->_db_datenholen($sql);
 		print_r($d);
 		echo "<br>Reverting order setting";
-		$this->getDB()->update("codes", ['semaphorecode'=>"", "order_id"=>0], ["code"=>$code]);
+		$this->MAIN->getDB()->update("codes", ['semaphorecode'=>"", "order_id"=>0], ["code"=>$code]);
 		*/
 	}
 }

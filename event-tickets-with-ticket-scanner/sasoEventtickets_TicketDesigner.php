@@ -69,12 +69,12 @@ class sasoEventtickets_TicketDesigner {
         $product_original = $product;
         $product_parent_original = $product_parent;
 
-        $product_original_id = apply_filters( 'wpml_object_id', $product->get_id(), 'product', true );
+        $product_original_id = $this->MAIN->getTicketHandler()->getWPMLProductId($product->get_id());
         if ($product_original_id != $product->get_id()) {
             $product_original = $this->MAIN->getTicketHandler()->get_product($product_original_id);
         }
         if ($product_parent_id > 0) {
-            $product_parent_original_id = apply_filters( 'wpml_object_id', $product_parent_id, 'product', true );
+            $product_parent_original_id = $this->MAIN->getTicketHandler()->getWPMLProductId($product_parent_id);
             if ($product_parent_original_id != $product_parent_id) {
                 $product_parent_original = $this->MAIN->getTicketHandler()->get_product($product_parent_original_id);
             }
@@ -156,6 +156,22 @@ class sasoEventtickets_TicketDesigner {
         }
 		$ticket['day_per_ticket_label'] = $label;
 
+		// Seat information from ticket metadata
+		$ticket['seat_id'] = $metaObj['wc_ticket']['seat_id'] ?? null;
+		$ticket['seat_identifier'] = $metaObj['wc_ticket']['seat_identifier'] ?? '';
+		$ticket['seat_label'] = $metaObj['wc_ticket']['seat_label'] ?? '';
+		$ticket['seat_category'] = $metaObj['wc_ticket']['seat_category'] ?? '';
+		$ticket['seat_desc'] = '';
+		$ticket['has_seat'] = !empty($ticket['seat_id']);
+		// Load seat description from DB if option active
+		if ($ticket['has_seat'] && $this->MAIN->getOptions()->isOptionCheckboxActive('seatingShowDescOnTicket')) {
+			$seat = $this->MAIN->getSeating()->getSeatManager()->getById((int)$ticket['seat_id']);
+			if ($seat && !empty($seat['meta'])) {
+				$seatMeta = is_array($seat['meta']) ? $seat['meta'] : json_decode($seat['meta'], true);
+				$ticket['seat_desc'] = $seatMeta['seat_desc'] ?? '';
+			}
+		}
+
         $options = [];
         foreach($this->MAIN->getOptions()->getOptionsKeys() as $key) {
             if ($key == "wcTicketDesignerTemplate") continue;
@@ -187,9 +203,10 @@ class sasoEventtickets_TicketDesigner {
                 }
                 return $date->format($pattern);
             } else if (is_int($date)) {
-                return date($pattern, $date);
+                // Use date_i18n with gmt=true - prevents timezone conversion but translates month/day names
+                return date_i18n($pattern, $date, true);
             }
-            return date($pattern, strtotime($date));
+            return date_i18n($pattern, strtotime($date), true);
         });
         $twig->addFilter($filter_format_datetime);
         $filter_stripslashes = new \Twig\TwigFilter('stripslashes', function ($text) {
@@ -240,6 +257,8 @@ class sasoEventtickets_TicketDesigner {
         }));
         global $wpdb;
 
+        $list_metaObj["desc"] = stripslashes($list_metaObj["desc"]);
+
         $this->variables = [
             'PRODUCT' => $product,
             'PRODUCT_PARENT' => $product_parent,
@@ -258,8 +277,8 @@ class sasoEventtickets_TicketDesigner {
             'forPDFOutput' => $forPDFOutput,
             'isScanner' => $this->MAIN->getTicketHandler()->isScanner(),
             'SERVER' => [
-                "time"=>date("Y-m-d H:i:s", current_time("timestamp")),
-                "timestamp"=>current_time("timestamp"),
+                "time"=>wp_date("Y-m-d H:i:s"),
+                "timestamp"=>time(),
                 "timezone"=>wp_timezone()
             ],
             'WPDB' => $wpdb
@@ -405,6 +424,10 @@ class sasoEventtickets_TicketDesigner {
 
             {%- if METAOBJ.wc_ticket.value_per_ticket is not empty -%}
                 <p>{{ TICKET.value_per_ticket_label ~ " " ~ METAOBJ.wc_ticket.value_per_ticket }}</p>
+            {%- endif -%}
+
+            {%- if TICKET.has_seat and not OPTIONS.wcTicketHideSeatOnPDF -%}
+                <p>{{ OPTIONS.wcTicketTransSeat }} <b>{{ TICKET.seat_label }}{% if TICKET.seat_category %} ({{ TICKET.seat_category }}){% endif %}</b></p>
             {%- endif -%}
 
             {%- if OPTIONS.wcTicketDisplayPurchasedItemFromOrderOnTicket and ORDER.get_items|length > 1 %}
@@ -641,6 +664,10 @@ class sasoEventtickets_TicketDesigner {
 
             {%- if METAOBJ.wc_ticket.value_per_ticket is not empty -%}
                 <p>{{ TICKET.value_per_ticket_label ~ " " ~ METAOBJ.wc_ticket.value_per_ticket }}</p>
+            {%- endif -%}
+
+            {%- if TICKET.has_seat and not OPTIONS.wcTicketHideSeatOnPDF -%}
+                <p>{{ OPTIONS.wcTicketTransSeat }} <b>{{ TICKET.seat_label }}{% if TICKET.seat_category %} ({{ TICKET.seat_category }}){% endif %}</b></p>
             {%- endif -%}
 
             {%- if OPTIONS.wcTicketDisplayPurchasedItemFromOrderOnTicket and ORDER.get_items|length > 1 %}

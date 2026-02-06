@@ -325,11 +325,12 @@ class sasoEventtickets_TicketBadge {
                     $key = substr(substr($item, 16), 0, -1);
                     $value = $this->getValueOfArrayByPlaceholder($key, $product_dates);
                     if (!empty($value)) {
+                        // Use date_i18n with gmt=true - ticket dates are stored in local time, gmt=true prevents timezone conversion but translates month/day names
                         if ($key == "ticket_start_date" || $key == "ticket_end_date") {
-                            $value = @date($date_format, strtotime($value));
+                            $value = date_i18n($date_format, strtotime($value), true);
                         }
                         if ($key == "ticket_start_time" || $key == "ticket_end_time") {
-                            $value = @date($date_format, strtotime($product_dates['ticket_start_date']." ".$value));
+                            $value = date_i18n($date_format, strtotime($product_dates['ticket_start_date']." ".$value), true);
                         }
                     }
                     $html = str_replace($item, wp_kses_post($value), $html);
@@ -373,7 +374,7 @@ class sasoEventtickets_TicketBadge {
                             $value = $this->getValueOfWCObject($key, $order);
                         }
                         if ($key == "date.paid" || $key == "date.completed" || $key == "date.created") {
-                            $value = date($this->date_time_format, strtotime($value));
+                            $value = wp_date($this->date_time_format, strtotime($value));
                         }
                         $html = str_replace($item, wp_kses_post($value), $html);
                     }
@@ -396,16 +397,6 @@ class sasoEventtickets_TicketBadge {
 
     private function setProductValues($product, $html, $pattern='PRODUCT') {
         if ($product != null) {
-            $is_variation = $product->get_type() == "variation" ? true : false;
-            $product_parent = $product;
-            $product_parent_id = $product->get_parent_id();
-
-            $saso_eventtickets_is_date_for_all_variants = true;
-            if ($is_variation && $product_parent_id > 0) {
-                $product_parent = wc_get_product( $product_parent_id );
-                $saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
-            }
-
             $html = $this->replaceProductTemplateTags($product, $html, $pattern);
         }
         return $html;
@@ -419,7 +410,7 @@ class sasoEventtickets_TicketBadge {
                 $key = substr(substr($item, $len_pattern), 0, -1);
                 $value = $this->getValueOfWCObject($key, $product);
                 if ($key == "date.modified" || $key == "date.created") {
-                    $value = date($this->date_time_format, strtotime($value));
+                    $value = wp_date($this->date_time_format, strtotime($value));
                 }
                 $html = str_replace($item, wp_kses_post($value), $html);
             }
@@ -445,7 +436,7 @@ class sasoEventtickets_TicketBadge {
 
     private function getValueOfWCObject($key, $object) {
         if (method_exists($object, "get_id")) {
-            $product_original_id = apply_filters( 'wpml_object_id', $object->get_id(), 'product', true );
+            $product_original_id = $this->MAIN->getTicketHandler()->getWPMLProductId($object->get_id());
             $product_original = null;
             if ($product_original_id != $object->get_id()) {
                 $product_original = $this->MAIN->getTicketHandler()->get_product($product_original_id);

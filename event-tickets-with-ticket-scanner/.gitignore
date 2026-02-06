@@ -1,0 +1,14 @@
+# Claude Code guidance file
+CLAUDE.md
+
+# Claude refactoring documentation folder
+CLAUDE/
+# Claude Code session directory
+.claude/
+
+# Backup files
+*.bak
+*.backup
+# Debug files
+debug-*.txt
+debug-*.log

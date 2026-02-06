@@ -12,13 +12,6 @@ class sasoEventtickets_Core {
 		$this->MAIN = $MAIN;
 	}
 
-	private function getBase() {
-		return $this->MAIN->getBase();
-	}
-	private function getDB() {
-		return $this->MAIN->getDB();
-	}
-
 	public function clearCode($code) {
 		$ret = trim(urldecode(strip_tags(str_replace(" ","",str_replace(":","",str_replace("-", "", $code))))));
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'core_clearCode', $ret );
@@ -26,8 +19,8 @@ class sasoEventtickets_Core {
 	}
 
 	public function getListById($id) {
-		$sql = "select * from ".$this->getDB()->getTabelle("lists")." where id = ".intval($id);
-		$ret = $this->getDB()->_db_datenholen($sql);
+		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("lists")." where id = ".intval($id);
+		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
 		if (count($ret) == 0) throw new Exception("#9232 ticket list not found");
 		return $ret[0];
 	}
@@ -35,22 +28,35 @@ class sasoEventtickets_Core {
 	public function getCodesByRegUserId($user_id) {
 		$user_id = intval($user_id);
 		if ($user_id <= 0) return [];
-		$sql = "select a.* from ".$this->getDB()->getTabelle("codes")." a where user_id = ".$user_id;
-		return $this->getDB()->_db_datenholen($sql);
+		$sql = "select a.* from ".$this->MAIN->getDB()->getTabelle("codes")." a where user_id = ".$user_id;
+		return $this->MAIN->getDB()->_db_datenholen($sql);
+	}
+
+	/**
+	 * Get all ticket codes for a specific WooCommerce order
+	 *
+	 * @param int $order_id WooCommerce order ID
+	 * @return array Array of code records
+	 */
+	public function getCodesByOrderId(int $order_id): array {
+		$order_id = intval($order_id);
+		if ($order_id <= 0) return [];
+		$sql = "select a.* from ".$this->MAIN->getDB()->getTabelle("codes")." a where order_id = ".$order_id;
+		return $this->MAIN->getDB()->_db_datenholen($sql);
 	}
 
 	public function retrieveCodeByCode($code, $mitListe=false) {
 		$code = $this->clearCode($code);
-		$code = $this->getDB()->reinigen_in($code);
+		$code = $this->MAIN->getDB()->reinigen_in($code);
 		if (empty($code)) throw new Exception("#203 tiket number empty");
 		if ($mitListe) {
-			$sql = "select a.*, b.name as list_name from ".$this->getDB()->getTabelle("codes")." a
-					left join ".$this->getDB()->getTabelle("lists")." b on a.list_id = b.id
+			$sql = "select a.*, b.name as list_name from ".$this->MAIN->getDB()->getTabelle("codes")." a
+					left join ".$this->MAIN->getDB()->getTabelle("lists")." b on a.list_id = b.id
 					where code = '".$code."'";
 		} else {
-			$sql = "select a.* from ".$this->getDB()->getTabelle("codes")." a where code = '".$code."'";
+			$sql = "select a.* from ".$this->MAIN->getDB()->getTabelle("codes")." a where code = '".$code."'";
 		}
-		$ret = $this->getDB()->_db_datenholen($sql);
+		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
 		if (count($ret) == 0) throw new Exception("#204 ticket with ".$code." not found");
 		return $ret[0];
 	}
@@ -59,14 +65,14 @@ class sasoEventtickets_Core {
 		if ($this->isCodeSizeExceeded()) throw new Exception("#208 too many tickets. Unlimited tickets only with premium");
 	}
 	public function isCodeSizeExceeded() {
-		return $this->getBase()->_isMaxReachedForTickets($this->getDB()->getCodesSize()) == false;
+		return $this->MAIN->getBase()->_isMaxReachedForTickets($this->MAIN->getDB()->getCodesSize()) == false;
 	}
 
 	// helpful if meta information is changed by  function and the following function might retrieve the inform from the database
 	public function saveMetaObject($codeObj, $metaObj) {
 		// convert meta object to json and save it
 		$codeObj['meta'] = $this->_json_encode_with_error_handling($metaObj);
-		$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
 		return $codeObj;
 	}
 
@@ -74,13 +80,13 @@ class sasoEventtickets_Core {
 		$id = intval($id);
 		if ($id == 0) throw new Exception("#220 id is wrong");
 		if ($mitListe) {
-			$sql = "select a.*, b.name as list_name from ".$this->getDB()->getTabelle("codes")." a
-					left join ".$this->getDB()->getTabelle("lists")." b on a.list_id = b.id
+			$sql = "select a.*, b.name as list_name from ".$this->MAIN->getDB()->getTabelle("codes")." a
+					left join ".$this->MAIN->getDB()->getTabelle("lists")." b on a.list_id = b.id
 					where a.id = ".$id;
 		} else {
-			$sql = "select a.* from ".$this->getDB()->getTabelle("codes")." a where a.id = ".$id;
+			$sql = "select a.* from ".$this->MAIN->getDB()->getTabelle("codes")." a where a.id = ".$id;
 		}
-		$ret = $this->getDB()->_db_datenholen($sql);
+		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
 		if (count($ret) == 0) throw new Exception("#221 ticket not found");
 		return $ret[0];
 	}
@@ -160,10 +166,10 @@ class sasoEventtickets_Core {
 	}
 
 	public function encodeMetaValuesAndFillObject($metaValuesString, $codeObj=null) {
-		$metaObj = $this->getMetaObject();
-		if (!empty($metaValuesString)) {
-			$metaObj = array_replace_recursive($metaObj, json_decode($metaValuesString, true));
-		}
+		// Decode + merge with defaults
+		$metaObj = $this->decodeAndMergeMeta($metaValuesString, $this->getMetaObject());
+
+		// Fill computed values (usernames, URLs, etc.)
 		if (isset($metaObj['user']['reg_userid']) && $metaObj['user']['reg_userid'] > 0) {
 			$u = get_userdata($metaObj['user']['reg_userid']);
 			if ($u === false) {
@@ -215,7 +221,7 @@ class sasoEventtickets_Core {
 			$metaObj['wc_ticket']['_set_by_admin_username'] = "";
 		}
 		if ($metaObj['wc_ticket']['is_ticket'] == 1 && $codeObj != null && is_array($codeObj)) {
-			if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".current_time("timestamp"));
+			if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".time());
 			if (empty($metaObj['wc_ticket']['_public_ticket_id'])) $metaObj['wc_ticket']['_public_ticket_id'] = $this->getTicketId($codeObj, $metaObj);
 			if (empty($metaObj['wc_ticket']['_qr_content'])) $metaObj['wc_ticket']['_qr_content'] = $this->getQRCodeContent($codeObj, $metaObj);
 			$metaObj['wc_ticket']['_url'] = $this->getTicketURL($codeObj, $metaObj);
@@ -303,11 +309,7 @@ class sasoEventtickets_Core {
 	}
 
 	public function encodeMetaValuesAndFillObjectList($metaValuesString) {
-		$metaObj = $this->getMetaObjectList();
-		if (!empty($metaValuesString)) {
-			$metaObj = array_replace_recursive($metaObj, json_decode($metaValuesString, true));
-		}
-		return $metaObj;
+		return $this->decodeAndMergeMeta($metaValuesString, $this->getMetaObjectList());
 	}
 
 	public function setMetaObj($codeObj) {
@@ -354,11 +356,7 @@ class sasoEventtickets_Core {
 	}
 
 	public function encodeMetaValuesAndFillObjectAuthtoken($metaValuesString) {
-		$metaObj = $this->getMetaObjectAuthtoken();
-		if (!empty($metaValuesString)) {
-			$metaObj = array_replace_recursive($metaObj, json_decode($metaValuesString, true));
-		}
-		return $metaObj;
+		return $this->decodeAndMergeMeta($metaValuesString, $this->getMetaObjectAuthtoken());
 	}
 
 	public function alignArrays(&$array1, &$array2) {
@@ -385,13 +383,22 @@ class sasoEventtickets_Core {
 		unset($value); // Referenz aufheben
 	}
 
-	public function getUserIdsForCustomerName($search_query) {
-		$ret = [];
+	/**
+	 * Search for customers by name and return matching user_ids and order_ids
+	 *
+	 * @param string $search_query Search term
+	 * @return array ['user_ids' => [...], 'order_ids' => [...]]
+	 */
+	public function getUserIdsForCustomerName($search_query): array {
+		$ret = ['user_ids' => [], 'order_ids' => []];
 		$search_query = trim($search_query);
 		if (empty($search_query)) return $ret;
+
+		// Search in WordPress standard meta AND WooCommerce billing/shipping meta
 		$args = array(
 			'meta_query' => array(
 				'relation' => 'OR',
+				// WordPress standard
 				array(
 					'key'     => 'first_name',
 					'value'   => $search_query,
@@ -402,16 +409,139 @@ class sasoEventtickets_Core {
 					'value'   => $search_query,
 					'compare' => 'LIKE',
 				),
+				// WooCommerce billing
+				array(
+					'key'     => 'billing_first_name',
+					'value'   => $search_query,
+					'compare' => 'LIKE',
+				),
+				array(
+					'key'     => 'billing_last_name',
+					'value'   => $search_query,
+					'compare' => 'LIKE',
+				),
+				// WooCommerce shipping
+				array(
+					'key'     => 'shipping_first_name',
+					'value'   => $search_query,
+					'compare' => 'LIKE',
+				),
+				array(
+					'key'     => 'shipping_last_name',
+					'value'   => $search_query,
+					'compare' => 'LIKE',
+				),
 			),
 		);
 
 		$user_query = new WP_User_Query($args);
 		if (!empty($user_query->get_results())) {
 			foreach ($user_query->get_results() as $user) {
-				$ret[] = $user->ID;
+				$ret['user_ids'][] = $user->ID;
 			}
 		}
+
+		// Also search by display_name and user_email
+		$args2 = array(
+			'search'         => '*' . $search_query . '*',
+			'search_columns' => array('display_name', 'user_email', 'user_login'),
+		);
+		$user_query2 = new WP_User_Query($args2);
+		if (!empty($user_query2->get_results())) {
+			foreach ($user_query2->get_results() as $user) {
+				if (!in_array($user->ID, $ret['user_ids'])) {
+					$ret['user_ids'][] = $user->ID;
+				}
+			}
+		}
+
+		// Search in WooCommerce orders (HPOS compatible) - includes guest orders
+		if (class_exists('WooCommerce')) {
+			$this->searchWooCommerceOrdersForCustomer($search_query, $ret);
+		}
+
 		return $ret;
+	}
+
+	/**
+	 * Search WooCommerce orders by customer name and add matching user_ids and order_ids
+	 * Uses WooCommerce API (wc_get_orders) with field_query for LIKE searches
+	 * Works with both HPOS and legacy storage
+	 * For registered users: adds user_id
+	 * For guest orders: adds order_id
+	 *
+	 * @param string $search_query Search term
+	 * @param array &$ret Reference to result array ['user_ids' => [...], 'order_ids' => [...]]
+	 */
+	private function searchWooCommerceOrdersForCustomer(string $search_query, array &$ret): void {
+		if (!function_exists('wc_get_orders')) {
+			return;
+		}
+
+		global $wpdb;
+		$search_like = '%' . $wpdb->esc_like($search_query) . '%';
+
+		// Check if HPOS is enabled
+		if (class_exists('Automattic\WooCommerce\Utilities\OrderUtil')
+			&& \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()) {
+
+			// HPOS: Search in wc_order_addresses table
+			$addresses_table = $wpdb->prefix . 'wc_order_addresses';
+			$orders_table = $wpdb->prefix . 'wc_orders';
+
+			$sql = $wpdb->prepare(
+				"SELECT DISTINCT o.id as order_id, o.customer_id
+				FROM {$orders_table} o
+				INNER JOIN {$addresses_table} a ON o.id = a.order_id
+				WHERE (a.first_name LIKE %s
+					OR a.last_name LIKE %s
+					OR a.email LIKE %s
+					OR a.company LIKE %s)",
+				$search_like, $search_like, $search_like, $search_like
+			);
+
+			$results = $wpdb->get_results($sql);
+			foreach ($results as $row) {
+				$customer_id = (int) $row->customer_id;
+				$order_id = (int) $row->order_id;
+
+				if ($customer_id > 0) {
+					if (!in_array($customer_id, $ret['user_ids'])) {
+						$ret['user_ids'][] = $customer_id;
+					}
+				} else {
+					if (!in_array($order_id, $ret['order_ids'])) {
+						$ret['order_ids'][] = $order_id;
+					}
+				}
+			}
+		} else {
+			// Legacy: Search in post meta
+			$sql = $wpdb->prepare(
+				"SELECT DISTINCT pm.post_id as order_id, COALESCE(pm_cust.meta_value, 0) as customer_id
+				FROM {$wpdb->postmeta} pm
+				LEFT JOIN {$wpdb->postmeta} pm_cust ON pm.post_id = pm_cust.post_id AND pm_cust.meta_key = '_customer_user'
+				WHERE pm.meta_key IN ('_billing_first_name', '_billing_last_name', '_billing_email', '_billing_company')
+				AND pm.meta_value LIKE %s",
+				$search_like
+			);
+
+			$results = $wpdb->get_results($sql);
+			foreach ($results as $row) {
+				$customer_id = (int) $row->customer_id;
+				$order_id = (int) $row->order_id;
+
+				if ($customer_id > 0) {
+					if (!in_array($customer_id, $ret['user_ids'])) {
+						$ret['user_ids'][] = $customer_id;
+					}
+				} else {
+					if (!in_array($order_id, $ret['order_ids'])) {
+						$ret['order_ids'][] = $order_id;
+					}
+				}
+			}
+		}
 	}
 
 	public function json_encode_with_error_handling($object, $depth=512) {
@@ -420,6 +550,31 @@ class sasoEventtickets_Core {
 			throw new Exception(json_last_error_msg());
 		}
 		return $json;
+	}
+
+	/**
+	 * Generic decode and merge meta with defaults
+	 *
+	 * Use this for any entity type by passing the default meta object.
+	 * Pattern: Decode stored JSON, merge over defaults, return complete object.
+	 *
+	 * Benefits:
+	 * - Old stored data automatically gets new fields
+	 * - No data loss (stored values preserved)
+	 * - Single source of truth for merge logic
+	 *
+	 * @param string|null $metaJson JSON string from database
+	 * @param array $defaultMetaObj Default meta object with all fields
+	 * @return array Merged meta object with all fields guaranteed
+	 */
+	public function decodeAndMergeMeta(?string $metaJson, array $defaultMetaObj): array {
+		if (!empty($metaJson)) {
+			$decoded = json_decode($metaJson, true);
+			if (is_array($decoded)) {
+				$defaultMetaObj = array_replace_recursive($defaultMetaObj, $decoded);
+			}
+		}
+		return $defaultMetaObj;
 	}
 
 	public function getRealIpAddr() {
@@ -441,63 +596,27 @@ class sasoEventtickets_Core {
 	public function triggerWebhooks($status, $codeObj) {
 		$options = $this->MAIN->getOptions();
 		if ($options->isOptionCheckboxActive('webhooksActiv')) {
-			$optionname = "";
-			switch($status) {
-				case 0:
-					$optionname = "webhookURLinvalid";
-					break;
-				case 1:
-					$optionname = "webhookURLvalid";
-					break;
-				case 2:
-					$optionname = "webhookURLinactive";
-					break;
-				case 3:
-					$optionname = "webhookURLisregistered";
-					break;
-				case 4:
-					$optionname = "webhookURLexpired";
-					break;
-				case 5:
-					$optionname = "webhookURLmarkedused";
-					break;
-				case 6:
-					$optionname = "webhookURLsetused";
-					break;
-				case 7:
-					$optionname = "webhookURLregister";
-					break;
-				case 8:
-					$optionname = "webhookURLipblocking";
-					break;
-				case 9:
-					$optionname = "webhookURLipblocked";
-					break;
-				case 10:
-					$optionname = "webhookURLaddwcinfotocode";
-					break;
-				case 11:
-					$optionname = "webhookURLwcremove";
-					break;
-				case 12:
-					$optionname = "webhookURLaddwcticketinfoset";
-					break;
-				case 13:
-					$optionname = "webhookURLaddwcticketredeemed";
-					break;
-				case 14:
-					$optionname = "webhookURLaddwcticketunredeemed";
-					break;
-				case 15:
-					$optionname = "webhookURLaddwcticketinforemoved";
-					break;
-				case 16:
-					$optionname = "webhookURLrestrictioncodeused";
-					break;
-				case 17:
-					$optionname = "webhookURLaddwcticketsold";
-					break;
-			}
+			$statusToOption = [
+				0  => "webhookURLinvalid",
+				1  => "webhookURLvalid",
+				2  => "webhookURLinactive",
+				3  => "webhookURLisregistered",
+				4  => "webhookURLexpired",
+				5  => "webhookURLmarkedused",
+				6  => "webhookURLsetused",
+				7  => "webhookURLregister",
+				8  => "webhookURLipblocking",
+				9  => "webhookURLipblocked",
+				10 => "webhookURLaddwcinfotocode",
+				11 => "webhookURLwcremove",
+				12 => "webhookURLaddwcticketinfoset",
+				13 => "webhookURLaddwcticketredeemed",
+				14 => "webhookURLaddwcticketunredeemed",
+				15 => "webhookURLaddwcticketinforemoved",
+				16 => "webhookURLrestrictioncodeused",
+				17 => "webhookURLaddwcticketsold",
+			];
+			$optionname = $statusToOption[$status] ?? "";
 			if (!empty($optionname)) {
 				$url = $options->getOption($optionname)['value'];
 
@@ -644,7 +763,7 @@ class sasoEventtickets_Core {
 		$order_id = $order->get_id();
 		$idcode = $order->get_meta('_saso_eventtickets_order_idcode');
 		if (empty($idcode)) {
-			$idcode = strtoupper(md5($order_id."-".current_time("timestamp")."-".uniqid()));
+			$idcode = strtoupper(md5($order_id."-".time()."-".uniqid()));
 			$order->update_meta_data( '_saso_eventtickets_order_idcode', $idcode );
 			$order->save();
 		}

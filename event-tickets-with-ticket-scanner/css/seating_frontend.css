@@ -1,0 +1,833 @@
+/**
+ * Seating Frontend Styles
+ *
+ * Styles for customer-facing seat selection UI.
+ *
+ * @package Event_Tickets_With_Ticket_Scanner
+ * @since 2.8.0
+ */
+
+/* ==========================================================================
+   Selector Container
+   ========================================================================== */
+
+.saso-seating-selector {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin: 15px 0;
+	padding: 15px;
+	background: #f9f9f9;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+}
+
+.saso-seating-label {
+	flex: 0 0 auto;
+	margin: 0;
+	font-weight: 600;
+	font-size: 14px;
+	color: #333;
+}
+
+.saso-seating-label .required {
+	color: #e00;
+	margin-left: 3px;
+}
+
+.saso-seating-status {
+	flex: 0 0 100%;
+	margin-top: 0;
+	font-size: 13px;
+}
+
+.saso-seating-status:empty {
+	display: none;
+}
+
+/* Date required message */
+.saso-seating-date-required {
+	flex: 1 1 100%;
+	padding: 12px 15px;
+	background: #fff8e5;
+	border: 1px solid #ffcc00;
+	border-radius: 4px;
+	color: #664d00;
+	font-size: 14px;
+}
+
+.saso-seat-selection-input {
+	display: none;
+}
+
+.saso-seating-status.success {
+	color: #4CAF50;
+}
+
+.saso-seating-status.error {
+	color: #F44336;
+}
+
+.saso-seating-status.loading {
+	color: #666;
+	font-style: italic;
+}
+
+/* ==========================================================================
+   Simple Dropdown Selector
+   ========================================================================== */
+
+.saso-seat-dropdown {
+	width: 100%;
+	max-width: 350px;
+	padding: 10px 12px;
+	font-size: 14px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	background-color: #fff;
+	cursor: pointer;
+}
+
+.saso-seat-dropdown:focus {
+	outline: none;
+	border-color: #2196F3;
+	box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.saso-seat-dropdown option:disabled {
+	color: #999;
+}
+
+/* ==========================================================================
+   Visual Selector Button
+   ========================================================================== */
+
+.saso-seat-visual-container {
+	flex: 1 1 auto;
+}
+
+.saso-open-seat-map {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 10px 20px;
+	font-size: 14px;
+	font-weight: 500;
+	color: #fff;
+	background: #2196F3;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background 0.2s;
+	box-sizing: border-box;
+	text-align: center;
+}
+
+.saso-open-seat-map:hover {
+	background: #1976D2;
+}
+
+.saso-open-seat-map:before {
+	content: "\f239";
+	font-family: dashicons;
+	font-size: 18px;
+}
+
+.saso-open-seat-map.has-selection {
+	background: #4CAF50;
+}
+
+.saso-open-seat-map.has-selection:hover {
+	background: #388E3C;
+}
+
+/* Selected seats list with countdown */
+.saso-selected-seats-labels {
+	display: block;
+	clear: both;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.saso-selected-seats-labels:empty {
+	display: none;
+}
+
+.saso-seat-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.saso-seat-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 12px;
+	margin-bottom: 4px;
+	background: #fff;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.saso-seat-item:last-child {
+	margin-bottom: 0;
+}
+
+.saso-seat-item.expired {
+	background: #ffebee;
+	border-color: #f44336;
+	opacity: 0.7;
+}
+
+.saso-seat-name {
+	color: #333;
+	font-weight: 500;
+}
+
+.saso-seat-countdown {
+	font-family: monospace;
+	font-size: 13px;
+	color: #666;
+	background: #f5f5f5;
+	padding: 2px 8px;
+	border-radius: 3px;
+	min-width: 50px;
+	text-align: center;
+}
+
+.saso-seat-countdown.warning {
+	color: #e65100;
+	background: #fff3e0;
+	font-weight: bold;
+}
+
+.saso-seat-countdown.expired {
+	color: #fff;
+	background: #c62828;
+	font-weight: bold;
+}
+
+.saso-seat-countdown .expired-text {
+	color: inherit;
+}
+
+/* Cart-specific styling */
+.saso-cart-seat-info {
+	margin-top: 10px;
+}
+
+.saso-cart-seat-info > strong {
+	display: block;
+	margin-bottom: 8px;
+	font-size: 13px;
+}
+
+/* Locked datepicker (seats selected) */
+.saso-datepicker-locked input {
+	background-color: #f5f5f5 !important;
+	cursor: not-allowed !important;
+	opacity: 0.7;
+}
+
+.saso-datepicker-locked-reason {
+	margin: 5px 0 0 0;
+	color: #666;
+	font-style: italic;
+}
+
+/* Seats required notice */
+.saso-seats-required-notice {
+	margin: 10px 0;
+	padding: 10px 15px;
+	background: #fff3cd;
+	border: 1px solid #ffc107;
+	border-radius: 4px;
+	color: #856404;
+	font-size: 13px;
+}
+
+/* Locked quantity (seats selected) */
+.saso-quantity-locked {
+	position: relative;
+}
+
+.saso-quantity-locked input.qty {
+	background-color: #f5f5f5 !important;
+	cursor: not-allowed !important;
+	pointer-events: none;
+}
+
+.saso-quantity-locked-notice {
+	display: block;
+	font-size: 11px;
+	color: #666;
+	font-style: italic;
+	margin-top: 3px;
+}
+
+/* ==========================================================================
+   Modal Overlay
+   ========================================================================== */
+
+.saso-seat-map-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.6);
+	z-index: 99999;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s, visibility 0.3s;
+}
+
+.saso-seat-map-overlay.active {
+	opacity: 1;
+	visibility: visible;
+}
+
+/* ==========================================================================
+   Modal Container
+   ========================================================================== */
+
+.saso-seat-map-modal {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) scale(0.9);
+	width: 90vw;
+	max-width: 900px;
+	max-height: 90vh;
+	background: #fff;
+	border-radius: 8px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+	z-index: 100000;
+	display: flex;
+	flex-direction: column;
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.3s ease;
+}
+
+.saso-seat-map-modal.active {
+	opacity: 1;
+	visibility: visible;
+	transform: translate(-50%, -50%) scale(1);
+}
+
+/* Modal Header */
+.saso-seat-map-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 15px 20px;
+	border-bottom: 1px solid #e0e0e0;
+	background: #f5f5f5;
+	border-radius: 8px 8px 0 0;
+}
+
+.saso-seat-map-header h3 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+	color: #333;
+}
+
+.saso-close-modal {
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	font-size: 24px;
+	line-height: 1;
+	color: #666;
+	background: transparent;
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.saso-close-modal:hover {
+	color: #333;
+	background: #e0e0e0;
+}
+
+/* Modal Body */
+.saso-seat-map-body {
+	flex: 1;
+	overflow: auto;
+	padding: 20px;
+	background: #fafafa;
+}
+
+.saso-seat-map {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-height: 50vh;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	/* background is set via inline style from seating plan */
+}
+
+/* ==========================================================================
+   SVG Seats
+   ========================================================================== */
+
+.saso-seat {
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.saso-seat-label {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	font-weight: 500;
+	user-select: none;
+}
+
+.saso-seat.free:hover {
+	filter: brightness(1.15);
+	transform-origin: center;
+}
+
+.saso-seat.blocked,
+.saso-seat.sold {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.saso-seat.selected {
+	stroke: #000 !important;
+	stroke-width: 3px !important;
+	filter: drop-shadow(0 0 4px rgba(33, 150, 243, 0.5));
+}
+
+.saso-seat.temp-selected {
+	stroke: #000 !important;
+	stroke-width: 2px !important;
+	filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+}
+
+/* Seat Tooltip */
+.saso-seat title {
+	font-size: 12px;
+}
+
+/* ==========================================================================
+   Legend
+   ========================================================================== */
+
+.saso-seat-map-legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 15px;
+	padding: 12px 20px;
+	border-top: 1px solid #e0e0e0;
+	background: #f9f9f9;
+}
+
+.legend-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	color: #555;
+}
+
+.legend-color {
+	width: 18px;
+	height: 18px;
+	border-radius: 3px;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.legend-color.free {
+	background: #4CAF50;
+}
+
+.legend-color.blocked {
+	background: #ff9900;
+}
+
+.legend-color.sold {
+	background: #cc0000;
+}
+
+.legend-color.selected {
+	background: #2196F3;
+	box-shadow: 0 0 0 2px #000;
+}
+
+/* ==========================================================================
+   Modal Footer
+   ========================================================================== */
+
+.saso-seat-map-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+	padding: 15px 20px;
+	border-top: 1px solid #e0e0e0;
+	background: #f5f5f5;
+	border-radius: 0 0 8px 8px;
+}
+
+.saso-seat-info {
+	flex: 1;
+	font-size: 14px;
+	color: #333;
+}
+
+.saso-seat-info strong {
+	color: #2196F3;
+}
+
+/* Multi-select counter */
+.saso-seat-counter {
+	display: inline-block;
+	padding: 2px 8px;
+	background: #e3f2fd;
+	border-radius: 4px;
+	font-size: 13px;
+	margin-right: 8px;
+}
+
+.saso-seat-counter strong {
+	color: #1976D2;
+}
+
+.saso-temp-warning {
+	color: #F57C00;
+	font-weight: 500;
+}
+
+.saso-seat-map-actions {
+	display: flex;
+	gap: 10px;
+}
+
+.saso-cancel-selection,
+.saso-confirm-selection {
+	padding: 10px 20px;
+	font-size: 14px;
+	font-weight: 500;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.saso-cancel-selection {
+	color: #666;
+	background: #e0e0e0;
+}
+
+.saso-cancel-selection:hover {
+	background: #d0d0d0;
+}
+
+.saso-confirm-selection {
+	color: #fff;
+	background: #4CAF50;
+}
+
+.saso-confirm-selection:hover:not(:disabled) {
+	background: #388E3C;
+}
+
+.saso-confirm-selection:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Cart Display
+   ========================================================================== */
+
+.saso-cart-seat-info {
+	margin: 5px 0 0;
+	padding: 5px 10px;
+	font-size: 13px;
+	color: #555;
+	background: #f0f7ff;
+	border-left: 3px solid #2196F3;
+	border-radius: 0 4px 4px 0;
+}
+
+.saso-cart-seat-info strong {
+	color: #333;
+}
+
+/* ==========================================================================
+   Responsive - Tablet
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	.saso-seat-map-modal {
+		width: 95vw;
+		max-height: 95vh;
+		border-radius: 0;
+	}
+
+	.saso-seat-map-header {
+		padding: 12px 15px;
+		border-radius: 0;
+	}
+
+	.saso-seat-map-header h3 {
+		font-size: 16px;
+	}
+
+	.saso-seat-map-body {
+		padding: 15px;
+	}
+
+	.saso-seat-map {
+		max-height: 45vh;
+	}
+
+	.saso-seat-map-legend {
+		padding: 10px 15px;
+		gap: 10px;
+	}
+
+	.legend-item {
+		font-size: 12px;
+	}
+
+	.saso-seat-map-footer {
+		flex-wrap: wrap;
+		padding: 12px 15px;
+		border-radius: 0;
+	}
+
+	.saso-seat-info {
+		width: 100%;
+		margin-bottom: 10px;
+		text-align: center;
+	}
+
+	.saso-cancel-selection,
+	.saso-confirm-selection {
+		flex: 1;
+	}
+}
+
+/* ==========================================================================
+   Responsive - Mobile
+   ========================================================================== */
+
+@media (max-width: 480px) {
+	.saso-seat-map-modal {
+		width: 100vw;
+		height: 100vh;
+		max-height: 100vh;
+		top: 0;
+		left: 0;
+		transform: none;
+	}
+
+	.saso-seat-map-modal.active {
+		transform: none;
+	}
+
+	.saso-close-modal {
+		width: 44px;
+		height: 44px;
+		font-size: 28px;
+	}
+
+	.saso-seat-map {
+		max-height: 55vh;
+		touch-action: pan-x pan-y pinch-zoom;
+	}
+
+	.saso-seat-map-legend {
+		justify-content: center;
+	}
+
+	.legend-color {
+		width: 16px;
+		height: 16px;
+	}
+
+	.saso-cancel-selection,
+	.saso-confirm-selection {
+		padding: 12px 15px;
+		font-size: 15px;
+	}
+}
+
+/* ==========================================================================
+   Landscape Mode (Mobile)
+   ========================================================================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+	.saso-seat-map-modal {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.saso-seat-map-header {
+		width: 100%;
+		padding: 8px 15px;
+	}
+
+	.saso-seat-map-header h3 {
+		font-size: 14px;
+	}
+
+	.saso-seat-map-body {
+		flex: 1;
+		padding: 10px;
+	}
+
+	.saso-seat-map {
+		max-height: 60vh;
+	}
+
+	.saso-seat-map-legend {
+		display: none;
+	}
+
+	.saso-seat-map-footer {
+		width: 100%;
+		padding: 8px 15px;
+	}
+
+	.saso-seat-info {
+		display: none;
+	}
+}
+
+/* ==========================================================================
+   Loading State
+   ========================================================================== */
+
+.saso-seating-selector.loading {
+	position: relative;
+	pointer-events: none;
+	opacity: 0.7;
+}
+
+.saso-seating-selector.loading:after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 24px;
+	height: 24px;
+	margin: -12px 0 0 -12px;
+	border: 3px solid #e0e0e0;
+	border-top-color: #2196F3;
+	border-radius: 50%;
+	animation: saso-spin 0.8s linear infinite;
+}
+
+@keyframes saso-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* ==========================================================================
+   Plan Image Preview Button
+   ========================================================================== */
+
+.saso-plan-image-preview {
+	flex: 0 0 auto;
+	margin-left: auto;
+}
+
+.saso-view-plan-image {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 14px;
+	font-size: 13px;
+	color: #555;
+	background: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.saso-view-plan-image:hover {
+	color: #333;
+	border-color: #999;
+	background: #f5f5f5;
+}
+
+.saso-view-plan-image:before {
+	content: "\f128";
+	font-family: dashicons;
+	font-size: 16px;
+}
+
+/* ==========================================================================
+   Plan Image Lightbox
+   ========================================================================== */
+
+.saso-plan-image-lightbox {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.9);
+	z-index: 100001;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	cursor: pointer;
+}
+
+.saso-plan-image-lightbox img {
+	max-width: 95%;
+	max-height: 95%;
+	object-fit: contain;
+	border-radius: 4px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.saso-lightbox-close {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	font-size: 32px;
+	line-height: 1;
+	color: #fff;
+	background: rgba(0, 0, 0, 0.5);
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.saso-lightbox-close:hover {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+	.saso-seating-selector,
+	.saso-seat-map-modal,
+	.saso-seat-map-overlay,
+	.saso-plan-image-lightbox {
+		display: none !important;
+	}
+}

@@ -243,6 +243,9 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			register_rest_route($prefix.'/ticket/scanner', '/downloadPDFTicketBadge', [
 				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_downloadPDFTicketBadge', 'args'=>['code'=>['required'=>true]], 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
 			]);
+			register_rest_route($prefix.'/ticket/scanner', '/seating_plan', [
+				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_seating_plan', 'args'=>['plan_id'=>['required'=>true], 'seat_id'=>['required'=>false]], 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
+			]);
 		}
 		public static function rest_permission_callback($web_request) {
 			try {
@@ -301,6 +304,17 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 				wp_send_json_error($e->getMessage());
 			}
 		}
+		public static function rest_seating_plan($web_request) {
+			try {
+				include_once plugin_dir_path(__FILE__)."sasoEventtickets_Ticket.php";
+				$ticket = sasoEventtickets_Ticket::Instance($_SERVER["REQUEST_URI"]);
+				$ret = $ticket->rest_seating_plan($web_request);
+				$ret['nonce'] = wp_create_nonce( 'wp_rest' );
+				wp_send_json_success($ret);
+			} catch (Exception $e) {
+				wp_send_json_error($e->getMessage());
+			}
+		}
 		public static function isOrderPaid($order) {
 			if ($order === null || !is_object($order) || !is_a($order, 'WC_Order')) {
 				return false;
@@ -309,21 +323,30 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			$ok_order_statuses = wc_get_is_paid_statuses(); // array( 'processing', 'completed' )
 			return in_array($order_status, $ok_order_statuses);
 		}
-		public static function time() {
-			//return current_time("timestamp");
-			$timezone = wp_timezone();
-			$datetime = new DateTime( 'now', $timezone );
-			return $datetime->getTimestamp();
+
+		/**
+		 * @deprecated Since 2.8.0 - Use current_time('timestamp') or time() instead
+		 * Kept for backward compatibility with older premium plugin versions
+		 */
+		public static function time(): int {
+			return current_time('timestamp');
 		}
-		public static function date($format, $timestamp=0, $timezone=null) {
-			// wp_date( $format, $timestamp, $timezone );
-			if (empty($timezone)) $timezone = wp_timezone();
-			$datetime = new DateTime( 'now', $timezone );
-			if ($timestamp > 1) {
+
+		/**
+		 * @deprecated Since 2.8.0 - Use wp_date() instead
+		 * Kept for backward compatibility with older premium plugin versions
+		 */
+		public static function date(string $format, int $timestamp = 0, $timezone = null): string {
+			if (empty($timezone)) {
+				$timezone = wp_timezone();
+			}
+			$datetime = new DateTime('now', $timezone);
+			if ($timestamp > 0) {
 				$datetime->setTimestamp($timestamp);
 			}
-			return $datetime->format( $format );
+			return $datetime->format($format);
 		}
+
 		public static function is_assoc_array($array) {
 			if (!is_array($array)) {
 				return false;

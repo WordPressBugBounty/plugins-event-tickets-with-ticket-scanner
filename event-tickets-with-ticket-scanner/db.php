@@ -1,11 +1,11 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventticketsDB extends sasoEventtickets_DB {
-	public $dbversion = '1.7';
+	public $dbversion = '1.10';
 	public function __construct($MAIN) {
 		$this->MAIN = $MAIN;
 		parent::$dbprefix = "saso_eventtickets_";
-		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs'];
+		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks'];
 		$this->init();
 	}
 
@@ -96,8 +96,86 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				caller_name varchar(250) NOT NULL DEFAULT '',
 				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
 			"additional"=>[
-				"CREATE INDEX idx1 ON ".$this->getTabelle('ips')." (time)",
-				"CREATE INDEX idx2 ON ".$this->getTabelle('ips')." (caller_name)"
+				"CREATE INDEX idx1 ON ".$this->getTabelle('errorlogs')." (time)",
+				"CREATE INDEX idx2 ON ".$this->getTabelle('errorlogs')." (caller_name)"
+			]
+		];
+		// Seating Plans - v1.8, extended v1.9 for Visual Designer
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('seatingplans')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(255) NOT NULL DEFAULT '',
+				name varchar(255) NOT NULL DEFAULT '',
+				aktiv int(1) unsigned NOT NULL DEFAULT 0,
+				meta longtext NOT NULL DEFAULT '',
+				layout_type varchar(20) NOT NULL DEFAULT 'simple',
+				meta_draft longtext NOT NULL DEFAULT '',
+				meta_published longtext NOT NULL DEFAULT '',
+				published_at datetime DEFAULT NULL,
+				published_by int(32) unsigned DEFAULT NULL,
+				created_by int(32) unsigned DEFAULT NULL,
+				updated_by int(32) unsigned DEFAULT NULL,
+				created_at datetime DEFAULT NULL,
+				updated_at datetime DEFAULT NULL,
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[
+				"CREATE UNIQUE INDEX idx1 ON ".$this->getTabelle('seatingplans')." (name)"
+			]
+		];
+		// Seats - v1.8, extended v1.9 for Visual Designer
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('seats')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(255) NOT NULL DEFAULT '',
+				seatingplan_id int(32) unsigned NOT NULL DEFAULT 0,
+				seat_identifier varchar(100) NOT NULL DEFAULT '',
+				aktiv int(1) unsigned NOT NULL DEFAULT 1,
+				sort_order int(32) unsigned NOT NULL DEFAULT 0,
+				meta longtext NOT NULL DEFAULT '',
+				is_deleted tinyint(1) unsigned NOT NULL DEFAULT 0,
+				deleted_at datetime DEFAULT NULL,
+				deleted_by int(32) unsigned DEFAULT NULL,
+				created_by int(32) unsigned DEFAULT NULL,
+				updated_by int(32) unsigned DEFAULT NULL,
+				created_at datetime DEFAULT NULL,
+				updated_at datetime DEFAULT NULL,
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[
+				"CREATE INDEX idx1 ON ".$this->getTabelle('seats')." (seatingplan_id, aktiv, sort_order)",
+				"CREATE UNIQUE INDEX idx2 ON ".$this->getTabelle('seats')." (seatingplan_id, seat_identifier)",
+				"CREATE INDEX idx3 ON ".$this->getTabelle('seats')." (seatingplan_id, is_deleted)"
+			]
+		];
+		// Seat Blocks (Semaphore) - v1.8
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('seat_blocks')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(255) NOT NULL DEFAULT '',
+				seat_id int(32) unsigned NOT NULL DEFAULT 0,
+				seatingplan_id int(32) unsigned NOT NULL DEFAULT 0,
+				product_id int(32) unsigned NOT NULL DEFAULT 0,
+				event_date date DEFAULT NULL,
+				session_id varchar(100) NOT NULL DEFAULT '',
+				order_id int(32) unsigned DEFAULT NULL,
+				code_id int(32) unsigned DEFAULT NULL,
+				expires_at datetime DEFAULT NULL,
+				last_seen datetime DEFAULT NULL,
+				status varchar(20) NOT NULL DEFAULT 'blocked',
+				meta longtext NOT NULL DEFAULT '',
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[
+				"CREATE INDEX idx1 ON ".$this->getTabelle('seat_blocks')." (seatingplan_id, event_date, status)",
+				"CREATE INDEX idx2 ON ".$this->getTabelle('seat_blocks')." (seat_id, product_id, event_date, status)",
+				"CREATE INDEX idx3 ON ".$this->getTabelle('seat_blocks')." (status, expires_at)",
+				"CREATE INDEX idx4 ON ".$this->getTabelle('seat_blocks')." (session_id)",
+				"CREATE INDEX idx5 ON ".$this->getTabelle('seat_blocks')." (order_id)",
+				"CREATE INDEX idx6 ON ".$this->getTabelle('seat_blocks')." (code_id)"
 			]
 		];
 		$tabellen = apply_filters( $this->MAIN->_add_filter_prefix.'db_system_installiereTabellen', $tabellen );
@@ -130,10 +208,6 @@ class sasoEventtickets_DB {
 
 	public function getTabelle($tabelle) {
 		return $this->tabellen[$tabelle];
-	}
-
-	private function getAdminSettings() {
-		return $this->MAIN->getAdmin();
 	}
 
 	public function getTables() {
@@ -289,7 +363,7 @@ class sasoEventtickets_DB {
 
 			update_option( self::$dbprefix."db_version", $this->dbversion );
 			if ($this->callerValue == "basic") {
-				$this->getAdminSettings()->performJobsAfterDBUpgraded($this->dbversion, $installed_ver);
+				$this->MAIN->getAdmin()->performJobsAfterDBUpgraded($this->dbversion, $installed_ver);
 			} else { // wenn für die prem DB dann direkt aufruf
 				if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'performJobsAfterPremDBUpgraded')) {
 					$this->MAIN->getPremiumFunctions()->performJobsAfterPremDBUpgraded($this->dbversion, $installed_ver);

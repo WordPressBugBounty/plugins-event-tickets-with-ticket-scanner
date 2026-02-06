@@ -8,9 +8,6 @@ class sasoEventtickets_Options {
 		$this->MAIN = $MAIN;
 		$this->_prefix = $_prefix;
 	}
-	private function getBase() {
-		return $this->MAIN->getBase();
-	}
 	public function initOptions() {
 		$order_status = [];
 		if (function_exists("wc_get_order_statuses")) {
@@ -76,7 +73,8 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'ticketScannerDontShowOptionControls', 'label'=>__('Do not show the option controls', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Hide the options of the ticket scanner from the ticket scanner view. So the person who is scanning cannot change the options. The presets are taking as default. If not active, the users choice on the ticket scanner will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', '_doc_video'=>'https://youtu.be/CnmTN1K-Z1o'];
 		$options[] = ['key'=>'ticketScannerDontShowBtnPDF', 'label'=>__('Do not show the PDF download button', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Hide the PDF button on the ticket scanner.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', '_doc_video'=>'https://youtu.be/0P9nEVbKy0M'];
 		$options[] = ['key'=>'ticketScannerDontShowBtnBadge', 'label'=>__('Do not show the Badge download button', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Hide the Badge button on the ticket scanner.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', '_doc_video'=>'https://youtu.be/0P9nEVbKy0M'];
-		$options[] = ['key'=>'ticketScannerDontShowOptionControls', 'label'=>__('Do not show the option controls', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Hide the options of the ticket scanner from the ticket scanner view. So the person who is scanning cannot change the options. The presets are taking as default. If not active, the users choice on the ticket scanner will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox'];
+		$options[] = ['key'=>'ticketScannerShowSeatingPlan', 'label'=>__('Show seating plan button on ticket scanner', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, a button will be shown to display the seating plan with the scanned seat highlighted. Only visible if the ticket has a seat assigned and the plan is visual.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', 'def'=>true];
+		$options[] = ['key'=>'ticketScannerShowVenueImage', 'label'=>__('Show venue image button on ticket scanner', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, a button will be shown to display the venue image. Only visible if the ticket has a seat assigned and the plan has a venue image.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', 'def'=>true];
 		$options[] = ['key'=>'ticketScannerStartCamWithoutButtonClicked', 'label'=>__('Preset: Start cam to scan next ticket immediately', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, the ticket scanner will skip the scan-next-button and start the cam immediately.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', '_doc_video'=>'https://youtu.be/itsipS8HNbw'];
 		$options[] = ['key'=>'ticketScannerScanAndRedeemImmediately', 'label'=>__('Preset: Scan and Redeem immediately', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, the ticket scanner will be preset with the option to scan the ticket and redeem it with the scan.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', '_doc_video'=>'https://youtu.be/wzWTwWJg7QA'];
 		$options[] = ['key'=>'ticketScannerHideTicketInformation', 'label'=>__('Preset: Hide ticket information', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, the ticket information wil not be shown.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', '_doc_video'=>'https://youtu.be/StDkB_u0PZc'];
@@ -220,9 +218,119 @@ class sasoEventtickets_Options {
 						, '_doc_video'=>'https://www.youtube.com/watch?v=YvpcNsfjNC8'
 					];
 
+		$options[] = [
+			'key'=>'h120',
+			'label'=>__("Seating Plan settings", 'event-tickets-with-ticket-scanner'),
+			'desc'=>"",
+			'type'=>"heading"
+			];
+		$additional = [ "values"=>[] ];
+		$options[] = [
+			'key'=>'seatingBlockTimeout',
+			'label'=>__("Seat reservation timeout (minutes)", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("How long a seat is reserved for a customer before it becomes available again. Default is 15 minutes.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"dropdown",
+			'def'=>15,
+			'additional'=>["values"=>
+				[
+					["label"=>'5 ' . __('minutes', 'event-tickets-with-ticket-scanner'), "value"=>5],
+					["label"=>'10 ' . __('minutes', 'event-tickets-with-ticket-scanner'), "value"=>10],
+					["label"=>'15 ' . __('minutes', 'event-tickets-with-ticket-scanner') . ' (' . __('default', 'event-tickets-with-ticket-scanner') . ')', "value"=>15],
+					["label"=>'20 ' . __('minutes', 'event-tickets-with-ticket-scanner'), "value"=>20],
+					["label"=>'30 ' . __('minutes', 'event-tickets-with-ticket-scanner'), "value"=>30],
+					["label"=>'45 ' . __('minutes', 'event-tickets-with-ticket-scanner'), "value"=>45],
+					["label"=>'60 ' . __('minutes', 'event-tickets-with-ticket-scanner'), "value"=>60]
+				]
+			]
+		];
+		$options[] = [
+			'key'=>'seatingHideExpirationTime',
+			'label'=>__("Hide seat reservation expiration time", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, the countdown timer showing when the seat reservation expires will be hidden. This can help prevent automated bots from exploiting the reservation system.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingLockSelectedSeats',
+			'label'=>__("Lock selected seats (no deselection)", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, once a seat is selected it cannot be deselected by clicking on it again. Only replacement by selecting another seat is possible. Useful when integrating with third-party systems that need time to sync.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingRemoveExpiredFromCart',
+			'label'=>__("Auto-remove cart items with expired seat reservations", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, cart items with expired seat reservations will be automatically removed from the cart. This prevents accidental purchases without selected seats.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingSeparateCartItems',
+			'label'=>__("Create separate cart items for each seat", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, each seat selection creates a separate cart item (quantity 1). If inactive (default), seats are combined in one cart item like the date picker.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingBlockOnAddToCart',
+			'label'=>__("Reserve seat only when adding to cart", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, seats are only reserved when adding to cart (not when selecting in the seat map). This reduces unnecessary reservations but increases the risk that a seat becomes unavailable.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingHeartbeatStaleTimeout',
+			'label'=>__("Heartbeat stale timeout (seconds)", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If a user's browser stops sending heartbeats (e.g., closed tab), consider their seat reservation as stale/free after this many seconds. Set to 0 to disable (only use regular expiration). Default: 60 seconds.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"dropdown",
+			'def'=>60,
+			'additional'=>['values'=>[
+				["label"=>__('Disabled (use regular expiration)', 'event-tickets-with-ticket-scanner'), "value"=>0],
+				["label"=>__('30 seconds', 'event-tickets-with-ticket-scanner'), "value"=>30],
+				["label"=>__('60 seconds (default)', 'event-tickets-with-ticket-scanner'), "value"=>60],
+				["label"=>__('90 seconds', 'event-tickets-with-ticket-scanner'), "value"=>90],
+				["label"=>__('120 seconds', 'event-tickets-with-ticket-scanner'), "value"=>120]
+			]]
+		];
+		$options[] = [
+			'key'=>'seatingHidePlanNameInScanner',
+			'label'=>__("Hide seating plan name in ticket scanner", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, the seating plan name will not be displayed in the ticket scanner. Only the seat label and category will be shown.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingShowDescInScanner',
+			'label'=>__("Show seat description in ticket scanner", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, the seat description will be displayed in the ticket scanner when scanning a ticket.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingShowDescOnTicket',
+			'label'=>__("Show seat description on ticket (PDF/Designer)", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, the seat description will be displayed on the ticket PDF and ticket detail page.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingShowDescInCart',
+			'label'=>__("Show seat description in cart", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, the seat description will be displayed in the cart and checkout.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingShowDescInChooser',
+			'label'=>__("Show seat description in seating plan chooser", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, the seat description will be displayed when hovering or selecting a seat in the seating plan on the product page.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+
 		$options[] = ['key'=>'h16', 'label'=>__("Ticket Designer", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can design your ticket look & feel. You are able to preview your ticket design within the second ticket design textarea. This template will be used on the ticket detail view, ticket PDF", 'event-tickets-with-ticket-scanner'), 'type'=>"heading"];
 		$options[] = ['key'=>'wcTicketTemplateUseDefault', 'label'=>__("Use the default template for the ticket", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, then the ticket template code will not be used. Best for beginners, who do not want to adjust the ticket template code. If the ticket template code is empty, then it will also use the default template code.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/sV1L2MJtq8M'];
-		$options[] = ['key'=>'h16_desc', 'label'=>__('The plugin is using the Twig template engine (3.7.1). This is a well documented tempklate engine that gives you a great freedom.<br><a target="_blank" href="https://twig.symfony.com/doc/3.x/">Open Documentation of Twig</a>', 'event-tickets-with-ticket-scanner'), 'desc'=>"You can use the following variables:<ul><li>PRODUCT</li><li>PRODUCT_PARENT</li><li>PRODUCT_ORIGINAL (in case you use WPML plugin, might be helpful - all the event tickets settings are on the original product)</li><li>PRODUCT_PARENT_ORIGINAL (in case you use WPML plugin, might be helpful - all the event tickets settings are on the original parent product - for variant/variable product)</li><li>OPTIONS</li><li>TICKET</li><li>ORDER</li><li>ORDER_ITEM</li><li>CODEOBJ</li><li>METAOBJ</li><li>LISTOBJ</li><li>LIST_METAOBJ</li><li>is_variation</li><li>forPDFOutput</li><li>isScanner</li><li>WPDB</li></ul>ACF support: you can use the function get_field to retrieve an ACF field value. You need to provide the product_id. e.g. {{ get_field('some_value', PRODUCT_PARENT.get_id)|escape }} or {{ get_field('some_value', PRODUCT_PARENT.get_id)|escape('wp_kses_post')|raw }} and so on.", 'type'=>"desc"];
+		$options[] = ['key'=>'h16_desc', 'label'=>__('The plugin is using the Twig template engine (3.22.0). This is a well documented tempklate engine that gives you a great freedom.<br><a target="_blank" href="https://twig.symfony.com/doc/3.x/">Open Documentation of Twig</a>', 'event-tickets-with-ticket-scanner'), 'desc'=>"You can use the following variables:<ul><li>PRODUCT</li><li>PRODUCT_PARENT</li><li>PRODUCT_ORIGINAL (in case you use WPML plugin, might be helpful - all the event tickets settings are on the original product)</li><li>PRODUCT_PARENT_ORIGINAL (in case you use WPML plugin, might be helpful - all the event tickets settings are on the original parent product - for variant/variable product)</li><li>OPTIONS</li><li>TICKET</li><li>ORDER</li><li>ORDER_ITEM</li><li>CODEOBJ</li><li>METAOBJ</li><li>LISTOBJ</li><li>LIST_METAOBJ</li><li>is_variation</li><li>forPDFOutput</li><li>isScanner</li><li>WPDB</li></ul>ACF support: you can use the function get_field to retrieve an ACF field value. You need to provide the product_id. e.g. {{ get_field('some_value', PRODUCT_PARENT.get_id)|escape }} or {{ get_field('some_value', PRODUCT_PARENT.get_id)|escape('wp_kses_post')|raw }} and so on.", 'type'=>"desc"];
 		$options[] = ['key'=>'wcTicketPDFZeroMargin', 'label'=>__("Do not use padding within the PDF ticket", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, then the PDF content will start directly from the beginning of the paper. You need to add your own padding and margin within the template.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/2Ek2qkjHNAY'];
 		$options[] = ['key'=>'wcTicketPDFisRTL', 'label'=>__("BETA Use RTL for PDF", 'event-tickets-with-ticket-scanner'), 'desc'=>__("This feature is in Beta. This means, good results are not guaranteed, still optimizing this. If active, the PDF will be generated with RTL option active.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/7xmNgRmcrH0'];
 		$options[] = ['key'=>'wcTicketSizeWidth', 'label'=>__('Size in mm for the width', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Will be used to set the width of the PDF. If empty or zero or lower than 20, the default of 210 will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>'number', 'def'=>210, "additional"=>["min"=>20], '_doc_video'=>'https://youtu.be/c2XtUY2l1OM'];
@@ -248,6 +356,7 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketHeading', 'label'=>__("Ticket title", 'event-tickets-with-ticket-scanner'), 'desc'=>__("This is the title of the ticket", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__("Ticket", 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketTransExpired', 'label'=>__("Label 'EXPIRED' on the event date", 'event-tickets-with-ticket-scanner'), 'desc'=>"", 'type'=>"text", 'def'=>__("EXPIRED", 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketTransLocation', 'label'=>__("Label 'Location' heading on for the event location", 'event-tickets-with-ticket-scanner'), 'desc'=>"", 'type'=>"text", 'def'=>__("Location", 'event-tickets-with-ticket-scanner')];
+		$options[] = ['key'=>'wcTicketTransSeat', 'label'=>__("Label 'Seat' heading for the seat information", 'event-tickets-with-ticket-scanner'), 'desc'=>"", 'type'=>"text", 'def'=>__("Seat", 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketTransCustomer', 'label'=>__("Label 'Customer' heading on the customer details", 'event-tickets-with-ticket-scanner'), 'desc'=>"", 'type'=>"text", 'def'=>__("Customer", 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketTransPaymentDetail', 'label'=>__("Label 'Payment details' heading on the payment details", 'event-tickets-with-ticket-scanner'), 'desc'=>"", 'type'=>"text", 'def'=>__("Payment details", 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketTransPaymentDetailPaidAt', 'label'=>__("Label 'Order paid at' on the payment details", 'event-tickets-with-ticket-scanner'), 'desc'=>"", 'type'=>"text", 'def'=>__("Order paid at:", 'event-tickets-with-ticket-scanner')];
@@ -303,6 +412,7 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketDisplayDateOnMail', 'label'=>__("Show the event date on purchase order email", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active and a date is set on the product, then it will display the date of the event on the purchase email to the client.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/B8CqwD1XUSY'];
 		$options[] = ['key'=>'wcTicketDisplayDateOnPrdDetail', 'label'=>__("Show the event date on the product detail page for your customer", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active and a date is set on the product, then it will display the date of the event on the product detail page to the client.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/uIk49qlTMIg'];
 		$options[] = ['key'=>'wcTicketHideDateOnPDF', 'label'=>__("Hide the event date on the ticket", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active the event date is not shown on the ticket.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/Vbj4pTx-Z4o'];
+		$options[] = ['key'=>'wcTicketHideSeatOnPDF', 'label'=>__("Hide the seat information on the ticket", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active the seat information is not shown on the ticket.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>""];
 		$options[] = ['key'=>'wcTicketICSOrganizerEmail', 'label'=>__("Email address for organizer entry", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If set then the organizer tag will be added to the ICS file. The organizer name will be your website name", 'event-tickets-with-ticket-scanner'), 'type'=>"text", '_doc_video'=>'https://youtu.be/bC_NyPMv2_c'];
 
 		$options[] = [
@@ -626,7 +736,7 @@ class sasoEventtickets_Options {
 	public function getOptionDateFormat() {
 		$date_format = $this->getOptionValue('displayDateFormat');
 		try {
-			$d = date($date_format, current_time("timestamp"));
+			$d = wp_date($date_format);
 		} catch(Exception $e) {
 			$date_format = 'Y/m/d';
 		}
@@ -635,7 +745,7 @@ class sasoEventtickets_Options {
 	public function getOptionTimeFormat() {
 		$date_format = $this->getOptionValue('displayTimeFormat');
 		try {
-			$d = date($date_format, current_time("timestamp"));
+			$d = wp_date($date_format);
 		} catch(Exception $e) {
 			$date_format = 'H:i';
 		}
@@ -646,7 +756,7 @@ class sasoEventtickets_Options {
 		$time_format = $this->getOptionTimeFormat();
 		// check if the date values are working
 		try {
-			$d = date($date_format." ".$time_format, current_time("timestamp"));
+			$d = wp_date($date_format." ".$time_format);
 		} catch(Exception $e) {
 			$date_format = 'Y/m/d';
 		}

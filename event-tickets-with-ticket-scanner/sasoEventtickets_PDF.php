@@ -453,8 +453,10 @@ class sasoEventtickets_PDF {
 			if (function_exists("getimagesize")){
 				$finfo = getimagesize($this->background_image);
 				//print_r($finfo);exit;
-				$bg_size_w = $pdf->pixelsToUnits($finfo[0]);
-				$bg_size_h = $pdf->pixelsToUnits($finfo[1]);
+				if (is_array($finfo) && count($finfo) > 1) {
+					$bg_size_w = $pdf->pixelsToUnits($finfo[0]);
+					$bg_size_h = $pdf->pixelsToUnits($finfo[1]);
+				}
 				$faktor = 1;
 				if ($bg_size_w > $w_image) {
 					$faktor = $bg_size_w / $w_image;
@@ -475,12 +477,23 @@ class sasoEventtickets_PDF {
 			$pdf->setPageMark();
 		}
 
-		$qr_params = $pdf->serializeTCPDFtagParameters([$this->qr['text'], $this->qr['type'], '', '', $this->qr['size']['width'], $this->qr['size']['height'], $this->qr['style'], $this->qr['align']]);
-		$qr_code_inline = '<tcpdf method="write2DBarcode" params="'.$qr_params.'" />';
+		// Build QR code inline - with fallback for FPDI versions that don't have serializeTCPDFtagParameters
+		// This can happen when another plugin loads setasign/fpdi via composer which overrides our bundled FPDI
+		$qr_code_inline = '';
+		$use_qrcode_fallback = false;
+		if (method_exists($pdf, 'serializeTCPDFtagParameters')) {
+			$qr_params = $pdf->serializeTCPDFtagParameters([$this->qr['text'], $this->qr['type'], '', '', $this->qr['size']['width'], $this->qr['size']['height'], $this->qr['style'], $this->qr['align']]);
+			$qr_code_inline = '<tcpdf method="write2DBarcode" params="'.$qr_params.'" />';
+		} else {
+			// Fallback: replace {QRCODE_INLINE} with marker, render QR code after HTML
+			$use_qrcode_fallback = true;
+		}
 		//$pdf->writeHTML(print_r($this->qr, true));
 
 		foreach($page_parts as $p) {
 
+			// Check if this part contains {QRCODE_INLINE} and we need fallback
+			$needs_qr_fallback = $use_qrcode_fallback && strpos($p, '{QRCODE_INLINE}') !== false;
 			$p = str_replace("{QRCODE_INLINE}", $qr_code_inline, $p);
 
 			try {
@@ -500,6 +513,12 @@ class sasoEventtickets_PDF {
 						}
 					} else {
 						$pdf->writeHTML($teil, false, false, true, false, '');
+						// Fallback: render QR code after HTML if inline method not available
+						if ($needs_qr_fallback && !empty($this->qr['text'])) {
+							$qr = $this->getDefaultQRValues();
+							$pdf->write2DBarcode($this->qr['text'], $this->qr['type'], $this->qr['pos']['x'], $this->qr['pos']['y'], $this->qr['size']['width'], $this->qr['size']['height'], $qr['style'], $qr['align']);
+							$needs_qr_fallback = false; // Only render once
+						}
 					}
 				}
 			} catch(Exception $e) {	}
