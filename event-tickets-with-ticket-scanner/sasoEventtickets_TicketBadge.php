@@ -202,6 +202,13 @@ class sasoEventtickets_TicketBadge {
 		}
 
         $product_id = intval($metaObj['woocommerce']['product_id']);
+
+		// Background color (as fallback when no image or to fill gaps)
+		$wcTicketPDFBackgroundColor = $this->MAIN->getOptions()->getOptionValue('wcTicketPDFBackgroundColor');
+		if (!empty($wcTicketPDFBackgroundColor)) {
+			$pdf->setBackgroundColor($wcTicketPDFBackgroundColor);
+		}
+
 		$wcTicketBadgeBG = $this->MAIN->getAdmin()->getOptionValue('wcTicketBadgeBG');
 		$wcTicketBadgeBG = apply_filters( $this->MAIN->_add_filter_prefix.'wcTicketBadgeBG', $wcTicketBadgeBG, $product_id);
 		if (!empty($wcTicketBadgeBG) && intval($wcTicketBadgeBG) >0) {
@@ -216,7 +223,6 @@ class sasoEventtickets_TicketBadge {
 			    }
             }
 		}
-
 
         $pdf->addPart($html);
         $qrTicketPDFPadding = intval($this->MAIN->getOptions()->getOptionValue('qrTicketPDFPadding'));

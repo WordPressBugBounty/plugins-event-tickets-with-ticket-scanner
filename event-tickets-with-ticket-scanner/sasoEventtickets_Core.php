@@ -300,6 +300,16 @@ class sasoEventtickets_Core {
 			],
 			'webhooks'=>[
 				'webhookURLaddwcticketsold'=>''
+			],
+			'messages'=>[
+				'format_limit_threshold_warning'=>[
+					'attempts'=>0,
+					'last_email'=>''
+				],
+				'format_end_warning'=>[
+					'attempts'=>0,
+					'last_email'=>''
+				]
 			]
 		];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getMetaObjectList')) {

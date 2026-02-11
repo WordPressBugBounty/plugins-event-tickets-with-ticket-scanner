@@ -19,10 +19,28 @@ class sasoEventtickets_AdminSettings {
 		if (!$skipNonceTest) {
 			$nonce_mode = $this->MAIN->_js_nonce;
 			if (!wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('nonce'), $nonce_mode)) {
-				if (!wp_verify_nonce(SASO_EVENTTICKETS::getRequestPara('nonce'), 'wp_rest')) { // coming from the ticket scanner - for now
-					if ($just_ret) throw new Exception("Security check failed");
-					return wp_send_json_error ("Security check failed");
-				}
+				if ($just_ret) throw new Exception("Security check failed");
+				return wp_send_json_error ("Security check failed");
+			}
+		}
+
+		// Defense in depth: require manage_options for sensitive actions
+		$sensitive_actions = [
+			'changeOption', 'resetOptions', 'deleteOptions',
+			'emptyTableCodes', 'emptyTableLists', 'emptyTableErrorLogs',
+			'removeCode', 'removeCodes', 'removeAllCodesFromList',
+			'addAuthtoken', 'editAuthtoken', 'removeAuthtoken',
+			'repairTables', 'expose_desctables', 'testing',
+			'addList', 'editList', 'removeList',
+			'addCode', 'addCodes', 'editCode',
+			'removeWoocommerceOrderInfoFromCode', 'removeWoocommerceRstrPurchaseInfoFromCode',
+			'removeUserRegistrationFromCode', 'removeUsedInformationFromCode',
+			'removeUsedInformationFromCodeBulk', 'editTicketMetaEntry',
+		];
+		if (in_array(trim($a), $sensitive_actions) && !current_user_can('manage_options')) {
+			if (!$this->MAIN->isUserAllowedToAccessAdminArea()) {
+				if ($just_ret) throw new Exception("Permission denied");
+				return wp_send_json_error("Permission denied", 403);
 			}
 		}
 
@@ -666,6 +684,19 @@ class sasoEventtickets_AdminSettings {
 
 		$metaObj = $this->_setMetaDataForList($data, $metaObj);
 
+		// Clear format warning when list is manually saved (user likely adjusted formatter)
+		if (!empty($metaObj['messages']['format_limit_threshold_warning']['last_email']) ||
+		    !empty($metaObj['messages']['format_end_warning']['last_email'])) {
+			$metaObj['messages']['format_limit_threshold_warning'] = [
+				'attempts' => 0,
+				'last_email' => ''
+			];
+			$metaObj['messages']['format_end_warning'] = [
+				'attempts' => 0,
+				'last_email' => ''
+			];
+		}
+
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'setFelderListEdit')) {
 			$felder = $this->MAIN->getPremiumFunctions()->setFelderListEdit($felder, $data, $listObj, $metaObj);
 		}
@@ -1161,10 +1192,16 @@ class sasoEventtickets_AdminSettings {
 				$data["code"] = $this->generateCode($formatterValues);
 				try {
 					$id = $this->addCode($data);
+					// Check if counter exceeded threshold (50% warning)
+					if ($counter > 50) {
+						$this->checkAndSaveFormatWarning($list_id, $counter, 'format_limit_threshold_warning');
+					}
 					break;
 				} catch(Exception $e) {
 					// code exists already, try a new one
 					if (substr($e->getMessage(), 0, 5) == "#208 ") { // no premium and limit exceeded
+						// Save critical warning and send email
+						$this->checkAndSaveFormatWarning($list_id, $counter, 'format_end_warning');
 						$data["code"] = $this->getOptionValue('wcassignmentTextNoCodePossible', __("Please contact our support for the ticket/code", 'event-tickets-with-ticket-scanner'));
 						return $data["code"];
 					}
@@ -2269,6 +2306,154 @@ class sasoEventtickets_AdminSettings {
 		echo "<br>Reverting order setting";
 		$this->MAIN->getDB()->update("codes", ['semaphorecode'=>"", "order_id"=>0], ["code"=>$code]);
 		*/
+	}
+
+	/**
+	 * Check if format warning should be saved based on counter threshold
+	 * @param int $list_id Ticket list ID
+	 * @param int $counter Number of attempts needed to generate code
+	 * @param string $warningType 'format_limit_threshold_warning' for 50%, 'format_end_warning' for 100%
+	 * @return void
+	 */
+	private function checkAndSaveFormatWarning($list_id, $counter, $warningType = 'format_limit_threshold_warning') {
+		try {
+			$listObj = $this->getList(['id' => $list_id]);
+			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+
+			// Check if email already sent today
+			$lastEmail = $metaObj['messages'][$warningType]['last_email'] ?? '';
+			$shouldSendEmail = empty($lastEmail);
+
+			if (!empty($lastEmail)) {
+				$lastEmailTime = strtotime($lastEmail);
+				$timeDiff = (time() - $lastEmailTime) / 3600; // hours
+				if ($timeDiff >= 24) {
+					$shouldSendEmail = true;
+				}
+			}
+
+			// Update warning data
+			$metaObj['messages'][$warningType]['attempts'] = max($counter, $metaObj['messages'][$warningType]['attempts']);
+
+			if ($shouldSendEmail) {
+				$metaObj['messages'][$warningType]['last_email'] = wp_date("Y-m-d H:i:s");
+				// Save to meta
+				$this->editList($list_id, ['meta' => $this->MAIN->getCore()->_json_encode_with_error_handling($metaObj)]);
+				// Send email
+				$severity = ($warningType === 'format_end_warning') ? 'critical' : 'warning';
+				$this->sendFormatWarningEmail($list_id, $severity, $counter);
+			} else {
+				// Just save the updated attempts count
+				$this->editList($list_id, ['meta' => $this->MAIN->getCore()->_json_encode_with_error_handling($metaObj)]);
+			}
+
+		} catch (Exception $e) {
+			// Log error but don't throw
+			$this->logErrorToDB($e, "", "checkAndSaveFormatWarning for list $list_id");
+		}
+	}
+
+	/**
+	 * Send email to admin about format exhaustion
+	 * @param int $list_id Ticket list ID
+	 * @param string $severity 'warning' or 'critical'
+	 * @param int $counter Number of attempts
+	 * @return void
+	 */
+	private function sendFormatWarningEmail($list_id, $severity, $counter) {
+		try {
+			$listObj = $this->getList(['id' => $list_id]);
+			$admin_email = get_option('admin_email');
+			$blog_name = get_bloginfo('name');
+			$site_url = site_url();
+
+			$subject = '';
+			$message = '';
+
+			if ($severity === 'critical') {
+				$subject = sprintf(__('[%s] CRITICAL: Ticket format exhausted for "%s"', 'event-tickets-with-ticket-scanner'), $blog_name, $listObj['name']);
+				$message = sprintf(
+					__("WARNING: The ticket number format for list \"%s\" is exhausted!\n\nIt took %d attempts to generate a ticket code.\n\nActions:\n1. Go to: %s\n2. Edit the ticket list\n3. Increase code length or change character set\n\nWithout action, future ticket sales may fail!", 'event-tickets-with-ticket-scanner'),
+					$listObj['name'],
+					$counter,
+					admin_url('admin.php?page=sasoEventTicketsAdminLists&act=edit&id=' . $list_id)
+				);
+			} else {
+				$subject = sprintf(__('[%s] WARNING: Ticket format running out for "%s"', 'event-tickets-with-ticket-scanner'), $blog_name, $listObj['name']);
+				$message = sprintf(
+					__("WARNING: The ticket number format for list \"%s\" is running out of combinations!\n\nIt took %d attempts to generate a ticket code.\n\nRecommended action:\n1. Go to: %s\n2. Edit the ticket list\n3. Consider increasing code length or character set\n\nThis is a proactive warning to prevent future issues.", 'event-tickets-with-ticket-scanner'),
+					$listObj['name'],
+					$counter,
+					admin_url('admin.php?page=sasoEventTicketsAdminLists&act=edit&id=' . $list_id)
+				);
+			}
+
+			$headers = ['Content-Type: text/plain; charset=UTF-8'];
+			wp_mail($admin_email, $subject, $message, $headers);
+
+		} catch (Exception $e) {
+			$this->logErrorToDB($e, "", "sendFormatWarningEmail for list $list_id");
+		}
+	}
+
+	/**
+	 * Get format warning from ticket list meta
+	 * @param int $list_id Ticket list ID
+	 * @return array|null ['type'=>'...', 'attempts'=>...] or null
+	 */
+	public function getFormatWarning($list_id) {
+		try {
+			$listObj = $this->getList(['id' => $list_id]);
+			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+
+			// Check for critical warning first
+			if (!empty($metaObj['messages']['format_end_warning']['last_email'])) {
+				return [
+					'type' => 'critical',
+					'attempts' => $metaObj['messages']['format_end_warning']['attempts'],
+					'list_name' => $listObj['name']
+				];
+			}
+
+			// Check for threshold warning
+			if (!empty($metaObj['messages']['format_limit_threshold_warning']['last_email'])) {
+				return [
+					'type' => 'warning',
+					'attempts' => $metaObj['messages']['format_limit_threshold_warning']['attempts'],
+					'list_name' => $listObj['name']
+				];
+			}
+
+			return null;
+		} catch (Exception $e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Clear format warning from ticket list meta
+	 * @param int $list_id Ticket list ID
+	 * @return void
+	 */
+	public function clearFormatWarning($list_id) {
+		try {
+			$listObj = $this->getList(['id' => $list_id]);
+			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+
+			// Reset warning data
+			$metaObj['messages']['format_limit_threshold_warning'] = [
+				'attempts' => 0,
+				'last_email' => ''
+			];
+			$metaObj['messages']['format_end_warning'] = [
+				'attempts' => 0,
+				'last_email' => ''
+			];
+
+			$this->editList($list_id, ['meta' => $this->MAIN->getCore()->_json_encode_with_error_handling($metaObj)]);
+		} catch (Exception $e) {
+			$this->logErrorToDB($e, "", "clearFormatWarning for list $list_id");
+		}
 	}
 }
 ?>

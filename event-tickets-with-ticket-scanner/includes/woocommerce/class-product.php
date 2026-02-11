@@ -1094,12 +1094,18 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 		}
 
 		/**
-		 * Add background image to flyer PDF
+		 * Add background image and color to flyer PDF
 		 *
 		 * @param object $pdf PDF object
 		 * @return void
 		 */
 		private function addFlyerBackground($pdf): void {
+			// Background color (as fallback when no image or to fill gaps)
+			$wcTicketPDFBackgroundColor = $this->MAIN->getOptions()->getOptionValue('wcTicketPDFBackgroundColor');
+			if (!empty($wcTicketPDFBackgroundColor)) {
+				$pdf->setBackgroundColor($wcTicketPDFBackgroundColor);
+			}
+
 			$wcTicketFlyerBG = $this->MAIN->getOptions()->getOptionValue('wcTicketFlyerBG');
 			if (empty($wcTicketFlyerBG) || intval($wcTicketFlyerBG) <= 0) {
 				return;

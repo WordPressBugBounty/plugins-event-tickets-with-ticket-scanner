@@ -1501,10 +1501,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 								$('input[data-key="'+v.key.replace("Test", "")+'"').val(value).trigger("change");
 								if (v.key == "wcTicketDesignerTemplateTest") {
 									$('input[data-key="wcTicketPDFZeroMargin"').prop("checked",$('input[data-key="wcTicketPDFZeroMarginTest"').is(':checked')).trigger("change");
+									$('input[data-key="wcTicketPDFFullBleed"').prop("checked",$('input[data-key="wcTicketPDFFullBleedTest"').is(':checked')).trigger("change");
 									$('input[data-key="wcTicketPDFisRTL"').prop("checked",$('input[data-key="wcTicketPDFisRTLTest"').is(':checked')).trigger("change");
 									$('input[data-key="wcTicketSizeWidth"').val($('input[data-key="wcTicketSizeWidthTest"').val()).trigger("change");
 									$('input[data-key="wcTicketSizeHeight"').val($('input[data-key="wcTicketSizeHeightTest"').val()).trigger("change");
 									$('input[data-key="wcTicketQRSize"').val($('input[data-key="wcTicketQRSizeTest"').val()).trigger("change");
+									$('input[data-key="wcTicketPDFBackgroundColor"').val($('input[data-key="wcTicketPDFBackgroundColorTest"').val()).trigger("change");
 								}
 							});
 						}).appendTo(btn_group);

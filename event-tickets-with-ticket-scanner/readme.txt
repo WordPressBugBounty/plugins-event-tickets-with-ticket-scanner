@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event ticketing, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 7.0
-Stable tag: 2.8.5
+Stable tag: 2.8.6
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -320,6 +320,19 @@ Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs i
 Default ticket template was adjusted to display the seat number. Big refactoring of our code base. Added the new feature to have seat plans. Please backup your system before upgrading.
 
 == Changelog ==
+= 2.8.6 - 2026-02-11 =
+* New: Full bleed mode option for ticket designer - removes ALL margins for edge-to-edge background images.
+* New: Separate full bleed option for test ticket designer.
+* New: Ticket background color option - set a custom background color for PDF tickets, badges, and flyers.
+* New: Ticket number format exhaustion warning - alerts admin when ticket format is running out of combinations (counter-based detection).
+* New: Automatic email notifications when ticket format reaches 50% capacity or is exhausted (once per day).
+* New: Admin notice with dismiss button for format warnings, includes direct link to edit ticket list.
+* New: Format warning auto-clears when ticket list is manually saved (user likely adjusted formatter).
+* Security: Fixed unauthenticated REST endpoint that exposed admin dispatcher (CVSS 9 - reported by Patchstack).
+* Security: REST permission callback now requires authentication (login or authtoken) by default.
+* Security: Added capability guards for sensitive admin actions (defense in depth).
+* Security: Removed wp_rest nonce fallback from admin action handler.
+
 = 2.8.5 - 2026-01-26 =
 * Fix: Fatal error on non-premium installations when SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION constant is undefined.
 * Improved: VollstartValidatorDebug URL parameter now passed through to AJAX requests for easier debugging.

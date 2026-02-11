@@ -293,13 +293,18 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 		}
 		public static function rest_downloadPDFTicketBadge($web_request) {
 			try {
-				$a = SASO_EVENTTICKETS::issetRPara('action') ? SASO_EVENTTICKETS::getRequestPara('action') : "";
 				global $sasoEventtickets;
-				if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-					$sasoEventtickets->getAdmin()->executeJSON($a, $_POST, true, false);
-				} else {
-					$sasoEventtickets->getAdmin()->executeJSON($a, $_GET, true, false);
+				$code = $web_request->get_param('code');
+				if (empty($code)) {
+					throw new Exception("#6100 ticket code parameter is missing");
 				}
+				$codeObj = $sasoEventtickets->getCore()->retrieveCodeByCode($code);
+				if (empty($codeObj)) {
+					throw new Exception("#6101 ticket code not found");
+				}
+				$badgeHandler = $sasoEventtickets->getTicketBadgeHandler();
+				$badgeHandler->downloadPDFTicketBadge($codeObj);
+				exit;
 			} catch (Exception $e) {
 				wp_send_json_error($e->getMessage());
 			}

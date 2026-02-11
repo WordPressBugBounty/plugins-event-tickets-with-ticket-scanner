@@ -11,6 +11,7 @@ class sasoEventtickets_PDF {
 	private $isRTL = false;
 	private $languageArray = null;
 	private $background_image = null;
+	private $background_color = null;
 	private $fontSize = 10;
 	private $fontFamily = "dejavusans";
 
@@ -18,6 +19,7 @@ class sasoEventtickets_PDF {
 	private $size_width = 210;
 	private $size_height = 297;
 	public $marginsZero = false;
+	public $fullBleed = false;
 
 	private $attach_pdfs = [];
 
@@ -194,6 +196,18 @@ class sasoEventtickets_PDF {
 
 	public function setBackgroundImage($background_image=null) {
 		$this->background_image = $background_image;
+	}
+
+	/**
+	 * Set the background color for the ticket PDF.
+	 * @param string|null $color Hex color value (e.g., '#FF0000' or 'FF0000')
+	 */
+	public function setBackgroundColor(?string $color = null): void {
+		if ($color !== null && $color !== '' && strtoupper($color) !== '#FFFFFF' && strtoupper($color) !== 'FFFFFF') {
+			$this->background_color = ltrim($color, '#');
+		} else {
+			$this->background_color = null;
+		}
 	}
 
 	public function setFontSize($number=10) {
@@ -415,6 +429,14 @@ class sasoEventtickets_PDF {
 		if ($this->marginsZero) {
 			$pdf->SetMargins(0, 0, 0);
 		}
+		// Full bleed mode: remove ALL margins, paddings and spacings for edge-to-edge printing
+		if ($this->fullBleed) {
+			$pdf->SetMargins(0, 0, 0);
+			$pdf->SetAutoPageBreak(false, 0);
+			$pdf->SetCellPadding(0);
+			$pdf->SetHeaderMargin(0);
+			$pdf->SetFooterMargin(0);
+		}
 		//$pdf->SetMargins(PDF_MARGIN_LEFT, 17, 10);
 		//$pdf->SetHeaderMargin(10);
 		//$pdf->SetFooterMargin(10);
@@ -438,6 +460,21 @@ class sasoEventtickets_PDF {
 		$page_parts = $this->getParts();
 		// Print text using writeHTMLCell()
 		$pdf->AddPage();
+
+		// Full bleed: start at exact position 0,0
+		if ($this->fullBleed) {
+			$pdf->SetXY(0, 0);
+		}
+
+		// background color (fills entire page as fallback/base)
+		if ($this->background_color !== null) {
+			$hex = $this->background_color;
+			$r = hexdec(substr($hex, 0, 2));
+			$g = hexdec(substr($hex, 2, 2));
+			$b = hexdec(substr($hex, 4, 2));
+			$pdf->SetFillColor($r, $g, $b);
+			$pdf->Rect(0, 0, $this->size_width, $this->size_height, 'F');
+		}
 
 		// background image
 		if ($this->background_image != null) {

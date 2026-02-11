@@ -245,24 +245,38 @@ final class sasoEventtickets_Ticket {
 	}
 
 	function rest_permission_callback(WP_REST_Request $web_request) {
-		// check ip brute force attack?????
-
 		$ret = false;
-		// check if request contains authtoken var
+
+		// Path 1: Authtoken authentication (for scanner team without WP accounts)
 		if ($web_request->has_param($this->MAIN->getAuthtokenHandler()::$authtoken_param)) {
 			$authHandler = $this->MAIN->getAuthtokenHandler();
 			$this->authtoken = $web_request->get_param($authHandler::$authtoken_param);
 			$ret = $authHandler->checkAccessForAuthtoken($this->authtoken);
 		} else {
-			$allowed_role = $this->MAIN->getOptions()->getOptionValue('wcTicketScannerAllowedRoles');
-			if (!$this->onlyLoggedInScannerAllowed && $allowed_role == "-") return true;
+			// Path 2: WordPress user authentication (must be logged in)
+			if (!is_user_logged_in()) return false;
+
 			$user = wp_get_current_user();
 			$user_roles = (array) $user->roles;
-			if ($this->onlyLoggedInScannerAllowed && in_array("administrator", $user_roles)) return true;
-			if ($allowed_role != "-") {
-				if (in_array($allowed_role, $user_roles)) $ret = true;
+
+			// Administrators always have access
+			if (in_array("administrator", $user_roles)) return true;
+
+			if ($this->onlyLoggedInScannerAllowed) {
+				// Strict mode: only administrators (already checked above)
+				$ret = false;
+			} else {
+				$allowed_role = $this->MAIN->getOptions()->getOptionValue('wcTicketScannerAllowedRoles');
+				if ($allowed_role == "-") {
+					// No specific role required - any logged-in user can access
+					$ret = true;
+				} else {
+					// Specific role required
+					$ret = in_array($allowed_role, $user_roles);
+				}
 			}
 		}
+
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_rest_permission_callback', $ret, $web_request );
 		return $ret;
 	}
@@ -1667,6 +1681,23 @@ final class sasoEventtickets_Ticket {
 		}
 		$pdf->marginsZero = $marginZero;
 
+		// Full bleed mode for edge-to-edge printing
+		$fullBleed = false;
+		if ($ticket_template != null) {
+			$fullBleed = $ticket_template['metaObj']['wcTicketPDFFullBleed'] == true || intval($ticket_template['metaObj']['wcTicketPDFFullBleed']) == 1;
+		} else {
+			if (SASO_EVENTTICKETS::issetRPara('testDesigner')) {
+				if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketPDFFullBleedTest')) {
+					$fullBleed = true;
+				}
+			} else {
+				if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketPDFFullBleed')) {
+					$fullBleed = true;
+				}
+			}
+		}
+		$pdf->fullBleed = $fullBleed;
+
 		$width = 210;
         $height = 297;
 		$qr_code_size = 0; // takes default then
@@ -1805,6 +1836,15 @@ final class sasoEventtickets_Ticket {
 					$pdf->setBackgroundImage($mediaData['for_pdf']);
 				}
 			}
+		}
+
+		// Background color (as fallback when no image or to fill gaps)
+		$bgColorOption = SASO_EVENTTICKETS::issetRPara('testDesigner')
+			? 'wcTicketPDFBackgroundColorTest'
+			: 'wcTicketPDFBackgroundColor';
+		$wcTicketPDFBackgroundColor = $this->MAIN->getOptions()->getOptionValue($bgColorOption);
+		if (!empty($wcTicketPDFBackgroundColor)) {
+			$pdf->setBackgroundColor($wcTicketPDFBackgroundColor);
 		}
 
 		$wcTicketTicketAttachPDFOnTicket = $this->MAIN->getAdmin()->getOptionValue('wcTicketTicketAttachPDFOnTicket');
