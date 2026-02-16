@@ -1,334 +1,244 @@
 === Event Tickets with Ticket Scanner ===
 Contributors: sasonikolov
-Tags: event ticketing, ticket scanner, QR code tickets, woocommerce tickets, seating plan
-Requires PHP: 7.0
-Stable tag: 2.8.6
+Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
+Requires PHP: 8.1
+Stable tag: 2.8.7
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-The complete WooCommerce ticketing solution: sell event tickets, design custom PDFs, assign seats with interactive seating plans, and scan QR codes at the entrance.
-Perfect for concerts, festivals, theaters, sports events, clubs, and any venue that needs professional ticket management with optional seat reservations.
+Sell event tickets with WooCommerce. Design seating plans, generate PDF tickets with QR codes, and scan them at the door. No per-ticket fees.
 
 == Description ==
-**Sell, Scan, Succeed – Event Ticketing Made Easy**
 
-Easily sell digital tickets for events, clubs, or memberships with the **Event Tickets with Ticket Scanner** plugin for WooCommerce. Turn any product into a scannable ticket with a unique QR code and downloadable PDF – ready to redeem at the entrance.
+**Stop paying per-ticket fees. Own your entire ticketing workflow inside WordPress.**
+
+Event Tickets with Ticket Scanner turns any WooCommerce product into a scannable event ticket — complete with QR code, downloadable PDF, and a built-in mobile ticket scanner for your team at the door.
+
+Unlike platforms like Eventbrite or Ticketmaster, you keep 100% of your revenue. Unlike other WordPress plugins, you get a **visual seating plan designer** and a **ticket PDF designer** included — not as expensive add-ons.
 
 https://youtu.be/uWSdKdOyn70
 
-[Whats in for you](https://youtu.be/KKLp1Lwqj_U)
+**Used by 1,000+ event organizers worldwide** — from small community events to large concert venues. Rated ⭐ 4.9/5 on WordPress.org.
 
-**Perfect for:**
-* Concerts, theaters, and festivals
-* Sports events and arenas
-* Spas, clubs, gyms, theme parks
-* Community events and memberships
+= Who is this for? =
 
-**Key Benefits:**
-* **Visual drag & drop seating designer** – create venue layouts with seats, shapes, labels, and background images. Rotate, duplicate, and bulk-edit elements with ease.
-* **Custom ticket PDF designer** – design professional tickets with your logo, colors, QR codes, and branding. Full control over layout and styling.
-* Built-in **browser-based ticket scanner** (mobile ready)
-* Let customers **choose their seats** during checkout with interactive seat selection
-* Sell multi-entry, family, and time-limited tickets
-* Supports WooCommerce variants and product bundles
-* Offline fallback options available for big events
+* **Concert & festival organizers** — sell general admission or assigned seats with interactive seat selection
+* **Theaters & venues** — design your seating layout with drag & drop, let customers pick their seats
+* **Sports events & arenas** — handle high volumes with offline fallback and team scanner access
+* **Clubs, spas, gyms & theme parks** — sell multi-entry passes, family tickets, or memberships with expiration
+* **Community events & fundraisers** — get started in minutes with the free version
 
-https://youtu.be/KKLp1Lwqj_U
+= How it works — 3 steps =
 
-A Quick start is shown in this [Quick start video](https://vollstart.com/event-tickets-with-ticket-scanner/docs/#quickstart).
+1. Install the plugin and create a ticket list under "Event Tickets"
+2. Enable "Ticket Sales" on any WooCommerce product
+3. Customers receive a unique QR code ticket — scan and redeem at the entrance
 
+That's it. No coding required. [Watch the quickstart video](https://youtu.be/KKLp1Lwqj_U)
 
-**Flexible Setup:**
-* Automatically generate secure ticket numbers or import your own
-* **Free version:** Email includes download link to ticket PDF and (optional) QR code with ticket number
-* **Premium only:** Attach ticket as PDF file directly to email
-* Show ticket detail page with QR code and PDF download
-* Use webhooks to notify third-party systems on redeem
-* Built-in protection against fake tickets or double redemption
+= 🎨 Visual Seating Plan Designer =
 
-**Advanced Features (Premium):**
-* PDF ticket file as attachment in order email
-* Team scanner access via Auth Tokens
-* Calendar invites (ICS files)
-* Custom flyers and multipage PDF options
-* CVV check and brute-force IP block
-* Shortcodes for displaying and validating ticket numbers
+Create professional venue layouts without any design tools:
 
-**Get Started in 3 Steps:**
-1. Install the plugin
-2. Create a ticket list under “Event Tickets”
-3. Enable “Ticket Sales” in your WooCommerce product
+* Drag & drop seats, shapes, labels, and text onto your canvas
+* Upload venue floor plans as background images
+* Rotate, duplicate, and bulk-edit elements
+* Color-code seat categories and pricing tiers
+* Customers see a **real-time interactive seat map** during checkout
+* Seats are automatically blocked during checkout and released on cancel/refund
 
-Customers get a unique ticket number, QR code, and download link. Redeem tickets via QR scanner or input field.
+= 🎟️ Ticket PDF Designer =
 
-**Try it now for free.** Upgrade to Premium for high-volume event features and PDF delivery control.
+Design tickets that match your brand — not generic templates:
 
-**🎨 Visual Seating Plan Designer**
-Create professional venue layouts with our drag & drop designer:
-* Add seats, rectangles, circles, lines, and text labels
-* Upload background images (venue floor plans)
-* Rotate elements individually or as a group
-* Bulk-edit multiple elements at once
-* Duplicate seats and entire layouts
-* Color-code seat categories
-* Real-time preview of customer seat selection
+* Add your logo, custom colors, header and background images
+* Position QR codes exactly where you want them
+* Create event badges for staff and VIP passes
+* Multi-page PDF support with attached documents
+* Full bleed mode for edge-to-edge designs
 
-**🎟️ Ticket PDF Designer**
-Design stunning tickets that match your brand:
-* Custom logo, header, and background images
-* Flexible QR code positioning
-* Badge designer for event passes
-* Multi-page PDF support
-* Attach additional documents
+= 📱 Built-in Ticket Scanner =
 
-== Links ==
+No extra app needed. The scanner runs in any mobile browser — or install it as a PWA:
 
-* [Quickstart video](https://youtu.be/KKLp1Lwqj_U)
-* [Documentation & Premium](https://vollstart.com/event-tickets-with-ticket-scanner)
+* Scan QR codes with your phone camera — works on iOS and Android
+* **Install as PWA** — add to home screen for instant launch without browser chrome
+* **Fullscreen mode** — immersive scanning with a single tap
+* **Haptic feedback** — vibration confirms valid/invalid tickets instantly
+* Grant team members scanner access via Auth Tokens (no WordPress login needed)
+* See ticket details, seat position, and venue map instantly after scan
+* Voice output confirms valid/invalid tickets for fast processing
+* Protection against fake tickets, double redemption, and brute-force attempts
+* Supports hardware barcode scanners for high-traffic entrances
+* Customizable theme color to match your brand
+
+= Powerful Ticket Types =
+
+* **Single entry** — classic one-time event ticket
+* **Multi-entry passes** — allow multiple scans (configurable limit)
+* **Family tickets** — generate multiple tickets per order item
+* **Memberships & season passes** — set expiration dates
+* **Day chooser tickets** — let customers pick their event date at checkout
+* **Purchase allowance codes** — restrict who can buy specific products
+
+= Built for WooCommerce =
+
+* Works with product variants (e.g., VIP vs. General Admission)
+* Tickets auto-generate on order completion
+* Refunded orders automatically recover and recycle ticket numbers
+* Compatible with WooCommerce Subscriptions
+* Works with WooCommerce PDF Invoices & Packing Slips
+* WPML compatible for multilingual stores
+
+= Free vs. Premium =
+
+The free version covers everything you need to start selling tickets:
+
+* ✅ Ticket generation with QR codes
+* ✅ PDF ticket download (via link in email)
+* ✅ Built-in ticket scanner
+* ✅ Interactive seating plan designer
+* ✅ Seat selection at checkout
+* ✅ Multi-entry and family tickets
+* ✅ Day chooser for date-based events
+* ✅ Webhooks for third-party integrations
+
+**Premium adds professional features for larger events:**
+
+* 🔓 PDF ticket as email attachment (not just a link)
+* 🔓 Team scanner access via Auth Tokens
+* 🔓 Calendar invites (ICS files) in emails
+* 🔓 Custom flyers and multi-page PDFs
+* 🔓 CVV security check on tickets
+* 🔓 Brute-force IP blocking
+* 🔓 No ticket limits
+* 🔓 Advanced shortcodes for ticket display and validation
+
+[Get Premium](https://vollstart.com/event-tickets-with-ticket-scanner/)
+
+= Links =
+
+* [Documentation](https://vollstart.com/event-tickets-with-ticket-scanner/docs/)
+* [Quickstart Video](https://youtu.be/KKLp1Lwqj_U)
+* [All Features](https://vollstart.com/event-tickets-with-ticket-scanner/docs/event-tickets-with-ticket-scanner-feature-list/)
+* [Premium Plugin](https://vollstart.com/event-tickets-with-ticket-scanner/)
 * [Support](mailto:support@vollstart.com)
-* [Event Tickets with WooCommerce Premium](https://vollstart.com/event-tickets-with-ticket-scanner/)
-
-== Features ==
-Here you can find all available options listed: [Display all options](https://vollstart.com/event-tickets-with-ticket-scanner/docs/event-tickets-with-ticket-scanner-feature-list/)
-
-https://youtu.be/ls_Lkf08n9I
-
-* Sell event tickets as PDF with WooCommerce
-* Single entrance, multipass, family pass, member card with expiration date and more
-* Add QR, tickets, badges, additional PDF pages to the purchase order emails.
-* Download PDF of ticket to print it as a badge for your customers
-* Attach your own PDF to the ticket PDF (will be added as additional pages)
-* Also for professional usage - use your QR and barcode scanner to verify the tickets
-* WooCommerce product variants supported
-* Generate flyer for your party or event
-* Redeem event tickets at the entrance using the included ticket scanner page (mobile ready)
-* Add ICS calendar file or a ticket to the purchase email and ticket detail page
-* Store WooCommerce orderid, itemid and productid to a ticket that was generated or used for a product sale
-* You can now set a unique ticket number format for all WooCommerce product that are using a ticket number
-* You can now set the ticket number format directly also on the WooCommerce product detail page if needed
-* Use your codes to restrict purchases that allow a purchase of this product only if the buyer has a code for it (purchase allowance code)
-* Add your own messages for the ticket number validation form for your customers
-* Add your own message for the "product stolen" validation message
-* Disable the validation form for not logged in wordpress user
-* User can register to a ticket (with the wordpress user id if needed) after the ticket number is checked - this makes your code one-time usable
-* Display registered user information of a ticket number during the validation if you need this
-* One time check can have a maximum check amount based on ticket list or based on the global settings
-* The user can be forwared (redirected) to an URL after the ticket number was checked - to show more details
-* Webhooks - you can inform other systems about ticket redeemed status and validation steps
-* Display assigned tickets to your user with a shortcode [sasoEventTickets_code]
-* Add images to the ticket (header, background and Footer)
-* Adopt font size for the PDF ticket
-* Forcing responsive design for the ticket scanner for better experience
-* Allow multiple redeem times for multi usage tickets
-* Ticket badge designer for maximum control of the look and feel
-* Interactive seating plan designer with drag & drop editor
-* Let customers choose their seats during checkout
-* Automatic seat blocking and release on order cancel/refund
-
-== Technical Requirements ==
-Wordpress, Woocommerce, php-curl, php-imagick
-
-== GETTING STARTED ==
-
-A Quick start is shown in this [video](https://vollstart.com/event-tickets-with-ticket-scanner/docs/#quickstart).
-A good first start is to open the event ticket admin area and create a list first, if not already done or if you do not want to use the default ticket list.
-Go to your WooCommerce product and activate the ticket sale option and set the list.
-Check out all the possible options in the event ticket admin area to understand, how to tweak your usages of plugin.
-Optional: Then add your ticket number by importing (add button at the ticket table) or assign the ticket list to your products.
-Optional: If you need a validation form for your users, to check the ticket number, then please add the shortcode **[sasoEventTicketsValidator]** to a page.
-
-= Steps to start =
-- Go to the admin area and click on menu "Event Tickets".
-- Click on button "Add" next to the heading "List".
-- Go to your "ticket" product and set the option with in the product settings "Event Tickets"
-*To scan the QR code of the sold tickets at the entrance:*
-- Go to the admin area and click on menu "Event Tickets".
-- Click on the button "Ticket Scanner" at the top area
-- Scan tickets and redeem them
-
-Try it out first, before you go Premium! ["Here you can find the premium plugin"](https://vollstart.com/event-tickets-with-ticket-scanner).
-
-== Woocommerce support for auto-generating tickets ==
-**Supports version 6+**
-**You can use this plugin to auto-generate tickets and codes for your woocommerce products**
-* Create a code list
-* Go to your WooCommerce product and edit the product which should receive a ticket
-* Go to your WooCommerce product and edit the product which should receive a code - if needed
-* Click on "Event Tickets" in the attribute area of your product
-* Choose the "List" that will be used for this product
-
-Everytime this product is sold, it will get a new generated ticket number/code or use an unused one within your list (This need to be activated within the option settings). The new code will be added to the code list you set on your WooCommerce product and to the product sale too.
-If the sold product quantity in the order is more than 1, then a ticket number/code will be generated for each element. The code will be generated after the purchase. In case of a refund the code will be recovered and marked as unused, so that it can be reused.
-
-*E.g.: Your customer bought 2 of the same product within one order, then 2 tickets will be generated and stored to the product item within this order.*
-
-= WooCommerce Ticket Features =
-* Automatically create and assign tickets for physical products and digital products
-* Recover tickets assigned to refunded orders
-* Option to reuse the recovered tickets with the latest orders
-* Automatically deliver the tickets with the complete order email
-* Automatically a ticket as PDF for download and add the download link to the complete order email.
-* Automatically deliver the tickets and download URL with the optional PDF invoice "WooCommerce PDF Invoices"
-* Download a flyer for your event or party
-
-= WooCommerce Code Features =
-* Automatically create and assign codes for physical products and digital products
-* Recover code assigned to refunded orders
-* Option to reuse the recovered codes with the latest orders
-* Automatically deliver the codes with the complete order email
-* Automatically deliver the codes with the optional PDF invoice "WooCommerce PDF Invoices"
-
-**Please note:**
-If you exceed your limit (*no limits for premium user*) of the amount of possible tickets/codes, then the ticket/code added to the sold product will be a text information: **"Please contact our support for the code"**.
-This way your business is not harmed and your customer can contact you to get a code manually. The format of the code will be **12345-12345-12345-12345** if you do not set a generation format within the options.
-
-== WooCommerce PDF Invoices support to display the ticket numbers on the PDFs ==
-If you use ["WooCommerce PDF Invoices"](https://en-gb.wordpress.org/plugins/woocommerce-pdf-invoices-packing-slips/), then the generated ticket numbers/codes are displayed on the generated PDFs too!
-The supported PDF plugin is from Ewout Fernhout.
-
-== WooCommerce Ticket Sale ==
-You can add a list to your product and sell tickets. The ticket will be added to the sale informations for you and your client.
-The client will also have a link to check the ticket and mark the ticket as used, only if the order is set to completed. This will mark the ticket as redeemed.
-You can check the entrance by letting your customer show the confirmation page and hit on the "redeem"-button.
-Or you scan the QR code of the ticket with the ticket scanner (included). The ticket is also available as PDF for download to your customers.
-[Checkout the video, how it works](https://vollstart.com/event-tickets-with-ticket-scanner/docs/#ticket)
-
-== Frontend ==
-We have different frontend elements. Just to sell tickets and scan them, you do not need to add any shortcodes to your pages.
-
-= Frontend event tickets =
-Your customer will receive a specific URL to the ticket detail page. You can control which information to display. additional they can download the ticket as a PDF.
-The ticket will contain a QR code, that can be scanned by you or your team (no login to WordPress needed) and redeem the ticket.
-[Watch the video for it](https://vollstart.com/event-tickets-with-ticket-scanner/docs/#quickstart)
-
-= Frontend event list =
-You can use the shortcode [sasoEventTicketsValidator_eventsview] to display the upcoming events. Default is to start for the whole month and the next 2 months.
-You can add the parameter months_to_show to control how many months you want to show. Eg. months_to_show="3"
-
-= Frontend to validate the ticket number =
-* Use the shortcode **[sasoEventTicketsValidator]**
-* Create a page or use an existing one and add the shortcode to the page
-* The shortcode will be replaced for your users by a form to enter the ticket number and a button to validate the ticket. This allows you to surround the form with your own heading and instruction.
-* Each ticket number has a display version (e.g. XYZXYZ -> XYZ-XYZ), so it is easier for your user to read the ticket number.
-* The check will remove the display delimiter "-", ":", " " for the check automatically.
-* So your user can enter the ticket number with or without delimiters.
-
-If you use CVV on a code and the user enter the ticket number that requires a cvv, then your user will be ask to enter the CVV.
-The user could enter the CVV immediately with the code. Separate the value with a ":". E.g: XYZXYZ:1234.
-
-It is possible to prefill the ticket number validation form with a ticket number.
-Add the parameter "code" to your page URL to create a link that prefills the form.
-*E.g https://vollstart.com/serial-codes/?code=123-456-789*
-
-= Form options for expert =
-You can use your own input, trigger and output HTML element.
-Add the id parameter to your HTML elements and pass them to the shortcode as corresponding parameter.
-You can add also your own JS function name that will be called before the ticket number is checked on the server and also if the result comes back.
-*[sasoEventTicketsValidator inputid="" triggerid="" outputid="" jspre="" jsafter=""]*
-[Read here more about this feature](https://vollstart.com/event-tickets-with-ticket-scanner/docs/#styling)
-
-== Quick overview ==
-Each ticket number is unique. The list is for your organisation and for your WooCommerce products.
-
-= Plugin administration - where to find the plugin management area =
-*It will add a new menu entry "Event Tickets" within the settings section.*
-
-[More about the plugin on our website](https://vollstart.com/event-tickets-with-ticket-scanner/docs)
-
-== Support ==
-Write to support@vollstart.com for support request.
-For both plugins: The basic free and for the premium plugin.
-We are here to help you.
 
 == Installation ==
 
+= Requirements =
 * WordPress 5.0 or greater
-* PHP version 7.0 or greater
-* MySQL version 5.0 or greater
+* WooCommerce 6.0 or greater
+* PHP 8.1 or greater (PHP 8.4 compatible)
+* PHP extensions: php-curl, php-imagick
 
 = Installation =
 
-1. Install the plugin using the WordPress built-in Plugin installer.
-2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Click on the menu "Event Tickets" and browse the options - optional.
-4. Edit your product to generate a event ticket.
+1. Go to **Plugins → Add New** in your WordPress admin
+2. Search for "Event Tickets with Ticket Scanner"
+3. Click **Install Now**, then **Activate**
+4. Go to **Event Tickets** in your admin menu and create your first ticket list
+5. Edit any WooCommerce product → open the **Event Tickets** tab → enable ticket sales
 
 = Quick Setup =
-This plugin extend WooCommerce to be able to setup your product as a ticket. Go to the product. Open the Event Tickets tab and activate the checkbox. Set the ticket list and fill out the other details if needed.
-The default is to generate the ticket if the order is "completed". For automatically order status set to "completed" set up the ticket as a virtual product and/or download product - add a flyer or so as a download.
-To test the ticket. Create an order within the order backend, set the order status to "completed" - this will assign the ticket numbers. Check the order email. Click on the ticket detail link to check the ticket detail page.
-Create a real test purchase (with coupon code or wire transfer), check the order email.
-If you have a 404 page for ticket detail page or ticket scanner page, then set up the compatibility options.
 
-**For more help and your first steps, please [visit our website](https://vollstart.com/event-tickets-with-ticket-scanner/docs/)**
+The plugin extends WooCommerce so any product can become a ticket. Enable the checkbox on your product, assign a ticket list, and you're ready to sell.
 
-== Plugin support ==
-* WPML plugin
-* PDF Invoices & Packing Slips for WooCommerce
+**Tip:** Set the product as "Virtual" so WooCommerce auto-completes the order and triggers ticket generation immediately after payment.
+
+To test: Create a manual order in WooCommerce, set it to "Completed", and check the order email for the ticket link.
+
+**For a step-by-step walkthrough, [watch the quickstart video](https://vollstart.com/event-tickets-with-ticket-scanner/docs/#quickstart).**
+
+== Frequently Asked Questions ==
+
+= Do I need any other plugins? =
+You need WooCommerce (free) to handle payments and orders. Everything else is included — no additional ticketing add-ons required.
+
+= Does this work without WooCommerce? =
+WooCommerce is required for selling tickets. However, you can use the plugin to manage and validate ticket lists manually without WooCommerce sales.
+
+= Can my team scan tickets without a WordPress account? =
+Yes! Premium includes Auth Tokens that give your door staff scanner access via a simple URL — no login required.
+
+= Does the scanner work offline? =
+The scanner is browser-based and requires an internet connection. For large events, the plugin includes offline fallback options to prevent interruptions.
+
+= Can customers choose their own seats? =
+Yes. Design your venue layout with the drag & drop seating designer, and customers will see an interactive seat map during checkout where they can pick available seats.
+
+= What ticket types can I create? =
+Single entry, multi-entry passes, family tickets (multiple tickets per purchase), memberships with expiration dates, and day-chooser tickets where customers pick their event date.
+
+= How are tickets delivered to customers? =
+In the free version, the order confirmation email includes a link to download the ticket PDF and view the QR code. Premium allows attaching the PDF directly to the email and adding calendar invites (ICS).
+
+= What happens when an order is refunded? =
+The ticket is automatically deactivated, the assigned seat is released, and the ticket number is recovered for reuse.
+
+= Is the plugin compatible with WPML? =
+Yes. WPML is supported for multilingual ticket sales. The scanner also supports multiple languages including German, Spanish, French, Italian, Japanese, Dutch, Portuguese, and Chinese.
+
+= What if I exceed the free ticket limit? =
+If you reach the limit, the plugin will display a message asking the customer to contact support. Your sales are never interrupted. Premium has no ticket limits.
+
+= Can I use my own QR code or barcode scanner hardware? =
+Yes. The built-in scanner page accepts input from hardware barcode scanners in addition to camera-based QR scanning.
+
+= How do I prevent ticket fraud? =
+Every ticket number is unique. The scanner detects duplicate redemption attempts. Premium adds CVV verification and brute-force IP blocking for additional security.
 
 == Screenshots ==
 
-1. **Ticket Details Mobile** The ticket details are also optimized for mobile devices.
-2. **Ticket Details Desktop** You can define what will be shown on the ticket.
-3. **Ticket PDF** Your customer can download the ticket as a PDF.
-4. **Ticket scanner** Scan and redeem the tickets at the entrance on mobile and desktop devices.
-5. **Ticket Badge** Print out your ticket badge with customer name on it.
-6. **Options 1** Ticket options.
-7. **Options 3** Created tickets backend admin area.
-8. **Options 4** Ticket numbers can be pre generated if needed.
-9. **Flyer example** You can also adjust your event or party flyer.
-10. **Ticket example** You can adjust different areas of the PDF ticket.
-11. **Product settings** You overwrite the format of the ticket number and activate the ticket sale.
-12. **Options 5** Adjust the information on the flyer.
-13. **Order Ticket Detail View** Quick ticket scan possible with the order ticket detail view.
+1. **Ticket on Mobile** — Customers see their ticket details optimized for any device, with QR code and PDF download.
+2. **Ticket Details Desktop** — Configure exactly which information appears on the ticket detail page.
+3. **PDF Ticket** — Professionally designed PDF ticket with QR code, ready for print or mobile display.
+4. **Ticket Scanner** — Built-in mobile scanner for your team at the entrance. No app required.
+5. **Event Badge** — Print name badges for conferences, VIP events, or staff credentials.
+6. **Admin Options** — Comprehensive settings to configure ticket behavior, formats, and delivery.
+7. **Ticket Management** — Overview of all generated tickets with status, redemption info, and filters.
+8. **Ticket Number Formats** — Pre-generate ticket numbers or let the plugin create them automatically.
+9. **Event Flyer** — Generate promotional flyers for your event directly from the plugin.
+10. **PDF Designer** — Customize every area of your ticket PDF: logo, images, QR position, colors.
+11. **Product Settings** — Enable ticket sales on any WooCommerce product with one checkbox.
+12. **Flyer Settings** — Configure flyer content, images, and event details.
+13. **Order Ticket View** — Quick-scan tickets directly from the WooCommerce order detail page.
 
 == Upgrade Notice ==
-= 2.0.5 =
-Attention, the option wcTicketShowRedeemBtnOnTicket is added and replace the old wcTicketDontShowRedeemBtnOnTicket.
-The template for the ticket designer is adjusted for this!
-In the future the template code part with the buttons will be removed from the ticket designer.
 
-= 1.3.0 =
-Attention, the translation forced bigger chunk of code to be changed.
-
-= 1.2.0 =
-To update the old sold tickets, please execute the "repair table" button within the support area. From now on we will store also the user id of the ticket purchase.
-
-= 1.0.11 =
-Default value is changed to true for the option to reuse not used ticket numbers within a ticket list assigned to a product
-
-= 1.0.9 =
-New option to add the amount of purchased tickets per sold item on the PDF. Database updated. You can see now the redeemed ticket information within the admin area on the data table.
-
-= 1.0.5 =
-Serial code options are removed. They do not fit with the event and party tickets approach.
-
-= 1.0.4 =
-Activate in the options the new feature to attach the calendar entry (ICS file) to your purchase emails.
-
-= 2.4.0 =
-New Javascript library for the ticket scanner. If you need to use the old ticket scanner, then add the parameter &useoldticketscanner=1 to the ticket scanner URL.
-
-= 2.4.1 =
-New default value for the option to allow access to the admin area of the tickets - now it is false, only administrator, until you set it otherwise.
-
-= 2.5.0 =
-Default ticket template was adjusted. Plugin tested with PHP 8.3 - to use URLs in your template for the PDF make sure you have php8.3-curl and php8.3-imagick installed.
-
-= 2.8.0 = 
-Default ticket template was adjusted to display the seat number. Big refactoring of our code base. Added the new feature to have seat plans. Please backup your system before upgrading.
+= 2.8.0 =
+Major release: Interactive seating plan designer with drag & drop editor. Default ticket template updated to display seat numbers. Please backup your system before upgrading.
 
 == Changelog ==
+
+= 2.8.7 - 2026-02-16 =
+* New: PWA (Progressive Web App) support — install the ticket scanner as a home screen app on mobile devices (optional, enable in settings)
+* New: Fullscreen mode button for the ticket scanner — immersive scanning without browser chrome
+* New: Haptic feedback (vibration) on scan result — different patterns for success and failure
+* New: Customizable scanner theme color — affects PWA status bar, loading spinner, and scanner buttons
+* New: Expanded FAQ with 7 categories and 21 questions covering scanner setup, PDF design, WooCommerce, webhooks, and more
+* Improved: Scanner HTML now uses proper DOCTYPE, charset, and viewport meta tags
+* Improved: Scanner assets (JS libraries, CSS, images) cached by service worker for faster loading
+* Security: Hardened premium license revalidation with independent subscription verification
+* Security: Added HMAC checksum protection against license data tampering in database
+* Fix: Resolved infinite recursion during plugin initialization when premium plugin is active
+* Fix: Translation loading no longer triggers WordPress 6.7+ "too early" notice
+* Fix: License checksum verification now stable across CLI and web contexts
+* Fix: License server response now correctly overrides local data (fixed array_merge order)
+* Fix: API connection failures are now tracked; premium deactivates after 5 consecutive failures
+* Fix: Admin page loads now trigger license check if last check was >24h ago (cron fallback)
+* Fix: License key input field now always visible when premium plugin is installed
+
 = 2.8.6 - 2026-02-11 =
-* New: Full bleed mode option for ticket designer - removes ALL margins for edge-to-edge background images.
+* New: Full bleed mode option for ticket designer — removes ALL margins for edge-to-edge background images.
 * New: Separate full bleed option for test ticket designer.
-* New: Ticket background color option - set a custom background color for PDF tickets, badges, and flyers.
-* New: Ticket number format exhaustion warning - alerts admin when ticket format is running out of combinations (counter-based detection).
+* New: Ticket background color option — set a custom background color for PDF tickets, badges, and flyers.
+* New: Ticket number format exhaustion warning — alerts admin when ticket format is running out of combinations (counter-based detection).
 * New: Automatic email notifications when ticket format reaches 50% capacity or is exhausted (once per day).
 * New: Admin notice with dismiss button for format warnings, includes direct link to edit ticket list.
 * New: Format warning auto-clears when ticket list is manually saved (user likely adjusted formatter).
-* Security: Fixed unauthenticated REST endpoint that exposed admin dispatcher (CVSS 9 - reported by Patchstack).
+* Security: Fixed unauthenticated REST endpoint that exposed admin dispatcher (CVSS 9 — reported by Patchstack).
 * Security: REST permission callback now requires authentication (login or authtoken) by default.
 * Security: Added capability guards for sensitive admin actions (defense in depth).
 * Security: Removed wp_rest nonce fallback from admin action handler.
@@ -338,41 +248,37 @@ Default ticket template was adjusted to display the seat number. Big refactoring
 * Improved: VollstartValidatorDebug URL parameter now passed through to AJAX requests for easier debugging.
 
 = 2.8.4 - 2026-01-26 =
-* New: Seating plan visualization in ticket scanner - view venue map with highlighted seat position (#221).
-* New: Option to enable/disable seating plan button in scanner (ticketScannerShowSeatingPlan).
-* New: Option to enable/disable venue image button in scanner (ticketScannerShowVenueImage).
+* New: Seating plan visualization in ticket scanner — view venue map with highlighted seat position.
+* New: Option to enable/disable seating plan button in scanner.
+* New: Option to enable/disable venue image button in scanner.
 * Improved: Seating plan data loaded on demand (lazy loading) for better scanner performance.
-* New: Shortcode parameter `order_id` for [sasoEventTicketsValidator_code] to display tickets from a specific order (#166).
-* New: Shortcode [sasoEventTicketsValidator_ticket_detail] to display ticket detail view on any page (#76).
-* Fix: Date localization now correctly displays translated month/day names (e.g., German, Spanish) while maintaining correct timezone handling.
+* New: Shortcode parameter `order_id` for [sasoEventTicketsValidator_code] to display tickets from a specific order.
+* New: Shortcode [sasoEventTicketsValidator_ticket_detail] to display ticket detail view on any page.
+* Fix: Date localization now correctly displays translated month/day names while maintaining correct timezone handling.
 * Fix: Fatal error in removeUsedInformationFromCode() when changing order status.
 
 = 2.8.3 - 2026-01-22 =
-* New: Seating Designer - Element rotation (0-359°) with preset buttons.
-* New: Seating Designer - Group rotation (rotate multiple selected elements around their common center).
-* New: Seating Designer - Bulk property editing when multiple elements are selected.
-* New: Seating Designer - Duplicate selection for groups (copy multiple elements at once).
-* New: Seating Designer - Enhanced visual feedback for multi-selected elements.
+* New: Seating Designer — Element rotation (0-359°) with preset buttons.
+* New: Seating Designer — Group rotation (rotate multiple selected elements around their common center).
+* New: Seating Designer — Bulk property editing when multiple elements are selected.
+* New: Seating Designer — Duplicate selection for groups (copy multiple elements at once).
+* New: Seating Designer — Enhanced visual feedback for multi-selected elements.
 * Improved: Seating API now uses unified bulk operations for better performance.
-* Fix: PDF QR code compatibility with third-party FPDI libraries (e.g., from WooCommerce PDF plugins).
+* Fix: PDF QR code compatibility with third-party FPDI libraries.
 * Fix: Event times displayed incorrectly due to double timezone conversion in ticket templates.
 
 = 2.8.2 - 2026-01-21 =
 * New: Clone/duplicate seating plans with all seats and layout.
 * New: Batch operations for seats (activate, deactivate, delete multiple seats at once).
-* New: Premium subscription expiration check - features are now disabled after subscription ends.
-* New: Admin warnings 14 days before premium subscription expires.
-* New: Grace period (7 days) after subscription expiration before features are disabled.
-* New: Lifetime license support (never expires).
-* Fix: Restored deprecated time() and date() methods for backward compatibility with older premium plugin versions.
-* New: Admin notice for outdated premium plugin versions with upgrade link.
-* New: Delete All Tickets button on ticket list - bulk delete with double confirmation.
-* New: Shortcode parameter download_all_pdf for [sasoEventTicketsValidator_code] - download all user tickets as one PDF.
-* New: Safety check when deleting ticket lists - warns if list is still assigned to products.
+* New: Premium subscription expiration check with admin warnings and grace period.
+* New: Lifetime license support.
+* New: Delete All Tickets button on ticket list with double confirmation.
+* New: Shortcode parameter download_all_pdf for downloading all user tickets as one PDF.
+* New: Safety check when deleting ticket lists — warns if list is still assigned to products.
+* Fix: Restored deprecated methods for backward compatibility with older premium plugin versions.
 
 = 2.8.1 - 2026-01-20 =
-* Fix: PHP 8.4 compatibility - explicit nullable type for REST API parameter.
-* Fix: Remove debug infos.
+* Fix: PHP 8.4 compatibility — explicit nullable type for REST API parameter.
 
 = 2.8.0 - 2026-01-20 =
 * New: Interactive seating plan designer with drag & drop editor for creating venue layouts.
@@ -381,144 +287,8 @@ Default ticket template was adjusted to display the seat number. Big refactoring
 * New: Automatic seat blocking during checkout with configurable timeout.
 * New: Seat release on order cancel or refund.
 * New: Seating plan support on shop/archive pages.
-* Add more secure checks for accessing the wordpress plugin admin.
-* Add voice output to the ticket scanner.
-* Bug fix for ticket list description - removing the slashes that masks (").
-* Bug fix for customer search in the admin backend.
-* Improved security checks for admin usage.
-* Changes to display now the public ticket number on the email, instead of the ticket number - to prevent confusions.
-
-= 2.7.10 - 2025-10-14 =
-* Fix for the created time within the admin area on the tables (tickets, ticket list, auths).
-* Fix for polygon plugin that is overwritting a WPML function and prevents to get the correct porduct id.
-* Adjust the order of the tickets table to use the created date as default.
-* Fix for date picker with plugins, that are messing up the date information on the cart item.
-
-= 2.7.9 - 2025-09-30 =
-* Add an update checkout to reflect the changed input values if you use a single page for cart and checkout.
-* Add First Steps box to the admin area for new users.
-* Add link to the BETA chat bot for faster help - using ChatGPT for now.
-* Added a warning, if you try to add ticket numbers without having a ticket list.
-* Add info if the datatable for the ticket list is empty.
-* Add info if the datatable for the tickets is empty.
-* Add release notes as link within the support area.
-* New option to allow subscription using the same ticket number as the parent order - wcassignmentExtendTicketWithSubscription.
-* Fix for ticket scanner url if option wcTicketCompatibilityModeURLPath is used.
-* Add ticket scanner URL with public ticket number to the ticket details in the admin area.
-* Adjust date and time output at the admin area to use your date and time format.
-
-= 2.7.8 - 2025-09-15 =
-* Fix the switched column value of redeemed and redeemed.
-* Fix the missing date on the ticket.
-
-= 2.7.7 - 2025-09-08 =
-* Add fix for WPML products for the order email.
-* Fix for display chosen date from the date picker to the WCPDF plugin if used.
-* Fix for format display of chosen date on the email.
-* Fix for format display of chosen date on the thank you page.
-* Add more support for WPML.
-* Add new label for the date picker. If the date is in the past then the value of option wcTicketLabelCartForDaychooserPassedDate will be shown.
-* Fix for cleaning up the session if an product is removed from the cart.
-* Add date picker to the shop page for day chooser products.
-* Add date picker to the product page for day chooser products.
-* Label wcTicketLabelPDFDownloadHeading can be excluded from rendering by entering an empty space.
-
-= 2.7.6 - 2025-08-22 =
-* Add name and language indicator to the font chooser option wcTicketPDFFontFamily
-* Listed more libraries in the support area
-* Removed the list with all available options from the support area
-* New option to set the order status if the ticket is viewed or downloaded. Warning, this is tricky, if you have no clue for what it could be used, please do not use it. Option: ticketScannerSetOrderStatusAfterTicketView.
-* Fix display order ticket paid date for non paid tickets.
-* Adopt ticket scanner to process also prefix "order-" as an order ticket number - fix bug before premum version 1.5.5.
-
-= 2.7.5 - 2025-07-09 =
-* Add check of the user input for the date picker. If the start and end date is set on the product, then the validation will make sure, the date is entered and also within the date range.
-* New option to prevent downloads of tickets (secured downloads), badges and ICS files if the user is not logged in. To use this, activate wcTicketAllowOnlyLoggedinToDownload.
-* New option if you want to redirect not logged in users during the secured download - wcTicketAllowOnlyLoggedinToDownloadRedirectURL.
-
-= 2.7.4 - 2025-07-01 =
-* Fix background image for ticket badges.
-
-= 2.7.3 - 2025-06-24 =
-* Fix for missing parent product id with wpml within the tickets
-* Added languages for ticket scanner (ch_CN, es_ES, fr_FR, it_IT, ja_JP, nl_NL. pt_BR, pt_PT)
-
-= 2.7.2 - 2025-06-17 =
-* Fix qr content on ticket badge
-
-= 2.7.1 - 2025-06-12 =
-* Fix ticket scanner - it was prepared by accident to have a bit of code that is new approach.
-
-= 2.7.0 - 2025-06-11 =
-* Fix removing the ticket numbers from the order item, even if the tickets are already deleted.
-* Changed the premium license link.
-* Fix wrong QR code on QR code image and PDF if you use your own qr code content with option qrOwnQRContent.
-* Fix wrong QR code on ticket badge if you use your own qr code content with option qrOwnQRContent.
-
-= 2.6.11 - 2025-05-28 =
-* Fix PDF ob_clean notice.
-* Fix wrong version number.
-* Fix cart (datepicker, text-value, option-value) value saving within the cart view and checkout.
-* Fix update all dates on the cart view and checkout.
-
-= 2.6.10 - 2025-05-26 =
-* Add shortcode to display all options/features.
-* Added ticket title and sub title (variation name) above the buttons for the distract free view of the scanned ticket.
-* Display last redeem operation with the redeem information on the ticket scanner.
-* Add redeem button to the top for fast redeem operation after the ticket is retrieved on the ticket scanner.
-* New option to preset the ticket scanner to display the short description in distract free mode - ticketScannerHideTicketInformationShowShortDesc
-* Bug fix for missing orders if the order will be checked for "is-paid"
-
-= 2.6.9 = 2025-05-19 =
-* Fix date picker saving value at cart.
-* Reinit the date picker fields if the cart was updated.
-
-= 2.6.8 - 2025-05-13 =
-* Fix issue with variable products on the order view.
-
-= 2.6.7 - 2025-05-13 =
-* Add is_daychooser and day_per_ticket to the export. You have the meta information now direct as a column: meta_wc_ticket_is_daychooser, meta_wc_ticket_day_per_ticket.
-* Add new filter for ticket numbers in the admin to search for a chosen date on the tickets. Search value is DAYPERTICKET:YYYY-MM-DD. You can also search for YYYY-MM or just YYYY.
-* You can now add and & to the search within the ticket admin to search for more than one filter. But limited to filters and one normal search. E.g. PRODUCTID:123 & ORDERID:123 & ticketnumber.
-* You can download the ticket badges from within the order now
-
-= 2.6.6 - 2025-05-06 =
-* Added more help videos to the options
-
-= 2.6.5 - 2025-05-05 =
-* Added list of third party libraries to the support information area.
-* Ticket scanner has a new option to use the old QR code scanner library for compatibility mode in case your iphone is not working as expected.
-* Admin area is refreshing the security code (nonce) automatically if open.
-* Add an newline to put the date on the next line in the order items table.
-* Thank you page uses now the new WooCommerce hook.
-* Added font for PDF Roboto and Newsreader to support more languages.
-
-= 2.6.4 - 2025-04-24 =
-* Basic WPML plugin support added.
-* Optimized the plugin speed a little bit.
-
-= 2.6.3 - 2025-04-16=
-* Datatables in the admin made width=100%.
-* Add checks for used 3rd party php classes, so that they will not be re-added to php - what could cause conflicts.
-* Display customer name is now using $order->get_formatted_billing_full_name.
-
-= 2.6.2 - 2025-04-07 =
-* Two columns added to the export: is_daychooser and day_per_ticket.
-* Preparation to display the redeemed and not redeemed tickets at the ticket scanner - with premium 1.5.2 available.
-* Changing title of the admin area from Event Tickets with Woocommerce to Event Tickets with Ticket Scanner
-* Fixed the default value for Date2Text Javascript function on the ticket.
-* Ticket scanner is now checking at least every 4 minutes for a new nonce security token, to prevent access error message.
-* Fix for the date chooser - it will prevent allowing to choose a date before today.
-
-= 2.6.1 - 2025-03-18 =
-* Bug fix new check of the option value is active
-
-= 2.6.0 - 2025-03-17 =
-* Bug fix for unchecking of product checkboxes in the event tickets tab
-* New shortcode [sasoEventTicketsValidator_eventsview]. Add event calendar view for events with an start date. Missing end date will be treated like same day.
-* Option wcassignmentDoNotPutOnEmail re-added :)
-* Option wcassignmentDoNotPutOnPDF re-added :)
-* Small optimizations on options call and find products to make them private after expired
-* Format for date and time is also passed to the outputs
-* Ticket scanner is showing now always the variant name at the top - even if the option is deactivated. For the ticket view and PDF it is still the same.
-* Ticket scanner text input field for hardware qr code scanner accepts also "'" as divider of the public ticket number.
+* New: Voice output for the ticket scanner.
+* Improved: Security checks for admin area access.
+* Improved: Public ticket number now displayed in emails instead of internal ticket number.
+* Fix: Ticket list description slashes.
+* Fix: Customer search in admin backend.

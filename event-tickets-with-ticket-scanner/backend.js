@@ -843,32 +843,123 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 		let questions = [
 			{
-				"q":'PDF is not rendering - critical error',
-				"t":'<p>The used PDF library cannot handle all the fancy HTML and CSS. Using these in the product description can lead to an error. If the ticket detail page is working, but the PDF not then you can try to remove the HTML tags or use the option to not print the product description to the ticket.<br>Please set the option <b>wcTicketPDFStripHTML</b> to remove the HTML and retry the PDF by reloading the browser or click again.</p><p>If your system is not live yet, you can use the debug mode first to see which HTML tags are used. The basics HTML tags are working well.</p><p>Try the option to remove the not supported HTML tags - this is not always great, because it removes the HTML tags that Wordpress is not supporting and could still lead to PDF issues, but a great start.<br>If this was not helping, then remove please the HTML tags in your product description for a test. You can also just deactivate the option <b>wcTicketDisplayShortDesc</b> to not use the short description of the product for a test.</p>'
+				cat: "Getting Started",
+				items: [
+					{
+						q: "How do I create my first ticket product?",
+						t: '<p>In WooCommerce, create or edit a product. In the <b>Product data</b> panel you will find the <b>Event Ticket</b> tab. Check <b>This is a ticket</b> and assign a ticket list. Save the product. When a customer purchases this product and the order reaches the status "completed", a ticket with a unique QR code is generated automatically.</p><p>You can also check out <a href="https://youtu.be/yJcHMV7oAFc" target="_blank">this setup video</a> for a walkthrough.</p>'
+					},
+					{
+						q: "What is the difference between free and premium?",
+						t: '<p>The free version supports up to 32 tickets per product and includes the full ticket scanner, QR codes, PDF tickets, and WooCommerce integration.</p><p>The <b>premium version</b> removes the ticket limit and adds features like the visual ticket template designer (TWIG), ticket badges, seating plans, custom fields per ticket, and more.</p>'
+					}
+				]
 			},
 			{
-				"q":'Receiving 404 error page if calling the ticket view and/or PDF',
-				"t":'<p>Some installations have issues to open the ticket details view and/or the ticket scanner.<br>This could be because of your theme, other plugins or more stricter security settings.</p><p>If you experience to see the "file not found" page (404), then it could help if your activate the compatibility mode in the options.</p><p>For this configure the option <b>wcTicketCompatibilityModeURLPath</b> and/or <b>wcTicketCompatibilityMode</b>.</p><p>If this do not help, then the plugin will not work with your installation for now.</p>'
+				cat: "Ticket Scanner",
+				items: [
+					{
+						q: "How do I share scanner access with my event staff?",
+						t: '<p>Go to the plugin admin and click <b>Auth Tokens</b>. Create a new token and optionally restrict it to specific products. Your staff can scan the auth token QR code with the ticket scanner on their phone &mdash; it grants scanner access without needing a WordPress login.</p>'
+					},
+					{
+						q: "How do I install the scanner as an app on my phone?",
+						t: '<p>The ticket scanner supports <b>PWA</b> (Progressive Web App). Enable the option <b>ticketScannerPWA</b> in the plugin settings. Then open the scanner URL in Chrome or Safari and use "Add to Home Screen". It will behave like a native app with its own icon and fullscreen mode.</p>'
+					},
+					{
+						q: "What are scanner presets and which should I use?",
+						t: '<p>Scanner presets are quick-access buttons at the top of the scanner that configure multiple options at once. The most popular presets:</p><ul><li><b>Fast Mode</b> &mdash; enables <b>ticketScannerScanAndRedeemImmediately</b> and <b>ticketScannerStartCamWithoutButtonClicked</b> so scanning and redeeming happens in one step without extra taps.</li><li><b>Info Mode</b> &mdash; shows full ticket details before redeeming, useful for checking names or seat numbers.</li></ul><p>You can also toggle <b>ticketScannerHideTicketInformation</b> and <b>ticketScannerVibrate</b> (haptic feedback) individually.</p>'
+					},
+					{
+						q: "Can I use a hardware barcode scanner?",
+						t: '<p>Yes. The ticket scanner page has a text input field. Any USB or Bluetooth barcode/QR scanner that acts as a keyboard input device will work. Simply focus the input field and scan &mdash; the code is entered and submitted automatically.</p>'
+					}
+				]
 			},
 			{
-				"q":'How to ask for a value of your ticket?',
-				"t":'<p>You can setup your product to ask your customer for up to 2 values. Free text and a value chosen from a dropdown.<br>You can checkout how it is done with <a href="https://youtu.be/2vTV39wgWNE" target="_blank">this video</a>.</p>'
+				cat: "Tickets & PDF",
+				items: [
+					{
+						q: "How do I customize the ticket PDF design?",
+						t: '<p>The plugin uses <b>TWIG templates</b> for PDF rendering. In the plugin options, you can find the <b>Ticket Template Designer</b> section. Use the test designer to preview changes live. You have access to variables like <code>TICKET</code>, <code>ORDER</code>, <code>PRODUCT</code>, and <code>METAOBJ</code>.</p><p>Options like <b>wcTicketSizeWidth</b>, <b>wcTicketSizeHeight</b>, <b>wcTicketPDFBackgroundColor</b>, and <b>wcTicketPDFFullBleed</b> let you control the page layout. The premium version includes the visual template designer.</p>'
+					},
+					{
+						q: "How do I let customers download all tickets as one PDF?",
+						t: '<p>Enable one or more of these options to show a "Download all tickets" button:</p><ul><li><b>wcTicketDisplayDownloadAllTicketsPDFButtonOnMail</b> &mdash; link in the order confirmation email</li><li><b>wcTicketDisplayDownloadAllTicketsPDFButtonOnCheckout</b> &mdash; on the checkout thank-you page</li><li><b>wcTicketDisplayDownloadAllTicketsPDFButtonOnOrderdetail</b> &mdash; on the "My Account" order detail page</li></ul><p>The customer can then download a single PDF containing all tickets from the order.</p>'
+					}
+				]
 			},
 			{
-				"q":'(Pre)Create order with tickets in the backend',
-				"t":'<p>You can also checkout <a href="https://youtu.be/VxUV-s-SIpA" target="_blank">this video here</a>.<br>This video shows how to create an order from the backend and generate the tickets.<br>This approach is also good for free tickets. So you can create the order and have valid tickets. Do not forget to set the order to a redeemable status. The default is "completed".</p>'
+				cat: "WooCommerce",
+				items: [
+					{
+						q: "How do I let customers choose their event date?",
+						t: '<p>Edit your ticket product and enable the <b>Day Chooser</b> checkbox in the Event Ticket tab. Configure the start/end date range and optionally exclude specific weekdays. The customer will see a date picker on the product page and must choose a date before adding to cart.</p><p>Use <b>wcTicketLabelCartForDaychooser</b> to customize the label shown in the cart.</p>'
+					},
+					{
+						q: "How do I handle refunds &mdash; what happens to the ticket?",
+						t: '<p>Two options control this:</p><ul><li><b>wcRestrictFreeCodeByOrderRefund</b> &mdash; clears the ticket when the entire order is refunded or deleted</li><li><b>wcassignmentOrderItemRefund</b> &mdash; clears the ticket when an individual line item is refunded</li></ul><p>When a ticket is "cleared", it becomes invalid and cannot be scanned anymore. The ticket code is released back to the pool.</p>'
+					},
+					{
+						q: "Can I auto-complete orders that only contain tickets?",
+						t: '<p>Yes. Enable the option <b>wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets</b>. When all items in the order are ticket products and the order reaches "processing" status (payment received), it is automatically set to "completed". This triggers ticket generation without manual intervention. Unpaid orders are not affected.</p>'
+					},
+					{
+						q: "Can customers redeem their own ticket?",
+						t: '<p>Yes. Enable the option <b>wcTicketShowRedeemBtnOnTicket</b> to show a redeem button on the ticket detail page. This is useful for self-check-in scenarios. You can also set <b>wcTicketRedirectUser</b> and <b>wcTicketRedirectUserURL</b> to redirect the customer to a specific page after redemption.</p>'
+					}
+				]
 			},
 			{
-				"q":'How to display meta information of the purchased item?',
-				"t":'You can display the meta information of the item with TWIG.<br>Try TWIG code in the ticket template test designer, to see if this helps. First it is a good idea to check the whole meta values. You can achieve this, by displaying the values as JSON with this code.<p><b>{% for item_id, item in ORDER.get_items %}<br>{{ item.get_meta_data|json_encode() }}<br>{% endfor %}</b></p><p>You will see the key value pairs. Then grab your values. E.g.</p><p><b>{%- for item_id, item in ORDER.get_items -%}<br>{%- if item_id == METAOBJ.woocommerce.item_id -%}<br>&lt;br&gt;Date: {{ item.get_meta("Booked From", true) }} - {{ item.get_meta("Booked To", true) }}<br>{%- endif -%}<br>{%- endfor -%}</b></p>'
+				cat: "Validation & Security",
+				items: [
+					{
+						q: "How do I prevent tickets from being scanned too early or too late?",
+						t: '<p>Set event start and end dates on your ticket product. Then configure these options:</p><ul><li><b>wcTicketDontAllowRedeemTicketBeforeStart</b> &mdash; blocks scanning before the event starts</li><li><b>wcTicketOffsetAllowRedeemTicketBeforeStart</b> &mdash; allow scanning X hours before start (e.g. 2 hours early for entry)</li><li><b>wcTicketAllowRedeemTicketAfterEnd</b> &mdash; allow or block scanning after the event ends</li></ul><p>You can customize the error messages shown via <b>wcTicketTransTicketNotValidToEarly</b> and <b>wcTicketTransTicketNotValidToLate</b>.</p>'
+					},
+					{
+						q: "How do I allow multi-use tickets (day passes, memberships)?",
+						t: '<p>Edit your ticket product and set the <b>Max redeem amount</b> field in the Event Ticket tab. Set it to the number of times a ticket can be scanned (e.g. 30 for a monthly pass). Set it to <b>0</b> for unlimited scans.</p><p>The scanner will show how many times the ticket has been used (e.g. "Used 5 of 30").</p>'
+					}
+				]
 			},
 			{
-				"q":"How to set the order immediately to 'completed' if the order is paid?",
-				"t":"You can activate the option wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets to change the order status to completed if all purchased items in the order are tickets and the order status is processing. With this the order is fine and not paid orders are not automatically set to completed. This prevents frauds."
+				cat: "Advanced",
+				items: [
+					{
+						q: "How do I use webhooks to connect to external systems?",
+						t: '<p>Enable <b>webhooksActiv</b> in the plugin options. Then configure URLs for the events you want to be notified about:</p><ul><li><b>webhookURLsetused</b> &mdash; ticket redeemed for the first time</li><li><b>webhookURLaddwcticketsold</b> &mdash; new ticket sold via WooCommerce</li><li><b>webhookURLaddwcticketredeemed</b> / <b>webhookURLaddwcticketunredeemed</b> &mdash; ticket redeemed or unredeemed</li></ul><p>The plugin sends a POST request with ticket data as JSON to the configured URL. You can use this to sync with CRM systems, access control, or analytics tools.</p>'
+					},
+					{
+						q: "How to use own page with ticket scanner and have the QR code redirect to it?",
+						t: "<p>You set up a page with the ticket scanner shortcode 'sasoEventTicketsValidator_ticket_scanner'.<br>Then adjust the URL for your tickets (scanner is included). The only option for now is the wcTicketCompatibilityModeURLPath. But this also changes the detail page of the ticket. Basically the system is adding to this URL just the '/scanner/?code='.</p><p>If you do not want this, you can adjust the QR content with the option <b>qrOwnQRContent</b>.</p><p>Set it to have the content:<br>https://domain-and-path/scanner/?code={WC_TICKET__PUBLIC_TICKET_ID}</p>"
+					},
+					{
+						q: "How to display meta information of the purchased item?",
+						t: 'You can display the meta information of the item with TWIG.<br>Try TWIG code in the ticket template test designer, to see if this helps. First it is a good idea to check the whole meta values. You can achieve this, by displaying the values as JSON with this code.<p><b>{% for item_id, item in ORDER.get_items %}<br>{{ item.get_meta_data|json_encode() }}<br>{% endfor %}</b></p><p>You will see the key value pairs. Then grab your values. E.g.</p><p><b>{%- for item_id, item in ORDER.get_items -%}<br>{%- if item_id == METAOBJ.woocommerce.item_id -%}<br>&lt;br&gt;Date: {{ item.get_meta("Booked From", true) }} - {{ item.get_meta("Booked To", true) }}<br>{%- endif -%}<br>{%- endfor -%}</b></p>'
+					}
+				]
 			},
 			{
-				"q":"How to use own page with ticket scanner and have the QR code redirect to it?",
-				"t":"<p>You set up a page with the ticket scanner shortcode 'sasoEventTicketsValidator_ticket_scanner'.<br>Then adjust the URL for your tickets (scanner is included). The only option for now is the wcTicketCompatibilityModeURLPath. But this also changes the detail page of the ticket. Basically the system is adding to this URL just the '/scanner/?code='.</p><p>If you do not want this, you can adjust the QR content with the option qrOwnQRContent.</p><p>Set it to have the content:<br>https://domain-and-path/scanner/?code={WC_TICKET__PUBLIC_TICKET_ID}</p>"
+				cat: "Troubleshooting",
+				items: [
+					{
+						q: "PDF is not rendering - critical error",
+						t: '<p>The used PDF library cannot handle all the fancy HTML and CSS. Using these in the product description can lead to an error. If the ticket detail page is working, but the PDF not then you can try to remove the HTML tags or use the option to not print the product description to the ticket.<br>Please set the option <b>wcTicketPDFStripHTML</b> to remove the HTML and retry the PDF by reloading the browser or click again.</p><p>If your system is not live yet, you can use the debug mode first to see which HTML tags are used. The basics HTML tags are working well.</p><p>Try the option to remove the not supported HTML tags - this is not always great, because it removes the HTML tags that Wordpress is not supporting and could still lead to PDF issues, but a great start.<br>If this was not helping, then remove please the HTML tags in your product description for a test. You can also just deactivate the option <b>wcTicketDisplayShortDesc</b> to not use the short description of the product for a test.</p>'
+					},
+					{
+						q: "Receiving 404 error page if calling the ticket view and/or PDF",
+						t: '<p>Some installations have issues to open the ticket details view and/or the ticket scanner.<br>This could be because of your theme, other plugins or more stricter security settings.</p><p>If you experience to see the "file not found" page (404), then it could help if your activate the compatibility mode in the options.</p><p>For this configure the option <b>wcTicketCompatibilityModeURLPath</b> and/or <b>wcTicketCompatibilityMode</b>.</p><p>If this do not help, then the plugin will not work with your installation for now.</p>'
+					},
+					{
+						q: "How to ask for a value of your ticket?",
+						t: '<p>You can setup your product to ask your customer for up to 2 values. Free text and a value chosen from a dropdown.<br>You can checkout how it is done with <a href="https://youtu.be/2vTV39wgWNE" target="_blank">this video</a>.</p>'
+					},
+					{
+						q: "(Pre)Create order with tickets in the backend",
+						t: '<p>You can also checkout <a href="https://youtu.be/VxUV-s-SIpA" target="_blank">this video here</a>.<br>This video shows how to create an order from the backend and generate the tickets.<br>This approach is also good for free tickets. So you can create the order and have valid tickets. Do not forget to set the order to a redeemable status. The default is "completed".</p>'
+					}
+				]
 			}
 		];
 
@@ -877,13 +968,16 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		let div2 = $('<div style="background:white;padding:15px;border-radius:15px;">').appendTo(div);
 		div2.append(getUseFulVideosHTML()+'<br><br>');
 
-		questions.forEach(v=>{
-			let clicked = false;
-			div2.append($('<h3 style="cursor:pointer;">').html("+ "+v.q).on("click",e=>{
-				f1.css("display", clicked ? "none" : "block");
-				clicked = !clicked;
-			}));
-			let f1 = $('<div style="display:none;padding-bottom:15px;">').html(v.t).appendTo(div2);
+		questions.forEach(cat => {
+			div2.append($('<h2 style="margin:25px 0 10px 0;padding-bottom:5px;border-bottom:2px solid #ddd;">').text(cat.cat));
+			cat.items.forEach(v => {
+				let clicked = false;
+				div2.append($('<h3 style="cursor:pointer;margin:5px 0;">').html("+ "+v.q).on("click",e=>{
+					f1.css("display", clicked ? "none" : "block");
+					clicked = !clicked;
+				}));
+				let f1 = $('<div style="display:none;padding:0 0 15px 15px;">').html(v.t).appendTo(div2);
+			});
 		});
 
 		DIV.html(getBackButtonDiv());
@@ -1442,7 +1536,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							desc = desc.trim();
 							elem_div.append(desc !== "" ? '<br><i>'+desc+'</i>':'');
 						}
-						if (v.type != "number") {
+						if (v.type != "number" && v.type != "color") {
 							elem_input.css({"width":"90%"});
 						}
 						if (v.type != "dropdown" && v.type != "editor") {
@@ -2773,7 +2867,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.confirmedCount+'<th align="left">'
 					+_x('Redeemed', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.redeemAmount+'<th>'
 					+_x('OrderId', 'label', 'event-tickets-with-ticket-scanner')+'</th><th>CVV</th><th>'
-					+_x('Status', 'label', 'event-tickets-with-ticket-scanner')+'</th><th></th></tr></thead><tfoot><th colspan="10" style="text-align:left;font-weight:normal;padding-left:0;padding-bottom:0;"></th></tfoot>');
+					+_x('Status', 'label', 'event-tickets-with-ticket-scanner')+'</th><th style="min-width:290px"></th></tr></thead><tfoot><th colspan="10" style="text-align:left;font-weight:normal;padding-left:0;padding-bottom:0;"></th></tfoot>');
 				tabelle_codes.find('input[data-id="checkAll"]').on('click', (e)=> {
 					let isChecked = $(e.currentTarget).prop('checked');
 					let found = false;

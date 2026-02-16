@@ -14,7 +14,7 @@ final class sasoEventtickets_Ticket {
 	private $authtoken = null; // only set if the ticket scanner is sending the request with authtoken
 
 	private $redeem_successfully = false;
-	private $onlyLoggedInScannerAllowed = false;
+	private $onlyLoggedInScannerAllowed = null;
 
 	public static function Instance($request_uri) {
 		static $inst = null;
@@ -34,14 +34,13 @@ final class sasoEventtickets_Ticket {
 		$this->MAIN = $sasoEventtickets;
 
 		$this->setRequestURI($request_uri);
-		$this->onlyLoggedInScannerAllowed = $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketOnlyLoggedInScannerAllowed') ? true : false;
-		//load_plugin_textdomain('event-tickets-with-ticket-scanner', false, 'event-tickets-with-ticket-scanner/languages');
+		// Options are loaded lazily to avoid triggering translations before 'init'
+		add_action( 'init', [$this, 'initOptionsFromConstructor'], 1 );
+	}
+
+	public function initOptionsFromConstructor(): void {
+		$this->onlyLoggedInScannerAllowed = $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketOnlyLoggedInScannerAllowed');
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketActivateOBFlush')) {
-			/**
-			 * Proper ob_end_flush() for all levels
-			 * This replaces the WordPress `wp_ob_end_flush_all()` function
-			 * with a replacement that doesn't cause PHP notices.
-			 */
 			remove_action( 'shutdown', 'wp_ob_end_flush_all', 1 );
 			add_action( 'shutdown', function() {
 				while ( ob_get_level() > 0 ) {
@@ -49,6 +48,13 @@ final class sasoEventtickets_Ticket {
 				}
 			} );
 		}
+	}
+
+	private function isOnlyLoggedInScannerAllowed(): bool {
+		if ($this->onlyLoggedInScannerAllowed === null) {
+			$this->onlyLoggedInScannerAllowed = $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketOnlyLoggedInScannerAllowed');
+		}
+		return $this->onlyLoggedInScannerAllowed;
 	}
 
 	public function getWPMLProductId($product_id) {
@@ -111,29 +117,77 @@ final class sasoEventtickets_Ticket {
 	public function isSubscriptionActive(): bool {
 		$info = $this->get_expiration();
 
-		// No expiration date known = active (fallback for legacy data)
-		if (empty($info['timestamp']) || $info['timestamp'] <= 0) {
-			return true;
+		// Lifetime = immer aktiv
+		if (isset($info['timestamp']) && $info['timestamp'] == -1) return true;
+		if (isset($info['subscription_type']) && $info['subscription_type'] === 'lifetime') return true;
+
+		// Zu viele Fehler hintereinander = inaktiv
+		if (intval($info['consecutive_failures'] ?? 0) >= 5) return false;
+
+		// Checksum-Prüfung: wurden Werte manipuliert?
+		if (!$this->verifyExpirationChecksum($info)) return false;
+
+		// Noch nie erfolgreich geprüft?
+		$last_success = intval($info['last_success'] ?? 0);
+		if ($last_success === 0) {
+			// First-Install Grace: 3 Tage Zeit für ersten Server-Check
+			$first_seen = intval($info['first_seen'] ?? 0);
+			if ($first_seen === 0) {
+				// Allererster Aufruf - first_seen setzen
+				$this->setFirstSeen();
+				return true;
+			}
+			// Mehr als 3 Tage ohne erfolgreichen Check = inaktiv
+			return (time() - $first_seen) < (3 * 86400);
 		}
 
-		// Lifetime licenses (timestamp = -1) = always active
-		if ($info['timestamp'] == -1) {
-			return true;
-		}
+		// Letzter erfolgreicher Check zu alt (>10 Tage) = inaktiv
+		if ((time() - $last_success) > (10 * 86400)) return false;
 
-		// Check subscription type (if available from server)
-		if (isset($info['subscription_type']) && $info['subscription_type'] === 'lifetime') {
-			return true;
-		}
+		// Kein Timestamp vom Server = inaktiv (außer in Grace Period)
+		if (empty($info['timestamp']) || $info['timestamp'] <= 0) return false;
 
-		// Grace period: configurable days after expiration (default 7)
-		$grace_days = isset($info['grace_period_days']) ? intval($info['grace_period_days']) : 7;
-		$grace_seconds = $grace_days * 86400;
-
-		return time() < ($info['timestamp'] + $grace_seconds);
+		// Normale Expiration + Grace Period
+		$grace_days = intval($info['grace_period_days'] ?? 7);
+		return time() < ($info['timestamp'] + ($grace_days * 86400));
 	}
 
-	private function checkForPremiumSerialExpiration() {
+	/**
+	 * Calculate HMAC checksum over critical license fields to detect DB manipulation.
+	 */
+	private function calculateExpirationChecksum(array $info): string {
+		$critical = [
+			'timestamp' => $info['timestamp'] ?? 0,
+			'last_success' => $info['last_success'] ?? 0,
+			'notvalid' => $info['notvalid'] ?? 0,
+			'consecutive_failures' => $info['consecutive_failures'] ?? 0,
+		];
+		$salt = defined('AUTH_KEY') ? AUTH_KEY : 'saso_et_fallback_salt';
+		return hash_hmac('sha256', json_encode($critical), $salt);
+	}
+
+	/**
+	 * Verify that stored license data has not been tampered with.
+	 * Legacy data without checksum is accepted.
+	 */
+	private function verifyExpirationChecksum(array $info): bool {
+		if (!isset($info['_checksum'])) return true; // Legacy-Daten ohne Checksum = OK
+		return hash_equals($info['_checksum'], $this->calculateExpirationChecksum($info));
+	}
+
+	/**
+	 * Record the first time the plugin was seen (for grace period on fresh installs).
+	 */
+	private function setFirstSeen(): void {
+		$option_name = $this->MAIN->getPrefix() . "_premium_serial_expiration";
+		$info = get_option($option_name);
+		$info_obj = !empty($info) ? json_decode($info, true) : [];
+		$info_obj['first_seen'] = time();
+		$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
+		update_option($option_name, json_encode($info_obj));
+	}
+
+	public function checkForPremiumSerialExpiration() {
 		$option_name = $this->MAIN->getPrefix()."_premium_serial_expiration";
 		// check the expiration of the premium serial
 		if ($this->MAIN->isPremium()) {
@@ -169,13 +223,23 @@ final class sasoEventtickets_Ticket {
 
 					$response = wp_remote_get($url, ['timeout' => 45]);
 					if (is_wp_error($response)) {
+						// Fehler tracken
+						$info_obj["consecutive_failures"] = intval($info_obj["consecutive_failures"] ?? 0) + 1;
+						$info_obj["last_run"] = time();
+						$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
+						update_option($option_name, json_encode($info_obj));
 					} else {
 						$body = wp_remote_retrieve_body( $response );
 						$data = json_decode( $body, true );
 						if (isset($data["isCheckCall"]) && $data["isCheckCall"] == 1) {
-							// store it get_option( self::$_dbprefix."db_version" ); update_option( self::$_dbprefix."db_version", $this->dbversion );
 							$info_obj["last_run"] = time();
-							$info_obj = array_merge($data, $info_obj);
+							$info_obj["last_success"] = time();
+							$info_obj["consecutive_failures"] = 0;
+							// Server-Daten gezielt übernehmen (Server gewinnt)
+							foreach (['timestamp', 'expiration_date', 'timezone', 'notvalid', 'isCheckCall', 'subscription_type', 'grace_period_days'] as $key) {
+								if (isset($data[$key])) $info_obj[$key] = $data[$key];
+							}
+							$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
 							$value = $this->MAIN->getCore()->json_encode_with_error_handling($info_obj);
 							update_option($option_name, $value);
 						}
@@ -262,7 +326,7 @@ final class sasoEventtickets_Ticket {
 			// Administrators always have access
 			if (in_array("administrator", $user_roles)) return true;
 
-			if ($this->onlyLoggedInScannerAllowed) {
+			if ($this->isOnlyLoggedInScannerAllowed()) {
 				// Strict mode: only administrators (already checked above)
 				$ret = false;
 			} else {
@@ -1032,7 +1096,7 @@ final class sasoEventtickets_Ticket {
 	public function isScanner() {
 		// /wp-content/plugins/event-tickets-with-ticket-scanner/ticket/scanner/
 		if ($this->isScanner == null) {
-			if ($this->onlyLoggedInScannerAllowed) {
+			if ($this->isOnlyLoggedInScannerAllowed()) {
 				if (!in_array('administrator',  wp_get_current_user()->roles)) {
 					return false;
 				}
@@ -1283,8 +1347,21 @@ final class sasoEventtickets_Ticket {
 	public function outputTicketScannerStandalone() {
 		header('HTTP/1.1 200 OK');
 		$this->MAIN->setTicketScannerJS();
-		//get_header();
-		echo '<html><head>';
+		$pwaEnabled = $this->MAIN->getOptions()->isOptionCheckboxActive('ticketScannerPWA');
+		$themeColor = $this->MAIN->getOptions()->getOptionValue('ticketScannerThemeColor', '#2e74b5');
+		if (empty($themeColor)) $themeColor = '#2e74b5';
+		echo '<!DOCTYPE html>';
+		echo '<html lang="'.esc_attr(get_locale()).'">';
+		echo '<head>';
+		echo '<meta charset="UTF-8">';
+		echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
+		if ($pwaEnabled) {
+			echo '<meta name="theme-color" content="'.esc_attr($themeColor).'">';
+			echo '<meta name="mobile-web-app-capable" content="yes">';
+			echo '<link rel="manifest" href="'.esc_url(rest_url(SASO_EVENTTICKETS::getRESTPrefixURL().'/ticket/scanner/pwa-manifest')).'">';
+			echo '<link rel="apple-touch-icon" href="'.esc_url(plugins_url('img/pwa-icon-192.png', __FILE__)).'">';
+		}
+		$tc = esc_attr($themeColor);
 		?>
 		<style>
             body {font-family: Helvetica, Arial, sans-serif;}
@@ -1293,7 +1370,7 @@ final class sasoEventtickets_Ticket {
 			div.ticket_content p {font-size:initial !important;margin-bottom:1em !important;}
             button {padding:10px;font-size: 1.5em;}
             .lds-dual-ring {display:inline-block;width:64px;height:64px;}
-            .lds-dual-ring:after {content:" ";display:block;width:46px;height:46px;margin:1px;border-radius:50%;border:5px solid #fff;border-color:#2e74b5 transparent #2e74b5 transparent;animation:lds-dual-ring 0.6s linear infinite;}
+            .lds-dual-ring:after {content:" ";display:block;width:46px;height:46px;margin:1px;border-radius:50%;border:5px solid #fff;border-color:<?php echo $tc; ?> transparent <?php echo $tc; ?> transparent;animation:lds-dual-ring 0.6s linear infinite;}
             @keyframes lds-dual-ring {0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);}}
 		</style>
 		<?php

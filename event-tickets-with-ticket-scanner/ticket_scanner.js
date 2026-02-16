@@ -54,6 +54,7 @@ jQuery(document).ready(()=>{
         distract_free: false,
         distract_free_show_short_desc: false,
         speak: false,
+        vibrate: false,
         auth:"",
         ticketScannerDontRememberCamChoice:toBool(myAjax.ticketScannerDontRememberCamChoice),
         ticketScannerStartCamWithoutButtonClicked:false,
@@ -112,6 +113,14 @@ jQuery(document).ready(()=>{
             ticket_scanner_operating_option.speak = !ticket_scanner_operating_option.speak;
         }
         _storeValue("ticket_scanner_operating_option.speak", ticket_scanner_operating_option.speak ? 1 : 0);
+    }
+    function setVibrate(value) {
+        if (typeof value != "undefined") {
+            ticket_scanner_operating_option.vibrate = value;
+        } else {
+            ticket_scanner_operating_option.vibrate = !ticket_scanner_operating_option.vibrate;
+        }
+        _storeValue("ticket_scanner_operating_option.vibrate", ticket_scanner_operating_option.vibrate ? 1 : 0);
     }
     function setDistractFreeShowShortDesc(value) {
         if (typeof value != "undefined") {
@@ -379,6 +388,13 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             div.append(' '+__("Speak out loud redeem operation (BETA)", 'event-tickets-with-ticket-scanner'));
             div.append("<br>");
 
+            let chkbox_vibrate = $('<input type="checkbox">').on("click", e=> {
+                setVibrate();
+            }).appendTo(div);
+            if (ticket_scanner_operating_option.vibrate) chkbox_vibrate.prop("checked", true);
+            div.append(' '+__("Vibrate on scan result", 'event-tickets-with-ticket-scanner'));
+            div.append("<br>");
+
             let chkbox_redeem_imediately = $('<input type="checkbox">').on("click", e=>{
                 setRedeemImmediately();
             }).appendTo(div);
@@ -428,9 +444,38 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         $('<div style="margin-top:40px;">').append(system.INPUTFIELD).appendTo(div);
         if (typeof ticket_scanner_operating_option.auth == "object") div.append(system.AUTHTOKENREMOVEBUTTON);
         div.append(system.ADDITIONBUTTONS);
+        addFullscreenButton(div);
         system.TIMEAREA = $('<div>');
         div.append(system.TIMEAREA);
         $('#reader_options').html(div);
+    }
+
+    function addFullscreenButton(container) {
+        var el = document.documentElement;
+        if (!el.requestFullscreen && !el.webkitRequestFullscreen) return;
+        var btn = $('<button class="button-ticket-options">').html(__("Fullscreen", 'event-tickets-with-ticket-scanner'));
+        btn.on("click", function() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (el.requestFullscreen) el.requestFullscreen();
+                else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        });
+        var onChange = function() {
+            var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            btn.html(isFs ? __("Exit Fullscreen", 'event-tickets-with-ticket-scanner') : __("Fullscreen", 'event-tickets-with-ticket-scanner'));
+        };
+        document.addEventListener('fullscreenchange', onChange);
+        document.addEventListener('webkitfullscreenchange', onChange);
+        container.append(btn);
+    }
+
+    function vibrateOnResult(success) {
+        if (navigator.vibrate && ticket_scanner_operating_option.vibrate) {
+            navigator.vibrate(success ? [200] : [100, 50, 100, 50, 100]);
+        }
     }
 
     function addMetaTag(name, content) {
@@ -1015,6 +1060,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function displayRedeemedInfo(code, data) {
         system.status = "redeemed";
         system.redeemed_successfully = data.redeem_successfully;
+        vibrateOnResult(data.redeem_successfully);
         displayTicketRedeemedInfo(data);
         if(ticket_scanner_operating_option.redeem_auto) {
             showScanNextTicketButton();
@@ -1057,6 +1103,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         updateTicketScannerInfoArea(content);
     }
     function displayRedeemedOrderInfo(code, data) {
+        vibrateOnResult(data.errors.length === 0);
         let content = $('<div>');
         content.html('<center>'+code+'</center>');
         if (data.errors.length > 0) {
@@ -1740,7 +1787,8 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         document.getElementsByClassName('ticket_content')[0].style.borderRadius="12px";
         let content = '';
         content += 'button.button-ticket-options {width:90%;margin-left:auto;margin-right:auto;margin-bottom:15px;display:block;border-radius:12px;padding:10px 15px;text-align:center;}';
-        content += 'button.button-primary {background-color:#008CBA;color:white;border-color:#008CBA;}';
+        var tc = myAjax.ticketScannerThemeColor || '#008CBA';
+        content += 'button.button-primary {background-color:'+tc+';color:white;border-color:'+tc+';}';
         content += '@media screen and (min-width: 720px) { button.button-ticket-options{width:50%;} }';
         // Seating Plan Modal Styles
         content += '.seating-plan-modal-overlay {position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:10px;box-sizing:border-box;}';
@@ -1958,6 +2006,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 setRedeemImmediately(toBool(myAjax.ticketScannerScanAndRedeemImmediately));
                 setDistractFree(toBool(myAjax.ticketScannerHideTicketInformation));
                 setStartCamWithoutButtonClicked(toBool(myAjax.ticketScannerStartCamWithoutButtonClicked));
+                setVibrate(toBool(myAjax.ticketScannerVibrate));
             } else {
                 if (system.PARA.redeemauto || _loadValue("ticket_scanner_operating_option.redeem_auto") == "1" || setRedeemImmediately(toBool(myAjax.ticketScannerScanAndRedeemImmediately))) {
                     setRedeemImmediately(true);
@@ -1973,6 +2022,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 }
                 if (system.PARA.speak || _loadValue("ticket_scanner_operating_option.speak") == "1" || toBool(myAjax.ticketScannerSpeakText)) {
                     setSpeakCheckbox(true);
+                }
+                if (_loadValue("ticket_scanner_operating_option.vibrate") == "1" || toBool(myAjax.ticketScannerVibrate)) {
+                    setVibrate(true);
                 }
             }
 
@@ -1994,6 +2046,8 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 startScanner();
                 //showScanNextTicketButton();
             }
+
+            registerServiceWorker();
         });
 
     }
@@ -2024,6 +2078,21 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             } catch (e) {
                 console.error("TTS failed:", e);
             }
+        }
+    }
+
+    function registerServiceWorker() {
+        if ('serviceWorker' in navigator && myAjax._pwaSWUrl) {
+            var scannerScope = window.location.pathname;
+            if (scannerScope.charAt(scannerScope.length - 1) !== '/') scannerScope += '/';
+
+            navigator.serviceWorker.register(myAjax._pwaSWUrl, { scope: scannerScope })
+                .then(function(registration) {
+                    setInterval(function() { registration.update(); }, 3600000);
+                })
+                .catch(function() {
+                    // Not critical - scanner works without SW
+                });
         }
     }
 

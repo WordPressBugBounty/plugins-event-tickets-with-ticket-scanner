@@ -231,6 +231,12 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 
 		public static function setRestRoutesTicket() {
 			$prefix = SASO_EVENTTICKETS::getRESTPrefixURL();
+			register_rest_route($prefix.'/ticket/scanner', '/pwa-manifest', [
+				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_pwa_manifest', 'permission_callback'=>function(){return true;}]
+			]);
+			register_rest_route($prefix.'/ticket/scanner', '/pwa-sw', [
+				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_pwa_sw', 'permission_callback'=>function(){return true;}]
+			]);
 			register_rest_route($prefix.'/ticket/scanner', '/ping', [
 				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_ping', 'permission_callback'=>function(){return true;}]
 			]);
@@ -320,6 +326,48 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 				wp_send_json_error($e->getMessage());
 			}
 		}
+		public static function rest_pwa_manifest($web_request) {
+			global $sasoEventtickets;
+			$scannerUrl = $sasoEventtickets->getCore()->getTicketURLBase() . 'scanner/';
+			$scope = wp_parse_url($scannerUrl, PHP_URL_PATH);
+			$iconBase = plugins_url('img/', __FILE__);
+			$themeColor = $sasoEventtickets->getOptions()->getOptionValue('ticketScannerThemeColor', '#2e74b5');
+			if (empty($themeColor)) $themeColor = '#2e74b5';
+			$manifest = [
+				'name'             => 'Ticket Scanner',
+				'short_name'       => 'Scanner',
+				'display'          => 'standalone',
+				'orientation'      => 'portrait',
+				'theme_color'      => $themeColor,
+				'background_color' => '#ffffff',
+				'start_url'        => $scannerUrl,
+				'scope'            => $scope,
+				'icons'            => [
+					['src' => $iconBase . 'pwa-icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
+					['src' => $iconBase . 'pwa-icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],
+				],
+			];
+			return new WP_REST_Response($manifest, 200, ['Content-Type' => 'application/manifest+json']);
+		}
+
+		public static function rest_pwa_sw($web_request) {
+			global $sasoEventtickets;
+			$swFile = plugin_dir_path(__FILE__) . 'pwa-sw.js';
+			if (!file_exists($swFile)) {
+				return new WP_Error('not_found', 'Service worker not found', ['status' => 404]);
+			}
+			$js = file_get_contents($swFile);
+			$version = defined('SASO_EVENTTICKETS_PLUGIN_VERSION') ? SASO_EVENTTICKETS_PLUGIN_VERSION : '1';
+			$js = str_replace('ticket-scanner-v1', 'ticket-scanner-' . $version, $js);
+			$scannerUrl = $sasoEventtickets->getCore()->getTicketURLBase() . 'scanner/';
+			$scope = wp_parse_url($scannerUrl, PHP_URL_PATH);
+			header('Content-Type: application/javascript');
+			header('Service-Worker-Allowed: ' . $scope);
+			header('Cache-Control: no-cache');
+			echo $js;
+			exit;
+		}
+
 		public static function isOrderPaid($order) {
 			if ($order === null || !is_object($order) || !is_a($order, 'WC_Order')) {
 				return false;

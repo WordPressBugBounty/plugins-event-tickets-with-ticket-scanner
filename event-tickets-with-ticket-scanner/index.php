@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.8.6
+ * Version: 2.8.7
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.8.6');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.8.7');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -44,6 +44,7 @@ class sasoEventtickets {
 	protected $_divId = 'sasoEventtickets';
 
 	private $_isPrem = null;
+	private $_isCheckingSubscription = false;
 	private $_premium_plugin_name = 'event-tickets-with-ticket-scanner-premium';
 	private $_premium_function_file = 'sasoEventtickets_PremiumFunctions.php';
 	private $PREMFUNCTIONS = null;
@@ -64,6 +65,8 @@ class sasoEventtickets {
 	}
 
 	public function __construct() {
+		global $sasoEventtickets;
+		$sasoEventtickets = $this; // Set early to prevent circular dependency with sasoEventtickets_Ticket
 		$this->_js_version = $this->getPluginVersion();
 		$this->initHandlers();
 	}
@@ -267,7 +270,28 @@ class sasoEventtickets {
 		return $premiumFile;
 	}
 	public function isPremium() {
-		if ($this->_isPrem == null) $this->getPremiumFunctions();
+		if ($this->_isPrem === null) {
+			$this->getPremiumFunctions();
+			// If PREMFUNCTIONS already existed, getPremiumFunctions() skipped re-evaluation.
+			// Re-query the premium plugin directly.
+			if ($this->_isPrem === null && $this->PREMFUNCTIONS !== null) {
+				$this->_isPrem = ($this->PREMFUNCTIONS instanceof sasoEventtickets_PremiumFunctions)
+					? $this->PREMFUNCTIONS->isPremium()
+					: false;
+			}
+		}
+
+		// Eigene Verifikation: auch wenn Premium-Plugin "ja" sagt,
+		// Basic Plugin prüft den gespeicherten Lizenzstatus selbst.
+		// Rekursionsschutz: isPremium() -> getTicketHandler() -> Konstruktor -> getOptions() -> isPremium()
+		if ($this->_isPrem === true && !$this->_isCheckingSubscription) {
+			$this->_isCheckingSubscription = true;
+			if (!$this->getTicketHandler()->isSubscriptionActive()) {
+				$this->_isPrem = false;
+			}
+			$this->_isCheckingSubscription = false;
+		}
+
 		return $this->_isPrem;
 	}
 	public function getPrefix() {
@@ -368,7 +392,29 @@ class sasoEventtickets {
 			add_action('wp_ajax_'.$this->_prefix.'_executeSeatingAdmin', [$this,'executeSeatingAdmin_a'], 10, 0);
 		}
 
+		add_action('admin_init', [$this, 'periodicLicenseCheck']);
+
 		do_action( $this->_do_action_prefix.'main_init_backend' );
+	}
+
+	/**
+	 * Periodic license check on admin page loads.
+	 * Runs at most once per 24h to catch cases where WP Cron is disabled.
+	 */
+	public function periodicLicenseCheck(): void {
+		if (!$this->isPremium()) return;
+
+		$info = $this->getTicketHandler()->get_expiration();
+		$last_run = intval($info['last_run']);
+
+		// Maximal 1x pro 24h, nicht bei jedem Page Load
+		if ($last_run > 0 && (time() - $last_run) < 86400) return;
+
+		// Check ausführen
+		$this->getTicketHandler()->checkForPremiumSerialExpiration();
+
+		// isPremium Cache invalidieren damit neuer Wert gilt
+		$this->_isPrem = null;
 	}
 	public function WooCommercePluginLoaded() {
 		// DON'T load WC here - let relay functions do lazy loading
@@ -923,6 +969,7 @@ class sasoEventtickets {
 
 		$ticketScannerDontRememberCamChoice = $this->getOptions()->isOptionCheckboxActive("ticketScannerDontRememberCamChoice") ? true : false;
 
+		$pwaEnabled = $this->getOptions()->isOptionCheckboxActive('ticketScannerPWA');
 		$vars = [
 			'root' => esc_url_raw( rest_url() ),
 			'_plugin_home_url' =>plugins_url( "",__FILE__ ),
@@ -933,6 +980,7 @@ class sasoEventtickets {
 			'_restPrefixUrl'=>SASO_EVENTTICKETS::getRESTPrefixURL(),
 			'_siteUrl'=>get_site_url(),
 			'_params'=>["auth"=>$this->getAuthtokenHandler()::$authtoken_param],
+			'_pwaSWUrl'=>$pwaEnabled ? rest_url(SASO_EVENTTICKETS::getRESTPrefixURL().'/ticket/scanner/pwa-sw') : '',
 			//'url'   => admin_url( 'admin-ajax.php' ), // not used for now in ticketscanner.js
 			'url'   => rest_get_server(), // not used for now in ticketscanner.js
 			'nonce' => wp_create_nonce( 'wp_rest' ),
@@ -948,7 +996,9 @@ class sasoEventtickets {
 			'ticketScannerHideTicketInformationShowShortDesc' => $this->getOptions()->isOptionCheckboxActive('ticketScannerHideTicketInformationShowShortDesc'),
 			'ticketScannerDontShowBtnPDF' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDontShowBtnPDF'),
 			'ticketScannerDontShowBtnBadge' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDontShowBtnBadge'),
-			'ticketScannerDisplayTimes' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDisplayTimes')
+			'ticketScannerDisplayTimes' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDisplayTimes'),
+			'ticketScannerThemeColor' => $this->getOptions()->getOptionValue('ticketScannerThemeColor', '#2e74b5'),
+			'ticketScannerVibrate' => $this->getOptions()->isOptionCheckboxActive('ticketScannerVibrate')
 		];
 		$vars = apply_filters( $this->_add_filter_prefix.'main_setTicketScannerJS', $vars );
         wp_localize_script(
@@ -1539,8 +1589,9 @@ class sasoEventtickets {
 	 * @return void
 	 */
 	public function showSubscriptionWarning(): void {
-		// Only show for premium users
-		if (!$this->isPremium()) {
+		// Only show when premium plugin is installed (not dependent on subscription status,
+		// otherwise the expiration warning itself would never be shown)
+		if (!class_exists('sasoEventtickets_PremiumFunctions')) {
 			return;
 		}
 
