@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.8.9
+Stable tag: 2.8.10
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -212,7 +212,7 @@ Major release: Interactive seating plan designer with drag & drop editor. Defaul
 
 == Changelog ==
 
-= 2.8.9 - 2026-02-18 =
+= 2.8.10 - 2026-02-18 =
 * Fix: Premium license recovery — license revalidation now runs even when local license data is stale, preventing permanent premium lockout
 * Fix: Stale "notvalid" flag is now cleared when the license server confirms a valid subscription
 
