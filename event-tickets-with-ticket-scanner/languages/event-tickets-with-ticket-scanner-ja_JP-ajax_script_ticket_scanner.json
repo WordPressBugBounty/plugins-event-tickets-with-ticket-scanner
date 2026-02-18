@@ -1,6 +1,6 @@
 {
     "translation-revision-date": "2025-06-23 11:00+01:00",
-    "generator": "WP-CLI\/2.7.1",
+    "generator": "WP-CLI/2.7.1",
     "source": "ticket_scanner.js",
     "domain": "event-tickets-with-ticket-scanner",
     "locale_data": {
@@ -85,8 +85,8 @@
             "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
                 "QRコードに公開チケット番号が見つかりません。チケットのQRコードをお試しください。"
             ],
-            "Confirmed status validation check counter: <b>%s<\/b>": [
-                "確認済みステータス検証カウンター: <b>%s<\/b>"
+            "Confirmed status validation check counter: <b>%s</b>": [
+                "確認済みステータス検証カウンター: <b>%s</b>"
             ],
             "Display short description if ticket information is hidden": [
                 "チケット情報が非表示の場合、簡単な説明を表示する"
@@ -142,8 +142,8 @@
             "label\u0004Redeem Ticket": [
                 "チケットを引き換える"
             ],
-            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
-                "このチケットの最大引き換え数: <b>%s<\/b>"
+            "Max Redeem Amount for this ticket: <b>%s</b>": [
+                "このチケットの最大引き換え数: <b>%s</b>"
             ],
             "no code found": [
                 "コードが見つかりません"
@@ -151,8 +151,8 @@
             "%s Products, %s Tickets": [
                 "%s 製品, %s チケット"
             ],
-            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
-                "引き換え使用状況: <b>%1$d<\/b> / <b>%2$d<\/b>"
+            "Redeem usage: <b>%1$d</b> of <b>%2$d</b>": [
+                "引き換え使用状況: <b>%1$d</b> / <b>%2$d</b>"
             ],
             "start redeem ticket...loading...": [
                 "チケットの引き換えを開始...読み込み中..."
@@ -207,6 +207,9 @@
             ],
             "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
                 "QRコードの内容が不明です。データを正しく抽出できません。チケットのQRコードをお試しください。"
+            ],
+            "Last scan: %s": [
+                "最終スキャン: %s"
             ]
         }
     }

@@ -389,7 +389,7 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 		 * @deprecated Since 2.8.0 - Use wp_date() instead
 		 * Kept for backward compatibility with older premium plugin versions
 		 */
-		public static function date(string $format, int $timestamp = 0, $timezone = null): string {
+		public static function date(string $format, int $timestamp = 0, ?\DateTimeZone $timezone = null): string {
 			if (empty($timezone)) {
 				$timezone = wp_timezone();
 			}

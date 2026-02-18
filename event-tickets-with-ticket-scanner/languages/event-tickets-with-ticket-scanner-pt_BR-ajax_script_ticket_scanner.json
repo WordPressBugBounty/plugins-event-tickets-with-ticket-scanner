@@ -1,6 +1,6 @@
 {
     "translation-revision-date": "2025-06-23 11:00+01:00",
-    "generator": "WP-CLI\/2.7.1",
+    "generator": "WP-CLI/2.7.1",
     "source": "ticket_scanner.js",
     "domain": "event-tickets-with-ticket-scanner",
     "locale_data": {
@@ -85,8 +85,8 @@
             "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
                 "Não foi possível encontrar o número do ingresso público no código QR. Por favor, tente um código QR de um ingresso."
             ],
-            "Confirmed status validation check counter: <b>%s<\/b>": [
-                "Contador de verificação de validação de status confirmado: <b>%s<\/b>"
+            "Confirmed status validation check counter: <b>%s</b>": [
+                "Contador de verificação de validação de status confirmado: <b>%s</b>"
             ],
             "Display short description if ticket information is hidden": [
                 "Exibir breve descrição se as informações do ingresso estiverem ocultas"
@@ -142,8 +142,8 @@
             "label\u0004Redeem Ticket": [
                 "Resgatar Ingresso"
             ],
-            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
-                "Quantidade máxima de resgates para este ingresso: <b>%s<\/b>"
+            "Max Redeem Amount for this ticket: <b>%s</b>": [
+                "Quantidade máxima de resgates para este ingresso: <b>%s</b>"
             ],
             "no code found": [
                 "nenhum código encontrado"
@@ -151,8 +151,8 @@
             "%s Products, %s Tickets": [
                 "%s produtos, %s ingressos"
             ],
-            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
-                "Uso de resgate: <b>%1$d<\/b> de <b>%2$d<\/b>"
+            "Redeem usage: <b>%1$d</b> of <b>%2$d</b>": [
+                "Uso de resgate: <b>%1$d</b> de <b>%2$d</b>"
             ],
             "start redeem ticket...loading...": [
                 "iniciando resgate de ingresso...carregando..."
@@ -207,6 +207,9 @@
             ],
             "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
                 "Conteúdo do código QR desconhecido. Não foi possível extrair os dados corretamente. Por favor, tente um código QR de um ingresso."
+            ],
+            "Last scan: %s": [
+                "Última leitura: %s"
             ]
         }
     }

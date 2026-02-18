@@ -3107,3 +3107,114 @@ msgid "Order item deleted. Free ticket number: %s for next usage."
 msgstr ""
 "Position der Bestellung gelöscht. Ticketnummer: %s freigegeben für die "
 "nächste Benutzung."
+
+#. v2.8.7 PWA & Scanner options
+#: sasoEventtickets_Options.php
+msgid "Enable PWA (Progressive Web App) for Ticket Scanner"
+msgstr "PWA (Progressive Web App) für Ticket-Scanner aktivieren"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the ticket scanner can be installed as an app on mobile devices. It will be available from the home screen and open without browser chrome."
+msgstr "Wenn aktiv, kann der Ticket-Scanner als App auf Mobilgeräten installiert werden. Er wird vom Startbildschirm aus verfügbar sein und ohne Browser-Rahmen geöffnet."
+
+#: sasoEventtickets_Options.php
+msgid "Scanner theme color"
+msgstr "Scanner-Themenfarbe"
+
+#: sasoEventtickets_Options.php
+msgid "This color is used for the \"Scan next Ticket\" button, the loading spinner animation, and the PWA status bar (if PWA is enabled). Change it to match your brand. Default is #2e74b5 (blue)."
+msgstr "Diese Farbe wird für den \"Nächstes Ticket scannen\"-Button, die Ladeanimation und die PWA-Statusleiste (falls PWA aktiviert) verwendet. Passe sie an deine Marke an. Standard ist #2e74b5 (blau)."
+
+#: sasoEventtickets_Options.php
+msgid "Show seating plan button on ticket scanner"
+msgstr "Sitzplan-Button im Ticket-Scanner anzeigen"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the seating plan with the scanned seat highlighted. Only visible if the ticket has a seat assigned and the plan is visual."
+msgstr "Wenn aktiv, wird ein Button angezeigt, der den Sitzplan mit dem gescannten Platz hervorgehoben darstellt. Nur sichtbar, wenn dem Ticket ein Platz zugewiesen ist und der Plan visuell ist."
+
+#: sasoEventtickets_Options.php
+msgid "Show venue image button on ticket scanner"
+msgstr "Veranstaltungsort-Bild-Button im Ticket-Scanner anzeigen"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the venue image. Only visible if the ticket has a seat assigned and the plan has a venue image."
+msgstr "Wenn aktiv, wird ein Button angezeigt, der das Bild des Veranstaltungsortes darstellt. Nur sichtbar, wenn dem Ticket ein Platz zugewiesen ist und der Plan ein Veranstaltungsort-Bild hat."
+
+#: sasoEventtickets_Options.php
+msgid "Preset: Haptic feedback (vibration) on scan result"
+msgstr "Voreinstellung: Haptisches Feedback (Vibration) bei Scan-Ergebnis"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the device will vibrate when a ticket is redeemed. Short vibration for success, triple pulse for failure. Only works on devices that support vibration (most Android phones)."
+msgstr "Wenn aktiv, vibriert das Gerät beim Einlösen eines Tickets. Kurze Vibration bei Erfolg, dreifacher Puls bei Fehler. Funktioniert nur auf Geräten mit Vibrationsfunktion (die meisten Android-Telefone)."
+
+#. v2.8.6 Format exhaustion warnings
+#: index.php
+msgid "⚠️ CRITICAL: Ticket format for \"%1$s\" is exhausted! It took %2$d attempts to generate a code. Future ticket sales may fail. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ KRITISCH: Ticket-Format für \"%1$s\" ist erschöpft! Es wurden %2$d Versuche benötigt, um einen Code zu generieren. Zukünftige Ticketverkäufe könnten fehlschlagen. %3$sListe bearbeiten%4$s | %5$sSchließen%4$s"
+
+#: index.php
+msgid "⚠️ WARNING: Ticket format for \"%1$s\" is running out of combinations. It took %2$d attempts to generate a code. Consider increasing code length. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ WARNUNG: Ticket-Format für \"%1$s\" hat nur noch wenige Kombinationen übrig. Es wurden %2$d Versuche benötigt, um einen Code zu generieren. Erwäge die Codelänge zu erhöhen. %3$sListe bearbeiten%4$s | %5$sSchließen%4$s"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] CRITICAL: Ticket format exhausted for \"%s\""
+msgstr "[%s] KRITISCH: Ticket-Format erschöpft für \"%s\""
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is exhausted!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Actions:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Increase code length or change character set\n"
+"\n"
+"Without action, future ticket sales may fail!"
+msgstr ""
+"WARNUNG: Das Ticketnummern-Format für Liste \"%s\" ist erschöpft!\n"
+"\n"
+"Es wurden %d Versuche benötigt, um einen Ticketcode zu generieren.\n"
+"\n"
+"Maßnahmen:\n"
+"1. Gehe zu: %s\n"
+"2. Bearbeite die Ticketliste\n"
+"3. Erhöhe die Codelänge oder ändere den Zeichensatz\n"
+"\n"
+"Ohne Maßnahme könnten zukünftige Ticketverkäufe fehlschlagen!"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] WARNING: Ticket format running out for \"%s\""
+msgstr "[%s] WARNUNG: Ticket-Format wird knapp für \"%s\""
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is running out of combinations!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Recommended action:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Consider increasing code length or character set\n"
+"\n"
+"This is a proactive warning to prevent future issues."
+msgstr ""
+"WARNUNG: Das Ticketnummern-Format für Liste \"%s\" hat nur noch wenige Kombinationen!\n"
+"\n"
+"Es wurden %d Versuche benötigt, um einen Ticketcode zu generieren.\n"
+"\n"
+"Empfohlene Maßnahme:\n"
+"1. Gehe zu: %s\n"
+"2. Bearbeite die Ticketliste\n"
+"3. Erwäge die Codelänge oder den Zeichensatz zu erhöhen\n"
+"\n"
+"Dies ist eine proaktive Warnung, um zukünftige Probleme zu vermeiden."
+
+#. v2.8.8 PHP version warning
+#: index.php
+msgid "Your server is running PHP %1$s. This plugin requires PHP %2$s or higher. Please upgrade PHP to ensure full compatibility."
+msgstr "Ihr Server nutzt PHP %1$s. Dieses Plugin benötigt PHP %2$s oder höher. Bitte aktualisieren Sie PHP, um volle Kompatibilität sicherzustellen."

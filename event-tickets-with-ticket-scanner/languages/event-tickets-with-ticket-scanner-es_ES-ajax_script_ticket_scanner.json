@@ -1,6 +1,6 @@
 {
     "translation-revision-date": "2025-06-23 10:56+01:00",
-    "generator": "WP-CLI\/2.7.1",
+    "generator": "WP-CLI/2.7.1",
     "source": "ticket_scanner.js",
     "domain": "event-tickets-with-ticket-scanner",
     "locale_data": {
@@ -85,8 +85,8 @@
             "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
                 "No se puede encontrar el número de ticket público en el código QR. Por favor, pruebe con un código QR de un ticket."
             ],
-            "Confirmed status validation check counter: <b>%s<\/b>": [
-                "Contador de verificación de validación de estado confirmado: <b>%s<\/b>"
+            "Confirmed status validation check counter: <b>%s</b>": [
+                "Contador de verificación de validación de estado confirmado: <b>%s</b>"
             ],
             "Display short description if ticket information is hidden": [
                 "Mostrar descripción corta si la información del ticket está oculta"
@@ -142,8 +142,8 @@
             "label\u0004Redeem Ticket": [
                 "Canjear ticket"
             ],
-            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
-                "Cantidad máxima de canjes para este ticket: <b>%s<\/b>"
+            "Max Redeem Amount for this ticket: <b>%s</b>": [
+                "Cantidad máxima de canjes para este ticket: <b>%s</b>"
             ],
             "no code found": [
                 "no se encontró código"
@@ -151,8 +151,8 @@
             "%s Products, %s Tickets": [
                 "%s productos, %s tickets"
             ],
-            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
-                "Uso de canje: <b>%1$d<\/b> de <b>%2$d<\/b>"
+            "Redeem usage: <b>%1$d</b> of <b>%2$d</b>": [
+                "Uso de canje: <b>%1$d</b> de <b>%2$d</b>"
             ],
             "start redeem ticket...loading...": [
                 "iniciar canje de ticket...cargando..."
@@ -207,6 +207,9 @@
             ],
             "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
                 "Contenido del código QR desconocido. No se pueden extraer los datos correctamente. Por favor, pruebe con un código QR de un ticket."
+            ],
+            "Last scan: %s": [
+                "Último escaneo: %s"
             ]
         }
     }

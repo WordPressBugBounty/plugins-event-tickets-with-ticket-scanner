@@ -3106,3 +3106,114 @@ msgid "Order item deleted. Free ticket number: %s for next usage."
 msgstr ""
 "Position der Bestellung gelöscht. Ticketnummer: %s freigegeben für die "
 "nächste Benutzung."
+
+#. v2.8.7 PWA & Scanner options
+#: sasoEventtickets_Options.php
+msgid "Enable PWA (Progressive Web App) for Ticket Scanner"
+msgstr "PWA (Progressive Web App) engedélyezése a jegyszkennerhez"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the ticket scanner can be installed as an app on mobile devices. It will be available from the home screen and open without browser chrome."
+msgstr "Ha aktív, a jegyszkenner alkalmazásként telepíthető mobileszközökre. A kezdőképernyőről lesz elérhető és böngészőkeret nélkül nyílik meg."
+
+#: sasoEventtickets_Options.php
+msgid "Scanner theme color"
+msgstr "Szkenner téma szín"
+
+#: sasoEventtickets_Options.php
+msgid "This color is used for the \"Scan next Ticket\" button, the loading spinner animation, and the PWA status bar (if PWA is enabled). Change it to match your brand. Default is #2e74b5 (blue)."
+msgstr "Ez a szín a \"Következő jegy szkennelése\" gombhoz, a betöltési animációhoz és a PWA állapotsávhoz (ha a PWA engedélyezve van) használatos. Változtasd meg a márkádnak megfelelően. Az alapértelmezett #2e74b5 (kék)."
+
+#: sasoEventtickets_Options.php
+msgid "Show seating plan button on ticket scanner"
+msgstr "Ülésrend gomb megjelenítése a jegyszkennerben"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the seating plan with the scanned seat highlighted. Only visible if the ticket has a seat assigned and the plan is visual."
+msgstr "Ha aktív, egy gomb jelenik meg az ülésrend megjelenítéséhez a szkennelt ülőhely kiemelésével. Csak akkor látható, ha a jegyhez ülőhely van rendelve és a terv vizuális."
+
+#: sasoEventtickets_Options.php
+msgid "Show venue image button on ticket scanner"
+msgstr "Helyszín kép gomb megjelenítése a jegyszkennerben"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the venue image. Only visible if the ticket has a seat assigned and the plan has a venue image."
+msgstr "Ha aktív, egy gomb jelenik meg a helyszín képének megjelenítéséhez. Csak akkor látható, ha a jegyhez ülőhely van rendelve és a tervnek van helyszín képe."
+
+#: sasoEventtickets_Options.php
+msgid "Preset: Haptic feedback (vibration) on scan result"
+msgstr "Előbeállítás: Haptikus visszajelzés (rezgés) szkennelési eredménynél"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the device will vibrate when a ticket is redeemed. Short vibration for success, triple pulse for failure. Only works on devices that support vibration (most Android phones)."
+msgstr "Ha aktív, az eszköz rezegni fog a jegy beváltásakor. Rövid rezgés sikernél, hármas impulzus hibánál. Csak rezgést támogató eszközökön működik (a legtöbb Android telefon)."
+
+#. v2.8.6 Format exhaustion warnings
+#: index.php
+msgid "⚠️ CRITICAL: Ticket format for \"%1$s\" is exhausted! It took %2$d attempts to generate a code. Future ticket sales may fail. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ KRITIKUS: A(z) \"%1$s\" jegyformátum kimerült! %2$d kísérlet kellett egy kód generálásához. A jövőbeli jegyértékesítések meghiúsulhatnak. %3$sLista szerkesztése%4$s | %5$sElvetés%4$s"
+
+#: index.php
+msgid "⚠️ WARNING: Ticket format for \"%1$s\" is running out of combinations. It took %2$d attempts to generate a code. Consider increasing code length. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ FIGYELMEZTETÉS: A(z) \"%1$s\" jegyformátum kifogy a kombinációkból. %2$d kísérlet kellett egy kód generálásához. Fontold meg a kódhossz növelését. %3$sLista szerkesztése%4$s | %5$sElvetés%4$s"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] CRITICAL: Ticket format exhausted for \"%s\""
+msgstr "[%s] KRITIKUS: Jegyformátum kimerült a(z) \"%s\" számára"
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is exhausted!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Actions:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Increase code length or change character set\n"
+"\n"
+"Without action, future ticket sales may fail!"
+msgstr ""
+"FIGYELMEZTETÉS: A(z) \"%s\" lista jegyszám-formátuma kimerült!\n"
+"\n"
+"%d kísérlet kellett egy jegykód generálásához.\n"
+"\n"
+"Teendők:\n"
+"1. Menj ide: %s\n"
+"2. Szerkeszd a jegylistát\n"
+"3. Növeld a kódhosszt vagy változtasd meg a karakterkészletet\n"
+"\n"
+"Beavatkozás nélkül a jövőbeli jegyértékesítések meghiúsulhatnak!"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] WARNING: Ticket format running out for \"%s\""
+msgstr "[%s] FIGYELMEZTETÉS: Jegyformátum kimerülőben a(z) \"%s\" számára"
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is running out of combinations!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Recommended action:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Consider increasing code length or character set\n"
+"\n"
+"This is a proactive warning to prevent future issues."
+msgstr ""
+"FIGYELMEZTETÉS: A(z) \"%s\" lista jegyszám-formátuma kifogy a kombinációkból!\n"
+"\n"
+"%d kísérlet kellett egy jegykód generálásához.\n"
+"\n"
+"Javasolt teendő:\n"
+"1. Menj ide: %s\n"
+"2. Szerkeszd a jegylistát\n"
+"3. Fontold meg a kódhossz vagy a karakterkészlet növelését\n"
+"\n"
+"Ez egy proaktív figyelmeztetés a jövőbeli problémák megelőzésére."
+
+#. v2.8.8 PHP version warning
+#: index.php
+msgid "Your server is running PHP %1$s. This plugin requires PHP %2$s or higher. Please upgrade PHP to ensure full compatibility."
+msgstr "A szervere PHP %1$s verziót futtat. Ez a bővítmény PHP %2$s vagy újabb verziót igényel. Kérjük, frissítse a PHP-t a teljes kompatibilitás érdekében."

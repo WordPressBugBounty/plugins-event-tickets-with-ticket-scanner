@@ -3106,3 +3106,114 @@ msgid "Order item deleted. Free ticket number: %s for next usage."
 msgstr ""
 "Position der Bestellung gelöscht. Ticketnummer: %s freigegeben für die "
 "nächste Benutzung."
+
+#. v2.8.7 PWA & Scanner options
+#: sasoEventtickets_Options.php
+msgid "Enable PWA (Progressive Web App) for Ticket Scanner"
+msgstr "チケットスキャナーのPWA（プログレッシブウェブアプリ）を有効にする"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the ticket scanner can be installed as an app on mobile devices. It will be available from the home screen and open without browser chrome."
+msgstr "有効にすると、チケットスキャナーをモバイルデバイスにアプリとしてインストールできます。ホーム画面から利用でき、ブラウザのフレームなしで開きます。"
+
+#: sasoEventtickets_Options.php
+msgid "Scanner theme color"
+msgstr "スキャナーテーマカラー"
+
+#: sasoEventtickets_Options.php
+msgid "This color is used for the \"Scan next Ticket\" button, the loading spinner animation, and the PWA status bar (if PWA is enabled). Change it to match your brand. Default is #2e74b5 (blue)."
+msgstr "この色は「次のチケットをスキャン」ボタン、読み込みアニメーション、PWAステータスバー（PWAが有効な場合）に使用されます。ブランドに合わせて変更してください。デフォルトは#2e74b5（青）です。"
+
+#: sasoEventtickets_Options.php
+msgid "Show seating plan button on ticket scanner"
+msgstr "チケットスキャナーに座席表ボタンを表示"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the seating plan with the scanned seat highlighted. Only visible if the ticket has a seat assigned and the plan is visual."
+msgstr "有効にすると、スキャンした座席がハイライトされた座席表を表示するボタンが表示されます。チケットに座席が割り当てられ、プランがビジュアルの場合のみ表示されます。"
+
+#: sasoEventtickets_Options.php
+msgid "Show venue image button on ticket scanner"
+msgstr "チケットスキャナーに会場画像ボタンを表示"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the venue image. Only visible if the ticket has a seat assigned and the plan has a venue image."
+msgstr "有効にすると、会場画像を表示するボタンが表示されます。チケットに座席が割り当てられ、プランに会場画像がある場合のみ表示されます。"
+
+#: sasoEventtickets_Options.php
+msgid "Preset: Haptic feedback (vibration) on scan result"
+msgstr "プリセット：スキャン結果の触覚フィードバック（振動）"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the device will vibrate when a ticket is redeemed. Short vibration for success, triple pulse for failure. Only works on devices that support vibration (most Android phones)."
+msgstr "有効にすると、チケット引き換え時にデバイスが振動します。成功時は短い振動、失敗時は3回のパルス振動。振動対応デバイス（ほとんどのAndroidスマートフォン）でのみ動作します。"
+
+#. v2.8.6 Format exhaustion warnings
+#: index.php
+msgid "⚠️ CRITICAL: Ticket format for \"%1$s\" is exhausted! It took %2$d attempts to generate a code. Future ticket sales may fail. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ 重大：\"%1$s\" のチケットフォーマットが枯渇しました！コード生成に%2$d回の試行が必要でした。今後のチケット販売が失敗する可能性があります。%3$sリストを編集%4$s | %5$s閉じる%4$s"
+
+#: index.php
+msgid "⚠️ WARNING: Ticket format for \"%1$s\" is running out of combinations. It took %2$d attempts to generate a code. Consider increasing code length. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ 警告：\"%1$s\" のチケットフォーマットの組み合わせが残りわずかです。コード生成に%2$d回の試行が必要でした。コード長の増加を検討してください。%3$sリストを編集%4$s | %5$s閉じる%4$s"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] CRITICAL: Ticket format exhausted for \"%s\""
+msgstr "[%s] 重大：\"%s\" のチケットフォーマットが枯渇"
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is exhausted!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Actions:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Increase code length or change character set\n"
+"\n"
+"Without action, future ticket sales may fail!"
+msgstr ""
+"警告：リスト \"%s\" のチケット番号フォーマットが枯渇しました！\n"
+"\n"
+"チケットコードの生成に%d回の試行が必要でした。\n"
+"\n"
+"対処方法：\n"
+"1. 次のページへ移動：%s\n"
+"2. チケットリストを編集\n"
+"3. コード長を増やすか文字セットを変更\n"
+"\n"
+"対処しないと、今後のチケット販売が失敗する可能性があります！"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] WARNING: Ticket format running out for \"%s\""
+msgstr "[%s] 警告：\"%s\" のチケットフォーマットが枯渇間近"
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is running out of combinations!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Recommended action:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Consider increasing code length or character set\n"
+"\n"
+"This is a proactive warning to prevent future issues."
+msgstr ""
+"警告：リスト \"%s\" のチケット番号フォーマットの組み合わせが残りわずかです！\n"
+"\n"
+"チケットコードの生成に%d回の試行が必要でした。\n"
+"\n"
+"推奨される対処方法：\n"
+"1. 次のページへ移動：%s\n"
+"2. チケットリストを編集\n"
+"3. コード長や文字セットの増加を検討\n"
+"\n"
+"これは将来の問題を防ぐための予防的な警告です。"
+
+#. v2.8.8 PHP version warning
+#: index.php
+msgid "Your server is running PHP %1$s. This plugin requires PHP %2$s or higher. Please upgrade PHP to ensure full compatibility."
+msgstr "サーバーはPHP %1$s を実行しています。このプラグインにはPHP %2$s 以上が必要です。完全な互換性を確保するためにPHPをアップグレードしてください。"

@@ -1095,10 +1095,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			DIV.append('<li><b>jQuery</b> - '+label_version+': '+jQuery.fn.jquery+'</li>');
 			DIV.append('<li><b>jQuery UI</b> - '+label_version+': '+jQuery.ui.version+'</li>');
 			DIV.append('<li><b>jQuery UI CSS</b> - '+label_version+': '+jQuery.ui.version+'</li>');
-			DIV.append('<li><b>PHP TWIG template engine</b> https://twig.symfony.com/ - '+label_version+': 3.22.0</li>');
+			DIV.append('<li><b>PHP TWIG template engine</b> https://twig.symfony.com/ - '+label_version+': 3.22.0 (Requires PHP >= 8.1.0)</li>');
 			DIV.append('<li><b>PHP QR Code</b> http://sourceforge.net/projects/phpqrcode/ - '+label_version+': 1.1.4</li>');
 			DIV.append('<li><b>FPDI</b> '+label_version+': 2.3.7</li>');
-			DIV.append('<li><b>FPDF</b> '+label_version+': 1.8.5</li>');
+			DIV.append('<li><b>FPDF</b> '+label_version+': 1.85</li>');
 			DIV.append('<li><b>TCPDF</b> http://www.tcpdf.org - '+label_version+': 6.4.4</li>');
 			DIV.append('<li><b>Javascript QR code scanner:</b> https://github.com/nimiq/qr-scanner - '+label_version+': 1.4.2</li>');
 			DIV.append('<li><b>Javascript Datatable:</b> https://datatables.net/ - '+label_version+': 1.10.21</li>');

@@ -3106,3 +3106,114 @@ msgid "Order item deleted. Free ticket number: %s for next usage."
 msgstr ""
 "Position der Bestellung gelöscht. Ticketnummer: %s freigegeben für die "
 "nächste Benutzung."
+
+#. v2.8.7 PWA & Scanner options
+#: sasoEventtickets_Options.php
+msgid "Enable PWA (Progressive Web App) for Ticket Scanner"
+msgstr "票务扫描器启用PWA（渐进式网络应用）"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the ticket scanner can be installed as an app on mobile devices. It will be available from the home screen and open without browser chrome."
+msgstr "启用后，票务扫描器可以作为应用安装到移动设备上。它将从主屏幕启动，无需浏览器框架。"
+
+#: sasoEventtickets_Options.php
+msgid "Scanner theme color"
+msgstr "扫描器主题颜色"
+
+#: sasoEventtickets_Options.php
+msgid "This color is used for the \"Scan next Ticket\" button, the loading spinner animation, and the PWA status bar (if PWA is enabled). Change it to match your brand. Default is #2e74b5 (blue)."
+msgstr "此颜色用于「扫描下一张票」按钮、加载动画和PWA状态栏（如果启用了PWA）。更改它以匹配您的品牌。默认值为#2e74b5（蓝色）。"
+
+#: sasoEventtickets_Options.php
+msgid "Show seating plan button on ticket scanner"
+msgstr "在票务扫描器上显示座位图按钮"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the seating plan with the scanned seat highlighted. Only visible if the ticket has a seat assigned and the plan is visual."
+msgstr "启用后，将显示一个按钮来查看座位图，并高亮显示已扫描的座位。仅在票据分配了座位且平面图为可视化时可见。"
+
+#: sasoEventtickets_Options.php
+msgid "Show venue image button on ticket scanner"
+msgstr "在票务扫描器上显示场馆图片按钮"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the venue image. Only visible if the ticket has a seat assigned and the plan has a venue image."
+msgstr "启用后，将显示一个按钮来查看场馆图片。仅在票据分配了座位且平面图有场馆图片时可见。"
+
+#: sasoEventtickets_Options.php
+msgid "Preset: Haptic feedback (vibration) on scan result"
+msgstr "预设：扫描结果触觉反馈（振动）"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the device will vibrate when a ticket is redeemed. Short vibration for success, triple pulse for failure. Only works on devices that support vibration (most Android phones)."
+msgstr "启用后，兑换票据时设备将振动。成功时短振动，失败时三次脉冲。仅在支持振动的设备上有效（大多数Android手机）。"
+
+#. v2.8.6 Format exhaustion warnings
+#: index.php
+msgid "⚠️ CRITICAL: Ticket format for \"%1$s\" is exhausted! It took %2$d attempts to generate a code. Future ticket sales may fail. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ 严重：\"%1$s\" 的票据格式已耗尽！生成代码需要%2$d次尝试。未来的票据销售可能会失败。%3$s编辑列表%4$s | %5$s关闭%4$s"
+
+#: index.php
+msgid "⚠️ WARNING: Ticket format for \"%1$s\" is running out of combinations. It took %2$d attempts to generate a code. Consider increasing code length. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ 警告：\"%1$s\" 的票据格式组合即将耗尽。生成代码需要%2$d次尝试。请考虑增加代码长度。%3$s编辑列表%4$s | %5$s关闭%4$s"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] CRITICAL: Ticket format exhausted for \"%s\""
+msgstr "[%s] 严重：\"%s\" 的票据格式已耗尽"
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is exhausted!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Actions:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Increase code length or change character set\n"
+"\n"
+"Without action, future ticket sales may fail!"
+msgstr ""
+"警告：列表 \"%s\" 的票据编号格式已耗尽！\n"
+"\n"
+"生成票据代码需要%d次尝试。\n"
+"\n"
+"操作步骤：\n"
+"1. 前往：%s\n"
+"2. 编辑票据列表\n"
+"3. 增加代码长度或更改字符集\n"
+"\n"
+"如不采取措施，未来的票据销售可能会失败！"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] WARNING: Ticket format running out for \"%s\""
+msgstr "[%s] 警告：\"%s\" 的票据格式即将耗尽"
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is running out of combinations!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Recommended action:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Consider increasing code length or character set\n"
+"\n"
+"This is a proactive warning to prevent future issues."
+msgstr ""
+"警告：列表 \"%s\" 的票据编号格式组合即将耗尽！\n"
+"\n"
+"生成票据代码需要%d次尝试。\n"
+"\n"
+"建议操作：\n"
+"1. 前往：%s\n"
+"2. 编辑票据列表\n"
+"3. 考虑增加代码长度或字符集\n"
+"\n"
+"这是一个预防性警告，以防止未来出现问题。"
+
+#. v2.8.8 PHP version warning
+#: index.php
+msgid "Your server is running PHP %1$s. This plugin requires PHP %2$s or higher. Please upgrade PHP to ensure full compatibility."
+msgstr "您的服务器正在运行PHP %1$s。此插件需要PHP %2$s或更高版本。请升级PHP以确保完全兼容。"

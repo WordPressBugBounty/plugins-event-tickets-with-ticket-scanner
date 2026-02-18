@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.8.7
+ * Version: 2.8.8
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.8.7');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.8.8');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -386,6 +386,7 @@ class sasoEventtickets {
 		add_action( 'admin_notices', [$this, 'showSubscriptionWarning'] );
 		add_action( 'admin_notices', [$this, 'showOutdatedPremiumWarning'] );
 		add_action( 'admin_notices', [$this, 'showFormatWarning'] );
+		add_action( 'admin_notices', [$this, 'showPhpVersionWarning'] );
 
 		if (basename($_SERVER['SCRIPT_NAME']) == "admin-ajax.php") {
 			add_action('wp_ajax_'.$this->_prefix.'_executeAdminSettings', [$this,'executeAdminSettings_a'], 10, 0);
@@ -1714,6 +1715,21 @@ class sasoEventtickets {
 	 *
 	 * @return void
 	 */
+	public function showPhpVersionWarning(): void {
+		if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
+			return;
+		}
+		printf(
+			'<div class="notice notice-warning is-dismissible"><p><strong>Event Tickets with Ticket Scanner:</strong> %s</p></div>',
+			sprintf(
+				/* translators: 1: current PHP version 2: required PHP version */
+				esc_html__('Your server is running PHP %1$s. This plugin requires PHP %2$s or higher. Please upgrade PHP to ensure full compatibility.', 'event-tickets-with-ticket-scanner'),
+				PHP_VERSION,
+				'8.1'
+			)
+		);
+	}
+
 	public function showFormatWarning(): void {
 		// Only show in admin
 		if (!is_admin()) {

@@ -163,6 +163,7 @@ jQuery(document).ready(()=>{
         if (loadingticket) return;
         loadingticket = true;
         system.last_scanned_ticket = {code: decodedText, timestamp: time()};
+        updateLastScanTime();
 
         if (qrScanner != null) {
             //qrScanner.stop(); // faster if not executed
@@ -1689,6 +1690,18 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 div.append("Local: "+date+"<br>");
                 system.TIMEAREA.html(div);
             }
+        }
+    }
+    function updateLastScanTime() {
+        let now = new Date();
+        let timeStr = now.toLocaleTimeString();
+        let el = $('#last_scan_time');
+        if (el.length === 0) {
+            system.TIMEAREA.prepend($('<div id="last_scan_time" style="font-size:0.85em;color:#666;padding:2px 0;">').html(
+                sprintf(/* translators: %s: time of last scan */__('Last scan: %s', 'event-tickets-with-ticket-scanner'), timeStr)
+            ));
+        } else {
+            el.html(sprintf(/* translators: %s: time of last scan */__('Last scan: %s', 'event-tickets-with-ticket-scanner'), timeStr));
         }
     }
     function displayTimezoneInformation(data) {

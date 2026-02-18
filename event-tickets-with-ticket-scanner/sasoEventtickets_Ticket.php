@@ -317,24 +317,24 @@ final class sasoEventtickets_Ticket {
 			$this->authtoken = $web_request->get_param($authHandler::$authtoken_param);
 			$ret = $authHandler->checkAccessForAuthtoken($this->authtoken);
 		} else {
-			// Path 2: WordPress user authentication (must be logged in)
-			if (!is_user_logged_in()) return false;
-
-			$user = wp_get_current_user();
-			$user_roles = (array) $user->roles;
-
-			// Administrators always have access
-			if (in_array("administrator", $user_roles)) return true;
-
-			if ($this->isOnlyLoggedInScannerAllowed()) {
-				// Strict mode: only administrators (already checked above)
-				$ret = false;
+			// Path 2: Check if scanner is open to everyone (no login required)
+			$allowed_role = $this->MAIN->getOptions()->getOptionValue('wcTicketScannerAllowedRoles');
+			if ($allowed_role == "-" && !$this->isOnlyLoggedInScannerAllowed()) {
+				$ret = true;
 			} else {
-				$allowed_role = $this->MAIN->getOptions()->getOptionValue('wcTicketScannerAllowedRoles');
-				if ($allowed_role == "-") {
-					// No specific role required - any logged-in user can access
-					$ret = true;
-				} else {
+				// Path 3: WordPress user authentication (must be logged in)
+				if (!is_user_logged_in()) return false;
+
+				$user = wp_get_current_user();
+				$user_roles = (array) $user->roles;
+
+				// Administrators always have access
+				if (in_array("administrator", $user_roles)) return true;
+
+				if ($this->isOnlyLoggedInScannerAllowed()) {
+					// Strict mode: only administrators (already checked above)
+					$ret = false;
+				} else if ($allowed_role != "-") {
 					// Specific role required
 					$ret = in_array($allowed_role, $user_roles);
 				}

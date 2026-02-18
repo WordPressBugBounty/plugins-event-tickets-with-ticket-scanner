@@ -1,6 +1,6 @@
 {
     "translation-revision-date": "2025-06-23 11:00+01:00",
-    "generator": "WP-CLI\/2.7.1",
+    "generator": "WP-CLI/2.7.1",
     "source": "ticket_scanner.js",
     "domain": "event-tickets-with-ticket-scanner",
     "locale_data": {
@@ -85,8 +85,8 @@
             "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
                 "无法在二维码中找到公开票号。请尝试使用票务二维码。"
             ],
-            "Confirmed status validation check counter: <b>%s<\/b>": [
-                "已确认状态验证计数器：<b>%s<\/b>"
+            "Confirmed status validation check counter: <b>%s</b>": [
+                "已确认状态验证计数器：<b>%s</b>"
             ],
             "Display short description if ticket information is hidden": [
                 "如果票务信息被隐藏，则显示简短描述"
@@ -142,8 +142,8 @@
             "label\u0004Redeem Ticket": [
                 "兑换票"
             ],
-            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
-                "此票的最大兑换数量：<b>%s<\/b>"
+            "Max Redeem Amount for this ticket: <b>%s</b>": [
+                "此票的最大兑换数量：<b>%s</b>"
             ],
             "no code found": [
                 "未找到代码"
@@ -151,8 +151,8 @@
             "%s Products, %s Tickets": [
                 "%s 产品，%s 票"
             ],
-            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
-                "兑换使用情况：<b>%1$d<\/b> / <b>%2$d<\/b>"
+            "Redeem usage: <b>%1$d</b> of <b>%2$d</b>": [
+                "兑换使用情况：<b>%1$d</b> / <b>%2$d</b>"
             ],
             "start redeem ticket...loading...": [
                 "开始兑换票...加载中..."
@@ -207,6 +207,9 @@
             ],
             "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
                 "二维码内容未知。无法正确提取数据。请尝试使用票务二维码。"
+            ],
+            "Last scan: %s": [
+                "上次扫描: %s"
             ]
         }
     }

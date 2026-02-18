@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.8.7
+Stable tag: 2.8.8
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -211,6 +211,14 @@ Every ticket number is unique. The scanner detects duplicate redemption attempts
 Major release: Interactive seating plan designer with drag & drop editor. Default ticket template updated to display seat numbers. Please backup your system before upgrading.
 
 == Changelog ==
+
+= 2.8.8 - 2026-02-18 =
+* Fix: Option "No login required to access scanner" (wcTicketScannerAllowedRoles) now works correctly again for non-authenticated users
+* Fix: PHP 8.4 compatibility — explicit nullable type hints for deprecated implicit nullable parameters
+* Improved: Updated translations for all 11 languages (DE, ES, FR, HU, IT, JA, NL, PT-BR, PT-PT, ZH) with 16 new strings from v2.8.6 and v2.8.7 (PWA, scanner options, format warnings)
+* New: Ticket scanner shows timestamp of last scan for better tracking
+* New: Admin notice when PHP version is below the required 8.1
+* Improved: Corrected library version display in system info (FPDF 1.85, Twig PHP requirement note)
 
 = 2.8.7 - 2026-02-16 =
 * New: PWA (Progressive Web App) support — install the ticket scanner as a home screen app on mobile devices (optional, enable in settings)

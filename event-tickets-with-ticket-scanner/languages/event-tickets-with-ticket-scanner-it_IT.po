@@ -3106,3 +3106,114 @@ msgid "Order item deleted. Free ticket number: %s for next usage."
 msgstr ""
 "Position der Bestellung gelöscht. Ticketnummer: %s freigegeben für die "
 "nächste Benutzung."
+
+#. v2.8.7 PWA & Scanner options
+#: sasoEventtickets_Options.php
+msgid "Enable PWA (Progressive Web App) for Ticket Scanner"
+msgstr "Attiva PWA (Progressive Web App) per lo scanner biglietti"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the ticket scanner can be installed as an app on mobile devices. It will be available from the home screen and open without browser chrome."
+msgstr "Se attivo, lo scanner biglietti può essere installato come app sui dispositivi mobili. Sarà disponibile dalla schermata iniziale e si aprirà senza la cornice del browser."
+
+#: sasoEventtickets_Options.php
+msgid "Scanner theme color"
+msgstr "Colore tema dello scanner"
+
+#: sasoEventtickets_Options.php
+msgid "This color is used for the \"Scan next Ticket\" button, the loading spinner animation, and the PWA status bar (if PWA is enabled). Change it to match your brand. Default is #2e74b5 (blue)."
+msgstr "Questo colore viene utilizzato per il pulsante \"Scansiona prossimo biglietto\", l'animazione di caricamento e la barra di stato PWA (se PWA è attivata). Modificalo per adattarlo al tuo marchio. Il valore predefinito è #2e74b5 (blu)."
+
+#: sasoEventtickets_Options.php
+msgid "Show seating plan button on ticket scanner"
+msgstr "Mostra pulsante mappa posti sullo scanner biglietti"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the seating plan with the scanned seat highlighted. Only visible if the ticket has a seat assigned and the plan is visual."
+msgstr "Se attivo, verrà mostrato un pulsante per visualizzare la mappa posti con il posto scansionato evidenziato. Visibile solo se il biglietto ha un posto assegnato e la mappa è visuale."
+
+#: sasoEventtickets_Options.php
+msgid "Show venue image button on ticket scanner"
+msgstr "Mostra pulsante immagine del luogo sullo scanner biglietti"
+
+#: sasoEventtickets_Options.php
+msgid "If active, a button will be shown to display the venue image. Only visible if the ticket has a seat assigned and the plan has a venue image."
+msgstr "Se attivo, verrà mostrato un pulsante per visualizzare l'immagine del luogo. Visibile solo se il biglietto ha un posto assegnato e la mappa ha un'immagine del luogo."
+
+#: sasoEventtickets_Options.php
+msgid "Preset: Haptic feedback (vibration) on scan result"
+msgstr "Preimpostazione: Feedback aptico (vibrazione) sul risultato della scansione"
+
+#: sasoEventtickets_Options.php
+msgid "If active, the device will vibrate when a ticket is redeemed. Short vibration for success, triple pulse for failure. Only works on devices that support vibration (most Android phones)."
+msgstr "Se attivo, il dispositivo vibrerà quando un biglietto viene convalidato. Vibrazione breve per successo, triplo impulso per fallimento. Funziona solo su dispositivi che supportano la vibrazione (la maggior parte dei telefoni Android)."
+
+#. v2.8.6 Format exhaustion warnings
+#: index.php
+msgid "⚠️ CRITICAL: Ticket format for \"%1$s\" is exhausted! It took %2$d attempts to generate a code. Future ticket sales may fail. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ CRITICO: Il formato biglietto per \"%1$s\" è esaurito! Sono stati necessari %2$d tentativi per generare un codice. Le vendite future di biglietti potrebbero fallire. %3$sModifica lista%4$s | %5$sIgnora%4$s"
+
+#: index.php
+msgid "⚠️ WARNING: Ticket format for \"%1$s\" is running out of combinations. It took %2$d attempts to generate a code. Consider increasing code length. %3$sEdit list%4$s | %5$sDismiss%4$s"
+msgstr "⚠️ AVVISO: Il formato biglietto per \"%1$s\" sta esaurendo le combinazioni. Sono stati necessari %2$d tentativi per generare un codice. Considera di aumentare la lunghezza del codice. %3$sModifica lista%4$s | %5$sIgnora%4$s"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] CRITICAL: Ticket format exhausted for \"%s\""
+msgstr "[%s] CRITICO: Formato biglietto esaurito per \"%s\""
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is exhausted!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Actions:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Increase code length or change character set\n"
+"\n"
+"Without action, future ticket sales may fail!"
+msgstr ""
+"AVVISO: Il formato del numero biglietto per la lista \"%s\" è esaurito!\n"
+"\n"
+"Sono stati necessari %d tentativi per generare un codice biglietto.\n"
+"\n"
+"Azioni:\n"
+"1. Vai a: %s\n"
+"2. Modifica la lista biglietti\n"
+"3. Aumenta la lunghezza del codice o cambia il set di caratteri\n"
+"\n"
+"Senza intervento, le vendite future di biglietti potrebbero fallire!"
+
+#: sasoEventtickets_AdminSettings.php
+msgid "[%s] WARNING: Ticket format running out for \"%s\""
+msgstr "[%s] AVVISO: Formato biglietto in esaurimento per \"%s\""
+
+#: sasoEventtickets_AdminSettings.php
+msgid ""
+"WARNING: The ticket number format for list \"%s\" is running out of combinations!\n"
+"\n"
+"It took %d attempts to generate a ticket code.\n"
+"\n"
+"Recommended action:\n"
+"1. Go to: %s\n"
+"2. Edit the ticket list\n"
+"3. Consider increasing code length or character set\n"
+"\n"
+"This is a proactive warning to prevent future issues."
+msgstr ""
+"AVVISO: Il formato del numero biglietto per la lista \"%s\" sta esaurendo le combinazioni!\n"
+"\n"
+"Sono stati necessari %d tentativi per generare un codice biglietto.\n"
+"\n"
+"Azione consigliata:\n"
+"1. Vai a: %s\n"
+"2. Modifica la lista biglietti\n"
+"3. Considera di aumentare la lunghezza del codice o il set di caratteri\n"
+"\n"
+"Questo è un avviso proattivo per prevenire problemi futuri."
+
+#. v2.8.8 PHP version warning
+#: index.php
+msgid "Your server is running PHP %1$s. This plugin requires PHP %2$s or higher. Please upgrade PHP to ensure full compatibility."
+msgstr "Il tuo server utilizza PHP %1$s. Questo plugin richiede PHP %2$s o superiore. Aggiorna PHP per garantire la piena compatibilità."

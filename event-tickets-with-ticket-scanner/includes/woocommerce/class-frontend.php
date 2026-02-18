@@ -1838,7 +1838,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param \WC_Cart|null $cart Cart object (optional, not used)
 		 * @return void
 		 */
-		public function woocommerce_after_cart_item_quantity_update_handler(string $cart_item_key, int $quantity, int $old_quantity, $cart = null): void {
+		public function woocommerce_after_cart_item_quantity_update_handler(string $cart_item_key, int $quantity, int $old_quantity, ?\WC_Cart $cart = null): void {
 			if ($quantity == $old_quantity) {
 				return;
 			}
