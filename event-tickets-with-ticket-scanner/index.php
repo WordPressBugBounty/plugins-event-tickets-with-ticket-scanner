@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.8.8
+ * Version: 2.8.9
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -403,13 +403,19 @@ class sasoEventtickets {
 	 * Runs at most once per 24h to catch cases where WP Cron is disabled.
 	 */
 	public function periodicLicenseCheck(): void {
-		if (!$this->isPremium()) return;
+		// Also run when premium plugin is installed with a serial key but isPremium() is false
+		// This breaks the deadlock where isPremium()=false prevents the license check from ever running
+		$hasPremiumPlugin = class_exists('sasoEventtickets_PremiumFunctions');
+		$hasSerial = !empty(trim(get_option("saso-event-tickets-premium_serial", "")));
+		if (!$this->isPremium() && !($hasPremiumPlugin && $hasSerial)) return;
 
 		$info = $this->getTicketHandler()->get_expiration();
 		$last_run = intval($info['last_run']);
 
 		// Maximal 1x pro 24h, nicht bei jedem Page Load
-		if ($last_run > 0 && (time() - $last_run) < 86400) return;
+		// In recovery mode (not premium but has serial), check more frequently (every 1h)
+		$interval = $this->isPremium() ? 86400 : 3600;
+		if ($last_run > 0 && (time() - $last_run) < $interval) return;
 
 		// Check ausführen
 		$this->getTicketHandler()->checkForPremiumSerialExpiration();

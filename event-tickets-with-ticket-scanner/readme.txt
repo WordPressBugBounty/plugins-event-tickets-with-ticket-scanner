@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.8.8
+Stable tag: 2.8.9
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -211,6 +211,10 @@ Every ticket number is unique. The scanner detects duplicate redemption attempts
 Major release: Interactive seating plan designer with drag & drop editor. Default ticket template updated to display seat numbers. Please backup your system before upgrading.
 
 == Changelog ==
+
+= 2.8.9 - 2026-02-18 =
+* Fix: Premium license recovery — license revalidation now runs even when local license data is stale, preventing permanent premium lockout
+* Fix: Stale "notvalid" flag is now cleared when the license server confirms a valid subscription
 
 = 2.8.8 - 2026-02-18 =
 * Fix: Option "No login required to access scanner" (wcTicketScannerAllowedRoles) now works correctly again for non-authenticated users

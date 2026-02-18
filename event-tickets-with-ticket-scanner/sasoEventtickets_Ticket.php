@@ -190,7 +190,10 @@ final class sasoEventtickets_Ticket {
 	public function checkForPremiumSerialExpiration() {
 		$option_name = $this->MAIN->getPrefix()."_premium_serial_expiration";
 		// check the expiration of the premium serial
-		if ($this->MAIN->isPremium()) {
+		// Also run when premium plugin is installed with a serial key but isPremium() is false (recovery from deadlock)
+		$hasPremiumPlugin = class_exists('sasoEventtickets_PremiumFunctions');
+		$hasSerial = !empty(trim(get_option("saso-event-tickets-premium_serial", "")));
+		if ($this->MAIN->isPremium() || ($hasPremiumPlugin && $hasSerial)) {
 			$info_obj = $this->get_expiration();
 			$doCheck = false;
 			if ($info_obj["last_run"] == 0) {
@@ -209,6 +212,10 @@ final class sasoEventtickets_Ticket {
 				} else {
 					$doCheck = true;
 				}
+			}
+			// In recovery mode (not premium but has serial), always force check
+			if (!$this->MAIN->isPremium() && $hasPremiumPlugin && $hasSerial) {
+				$doCheck = true;
 			}
 			if ($doCheck) {
 				$serial = trim(get_option( "saso-event-tickets-premium_serial" ));
@@ -235,6 +242,10 @@ final class sasoEventtickets_Ticket {
 							$info_obj["last_run"] = time();
 							$info_obj["last_success"] = time();
 							$info_obj["consecutive_failures"] = 0;
+							// Clear notvalid if server doesn't send it (successful check = valid)
+							if (!isset($data["notvalid"])) {
+								unset($info_obj["notvalid"]);
+							}
 							// Server-Daten gezielt übernehmen (Server gewinnt)
 							foreach (['timestamp', 'expiration_date', 'timezone', 'notvalid', 'isCheckCall', 'subscription_type', 'grace_period_days'] as $key) {
 								if (isset($data[$key])) $info_obj[$key] = $data[$key];
