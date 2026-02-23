@@ -576,6 +576,18 @@ class sasoEventtickets_Options {
 		// unabhängig vom Subscription-Validierungsstatus. Sonst kann der User seinen Key nicht eingeben.
 		if (method_exists($this->MAIN->getPremiumFunctions(), '_initOptions')) {
 			$this->_options = $this->MAIN->getPremiumFunctions()->_initOptions($this->_options);
+		} elseif ($this->MAIN->isOldPremiumDetected()) {
+			// Old premium detected but not loaded — show serial key field so user can enter/update
+			// their key, which PUC (in the premium plugin) needs to check for updates.
+			$serial = trim(get_option("saso-event-tickets-premium_serial", ""));
+			$serialOption = $this->getOptionsObject(
+				'serial',
+				__("Premium Serial Key", 'event-tickets-with-ticket-scanner'),
+				__("Enter your premium licence key. After updating the Premium plugin to version 1.6.0+, all premium features will be restored.", 'event-tickets-with-ticket-scanner'),
+				"text",
+				$serial
+			);
+			array_unshift($this->_options, $serialOption);
 		}
 	}
 	public function getOptionsObject($key, $label, $desc="",$type="checkbox",$def=null,$additional=[], $isPublic=false, $doc_video='', $do_not_trim=false) {
@@ -710,6 +722,11 @@ class sasoEventtickets_Options {
 			}
 			update_option($option['id'], $v, false);
 			$this->_setOptionValuesByKey($data['key'], 'value', $v);
+		}
+		// When serial key is changed via basic plugin (old premium compat), also store in the
+		// option that PUC and the license check read from.
+		if ($data['key'] === 'serial' && $this->MAIN->isOldPremiumDetected()) {
+			update_option("saso-event-tickets-premium_serial", trim($data['value']));
 		}
 		do_action( $this->MAIN->_do_action_prefix.'changeOption', $data);
 	}

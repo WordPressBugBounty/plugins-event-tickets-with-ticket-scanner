@@ -14,7 +14,7 @@ msgstr ""
 "PO-Revision-Date: 2023-02-09 14:09+01:00\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: event-tickets-with-ticket-scanner\n"
-"Language: de\n"
+"Language: it\n"
 
 #. Plugin Name of the plugin
 msgid "Event Tickets with Ticket Scanner"
@@ -32,11 +32,11 @@ msgid ""
 "registration and more. This allows your user to register them self to a "
 "ticket."
 msgstr ""
-"Du kannst Tickets und Ticketnummern erstellen und generieren lassen. Du "
-"kannst die Tickets am Eingang mit dem mitgelieferten Ticket-Scanner "
-"entwerten. Deine Kunden können das Tikcet als PDF herunterladen. Im Premium "
-"kannst du die Registrierung der Käufer auf das Ticket und vieles mehr "
-"aktivieren."
+"Puoi creare e generare biglietti e codici. Puoi convalidare i biglietti "
+"all'ingresso utilizzando lo scanner biglietti integrato. I tuoi clienti "
+"possono scaricare un PDF con le informazioni del biglietto. La versione "
+"Premium consente inoltre di attivare la registrazione degli utenti e molto "
+"altro."
 
 #. Author of the plugin
 msgid "Saso Nikolov"
@@ -51,30 +51,31 @@ msgid ""
 "You are using the premium version. Many thanks, please enter your serial key "
 "within the options"
 msgstr ""
-"Du nutzt die Premium Version. Vielen Dank, bitte gib deine Seriennummer in "
-"den Optionen ein."
+"Stai utilizzando la versione Premium. Grazie mille, inserisci la tua chiave "
+"seriale nelle opzioni."
 
 #: backend.js:278 backend.js:362 backend.js:957
 msgctxt "label"
 msgid "Back"
-msgstr "Zurück"
+msgstr "Indietro"
 
 #: backend.js:284
 msgid ""
 "Please copy the following information, so that we can support you better and "
 "faster. Remove any critical information if needed."
 msgstr ""
-"Bitte kopiere die folgenden Informationen, damit wir dich besser und "
-"schneller unterstützen können. Entferne kritische Information, wenn nötig."
+"Si prega di copiare le seguenti informazioni, in modo che possiamo "
+"assistervi meglio e più rapidamente. Rimuovere eventuali informazioni "
+"sensibili se necessario."
 
 #: backend.js:328
 msgctxt "label"
 msgid "Repair tables"
-msgstr "Tabellen reparieren"
+msgstr "Ripara tabelle"
 
 #: backend.js:329
 msgid "Repair database tables?"
-msgstr "Datenbank Tabellen reparieren?"
+msgstr "Riparare le tabelle del database?"
 
 #: backend.js:329
 msgid ""
@@ -83,16 +84,16 @@ msgid ""
 "errors messages during the page reload - that is normal. Why not asking "
 "support, if you should do it? ;)"
 msgstr ""
-"Willst du wirklich versuchen die Datenbank Tabellenstruktur für dieses "
-"Plugin zu reparieren? Es sollte sicher sein, aber nur in sehr wenigen Fällen "
-"nötig sein. Vielleicht wirst du ein paar Fahler angezeigt bekommen- das ist "
-"normal. Warum nicht lieber erst den Support fragen, ob du es machen "
-"solltest? ;)"
+"Vuoi davvero tentare di riparare la struttura delle tabelle del database per "
+"questo plugin? Dovrebbe essere sicuro, ma necessario solo in casi molto "
+"rari. Potresti visualizzare alcuni messaggi di errore durante il "
+"ricaricamento della pagina - è normale. Perché non chiedere prima al "
+"supporto se è necessario farlo? ;)"
 
 #: backend.js:332
 msgctxt "title"
 msgid "Repaired"
-msgstr "Repariert"
+msgstr "Riparato"
 
 #: backend.js:336 backend.js:1078 backend.js:1099 backend.js:1100
 #: backend.js:1103 backend.js:1129 backend.js:1210 backend.js:1331
@@ -104,255 +105,257 @@ msgstr "Ok"
 #: backend.js:336 ticket_scanner.js:224
 msgctxt "label"
 msgid "Close"
-msgstr "Schliessen"
+msgstr "Chiudi"
 
 #: backend.js:371
 msgctxt "title"
 msgid "Replacement Tags"
-msgstr "Platzhalter"
+msgstr "Tag sostitutivi"
 
 #: backend.js:371
 msgid ""
 "You can use these replacement tags in your text messages and URLs for the "
 "meta ticket values"
 msgstr ""
-"Du kannst diese Platzhalter in deinen Textnachrichten und URLs für die Werte "
-"aus den Ticket Metainformationen nutzen"
+"Puoi utilizzare questi tag sostitutivi nei tuoi messaggi di testo e negli "
+"URL per i valori dei metadati del biglietto"
 
 #: backend.js:377
 msgctxt "title"
 msgid "Options"
-msgstr "Optionen"
+msgstr "Opzioni"
 
 #: backend.js:435
 msgctxt "label"
 msgid "Remove image"
-msgstr "Bild entfernen"
+msgstr "Rimuovi immagine"
 
 #: backend.js:437
 msgctxt "title"
 msgid "Remove image"
-msgstr "Bild entfernen"
+msgstr "Rimuovi immagine"
 
 #: backend.js:437
 msgid "Do you really want to remove the image information from this option?"
-msgstr "Willst du wirklich die Bildinformationen für diese Option entfernen?"
+msgstr "Vuoi davvero rimuovere le informazioni dell'immagine da questa opzione?"
 
 #: backend.js:525
 msgctxt "title"
 msgid "Title"
-msgstr "Titel"
+msgstr "Titolo"
 
 #: backend.js:548
 msgctxt "title"
 msgid "Select Media"
-msgstr "Media-Datei auswählen"
+msgstr "Seleziona file multimediale"
 
 #: backend.js:592
 msgctxt "label"
 msgid "Support Info"
-msgstr "Support Informationen"
+msgstr "Informazioni di supporto"
 
 #: backend.js:598
 msgctxt "label"
 msgid "Ticket Scanner"
-msgstr "Ticket-Scanner"
+msgstr "Scanner biglietti"
 
 #: backend.js:605
 msgctxt "label"
 msgid "Options"
-msgstr "Optionen"
+msgstr "Opzioni"
 
 #: backend.js:648
 msgctxt "label"
 msgid "Enter a prefix (optional)"
-msgstr "Prefix eingeben (optional)"
+msgstr "Inserire un prefisso (opzionale)"
 
 #: backend.js:649
 msgid ""
 "You can use date placeholder to have the prefix filled with the date of the "
 "confirmed purchase."
 msgstr ""
-"Du kannst Platzhalter für das Datum nutzen, den Prefix mit dem Datum für den "
-"bestätigten Kauf zu setzen."
+"Puoi utilizzare segnaposto per la data, per compilare il prefisso con la "
+"data dell'acquisto confermato."
 
 #: backend.js:649
 msgid ""
 "You can use: {Y} = year, {m} = month, {d} = day, {H} = hour, {i} = minutes, "
 "{s} = seconds, {TIMESTAMP} = unix timestamp."
 msgstr ""
-"Du kannst folgendes nutzen: {Y} = Jahr, {m} = Monat, {d} = Tag, {H} = "
-"Stunde, {i} = Minute, {s} = Sekunde, {TIMESTAMP} = Unix Zeitstempel."
+"Puoi utilizzare: {Y} = anno, {m} = mese, {d} = giorno, {H} = ora, {i} = "
+"minuti, {s} = secondi, {TIMESTAMP} = timestamp Unix."
 
 #: backend.js:656
 msgctxt "label"
 msgid "Choose type of ticket numbers"
-msgstr "Wähle Typ der Ticketnummern"
+msgstr "Scegli il tipo di numeri biglietto"
 
 #: backend.js:657
 msgctxt "option value"
 msgid "Serials"
-msgstr "Seriennummer"
+msgstr "Numeri seriali"
 
 #: backend.js:657
 msgctxt "option value"
 msgid "Numbers"
-msgstr "Nummern"
+msgstr "Numeri"
 
 #: backend.js:678
 msgctxt "title"
 msgid "Serials options"
-msgstr "Seriennummern Einstellungen"
+msgstr "Opzioni numeri seriali"
 
 #: backend.js:680
 msgctxt "label"
 msgid "Amount of letter needed"
-msgstr "Anzahl benötigter Stellen"
+msgstr "Numero di caratteri necessari"
 
 #: backend.js:688
 msgctxt "label"
 msgid "Letter exclusion"
-msgstr "Ausschluß von Zeichen"
+msgstr "Esclusione di caratteri"
 
 #: backend.js:689 backend.js:1028 backend.js:1345 backend.js:710
 msgctxt "option value"
 msgid "None"
-msgstr "Keine"
+msgstr "Nessuno"
 
 #: backend.js:695
 msgctxt "label"
 msgid "Letter style"
-msgstr "Darstellung Stil"
+msgstr "Stile dei caratteri"
 
 #: backend.js:696
 msgctxt "option value"
 msgid "Uppercase"
-msgstr "Großbuchstaben"
+msgstr "Maiuscolo"
 
 #: backend.js:696
 msgctxt "option value"
 msgid "Lowercase"
-msgstr "Kleinbuchstaben"
+msgstr "Minuscolo"
 
 #: backend.js:696
 msgctxt "option value"
 msgid "Both"
-msgstr "Beides"
+msgstr "Entrambi"
 
 #: backend.js:702
 msgctxt "label"
 msgid "Numbers needed?"
-msgstr "Nummern benötigt?"
+msgstr "Numeri necessari?"
 
 #: backend.js:703 backend.js:1774
 msgctxt "label"
 msgid "No"
-msgstr "Nein"
+msgstr "No"
 
 #: backend.js:703 backend.js:1769
 msgctxt "label"
 msgid "Yes"
-msgstr "Ja"
+msgstr "Sì"
 
 #: backend.js:703
 msgctxt "option value"
 msgid "Only numbers"
-msgstr "Nur Nummern"
+msgstr "Solo numeri"
 
 #: backend.js:709
 msgctxt "label"
 msgid "Delimiter?"
-msgstr "Trennzeichen"
+msgstr "Delimitatore?"
 
 #: backend.js:710
 msgctxt "option value"
 msgid "Space"
-msgstr "Leerzeichen"
+msgstr "Spazio"
 
 #: backend.js:726
 msgctxt "label"
 msgid "After how many letters?"
-msgstr "Wie viele Zeichen?"
+msgstr "Dopo quanti caratteri?"
 
 #: backend.js:726
 msgctxt "title"
 msgid "Numbers options"
-msgstr "Nummernoptionen"
+msgstr "Opzioni numeri"
 
 #: backend.js:726
 msgctxt "label"
 msgid "Start number"
-msgstr "Startnummer"
+msgstr "Numero iniziale"
 
 #: backend.js:747
 msgctxt "label"
 msgid "Offset for each number"
-msgstr "Offset für jede Nummer"
+msgstr "Offset per ogni numero"
 
 #: backend.js:797
 msgid "Amount of letters has to be higher"
-msgstr "Anzahl der Buchstaben müssen höher sein"
+msgstr "Il numero di caratteri deve essere maggiore"
 
 #: backend.js:824
 msgid "Your start number is not correct. It has to be an integer bigger than 0"
 msgstr ""
-"Deine Startnummer ist nicht korrekt. Es muss eine Ganzzahl grösser 0 sein"
+"Il numero iniziale non è corretto. Deve essere un numero intero maggiore di 0"
 
 #: backend.js:901
 msgctxt "label"
 msgid "PREMIUM active"
-msgstr "PREMIUM aktiv"
+msgstr "PREMIUM attivo"
 
 #: backend.js:903
 msgctxt "label"
 msgid "FREE version"
-msgstr "FREE Version"
+msgstr "Versione FREE"
 
 #: backend.js:905
 msgctxt "title"
 msgid "Lists of tickets"
-msgstr "Liste der Tickets"
+msgstr "Elenchi dei biglietti"
 
 #: backend.js:906
 msgid "Organize your tickets in lists. You can assign tickets to a list."
 msgstr ""
-"Organisiere deine Ticket in Listen. Du kannst Ticket einer Liste zuweisen."
+"Organizza i tuoi biglietti in elenchi. Puoi assegnare i biglietti a un "
+"elenco."
 
 #: backend.js:922
 msgctxt "title"
 msgid "Enter an amount of how many ticket numbers you need"
-msgstr "Gib ein, wie viele Tickets du benötigst"
+msgstr "Inserisci la quantità di numeri biglietto necessari"
 
 #: backend.js:961
 msgctxt "title"
 msgid "1. Ticket number generator (optional step)"
-msgstr "1. Ticketnummer generieren (optionaler Schritt)"
+msgstr "1. Generatore di numeri biglietto (passaggio opzionale)"
 
 #: backend.js:961
 msgid "You can generate ticket numbers."
-msgstr "Du kannst Ticketnummern generieren."
+msgstr "Puoi generare numeri di biglietto."
 
 #: backend.js:962
 msgid ""
 "Up 100.000 tickets generation per run. The limit is to prevent performance "
 "issues."
 msgstr ""
-"Bis zu 100.000 Tickets pro Ausführung. Dieses Limit soll verhindern, dass "
-"wir in einen Timeout geraten."
+"Fino a 100.000 biglietti per esecuzione. Questo limite serve a prevenire "
+"problemi di prestazioni."
 
 #: backend.js:962
 msgid "You can repeat the \"store tickets\" operations as often as needed."
-msgstr "Du kannst das \"Tickets speichern \" so oft ausführen, wie nötig"
+msgstr ""
+"Puoi ripetere l'operazione \"salva biglietti\" tutte le volte necessarie."
 
 #: backend.js:965
 msgctxt "label"
 msgid "Enter amount of needed ticket numbers"
-msgstr "Gib die Anzahl der benötigten Ticketnummern ein"
+msgstr "Inserisci il numero di biglietti necessari"
 
 #. translators: 1: amount of possible codes 2: premium info
 #: backend.js:966
 msgid "%1$d max. %2$s up to 100.000 for each run"
-msgstr "%1$d max. %2$s bis zu 100.000 bei jedem Durchgang"
+msgstr "Massimo %1$d. %2$s fino a 100.000 per ogni esecuzione"
 
 #: backend.js:977
 msgctxt "label"
@@ -360,18 +363,18 @@ msgid ""
 "Clear the ticket numbers list textarea field below to add fill in the new "
 "generated ticket numbers"
 msgstr ""
-"Leere das Feld mit den generierten Ticketnummern unten und setze die neuen "
-"Ticketnummern ein"
+"Svuota il campo dell'area di testo sottostante con i numeri biglietto per "
+"inserire i nuovi numeri biglietto generati"
 
 #: backend.js:983
 msgctxt "label"
 msgid "Generate Code Verification Value (CVV) for each ticket number"
-msgstr "Generiere den Code-Verifizierungswert (CVV) für jede Ticketnummer"
+msgstr "Genera il valore di verifica del codice (CVV) per ogni numero biglietto"
 
 #: backend.js:983
 msgctxt "label"
 msgid "Generate ticket numbers"
-msgstr "Generiere die Ticketnummern"
+msgstr "Genera numeri biglietto"
 
 #. translators: 1: amount of created tickets 2: seconds 3: amount of runs
 #: backend.js:1006
@@ -379,13 +382,13 @@ msgid ""
 "Created %1$d tickets. In %2$s seconds, with %3$d runs to find unique ticket "
 "numbers."
 msgstr ""
-"%1$d erstellte Ticketnummern. In %2$s Sekunden und mit %3$d Durchgängen, um "
-"eindeutige Ticketnummern zu finden."
+"Creati %1$d biglietti. In %2$s secondi, con %3$d esecuzioni per trovare "
+"numeri biglietto univoci."
 
 #. translators: %d: amout of ticket numbers
 #: backend.js:1017
 msgid "contains %d tickets"
-msgstr "enthält %d Ticketnummern"
+msgstr "contiene %d biglietti"
 
 #: backend.js:1019
 msgid ""
@@ -394,26 +397,25 @@ msgid ""
 "number.<br>While storing the numbers to the server, it will check if the "
 "ticket number is unique and mark the ones, that are not."
 msgstr ""
-"Eine Ticketnummer pro Zeile und/oder kommagetrennt (,).<br>Wenn die CVV "
-"Nummer mitangeben möchtest, dann trenne die CVV von der Ticketnummer mit "
-"einem Semikolon (;).<br>Während die Ticketnummern auf dem Server gespeichert "
-"werden, prüft der Server ob die Ticketnummer schon existiert und markiert "
-"schon vorhandene Ticketnummern."
+"Un numero per riga e/o separati da virgola (,).<br>Se si desidera aggiungere "
+"il numero CVV, separare il numero biglietto con (;) e aggiungere il numero "
+"CVV.<br>Durante il salvataggio dei numeri sul server, verrà verificato se il "
+"numero biglietto è univoco e verranno contrassegnati quelli duplicati."
 
 #: backend.js:1020
 msgctxt "title"
 msgid "2. Ticket numbers to store on the server"
-msgstr "2. Speicher Ticketnummern auf deinem Server"
+msgstr "2. Numeri biglietto da salvare sul server"
 
 #. translators: 1: max amout of ticket numbers 2: premium info
 #: backend.js:1039
 msgid "You can store up to %1$d. %2$s unlimited"
-msgstr "Du kannst bis zu %1$d Ticketnummern speichern. %2$s unlimitiert."
+msgstr "Puoi salvare fino a %1$d biglietti. %2$s illimitati."
 
 #: backend.js:1042
 msgctxt "label"
 msgid "Store ticket numbers"
-msgstr "Speicher die Ticketnummern"
+msgstr "Salva numeri biglietto"
 
 #: backend.js:1057
 msgid ""
@@ -421,24 +423,24 @@ msgid ""
 "entry on the server).<br>Scroll down and wait for all to finish.<br>In the "
 "textarea below you will find all the successful stored tickets."
 msgstr ""
-"Jeder Eintrag wird grün (erfolgreich gespeichert) oder rot (NICHT OK - "
-"Duplikat auf dem Server entdeckt) eingefärbt.<br>Scroll nach unten und warte "
-"bis alle Ticketnummern vom Server überprüft und gespeichert wurden.<br>Im "
-"Textfeld findest du jede erfolgreich gespeicherte Ticketnummer."
+"Ogni voce diventerà verde (salvata con successo) o rossa (NON OK - voce "
+"duplicata sul server).<br>Scorri verso il basso e attendi il completamento."
+"<br>Nell'area di testo sottostante troverai tutti i biglietti salvati con "
+"successo."
 
 #: backend.js:1060
 msgctxt "title"
 msgid "Successfull stored ticket numbers"
-msgstr "Erfolgreich gespeicherte Ticketnummern"
+msgstr "Numeri biglietto salvati con successo"
 
 #: backend.js:1067
 msgctxt "title"
 msgid "Importing"
-msgstr "Importiere"
+msgstr "Importazione"
 
 #: backend.js:1077
 msgid "Import process finished"
-msgstr "Importvorgang beendet"
+msgstr "Processo di importazione completato"
 
 #. translators: %d: total ticket count
 #: backend.js:1096
@@ -447,112 +449,112 @@ msgid ""
 "Your Limit of %d tickets is reached. Use the premium version to have "
 "unlimited tickets"
 msgstr ""
-"Dein Limit von %d Ticketnummern ist erreicht. Nutze die Premiumversion, um "
-"unlimitierte Ticketnummern zu erstellen"
+"Il limite di %d biglietti è stato raggiunto. Utilizza la versione Premium "
+"per avere biglietti illimitati"
 
 #: backend.js:1100
 msgctxt "title"
 msgid "Amount"
-msgstr "Anzahl"
+msgstr "Quantità"
 
 #: backend.js:1100 backend.js:1107
 msgctxt "label"
 msgid "Not Ok"
-msgstr "Nicht Ok"
+msgstr "Non Ok"
 
 #: backend.js:1145 backend.js:1513
 msgctxt "title"
 msgid "Export tickets"
-msgstr "Tickets Exportieren"
+msgstr "Esporta biglietti"
 
 #: backend.js:1151
 msgctxt "label"
 msgid "Export"
-msgstr "Exportieren"
+msgstr "Esporta"
 
 #: backend.js:1157 backend.js:1210 backend.js:1337
 msgctxt "label"
 msgid "Cancel"
-msgstr "Abbrechen"
+msgstr "Annulla"
 
 #: backend.js:1164
 msgctxt "label"
 msgid "Choose your export settings"
-msgstr "Bestimme deine Exporteinstellungen"
+msgstr "Scegli le impostazioni di esportazione"
 
 #: backend.js:1165
 msgctxt "label"
 msgid "Choose the delimiter for the column values"
-msgstr "Wähle das Trennzeichen für die Spalten"
+msgstr "Scegli il delimitatore per i valori delle colonne"
 
 #: backend.js:1165
 msgctxt "option value"
 msgid "Comma"
-msgstr "Komma"
+msgstr "Virgola"
 
 #: backend.js:1165
 msgctxt "option value"
 msgid "Semicolon"
-msgstr "Semikolon"
+msgstr "Punto e virgola"
 
 #: backend.js:1165
 msgctxt "option value"
 msgid "Pipe"
-msgstr "Senkrechter Strich"
+msgstr "Barra verticale"
 
 #: backend.js:1166
 msgctxt "label"
 msgid "Choose a file suffix"
-msgstr "Wähle eine Dateieindung"
+msgstr "Scegli un suffisso per il file"
 
 #: backend.js:1168
 msgctxt "option value"
 msgid "All"
-msgstr "Alles"
+msgstr "Tutti"
 
 #: backend.js:1172
 msgctxt "label"
 msgid "Limit export to ticket list"
-msgstr "Schränke den Export auf eine Ticket-Liste ein"
+msgstr "Limita l'esportazione a un elenco biglietti"
 
 #: backend.js:1174
 msgctxt "label"
 msgid "Choose a sorting field"
-msgstr "Wähle das Spalte für die Sortierung aus"
+msgstr "Scegli il campo di ordinamento"
 
 #: backend.js:1174
 msgctxt "option value"
 msgid "Creation date"
-msgstr "Erstelldatum"
+msgstr "Data di creazione"
 
 #: backend.js:1174 backend.js:1663
 msgid "Ticket display number"
-msgstr "Formatierte Ticketnummer"
+msgstr "Numero biglietto formattato"
 
 #: backend.js:1174
 msgctxt "option value"
 msgid "List name"
-msgstr "Listenname"
+msgstr "Nome elenco"
 
 #: backend.js:1175
 msgctxt "label"
 msgid "Choose a sorting direction"
-msgstr "Wähle die Sortierrichtung"
+msgstr "Scegli la direzione di ordinamento"
 
 #: backend.js:1175
 msgctxt "option value"
 msgid "Ascending"
-msgstr "Aufsteigend"
+msgstr "Crescente"
 
 #: backend.js:1175
 msgctxt "option value"
 msgid "Descending"
-msgstr "Absteigened"
+msgstr "Decrescente"
 
 #. translators: %d: total record count
 #: backend.js:1175
 msgid "You have %d tickets stored."
-msgstr "Du hast %d Ticketnummern gespeichert."
+msgstr "Hai %d biglietti salvati."
 
 #: backend.js:1175
 msgid ""
@@ -560,141 +562,141 @@ msgid ""
 "you have too many tickets. In that case, you can export your tickets in "
 "several steps. e.g. 0 and 20000 amount and then 20001 and 20000 amount."
 msgstr ""
-"Einige Systeme sind langsam und die Verbindung bricht wegen einem Timeout "
-"ab, wenn du zuviele Tickets exportieren willst. In diesem Fall, exportieren "
-"deine Tickets in mehreren Durchgängen. Zum Beispiel 0 bis 20000 und dann von "
-"20001, erneut 20000 Tickets."
+"Alcuni sistemi sono lenti e il timeout della connessione interrompe "
+"l'esportazione se si hanno troppi biglietti. In tal caso, è possibile "
+"esportare i biglietti in più passaggi. Ad esempio 0 e 20000, poi 20001 e "
+"20000."
 
 #: backend.js:1175
 msgid "Enter your row start (0 = from the first)"
-msgstr "Gebe den Start an (0 = ab dem ersten Eintrag)"
+msgstr "Inserisci la riga di inizio (0 = dalla prima)"
 
 #: backend.js:1176
 msgctxt "label"
 msgid "Set a range"
-msgstr "Bestimme einen Bereich"
+msgstr "Imposta un intervallo"
 
 #: backend.js:1201
 msgctxt "title"
 msgid "Edit List"
-msgstr "Liste bearbeiten"
+msgstr "Modifica elenco"
 
 #: backend.js:1201
 msgctxt "title"
 msgid "Add List"
-msgstr "Liste hinzufügen"
+msgstr "Aggiungi elenco"
 
 #: backend.js:1223 backend.js:1409
 msgctxt "label"
 msgid "Name"
-msgstr "Name"
+msgstr "Nome"
 
 #: backend.js:1226
 msgctxt "label"
 msgid "Description"
-msgstr "Beschreibung"
+msgstr "Descrizione"
 
 #. translators: %s: h4 option name
 #: backend.js:1231
 msgid "Overrule %s per Ticket list"
-msgstr "Überschreibe %s mit dieser Ticketliste"
+msgstr "Sovrascrivi %s per elenco biglietti"
 
 #: backend.js:1246
 msgctxt "label"
 msgid "Overrule the ticket format settings"
-msgstr "Überschreibe die Einstellungen für das Format von  Ticketnummern"
+msgstr "Sovrascrivi le impostazioni del formato biglietto"
 
 #: backend.js:1247
 msgid ""
 "Will be overriden if you set the ticket number format settings on the "
 "product!"
 msgstr ""
-"Wird überschrieben, wenn das du das Format für die Ticketnummer am Produkt "
-"eingestellt hast!"
+"Verrà sovrascritto se si impostano le impostazioni del formato numero "
+"biglietto sul prodotto!"
 
 #: backend.js:1248
 msgctxt "label"
 msgid "Note"
-msgstr "Hinweis"
+msgstr "Nota"
 
 #: backend.js:1325
 msgctxt "title"
 msgid "Edit Ticket"
-msgstr "Ticket bearbeiten"
+msgstr "Modifica biglietto"
 
 #: backend.js:1325
 msgctxt "title"
 msgid "Add Ticket"
-msgstr "Ticket hinzufügen"
+msgstr "Aggiungi biglietto"
 
 #: backend.js:1345 backend.js:1485
 msgctxt "label"
 msgid "List"
-msgstr "Liste"
+msgstr "Elenco"
 
 #: backend.js:1352
 msgctxt "label"
 msgid "CVV - use 4 digits for best results"
-msgstr "CVV - nutze 4 Ziffern für die besten Ergebnisse"
+msgstr "CVV - utilizzare 4 cifre per i migliori risultati"
 
 #: backend.js:1353
 msgid ""
 "If CVV is set, then your user will be asked to enter also the CVV to check "
 "the ticket number."
 msgstr ""
-"Wenn CVV gesetzt wurde, dann wird dein Benutzer nach der CVV gefragt "
-"zusätzlich zur Ticketnummer."
+"Se il CVV è impostato, all'utente verrà chiesto di inserire anche il CVV "
+"per verificare il numero biglietto."
 
 #: backend.js:1361
 msgctxt "label"
 msgid "is inactiv"
-msgstr "ist inaktiv"
+msgstr "è inattivo"
 
 #: backend.js:1362 backend.js:1565
 msgctxt "label"
 msgid "is stolen"
-msgstr "ist gestohlen"
+msgstr "è rubato"
 
 #: backend.js:1393
 msgid "Use the add option"
-msgstr "Nutze die Hinzufügen Option"
+msgstr "Utilizza l'opzione aggiungi"
 
 #: backend.js:1409 backend.js:1485 backend.js:1663
 msgctxt "label"
 msgid "Created"
-msgstr "Erstellt am"
+msgstr "Creato il"
 
 #: backend.js:1428
 msgctxt "label"
 msgid "Tickets"
-msgstr "Tickets"
+msgstr "Biglietti"
 
 #: backend.js:1428 backend.js:1569
 msgctxt "label"
 msgid "Edit"
-msgstr "Bearbeiten"
+msgstr "Modifica"
 
 #: backend.js:1428 backend.js:1519 backend.js:1569
 msgctxt "label"
 msgid "Delete"
-msgstr "Löschen"
+msgstr "Elimina"
 
 #: backend.js:1443 backend.js:1617
 msgctxt "title"
 msgid "Do you want to delete?"
-msgstr "Willst du es wirklich löschen?"
+msgstr "Vuoi davvero eliminare?"
 
 #: backend.js:1443
 msgid "Are you sure, you want to delete this list?"
-msgstr "Bist du dir sicher, dass du diese Liste löschen möchtest?"
+msgstr "Sei sicuro di voler eliminare questo elenco?"
 
 #: backend.js:1443
 msgid "No ticket will be deleted. Just the list."
-msgstr "Kein Ticket wird gelöscht. Nur die Liste."
+msgstr "Nessun biglietto verrà eliminato. Solo l'elenco."
 
 #: backend.js:1461 backend.js:1462 backend.js:1506
 msgid "Empty table"
-msgstr "Tabelle leeren"
+msgstr "Svuota tabella"
 
 #. translators: %s: title list of tickets
 #: backend.js:1462
@@ -702,53 +704,53 @@ msgid ""
 "Do you want to empty the \"%s\" table? All data will be lost. No ticket will "
 "be deleted. Just the list."
 msgstr ""
-"Willst du die Tabelle \"%s\" leeren? Alle Einträge werden in der Datenbank "
-"gelöscht. Keine Tickets werden gelöscht, nur die Listen."
+"Vuoi svuotare la tabella \"%s\"? Tutti i dati andranno persi. Nessun "
+"biglietto verrà eliminato. Solo l'elenco."
 
 #: backend.js:1462
 msgctxt "title"
 msgid "List of tickets"
-msgstr "Liste der Tickets"
+msgstr "Elenco dei biglietti"
 
 #: backend.js:1469 backend.js:1499
 msgctxt "label"
 msgid "Add"
-msgstr "Hinzufügen"
+msgstr "Aggiungi"
 
 #. translators: 1: max possible lists amount 2: link to premium
 #: backend.js:1471
 msgid "Max. %1$d list. Unlimited with %2$s"
-msgstr "Maximal %1$d Listen möglich. Unlimitiert mit %2$s"
+msgstr "Massimo %1$d elenchi. Illimitati con %2$s"
 
 #: backend.js:1479
 msgctxt "label"
 msgid "Customer"
-msgstr "Kunde"
+msgstr "Cliente"
 
 #: backend.js:1482
 msgctxt "label"
 msgid "Redeem Amount"
-msgstr "Entwertungen"
+msgstr "Numero di convalide"
 
 #: backend.js:1485
 msgctxt "label"
 msgid "Ticket"
-msgstr "Ticket"
+msgstr "Biglietto"
 
 #: backend.js:1485
 msgctxt "label"
 msgid "Redeemed"
-msgstr "Entwertet"
+msgstr "Convalidato"
 
 #: backend.js:1485 backend.js:1670
 msgctxt "label"
 msgid "OrderId"
-msgstr "Bestellnummer"
+msgstr "ID ordine"
 
 #: backend.js:1485
 msgctxt "label"
 msgid "Status"
-msgstr "Status"
+msgstr "Stato"
 
 #: backend.js:1500
 msgid ""
@@ -756,104 +758,103 @@ msgid ""
 "can add more new tickets or buy the premium version to have unlimited "
 "tickets."
 msgstr ""
-"Du hast das Maximum an Tickets erreicht. Du musst Tickets löschen, um "
-"weitere Tickets anzulegen oder die Premiumversion erwerben, um unlimitiert "
-"Tickets anzulegen."
+"Hai raggiunto il numero massimo di biglietti. Devi eliminare dei biglietti "
+"prima di poterne aggiungere di nuovi oppure acquistare la versione Premium "
+"per avere biglietti illimitati."
 
 #. translators: %s: name of ticket table
 #: backend.js:1506
 msgid "Do you want to empty the \"%s\" table? All data will be lost."
 msgstr ""
-"Willst du die Tabelle \"%s\" leeren? Deine Tickets werden aus der Datenbank "
-"gelöscht."
+"Vuoi svuotare la tabella \"%s\"? Tutti i dati andranno persi."
 
 #: backend.js:1519
 msgctxt "option value"
 msgid "Bulk Action"
-msgstr "Mehrfachaktion"
+msgstr "Azione multipla"
 
 #. translators: 1: max amount tickets 2: premium link
 #: backend.js:1533
 msgid "Max. %1$d tickets. Unlimited with %2$s"
-msgstr "Maximal %1$d Tickets. Unlimitert mit %2$s"
+msgstr "Massimo %1$d biglietti. Illimitati con %2$s"
 
 #. translators: 1: amount tickets 2: total amount tickets
 #: backend.js:1598
 msgid "Redeemed tickets: %1$d (filtered) of %2$d (total redeemed tickets)"
-msgstr "Entwertete Tickets: %1$d (gefiltert) von %2$d"
+msgstr "Biglietti convalidati: %1$d (filtrati) di %2$d (totale)"
 
 #: backend.js:1616
 msgid "Are you sure, you want to delete this ticket?"
-msgstr "Bist du sicher, dass du dieses Ticket löschen möchtest?"
+msgstr "Sei sicuro di voler eliminare questo biglietto?"
 
 #: backend.js:1647
 msgctxt "label"
 msgid "Display QR with ticket number"
-msgstr "QR-Code mit Ticketnummer anzeigen"
+msgstr "Mostra QR con numero biglietto"
 
 #: backend.js:1649 backend.js:1656
 msgctxt "label"
 msgid "This QR image contains"
-msgstr "Dieses QR-Bild enthält"
+msgstr "Questa immagine QR contiene"
 
 #: backend.js:1650
 msgctxt "title"
 msgid "QR with ticket number"
-msgstr "QR-Code enthält die Ticketnummer"
+msgstr "QR con numero biglietto"
 
 #: backend.js:1653
 msgctxt "label"
 msgid "Display QR with URL"
-msgstr "Zeige QR-Code mit URL an"
+msgstr "Mostra QR con URL"
 
 #: backend.js:1657 backend.js:1663
 msgctxt "label"
 msgid "QR with URL and code"
-msgstr "QR-Code mit URL und Code"
+msgstr "QR con URL e codice"
 
 #: backend.js:1663
 msgctxt "label"
 msgid "Code Verification Value (CVV)"
-msgstr "Code-Verifizierungswert (CVV)"
+msgstr "Valore di verifica del codice (CVV)"
 
 #: backend.js:1666
 msgctxt "title"
 msgid "WooCommerce Order"
-msgstr "WooCommerce Bestellung"
+msgstr "Ordine WooCommerce"
 
 #: backend.js:1667
 msgid "WooCommerce not found"
-msgstr "WooCommerce nicht gefunden"
+msgstr "WooCommerce non trovato"
 
 #: backend.js:1666
 msgctxt "label"
 msgid "Show in WooCommerce Orders"
-msgstr "In WooCommerce anzeigen"
+msgstr "Mostra negli ordini WooCommerce"
 
 #: backend.js:1673 backend.js:1695
 msgctxt "label"
 msgid "Order from"
-msgstr "Bestellung vom"
+msgstr "Ordine del"
 
 #: backend.js:1674 backend.js:1696
 msgctxt "label"
 msgid "Product Id"
-msgstr "Produkt-Id"
+msgstr "ID prodotto"
 
 #: backend.js:1674 backend.js:1696
 msgctxt "label"
 msgid "Show Product"
-msgstr "Produkt zeigen"
+msgstr "Mostra prodotto"
 
 #: backend.js:1678
 msgctxt "label"
 msgid "Delete WooCommerce order info for this ticket"
-msgstr "Lösche WooCommerce Bestellinformationen für diese Ticket"
+msgstr "Elimina le informazioni dell'ordine WooCommerce per questo biglietto"
 
 #: backend.js:1679
 msgctxt "label"
 msgid "Remove order"
-msgstr "Bestellung entfernen"
+msgstr "Rimuovi ordine"
 
 #. translators: %s: ticket number
 #: backend.js:1687
@@ -866,32 +867,32 @@ msgid ""
 "will remove all tickets from all items on this order. Click OK to proceed "
 "the removal."
 msgstr ""
-"Willst du wirklich die Bestellinformationen für dieses Ticket \"%s\" "
-"entfernen? Damit entfernst du auch die Ticketnummern von der Bestellung! Für "
-"das Premium Plugin: Es wird nur von der Position in der Bestellung entfernt. "
-"Wenn das Ticket mehrmals in der Bestellung erworben wurde, dann werden die "
-"Ticketnummern von der Position entfernt. Für das BASIC Plugin: Es entfernt "
-"alle Ticketnummern von allen Positionen in der Bestellung. Klick auf OK um "
-"mit dem Entfernung weiter zu machen."
+"Vuoi davvero rimuovere le informazioni dell'ordine per questo biglietto "
+"\"%s\"? Questo rimuoverà anche il numero biglietto dall'ordine! Per il "
+"PLUGIN PREMIUM: verrà rimosso solo dalla posizione dell'ordine. Se un ordine "
+"contiene più di un articolo con numero biglietto, verranno rimossi solo i "
+"numeri biglietto da questo articolo dell'ordine. Per il PLUGIN BASIC: "
+"verranno rimossi tutti i biglietti da tutti gli articoli di questo ordine. "
+"Clicca OK per procedere con la rimozione."
 
 #: backend.js:1691
 msgid "WooCommerce Purchase Restriction"
-msgstr "WooCommerce Bestell-Freigabecode"
+msgstr "Codice di restrizione acquisto WooCommerce"
 
 #: backend.js:1694 backend.js:1706
 msgctxt "label"
 msgid "Used for Order ID"
-msgstr "Genutzt für die Bestellungsnummer"
+msgstr "Utilizzato per l'ID ordine"
 
 #: backend.js:1694
 msgctxt "label"
 msgid "Open WooCommerce Order"
-msgstr "Öffne die Bestellung"
+msgstr "Apri l'ordine WooCommerce"
 
 #: backend.js:1697 backend.js:1698
 msgctxt "title"
 msgid "Remove purchase ticket information"
-msgstr "Entferne Ticketinformationen von der Bestellung"
+msgstr "Rimuovi informazioni biglietto dall'acquisto"
 
 #. translators: %s: ticket nummer
 #: backend.js:1698
@@ -901,30 +902,29 @@ msgid ""
 "order items! This ticket can then be reused for purchases. Click OK to "
 "proceed the removal."
 msgstr ""
-"Willst du wirklich die Ticketinformationen von der Bestellung für die "
-"Ticketnummer \"%s\" entfernen? Das entfernt die Ticketnummern auch von der "
-"Position in der Bestellung! Die Ticketnummer kann dann wieder verwendet "
-"werden, sofern diese Option aktiviert wurde. Klicke auf Ok, um weiter zu "
-"machen."
+"Vuoi davvero rimuovere le informazioni del biglietto dall'ordine per il "
+"biglietto \"%s\"? Questo rimuoverà anche i biglietti dagli articoli "
+"dell'ordine! Il biglietto potrà quindi essere riutilizzato per gli acquisti. "
+"Clicca OK per procedere con la rimozione."
 
 #: backend.js:1710
 msgctxt "title"
 msgid "Registered user"
-msgstr "Registrierter Benutzer"
+msgstr "Utente registrato"
 
 #: backend.js:1713
 msgctxt "title"
 msgid "IP list checked for this ticket"
-msgstr "IPs die einen Check für dieses Ticket gemacht haben"
+msgstr "Elenco IP che hanno effettuato un controllo per questo biglietto"
 
 #: backend.js:1762
 msgctxt "title"
 msgid "Error"
-msgstr "Fehler"
+msgstr "Errore"
 
 #: index.php:89 backend.js:1360 backend.js:1565 backend.js:1663
 msgid "is active"
-msgstr "ist aktiv"
+msgstr "è attivo"
 
 #: index.php:265 index.php:266
 msgid "Event Tickets"
@@ -932,113 +932,113 @@ msgstr "Event Tickets"
 
 #: index.php:271
 msgid "You do not have sufficient permissions to access this page."
-msgstr "Deine Berechtigung reicht nicht aus, um diese Seite aufzurufen."
+msgstr "Non disponi di autorizzazioni sufficienti per accedere a questa pagina."
 
 #: index.php:324
 msgid "Version"
-msgstr "Version"
+msgstr "Versione"
 
 #: index.php:325
 msgid "Shortcode to display the restriction code check for the user"
-msgstr "Shortcode, um den Freigabecode-Check für den Benutzer anzuzeigen"
+msgstr "Shortcode per mostrare il controllo del codice di restrizione all'utente"
 
 #: index.php:325
 msgid "Learn here more about the possible parameters."
-msgstr "Hier erfährst du mehr über die möglichen Parameter."
+msgstr "Scopri di più sui parametri disponibili qui."
 
 #: index.php:326 index.php:335
 msgid "If you like our plugin, then please give us a"
-msgstr "Wenn dir das Plugin gefällt, dann hinterlasse mir bitte eine"
+msgstr "Se il nostro plugin ti piace, lasciaci una"
 
 #: index.php:334
 msgid "Plugin Rating"
-msgstr "Plugin Bewertung"
+msgstr "Valutazione del plugin"
 
 #: index.php:336
 msgid "Ticket Sale option"
-msgstr "Ticket Verkaufsoptionen"
+msgstr "Opzioni di vendita biglietti"
 
 #: index.php:337
 msgid ""
 "You can use this plugin to sell tickets and even redeem them. Check out the "
 "documentation for"
 msgstr ""
-"Du kannst das Plugin nutzen, um Tickets zu verkaufen und auch diese zu "
-"entwerten. Schau in die Dokumentation für"
+"Puoi utilizzare questo plugin per vendere biglietti e anche convalidarli. "
+"Consulta la documentazione per"
 
 #: index.php:337
 msgid "more details here"
-msgstr "mehr Details"
+msgstr "maggiori dettagli qui"
 
 #: index.php:338
 msgid "Premium Homepage"
-msgstr "Premium Homepage"
+msgstr "Homepage Premium"
 
 #: index.php:339
 msgid "You can find more details about the"
-msgstr "Du erfährst mehr Details über die"
+msgstr "Puoi trovare maggiori dettagli sulla"
 
 #: index.php:339
 msgid "premium version here"
-msgstr "Premium-Version hier"
+msgstr "versione Premium qui"
 
 #: index.php:356
 msgid ""
 "Shortcode to display the assigned tickets and codes of an user within a page"
 msgstr ""
-"Shortcode, um die zugewiesenen Tickets und Codes eines Benutzers auf einer "
-"Seite anzuzeigen"
+"Shortcode per mostrare i biglietti e i codici assegnati a un utente "
+"all'interno di una pagina"
 
 #: index.php:358
 msgid "Shortcode to display the ticket scanner within a page"
-msgstr "Short, um den Ticket-Scanner auf einer Seite anzuzeigen"
+msgstr "Shortcode per mostrare lo scanner biglietti all'interno di una pagina"
 
 #: index.php:359
 msgid "Useful if you cannot open the ticket scanner due to security issues."
 msgstr ""
-"Nützlich, wenn du den Ticket-Scanner wegen Sicherheitseinstellungen nicht "
-"öffnen kannst."
+"Utile se non è possibile aprire lo scanner biglietti a causa di problemi di "
+"sicurezza."
 
 #: index.php:361
 msgid "PHP Filters"
-msgstr "PHP Filter"
+msgstr "Filtri PHP"
 
 #: index.php:362
 msgid ""
 "You can use PHP code to register your filter functions for the validation "
 "check."
 msgstr ""
-"Du kannst PHP Code nutzen, um deine Filterfunktionen für den "
-"Validierungscheck zu registrieren."
+"Puoi utilizzare codice PHP per registrare le tue funzioni filtro per il "
+"controllo di validazione."
 
 #: index.php:363
 msgid "Click here for more help about the functions"
-msgstr "Klicke hier, für mehr Hilfe zu den Funktionen"
+msgstr "Clicca qui per ulteriore aiuto sulle funzioni"
 
 #: index.php:569 sasoEventtickets_Ticket.php:686 ticket_scanner.js:37
 msgid "...loading..."
-msgstr "...lade..."
+msgstr "...caricamento..."
 
 #: sasoEventtickets_AdminSettings.php:128 sasoEventtickets_Frontend.php:38
 #: woocommerce-hooks.php:1056
 msgid "function \"%s\" not implemented"
-msgstr "Funktion \"%s\" nicht implementiert"
+msgstr "Funzione \"%s\" non implementata"
 
 #: sasoEventtickets_AdminSettings.php:389
 msgid "Could not create code list. Name exists already."
-msgstr "Konnte die Code-Liste nicht erstellen. Der Name exisitiert bereits."
+msgstr "Impossibile creare l'elenco codici. Il nome esiste già."
 
 #: sasoEventtickets_AdminSettings.php:607
 msgid "code exists already"
-msgstr "Code existiert bereits"
+msgstr "Il codice esiste già"
 
 #: sasoEventtickets_AdminSettings.php:692
 msgid "Please contact our support for the ticket/code"
-msgstr "Bitte kontaktiere unseren Support für deine Ticketnummer"
+msgstr "Si prega di contattare il nostro supporto per il biglietto/codice"
 
 #: sasoEventtickets_AdminSettings.php:715
 msgid "code could not be generated and stored"
-msgstr "Code konnte nicht generiert und gespeichert werden"
+msgstr "Impossibile generare e salvare il codice"
 
 #. translators: 1: redeemed ticket counter 2: max redeem possible
 #: sasoEventtickets_AdminSettings.php:1006
@@ -1046,148 +1046,151 @@ msgid ""
 "Ticket cannot be redeemed anymore. All redeem operations are used up. %1$d "
 "of %2$d."
 msgstr ""
-"Ticket kann nicht mehr entwertet werden. Die verfügbaren Entwertungen sind "
-"aufgebraucht. %1$d von %2$d."
+"Il biglietto non può più essere convalidato. Tutte le convalide sono state "
+"utilizzate. %1$d di %2$d."
 
 #. translators: %1$s: ticket number
 #: sasoEventtickets_AdminSettings.php:1067
 msgid "Order item changed to ticket with ticket number: %1$s"
 msgstr ""
-"Position der Bestellung wurde zu einem Ticket umgewandelt mit der "
-"Ticketnummer: %1$s"
+"L'articolo dell'ordine è stato convertito in biglietto con numero "
+"biglietto: %1$s"
 
 #: sasoEventtickets_Core.php:119 sasoEventtickets_Core.php:129
 #: sasoEventtickets_Core.php:139 sasoEventtickets_Core.php:149
 #: sasoEventtickets_Core.php:159
 msgid "USERID DO NOT EXISTS"
-msgstr "Benutzer-ID existiert nicht"
+msgstr "L'ID utente non esiste"
 
 #: sasoEventtickets_Core.php:210
 msgid "Value given by the user during the code registration."
-msgstr "Der vom Benutzer, während der Code Registrierung, eingebene Wert."
+msgstr "Valore inserito dall'utente durante la registrazione del codice."
 
 #: sasoEventtickets_Core.php:211
 msgid "IP address of the user, register to a code."
-msgstr "IP-Adresse des Benutzers beim Registrieren eines Codes auf sich."
+msgstr "Indirizzo IP dell'utente registrato a un codice."
 
 #: sasoEventtickets_Core.php:212
 msgid "User id of the registered user to a code. Default will be 0."
-msgstr "Benutzer-ID des registrierten Benutzers. Standard ist 0."
+msgstr "ID utente dell'utente registrato a un codice. Il valore predefinito è 0."
 
 #: sasoEventtickets_Core.php:213
 msgid "IP addres of the user that used the code."
-msgstr "IP-Adresse des Benutzers, welcher das Ticket benutzt hat."
+msgstr "Indirizzo IP dell'utente che ha utilizzato il codice."
 
 #: sasoEventtickets_Core.php:214
 msgid "Amount of how many times the code was validated successfully."
-msgstr ""
-"Anzahl der verfügbaren Entwertungen, die erfolgreiche validiert wurden."
+msgstr "Numero di volte in cui il codice è stato validato con successo."
 
 #: sasoEventtickets_Core.php:215
 msgid "WooCommerce order id assigned to the code."
-msgstr "WooCommerce Bestellnummer wurde dem Ticket zugewiesen."
+msgstr "ID ordine WooCommerce assegnato al codice."
 
 #: sasoEventtickets_Core.php:216
 msgid "WooCommerce product id assigned to the code."
-msgstr "WooCommerce Produkt-ID wurde dem Ticket zugewiesen."
+msgstr "ID prodotto WooCommerce assegnato al codice."
 
 #: sasoEventtickets_Core.php:217
 msgid "Creation date of the WooCommerce sales date."
-msgstr "Datum der Bestellung"
+msgstr "Data di creazione della vendita WooCommerce."
 
 #: sasoEventtickets_Core.php:218
 msgid "User id of the WooCommerce sales."
-msgstr "Benutzer-ID für die Bestellung."
+msgstr "ID utente della vendita WooCommerce."
 
 #: sasoEventtickets_Core.php:219
 msgid ""
 "WooCommerce order id, that was purchases using this code as an allowance to "
 "purchase a restricted product."
-msgstr "Bestellnummer für die der Freigabecode benutzt wurde."
+msgstr ""
+"ID ordine WooCommerce acquistato utilizzando questo codice come "
+"autorizzazione per acquistare un prodotto con restrizione."
 
 #: sasoEventtickets_Core.php:220
 msgid "WooCommerce product id that was restricted with this code."
-msgstr "Produkt-ID, welche einen Freigabecode benötigt hat."
+msgstr "ID prodotto WooCommerce che era limitato con questo codice."
 
 #: sasoEventtickets_Core.php:221
 msgid "Creation date of the WooCommerce purchase using the allowance code."
-msgstr "Datum der Bestellung mit dem Freigabecode."
+msgstr "Data di creazione dell'acquisto WooCommerce con il codice di autorizzazione."
 
 #: sasoEventtickets_Options.php:18
 msgid "Display options"
-msgstr "Anzeigenoptionen"
+msgstr "Opzioni di visualizzazione"
 
 #: sasoEventtickets_Options.php:19
 msgid "Your own date format"
-msgstr "Dein eigenes Datumsformat"
+msgstr "Formato data personalizzato"
 
 #: sasoEventtickets_Options.php:19
 msgid ""
 "If left empty, default will be 'Y/m/d'. Using the php date function format. "
 "Y=year, m=month, d=day H:hours, i:minutes, s=seconds"
 msgstr ""
-"Wenn es leer ist, dann wird das Format 'Y/m/d' genutzt. Die PHP Funktion "
-"date wird für die Ausgabe genutzt. Y=Jahr, m=Monat, d=Tag, H=Stunde, i:"
-"Minute, s=Sekunde"
+"Se lasciato vuoto, il valore predefinito sarà 'Y/m/d'. Utilizza il formato "
+"della funzione PHP date. Y=anno, m=mese, d=giorno, H=ore, i=minuti, "
+"s=secondi"
 
 #: sasoEventtickets_Options.php:20
 msgid "Your own time format"
-msgstr "Dein eigenes Zeitformat"
+msgstr "Formato ora personalizzato"
 
 #: sasoEventtickets_Options.php:20
 msgid ""
 "If left empty, default will be 'H:i'. Using the php date function format. "
 "H=hours with leading 0, i=minutes with leading zero, s=seconds"
 msgstr ""
-"Wenn es leer ist, dann wird das Format 'H:i' genutzt. Die PHP Funktion date "
-"wird für die Ausgabe genutzt. H=Stunde mit führender 0, i=Minunten mit "
-"führender 0, s=Sekunden"
+"Se lasciato vuoto, il valore predefinito sarà 'H:i'. Utilizza il formato "
+"della funzione PHP date. H=ore con 0 iniziale, i=minuti con 0 iniziale, "
+"s=secondi"
 
 #: sasoEventtickets_Options.php:21
 msgid "Display a column with the information how often the ticket is redeemed"
 msgstr ""
-"Zeige eine Spalte mit der Information an, wie oft wurde das Ticket entwertet"
+"Mostra una colonna con l'informazione su quante volte il biglietto è stato "
+"convalidato"
 
 #: sasoEventtickets_Options.php:21
 msgid ""
 "If active, then a new column within the admin area for each ticket will be "
 "shown with the redeem ticket information. This feature can be very slow."
 msgstr ""
-"Wenn aktiv, dann wird eine weitere Spalte im Adminbereich für jedes Ticket "
-"angezeigt. Dies kann dein System langsam machen."
+"Se attivo, verrà mostrata una nuova colonna nell'area di amministrazione per "
+"ogni biglietto con le informazioni sulle convalide. Questa funzione può "
+"essere molto lenta."
 
 #: sasoEventtickets_Options.php:22
 msgid "Display a column with the name of the buyer"
-msgstr "Zeige eine Spalte an, die den Namen des Käufers enthält"
+msgstr "Mostra una colonna con il nome dell'acquirente"
 
 #: sasoEventtickets_Options.php:22
 msgid ""
 "If active, then a new column within the admin area for each ticket will be "
 "shown with the billing name. <b>This feature can be very slow.</b>"
 msgstr ""
-"Wenn aktiv, dann wird eine weitere Spalte für jedes Ticket angezeigt, die "
-"den Namen in der Bestellung enthält. <b>Dies kann dein System verlangsamen.</"
-"b>"
+"Se attivo, verrà mostrata una nuova colonna nell'area di amministrazione per "
+"ogni biglietto con il nome di fatturazione. <b>Questa funzione può essere "
+"molto lenta.</b>"
 
 #: sasoEventtickets_Options.php:40
 msgid "Validator Form for ticket number check"
-msgstr "Validierungsformular für das Prüfen von Ticketnummern"
+msgstr "Modulo di validazione per il controllo dei numeri biglietto"
 
 #: sasoEventtickets_Options.php:41
 msgid "Your own check button label"
-msgstr "Dein eigener Text für den Check-Button"
+msgstr "Testo personalizzato per il pulsante di verifica"
 
 #: sasoEventtickets_Options.php:41
 msgid "If left empty, default will be 'Check'"
-msgstr "Wenn leer, dann wird 'Prüfen' genutzt"
+msgstr "Se lasciato vuoto, il valore predefinito sarà 'Check'"
 
 #: sasoEventtickets_Options.php:42
 msgid "Your own input field placeholder text"
-msgstr "Dein eigener Platzhaltertext für das Eingabefeld"
+msgstr "Testo segnaposto personalizzato per il campo di inserimento"
 
 #: sasoEventtickets_Options.php:42
 msgid "If left empty, default will be 'XXYYYZZ'"
-msgstr "Wenn leer, dann wird 'XXYYYZZ' genutzt"
+msgstr "Se lasciato vuoto, il valore predefinito sarà 'XXYYYZZ'"
 
 #: sasoEventtickets_Options.php:42
 msgid "XXYYYZZ"
@@ -1195,187 +1198,188 @@ msgstr "XXYYYZZ"
 
 #: sasoEventtickets_Options.php:43
 msgid "Your own background color of the button"
-msgstr "Deine eigenen Hintergrundfarbe für den Button"
+msgstr "Colore di sfondo personalizzato per il pulsante"
 
 #: sasoEventtickets_Options.php:43 sasoEventtickets_Options.php:44
 msgid ""
 "If left empty, default will be <span style='color:#007bff;'>'#007bff'</span>"
 msgstr ""
-"Wenn leer, dann wird <span style='color:#007bff;'>'#007bff'</span> genutzt"
+"Se lasciato vuoto, il valore predefinito sarà <span style='color:#007bff;'>"
+"'#007bff'</span>"
 
 #: sasoEventtickets_Options.php:44
 msgid "Your own border color of the button"
-msgstr "Deine eigene Rahmenfarbe vom Button"
+msgstr "Colore del bordo personalizzato per il pulsante"
 
 #: sasoEventtickets_Options.php:45
 msgid "Your own text color of the button"
-msgstr "Deine eigene Textfarbe für den Button"
+msgstr "Colore del testo personalizzato per il pulsante"
 
 #: sasoEventtickets_Options.php:45
 msgid "If left empty, default will be 'white'"
-msgstr "Wenn es leer bleibt, dann wird weiss genommen"
+msgstr "Se lasciato vuoto, il valore predefinito sarà 'white'"
 
 #: sasoEventtickets_Options.php:48
 msgid "Your own 'Ticket confirmed' message"
-msgstr "Dein eigene 'Ticket gültig' Meldung"
+msgstr "Messaggio personalizzato 'Biglietto confermato'"
 
 #: sasoEventtickets_Options.php:48
 msgid "If left empty, default will be 'Ticket confirmed'"
-msgstr "Wenn leer, dann wird 'Ticket gültig' genutzt"
+msgstr "Se lasciato vuoto, il valore predefinito sarà 'Ticket confirmed'"
 
 #: sasoEventtickets_Options.php:48
 msgid "Ticket confirmed"
-msgstr "Ticket gültig"
+msgstr "Biglietto confermato"
 
 #: sasoEventtickets_Options.php:49
 msgid "Your own 'Ticket not found' message"
-msgstr "Deine eigene 'Ticket nicht gefunden' Meldung"
+msgstr "Messaggio personalizzato 'Biglietto non trovato'"
 
 #: sasoEventtickets_Options.php:49
 msgid "If left empty, default will be 'Ticket not found'"
-msgstr "Wenn es leer bleibt, dann wird 'Ticket nicht gefunden' genutzt"
+msgstr "Se lasciato vuoto, il valore predefinito sarà 'Ticket not found'"
 
 #: sasoEventtickets_Options.php:49
 msgid "Ticket not found"
-msgstr "Ticket nicht gefunden"
+msgstr "Biglietto non trovato"
 
 #: sasoEventtickets_Options.php:50
 msgid "Your own 'Ticket inactive' message"
-msgstr "Deine eigene 'Ticket inaktiv' Meldung"
+msgstr "Messaggio personalizzato 'Biglietto inattivo'"
 
 #: sasoEventtickets_Options.php:50
 msgid ""
 "If left empty, default will be 'Please contact support for further "
 "investigation'"
 msgstr ""
-"Wenn leer, dann wird 'Bitte kontaktiere den Support für weitere "
-"Nachforschung' genutzt"
+"Se lasciato vuoto, il valore predefinito sarà 'Please contact support for "
+"further investigation'"
 
 #: sasoEventtickets_Options.php:50
 msgid "Please contact support for further investigation"
-msgstr "Bitte kontaktiere den Support für weitere Nachforschung"
+msgstr "Si prega di contattare il supporto per ulteriori verifiche"
 
 #: sasoEventtickets_Options.php:51
 msgid "Your own 'Ticket is already registered to a user' message"
-msgstr "Deine eigene 'Ticket ist bereit auf einen Benutzer registiert' Meldung"
+msgstr "Messaggio personalizzato 'Biglietto già registrato a un utente'"
 
 #: sasoEventtickets_Options.php:51
 msgid "If left empty, default will be 'Is registered to a user'"
 msgstr ""
-"Wenn leer, dann wird 'Ist bereits auf einen Benutzer registriert' genutzt"
+"Se lasciato vuoto, il valore predefinito sarà 'Is registered to a user'"
 
 #: sasoEventtickets_Options.php:51
 msgid "Is registered to a user"
-msgstr "Ist bereits auf einen Benutzer registriert"
+msgstr "È registrato a un utente"
 
 #: sasoEventtickets_Options.php:52
 msgid "Your own 'Ticket expired' message"
-msgstr "Deine eigene 'Ticket abgelaufen' Meldung"
+msgstr "Messaggio personalizzato 'Biglietto scaduto'"
 
 #: sasoEventtickets_Options.php:52
 msgid "If left empty, default will be 'Ticket expired'"
-msgstr "Wenn leer, dann wird 'Ticket abgelaufen' genutzt"
+msgstr "Se lasciato vuoto, il valore predefinito sarà 'Ticket expired'"
 
 #: sasoEventtickets_Options.php:52 sasoEventtickets_Ticket.php:382
 msgid "Ticket expired"
-msgstr "Ticket abgelaufen"
+msgstr "Biglietto scaduto"
 
 #: sasoEventtickets_Options.php:53
 msgid "Your own 'Ticket and CVV is not valid' message"
-msgstr "Deine eigene 'Ticket und CVV ist ungültig' Meldung"
+msgstr "Messaggio personalizzato 'Biglietto e CVV non validi'"
 
 #: sasoEventtickets_Options.php:53
 msgid "If left empty, default will be 'Ticket and CVV is not valid'."
-msgstr "Wenn leer, dann wird 'Ticket und CVV ist ungültig' genutzt"
+msgstr ""
+"Se lasciato vuoto, il valore predefinito sarà 'Ticket and CVV is not valid'."
 
 #: sasoEventtickets_Options.php:53
 msgid "Ticket and CVV is not valid"
-msgstr "Ticket und CVV ist ungültig"
+msgstr "Biglietto e CVV non validi"
 
 #: sasoEventtickets_Options.php:54
 msgid "Your own 'Ticket stolen' message"
-msgstr "Deine eigene 'Ticket ist gestohlen' Meldung"
+msgstr "Messaggio personalizzato 'Biglietto rubato'"
 
 #: sasoEventtickets_Options.php:54
 msgid ""
 "If left empty, default will be 'Ticket stolen'. You could set it to be more "
 "precise e.g.: 'The Ticket is reported as stolen'"
 msgstr ""
-"Wenn leer, dann wird 'Ticket ist gestohlen' genutzt. Du kannst sie so "
-"formulieren, dass es etwas spezifischer wird. Bsp: 'Das Ticket wurde als "
-"gestohlen gemeldet'"
+"Se lasciato vuoto, il valore predefinito sarà 'Ticket stolen'. È possibile "
+"impostare un testo più preciso, ad es.: 'Il biglietto è stato segnalato "
+"come rubato'"
 
 #: sasoEventtickets_Options.php:54
 msgid "Ticket is stolen"
-msgstr "Ticket ist gestohlen"
+msgstr "Biglietto rubato"
 
 #: sasoEventtickets_Options.php:55
 msgid "Your own 'Ticket is redeemed' message"
-msgstr "Deine eigene 'Ticket ist entwertet' Meldung"
+msgstr "Messaggio personalizzato 'Biglietto convalidato'"
 
 #: sasoEventtickets_Options.php:55
 msgid "If left empty, default will be 'Ticket is redeemed'"
-msgstr "Wenn leer, dann wird 'Ticket ist entwertet' genutzt"
+msgstr "Se lasciato vuoto, il valore predefinito sarà 'Ticket is redeemed'"
 
 #: sasoEventtickets_Options.php:55
 msgid "Ticket is redeemed"
-msgstr "Ticket ist entwertet"
+msgstr "Biglietto convalidato"
 
 #: sasoEventtickets_Options.php:57
 msgid "Logged in user only"
-msgstr "Nur eingeloggte Benutzer"
+msgstr "Solo utenti autenticati"
 
 #: sasoEventtickets_Options.php:58
 msgid ""
 "Allow only logged in wordpress user to enter a ticket number for validation"
 msgstr ""
-"Nur eingeloggte Benutzer dürfen die Ticketnummer im Validator überprüfen"
+"Consenti solo agli utenti WordPress autenticati di inserire un numero "
+"biglietto per la validazione"
 
 #: sasoEventtickets_Options.php:58
 msgid ""
 "If active and the user is not logged in, then the input fields will be "
 "disabled"
 msgstr ""
-"Wenn aktiv und der Benutzer ist nicht eingeloggt, dann werden die "
-"Eingabefelder deaktiviert"
+"Se attivo e l'utente non è autenticato, i campi di inserimento saranno "
+"disabilitati"
 
 #: sasoEventtickets_Options.php:59
 msgid "Your own 'Only for logged in user' message"
-msgstr "Deine eigene 'Nur für eingeloggte Benutzer' Meldung"
+msgstr "Messaggio personalizzato 'Solo per utenti autenticati'"
 
 #: sasoEventtickets_Options.php:59
 msgid ""
 "If left empty, default will be 'You need to log in to use the ticket "
 "validator'"
 msgstr ""
-"Wenn leer, dann wird 'Du musst dich einloggen, um den Ticketvalidator zu "
-"nutzen'"
+"Se lasciato vuoto, il valore predefinito sarà 'You need to log in to use "
+"the ticket validator'"
 
 #: sasoEventtickets_Options.php:59
 msgid "You need to log in to use the ticket validator"
-msgstr "Du musst dich einloggen, um den Ticketvalidator zu nutzen"
+msgstr "Devi effettuare il login per utilizzare il validatore di biglietti"
 
 #: sasoEventtickets_Options.php:76
 msgid "User redirection"
-msgstr "Benutzer Umleitung"
+msgstr "Reindirizzamento utente"
 
 #: sasoEventtickets_Options.php:77
 msgid "Activate redirect the user after a valid ticket was found."
 msgstr ""
-"Aktiviere eine Umleitung für den Benutzer, nachdem dieser die Ticketnummer "
-"geprüft hat"
+"Attiva il reindirizzamento dell'utente dopo che è stato trovato un biglietto "
+"valido."
 
 #: sasoEventtickets_Options.php:77 sasoEventtickets_Ticket.php:355
 msgid "If active, the user will be redirected to the URL your provide below."
 msgstr ""
-"Wenn aktiv, dann wird der Benutzer weitergeleitet an die unten hinterlegte "
-"URL."
+"Se attivo, l'utente verrà reindirizzato all'URL fornito di seguito."
 
 #: sasoEventtickets_Options.php:78
 msgid "Redirect already registered tickets and the user is the same."
 msgstr ""
-"Weiterleitung auch vornehmen, wenn die Ticketnummer bereits auf diesen "
-"Benutzer registriert ist."
+"Reindirizza anche i biglietti già registrati se l'utente è lo stesso."
 
 #: sasoEventtickets_Options.php:78
 msgid ""
@@ -1385,15 +1389,15 @@ msgid ""
 "restriction is active'. The user needs to be logged in for the system to "
 "recognize the user."
 msgstr ""
-"Wenn aktiv, dann wird der Benutzer an die unten angegebene URL "
-"weitergeleitet, auch wenn das Ticket bereits registriert ist und der "
-"Benutzer der Registrant ist. Der Benutzer wird nicht weitergeleitet, wenn "
-"'Einmalige Nutzung aktiv ist'. Der Benutzer muss eingeloggt sein, um als "
-"regristrierter Benutzer erkannt zu werden."
+"Se attivo, l'utente verrà reindirizzato all'URL fornito di seguito, anche "
+"se il biglietto è già registrato e l'utente che effettua il controllo è lo "
+"stesso utente registrato al biglietto. Non verrà eseguito se la 'restrizione "
+"di utilizzo una tantum' è attiva. L'utente deve essere autenticato affinché "
+"il sistema lo riconosca."
 
 #: sasoEventtickets_Options.php:79
 msgid "URL to redirect the user, if the ticket is valid."
-msgstr "URL für die Weiterleitung des Benutzers, wenn das Ticket gültig ist."
+msgstr "URL per il reindirizzamento dell'utente, se il biglietto è valido."
 
 #: sasoEventtickets_Options.php:79 sasoEventtickets_Options.php:83
 #: sasoEventtickets_Ticket.php:356
@@ -1408,20 +1412,19 @@ msgid ""
 "li><li><b>{LIST_DESC}</b>: Description of the assigned list</li><li><a "
 "href='#replacementtags'>More tags here</a></li></ul>"
 msgstr ""
-"Die URL kann relativ zur Seiten sein, wie beispielsweise /seite/ order "
-"absolute 'https://domain/url/'.<br>Folgende Platzerhalter können in der URL "
-"verwendet werden:<ul><li><b>{USERID}</b>: Ersetzt durch die Benutzer-ID, "
-"wenn der Benutzer eingeloggt war oder eben leer</li><li><b>{CODE}</b>: "
-"Ersetzt durch die Ticketnummer (ohne mögliche Trennzeichen)</"
-"li><li><b>{CODEDISPLAY}</b>: Ersetzt durch die Ticketnummer (Mit "
-"Trennzeichen)</li><li><b>{IP}</b>: Die IP-Adresse des Benutzers</"
-"li><li><b>{LIST}</b>: Name der Liste, wenn zugewiesen</li><li><b>{LIST_DESC}"
-"</b>: Beschreibung der zugewiesenen Liste</li><li><a "
-"href='#replacementtags'>Mehr Platzhalter findest du hier</a></li></ul>"
+"L'URL può essere relativo come '/pagina/' o assoluto 'https://dominio/url/'."
+"<br>Puoi utilizzare questi segnaposto per il tuo URL:<ul><li><b>{USERID}</b>"
+": Verrà sostituito con l'ID utente se l'utente è autenticato, altrimenti "
+"vuoto</li><li><b>{CODE}</b>: Verrà sostituito con il numero biglietto "
+"(senza i delimitatori)</li><li><b>{CODEDISPLAY}</b>: Verrà sostituito con "
+"il numero biglietto (CON i delimitatori)</li><li><b>{IP}</b>: L'indirizzo "
+"IP dell'utente</li><li><b>{LIST}</b>: Nome dell'elenco se assegnato</"
+"li><li><b>{LIST_DESC}</b>: Descrizione dell'elenco assegnato</li><li><a "
+"href='#replacementtags'>Altri tag qui</a></li></ul>"
 
 #: sasoEventtickets_Options.php:80
 msgid "Button label to click for the user to be redirected"
-msgstr "Buttontext für die Weiterleitung"
+msgstr "Testo del pulsante per il reindirizzamento dell'utente"
 
 #: sasoEventtickets_Options.php:80
 msgid ""
@@ -1429,9 +1432,9 @@ msgid ""
 "empty, then the user will be redirected immediately if the ticket is valid, "
 "without a button to click."
 msgstr ""
-"Nur wenn nicht leer bleibt, wird auch ein Button angezeigt. Wenn es leer "
-"bleibt, dann wird der Bneutzer sofort weitergeleitet, sobald das Ticket als "
-"gültig erkannt wurde."
+"Solo se compilato, il pulsante verrà visualizzato. Se si lascia questo campo "
+"vuoto, l'utente verrà reindirizzato immediatamente se il biglietto è valido, "
+"senza un pulsante da cliccare."
 
 #: sasoEventtickets_Options.php:82
 msgid "Webhooks"
@@ -1440,7 +1443,7 @@ msgstr "Webhooks"
 #: sasoEventtickets_Options.php:83
 msgid "Activate webhooks to call a service with the validation check."
 msgstr ""
-"Aktiviere Webhooks, um einen anderen Service nach dem Check aufzurufen."
+"Attiva i webhooks per chiamare un servizio con il controllo di validazione."
 
 #: sasoEventtickets_Options.php:83
 msgid ""
@@ -1448,14 +1451,14 @@ msgid ""
 "server side to another URL. Be carefull. This could slow down the validation "
 "check. It depends how fast your service URLs are responding."
 msgstr ""
-"Wenn aktiv, dann wird bei jeder Validierung durch einen Benutzer, eine URL "
-"aufgerufen. Sei vorsichtig, dies könnte die Validierung ansich etwas "
-"verlangsamen. Das hängt davon ab, wie schnell die aufzurufenden Services "
-"antworten."
+"Se attivo, ogni richiesta di validazione da parte di un utente attiverà una "
+"chiamata URL dal lato server verso un altro URL. Attenzione: questo potrebbe "
+"rallentare il controllo di validazione. Dipende dalla velocità di risposta "
+"dei servizi URL."
 
 #: sasoEventtickets_Options.php:84
 msgid "URL to your service if the checked ticket <b>is inactive</b>."
-msgstr "URL zu deinem Service, wenn das Ticket <b>inaktiv</b> ist."
+msgstr "URL del tuo servizio se il biglietto controllato <b>è inattivo</b>."
 
 #: sasoEventtickets_Options.php:84 sasoEventtickets_Options.php:85
 #: sasoEventtickets_Options.php:86 sasoEventtickets_Options.php:87
@@ -1464,77 +1467,77 @@ msgstr "URL zu deinem Service, wenn das Ticket <b>inaktiv</b> ist."
 #: sasoEventtickets_Options.php:94 sasoEventtickets_Options.php:95
 #: sasoEventtickets_Options.php:96
 msgid "Only triggered, if not empty."
-msgstr "Wird nur aufgerufen, wenn es nicht leer ist."
+msgstr "Attivato solo se non vuoto."
 
 #: sasoEventtickets_Options.php:85
 msgid "URL to your service if the checked ticket <b>is valid</b>."
-msgstr "URL zu deinem Service, wenn das Ticket <b>gültig</b> ist."
+msgstr "URL del tuo servizio se il biglietto controllato <b>è valido</b>."
 
 #: sasoEventtickets_Options.php:86
 msgid ""
 "URL to your service if the checked ticket <b>is invalid</b> (not found)."
 msgstr ""
-"URL zu deinem Service, wenn das Ticket <b>ungültig</b> ist (also nicht "
-"gefunden)."
+"URL del tuo servizio se il biglietto controllato <b>non è valido</b> (non "
+"trovato)."
 
 #: sasoEventtickets_Options.php:87
 msgid "URL to your service if <b>someone register to this ticket</b>."
 msgstr ""
-"URL zu deinem Service, wenn <b>jemand sich auf das Ticket registriert</b>."
+"URL del tuo servizio se <b>qualcuno si registra a questo biglietto</b>."
 
 #: sasoEventtickets_Options.php:88
 msgid ""
 "URL to your service if the checked ticket is already <b>registered to "
 "someone</b>."
 msgstr ""
-"URL zu deinem Service, wenn bei der Prüfung des Ticketstatus <b>ist schon "
-"auf jemanden registriert</b> zurückkommt."
+"URL del tuo servizio se il biglietto controllato è già <b>registrato a "
+"qualcuno</b>."
 
 #: sasoEventtickets_Options.php:89
 msgid ""
 "URL to your service if the checked ticket is valid and is <b>marked to be "
 "used the first time</b>."
 msgstr ""
-"URL zu deinem Service, wenn das Ticket gültig ist und <b>zum ersten mal "
-"geprüft wurde</b>."
+"URL del tuo servizio se il biglietto controllato è valido e viene "
+"<b>contrassegnato come utilizzato per la prima volta</b>."
 
 #: sasoEventtickets_Options.php:90
 msgid ""
 "URL to your service if the checked ticket is already <b>marked as used and "
 "checked again</b>."
 msgstr ""
-"URL zu deinem Service, wenn das Ticket schon als <b>genutzt und erenut "
-"geprüft</b> wird."
+"URL del tuo servizio se il biglietto controllato è già <b>contrassegnato "
+"come utilizzato e verificato nuovamente</b>."
 
 #: sasoEventtickets_Options.php:93
 msgid ""
 "URL to your service if the WooCommerce ticket data is set for this ticket "
 "number."
 msgstr ""
-"URL zu deinem Service, wenn die WooCommerce Ticketdaten auf die Ticketnummer "
-"geschrieben wird."
+"URL del tuo servizio se i dati del biglietto WooCommerce vengono impostati "
+"per questo numero biglietto."
 
 #: sasoEventtickets_Options.php:94
 msgid "URL to your service if the WooCommerce ticket is redeemed."
-msgstr "URL zu deinem Service, wenn das Ticket entwertet wurde."
+msgstr "URL del tuo servizio se il biglietto WooCommerce viene convalidato."
 
 #: sasoEventtickets_Options.php:95
 msgid "URL to your service if the WooCommerce ticket is un-redeemed."
 msgstr ""
-"URL zu deinem Service, wenn für das Ticket die Entwertung wieder gelöscht "
-"wird."
+"URL del tuo servizio se la convalida del biglietto WooCommerce viene "
+"annullata."
 
 #: sasoEventtickets_Options.php:96
 msgid ""
 "URL to your service if the WooCommerce ticket data is removed from the "
 "ticket number."
 msgstr ""
-"URL zu deinem Service, wenn die WooCommerce Ticketdaten von der Ticketnummer "
-"entfernt werden."
+"URL del tuo servizio se i dati del biglietto WooCommerce vengono rimossi "
+"dal numero biglietto."
 
 #: sasoEventtickets_Options.php:98
 msgid "Woocommerce product code assignment"
-msgstr "WooCommerce Produktzuweisung"
+msgstr "Assegnazione codice al prodotto WooCommerce"
 
 #: sasoEventtickets_Options.php:100
 msgid ""
@@ -1542,24 +1545,26 @@ msgid ""
 "free ticket amount. This text will be added to the WooCoomerce purchase "
 "information instead of the ticket number"
 msgstr ""
-"Text der angezeigt wird, wenn du noch kein <b>Premium</b> hast und keine "
-"weiteren Ticketnummern generieren kannst. Dieser Text wird an die "
-"Verkaufsbestätigung angehängt, anstatt der Ticketnummer"
+"Testo che verrà utilizzato se non si dispone della versione <b>Premium</b> "
+"e i biglietti gratuiti sono esauriti. Questo testo verrà aggiunto alle "
+"informazioni di acquisto WooCommerce al posto del numero biglietto"
 
 #: sasoEventtickets_Options.php:100
 msgid ""
 "If left empty, default will be 'Please contact our support for the ticket'"
 msgstr ""
-"Wenn leer, dann wird 'Bitte kontaktieren Sie unseren Support für Ihr Ticket' "
-"genutzt"
+"Se lasciato vuoto, il valore predefinito sarà 'Please contact our support "
+"for the ticket'"
 
 #: sasoEventtickets_Options.php:100
 msgid "Please contact our support for the ticket"
-msgstr "Bitte kontaktieren Sie unseren Support für Ihr Ticket"
+msgstr "Si prega di contattare il nostro supporto per il biglietto"
 
 #: sasoEventtickets_Options.php:102
 msgid "Clear the ticket number if the order was deleted, canceled or refunded"
-msgstr "Gebe die Ticket"
+msgstr ""
+"Libera il numero biglietto se l'ordine è stato eliminato, annullato o "
+"rimborsato"
 
 #: sasoEventtickets_Options.php:102
 msgid ""
@@ -1568,18 +1573,18 @@ msgid ""
 "option 'one time usage' is active, then the ticket number will be unmarked "
 "as used."
 msgstr ""
-"Wenn die Bestellung gelöscht oder der Status 'Refund' eingestellt wird, dann "
-"wird die WooCommerce Bestellinformation von den Ticketnummern entfernt. Wenn "
-"die Option 'Einmalige Nutzung' aktiviert ist, dann wird die Ticketnummer als "
-"ungenutzt markiert."
+"Se l'ordine viene eliminato o lo stato viene impostato su 'rimborso', le "
+"informazioni dell'ordine WooCommerce vengono rimosse dal/dai numero/i "
+"biglietto. Se l'opzione 'utilizzo una tantum' è attiva, il numero biglietto "
+"verrà contrassegnato come non utilizzato."
 
 #: sasoEventtickets_Options.php:103
 msgid ""
 "Reuse ticket from the ticket list assigned to the woocommerce product, that "
 "are not already used by a woocommerce purchase."
 msgstr ""
-"Wiederverwendung von Tickets in der Liste, welche einem Produkt zugewiesen "
-"wurde, die noch nicht für eine Bestellung genutzt werden."
+"Riutilizza i biglietti dall'elenco biglietti assegnato al prodotto "
+"WooCommerce che non sono già utilizzati da un acquisto WooCommerce."
 
 #: sasoEventtickets_Options.php:103
 msgid ""
@@ -1587,99 +1592,99 @@ msgid ""
 "list that is free. If no free code could be found, a new ticket will be "
 "created and assigned to the purchase."
 msgstr ""
-"Wenn aktiviert, dann versucht das System zuerst eine freie und ungenutzte "
-"Ticketnummer in der Liste zu finden. Wenn keine ungenutzte Ticketnummer "
-"vorhanden ist, dann wird eine neue Ticketnummer generiert und der Position "
-"in der Bestellung zugewiesen."
+"Se attivo, il sistema cercherà di utilizzare un biglietto esistente "
+"dall'elenco biglietti che è libero. Se non viene trovato nessun codice "
+"libero, verrà creato un nuovo biglietto e assegnato all'acquisto."
 
 #: sasoEventtickets_Options.php:104
 msgid "Do not print the ticket number CVV on the confirmation to the customer"
 msgstr ""
-"Die CVV Nummer für die Ticketnummer nicht in den E-Mails an den Kunden "
-"zeigen."
+"Non stampare il CVV del numero biglietto nella conferma al cliente"
 
 #: sasoEventtickets_Options.php:104
 msgid "If active, the assigned CVV will not be printed on the email"
-msgstr "Wenn aktiv, dann wird der CVV nicht in den E-Mails angezeigt"
+msgstr "Se attivo, il CVV assegnato non verrà mostrato nell'email"
 
 #: sasoEventtickets_Options.php:105
 msgid ""
 "Do not print the ticket number CVV on the PDF invoice woocommerce purchase."
 msgstr ""
-"Die CVV Nummer für die Ticketnummer nicht in der PDF Rechnung an den Kunden "
-"drucken."
+"Non stampare il CVV del numero biglietto sulla fattura PDF dell'acquisto "
+"WooCommerce."
 
 #: sasoEventtickets_Options.php:105
 msgid "If active, the assigned CVV will not be printed on the PDF"
-msgstr "Wenn aktiv, dann wird die CVV nicht auf das PDF gedruckt"
+msgstr "Se attivo, il CVV assegnato non verrà stampato sul PDF"
 
 #: sasoEventtickets_Options.php:106
 msgid "Do not put the ticket in the emails to the customer"
-msgstr "Keine Ticket informationen in den E-Mails an den Kunden anzeigen"
+msgstr "Non inserire il biglietto nelle email al cliente"
 
 #: sasoEventtickets_Options.php:106
 msgid ""
 "If active, the assigned ticket number and other ticket related information "
 "will not be put in the email"
 msgstr ""
-"Wenn aktiv, dann wird die Ticketnummer und andere Details nicht in den E-"
-"Mails angezeigt"
+"Se attivo, il numero biglietto assegnato e altre informazioni relative al "
+"biglietto non verranno inseriti nell'email"
 
 #: sasoEventtickets_Options.php:107
 msgid "Do not print the ticket on the PDF invoice woocommerce purchase."
-msgstr "Das Ticket nicht in der PDF Rechnung anzeigen (für das Plugin wcpdf)."
+msgstr ""
+"Non stampare il biglietto sulla fattura PDF dell'acquisto WooCommerce."
 
 #: sasoEventtickets_Options.php:107
 msgid "If active, the assigned ticket will not be printed on the PDF"
-msgstr "Wenn aktiv, dann wird Ticketdetails nicht auf derm PDF gedruckt"
+msgstr "Se attivo, il biglietto assegnato non verrà stampato sul PDF"
 
 #: sasoEventtickets_Options.php:108
 msgid "Set the ticket number formatter pattern for new sales."
-msgstr "Nutze für die Ticketnummer das folgende Format für neue Verkäufe."
+msgstr "Imposta il modello di formato del numero biglietto per le nuove vendite."
 
 #: sasoEventtickets_Options.php:108
 msgid "If active, the a new ticket will generated using the following settings"
 msgstr ""
-"Wenn aktiv, dann wird jede neue Ticketnummer mit den folgenden Einstellungen "
-"generiert"
+"Se attivo, ogni nuovo biglietto verrà generato utilizzando le seguenti "
+"impostazioni"
 
 #: sasoEventtickets_Options.php:111
 msgid "Display ticket number to your loggedin user"
-msgstr "Zeige die Ticketnummer für eingeloggte Benutzer"
+msgstr "Mostra il numero biglietto agli utenti autenticati"
 
 #. translators: %s: shortcode
 #: sasoEventtickets_Options.php:111
 msgid "You can display the tickets assigned to an user with this shortcode %s."
-msgstr "Mit diesem Shortcode %s."
+msgstr ""
+"Puoi visualizzare i biglietti assegnati a un utente con questo shortcode %s."
 
 #: sasoEventtickets_Options.php:112
 msgid ""
 "Text that will be added before the ticket number(s) for the user are "
 "displayed."
-msgstr "Text, welcher vor den Ticketnummern angezeigt werden soll."
+msgstr "Testo che verrà aggiunto prima dei numeri biglietto dell'utente."
 
 #: sasoEventtickets_Options.php:112
 msgid "Your ticket number(s):"
-msgstr "Deine Ticketnummer(n):"
+msgstr "Il/i tuo/i numero/i biglietto:"
 
 #: sasoEventtickets_Options.php:113
 msgid "Display the prefix text always."
-msgstr "Zeige den Prefixtext immer an."
+msgstr "Mostra sempre il testo prefisso."
 
 #: sasoEventtickets_Options.php:113
 msgid ""
 "If active, your prefix text will be rendered always. Even if the user is not "
 "logged in or do not have any tickets assigned to her yet."
 msgstr ""
-"Wenn aktiv, dann wird der Prefixtext immer angezeigt. Auch wenn der Benutzer "
-"nicht eingeloggt ist, oder keine Tickets zugewiesen wurden."
+"Se attivo, il testo prefisso verrà sempre visualizzato. Anche se l'utente "
+"non è autenticato o non ha ancora biglietti assegnati."
 
 #: sasoEventtickets_Options.php:114
 msgid ""
 "Text or letter to be used as a seperator for ticket numbers of the user."
 msgstr ""
-"Text oder Zeichen, welches als Trennzeichen bei mehreren Ticketnummern für "
-"den Benutzer genutzt werden soll."
+"Testo o carattere da utilizzare come separatore per i numeri biglietto "
+"dell'utente."
 
 #: sasoEventtickets_Options.php:114
 msgid ""
@@ -1687,21 +1692,21 @@ msgid ""
 "will be used to seperate them for display the numbers. If left empty, then "
 "it will be ', ' as a default."
 msgstr ""
-"Wenn der Benutzer mehr als eine Ticketnummer für ein Produkt erhält, dann "
-"wird dieser Text als Trennzeichen für die Darstellung der Ticketnummern "
-"genutzt. Wenn leer, dann wird ', ' genutzt."
+"Se l'utente ha più di un numero biglietto assegnato, questo testo verrà "
+"utilizzato per separarli nella visualizzazione. Se lasciato vuoto, il "
+"valore predefinito sarà ', '."
 
 #: sasoEventtickets_Options.php:123
 msgid "QR code"
-msgstr "QR-Code"
+msgstr "Codice QR"
 
 #: sasoEventtickets_Options.php:123
 msgid "You can generate QR code images for your ticket numbers."
-msgstr "Du kannst Bilder von QR-Codes für deine Ticketnummern generieren"
+msgstr "Puoi generare immagini di codici QR per i tuoi numeri biglietto."
 
 #: sasoEventtickets_Options.php:124
 msgid "URL for the QR image."
-msgstr "URL für das QR-Bild"
+msgstr "URL per l'immagine QR."
 
 #: sasoEventtickets_Options.php:124
 msgid ""
@@ -1716,41 +1721,40 @@ msgid ""
 "is not recommend, since the QR code is generated within the admin area.</"
 "li></ul>"
 msgstr ""
-"Die URL sollte absolute sein, wenn du das QR-Bild an deine Kunden "
-"weitergibst. Das Bild kann im Event Ticket Adminbereich angesehen werden. "
-"Die Ticketnummer Detailansicht enthält einen Button, um das QR-Bild "
-"anzuzeigen.<br>Du kannst folgende Platzhalter für deine URL nutzen:"
-"<ul><li><b>{CODE}</b>: wird durch die Ticketnummer (ohne Trennzeichen) "
-"ersetzt</li><li><b>{CODEDISPLAY}</b>: Wird durch die Ticketnummer (mit "
-"Trennzeichen) ersetzt</li><b>{LIST}</b>: Name der zugewiesenen Liste</"
-"li><li><b>{LIST_DESC}</b>: Beschreibung der zugewiesenen Liste</li><li><a "
-"href='#replacementtags'>Du kannst weitere Platzhalter nutzen.</a> Aber es "
-"ist nicht empfohlen, da dein QR-Code im Adminbereich generiert wird und bei "
-"der IP und anderen Werten, deine eigenen eingebunden werden.</li></ul>"
+"L'URL deve essere assoluto se si desidera fornire l'immagine QR generata ai "
+"propri clienti. L'immagine può essere recuperata nell'area dei biglietti "
+"evento. I dettagli del numero biglietto contengono un pulsante per questo."
+"<br>Puoi utilizzare questi segnaposto per il tuo URL:<ul><li><b>{CODE}</b>: "
+"Verrà sostituito con il numero (senza i delimitatori)</li><li><b>"
+"{CODEDISPLAY}</b>: Verrà sostituito con il numero (CON i delimitatori)</"
+"li><b>{LIST}</b>: Nome dell'elenco se assegnato</li><li><b>{LIST_DESC}</b>: "
+"Descrizione dell'elenco assegnato</li><li><a href='#replacementtags'>Puoi "
+"utilizzare altri tag.</a> Ma non è consigliato, poiché il codice QR viene "
+"generato nell'area di amministrazione.</li></ul>"
 
 #: sasoEventtickets_Ticket.php:68 sasoEventtickets_Ticket.php:204
 msgid "code missing"
-msgstr "Code fehlt"
+msgstr "Codice mancante"
 
 #: sasoEventtickets_Ticket.php:80
 msgid "Order item not found"
-msgstr "Position der Bestellung nicht gefunden"
+msgstr "Articolo dell'ordine non trovato"
 
 #: sasoEventtickets_Ticket.php:227 sasoEventtickets_Ticket.php:1207
 msgid "Ticket Info"
-msgstr "Ticketinformation"
+msgstr "Informazioni biglietto"
 
 #: sasoEventtickets_Ticket.php:271 woocommerce-hooks.php:595
 msgid "Ticket scanner"
-msgstr "Ticket-Scanner"
+msgstr "Scanner biglietti"
 
 #: sasoEventtickets_Ticket.php:277
 msgid "No special role allowed"
-msgstr "Keine spezielle Rolle benötigt"
+msgstr "Nessun ruolo speciale consentito"
 
 #: sasoEventtickets_Ticket.php:283
 msgid "Allow the specific role to access the ticket scanner"
-msgstr "Erlaube einer spezifischen Rolle Zugriff auf den Ticket-Scanner"
+msgstr "Consenti a un ruolo specifico di accedere allo scanner biglietti"
 
 #: sasoEventtickets_Ticket.php:284
 msgid ""
@@ -1758,27 +1762,27 @@ msgid ""
 "ticket scanner. This will not exclude the 'administrator', if the option is "
 "activated."
 msgstr ""
-"Wenn eine Rolle ausgewählt wird, dann haben nur Benutzer mit dieser Rolle "
-"Zugriff auf die Ticket-Scanner URL. Dies schliesst aber nicht den "
-"'Administrator' aus, selbst wenn diese Option aktiviert ist."
+"Se viene scelto un ruolo, gli utenti con questo ruolo potranno utilizzare "
+"lo scanner biglietti. Questo non esclude l'amministratore, anche se "
+"l'opzione è attivata."
 
 #: sasoEventtickets_Ticket.php:290
 msgid "Allow logged in user as adminstrator to open the ticket scanner"
 msgstr ""
-"Erlaube nur Benutzer mit der Rolle Administrator den Ticket-Scanner "
-"aufzurufen"
+"Consenti solo agli utenti autenticati come amministratori di aprire lo "
+"scanner biglietti"
 
 #: sasoEventtickets_Ticket.php:290
 msgid ""
 "If active, only logged-in user can scan a ticket. It is also testing if the "
 "user is an administrator."
 msgstr ""
-"Wenn aktie, dann können nur eingeloggte Benutzer mit der Rolle Administrator "
-"ein Ticket scannen."
+"Se attivo, solo gli utenti autenticati potranno scansionare un biglietto. "
+"Viene inoltre verificato se l'utente è un amministratore."
 
 #: sasoEventtickets_Ticket.php:291
 msgid "Allow to redeem ticket only if it is paid"
-msgstr "Erlaube die Entwertung eines Tickets nur, wenn es auch bezahlt ist"
+msgstr "Consenti la convalida del biglietto solo se è pagato"
 
 #: sasoEventtickets_Ticket.php:291
 msgid ""
@@ -1786,14 +1790,16 @@ msgid ""
 "by the ticket scanner. Normal users can anyway not redeem unpaid tickets by "
 "themself."
 msgstr ""
-"Wenn aktiv, dann ist die Entwertung eines Tickets mit dem Ticket-Scanner nur "
-"möglich, wenn die Bestellung auf einen bezahlten Status ist. Normale "
-"Benutzer können nie ein unbezahltes Ticket selbst entwerten."
+"Se attivo, solo i biglietti pagati e non rimborsati o annullati possono "
+"essere convalidati dallo scanner biglietti. Gli utenti normali non possono "
+"comunque convalidare biglietti non pagati autonomamente."
 
 #: sasoEventtickets_Ticket.php:292
 msgid ""
 "Count each ticket scan with the ticket scanner as a confirmed status check"
-msgstr "Zähle jeden Ticketscan als bestätigte Validierung hoch"
+msgstr ""
+"Conta ogni scansione di biglietto con lo scanner come controllo di stato "
+"confermato"
 
 #: sasoEventtickets_Ticket.php:292
 msgid ""
@@ -1801,25 +1807,25 @@ msgid ""
 "validation check and increase the confirmed status check counter. Only if "
 "the ticket is active."
 msgstr ""
-"Wenn aktiv, dann wird jeder Scan eines Tickets so gewertet, als wurde eine "
-"erfolgreiche Validierung der Ticketnummer vorgenommen und der Confirmation-"
-"Counter wird hochgezählt. Nur wenn das Ticket auch aktiv ist."
+"Se attivo, ogni scansione del biglietto verrà trattata come un controllo di "
+"validazione confermato e il contatore dei controlli di stato confermati "
+"verrà incrementato. Solo se il biglietto è attivo."
 
 #: sasoEventtickets_Ticket.php:293
 msgid "Display confirmed status checks on the ticket scanner view"
-msgstr "Zeige den Confirmation-Counter im Ticket-Scanner an"
+msgstr "Mostra i controlli di stato confermati nella vista dello scanner biglietti"
 
 #: sasoEventtickets_Ticket.php:293
 msgid ""
 "If active, the confirmed validation checks are displayed whith the retrieved "
 "ticket on the ticket scanner."
 msgstr ""
-"Wenn aktiv, dann wir der Confirmation-Counter beim Scanergebnis im Ticket-"
-"Scanner angezeigt."
+"Se attivo, i controlli di validazione confermati vengono visualizzati "
+"insieme al biglietto recuperato nello scanner biglietti."
 
 #: sasoEventtickets_Ticket.php:297 backend.js:1688
 msgid "Woocommerce ticket sale"
-msgstr "WooCommerce Ticketverkauf"
+msgstr "Vendita biglietti WooCommerce"
 
 #: sasoEventtickets_Ticket.php:298
 msgid ""
@@ -1827,14 +1833,13 @@ msgid ""
 "from this list as a ticket number. It will be printed on the purchase "
 "information to the customer."
 msgstr ""
-"Du kannst eine Ticket Liste einem Produkt zuweisen, um daraus ein "
-"Ticketprodukt zu machen. Die genutzten freien Ticketnummern werden aus "
-"dieser Liste entnommen oder neu generiert und dieser Liste zugewiesen. Die "
-"Ticketnummer wird auf der Bestellbestätigung für den Kunden angezeigt."
+"Puoi assegnare un elenco a un prodotto e questo genererà o riutilizzerà un "
+"biglietto da questo elenco come numero biglietto. Verrà stampato sulle "
+"informazioni di acquisto per il cliente."
 
 #: sasoEventtickets_Ticket.php:301
 msgid "Compatibility mode for ticket URL"
-msgstr "Kompatibilitätsmodus für die URL zum Ticket aktivieren"
+msgstr "Modalità di compatibilità per l'URL del biglietto"
 
 #: sasoEventtickets_Ticket.php:301
 msgid ""
@@ -1843,91 +1848,90 @@ msgid ""
 "ticket/XYZ will be /ticket/?code=XYZ URL for the link to the ticket detail "
 "and ticket PDF page. Some themes causing issues with the normal mode."
 msgstr ""
-"Wenn dein Theme den Fehler 404 anzeigt or das Ticket nicht richtig "
-"dargestellt wird, dann kannst du versuchen diesen Modus zu aktivieren. Wenn "
-"aktiv, dann werden die Ticket-URLs anders aufgebaut. Statt /ticket/XYZ wird "
-"es zu /ticket/?code=XYZ. Einige Themes haben Probleme mit dem normalen Modus."
+"Se il tuo tema mostra il titolo 404 o il biglietto non viene visualizzato "
+"affatto, puoi provare a utilizzare questa modalità di compatibilità. Se "
+"attivo, l'URL /ticket/XYZ diventerà /ticket/?code=XYZ per il link alla "
+"pagina dettagli biglietto e PDF del biglietto. Alcuni temi causano problemi "
+"con la modalità normale."
 
 #: sasoEventtickets_Ticket.php:302
 msgid "Do not show the redeem button on the ticket detail view for the client"
 msgstr ""
-"Zeigen den Entwertungsbutton auf dem Ticket nicht für den Kunden an. "
-"(Verhindert Selbstentwertung durch den Kunden)"
+"Non mostrare il pulsante di convalida nella vista dettagli biglietto per il "
+"cliente"
 
 #: sasoEventtickets_Ticket.php:302
 msgid ""
 "If active, it will not add the self-redeem button on the ticket detail view."
 msgstr ""
-"Wenn aktiv, dann wird der Selbstentwertungs-Button in der Ticket-"
-"Detailansicht ausgeblendet."
+"Se attivo, il pulsante di auto-convalida non verrà aggiunto nella vista "
+"dettagli biglietto."
 
 #: sasoEventtickets_Ticket.php:303
 msgid ""
 "Text that will be added before the ticket code on the PDF invoice, order "
 "table and order details"
 msgstr ""
-"Text der vor der Ticketnummer in der PDF_Rechnung (oder Bestelltabelle und "
-"Bestelldetails) angezeigt wird"
+"Testo che verrà aggiunto prima del codice biglietto sulla fattura PDF, "
+"nella tabella ordini e nei dettagli ordine"
 
 #: sasoEventtickets_Ticket.php:303
 msgid "If left empty, default will be 'Ticket number:'"
-msgstr "Wenn leer, dann wird 'Ticketnummer:' angezeigt"
+msgstr "Se lasciato vuoto, il valore predefinito sarà 'Ticket number:'"
 
 #: sasoEventtickets_Ticket.php:304
 msgid "Ticket number:"
-msgstr "Ticketnummer:"
+msgstr "Numero biglietto:"
 
 #: sasoEventtickets_Ticket.php:304
 msgid "Display the short description of the product on the ticket"
-msgstr "Zeige die Kurzbeschreibung vom Produkt im Ticket an"
+msgstr "Mostra la descrizione breve del prodotto sul biglietto"
 
 #: sasoEventtickets_Ticket.php:304
 msgid "If active, it will be printed on the ticket detail view."
 msgstr ""
-"Wenn aktiv, dann wird die Produktkurzbeschreibung in der Ticketdetailansicht "
-"angezeigt."
+"Se attivo, verrà stampato nella vista dettagli biglietto."
 
 #: sasoEventtickets_Ticket.php:305
 msgid "Hide the customer name and address on the ticket"
-msgstr "Blende den Kundennamen und Adresse auf dem Ticket aus"
+msgstr "Nascondi il nome e l'indirizzo del cliente sul biglietto"
 
 #: sasoEventtickets_Ticket.php:305
 msgid ""
 "If active, it will not print the customer information on the ticket detail "
 "view."
 msgstr ""
-"Wenn aktiv, dann werden die Kundeninformationen nicht auf dem Ticket "
-"angezeigt."
+"Se attivo, le informazioni del cliente non verranno stampate nella vista "
+"dettagli biglietto."
 
 #: sasoEventtickets_Ticket.php:306
 msgid "Hide the payment method on the ticket"
-msgstr "Blende die Zahlungsinformationen auf dem Ticket aus"
+msgstr "Nascondi il metodo di pagamento sul biglietto"
 
 #: sasoEventtickets_Ticket.php:306
 msgid ""
 "If active, it will not print the payment details on the ticket detail view."
 msgstr ""
-"Wenn aktiv, dann werden die Zahlungsinformationen auf dem Ticket nicht "
-"angezeigt."
+"Se attivo, i dettagli di pagamento non verranno stampati nella vista "
+"dettagli biglietto."
 
 #: sasoEventtickets_Ticket.php:307
 msgid "Display the quantity of the purchased item on the ticket."
-msgstr "Zeige die Anzahl der erworbenen Tickets auf dem Ticket an"
+msgstr "Mostra la quantità dell'articolo acquistato sul biglietto."
 
 #: sasoEventtickets_Ticket.php:307
 msgid ""
 "If active, it will print the amount of the purchased tickets on the ticket."
 msgstr ""
-"Wenn aktiv, dann wird die Anzahl der erworbenen Tickets in der Bestellung "
-"auf dem Ticket selbst angezeigt."
+"Se attivo, la quantità dei biglietti acquistati verrà stampata sul biglietto."
 
 #: sasoEventtickets_Ticket.php:308
 msgid ""
 "Text that will be added to the PDF if the option <b>'Display the quantity of "
 "the purchased tickets'</b> is activated."
 msgstr ""
-"Text, welcher auf dem PDF angezeigt wird, wenn die Option 'Zeige die Anzahl "
-"der erworbenen Tickets auf dem Ticket an' aktiv ist"
+"Testo che verrà aggiunto al PDF se l'opzione <b>'Mostra la quantità dei "
+"biglietti acquistati'</b> è attivata."
 
 #: sasoEventtickets_Ticket.php:308
 msgid ""
@@ -1936,177 +1940,175 @@ msgid ""
 "quantity of the item purchase. {TICKET_TOTAL_AMOUNT} will be replaced with "
 "the quantity of the purchased tickets for the order."
 msgstr ""
-"Wenn leer, dann wird '{TICKET_POSITION} von {TICKET_TOTAL_AMOUNT} Tickets' "
-"genutzt. {TICKET_POSITION} wird durch die Position in der Summe des "
-"erworbenen Produkts ersetzt. {TICKET_TOTAL_AMOUNT} wird durch die "
-"Gesamtanzahl des erworbenen Produkts für diese Bestellung ersetzt."
+"Se lasciato vuoto, il valore predefinito sarà '{TICKET_POSITION} di "
+"{TICKET_TOTAL_AMOUNT} Biglietti'. {TICKET_POSITION} verrà sostituito con la "
+"posizione nella quantità dell'articolo acquistato. {TICKET_TOTAL_AMOUNT} "
+"verrà sostituito con la quantità dei biglietti acquistati per l'ordine."
 
 #: sasoEventtickets_Ticket.php:308
 msgid "{TICKET_POSITION} of {TICKET_TOTAL_AMOUNT} Tickets"
-msgstr "{TICKET_POSITION} von {TICKET_TOTAL_AMOUNT} Tickets"
+msgstr "{TICKET_POSITION} di {TICKET_TOTAL_AMOUNT} Biglietti"
 
 #: sasoEventtickets_Ticket.php:309
 msgid "Hide the PDF download button on ticket detail page"
-msgstr "Blende den PDF-Downloadbutton auf der Ticketdetailansicht aus"
+msgstr "Nascondi il pulsante di download PDF nella pagina dettagli biglietto"
 
 #: sasoEventtickets_Ticket.php:309
 msgid ""
 "If active, it will not display the PDF download button on the ticket detail "
 "view. But the PDF can still be generated with the URL."
 msgstr ""
-"Wenn aktiv, dann wird der PDF-Downloadbutton in der Ticketansicht für den "
-"Kunden nicht angezeigt. Das PDF kann dennochmit der generierten URL "
-"heruntergeladen werden."
+"Se attivo, il pulsante di download PDF non verrà visualizzato nella vista "
+"dettagli biglietto. Tuttavia il PDF può ancora essere generato tramite URL."
 
 #: sasoEventtickets_Ticket.php:310
 msgid "Hide the PDF download button/link on purchase order email"
-msgstr "Blende den PDF-Downloadlink in den E-Mails der Bestellung aus."
+msgstr "Nascondi il pulsante/link di download PDF nell'email dell'ordine"
 
 #: sasoEventtickets_Ticket.php:310
 msgid ""
 "If active, it will not display the PDF download option on the purchase email "
 "to the client. But the PDF can still be generated with the URL."
 msgstr ""
-"Wenn aktiv, dann wird die PDF Ticketdownloadoption in den E-Mails für die "
-"Bestellung nicht angezeigt. Das PDF kann trotzdem mit der generierten URL "
-"heruntergeladen werden."
+"Se attivo, l'opzione di download PDF non verrà visualizzata nell'email di "
+"acquisto al cliente. Tuttavia il PDF può ancora essere generato tramite URL."
 
 #: sasoEventtickets_Ticket.php:311
 msgid "Hide the ticket detail page link on purchase order email"
 msgstr ""
-"Blende den Link zur Ticketdetailansicht für den Kunden in der E-Mail aus"
+"Nascondi il link alla pagina dettagli biglietto nell'email dell'ordine"
 
 #: sasoEventtickets_Ticket.php:311
 msgid ""
 "If active, it will not display the URL to the ticket detail page on the "
 "purchase email to the client."
 msgstr ""
-"Wenn aktiv, dann wird die URL zur Ticketdetailseite in den E-Mails an den "
-"Kunden ausgeblendet."
+"Se attivo, l'URL alla pagina dettagli biglietto non verrà visualizzato "
+"nell'email di acquisto al cliente."
 
 #: sasoEventtickets_Ticket.php:312
 msgid "Text that will be added as the PDF Ticket download label"
-msgstr "Text, welcher vor der der PDF Downloadoption stehen soll"
+msgstr "Testo che verrà utilizzato come etichetta per il download del PDF biglietto"
 
 #: sasoEventtickets_Ticket.php:312
 msgid ""
 "If left empty, default will be 'Download PDF Ticket' on the button and on "
 "the link within the purchase email."
 msgstr ""
-"Wenn leer, dann wird 'PDF-Ticket herunterladen' für den Button und dem Link "
-"in den E-Mails genutzt."
+"Se lasciato vuoto, il valore predefinito sarà 'Download PDF Ticket' sul "
+"pulsante e sul link nell'email di acquisto."
 
 #: sasoEventtickets_Ticket.php:312
 msgid "Download PDF Ticket"
-msgstr "PDF-Ticket herunterladen"
+msgstr "Scarica PDF biglietto"
 
 #: sasoEventtickets_Ticket.php:313
 msgid "Hide your wordpress name"
-msgstr "Blende dein Wordpressname aus"
+msgstr "Nascondi il nome WordPress"
 
 #: sasoEventtickets_Ticket.php:313 sasoEventtickets_Ticket.php:396
 msgid "If active, it will not display the wordpress name."
 msgstr ""
-"Wenn aktiv, dann wird der Name deiner Wordpressinstanz auf dem Ticket "
-"ausgeblendet."
+"Se attivo, il nome della tua installazione WordPress non verrà visualizzato "
+"sul biglietto."
 
 #: sasoEventtickets_Ticket.php:314
 msgid "Hide your blog description"
-msgstr "Blende deine Blogbeschreibung aus"
+msgstr "Nascondi la descrizione del blog"
 
 #: sasoEventtickets_Ticket.php:314 sasoEventtickets_Ticket.php:397
 msgid "If active, it will not display the wordpress description."
 msgstr ""
-"Wenn aktiv, dann wird die Beschreibung deiner Wordpressinstanz auf dem "
-"Ticket ausgeblendet."
+"Se attivo, la descrizione della tua installazione WordPress non verrà "
+"visualizzata sul biglietto."
 
 #: sasoEventtickets_Ticket.php:315
 msgid "Hide your wordpress URL"
-msgstr "Blende deine Wordpress URl aus"
+msgstr "Nascondi l'URL WordPress"
 
 #: sasoEventtickets_Ticket.php:315 sasoEventtickets_Ticket.php:398
 msgid "If active, it will not display the wordpress URL."
 msgstr ""
-"Wenn aktiv, dann wird die URL zu deiner Wordpressinstanz auf dem Ticket "
-"ausgeblendet."
+"Se attivo, l'URL della tua installazione WordPress non verrà visualizzato "
+"sul biglietto."
 
 #: sasoEventtickets_Ticket.php:316
 msgid "Display a small logo (max. 300x300px) at the bottom in the center"
-msgstr "Zeige ein kleines Logo (maximal 300x300 Pixel) unten zentriert an"
+msgstr "Mostra un piccolo logo (max. 300x300px) centrato in basso"
 
 #: sasoEventtickets_Ticket.php:316
 msgid "If a media file is chosen, the logo will be placed on the ticket PDF."
 msgstr ""
-"Wenn eine Bilddatei ausgewählt wurde, dann wird dieses Logo im PDF-Ticket "
-"angezeigt"
+"Se viene scelto un file multimediale, il logo verrà posizionato sul PDF del "
+"biglietto."
 
 #: sasoEventtickets_Ticket.php:319
 msgid "Choose logo for the ticket PDF"
-msgstr "Wähle dein Logo für das PDF-Ticket"
+msgstr "Scegli il logo per il PDF biglietto"
 
 #: sasoEventtickets_Ticket.php:319
 msgid "Display the customer note of the order on the ticket"
-msgstr "Zeige die Kundennotiz der Bestellung auf dem PDF-Ticket an"
+msgstr "Mostra la nota del cliente dell'ordine sul biglietto"
 
 #: sasoEventtickets_Ticket.php:321
 msgid ""
 "Too big! Choose an image with smaller size. Max 300px width, otherwise it "
 "will look not good on your ticket."
 msgstr ""
-"Zu gross! Bitte wähle ein Bild mit kleineren Abmaßen aus, ansonsten wird das "
-"nicht gut auf dem PDF-Ticket wirken."
+"Troppo grande! Scegli un'immagine più piccola. Larghezza massima 300px, "
+"altrimenti non avrà un bell'aspetto sul biglietto."
 
 #: sasoEventtickets_Ticket.php:325
 msgid "Display a banner image image at the top of the PDF"
-msgstr "Zeige eine Bannerbild oben auf dem PDF-Ticket an"
+msgstr "Mostra un'immagine banner nella parte superiore del PDF"
 
 #: sasoEventtickets_Ticket.php:325
 msgid "If a media file is chosen, the banner will be placed on the ticket PDF."
 msgstr ""
-"Wenn eine Bilddatei ausgewählte wurde, dann wird dieses Bild oben im PDF-"
-"Ticket angezeigt."
+"Se viene scelto un file multimediale, il banner verrà posizionato sul PDF "
+"del biglietto."
 
 #: sasoEventtickets_Ticket.php:328
 msgid "Choose banner image for the ticket PDF"
-msgstr "Wähle ein Bild für das PDF-Ticket aus"
+msgstr "Scegli l'immagine banner per il PDF biglietto"
 
 #: sasoEventtickets_Ticket.php:330
 msgid ""
 "Too small! Choose an image with bigger size. Min 600px width, otherwise it "
 "will look not good on your ticket."
 msgstr ""
-"Zu klein! Wähle ein Bild mit grösseren Maße. Mindestens 600 Pixel in der "
-"Breite, da ansonsten dein Ticket nicht gut aussehen könnte."
+"Troppo piccola! Scegli un'immagine più grande. Larghezza minima 600px, "
+"altrimenti non avrà un bell'aspetto sul biglietto."
 
 #: sasoEventtickets_Ticket.php:334
 msgid "Display a background image image at the center of the PDF"
-msgstr "Zeige ein Hintergrundbild in der Mitte vom PDF-Ticket an"
+msgstr "Mostra un'immagine di sfondo al centro del PDF"
 
 #: sasoEventtickets_Ticket.php:334
 msgid "If a media file is chosen, the image will be placed on the ticket PDF."
 msgstr ""
-"Wenn ein Bild ausgewählt wurde, dann wird dieses Bild in der Mitte vom PDF-"
-"Ticket angezeigt. Der Text wird über das Bild gelegt."
+"Se viene scelto un file multimediale, l'immagine verrà posizionata sul PDF "
+"del biglietto."
 
 #: sasoEventtickets_Ticket.php:336
 msgid "Choose background image for the ticket PDF"
-msgstr "Wähle eine Hintergrundbild für das PDF-Ticket aus"
+msgstr "Scegli l'immagine di sfondo per il PDF biglietto"
 
 #: sasoEventtickets_Ticket.php:342
 msgid "Ticket PDF settings"
-msgstr "PDF-Ticket Einstellungen"
+msgstr "Impostazioni PDF biglietto"
 
 #: sasoEventtickets_Ticket.php:346
 msgid "Font size for text on the ticket PDF"
-msgstr "Schriftgröße für den normalen Text im PDF-Ticket"
+msgstr "Dimensione carattere per il testo sul PDF biglietto"
 
 #: sasoEventtickets_Ticket.php:346
 msgid "Please choose a font size between 6pt and 16pt."
-msgstr "Bitte eine Grösse zwischen 6 und 16 Punkte wählen."
+msgstr "Scegli una dimensione carattere tra 6pt e 16pt."
 
 #: sasoEventtickets_Ticket.php:347
 msgid "Strip HTML from text"
-msgstr "Entferne HTML Tags aus dem Text"
+msgstr "Rimuovi HTML dal testo"
 
 #: sasoEventtickets_Ticket.php:347
 msgid ""
@@ -2114,25 +2116,25 @@ msgid ""
 "settings here to strip some not garanteed supported elements or choose even "
 "to display the HTML code (helps for debug purpose)."
 msgstr ""
-"Wenn du Probleme mit dem erstellten PDF-Ticket hast, dann kannst du hier "
-"einstellen, dass nicht unterstützte HTML-Elemente entfernt werden. Oder dass "
-"HTML selbst als Code angezeigt wird (nützlich bei der Fehlersuche)."
+"Se si riscontrano problemi con il PDF generato, è possibile modificare le "
+"impostazioni qui per rimuovere alcuni elementi non garantiti come supportati "
+"o scegliere di visualizzare il codice HTML (utile per il debug)."
 
 #: sasoEventtickets_Ticket.php:347
 msgid "No HTML strip (default)"
-msgstr "Kein HTML entfernen (Standard)"
+msgstr "Nessuna rimozione HTML (predefinito)"
 
 #: sasoEventtickets_Ticket.php:347
 msgid "Remove unsupported HTML"
-msgstr "Entferne nicht unterstütztes HTML"
+msgstr "Rimuovi HTML non supportato"
 
 #: sasoEventtickets_Ticket.php:347
 msgid "Show HTML Tags as text (Debugging)"
-msgstr "Zeige HTML-Tags als Text an (Fehlersuche)"
+msgstr "Mostra tag HTML come testo (debug)"
 
 #: sasoEventtickets_Ticket.php:348
 msgid "Display product variant name"
-msgstr "Zeige Produktvariantenname an"
+msgstr "Mostra il nome della variante prodotto"
 
 #: sasoEventtickets_Ticket.php:348
 msgid ""
@@ -2140,13 +2142,13 @@ msgid ""
 "variant id. Just the variant value. If more than one variant is choosen, "
 "then the delimiter will be a blank space."
 msgstr ""
-"Wenn aktiv, dann wird der Produktvariantenname unter dem Titel angezeigt, "
-"ohne die Variantennummer. Wenn mehr als eine Variante gewählt wurde, dann "
-"werden die Variantennamen mit einem Leerzeichen getrennt angezeigt-"
+"Se attivo, il/i nome/i della variante verranno visualizzati sotto il titolo "
+"senza l'ID della variante. Solo il valore della variante. Se vengono scelte "
+"più varianti, il delimitatore sarà uno spazio."
 
 #: sasoEventtickets_Ticket.php:352
 msgid "Ticket Redirect"
-msgstr "Ticket Weiterleitung"
+msgstr "Reindirizzamento biglietto"
 
 #: sasoEventtickets_Ticket.php:353
 msgid ""
@@ -2154,216 +2156,216 @@ msgid ""
 "page. For this, the feature 'Do not show the redeem button on the ticket "
 "detail view for the client' has to be NOT checked."
 msgstr ""
-"Wenn deine Kunden ein Ticket entwerten, dann kannst du sie zu einer anderen "
-"Seite weiterleiten. Für dieses Feature darf die Option 'Zeige nicht die  "
-"Selbstentwertung Option an' NICHT aktiviert sein."
+"Se i tuoi clienti convalidano il proprio biglietto, puoi reindirizzarli a "
+"un'altra pagina. Per questo, l'opzione 'Non mostrare il pulsante di "
+"convalida nella vista dettagli biglietto per il cliente' NON deve essere "
+"selezionata."
 
 #: sasoEventtickets_Ticket.php:356
 msgid "Activate redirect the user after redeeming their own ticket."
 msgstr ""
-"Aktiviere Weiterleitung für den Kunden, wenn dieser sein Ticket selbst "
-"entwertet."
+"Attiva il reindirizzamento dell'utente dopo la convalida del proprio "
+"biglietto."
 
 #: sasoEventtickets_Ticket.php:357
 msgid "URL to redirect the user, if the ticket was redeemed."
 msgstr ""
-"URL für die Weiterleitung, wenn das Ticket durch den Benutzer entwertet "
-"wurde."
+"URL per il reindirizzamento dell'utente, se il biglietto è stato convalidato."
 
 #: sasoEventtickets_Ticket.php:361
 msgid "Ticket Translations"
-msgstr "Ticket Übersetzungen"
+msgstr "Traduzioni biglietto"
 
 #: sasoEventtickets_Ticket.php:365
 msgid "Label 'EXPIRED' on the event date"
-msgstr "Text 'ABGELAUFEN' für das Veranstaltungsdatum"
+msgstr "Etichetta 'SCADUTO' sulla data dell'evento"
 
 #: sasoEventtickets_Ticket.php:365
 msgid "EXPIRED"
-msgstr "ABGELAUFEN"
+msgstr "SCADUTO"
 
 #: sasoEventtickets_Ticket.php:366
 msgid "Label 'Location' heading on for the event location"
-msgstr "Text '"
+msgstr "Etichetta 'Luogo' come intestazione per la sede dell'evento"
 
 #: sasoEventtickets_Ticket.php:366
 msgid "Location"
-msgstr "Veranstaltungsort"
+msgstr "Luogo"
 
 #: sasoEventtickets_Ticket.php:367
 msgid "Label 'Customer' heading on the customer details"
-msgstr "Text 'Kunde' Überschrift für die Kundendetails"
+msgstr "Etichetta 'Cliente' come intestazione per i dettagli del cliente"
 
 #: sasoEventtickets_Ticket.php:367
 msgid "Customer"
-msgstr "Kunde"
+msgstr "Cliente"
 
 #: sasoEventtickets_Ticket.php:368
 msgid "Label 'Payment details' heading on the payment details"
 msgstr ""
-"Text 'Zahlungsdetails' Überschrift für die Zahlungsdetails auf dem Ticket"
+"Etichetta 'Dettagli pagamento' come intestazione per i dettagli di pagamento"
 
 #: sasoEventtickets_Ticket.php:368
 msgid "Payment details"
-msgstr "Zahlungsdetails"
+msgstr "Dettagli pagamento"
 
 #: sasoEventtickets_Ticket.php:369
 msgid "Label 'Order paid at' on the payment details"
-msgstr "Text 'Bestellung gezahlt am' in den Zahlungsdetails"
+msgstr "Etichetta 'Ordine pagato il' nei dettagli di pagamento"
 
 #: sasoEventtickets_Ticket.php:369
 msgid "Order paid at:"
-msgstr "Bestellung gezahlt am:"
+msgstr "Ordine pagato il:"
 
 #: sasoEventtickets_Ticket.php:370
 msgid "Label 'Order completed at' on the payment details"
-msgstr "Text 'Bestellung abgschlossen am' in den Zahlungsdetails"
+msgstr "Etichetta 'Ordine completato il' nei dettagli di pagamento"
 
 #: sasoEventtickets_Ticket.php:370
 msgid "Order completed at:"
-msgstr "Bestellung abgeschlossen am:"
+msgstr "Ordine completato il:"
 
 #: sasoEventtickets_Ticket.php:371
 msgid "Label 'Paid via' on the payment details"
-msgstr "Text 'Bezahlt mit' in den Zahlungsdetails"
+msgstr "Etichetta 'Pagato tramite' nei dettagli di pagamento"
 
 #: sasoEventtickets_Ticket.php:371
 msgid "Paid via:"
-msgstr "Bezahlt mit:"
+msgstr "Pagato tramite:"
 
 #: sasoEventtickets_Ticket.php:372
 msgid "Label 'Free ticket' on the payment details"
-msgstr "Text 'Freikarte' auf den Zahlungsdetails"
+msgstr "Etichetta 'Biglietto gratuito' nei dettagli di pagamento"
 
 #: sasoEventtickets_Ticket.php:372
 msgid "Free ticket"
-msgstr "Freikarte"
+msgstr "Biglietto gratuito"
 
 #: sasoEventtickets_Ticket.php:373
 msgid "Label 'Coupon used' on the payment details"
-msgstr "Text 'Coupon benutzt' auf den Zahlungsdetails"
+msgstr "Etichetta 'Coupon utilizzato' nei dettagli di pagamento"
 
 #: sasoEventtickets_Ticket.php:373
 msgid "It will display which coupon was used."
-msgstr "Es zeigt an, welcher Coupon beim Kauf genutzt wurde."
+msgstr "Verrà visualizzato quale coupon è stato utilizzato."
 
 #: sasoEventtickets_Ticket.php:373
 msgid "Coupon used:"
-msgstr "Coupon benutzt:"
+msgstr "Coupon utilizzato:"
 
 #: sasoEventtickets_Ticket.php:374
 msgid "Label 'Ticket' for the ticket number"
-msgstr "Text 'Ticket' für die Ticketnummer"
+msgstr "Etichetta 'Biglietto' per il numero biglietto"
 
 #: sasoEventtickets_Ticket.php:374
 msgid "Ticket:"
-msgstr "Ticket:"
+msgstr "Biglietto:"
 
 #: sasoEventtickets_Ticket.php:375
 msgid "Label 'Price' for the paid price"
-msgstr "Text 'Preis' für den gezahlten Preis"
+msgstr "Etichetta 'Prezzo' per il prezzo pagato"
 
 #: sasoEventtickets_Ticket.php:375
 msgid "Price:"
-msgstr "Preis:"
+msgstr "Prezzo:"
 
 #: sasoEventtickets_Ticket.php:376
 msgid "Label 'Original price' for the ticket number"
-msgstr "Text 'Originalpreis' für das Ticket"
+msgstr "Etichetta 'Prezzo originale' per il biglietto"
 
 #: sasoEventtickets_Ticket.php:376
 msgid "Original price:"
-msgstr "Originalpreis:"
+msgstr "Prezzo originale:"
 
 #: sasoEventtickets_Ticket.php:377
 msgid "Label 'Ticket redeemed' for the customer notice"
-msgstr "Text 'Ticket entwertet' als Kundenhinweis"
+msgstr "Etichetta 'Biglietto convalidato' per l'avviso al cliente"
 
 #: sasoEventtickets_Ticket.php:377 ticket_scanner.js:330
 msgid "Ticket redeemed"
-msgstr "Ticket entwertet"
+msgstr "Biglietto convalidato"
 
 #: sasoEventtickets_Ticket.php:378
 msgid "Label 'Redeemed at' for the customer notice"
-msgstr "Text 'Entwertet am' als Kundenhinweis"
+msgstr "Etichetta 'Convalidato il' per l'avviso al cliente"
 
 #: sasoEventtickets_Ticket.php:378
 msgid "Redeemed at:"
-msgstr "Entwertet am:"
+msgstr "Convalidato il:"
 
 #: sasoEventtickets_Ticket.php:379
 msgid "Label 'Ticket valid' for the customer notice"
-msgstr "Text 'Ticket gültig' als Kundenhinweis"
+msgstr "Etichetta 'Biglietto valido' per l'avviso al cliente"
 
 #: sasoEventtickets_Ticket.php:379
 msgid "Ticket valid"
-msgstr "Ticket gültig"
+msgstr "Biglietto valido"
 
 #: sasoEventtickets_Ticket.php:380
 msgid "Label 'Refresh page' for the button"
-msgstr "Text 'Seite neu laden' für den Button"
+msgstr "Etichetta 'Aggiorna pagina' per il pulsante"
 
 #: sasoEventtickets_Ticket.php:380
 msgid "Refresh page"
-msgstr "Seite neu laden"
+msgstr "Aggiorna pagina"
 
 #: sasoEventtickets_Ticket.php:381
 msgid ""
 "Label 'Do you want to redeem the ticket?' for the question to your client"
 msgstr ""
-"Text 'Wollen Sie das Ticket entwerten?' als Frage an deinen Kunden bei der "
-"Selbstentwerungsoption"
+"Etichetta 'Vuole convalidare il biglietto?' per la domanda al cliente"
 
 #: sasoEventtickets_Ticket.php:381
 msgid ""
 "Do you want to redeem the ticket? Typically this is done at the entrance. "
 "This will mark this ticket as redeemed."
 msgstr ""
-"Wollen Sie das Ticket entwerten? Dies wird normalerweise am Eingang gemacht. "
-"Diese Aktion wird das Ticket entwerten."
+"Vuole convalidare il biglietto? Normalmente questo viene fatto all'ingresso. "
+"Questa azione contrassegnerà il biglietto come convalidato."
 
 #. translators: %s: default value
 #: sasoEventtickets_Ticket.php:382
 msgid "Label '%s' for the button to your client"
-msgstr "Text '%s' für den Button der deinem Kunden anzeigt wird"
+msgstr "Etichetta '%s' per il pulsante mostrato al cliente"
 
 #: sasoEventtickets_Ticket.php:382 sasoEventtickets_Ticket.php:664
 msgid "Redeem Ticket"
-msgstr "Ticket entwerten"
+msgstr "Convalida biglietto"
 
 #. translators: %s: default value
 #: sasoEventtickets_Ticket.php:383
 msgid "Label Error '%s' for the customer notice"
-msgstr "Text der Fehlermeldung '%s' im Kundenhinweis"
+msgstr "Etichetta errore '%s' per l'avviso al cliente"
 
 #: sasoEventtickets_Ticket.php:384
 msgid "Label Error 'Ticket is STOLEN' for the customer notice"
-msgstr "Text der Fehlermeldung 'Ticket ist gestohlen' im Kundenhinweis"
+msgstr "Etichetta errore 'Biglietto è RUBATO' per l'avviso al cliente"
 
 #: sasoEventtickets_Ticket.php:384
 msgid "Ticket is STOLEN"
-msgstr "Ticket ist gestohlen"
+msgstr "Il biglietto è RUBATO"
 
 #: sasoEventtickets_Ticket.php:385
 msgid "Label Error 'Ticket is not valid' for the customer notice"
-msgstr "Text der Fehlermeldung 'Ticket ist ungültig' im Kundenhinweis"
+msgstr "Etichetta errore 'Biglietto non valido' per l'avviso al cliente"
 
 #: sasoEventtickets_Ticket.php:385
 msgid "Ticket is not valid"
-msgstr "Ticket ist ungültig"
+msgstr "Il biglietto non è valido"
 
 #: sasoEventtickets_Ticket.php:386
 msgid "Label Error 'Ticket number is wrong' for the customer notice"
-msgstr "Text der Fehlermeldung 'Ticketnummer ist falsch' im Kundenhinweis"
+msgstr "Etichetta errore 'Numero biglietto errato' per l'avviso al cliente"
 
 #: sasoEventtickets_Ticket.php:386
 msgid "Ticket number is wrong"
-msgstr "Ticketnummer ist falsch"
+msgstr "Il numero biglietto è errato"
 
 #: sasoEventtickets_Ticket.php:387
 msgid "Text for max redeem amount for the customer notice on the PDF ticket"
 msgstr ""
-"Text für den Hinweis der maximalen Anzahl an Entwertungen für das PDF-Ticket"
+"Testo per il numero massimo di convalide per l'avviso al cliente sul PDF "
+"del biglietto"
 
 #. translators: %s: max amount ticket redeem
 #: sasoEventtickets_Ticket.php:387
@@ -2371,23 +2373,23 @@ msgid ""
 "This text will be added to the PDF ticket only if the ticket can be redeemed "
 "more than one time! Use the placeholder %s to display the amount."
 msgstr ""
-"Dieser Text wird dem PDF-Ticket hinzugefügt, wenn das Ticket mehr als einmal "
-"entwertet werden kann! Benutze den Platzhalter %s, um die maximale Anzahl "
-"anzuzeigen."
+"Questo testo verrà aggiunto al PDF del biglietto solo se il biglietto può "
+"essere convalidato più di una volta! Usa il segnaposto %s per mostrare il "
+"numero."
 
 #. translators: %s: max amount ticket redeem
 #: sasoEventtickets_Ticket.php:387
 msgid "You can redeem this ticket <b>%s times</b> within the valid period."
 msgstr ""
-"Du kannst das Ticket <b>%s mal</b> innerhalb der Gültigskeitsbereich "
-"entwerten."
+"Puoi convalidare questo biglietto <b>%s volte</b> entro il periodo di "
+"validità."
 
 #. translators: %s: max amount ticket redeem
 #: sasoEventtickets_Ticket.php:388
 msgid "Text for redeemed amount for the customer notice on the ticket"
 msgstr ""
-"Text für die Angabe der schon entwerten Anzahl im Kundenhinweis auf dem "
-"Ticket"
+"Testo per il numero di convalide effettuate per l'avviso al cliente sul "
+"biglietto"
 
 #. translators: 1: amount redeemed ticket 2: max amount ticket redeem
 #: sasoEventtickets_Ticket.php:388
@@ -2396,106 +2398,109 @@ msgid ""
 "Only if the ticket can be redeemed more than one time! Use the placeholders "
 "%1$s and %2$s to display the amounts."
 msgstr ""
-"Dieser Text wird auf dem Ticket-Scanner und auf der Ticket Detailansicht "
-"angezeigt. Nur wenn das Ticket mehr als einmal entwertet werden kann! "
-"Benutze den Platzhalter %1$s und %2$s um die Anzahl anzuzeigen."
+"Questo testo verrà aggiunto allo scanner biglietti e alla vista della pagina "
+"dettagli biglietto. Solo se il biglietto può essere convalidato più di una "
+"volta! Usa i segnaposto %1$s e %2$s per mostrare i numeri."
 
 #. translators: 1: amount redeemed ticket 2: max amount ticket redeem
 #: sasoEventtickets_Ticket.php:388
 msgid "You have used this ticket %1$s of %2$s."
-msgstr "Das Ticket wurde %1$s von %2$s möglichen Entwertungen entwertet."
+msgstr "Questo biglietto è stato utilizzato %1$s di %2$s volte."
 
 #: sasoEventtickets_Ticket.php:392
 msgid "Event Flyer"
-msgstr "Event-Flyer"
+msgstr "Volantino evento"
 
 #: sasoEventtickets_Ticket.php:393
 msgid ""
 "You can download a PDF flyer for your event within the product detail view. "
 "Control the components to be displayed."
 msgstr ""
-"Du kannt ein PDF-Flyer für dein Event in der Produktdetailansicht "
-"herunterladen. Bestimme die Komponenten, welche angezeigt werden sollen."
+"Puoi scaricare un volantino PDF per il tuo evento dalla vista dettagli "
+"prodotto. Controlla i componenti da visualizzare."
 
 #: sasoEventtickets_Ticket.php:396
 msgid "Hide your wordpress name."
-msgstr "Blende den Namen deiner Wordpressinstanz aus."
+msgstr "Nascondi il nome WordPress."
 
 #: sasoEventtickets_Ticket.php:397
 msgid "Hide your wordpress description."
-msgstr "Blende die Beschreibung von deiner Wordpressinstanz aus."
+msgstr "Nascondi la descrizione WordPress."
 
 #: sasoEventtickets_Ticket.php:398
 msgid "Hide your wordpress URL."
-msgstr "Blende die URL zu deiner Wordpressinstanz aus."
+msgstr "Nascondi l'URL WordPress."
 
 #: sasoEventtickets_Ticket.php:399
 msgid "Hide your ticket price."
-msgstr "Blende den Ticketpreis aus."
+msgstr "Nascondi il prezzo del biglietto."
 
 #: sasoEventtickets_Ticket.php:399
 msgid "If active, the ticket price will not be displayed."
-msgstr "Wenn aktiv, dann wird der Ticketpreis nicht angezeigt."
+msgstr "Se attivo, il prezzo del biglietto non verrà visualizzato."
 
 #: sasoEventtickets_Ticket.php:400
 msgid "Display a small logo (max. 300x300px) at the bottom in the center."
-msgstr "Zeige ein kleines Logo (maximal 300x300 Pixel) unten zentriert an."
+msgstr "Mostra un piccolo logo (max. 300x300px) centrato in basso."
 
 #: sasoEventtickets_Ticket.php:400
 msgid "If a media file is choosen, the logo will be placed on the flyer."
 msgstr ""
-"Wenn ein Bild ausgewählt wurde, dann wird dieses Logo im Flyer angezeigt."
+"Se viene scelto un file multimediale, il logo verrà posizionato sul "
+"volantino."
 
 #: sasoEventtickets_Ticket.php:403
 msgid "Choose logo for the ticket flyer"
-msgstr "Wähle ein Logo für deinen Ticket-Flyer aus"
+msgstr "Scegli il logo per il volantino biglietto"
 
 #: sasoEventtickets_Ticket.php:405
 msgid ""
 "Too big! Choose an image with smaller size. Max 300px width, otherwise it "
 "will look not good on your flyer."
 msgstr ""
-"ZU gross! Wähle ein Bild mit kleineren Maßen. Maximal 300 Pixel in der "
-"Breite, sonst sieht dies nicht gut im Flyer aus."
+"Troppo grande! Scegli un'immagine più piccola. Larghezza massima 300px, "
+"altrimenti non avrà un bell'aspetto sul volantino."
 
 #: sasoEventtickets_Ticket.php:409
 msgid "Display a banner image image at the top of the PDF."
-msgstr "Zeige ein Banner oben im PDF an."
+msgstr "Mostra un'immagine banner nella parte superiore del PDF."
 
 #: sasoEventtickets_Ticket.php:409
 msgid "If a media file is choosen, the banner will be placed on the flyer."
 msgstr ""
-"Wenn ein Bild ausgewählt wurde, dann wird dieses Bild im Flyer angezeigt."
+"Se viene scelto un file multimediale, il banner verrà posizionato sul "
+"volantino."
 
 #: sasoEventtickets_Ticket.php:412
 msgid "Choose banner image for the ticket flyer"
-msgstr "Wähle eine Bild als Banner für den Ticket-Flyer aus"
+msgstr "Scegli l'immagine banner per il volantino biglietto"
 
 #: sasoEventtickets_Ticket.php:414
 msgid ""
 "Too small! Choose an image with bigger size. Min 600px width, otherwise it "
 "will look not good on your flyer."
 msgstr ""
-"Zu klein! Wähle ein Bild mit grössere Breite. Mindestens 600 Pixel breit, "
-"sonsst sieht das im Flyer nicht gut aus."
+"Troppo piccola! Scegli un'immagine più grande. Larghezza minima 600px, "
+"altrimenti non avrà un bell'aspetto sul volantino."
 
 #: sasoEventtickets_Ticket.php:418
 msgid "Display a background image image at the center of the PDF."
-msgstr "Zeige ein Hintergrundbild zentriert im PDF an."
+msgstr "Mostra un'immagine di sfondo al centro del PDF."
 
 #: sasoEventtickets_Ticket.php:418
 msgid ""
 "If a media file is choosen, the image will be placed on the ticket flyer."
 msgstr ""
-"Wenn ein Bild ausgewählt wurde, dann wird das Bild auf dem Flyer angezeigt."
+"Se viene scelto un file multimediale, l'immagine verrà posizionata sul "
+"volantino biglietto."
 
 #: sasoEventtickets_Ticket.php:420
 msgid "Choose background image for the ticket flyer"
-msgstr "Wähle ein Hintergrundbild für den Ticket-Flyer aus"
+msgstr "Scegli l'immagine di sfondo per il volantino biglietto"
 
 #: sasoEventtickets_Ticket.php:424
 msgid "Calendar file (ICS)"
-msgstr "Kalenderdatei (ICS Format)"
+msgstr "File calendario (ICS)"
 
 #: sasoEventtickets_Ticket.php:424
 msgid ""
@@ -2503,15 +2508,16 @@ msgid ""
 "allows your customer to add the event easily from within the email to their "
 "calendar. Will work on most mail client."
 msgstr ""
-"Die ICS-Kalenderdatei enthält die Veranstaltungsinformationen und das Datum "
-"(sofern angegeben). Damit kann deine Kunden die Veranstaltung ganz leicht "
-"aus der E-Mail heraus in deren Kalender übertragen. Das funktioniert mit den "
-"meisten E-Mail-Programmen."
+"Il file calendario ICS conterrà le informazioni e la data dell'evento (se "
+"aggiunte). Questo consente ai tuoi clienti di aggiungere facilmente "
+"l'evento al proprio calendario direttamente dall'email. Funziona con la "
+"maggior parte dei client di posta."
 
 #: sasoEventtickets_Ticket.php:425
 msgid "Hide the ICS calendar file download button on ticket detail page"
 msgstr ""
-"Blende die ICS-Kalenderdatei Downloadoption auf der Ticketdetailsansicht aus"
+"Nascondi il pulsante di download del file calendario ICS nella pagina "
+"dettagli biglietto"
 
 #: sasoEventtickets_Ticket.php:425
 msgid ""
@@ -2519,221 +2525,199 @@ msgid ""
 "ticket detail view. It will be only shown if the ticket product has a "
 "starting date."
 msgstr ""
-"Wenn aktiv, dann wird die Downloadoption für die Kalenderdatei ausgeblendet. "
-"Es wird nur angezeigt, wenn auch die Veranstalung ein Startdatum hat."
+"Se attivo, il pulsante di download del file calendario non verrà "
+"visualizzato nella vista dettagli biglietto. Verrà mostrato solo se il "
+"prodotto biglietto ha una data di inizio."
 
 #: sasoEventtickets_Ticket.php:426
 msgid "Text that will be added as the ICS calendar file download label"
-msgstr "Text für den Button zum Herunterladen der ICS-Kalenderdatei"
+msgstr "Testo che verrà utilizzato come etichetta per il download del file calendario ICS"
 
 #. translators: %s: default value
 #: sasoEventtickets_Ticket.php:426
 msgid "If left empty, default will be \"%s\""
-msgstr "Wenn leer, dann wird '%s' genutzt"
+msgstr "Se lasciato vuoto, il valore predefinito sarà \"%s\""
 
 #. translators: %s: default value
 #: sasoEventtickets_Ticket.php:426
 msgid "Download calendar file"
-msgstr "Kalenderdartei herunterladen"
+msgstr "Scarica file calendario"
 
 #: sasoEventtickets_Ticket.php:427
 msgid "Attach the ICS calendar file to the WooCommerce mails"
-msgstr "Hänge die ICS-Kalenderdatei an die WooCommerce-E-Mails an"
+msgstr "Allega il file calendario ICS alle email WooCommerce"
 
 #: sasoEventtickets_Ticket.php:427
 msgid ""
 "If active, the ICS calendar file will be added as an attachment to the mails "
 "(order complete, customer note, customer invoice and processing order)"
 msgstr ""
-"Wenn aktiv, dann wird die ICS-Kalenderdatei als Anhang an den E-Mails (order "
-"complete, customer note, customer invoice und processing order) angehängt"
+"Se attivo, il file calendario ICS verrà aggiunto come allegato alle email "
+"(ordine completato, nota cliente, fattura cliente e ordine in elaborazione)"
 
 #: sasoEventtickets_Ticket.php:428
 msgid "Show the event date on purchase order email"
-msgstr "Zeige das Veranstaltungsdatum in den E-Mails zur Bestellung an"
+msgstr "Mostra la data dell'evento nell'email dell'ordine"
 
 #: sasoEventtickets_Ticket.php:428
 msgid ""
 "If active and a date is set on the product, then it will display the date of "
 "the event on the purchase email to the client."
 msgstr ""
-"Wenn aktiv und ein Datum im Produkt gesetzt ist, dann wird das Datum der "
-"Veranstaltung in den E-Mails an den Kunden angezeigt."
+"Se attivo e una data è impostata sul prodotto, la data dell'evento verrà "
+"visualizzata nell'email di acquisto al cliente."
 
 #: sasoEventtickets_Ticket.php:429
 msgid "Show the event date on the product detail page for your customer"
 msgstr ""
-"Zeige das Datum der Veranstaltung in der Produktdetailansicht des Kunden (im "
-"Shop)"
+"Mostra la data dell'evento nella pagina dettagli prodotto per il cliente"
 
 #: sasoEventtickets_Ticket.php:429
 msgid ""
 "If active and a date is set on the product, then it will display the date of "
 "the event on the product detail page to the client."
 msgstr ""
-"Wenn aktiv und ein Datum im Produkt gesetzt ist, dann wird das Datum der "
-"Veranstaltung auf der Produktdetailseite im Shop angezeigt."
+"Se attivo e una data è impostata sul prodotto, la data dell'evento verrà "
+"visualizzata nella pagina dettagli prodotto per il cliente."
 
 #: sasoEventtickets_Ticket.php:430
 msgid "Hide the event date on the ticket"
-msgstr "Blende das Veranstaltungsdatum auf dem Ticket aus"
+msgstr "Nascondi la data dell'evento sul biglietto"
 
 #: sasoEventtickets_Ticket.php:430
 msgid "If active the event date is not shown on the ticket."
 msgstr ""
-"Wenn aktiv, dann wird das Veranstaltungsdatum nicht auf dem PDF-Ticket und "
-"auch nicht auf der Ticketdetailansicht für deine Kunden angezeigt."
+"Se attivo, la data dell'evento non verrà mostrata sul biglietto."
 
 #: sasoEventtickets_Ticket.php:431
 msgid "User profile"
-msgstr "Benutzerprofil"
+msgstr "Profilo utente"
 
 #: sasoEventtickets_Ticket.php:432
 msgid "Display registered ticket numbers within the user profile"
 msgstr ""
-"Zeige die auf den Benutzer registrierten Ticketnummern in seinem Profil an"
+"Mostra i numeri biglietto registrati all'interno del profilo utente"
 
 #: sasoEventtickets_Ticket.php:433
 msgid "Display bought ticket numbers within the user profile"
-msgstr "Zeigt die erworbenen Ticketnummern in seinem Benutzerprofil an"
+msgstr "Mostra i numeri biglietto acquistati all'interno del profilo utente"
 
 #: sasoEventtickets_Ticket.php:514
 msgid "No date available"
-msgstr "Kein Datum vorhanden"
+msgstr "Nessuna data disponibile"
 
 #: sasoEventtickets_Ticket.php:599 ticket_scanner.js:383
-#, fuzzy
 msgid "TICKET NOT REDEEMED - see reason below"
-msgstr ""
-"#-#-#-#-#  event-tickets-with-ticket-scanner-it_IT.po (Event Tickets with "
-"Ticket Scanner 1.2.12)  #-#-#-#-#\n"
-"TICKET NICHT ENTWERTET - Gründe dafür stehen nachfolgend\n"
-"#-#-#-#-#  event-tickets-with-ticket-scanner-it_IT.po (Event Tickets with "
-"Ticket Scanner 1.2.12)  #-#-#-#-#\n"
-"TICKET NICHT ENTWERTET - siehe nachstehende Gründe"
+msgstr "BIGLIETTO NON CONVALIDATO - vedere il motivo di seguito"
 
 #: sasoEventtickets_Ticket.php:601 ticket_scanner.js:380
-#, fuzzy
 msgid "TICKET OK - Redeemed"
-msgstr ""
-"#-#-#-#-#  event-tickets-with-ticket-scanner-it_IT.po (Event Tickets with "
-"Ticket Scanner 1.2.12)  #-#-#-#-#\n"
-"TICKET OK - Entwertet\n"
-"#-#-#-#-#  event-tickets-with-ticket-scanner-it_IT.po (Event Tickets with "
-"Ticket Scanner 1.2.12)  #-#-#-#-#\n"
-"Ticket OK - Entwertet"
+msgstr "BIGLIETTO OK - Convalidato"
 
 #: sasoEventtickets_Ticket.php:629 ticket_scanner.js:381
 msgid "Successfully redeemed"
-msgstr "Erfolgreich entwertet"
+msgstr "Convalidato con successo"
 
 #: sasoEventtickets_Ticket.php:631 ticket_scanner.js:384
-#, fuzzy
 msgid "Failed to redeem"
-msgstr ""
-"#-#-#-#-#  event-tickets-with-ticket-scanner-it_IT.po (Event Tickets with "
-"Ticket Scanner 1.2.12)  #-#-#-#-#\n"
-"Fehler beim Entwerten\n"
-"#-#-#-#-#  event-tickets-with-ticket-scanner-it_IT.po (Event Tickets with "
-"Ticket Scanner 1.2.12)  #-#-#-#-#\n"
-"Entwertung fehlgeschlagen"
+msgstr "Convalida fallita"
 
 #: sasoEventtickets_Ticket.php:662
 msgid "Reload Ticket"
-msgstr "Ticket neu laden"
+msgstr "Ricarica biglietto"
 
 #: sasoEventtickets_Ticket.php:720
 msgid "Scan and Redeem immediately"
-msgstr "Scannen und automatisch sofort entwerten"
+msgstr "Scansiona e convalida immediatamente"
 
 #: sasoEventtickets_Ticket.php:721 ticket_scanner.js:78
 msgid "Scan next Ticket"
-msgstr "Nächstes Ticket scannen"
+msgstr "Scansiona il prossimo biglietto"
 
 #: sasoEventtickets_Ticket.php:728
 msgid "ticket redeemed already"
-msgstr "Ticket schon entwertet"
+msgstr "Biglietto già convalidato"
 
 #: sasoEventtickets_Ticket.php:753
 msgid "Order item not found for the PDF ticket"
-msgstr "Position der Bestellung nicht gefunden"
+msgstr "Articolo dell'ordine non trovato per il PDF del biglietto"
 
 #: sasoEventtickets_Ticket.php:803 sasoEventtickets_Ticket.php:907
 msgid "Ticket"
-msgstr "Ticket"
+msgstr "Biglietto"
 
 #: sasoEventtickets_Ticket.php:1142
 msgid ""
 "Order is not paid. And the option is active to allow only paid ticket to be "
 "redeemed is active."
 msgstr ""
-"Bestellung ist noch nicht bezahlt. Die Option ist aktiviert, dass nur "
-"bezahlte Tickets entwertet werden dürfen."
+"L'ordine non è stato pagato. L'opzione per consentire la convalida solo dei "
+"biglietti pagati è attiva."
 
 #: sasoEventtickets_Ticket.php:1158
 msgid "Ticket number to redeem is missing"
-msgstr "Ticketnummer für die Entwertung fehlt"
+msgstr "Numero biglietto per la convalida mancante"
 
 #: sasoEventtickets_Ticket.php:1201
 msgid "Order not marked as paid. Ticket not redeemed."
-msgstr "Bestellung ist noch nicht bezahlt. Ticket wurde nicht entwertet."
+msgstr "Ordine non contrassegnato come pagato. Biglietto non convalidato."
 
 #: sasoEventtickets_Ticket.php:1264
 msgid "No WooCommerce Support Found"
-msgstr "Keine WooCommerce Unterstützung gefunden"
+msgstr "Supporto WooCommerce non trovato"
 
 #: sasoEventtickets_Ticket.php:1265
 msgid "Please contact us for a solution."
-msgstr "Bitte kontaktiere uns für eine Problemlösung"
+msgstr "Si prega di contattarci per una soluzione."
 
 #. translators: %s: ticket number
 #: ticket_scanner.js:34
 msgid "found %s"
-msgstr "gefunden %s"
+msgstr "trovato %s"
 
 #: ticket_scanner.js:113 ticket_scanner.js:150
 msgid "Access rights missing. Please login first."
-msgstr "Zugriffsrechte fehlen. Bitter erst einloggen."
+msgstr "Diritti di accesso mancanti. Effettuare prima il login."
 
 #: ticket_scanner.js:182
 msgctxt "cal"
 msgid "Sun"
-msgstr "So"
+msgstr "Dom"
 
 #: ticket_scanner.js:183
 msgctxt "cal"
 msgid "Mon"
-msgstr "Mo"
+msgstr "Lun"
 
 #: ticket_scanner.js:184
 msgctxt "cal"
 msgid "Tue"
-msgstr "Di"
+msgstr "Mar"
 
 #: ticket_scanner.js:185
 msgctxt "cal"
 msgid "Wed"
-msgstr "Mi"
+msgstr "Mer"
 
 #: ticket_scanner.js:186
 msgctxt "cal"
 msgid "Thu"
-msgstr "Do"
+msgstr "Gio"
 
 #: ticket_scanner.js:187
 msgctxt "cal"
 msgid "Fri"
-msgstr "Fr"
+msgstr "Ven"
 
 #: ticket_scanner.js:188
 msgctxt "cal"
 msgid "Sat"
-msgstr "Sa"
+msgstr "Sab"
 
 #: ticket_scanner.js:191
 msgctxt "cal"
 msgid "Jan"
-msgstr "Jan"
+msgstr "Gen"
 
 #: ticket_scanner.js:192
 msgctxt "cal"
@@ -2743,7 +2727,7 @@ msgstr "Feb"
 #: ticket_scanner.js:193
 msgctxt "cal"
 msgid "Mar"
-msgstr "Mär"
+msgstr "Mar"
 
 #: ticket_scanner.js:194
 msgctxt "cal"
@@ -2753,32 +2737,32 @@ msgstr "Apr"
 #: ticket_scanner.js:195
 msgctxt "cal"
 msgid "May"
-msgstr "Mai"
+msgstr "Mag"
 
 #: ticket_scanner.js:196
 msgctxt "cal"
 msgid "Jun"
-msgstr "Jun"
+msgstr "Giu"
 
 #: ticket_scanner.js:197
 msgctxt "cal"
 msgid "Jul"
-msgstr "Jul"
+msgstr "Lug"
 
 #: ticket_scanner.js:198
 msgctxt "cal"
 msgid "Aug"
-msgstr "Aug"
+msgstr "Ago"
 
 #: ticket_scanner.js:199
 msgctxt "cal"
 msgid "Sep"
-msgstr "Sep"
+msgstr "Set"
 
 #: ticket_scanner.js:200
 msgctxt "cal"
 msgid "Oct"
-msgstr "Okt"
+msgstr "Ott"
 
 #: ticket_scanner.js:201
 msgctxt "cal"
@@ -2788,63 +2772,63 @@ msgstr "Nov"
 #: ticket_scanner.js:202
 msgctxt "cal"
 msgid "Dec"
-msgstr "Dez"
+msgstr "Dic"
 
 #. translators: %s: order status
 #: ticket_scanner.js:304 ticket_scanner.js:390
 msgid "Ticket is NOT paid (%s)."
-msgstr "Ticket nicht NICHT bezahlt (%s)."
+msgstr "Il biglietto NON è pagato (%s)."
 
 #: ticket_scanner.js:325
 msgid "Ticket paid"
-msgstr "Ticket bezahlt"
+msgstr "Biglietto pagato"
 
 #: ticket_scanner.js:327
 msgid "Ticket NOT paid"
-msgstr "Ticket NICHT bezahlt"
+msgstr "Biglietto NON pagato"
 
 #: ticket_scanner.js:332
 msgid "Ticket NOT redeemed"
-msgstr "Ticket NICHT entwertet"
+msgstr "Biglietto NON convalidato"
 
 #. translators: %s: confirmed check counter
 #: ticket_scanner.js:335
 msgid "Confirmed status validation check counter: <b>%s</b>"
-msgstr "Bestätigte Statuschecks-Zähler: <b>(%s)</b>"
+msgstr "Contatore controlli di stato confermati: <b>%s</b>"
 
 #. translators: %s: max redeem amount
 #: ticket_scanner.js:337
 msgid "Max Redeem Amount for this ticket: <b>%s</b>"
-msgstr "Maximale Anzahl an möglichen Entwertungen: <b>%s</b>"
+msgstr "Numero massimo di convalide per questo biglietto: <b>%s</b>"
 
 #. translators: 1: redeemd tickets 2: max redeem
 #: ticket_scanner.js:339
 msgid "Redeem usage: <b>%1$d</b> of <b>%2$d</b>"
-msgstr "Entwertungen: <b>%1$d</b> von <b>%2$d</b>"
+msgstr "Convalide effettuate: <b>%1$d</b> di <b>%2$d</b>"
 
 #. translators: %s: date
 #: ticket_scanner.js:343
 msgid "Bought at %s"
-msgstr "Gekauft am %s"
+msgstr "Acquistato il %s"
 
 #. translators: %s: date
 #: ticket_scanner.js:347
 msgid "Expiration at %s"
-msgstr "Verfall am %s"
+msgstr "Scadenza il %s"
 
 #. translators: 1: days 2: date
 #: ticket_scanner.js:351
 msgid "Expires after %1$d days (%2$s)"
-msgstr "Verfällt nach %1$d Tagen (%2$s)"
+msgstr "Scade dopo %1$d giorni (%2$s)"
 
 #: ticket_scanner.js:359
 msgid "start redeem ticket...loading..."
-msgstr "Entwerte Ticket ...lade..."
+msgstr "Convalida biglietto in corso...caricamento..."
 
 #: ticket_scanner.js:395
 msgctxt "label"
 msgid "Redeem Ticket"
-msgstr "Entwerte Ticket"
+msgstr "Convalida biglietto"
 
 #: ticket_scanner.js:398
 msgctxt "label"
@@ -2854,43 +2838,43 @@ msgstr "Download PDF"
 #. translators: %d: amount redeemed tickets
 #: ticket_scanner.js:431
 msgid "%d tickets of this event (product) redeemed already"
-msgstr "%d Tickets von diesem Event (Produkt) bereits entwertet"
+msgstr "%d biglietti di questo evento (prodotto) già convalidati"
 
 #: ticket_scanner.js:513
 msgid "For QR code barcode scanner"
-msgstr "Für Barcodescanner"
+msgstr "Per scanner codici a barre QR"
 
 #: ticket_scanner.js:515
 msgctxt "attr"
 msgid "Type in the ticket number and hit ENTER (optional to scanning)"
-msgstr "Ticketnummer eingeben und EINGABE drücken (optional für das Scannen)"
+msgstr "Digitare il numero biglietto e premere INVIO (alternativa alla scansione)"
 
 #: validator.js:391
 msgid "Please enter your CVV for this ticket"
-msgstr "Bitte die CVV Nummer für dieses Ticket eingeben"
+msgstr "Inserire il CVV per questo biglietto"
 
 #: woocommerce-hooks.php:81
 msgid "Deactivate auto-generating ticket"
-msgstr "Deaktievere die automatische Generierung von Tickets"
+msgstr "Disattiva la generazione automatica di biglietti"
 
 #: woocommerce-hooks.php:91
 msgid "No restriction applied"
-msgstr "Es wird kein Freigabecode benötigt"
+msgstr "Nessuna restrizione applicata"
 
 #: woocommerce-hooks.php:91
 msgid "Accept any existing code without limitation to a code list"
-msgstr "Akzeptiere jeden Code ohne Berücksichtigung einer Code-Liste"
+msgstr "Accetta qualsiasi codice esistente senza limitazione a un elenco codici"
 
 #: woocommerce-hooks.php:103
 msgctxt "label"
 msgid "Event Tickets"
-msgstr "Event-Tickets"
+msgstr "Event Tickets"
 
 #: woocommerce-hooks.php:104 woocommerce-hooks.php:766 backend.js:910
 #: backend.js:1507
 msgctxt "title"
 msgid "Event Tickets"
-msgstr "Event-Tickets"
+msgstr "Event Tickets"
 
 #. translators: %d: amount of maximum ticket that can be created
 #: woocommerce-hooks.php:153
@@ -2898,214 +2882,213 @@ msgid ""
 "With the free basic plugin, you can only <b>create up to %d tickets!</"
 "b><br>Make sure your are not selling more tickets :)"
 msgstr ""
-"Mit dem gratis Basisplugin kannst du <b>bis zu %d Tickets</b> erstellen."
-"<br>Achte darauf, dass du nicht mehr Tickets verkaufst :)"
+"Con il plugin base gratuito, puoi <b>creare solo fino a %d biglietti!</"
+"b><br>Assicurati di non vendere più biglietti :)"
 
 #. translators: 1: start of a-tag 2: end of a-tag
 #: woocommerce-hooks.php:153
 msgid "Here you can purchase the %1$spremium plugin%2$s for unlimited tickets."
 msgstr ""
-"Hier kannst du das %1$sPremiumplugin%2$s für eine unlimitierte Anzahl "
-"Tickets erwerben."
+"Qui puoi acquistare il %1$splugin Premium%2$s per biglietti illimitati."
 
 #: woocommerce-hooks.php:160
 msgid "Is a ticket sales"
-msgstr "Ist ein Ticketprodukt"
+msgstr "È una vendita di biglietti"
 
 #: woocommerce-hooks.php:161
 msgid "Activate this, to generate a ticket number"
-msgstr "Aktiviere diese Option, um eine Ticketnummer pro Verkauf zu generieren"
+msgstr "Attiva questa opzione per generare un numero biglietto"
 
 #: woocommerce-hooks.php:169
 msgid "This will be also in the cal entry file."
-msgstr "Dies wird auch in der Kalenderdatei angezeigt."
+msgstr "Questo verrà incluso anche nel file calendario."
 
 #: woocommerce-hooks.php:175
 msgid "Start date event"
-msgstr "Datum wann die Veranstaltung beginnt"
+msgstr "Data di inizio evento"
 
 #: woocommerce-hooks.php:178
 msgid ""
 "Set this to have this printed on the ticket and prevent too early redeemed "
 "tickets. Tickets can be redeemed from that day on."
 msgstr ""
-"Wenn gesetzt, wird dies auch auf dem Ticket angezeigt. Dazu wird auch "
-"verhindert, dass das Ticket zu früh entwertet werden kann. Tickets können ab "
-"diesem Tag entwertet werden."
+"Imposta questo valore per stamparlo sul biglietto e impedire convalide "
+"troppo anticipate. I biglietti possono essere convalidati a partire da quel "
+"giorno."
 
 #: woocommerce-hooks.php:184
 msgid "Start time"
-msgstr "Uhrzeit für den Beginn"
+msgstr "Orario di inizio"
 
 #: woocommerce-hooks.php:186 woocommerce-hooks.php:203
 msgid "Set this to have this printed on the ticket."
-msgstr "Setze diese Angabe, um dies auch auf dem Ticket anzuzeigen."
+msgstr "Imposta questo valore per stamparlo sul biglietto."
 
 #: woocommerce-hooks.php:192
 msgid "End date event"
-msgstr "Datum für das Ende der Veranstaltung"
+msgstr "Data di fine evento"
 
 #: woocommerce-hooks.php:195
 msgid ""
 "Set this to have this printed on the ticket and prevent later the ticket to "
 "be still valid. Tickets cannot be redeemed after that day."
 msgstr ""
-"Wenn gesetzt, dann wird dies auch auf dem Ticket angezeigt. es verhindert "
-"auch, dass das Ticket nach diesem Tag entwertet werden kann. Es wird dann "
-"als abgelaufen angezeigt."
+"Imposta questo valore per stamparlo sul biglietto e impedire che il "
+"biglietto sia ancora valido successivamente. I biglietti non possono essere "
+"convalidati dopo quel giorno."
 
 #: woocommerce-hooks.php:201
 msgid "End time"
-msgstr "Uhrzeit wann die Veranstaltung endet"
+msgstr "Orario di fine"
 
 #: woocommerce-hooks.php:210
 msgid "Date is for all variants"
-msgstr "Datum gilt auch für alle Varianten"
+msgstr "La data vale per tutte le varianti"
 
 #: woocommerce-hooks.php:211
 msgid ""
 "Activate this, to have the entered date printed on all product variants. No "
 "effect on simple products."
 msgstr ""
-"Aktiviere dies, um das Datum bei allen Produktvarianten anzuzeigen. Dies hat "
-"keinen Effekt bei einfachen Produkten."
+"Attiva questa opzione per stampare la data inserita su tutte le varianti "
+"del prodotto. Nessun effetto sui prodotti semplici."
 
 #: woocommerce-hooks.php:219
 msgid "Max. redeem operations"
-msgstr "Maximale Anzahl an Entwertungen"
+msgstr "Numero massimo di convalide"
 
 #: woocommerce-hooks.php:222
 msgid "How often do you allow to redeem the ticket?"
-msgstr "Wie oft soll das Ticket entwertet werden können?"
+msgstr "Quante volte si consente di convalidare il biglietto?"
 
 #: woocommerce-hooks.php:228
 msgid "Print this on the ticket"
-msgstr "Drucke dies auf das Ticket"
+msgstr "Stampa questo sul biglietto"
 
 #: woocommerce-hooks.php:229
 msgid "This optional information will be displayed on the ticket detail page."
 msgstr ""
-"Optional wird diese zusätzlich Information auf der Ticketdetailansicht für "
-"den Kunden angezeigt"
+"Queste informazioni opzionali verranno visualizzate nella pagina dettagli "
+"del biglietto."
 
 #: woocommerce-hooks.php:244
 msgid "You have no lists created!"
-msgstr "Du hast noch keine Liste erstellt!"
+msgstr "Non hai ancora creato nessun elenco!"
 
 #: woocommerce-hooks.php:244
 msgid ""
 "You need to create a list first within the event tickets admin area, to "
 "choose a list from."
 msgstr ""
-"Du musst zuerst eine Liste, im Event Ticket Adminbereich, erstellen. Dann "
-"kannst du die Liste dem Produkt zuordnen."
+"Devi prima creare un elenco nell'area di amministrazione Event Tickets, "
+"per poter scegliere un elenco."
 
 #: woocommerce-hooks.php:249
 msgid "List"
-msgstr "Liste"
+msgstr "Elenco"
 
 #: woocommerce-hooks.php:250
 msgid ""
 "Choose a list to activate auto-generating ticket numbers/codes for each sold "
 "item"
 msgstr ""
-"Wähle eine Liste, um die automatische Erstellen von Ticketnummern für jeden "
-"Verkauf zu aktivieren"
+"Scegli un elenco per attivare la generazione automatica di numeri "
+"biglietto/codici per ogni articolo venduto"
 
 #: woocommerce-hooks.php:259
 msgid "Use format settings"
-msgstr "Benutze folgendes Format für die Ticketnummer"
+msgstr "Utilizza le impostazioni di formato"
 
 #: woocommerce-hooks.php:260
 msgid ""
 "If active, then the format below will be used to generate ticket numbers "
 "during a purchase of this product."
 msgstr ""
-"Wenn aktiv, dann wird das eingestellte Format für die Generierung von neuen "
-"Ticketnmmern während dem Kauf genutzt."
+"Se attivo, il formato seguente verrà utilizzato per generare numeri "
+"biglietto durante l'acquisto di questo prodotto."
 
 #: woocommerce-hooks.php:264
 msgid "The ticket number format settings."
-msgstr "Ticketnummer Formateinstellungen"
+msgstr "Impostazioni del formato numero biglietto."
 
 #: woocommerce-hooks.php:264
 msgid ""
 "This will override an existing and active global \"serial code formatter "
 "pattern for new sales\" and also any format settings from the group."
 msgstr ""
-"Diese Einstellung überschreibt eine mögliche globale Einstellung für das "
-"Ticketnummerformat und auch ein das Format, welches über die Liste "
-"eingestellt wurde."
+"Questo sovrascriverà un eventuale modello globale attivo di \"formato codice "
+"seriale per nuove vendite\" e anche qualsiasi impostazione di formato "
+"dall'elenco."
 
 #: woocommerce-hooks.php:479 backend.js:1174 backend.js:1663
 msgid "Ticket number"
-msgstr "Ticketnummer"
+msgstr "Numero biglietto"
 
 #: woocommerce-hooks.php:481
 msgctxt "noun"
 msgid "Code"
-msgstr "Code"
+msgstr "Codice"
 
 #: woocommerce-hooks.php:485
 msgid "List ID"
-msgstr "Listen-ID"
+msgstr "ID elenco"
 
 #: woocommerce-hooks.php:488
 msgid "Is Ticket"
-msgstr "Ist eine Ticket"
+msgstr "È un biglietto"
 
 #: woocommerce-hooks.php:522
 msgctxt "label"
 msgid "Ticket List"
-msgstr "Ticketliste"
+msgstr "Elenco biglietti"
 
 #: woocommerce-hooks.php:594 woocommerce-hooks.php:689
 msgid "Ticket Detail"
-msgstr "Ticketdetails"
+msgstr "Dettagli biglietto"
 
 #: woocommerce-hooks.php:833
 msgid "Free ticket numbers used up. Added:"
-msgstr "Mögliche Anzahl an Tickets verbraucht. Hinzugefügt:"
+msgstr "Numeri biglietto gratuiti esauriti. Aggiunti:"
 
 #. translators: %s: name of called function
 #: woocommerce-hooks.php:881
 msgid "function \"%s\" in wc backend not implemented"
-msgstr "Funktion \"%s\" im WC Backend nicht implementiert"
+msgstr "Funzione \"%s\" nel backend WC non implementata"
 
 #: woocommerce-hooks.php:893
 msgid "Product Id for the event flyer is missing"
-msgstr "Produtk-ID für den Eventflyer fehlt"
+msgstr "ID prodotto per il volantino evento mancante"
 
 #. translators: %s: name of product
 #: woocommerce-hooks.php:1161
 msgid "The product \"%s\" requires a restriction code for checkout."
-msgstr "Das Produkt \"%s\" benötigt einen Freigabecode für die Bestellung."
+msgstr "Il prodotto \"%s\" richiede un codice di restrizione per il checkout."
 
 #. translators: 1: restriction code number 2: name of product
 #: woocommerce-hooks.php:1166
 msgid "The restriction code \"%1$s\" for product \"%2$s\" is already used."
 msgstr ""
-"Der Freigabecode \"%1$s\" für das Produkt \"%2$s\" ist bereits genutzt "
-"worden."
+"Il codice di restrizione \"%1$s\" per il prodotto \"%2$s\" è già stato "
+"utilizzato."
 
 #. translators: 1: restriction code number 2: name of product
 #: woocommerce-hooks.php:1171
 msgid "The restriction code \"%1$s\" for product \"%2$s\" is not valid."
-msgstr "der Freigabecode \"%1$s\" für das Produkt \"%2$s\" ist nicht gültig."
+msgstr "Il codice di restrizione \"%1$s\" per il prodotto \"%2$s\" non è valido."
 
 #. translators: %s: restriction code number
 #: woocommerce-hooks.php:1241
 msgid "Order item deleted. Free restriction code: %s for next usage."
 msgstr ""
-"Position der Bestellung gelöscht. Freigabecode: %s freigegeben für die "
-"nächste Benutzung."
+"Articolo dell'ordine eliminato. Codice di restrizione liberato: %s per il "
+"prossimo utilizzo."
 
 #. translators: %s: ticket number
 #: woocommerce-hooks.php:1260
 msgid "Order item deleted. Free ticket number: %s for next usage."
 msgstr ""
-"Position der Bestellung gelöscht. Ticketnummer: %s freigegeben für die "
-"nächste Benutzung."
+"Articolo dell'ordine eliminato. Numero biglietto liberato: %s per il "
+"prossimo utilizzo."
 
 #. v2.8.7 PWA & Scanner options
 #: sasoEventtickets_Options.php

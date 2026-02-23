@@ -98,7 +98,10 @@ final class sasoEventtickets_Ticket {
 			"consecutive_failures" => 0        // Failed license check attempts
 		];
 		if (!empty($info)) {
-			$info_obj = array_merge($info_obj, json_decode($info, true));
+			$decoded = json_decode($info, true);
+			if (is_array($decoded)) {
+				$info_obj = array_merge($info_obj, $decoded);
+			}
 		}
 		$info_obj = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_get_expiration', $info_obj );
 		return $info_obj;
@@ -189,12 +192,23 @@ final class sasoEventtickets_Ticket {
 
 	public function checkForPremiumSerialExpiration() {
 		$option_name = $this->MAIN->getPrefix()."_premium_serial_expiration";
-		// check the expiration of the premium serial
 		// Also run when premium plugin is installed with a serial key but isPremium() is false (recovery from deadlock)
 		$hasPremiumPlugin = class_exists('sasoEventtickets_PremiumFunctions');
-		$hasSerial = !empty(trim(get_option("saso-event-tickets-premium_serial", "")));
+		$serial = trim(get_option("saso-event-tickets-premium_serial", ""));
+		$hasSerial = !empty($serial);
 		if ($this->MAIN->isPremium() || ($hasPremiumPlugin && $hasSerial)) {
 			$info_obj = $this->get_expiration();
+
+			// Detect serial change: reset failure data so corrected serials get a fresh chance
+			$serial_hash = $hasSerial ? md5($serial) : '';
+			if (isset($info_obj["_serial_hash"]) && $info_obj["_serial_hash"] !== $serial_hash) {
+				$info_obj["consecutive_failures"] = 0;
+				$info_obj["last_run"] = 0;
+				$info_obj["last_success"] = 0;
+				unset($info_obj["notvalid"]);
+			}
+			$info_obj["_serial_hash"] = $serial_hash;
+
 			$doCheck = false;
 			if ($info_obj["last_run"] == 0) {
 				$doCheck = true;
@@ -213,49 +227,45 @@ final class sasoEventtickets_Ticket {
 					$doCheck = true;
 				}
 			}
-			// In recovery mode (not premium but has serial), always force check
-			if (!$this->MAIN->isPremium() && $hasPremiumPlugin && $hasSerial) {
-				$doCheck = true;
-			}
-			if ($doCheck) {
-				$serial = trim(get_option( "saso-event-tickets-premium_serial" ));
-				if (!empty($serial) && defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')) {
-					$domain = parse_url( get_site_url(), PHP_URL_HOST );
+			if ($doCheck && $hasSerial && defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')) {
+				$domain = parse_url( get_site_url(), PHP_URL_HOST );
 
-					$url = "https://vollstart.com/plugins/event-tickets-with-ticket-scanner-premium/"
-								.'?checking_for_updates=2&ver='.SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION
-								."&m=".get_option('admin_email')
-								."&d=".$domain
-								."&serial=".urlencode($serial);
+				$url = "https://vollstart.com/plugins/event-tickets-with-ticket-scanner-premium/"
+							.'?checking_for_updates=2&ver='.SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION
+							."&m=".get_option('admin_email')
+							."&d=".$domain
+							."&serial=".urlencode($serial);
 
-					$response = wp_remote_get($url, ['timeout' => 45]);
-					if (is_wp_error($response)) {
-						// Fehler tracken
+				$response = wp_remote_get($url, ['timeout' => 45]);
+				if (is_wp_error($response)) {
+					// Network error
+					$info_obj["consecutive_failures"] = intval($info_obj["consecutive_failures"] ?? 0) + 1;
+					$info_obj["last_run"] = time();
+				} else {
+					$body = wp_remote_retrieve_body( $response );
+					$data = json_decode( $body, true );
+					if (isset($data["isCheckCall"]) && $data["isCheckCall"] == 1) {
+						// Success: valid license response
+						$info_obj["last_run"] = time();
+						$info_obj["last_success"] = time();
+						$info_obj["consecutive_failures"] = 0;
+						// Clear notvalid if server doesn't send it (successful check = valid)
+						if (!isset($data["notvalid"])) {
+							unset($info_obj["notvalid"]);
+						}
+						// Server-Daten gezielt übernehmen (Server gewinnt)
+						foreach (['timestamp', 'expiration_date', 'timezone', 'notvalid', 'isCheckCall', 'subscription_type', 'grace_period_days'] as $key) {
+							if (isset($data[$key])) $info_obj[$key] = $data[$key];
+						}
+					} else {
+						// HTTP OK but invalid serial or server error — throttle retries
 						$info_obj["consecutive_failures"] = intval($info_obj["consecutive_failures"] ?? 0) + 1;
 						$info_obj["last_run"] = time();
-						$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
-						update_option($option_name, json_encode($info_obj));
-					} else {
-						$body = wp_remote_retrieve_body( $response );
-						$data = json_decode( $body, true );
-						if (isset($data["isCheckCall"]) && $data["isCheckCall"] == 1) {
-							$info_obj["last_run"] = time();
-							$info_obj["last_success"] = time();
-							$info_obj["consecutive_failures"] = 0;
-							// Clear notvalid if server doesn't send it (successful check = valid)
-							if (!isset($data["notvalid"])) {
-								unset($info_obj["notvalid"]);
-							}
-							// Server-Daten gezielt übernehmen (Server gewinnt)
-							foreach (['timestamp', 'expiration_date', 'timezone', 'notvalid', 'isCheckCall', 'subscription_type', 'grace_period_days'] as $key) {
-								if (isset($data[$key])) $info_obj[$key] = $data[$key];
-							}
-							$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
-							$value = $this->MAIN->getCore()->json_encode_with_error_handling($info_obj);
-							update_option($option_name, $value);
-						}
 					}
 				}
+				$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
+				$value = $this->MAIN->getCore()->json_encode_with_error_handling($info_obj);
+				update_option($option_name, $value);
 			}
 		}
 		do_action( $this->MAIN->_do_action_prefix.'ticket_checkForPremiumSerialExpiration' );
@@ -936,6 +946,20 @@ final class sasoEventtickets_Ticket {
 		}
 		return $this->calcDateStringAllowedRedeemFrom($tmp_prod->get_id(), $codeObj);
 	}
+	/**
+	 * Convert a local date+time (as entered by admin in WordPress timezone) to a UTC Unix timestamp.
+	 * WordPress sets PHP timezone to UTC, so strtotime() would wrongly interpret local dates as UTC.
+	 */
+	private function localDateToTimestamp(string $date, string $time = ''): int {
+		$datetime_str = trim($date . ' ' . $time);
+		try {
+			$dt = new \DateTime($datetime_str, wp_timezone());
+			return $dt->getTimestamp();
+		} catch (\Exception $e) {
+			return (int) strtotime($datetime_str);
+		}
+	}
+
 	public function calcDateStringAllowedRedeemFrom($product_id, $codeObj = null) {
 		// check if product id is from WPML plugin
 		// get the original product id, because the event ticket information is stored in the original product
@@ -989,7 +1013,7 @@ final class sasoEventtickets_Ticket {
 		if (empty($ret['ticket_start_date'])) {
 			$ret['ticket_start_date'] = wp_date("Y-m-d");
 		}
-		$ret['ticket_start_date_timestamp'] = strtotime(trim($ret['ticket_start_date']." ".$ret['ticket_start_time']));
+		$ret['ticket_start_date_timestamp'] = $this->localDateToTimestamp($ret['ticket_start_date'], $ret['ticket_start_time']);
 		$ret['ticket_start_p_date'] = wp_date("d", $ret['ticket_start_date_timestamp']);
 		$ret['ticket_start_p_month'] = wp_date("m", $ret['ticket_start_date_timestamp']);
 		$ret['ticket_start_p_year'] = wp_date("Y", $ret['ticket_start_date_timestamp']);
@@ -1007,7 +1031,7 @@ final class sasoEventtickets_Ticket {
 		} else {
 			$ret['is_end_time_set'] = true;
 		}
-		$ret['ticket_end_date_timestamp'] = strtotime(trim($ret['ticket_end_date']." ".$ret['ticket_end_time']));
+		$ret['ticket_end_date_timestamp'] = $this->localDateToTimestamp($ret['ticket_end_date'], $ret['ticket_end_time']);
 		$ret['ticket_end_p_date'] = wp_date("d", $ret['ticket_end_date_timestamp']);
 		$ret['ticket_end_p_month'] = wp_date("m", $ret['ticket_end_date_timestamp']);
 		$ret['ticket_end_p_year'] = wp_date("Y", $ret['ticket_end_date_timestamp']);
@@ -2414,6 +2438,23 @@ final class sasoEventtickets_Ticket {
 			}
 		}
 		return $max_redeem_amount;
+	}
+
+	/**
+	 * Count how many times a ticket was redeemed today
+	 *
+	 * @param array $statsRedeemed Array of redeem entries from stats_redeemed
+	 * @return int Number of redeems today
+	 */
+	public function countRedeemsToday(array $statsRedeemed): int {
+		$today = wp_date('Y-m-d');
+		$count = 0;
+		foreach ($statsRedeemed as $entry) {
+			if (!empty($entry['redeemed_date']) && substr($entry['redeemed_date'], 0, 10) === $today) {
+				$count++;
+			}
+		}
+		return $count;
 	}
 
 	public function getRedeemAmountText($codeObj, $metaObj, $forPDFOutput=false) {

@@ -12,3 +12,8 @@ CLAUDE/
 # Debug files
 debug-*.txt
 debug-*.log
+
+# Test dependencies (install via: cd tests && composer install)
+tests/vendor/
+tests/composer.lock
+tests/.phpunit.result.cache

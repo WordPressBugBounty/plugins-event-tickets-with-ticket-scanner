@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.8.10
+Stable tag: 2.9.0
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -208,9 +208,24 @@ Every ticket number is unique. The scanner detects duplicate redemption attempts
 == Upgrade Notice ==
 
 = 2.8.0 =
-Major release: Interactive seating plan designer with drag & drop editor. Default ticket template updated to display seat numbers. Please backup your system before upgrading.
+Major release: Old premium version will no longer work with this version. Interactive seating plan designer with drag & drop editor. Default ticket template updated to display seat numbers. Please backup your system before upgrading.
+
+= 2.8.10 = 
+Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 2.9.0 - 2026-02-23 =
+* Fix: Crash on PHP 8.x when plugin loading order puts basic before premium (e.g. after auto-update) — now defers premium loading via plugins_loaded hook
+* Fix: Crash in get_expiration() on PHP 8.x when license data contains invalid JSON
+* New: Old premium versions (< 1.6.0) are now gracefully blocked instead of causing fatal errors — site runs as free with admin warning
+* New: Serial key field shown in basic plugin settings when old premium is detected, so users can still manage their license
+* Improvement: License check now properly throttles retries when serial key is invalid, preventing excessive server calls
+* Improvement: Changing the serial key now immediately triggers a fresh license check instead of waiting for the next cycle
+* Fix: Invalid serial key no longer causes license check on every page load
+* Fix: All non-German translations (NL, ES, IT, PT_BR, PT_PT, HU, JA, ZH_CN) replaced with proper localized translations — previously contained German text
+* Fix: Renewal and reactivation links in admin notices pointed to wrong URL
+* Fix: Ticket redemption blocking ("deny redeem before event start") was off by the GMT offset for non-UTC timezones
 
 = 2.8.10 - 2026-02-18 =
 * Fix: Premium license recovery — license revalidation now runs even when local license data is stale, preventing permanent premium lockout

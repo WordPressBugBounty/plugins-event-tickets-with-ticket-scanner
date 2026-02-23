@@ -1,0 +1,7 @@
+# Files and directories excluded from plugin distribution
+tests/
+CLAUDE/
+.claude/
+.gitattributes
+.distignore
+.gitignore
