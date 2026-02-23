@@ -71,7 +71,7 @@ class sasoEventtickets_Core {
 	// helpful if meta information is changed by  function and the following function might retrieve the inform from the database
 	public function saveMetaObject($codeObj, $metaObj) {
 		// convert meta object to json and save it
-		$codeObj['meta'] = $this->_json_encode_with_error_handling($metaObj);
+		$codeObj['meta'] = $this->json_encode_with_error_handling($metaObj);
 		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
 		return $codeObj;
 	}

@@ -2337,14 +2337,15 @@ class sasoEventtickets_AdminSettings {
 
 			if ($shouldSendEmail) {
 				$metaObj['messages'][$warningType]['last_email'] = wp_date("Y-m-d H:i:s");
-				// Save to meta
-				$this->editList($list_id, ['meta' => $this->MAIN->getCore()->_json_encode_with_error_handling($metaObj)]);
-				// Send email
+			}
+
+			// Save updated meta directly to DB (not via editList which would clear warnings)
+			$newMeta = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+			$this->MAIN->getDB()->update('lists', ['meta' => $newMeta], ['id' => intval($list_id)]);
+
+			if ($shouldSendEmail) {
 				$severity = ($warningType === 'format_end_warning') ? 'critical' : 'warning';
 				$this->sendFormatWarningEmail($list_id, $severity, $counter);
-			} else {
-				// Just save the updated attempts count
-				$this->editList($list_id, ['meta' => $this->MAIN->getCore()->_json_encode_with_error_handling($metaObj)]);
 			}
 
 		} catch (Exception $e) {
@@ -2450,7 +2451,7 @@ class sasoEventtickets_AdminSettings {
 				'last_email' => ''
 			];
 
-			$this->editList($list_id, ['meta' => $this->MAIN->getCore()->_json_encode_with_error_handling($metaObj)]);
+			$this->editList($list_id, ['meta' => $this->MAIN->getCore()->json_encode_with_error_handling($metaObj)]);
 		} catch (Exception $e) {
 			$this->logErrorToDB($e, "", "clearFormatWarning for list $list_id");
 		}

@@ -56,10 +56,28 @@ class CoreMetaTest extends WP_UnitTestCase {
 
     // ── saveMetaObject ────────────────────────────────────────────
 
-    public function test_saveMetaObject_bug_calls_wrong_method(): void {
-        // saveMetaObject() has a bug: calls _json_encode_with_error_handling() (non-existent)
-        // instead of json_encode_with_error_handling(). Skip until fixed.
-        $this->markTestSkipped('saveMetaObject calls undefined _json_encode_with_error_handling method');
+    public function test_saveMetaObject_persists_to_db(): void {
+        $main = sasoEventtickets::Instance();
+        $listId = $main->getDB()->insert('lists', [
+            'name' => 'SaveMeta List ' . uniqid(),
+            'aktiv' => 1,
+            'meta' => '{}',
+        ]);
+        $code = strtoupper(substr(md5(uniqid()), 0, 20));
+        $main->getDB()->insert('codes', [
+            'code' => $code,
+            'list_id' => $listId,
+            'meta' => $main->getCore()->json_encode_with_error_handling($main->getCore()->getMetaObject()),
+        ]);
+        $codeObj = $main->getCore()->retrieveCodeByCode($code);
+        $metaObj = $main->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+        $metaObj['confirmedCount'] = 77;
+
+        $result = $main->getCore()->saveMetaObject($codeObj, $metaObj);
+
+        $fresh = $main->getCore()->retrieveCodeByCode($code);
+        $freshMeta = $main->getCore()->encodeMetaValuesAndFillObject($fresh['meta'], $fresh);
+        $this->assertEquals(77, $freshMeta['confirmedCount']);
     }
 
     // ── decodeAndMergeMeta ────────────────────────────────────────

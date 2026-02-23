@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.9.0
+Stable tag: 2.9.2
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -214,6 +214,12 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 2.9.2 - 2026-02-23 =
+* Fix: Format warning data (attempts, last_email) was never persisted — editList() called with wrong signature and would auto-clear warnings
+
+= 2.9.1 - 2026-02-23 =
+* Fix: Crash during checkout when format warning check runs (undefined method _json_encode_with_error_handling)
 
 = 2.9.0 - 2026-02-23 =
 * Fix: Crash on PHP 8.x when plugin loading order puts basic before premium (e.g. after auto-update) — now defers premium loading via plugins_loaded hook

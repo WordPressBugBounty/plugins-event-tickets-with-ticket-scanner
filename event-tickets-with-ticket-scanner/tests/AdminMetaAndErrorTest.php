@@ -39,8 +39,6 @@ class AdminMetaAndErrorTest extends WP_UnitTestCase {
     }
 
     // ── clearFormatWarning ───────────────────────────────────────
-    // NOTE: clearFormatWarning() internally calls _json_encode_with_error_handling()
-    // which doesn't exist (plugin bug). We test the clearing logic manually.
 
     public function test_clearFormatWarning_resets_counters(): void {
         $meta = json_encode([
@@ -168,7 +166,7 @@ class AdminMetaAndErrorTest extends WP_UnitTestCase {
         $codeObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
         $metaObj = $this->main->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
-        // Set some usage data (using json_encode + DB update to avoid saveMetaObject bug)
+        // Set some usage data
         $metaObj['used']['reg_ip'] = '127.0.0.1';
         $metaObj['confirmedCount'] = 5;
         $metaJson = $this->main->getCore()->json_encode_with_error_handling($metaObj);
@@ -188,5 +186,93 @@ class AdminMetaAndErrorTest extends WP_UnitTestCase {
     public function test_removeUsedInformationFromCode_missing_code_throws(): void {
         $this->expectException(Exception::class);
         $this->main->getAdmin()->removeUsedInformationFromCode([]);
+    }
+
+    // ── checkAndSaveFormatWarning (private, via Reflection) ─────
+
+    public function test_checkAndSaveFormatWarning_saves_attempts_to_list_meta(): void {
+        $meta = json_encode([
+            'desc' => '',
+            'redirect' => ['url' => ''],
+            'formatter' => ['active' => 1, 'format' => ''],
+            'webhooks' => ['webhookURLaddwcticketsold' => ''],
+            'messages' => [
+                'format_limit_threshold_warning' => ['attempts' => 0, 'last_email' => ''],
+                'format_end_warning' => ['attempts' => 0, 'last_email' => ''],
+            ],
+        ]);
+        $listId = $this->main->getDB()->insert('lists', [
+            'name' => 'FormatWarn Test ' . uniqid(),
+            'aktiv' => 1,
+            'meta' => $meta,
+        ]);
+
+        // Call private method via Reflection
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'checkAndSaveFormatWarning');
+        $ref->setAccessible(true);
+        $ref->invoke($this->main->getAdmin(), $listId, 55, 'format_limit_threshold_warning');
+
+        // Verify attempts saved
+        $listObj = $this->main->getAdmin()->getList(['id' => $listId]);
+        $metaObj = $this->main->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+        $this->assertEquals(55, $metaObj['messages']['format_limit_threshold_warning']['attempts']);
+        $this->assertNotEmpty($metaObj['messages']['format_limit_threshold_warning']['last_email']);
+    }
+
+    public function test_checkAndSaveFormatWarning_end_warning_type(): void {
+        $meta = json_encode([
+            'desc' => '',
+            'redirect' => ['url' => ''],
+            'formatter' => ['active' => 1, 'format' => ''],
+            'webhooks' => ['webhookURLaddwcticketsold' => ''],
+            'messages' => [
+                'format_limit_threshold_warning' => ['attempts' => 0, 'last_email' => ''],
+                'format_end_warning' => ['attempts' => 0, 'last_email' => ''],
+            ],
+        ]);
+        $listId = $this->main->getDB()->insert('lists', [
+            'name' => 'FormatEnd Test ' . uniqid(),
+            'aktiv' => 1,
+            'meta' => $meta,
+        ]);
+
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'checkAndSaveFormatWarning');
+        $ref->setAccessible(true);
+        $ref->invoke($this->main->getAdmin(), $listId, 100, 'format_end_warning');
+
+        $listObj = $this->main->getAdmin()->getList(['id' => $listId]);
+        $metaObj = $this->main->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+        $this->assertEquals(100, $metaObj['messages']['format_end_warning']['attempts']);
+        $this->assertNotEmpty($metaObj['messages']['format_end_warning']['last_email']);
+    }
+
+    public function test_checkAndSaveFormatWarning_skips_email_within_24h(): void {
+        $recentTime = wp_date("Y-m-d H:i:s", time() - 3600); // 1h ago
+        $meta = json_encode([
+            'desc' => '',
+            'redirect' => ['url' => ''],
+            'formatter' => ['active' => 1, 'format' => ''],
+            'webhooks' => ['webhookURLaddwcticketsold' => ''],
+            'messages' => [
+                'format_limit_threshold_warning' => ['attempts' => 10, 'last_email' => $recentTime],
+                'format_end_warning' => ['attempts' => 0, 'last_email' => ''],
+            ],
+        ]);
+        $listId = $this->main->getDB()->insert('lists', [
+            'name' => 'FormatSkip Test ' . uniqid(),
+            'aktiv' => 1,
+            'meta' => $meta,
+        ]);
+
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'checkAndSaveFormatWarning');
+        $ref->setAccessible(true);
+        $ref->invoke($this->main->getAdmin(), $listId, 60, 'format_limit_threshold_warning');
+
+        // Attempts should still be updated even if email is skipped
+        $listObj = $this->main->getAdmin()->getList(['id' => $listId]);
+        $metaObj = $this->main->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+        $this->assertEquals(60, $metaObj['messages']['format_limit_threshold_warning']['attempts']);
+        // last_email should NOT have changed (within 24h)
+        $this->assertEquals($recentTime, $metaObj['messages']['format_limit_threshold_warning']['last_email']);
     }
 }

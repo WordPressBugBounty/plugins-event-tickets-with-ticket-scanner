@@ -40,9 +40,6 @@ class CoreMetaAndUrlTest extends WP_UnitTestCase {
     }
 
     // ── saveMetaObject ───────────────────────────────────────────
-    // NOTE: saveMetaObject() calls _json_encode_with_error_handling() which
-    // doesn't exist (plugin bug — should be json_encode_with_error_handling).
-    // We test the equivalent logic using the public method + DB update directly.
 
     public function test_saveMetaObject_equivalent_persists_to_db(): void {
         $data = $this->createCodeInList();
