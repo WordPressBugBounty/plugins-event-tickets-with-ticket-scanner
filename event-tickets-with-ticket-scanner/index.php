@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.9.2
+ * Version: 2.9.3
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.9.2');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.9.3');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -67,7 +67,7 @@ class sasoEventtickets {
 	public function __construct() {
 		global $sasoEventtickets;
 		$sasoEventtickets = $this; // Set early to prevent circular dependency with sasoEventtickets_Ticket
-		$this->_js_version = $this->getPluginVersion();
+		$this->_js_version = $this->getPluginVersion() . (defined('WP_DEBUG') && WP_DEBUG ? '.' . time() : '');
 		$this->initHandlers();
 	}
 
@@ -308,7 +308,7 @@ class sasoEventtickets {
 		}
 	}
 
-	private function getPremiumPluginFolder() {
+	public function getPremiumPluginFolder(): string {
 		$plugins = get_option('active_plugins', []);
 		$premiumFile = "";
 		foreach($plugins as $plugin) {
@@ -336,13 +336,22 @@ class sasoEventtickets {
 		// Rekursionsschutz: isPremium() -> getTicketHandler() -> Konstruktor -> getOptions() -> isPremium()
 		if ($this->_isPrem === true && !$this->_isCheckingSubscription) {
 			$this->_isCheckingSubscription = true;
-			if (!$this->getTicketHandler()->isSubscriptionActive()) {
-				$this->_isPrem = false;
+			try {
+				if (!$this->getTicketHandler()->isSubscriptionActive()) {
+					$this->_isPrem = false;
+				}
+			} finally {
+				$this->_isCheckingSubscription = false;
 			}
-			$this->_isCheckingSubscription = false;
 		}
 
 		return $this->_isPrem;
+	}
+	/**
+	 * Invalidate the cached premium status so the next isPremium() call re-evaluates.
+	 */
+	public function invalidatePremiumCache(): void {
+		$this->_isPrem = null;
 	}
 	public function getPrefix() {
 		return $this->_prefix;
@@ -433,6 +442,7 @@ class sasoEventtickets {
 		//register_uninstall_hook( __FILE__, 'sasoEventticketsDB::plugin_uninstall' );  // MUSS NOCH GETESTE WERDEN
 		add_action( 'plugins_loaded', [$this, 'plugins_loaded'] );
 		add_action( 'show_user_profile', [$this, 'show_user_profile'] );
+		add_action( 'admin_init', [$this, 'handleFormatWarningDismiss'] );
 		add_action( 'admin_notices', [$this, 'showSubscriptionWarning'] );
 		add_action( 'admin_notices', [$this, 'showOutdatedPremiumWarning'] );
 		add_action( 'admin_notices', [$this, 'showFormatWarning'] );
@@ -471,7 +481,7 @@ class sasoEventtickets {
 		$this->getTicketHandler()->checkForPremiumSerialExpiration();
 
 		// isPremium Cache invalidieren damit neuer Wert gilt
-		$this->_isPrem = null;
+		$this->invalidatePremiumCache();
 	}
 	public function WooCommercePluginLoaded() {
 		// DON'T load WC here - let relay functions do lazy loading
@@ -774,7 +784,7 @@ class sasoEventtickets {
 			'ajaxActionPrefix' => $this->_prefix,
 			'divPrefix' => $this->_prefix,
 			'divId' => $this->_divId,
-			'jsFiles' => plugins_url( 'backend.js?_v='.$this->_js_version,__FILE__ )
+			'jsFiles' => plugins_url( 'backend.js?_v='.$this->_js_version.'&_f='.filemtime(__DIR__.'/backend.js'),__FILE__ )
 		);
 		$vars = apply_filters( $this->_add_filter_prefix.'main_options_page', $vars );
         wp_localize_script(
@@ -1796,6 +1806,25 @@ class sasoEventtickets {
 		);
 	}
 
+	/**
+	 * Handle format warning dismiss — runs on admin_init (before output) so wp_redirect() works.
+	 */
+	public function handleFormatWarningDismiss(): void {
+		if (!isset($_GET['saso_eventtickets_clear_format_warning']) || !isset($_GET['_wpnonce'])) {
+			return;
+		}
+		if (!current_user_can('manage_options')) {
+			return;
+		}
+		$list_id = intval($_GET['saso_eventtickets_clear_format_warning']);
+		$nonce = sanitize_text_field($_GET['_wpnonce']);
+		if (wp_verify_nonce($nonce, 'clear_format_warning_' . $list_id)) {
+			$this->getAdmin()->clearFormatWarning($list_id);
+			wp_redirect(remove_query_arg(['saso_eventtickets_clear_format_warning', '_wpnonce']));
+			exit;
+		}
+	}
+
 	public function showFormatWarning(): void {
 		// Only show in admin
 		if (!is_admin()) {
@@ -1805,19 +1834,6 @@ class sasoEventtickets {
 		// Only show to users who can manage options
 		if (!current_user_can('manage_options')) {
 			return;
-		}
-
-		// Check if user wants to clear a warning
-		if (isset($_GET['saso_eventtickets_clear_format_warning']) && isset($_GET['saso_eventtickets_clear_warning_nonce'])) {
-			$list_id = intval($_GET['saso_eventtickets_clear_format_warning']);
-			$nonce = sanitize_text_field($_GET['saso_eventtickets_clear_warning_nonce']);
-
-			if (wp_verify_nonce($nonce, 'clear_format_warning_' . $list_id)) {
-				$this->getAdmin()->clearFormatWarning($list_id);
-				// Redirect to remove query params
-				wp_redirect(remove_query_arg(['saso_eventtickets_clear_format_warning', 'saso_eventtickets_clear_warning_nonce']));
-				exit;
-			}
 		}
 
 		try {
@@ -1844,7 +1860,7 @@ class sasoEventtickets {
 							esc_html__('⚠️ CRITICAL: Ticket format for "%1$s" is exhausted! It took %2$d attempts to generate a code. Future ticket sales may fail. %3$sEdit list%4$s | %5$sDismiss%4$s', 'event-tickets-with-ticket-scanner'),
 							$list_name,
 							$attempts,
-							'<a href="' . esc_url(admin_url('admin.php?page=sasoEventTicketsAdminLists&act=edit&id=' . $list['id'])) . '">',
+							'<a href="' . esc_url(admin_url('admin.php?page=event-tickets-with-ticket-scanner')) . '">',
 							'</a>',
 							'<a href="' . esc_url($clear_url) . '">'
 						);
@@ -1862,7 +1878,7 @@ class sasoEventtickets {
 							esc_html__('⚠️ WARNING: Ticket format for "%1$s" is running out of combinations. It took %2$d attempts to generate a code. Consider increasing code length. %3$sEdit list%4$s | %5$sDismiss%4$s', 'event-tickets-with-ticket-scanner'),
 							$list_name,
 							$attempts,
-							'<a href="' . esc_url(admin_url('admin.php?page=sasoEventTicketsAdminLists&act=edit&id=' . $list['id'])) . '">',
+							'<a href="' . esc_url(admin_url('admin.php?page=event-tickets-with-ticket-scanner')) . '">',
 							'</a>',
 							'<a href="' . esc_url($clear_url) . '">'
 						);

@@ -413,7 +413,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				$check_values["item_id_missing"] = true;
 			} else {
 				$cart_item = $cart[$cart_item_id];
-				$cart_item[self::META_KEY_CODELIST_RESTRICTION_order_item] = $code;
+				$cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM] = $code;
 
 				WC()->cart->cart_contents[$cart_item_id] = $cart_item;
 				WC()->cart->set_session();
@@ -661,7 +661,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			// Show input for purchase restriction code
 			$saso_eventtickets_list = get_post_meta($cart_item['product_id'], self::META_KEY_CODELIST_RESTRICTION, true);
 			if (!empty($saso_eventtickets_list)) {
-				$code = isset($cart_item[self::META_KEY_CODELIST_RESTRICTION_order_item]) ? $cart_item[self::META_KEY_CODELIST_RESTRICTION_order_item] : '';
+				$code = isset($cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM]) ? $cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM] : '';
 				$infoLabel = $this->MAIN->getOptions()->getOptionValue('wcRestrictCartInfo');
 				$fieldPlaceholder = $this->MAIN->getOptions()->getOptionValue('wcRestrictCartFieldPlaceholder');
 				$html = '<div><small>' . esc_attr($infoLabel) . '<br></small>

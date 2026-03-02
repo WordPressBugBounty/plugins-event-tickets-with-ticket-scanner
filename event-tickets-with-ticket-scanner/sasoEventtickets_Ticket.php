@@ -190,7 +190,7 @@ final class sasoEventtickets_Ticket {
 		update_option($option_name, json_encode($info_obj));
 	}
 
-	public function checkForPremiumSerialExpiration() {
+	public function checkForPremiumSerialExpiration(bool $force = false) {
 		$option_name = $this->MAIN->getPrefix()."_premium_serial_expiration";
 		// Also run when premium plugin is installed with a serial key but isPremium() is false (recovery from deadlock)
 		$hasPremiumPlugin = class_exists('sasoEventtickets_PremiumFunctions');
@@ -210,7 +210,9 @@ final class sasoEventtickets_Ticket {
 			$info_obj["_serial_hash"] = $serial_hash;
 
 			$doCheck = false;
-			if ($info_obj["last_run"] == 0) {
+			if ($force) {
+				$doCheck = true;
+			} elseif ($info_obj["last_run"] == 0) {
 				$doCheck = true;
 			} else {
 				if (isset($info_obj["timestamp"])) {
@@ -740,6 +742,9 @@ final class sasoEventtickets_Ticket {
 
 		$ret['max_redeem_amount'] = intval(get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_ticket_max_redeem_amount', true ));
 		if ($ret['max_redeem_amount'] < 0) $ret['max_redeem_amount'] = 1;
+
+		$ret['max_redeem_per_day'] = intval(get_post_meta($product_parent_original->get_id(), 'saso_eventtickets_ticket_max_redeem_per_day', true));
+		$ret['redeems_today'] = $this->countRedeemsToday($metaObj['wc_ticket']['stats_redeemed']);
 
 		$ret['_options'] = [
 			"displayConfirmedCounter"=>$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketScannerDisplayConfirmedCount'),
@@ -2438,6 +2443,23 @@ final class sasoEventtickets_Ticket {
 			}
 		}
 		return $max_redeem_amount;
+	}
+
+	public function getMaxRedeemPerDayOfTicket($codeObj): int {
+		$codeObj = $this->MAIN->getCore()->setMetaObj($codeObj);
+		$metaObj = $codeObj['metaObj'];
+		$max_per_day = 0;
+		if (isset($metaObj['woocommerce'], $metaObj['woocommerce']['product_id'])) {
+			$product_id = intval($metaObj['woocommerce']['product_id']);
+			if ($product_id > 0) {
+				$product = $this->get_product($product_id);
+				if ($product->get_type() == "variation" && $product->get_parent_id() > 0) {
+					$product = $this->get_product($product->get_parent_id());
+				}
+				$max_per_day = intval(get_post_meta($product->get_id(), 'saso_eventtickets_ticket_max_redeem_per_day', true));
+			}
+		}
+		return $max_per_day;
 	}
 
 	/**

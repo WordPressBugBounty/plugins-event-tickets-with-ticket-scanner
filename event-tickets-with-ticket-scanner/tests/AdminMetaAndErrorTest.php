@@ -38,6 +38,100 @@ class AdminMetaAndErrorTest extends WP_UnitTestCase {
         return ['code' => $code, 'list_id' => $listId];
     }
 
+    private function createCodeWithOrder(string $status, string $email): array {
+        $listId = $this->main->getDB()->insert('lists', [
+            'name' => 'OrderMeta Test ' . uniqid(),
+            'aktiv' => 1,
+            'meta' => '{}',
+        ]);
+
+        $product = new WC_Product_Simple();
+        $product->set_name('OrderMeta Ticket ' . uniqid());
+        $product->set_regular_price('10.00');
+        $product->set_status('publish');
+        $product->save();
+        update_post_meta($product->get_id(), 'saso_eventtickets_is_ticket', 'yes');
+        update_post_meta($product->get_id(), 'saso_eventtickets_list', $listId);
+
+        $order = wc_create_order();
+        $order->add_product($product, 1);
+        $order->set_billing_email($email);
+        $order->calculate_totals();
+        $order->set_status($status);
+        $order->save();
+
+        $metaObj = $this->main->getCore()->getMetaObject();
+        $metaObj['woocommerce']['order_id'] = $order->get_id();
+        $metaObj['woocommerce']['product_id'] = $product->get_id();
+        $metaObj['woocommerce']['creation_date'] = gmdate('Y-m-d H:i:s');
+        $metaJson = $this->main->getCore()->json_encode_with_error_handling($metaObj);
+
+        $code = 'OME' . strtoupper(uniqid());
+        $this->main->getDB()->insert('codes', [
+            'code' => $code,
+            'code_display' => $code,
+            'cvv' => '',
+            'meta' => $metaJson,
+            'aktiv' => 1,
+            'redeemed' => 0,
+            'list_id' => $listId,
+            'order_id' => $order->get_id(),
+        ]);
+
+        return ['code' => $code, 'list_id' => $listId, 'order_id' => $order->get_id()];
+    }
+
+    private function createCodeWithVariation(): array {
+        $listId = $this->main->getDB()->insert('lists', [
+            'name' => 'VarMeta Test ' . uniqid(),
+            'aktiv' => 1,
+            'meta' => '{}',
+        ]);
+
+        $parent = new WC_Product_Variable();
+        $parent->set_name('Variable Ticket ' . uniqid());
+        $parent->set_status('publish');
+        $parent->save();
+
+        $attr = new WC_Product_Attribute();
+        $attr->set_name('pa_day');
+        $attr->set_options(['Monday', 'Tuesday']);
+        $attr->set_visible(true);
+        $attr->set_variation(true);
+        $parent->set_attributes([$attr]);
+        $parent->save();
+
+        $variation = new WC_Product_Variation();
+        $variation->set_parent_id($parent->get_id());
+        $variation->set_attributes(['pa_day' => 'Monday']);
+        $variation->set_regular_price('20.00');
+        $variation->set_status('publish');
+        $variation->save();
+
+        update_post_meta($parent->get_id(), 'saso_eventtickets_is_ticket', 'yes');
+        update_post_meta($parent->get_id(), 'saso_eventtickets_list', $listId);
+
+        $metaObj = $this->main->getCore()->getMetaObject();
+        $metaObj['woocommerce']['order_id'] = 0;
+        $metaObj['woocommerce']['product_id'] = $variation->get_id();
+        $metaObj['woocommerce']['creation_date'] = gmdate('Y-m-d H:i:s');
+        $metaJson = $this->main->getCore()->json_encode_with_error_handling($metaObj);
+
+        $code = 'VME' . strtoupper(uniqid());
+        $this->main->getDB()->insert('codes', [
+            'code' => $code,
+            'code_display' => $code,
+            'cvv' => '',
+            'meta' => $metaJson,
+            'aktiv' => 1,
+            'redeemed' => 0,
+            'list_id' => $listId,
+            'order_id' => 0,
+        ]);
+
+        return ['code' => $code, 'list_id' => $listId, 'variation_id' => $variation->get_id()];
+    }
+
     // ── clearFormatWarning ───────────────────────────────────────
 
     public function test_clearFormatWarning_resets_counters(): void {
@@ -136,6 +230,129 @@ class AdminMetaAndErrorTest extends WP_UnitTestCase {
     public function test_getMetaOfCode_invalid_code_throws(): void {
         $this->expectException(Exception::class);
         $this->main->getAdmin()->getMetaOfCode(['code' => 'NONEXISTENT_' . uniqid()]);
+    }
+
+    public function test_getMetaOfCode_without_order_has_no_order_status(): void {
+        $data = $this->createCodeInList();
+        $result = $this->main->getAdmin()->getMetaOfCode(['code' => $data['code']]);
+
+        $this->assertArrayHasKey('woocommerce', $result);
+        $this->assertArrayNotHasKey('_order_status', $result['woocommerce']);
+        $this->assertArrayNotHasKey('_billing_email', $result['woocommerce']);
+    }
+
+    public function test_getMetaOfCode_with_order_returns_status_and_email(): void {
+        if (!class_exists('WooCommerce')) $this->markTestSkipped('WooCommerce not available');
+
+        $data = $this->createCodeWithOrder('completed', 'buyer@example.com');
+        $result = $this->main->getAdmin()->getMetaOfCode(['code' => $data['code']]);
+
+        $this->assertSame('completed', $result['woocommerce']['_order_status']);
+        $this->assertSame('buyer@example.com', $result['woocommerce']['_billing_email']);
+    }
+
+    public function test_getMetaOfCode_with_processing_order_returns_processing_status(): void {
+        if (!class_exists('WooCommerce')) $this->markTestSkipped('WooCommerce not available');
+
+        $data = $this->createCodeWithOrder('processing', 'processing@example.com');
+        $result = $this->main->getAdmin()->getMetaOfCode(['code' => $data['code']]);
+
+        $this->assertSame('processing', $result['woocommerce']['_order_status']);
+        $this->assertSame('processing@example.com', $result['woocommerce']['_billing_email']);
+    }
+
+    // ── getMetaOfCode via executeJSON (same path as JS AJAX) ─────
+
+    public function test_getMetaOfCode_via_executeJSON_returns_woocommerce_section(): void {
+        $user_id = self::factory()->user->create(['role' => 'administrator']);
+        wp_set_current_user($user_id);
+
+        $data = $this->createCodeInList();
+        $result = $this->main->getAdmin()->executeJSON('getMetaOfCode', ['code' => $data['code']], true, true);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('woocommerce', $result);
+        $this->assertArrayHasKey('order_id', $result['woocommerce']);
+    }
+
+    public function test_getMetaOfCode_via_executeJSON_without_order_no_status(): void {
+        $user_id = self::factory()->user->create(['role' => 'administrator']);
+        wp_set_current_user($user_id);
+
+        $data = $this->createCodeInList();
+        $result = $this->main->getAdmin()->executeJSON('getMetaOfCode', ['code' => $data['code']], true, true);
+
+        $this->assertArrayNotHasKey('_order_status', $result['woocommerce']);
+        $this->assertArrayNotHasKey('_billing_email', $result['woocommerce']);
+    }
+
+    public function test_getMetaOfCode_via_executeJSON_with_order_has_status_and_email(): void {
+        if (!class_exists('WooCommerce')) $this->markTestSkipped('WooCommerce not available');
+
+        $user_id = self::factory()->user->create(['role' => 'administrator']);
+        wp_set_current_user($user_id);
+
+        $data = $this->createCodeWithOrder('completed', 'ajax-test@example.com');
+        $result = $this->main->getAdmin()->executeJSON('getMetaOfCode', ['code' => $data['code']], true, true);
+
+        $this->assertSame('completed', $result['woocommerce']['_order_status']);
+        $this->assertSame('ajax-test@example.com', $result['woocommerce']['_billing_email']);
+    }
+
+    public function test_getMetaOfCode_via_executeJSON_response_is_json_serializable(): void {
+        if (!class_exists('WooCommerce')) $this->markTestSkipped('WooCommerce not available');
+
+        $user_id = self::factory()->user->create(['role' => 'administrator']);
+        wp_set_current_user($user_id);
+
+        $data = $this->createCodeWithOrder('completed', 'json-test@example.com');
+        $result = $this->main->getAdmin()->executeJSON('getMetaOfCode', ['code' => $data['code']], true, true);
+
+        // JS does JSON.parse on the AJAX response — verify it survives encode/decode
+        $json = json_encode($result);
+        $this->assertNotFalse($json, 'getMetaOfCode response must be JSON-encodable');
+        $decoded = json_decode($json, true);
+        $this->assertSame('completed', $decoded['woocommerce']['_order_status']);
+        $this->assertSame('json-test@example.com', $decoded['woocommerce']['_billing_email']);
+    }
+
+    // ── getMetaOfCode product name and variation ───────────────
+
+    public function test_getMetaOfCode_with_order_returns_product_name(): void {
+        if (!class_exists('WooCommerce')) $this->markTestSkipped('WooCommerce not available');
+
+        $data = $this->createCodeWithOrder('completed', 'name@example.com');
+        $result = $this->main->getAdmin()->getMetaOfCode(['code' => $data['code']]);
+
+        $this->assertArrayHasKey('_product_name', $result['woocommerce']);
+        $this->assertNotEmpty($result['woocommerce']['_product_name']);
+    }
+
+    public function test_getMetaOfCode_without_order_no_product_name(): void {
+        $data = $this->createCodeInList();
+        $result = $this->main->getAdmin()->getMetaOfCode(['code' => $data['code']]);
+
+        $this->assertArrayNotHasKey('_product_name', $result['woocommerce']);
+    }
+
+    public function test_getMetaOfCode_simple_product_no_variation_attributes(): void {
+        if (!class_exists('WooCommerce')) $this->markTestSkipped('WooCommerce not available');
+
+        $data = $this->createCodeWithOrder('completed', 'simple@example.com');
+        $result = $this->main->getAdmin()->getMetaOfCode(['code' => $data['code']]);
+
+        $this->assertArrayNotHasKey('_variation_attributes', $result['woocommerce']);
+    }
+
+    public function test_getMetaOfCode_variation_product_returns_variation_attributes(): void {
+        if (!class_exists('WooCommerce')) $this->markTestSkipped('WooCommerce not available');
+
+        $data = $this->createCodeWithVariation();
+        $result = $this->main->getAdmin()->getMetaOfCode(['code' => $data['code']]);
+
+        $this->assertArrayHasKey('_product_name', $result['woocommerce']);
+        $this->assertArrayHasKey('_variation_attributes', $result['woocommerce']);
+        $this->assertNotEmpty($result['woocommerce']['_variation_attributes']);
     }
 
     // ── getRedeemAmount ──────────────────────────────────────────

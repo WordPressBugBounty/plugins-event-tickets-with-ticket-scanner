@@ -26,7 +26,7 @@ class sasoEventtickets_AdminSettings {
 
 		// Defense in depth: require manage_options for sensitive actions
 		$sensitive_actions = [
-			'changeOption', 'resetOptions', 'deleteOptions',
+			'changeOption', 'resetOptions', 'deleteOptions', 'exportOptions', 'importOptions', 'applyWizardPreset', 'applyPremiumDefaults', 'checkPremiumUpdate', 'recheckLicense',
 			'emptyTableCodes', 'emptyTableLists', 'emptyTableErrorLogs',
 			'removeCode', 'removeCodes', 'removeAllCodesFromList',
 			'addAuthtoken', 'editAuthtoken', 'removeAuthtoken',
@@ -153,11 +153,29 @@ class sasoEventtickets_AdminSettings {
 				case "changeOption":
 					$ret = $this->changeOption($data);
 					break;
+				case "applyWizardPreset":
+					$ret = $this->applyWizardPreset($data);
+					break;
+				case "applyPremiumDefaults":
+					$ret = $this->applyPremiumDefaults($data);
+					break;
+				case "checkPremiumUpdate":
+					$ret = $this->checkPremiumUpdate();
+					break;
+				case "recheckLicense":
+					$ret = $this->recheckLicense();
+					break;
 				case "resetOptions":
 					$ret = $this->resetOptions($data);
 					break;
 				case "deleteOptions":
 					$ret = $this->deleteOptions($data);
+					break;
+				case "exportOptions":
+					$ret = $this->exportOptions();
+					break;
+				case "importOptions":
+					$ret = $this->importOptions($data);
 					break;
 				case "getMetaOfCode":
 					$ret = $this->getMetaOfCode($data);
@@ -348,6 +366,7 @@ class sasoEventtickets_AdminSettings {
 				'IS_PRETTY_PERMALINK_ACTIVATED' => get_option('permalink_structure') ? true :false,
 				'plugin_version' => defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION') ? SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION : SASO_EVENTTICKETS_PLUGIN_VERSION
 			];
+			$versions["isOldPremiumDetected"] = $this->MAIN->isOldPremiumDetected();
 			$versions["date_default_timezone"] = date_default_timezone_get();
 			$versions["date_WP_timezone"] = wp_timezone_string();
 			$versions["date_WP_timezone_time"] = $this->wpdocs_custom_timezone_string();
@@ -362,7 +381,8 @@ class sasoEventtickets_AdminSettings {
 					'ticket_detail_path'=>$this->MAIN->getCore()->getTicketURLPath(true),
 					'ticket_scanner_path'=>$this->MAIN->getCore()->getTicketURLPath(true).'scanner/',
 					'ticket_scanner_url'=>$this->MAIN->getCore()->getTicketScannerURL(""),
-					'counter'=>$this->MAIN->getBase()->getOverallTicketCounterValue()
+					'counter'=>$this->MAIN->getBase()->getOverallTicketCounterValue(),
+					'redeemed_count'=>(int) $this->MAIN->getDB()->_db_getRecordCountOfTable('codes', 'redeemed = 1')
 				],
 				'site'=>[
 					'is_multisite'=>is_multisite() ? 1 : 0,
@@ -404,6 +424,333 @@ class sasoEventtickets_AdminSettings {
 	public function deleteOptions() {
 		return $this->MAIN->getOptions()->deleteAllOptionValues();
 	}
+	public function exportOptions(): array {
+		$options = $this->MAIN->getOptions()->getOptions();
+		$export = [];
+		foreach ($options as $option) {
+			if ($option['type'] === 'heading') {
+				continue;
+			}
+			$export[$option['key']] = $this->MAIN->getOptions()->getOptionValue($option['key']);
+		}
+		return [
+			'plugin' => 'event-tickets-with-ticket-scanner',
+			'version' => $this->MAIN->getPluginVersion(),
+			'exported_at' => gmdate('Y-m-d\TH:i:s\Z'),
+			'options' => $export,
+		];
+	}
+	public function importOptions(array $data): array {
+		$validKeys = $this->MAIN->getOptions()->getOptionsKeys();
+		$imported = 0;
+		$skipped = 0;
+		$raw = isset($data['options']) ? $data['options'] : '{}';
+		if (is_string($raw)) {
+			$raw = stripslashes($raw);
+		}
+		$optionsData = is_array($raw) ? $raw : json_decode($raw, true);
+		if (!is_array($optionsData)) {
+			$optionsData = [];
+		}
+		foreach ($optionsData as $key => $value) {
+			if (!in_array($key, $validKeys, true)) {
+				$skipped++;
+				continue;
+			}
+			$option = $this->MAIN->getOptions()->getOption($key);
+			if ($option === null || $option['type'] === 'heading') {
+				$skipped++;
+				continue;
+			}
+			if ($option['type'] === 'checkbox') {
+				$value = intval($value);
+			}
+			update_option($option['id'], $value, false);
+			$imported++;
+		}
+		return ['imported' => $imported, 'skipped' => $skipped];
+	}
+
+	/**
+	 * Returns the preset option values for a given use-case.
+	 *
+	 * @param string $preset One of: event, daypass, membership, voucher
+	 * @return array<string,int> option_key => value
+	 */
+	public static function getWizardPresetDefaults(string $preset): array {
+		$presets = [
+			'event' => [
+				// Redemption rules
+				'wcTicketDontAllowRedeemTicketBeforeStart' => 1,
+				'wcTicketOffsetAllowRedeemTicketBeforeStart' => 1,
+				'wcTicketAllowRedeemTicketAfterEnd' => 0,
+				// Scanner
+				'ticketScannerScanAndRedeemImmediately' => 1,
+				'ticketScannerVibrate' => 1,
+				// Customer features
+				'wcTicketShowRedeemBtnOnTicket' => 0,
+				'wcTicketUserProfileDisplayRedeemAmount' => 0,
+				// Email: order view + one-PDF link (groups/families)
+				'wcTicketDisplayOrderTicketsViewLinkOnMail' => 1,
+				'wcTicketDisplayDownloadAllTicketsPDFButtonOnMail' => 1,
+				'wcTicketDisplayOrderTicketsViewLinkOnCheckout' => 1,
+				// Email: event date + calendar file
+				'wcTicketAttachICSToMail' => 1,
+				'wcTicketDisplayDateOnMail' => 1,
+				// Order processing
+				'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets' => 1,
+			],
+			'daypass' => [
+				// Redemption rules
+				'wcTicketDontAllowRedeemTicketBeforeStart' => 0,
+				'wcTicketOffsetAllowRedeemTicketBeforeStart' => 1,
+				'wcTicketAllowRedeemTicketAfterEnd' => 1,
+				// Scanner
+				'ticketScannerScanAndRedeemImmediately' => 1,
+				'ticketScannerVibrate' => 1,
+				// Customer features
+				'wcTicketShowRedeemBtnOnTicket' => 0,
+				'wcTicketUserProfileDisplayRedeemAmount' => 0,
+				// Email: order view + one-PDF link (families)
+				'wcTicketDisplayOrderTicketsViewLinkOnMail' => 1,
+				'wcTicketDisplayDownloadAllTicketsPDFButtonOnMail' => 1,
+				'wcTicketDisplayOrderTicketsViewLinkOnCheckout' => 1,
+				// Email: no date/calendar (day chooser or flexible)
+				'wcTicketAttachICSToMail' => 0,
+				'wcTicketDisplayDateOnMail' => 0,
+				// Order processing
+				'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets' => 1,
+			],
+			'membership' => [
+				// Redemption rules
+				'wcTicketDontAllowRedeemTicketBeforeStart' => 0,
+				'wcTicketOffsetAllowRedeemTicketBeforeStart' => 1,
+				'wcTicketAllowRedeemTicketAfterEnd' => 1,
+				// Scanner
+				'ticketScannerScanAndRedeemImmediately' => 0,
+				'ticketScannerVibrate' => 1,
+				// Customer features
+				'wcTicketShowRedeemBtnOnTicket' => 1,
+				'wcTicketUserProfileDisplayRedeemAmount' => 1,
+				// Email: no group view (single pass)
+				'wcTicketDisplayOrderTicketsViewLinkOnMail' => 0,
+				'wcTicketDisplayDownloadAllTicketsPDFButtonOnMail' => 0,
+				'wcTicketDisplayOrderTicketsViewLinkOnCheckout' => 0,
+				// Email: no date/calendar
+				'wcTicketAttachICSToMail' => 0,
+				'wcTicketDisplayDateOnMail' => 0,
+				// Order processing
+				'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets' => 1,
+			],
+			'voucher' => [
+				// Redemption rules
+				'wcTicketDontAllowRedeemTicketBeforeStart' => 0,
+				'wcTicketOffsetAllowRedeemTicketBeforeStart' => 1,
+				'wcTicketAllowRedeemTicketAfterEnd' => 1,
+				// Scanner
+				'ticketScannerScanAndRedeemImmediately' => 1,
+				'ticketScannerVibrate' => 1,
+				// Customer features
+				'wcTicketShowRedeemBtnOnTicket' => 1,
+				'wcTicketUserProfileDisplayRedeemAmount' => 0,
+				// Email: no group view (single code)
+				'wcTicketDisplayOrderTicketsViewLinkOnMail' => 0,
+				'wcTicketDisplayDownloadAllTicketsPDFButtonOnMail' => 0,
+				'wcTicketDisplayOrderTicketsViewLinkOnCheckout' => 0,
+				// Email: no date/calendar
+				'wcTicketAttachICSToMail' => 0,
+				'wcTicketDisplayDateOnMail' => 0,
+				// Order processing
+				'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets' => 1,
+			],
+		];
+		if (!isset($presets[$preset])) {
+			return [];
+		}
+		return $presets[$preset];
+	}
+
+	/**
+	 * Returns premium-only preset additions for a given use-case.
+	 * These are applied on top of the base preset when premium is active.
+	 *
+	 * @param string $preset One of: event, daypass, membership, voucher
+	 * @return array<string,int> option_key => value
+	 */
+	public static function getWizardPresetPremiumDefaults(string $preset): array {
+		$presets = [
+			'event' => [
+				'wcTicketAttachTicketToMail' => 1,
+				'wcTicketAttachTicketToMailAsOnePDF' => 1,
+				'wcTicketAttachTicketToMailMax' => 21,
+			],
+			'daypass' => [
+				'wcTicketAttachTicketToMail' => 1,
+				'wcTicketAttachTicketToMailAsOnePDF' => 1,
+				'wcTicketAttachTicketToMailMax' => 21,
+			],
+			'membership' => [
+				'wcTicketAttachTicketToMail' => 1,
+				'wcTicketAttachTicketToMailAsOnePDF' => 0,
+				'wcTicketAttachTicketToMailMax' => 5,
+			],
+			'voucher' => [
+				'wcTicketAttachTicketToMail' => 1,
+				'wcTicketAttachTicketToMailAsOnePDF' => 0,
+				'wcTicketAttachTicketToMailMax' => 5,
+			],
+		];
+		if (!isset($presets[$preset])) {
+			return [];
+		}
+		return $presets[$preset];
+	}
+
+	/**
+	 * Apply a wizard preset: sets multiple options at once and marks the wizard as completed.
+	 *
+	 * @param array $data Expected keys: 'preset' (string), optional 'overrides' (array of key=>value)
+	 * @return array Result with applied count
+	 */
+	public function applyWizardPreset(array $data): array {
+		$preset = isset($data['preset']) ? sanitize_text_field($data['preset']) : '';
+		$defaults = self::getWizardPresetDefaults($preset);
+		if (empty($defaults)) {
+			throw new \Exception(sprintf(
+				esc_html__('Unknown wizard preset: "%s"', 'event-tickets-with-ticket-scanner'),
+				$preset
+			));
+		}
+
+		// Merge premium defaults if premium is active
+		if ($this->MAIN->isPremium()) {
+			$premiumDefaults = self::getWizardPresetPremiumDefaults($preset);
+			$defaults = array_merge($defaults, $premiumDefaults);
+		}
+
+		// Apply overrides from step 3 questions (comes as JSON string from JS)
+		$raw_overrides = isset($data['overrides']) ? $data['overrides'] : [];
+		if (is_string($raw_overrides)) {
+			$raw_overrides = json_decode(stripslashes($raw_overrides), true);
+			if (!is_array($raw_overrides)) {
+				$raw_overrides = [];
+			}
+		}
+		$overrides = $raw_overrides;
+		$validKeys = array_keys($defaults);
+		foreach ($overrides as $key => $value) {
+			if (in_array($key, $validKeys, true)) {
+				$defaults[$key] = $value;
+			}
+		}
+
+		// Apply all preset values via the existing changeOption mechanism
+		$applied = 0;
+		foreach ($defaults as $key => $value) {
+			$this->MAIN->getOptions()->changeOption(['key' => $key, 'value' => $value]);
+			$applied++;
+		}
+
+		// Mark wizard as completed with current plugin version
+		$this->MAIN->getOptions()->changeOption([
+			'key' => 'wizardCompleted',
+			'value' => $this->MAIN->getPluginVersion(),
+		]);
+
+		return ['applied' => $applied, 'preset' => $preset];
+	}
+
+	/**
+	 * Apply premium defaults: enables recommended premium options and marks premium wizard as completed.
+	 *
+	 * @param array $data Currently unused, reserved for future overrides
+	 * @return array Result with applied count and option details
+	 */
+	public function applyPremiumDefaults(array $data): array {
+		if (!$this->MAIN->isPremium()) {
+			throw new \Exception(
+				esc_html__('Premium plugin is not active.', 'event-tickets-with-ticket-scanner')
+			);
+		}
+
+		$defaults = [
+			'wcTicketAttachTicketToMail' => 1,
+			'wcTicketAttachTicketToMailAsOnePDF' => 1,
+			'wcTicketAttachTicketToMailMax' => 21,
+		];
+
+		$applied = 0;
+		$appliedKeys = [];
+		foreach ($defaults as $key => $value) {
+			$this->MAIN->getOptions()->changeOption(['key' => $key, 'value' => $value]);
+			$appliedKeys[$key] = $value;
+			$applied++;
+		}
+
+		// Mark premium wizard as completed
+		$this->MAIN->getOptions()->changeOption([
+			'key' => 'premiumWizardCompleted',
+			'value' => $this->MAIN->getPluginVersion(),
+		]);
+
+		return ['applied' => $applied, 'options' => $appliedKeys];
+	}
+
+	/**
+	 * Check if a premium plugin update is available (for old premium < 1.6.0).
+	 * Triggers wp_update_plugins() to force a fresh check, then inspects the transient.
+	 */
+	public function checkPremiumUpdate(): array {
+		if (!$this->MAIN->isOldPremiumDetected()) {
+			return ['hasUpdate' => false];
+		}
+
+		// Force WordPress to re-check plugin updates
+		delete_site_transient('update_plugins');
+		wp_update_plugins();
+
+		$updates = get_site_transient('update_plugins');
+		$premiumFolder = $this->MAIN->getPremiumPluginFolder();
+		if (empty($premiumFolder)) {
+			return ['hasUpdate' => false];
+		}
+		$premiumSlug = $premiumFolder . 'index.php';
+
+		if (isset($updates->response[$premiumSlug])) {
+			$update = $updates->response[$premiumSlug];
+			$updateUrl = wp_nonce_url(
+				admin_url('update.php?action=upgrade-plugin&plugin=' . urlencode($premiumSlug)),
+				'upgrade-plugin_' . $premiumSlug
+			);
+			return [
+				'hasUpdate' => true,
+				'newVersion' => $update->new_version ?? '',
+				'updateUrl' => $updateUrl,
+			];
+		}
+		return ['hasUpdate' => false];
+	}
+
+	/**
+	 * Re-check the premium license status by calling checkForPremiumSerialExpiration()
+	 * and returning the current license info for display in the admin UI.
+	 */
+	public function recheckLicense(): array {
+		$this->MAIN->getTicketHandler()->checkForPremiumSerialExpiration(true);
+		$this->MAIN->invalidatePremiumCache();
+		$info = $this->MAIN->getTicketHandler()->get_expiration();
+		$active = $this->MAIN->getTicketHandler()->isSubscriptionActive();
+		return [
+			'active' => $active,
+			'last_success' => intval($info['last_success'] ?? 0),
+			'consecutive_failures' => intval($info['consecutive_failures'] ?? 0),
+			'expiration_date' => $info['expiration_date'] ?? '',
+			'timestamp' => intval($info['timestamp'] ?? 0),
+			'subscription_type' => $info['subscription_type'] ?? '',
+			'notvalid' => intval($info['notvalid'] ?? 0),
+		];
+	}
+
 	public function getOptionValue($name, $defvalue="") {
 		return $this->MAIN->getOptions()->getOptionValue($name, $defvalue);
 	}
@@ -440,6 +787,18 @@ class sasoEventtickets_AdminSettings {
 			if ($order != null) {
 				$url = $this->MAIN->getCore()->getOrderTicketsURL($order);
 				$url2 = $this->MAIN->getCore()->getOrderTicketsURL($order, "ordertickets-");
+				$metaObj["woocommerce"]["_order_status"] = $order->get_status();
+				$metaObj["woocommerce"]["_billing_email"] = $order->get_billing_email();
+			}
+		}
+		$productId = intval($metaObj['woocommerce']['product_id'] ?? 0);
+		if ($productId > 0) {
+			$product = wc_get_product($productId);
+			if ($product) {
+				$metaObj["woocommerce"]["_product_name"] = $product->get_name();
+				if ($product->is_type('variation')) {
+					$metaObj["woocommerce"]["_variation_attributes"] = $product->get_attribute_summary();
+				}
 			}
 		}
 		$metaObj["wc_ticket"]["_order_url"] = $url;
@@ -1187,25 +1546,30 @@ class sasoEventtickets_AdminSettings {
 			}
 
 			$counter = 0;
-			while($counter < 100) {
+			while($counter < 500) {
 				$counter++;
 				$data["code"] = $this->generateCode($formatterValues);
 				try {
 					$id = $this->addCode($data);
 					// Check if counter exceeded threshold (50% warning)
-					if ($counter > 50) {
+					if ($counter > 250) {
 						$this->checkAndSaveFormatWarning($list_id, $counter, 'format_limit_threshold_warning');
 					}
 					break;
 				} catch(Exception $e) {
 					// code exists already, try a new one
 					if (substr($e->getMessage(), 0, 5) == "#208 ") { // no premium and limit exceeded
-						// Save critical warning and send email
-						$this->checkAndSaveFormatWarning($list_id, $counter, 'format_end_warning');
 						$data["code"] = $this->getOptionValue('wcassignmentTextNoCodePossible', __("Please contact our support for the ticket/code", 'event-tickets-with-ticket-scanner'));
 						return $data["code"];
 					}
 				}
+			}
+
+			// If loop exhausted without finding a unique code (all 500 attempts produced duplicates)
+			if ($id == 0 && $counter >= 500) {
+				$this->checkAndSaveFormatWarning($list_id, $counter, 'format_end_warning');
+				$data["code"] = $this->getOptionValue('wcassignmentTextNoCodePossible', __("Please contact our support for the ticket/code", 'event-tickets-with-ticket-scanner'));
+				return $data["code"];
 			}
 		}
 		//if (SASO_EVENTTICKETS::issetRPara('a') && SASO_EVENTTICKETS::getRequestPara('a') == 'testing') exit;
@@ -1230,7 +1594,8 @@ class sasoEventtickets_AdminSettings {
 		throw new Exception("#601 ".__('code could not be generated and stored', 'event-tickets-with-ticket-scanner'));
 	}
 	private function generateCode($formatterValues="") {
-		$code = implode('-', str_split(substr(strtoupper(md5(time()."_".rand())), 0, 20), 5));
+		$datePrefix = $this->encodeDateToLetters();
+		$code = $datePrefix . '-' . implode('-', str_split(substr(strtoupper(md5(time()."_".rand())), 0, 10), 5));
 		if (!empty($formatterValues) || $this->isOptionCheckboxActive("wcassignmentUseGlobalSerialFormatter")) {
 			if (empty($formatterValues)) {
 				$codeFormatterJSON = $this->getOptionValue('wcassignmentUseGlobalSerialFormatter_values');
@@ -1286,17 +1651,36 @@ class sasoEventtickets_AdminSettings {
 					}
 
 					// prefix
-					if (isset($obj['input_prefix_codes'])) {
+					if (isset($obj['input_prefix_codes']) && trim($obj['input_prefix_codes']) !== '') {
 						$prefix_code = trim($obj['input_prefix_codes']);
 						$prefix_code = str_replace(" ", "_", $prefix_code);
 						$prefix_code = $this->replacePlaceholderForCode($prefix_code);
 						$prefix_code = str_replace("/", "-", $prefix_code);
 						$code = $prefix_code.$code;
+					} else {
+						// No prefix configured: add date prefix to avoid collisions
+						$code = $datePrefix . '-' . $code;
 					}
 				}
 			}
 		}
 		return $code;
+	}
+
+	/**
+	 * Encode current date as 5 uppercase letters (base-26, days since 2020-01-01)
+	 * Covers ~32,000 years. Same day = same prefix = partitioned address space.
+	 * @return string e.g. "AADIL" for 2026-02-24
+	 */
+	private function encodeDateToLetters(): string {
+		$today = wp_date('Y-m-d');
+		$daysSinceRef = max(0, (int)((strtotime($today) - strtotime('2020-01-01')) / 86400));
+		$chars = '';
+		for ($i = 0; $i < 5; $i++) {
+			$chars = chr(65 + ($daysSinceRef % 26)) . $chars;
+			$daysSinceRef = intdiv($daysSinceRef, 26);
+		}
+		return $chars;
 	}
 	private function replacePlaceholderForCode($code) {
 		$time = time();
@@ -1603,6 +1987,19 @@ class sasoEventtickets_AdminSettings {
 		}
 
 		$metaObj["wc_ticket"]["_max_redeem_amount"] = $max_redeem_amount;
+
+		// Per-day limit check (last in chain, after total max check)
+		$max_per_day = $this->MAIN->getTicketHandler()->getMaxRedeemPerDayOfTicket($codeObj);
+		if ($max_per_day > 0) {
+			$redeems_today = $this->MAIN->getTicketHandler()->countRedeemsToday($metaObj['wc_ticket']['stats_redeemed']);
+			if ($redeems_today >= $max_per_day) {
+				throw new Exception(sprintf(
+					/* translators: 1: redeems used today 2: max allowed per day */
+					esc_html__('Daily redeem limit reached: %1$d of %2$d. Try again tomorrow.', 'event-tickets-with-ticket-scanner'),
+					$redeems_today, $max_per_day
+				));
+			}
+		}
 
 		if (empty($metaObj['wc_ticket']['redeemed_date']) || $max_redeem_amount > 1) {
 			$stat_redeem = [];
@@ -2188,16 +2585,28 @@ class sasoEventtickets_AdminSettings {
 				"data"=>$daten];
 	}
 
-	private function expose($type, $data) {
-		print_r($type);
-		print_r($data);
-		if ($type == "tables") {
-			foreach($this->MAIN->getDB()->getTables() as $table) {
-				$sql = "desc ".$this->MAIN->getDB()->getTabelle($table);
-				$ret = $this->MAIN->getDB()->_db_datenholen($sql);
-				print_r($ret);
+	/**
+	 * Expose internal DB table info for support diagnostics.
+	 * Returns structured JSON with table names, row counts, and column definitions.
+	 */
+	private function expose(string $type, $data): array {
+		if ($type === "tables") {
+			$tables = [];
+			foreach ($this->MAIN->getDB()->getTables() as $table) {
+				$fullName = $this->MAIN->getDB()->getTabelle($table);
+				$columns = $this->MAIN->getDB()->_db_datenholen("DESCRIBE " . $fullName);
+				$countResult = $this->MAIN->getDB()->_db_datenholen("SELECT COUNT(*) as cnt FROM " . $fullName);
+				$tables[$table] = [
+					'full_name' => $fullName,
+					'row_count' => intval($countResult[0]['cnt'] ?? 0),
+					'columns' => array_map(function($col) {
+						return $col['Field'] . ' (' . $col['Type'] . ')';
+					}, $columns),
+				];
 			}
+			return ['tables' => $tables];
 		}
+		return ['error' => 'unknown type: ' . $type];
 	}
 
 	private function getTicketsForTesting() {
@@ -2377,7 +2786,7 @@ class sasoEventtickets_AdminSettings {
 					__("WARNING: The ticket number format for list \"%s\" is exhausted!\n\nIt took %d attempts to generate a ticket code.\n\nActions:\n1. Go to: %s\n2. Edit the ticket list\n3. Increase code length or change character set\n\nWithout action, future ticket sales may fail!", 'event-tickets-with-ticket-scanner'),
 					$listObj['name'],
 					$counter,
-					admin_url('admin.php?page=sasoEventTicketsAdminLists&act=edit&id=' . $list_id)
+					admin_url('admin.php?page=event-tickets-with-ticket-scanner')
 				);
 			} else {
 				$subject = sprintf(__('[%s] WARNING: Ticket format running out for "%s"', 'event-tickets-with-ticket-scanner'), $blog_name, $listObj['name']);
@@ -2385,7 +2794,7 @@ class sasoEventtickets_AdminSettings {
 					__("WARNING: The ticket number format for list \"%s\" is running out of combinations!\n\nIt took %d attempts to generate a ticket code.\n\nRecommended action:\n1. Go to: %s\n2. Edit the ticket list\n3. Consider increasing code length or character set\n\nThis is a proactive warning to prevent future issues.", 'event-tickets-with-ticket-scanner'),
 					$listObj['name'],
 					$counter,
-					admin_url('admin.php?page=sasoEventTicketsAdminLists&act=edit&id=' . $list_id)
+					admin_url('admin.php?page=event-tickets-with-ticket-scanner')
 				);
 			}
 
@@ -2451,7 +2860,8 @@ class sasoEventtickets_AdminSettings {
 				'last_email' => ''
 			];
 
-			$this->editList($list_id, ['meta' => $this->MAIN->getCore()->json_encode_with_error_handling($metaObj)]);
+			$metaJson = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+			$this->MAIN->getDB()->update('lists', ['meta' => $metaJson], ['id' => intval($list_id)]);
 		} catch (Exception $e) {
 			$this->logErrorToDB($e, "", "clearFormatWarning for list $list_id");
 		}

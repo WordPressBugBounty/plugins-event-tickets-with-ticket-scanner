@@ -69,7 +69,7 @@ msgstr "Allow tickets to be redeemed after ending date and time"
 #: sasoEventtickets_Options.php:64
 msgid "Allow to redeem ticket only if it is paid"
 msgstr ""
-"Autoriser l'échange d'un billet uniquement s'il est payé\n"
+"Autoriser l'échange d'un billet uniquement s'il est payé"
 
 #: sasoEventtickets_Core.php:253
 msgid "Amount of how many times the code was validated successfully."
@@ -78,7 +78,7 @@ msgstr "Nombre de fois où le code a été validé avec succès."
 #: sasoEventtickets_Options.php:188
 msgid "Attach additional PDF to the PDF ticket"
 msgstr ""
-"Joindre un PDF supplémentaire au ticket PDF\n"
+"Joindre un PDF supplémentaire au ticket PDF"
 
 #: sasoEventtickets_Options.php:258
 msgid ""
@@ -233,7 +233,7 @@ msgstr "Coupon utilisé :"
 #: sasoEventtickets_Core.php:261
 msgid "Creation date of the WooCommerce purchase using the allowance code."
 msgstr ""
-"Date de création de l'achat WooCommerce en utilisant le code d'allocation.\n"
+"Date de création de l'achat WooCommerce en utilisant le code d'allocation."
 
 #: sasoEventtickets_Core.php:257
 msgid "Creation date of the WooCommerce sales date timezone."
@@ -3001,4 +3001,22 @@ msgstr ""
 "3. Envisager d'augmenter la longueur du code ou le jeu de caractères\n"
 "\n"
 "Ceci est un avertissement proactif pour prévenir les problèmes futurs."
+
+
+
+#: backend.js
+msgid "Please select at least one ticket first."
+msgstr "Veuillez d'abord sélectionner au moins un ticket."
+
+msgid "Max. redeems per day"
+msgstr ""
+
+msgid "How often can the ticket be redeemed per day? 0 = unlimited (only total max applies)."
+msgstr ""
+
+msgid "Daily redeem limit reached: %1$d of %2$d. Try again tomorrow."
+msgstr ""
+
+msgid "Redeems today: <b>%1$d</b> of <b>%2$d</b>"
+msgstr ""
 

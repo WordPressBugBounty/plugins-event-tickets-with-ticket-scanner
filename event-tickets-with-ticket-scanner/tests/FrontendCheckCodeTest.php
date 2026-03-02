@@ -1,131 +1,290 @@
 <?php
 /**
- * Tests for Frontend code checking: checkCode logic via
- * various code states (valid, invalid, inactive, used).
+ * Batch 42 — Frontend checkCode, registerToCode, and helper methods:
+ * - checkCode: main validation flow (valid, invalid, inactive, CVV, registered, expired, stolen)
+ * - registerToCode: user registration to ticket code
+ * - isUsed / markAsUsed: one-time-use logic
+ * - countConfirmedStatus: counter increment
+ * - getOptions: public options retrieval
  */
 
 class FrontendCheckCodeTest extends WP_UnitTestCase {
 
-    private $main;
+	private $main;
+	private $frontend;
 
-    public function set_up(): void {
-        parent::set_up();
-        $this->main = sasoEventtickets::Instance();
+	public function set_up(): void {
+		parent::set_up();
+		$this->main = sasoEventtickets::Instance();
+		$this->frontend = $this->main->getFrontend();
+	}
 
-        if (!class_exists('WC_Product_Simple')) {
-            $this->markTestSkipped('WooCommerce not available');
-        }
-    }
+	private function createActiveCode(string $code = '', string $cvv = ''): array {
+		$listId = $this->main->getDB()->insert('lists', [
+			'name' => 'FE Check List ' . uniqid(),
+			'aktiv' => 1,
+			'meta' => '{}',
+		]);
+		$metaObj = $this->main->getCore()->getMetaObject();
+		$metaJson = $this->main->getCore()->json_encode_with_error_handling($metaObj);
 
-    private function createCodeInList(): array {
-        $listId = $this->main->getDB()->insert('lists', [
-            'name' => 'CheckCode List ' . uniqid(),
-            'aktiv' => 1,
-            'meta' => '{}',
-        ]);
+		if (empty($code)) {
+			$code = 'FECHECK' . strtoupper(uniqid());
+		}
 
-        $product = new WC_Product_Simple();
-        $product->set_name('CheckCode Product ' . uniqid());
-        $product->set_regular_price('10.00');
-        $product->set_status('publish');
-        $product->save();
+		$this->main->getDB()->insert('codes', [
+			'list_id' => $listId,
+			'code' => $code,
+			'aktiv' => 1,
+			'cvv' => $cvv,
+			'order_id' => 0,
+			'user_id' => 0,
+			'meta' => $metaJson,
+		]);
 
-        update_post_meta($product->get_id(), 'saso_eventtickets_is_ticket', 'yes');
-        update_post_meta($product->get_id(), 'saso_eventtickets_list', $listId);
+		$codeObj = $this->main->getCore()->retrieveCodeByCode($code);
+		return ['list_id' => $listId, 'code' => $code, 'codeObj' => $codeObj];
+	}
 
-        $order = wc_create_order();
-        $order->add_product($product, 1);
-        $order->calculate_totals();
-        $order->set_status('completed');
-        $order->save();
+	private function createInactiveCode(): array {
+		$listId = $this->main->getDB()->insert('lists', [
+			'name' => 'FE Inactive List ' . uniqid(),
+			'aktiv' => 1,
+			'meta' => '{}',
+		]);
+		$metaObj = $this->main->getCore()->getMetaObject();
+		$metaJson = $this->main->getCore()->json_encode_with_error_handling($metaObj);
+		$code = 'FEINACT' . strtoupper(uniqid());
 
-        $this->main->getWC()->getOrderManager()->add_serialcode_to_order($order->get_id());
-        $codes = $this->main->getCore()->getCodesByOrderId($order->get_id());
+		$this->main->getDB()->insert('codes', [
+			'list_id' => $listId,
+			'code' => $code,
+			'aktiv' => 0,
+			'cvv' => '',
+			'order_id' => 0,
+			'user_id' => 0,
+			'meta' => $metaJson,
+		]);
 
-        return [
-            'code' => $codes[0]['code'],
-            'list_id' => $listId,
-            'order_id' => $order->get_id(),
-            'product_id' => $product->get_id(),
-        ];
-    }
+		return ['list_id' => $listId, 'code' => $code];
+	}
 
-    // ── isUsed with fresh code ───────────────────────────────────
+	private function createStolenCode(): array {
+		$listId = $this->main->getDB()->insert('lists', [
+			'name' => 'FE Stolen List ' . uniqid(),
+			'aktiv' => 1,
+			'meta' => '{}',
+		]);
+		$metaObj = $this->main->getCore()->getMetaObject();
+		$metaJson = $this->main->getCore()->json_encode_with_error_handling($metaObj);
+		$code = 'FESTOLEN' . strtoupper(uniqid());
 
-    public function test_fresh_code_is_not_used(): void {
-        $data = $this->createCodeInList();
-        $codeObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
-        $this->assertFalse($this->main->getFrontend()->isUsed($codeObj));
-    }
+		$this->main->getDB()->insert('codes', [
+			'list_id' => $listId,
+			'code' => $code,
+			'aktiv' => 2, // stolen
+			'cvv' => '',
+			'order_id' => 0,
+			'user_id' => 0,
+			'meta' => $metaJson,
+		]);
 
-    // ── isUsed with marked code ──────────────────────────────────
+		return ['list_id' => $listId, 'code' => $code];
+	}
 
-    public function test_marked_code_is_used(): void {
-        $data = $this->createCodeInList();
-        $codeObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
+	// ── checkCode ────────────────────────────────────────────
 
-        // Set used meta
-        $metaObj = $this->main->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
-        $metaObj['used']['reg_request'] = wp_date('Y-m-d H:i:s');
-        $metaJson = $this->main->getCore()->json_encode_with_error_handling($metaObj);
-        $this->main->getDB()->update('codes', ['meta' => $metaJson], ['id' => $codeObj['id']]);
+	public function test_checkCode_valid_code(): void {
+		$data = $this->createActiveCode();
+		$result = $this->frontend->checkCode(['code' => $data['code']]);
+		$this->assertIsArray($result);
+		$this->assertEquals(1, $result['valid']);
+	}
 
-        $codeObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
-        $this->assertTrue($this->main->getFrontend()->isUsed($codeObj));
-    }
+	public function test_checkCode_nonexistent_returns_zero(): void {
+		$result = $this->frontend->checkCode(['code' => 'NONEXISTENT_XYZ_' . uniqid()]);
+		$this->assertIsArray($result);
+		$this->assertEquals(0, $result['valid']);
+	}
 
-    // ── markAsUsed ───────────────────────────────────────────────
+	public function test_checkCode_inactive_returns_two(): void {
+		$data = $this->createInactiveCode();
+		$result = $this->frontend->checkCode(['code' => $data['code']]);
+		$this->assertIsArray($result);
+		$this->assertEquals(2, $result['valid']);
+	}
 
-    public function test_markAsUsed_returns_codeObj(): void {
-        $data = $this->createCodeInList();
-        $codeObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
-        $result = $this->main->getFrontend()->markAsUsed($codeObj);
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('code', $result);
-    }
+	public function test_checkCode_stolen_returns_seven(): void {
+		$data = $this->createStolenCode();
+		$result = $this->frontend->checkCode(['code' => $data['code']]);
+		$this->assertIsArray($result);
+		$this->assertEquals(7, $result['valid']);
+	}
 
-    public function test_markAsUsed_force_marks_code(): void {
-        $data = $this->createCodeInList();
-        $codeObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
+	public function test_checkCode_throws_for_empty_code(): void {
+		$this->expectException(Exception::class);
+		$this->expectExceptionMessageMatches('/#1001/');
+		$this->frontend->checkCode(['code' => '']);
+	}
 
-        // Force mark as used
-        $result = $this->main->getFrontend()->markAsUsed($codeObj, true);
+	public function test_checkCode_throws_for_missing_code(): void {
+		$this->expectException(Exception::class);
+		$this->expectExceptionMessageMatches('/#1001/');
+		$this->frontend->checkCode([]);
+	}
 
-        // Re-fetch and check
-        $updatedObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
-        $metaObj = $this->main->getCore()->encodeMetaValuesAndFillObject($updatedObj['meta'], $updatedObj);
-        $this->assertNotEmpty($metaObj['used']['reg_request']);
-    }
+	public function test_checkCode_cvv_required_returns_six(): void {
+		$data = $this->createActiveCode('', 'SECRET123');
+		$result = $this->frontend->checkCode(['code' => $data['code']]);
+		$this->assertEquals(6, $result['valid']);
+	}
 
-    // ── Code states ──────────────────────────────────────────────
+	public function test_checkCode_cvv_correct_returns_valid(): void {
+		$data = $this->createActiveCode('', 'SECRET123');
+		$result = $this->frontend->checkCode(['code' => $data['code'], 'cvv' => 'SECRET123']);
+		$this->assertEquals(1, $result['valid']);
+	}
 
-    public function test_active_code_has_aktiv_1(): void {
-        $data = $this->createCodeInList();
-        $codeObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
-        $this->assertEquals(1, intval($codeObj['aktiv']));
-    }
+	public function test_checkCode_cvv_wrong_stays_six(): void {
+		$data = $this->createActiveCode('', 'SECRET123');
+		$result = $this->frontend->checkCode(['code' => $data['code'], 'cvv' => 'WRONG']);
+		$this->assertEquals(6, $result['valid']);
+	}
 
-    public function test_inactive_code_has_aktiv_0(): void {
-        $data = $this->createCodeInList();
-        $codeObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
+	public function test_checkCode_cvv_case_insensitive(): void {
+		$data = $this->createActiveCode('', 'ABC');
+		$result = $this->frontend->checkCode(['code' => $data['code'], 'cvv' => 'abc']);
+		$this->assertEquals(1, $result['valid']);
+	}
 
-        // Deactivate
-        $this->main->getDB()->update('codes', ['aktiv' => 0], ['id' => $codeObj['id']]);
+	public function test_checkCode_returns_retObject(): void {
+		$data = $this->createActiveCode();
+		$result = $this->frontend->checkCode(['code' => $data['code']]);
+		$this->assertArrayHasKey('retObject', $result);
+		$this->assertArrayHasKey('message', $result['retObject']);
+	}
 
-        $updatedObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
-        $this->assertEquals(0, intval($updatedObj['aktiv']));
-    }
+	public function test_checkCode_registered_code_returns_three(): void {
+		$data = $this->createActiveCode();
+		// Register a user to the code
+		$metaObj = $this->main->getCore()->encodeMetaValuesAndFillObject($data['codeObj']['meta'], $data['codeObj']);
+		$metaObj['user']['value'] = 'Test User';
+		$this->main->getCore()->saveMetaObject($data['codeObj'], $metaObj);
 
-    // ── Retrieve code verification ───────────────────────────────
+		$result = $this->frontend->checkCode(['code' => $data['code']]);
+		$this->assertEquals(3, $result['valid']);
+	}
 
-    public function test_retrieveCodeByCode_throws_for_nonexistent(): void {
-        $this->expectException(Exception::class);
-        $this->main->getCore()->retrieveCodeByCode('NONEXISTENT-CODE-' . uniqid());
-    }
+	// ── isUsed ───────────────────────────────────────────────
 
-    public function test_retrieveCodeByCode_returns_correct_code(): void {
-        $data = $this->createCodeInList();
-        $codeObj = $this->main->getCore()->retrieveCodeByCode($data['code']);
-        $this->assertEquals($data['code'], $codeObj['code']);
-    }
+	public function test_isUsed_false_for_new_code(): void {
+		$data = $this->createActiveCode();
+		$this->assertFalse($this->frontend->isUsed($data['codeObj']));
+	}
+
+	public function test_isUsed_true_after_marking_used(): void {
+		$data = $this->createActiveCode();
+		$codeObj = $data['codeObj'];
+		$metaObj = $this->main->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$metaObj['used']['reg_request'] = wp_date("Y-m-d H:i:s");
+		$codeObj['meta'] = $this->main->getCore()->json_encode_with_error_handling($metaObj);
+
+		$this->assertTrue($this->frontend->isUsed($codeObj));
+	}
+
+	// ── countConfirmedStatus ─────────────────────────────────
+
+	public function test_countConfirmedStatus_increments(): void {
+		$data = $this->createActiveCode();
+		$codeObj = $data['codeObj'];
+		$codeObj['_valid'] = 1;
+
+		$result = $this->frontend->countConfirmedStatus($codeObj);
+		$this->assertIsArray($result);
+
+		// Reload and check confirmedCount
+		$reloaded = $this->main->getCore()->retrieveCodeByCode($data['code']);
+		$reloadedMeta = $this->main->getCore()->encodeMetaValuesAndFillObject($reloaded['meta'], $reloaded);
+		$this->assertEquals(1, (int) $reloadedMeta['confirmedCount']);
+	}
+
+	public function test_countConfirmedStatus_skips_when_not_valid(): void {
+		$data = $this->createActiveCode();
+		$codeObj = $data['codeObj'];
+		$codeObj['_valid'] = 0; // not valid
+
+		$this->frontend->countConfirmedStatus($codeObj);
+
+		$reloaded = $this->main->getCore()->retrieveCodeByCode($data['code']);
+		$reloadedMeta = $this->main->getCore()->encodeMetaValuesAndFillObject($reloaded['meta'], $reloaded);
+		$this->assertEquals(0, (int) $reloadedMeta['confirmedCount']);
+	}
+
+	public function test_countConfirmedStatus_force_increments(): void {
+		$data = $this->createActiveCode();
+		$codeObj = $data['codeObj'];
+		$codeObj['_valid'] = 0; // normally skipped
+
+		$this->frontend->countConfirmedStatus($codeObj, true); // force
+
+		$reloaded = $this->main->getCore()->retrieveCodeByCode($data['code']);
+		$reloadedMeta = $this->main->getCore()->encodeMetaValuesAndFillObject($reloaded['meta'], $reloaded);
+		$this->assertEquals(1, (int) $reloadedMeta['confirmedCount']);
+	}
+
+	public function test_countConfirmedStatus_sets_first_success(): void {
+		$data = $this->createActiveCode();
+		$codeObj = $data['codeObj'];
+		$codeObj['_valid'] = 1;
+
+		$this->frontend->countConfirmedStatus($codeObj);
+
+		$reloaded = $this->main->getCore()->retrieveCodeByCode($data['code']);
+		$reloadedMeta = $this->main->getCore()->encodeMetaValuesAndFillObject($reloaded['meta'], $reloaded);
+		$this->assertNotEmpty($reloadedMeta['validation']['first_success']);
+		$this->assertNotEmpty($reloadedMeta['validation']['last_success']);
+	}
+
+	public function test_countConfirmedStatus_multiple_calls(): void {
+		$data = $this->createActiveCode();
+		$codeObj = $data['codeObj'];
+		$codeObj['_valid'] = 1;
+
+		$codeObj = $this->frontend->countConfirmedStatus($codeObj);
+		$codeObj['_valid'] = 1; // reset for second call
+		$codeObj = $this->frontend->countConfirmedStatus($codeObj, true);
+
+		$reloaded = $this->main->getCore()->retrieveCodeByCode($data['code']);
+		$reloadedMeta = $this->main->getCore()->encodeMetaValuesAndFillObject($reloaded['meta'], $reloaded);
+		$this->assertEquals(2, (int) $reloadedMeta['confirmedCount']);
+	}
+
+	// ── getOptions ───────────────────────────────────────────
+
+	public function test_getOptions_returns_array(): void {
+		$result = $this->frontend->getOptions();
+		$this->assertIsArray($result);
+	}
+
+	// ── markAsUsed ───────────────────────────────────────────
+
+	public function test_markAsUsed_returns_codeObj(): void {
+		$data = $this->createActiveCode();
+		$result = $this->frontend->markAsUsed($data['codeObj']);
+		$this->assertIsArray($result);
+		$this->assertArrayHasKey('id', $result);
+	}
+
+	public function test_markAsUsed_with_force(): void {
+		$data = $this->createActiveCode();
+		$codeObj = $data['codeObj'];
+
+		// Force mark as used with 1 count
+		$result = $this->frontend->markAsUsed($codeObj, true);
+		$this->assertIsArray($result);
+
+		// After forced mark, isUsed should be true
+		$reloaded = $this->main->getCore()->retrieveCodeByCode($data['code']);
+		$this->assertTrue($this->frontend->isUsed($reloaded));
+	}
 }

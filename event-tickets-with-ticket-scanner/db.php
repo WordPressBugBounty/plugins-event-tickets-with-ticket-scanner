@@ -384,6 +384,28 @@ class sasoEventtickets_DB {
 		}
 		*/
 	}
+	/**
+	 * Log an error message to the errorlogs table.
+	 *
+	 * Convenience method used by seating subsystem and other components
+	 * that need simple string-based error logging without an Exception object.
+	 *
+	 * @param string $message Error message
+	 * @param string $callerName Optional caller identification
+	 */
+	public function logError(string $message, string $callerName = ''): void {
+		try {
+			$this->insert('errorlogs', [
+				'time' => wp_date('Y-m-d H:i:s'),
+				'exception_msg' => mb_substr($message, 0, 250),
+				'msg' => $message,
+				'caller_name' => mb_substr($callerName, 0, 250),
+			]);
+		} catch (\Exception $e) {
+			// Silently fail — logging should never break the application
+		}
+	}
+
 	protected function _system_installiereTabellen()
 	{
 		throw new Exception("overwrite this function");

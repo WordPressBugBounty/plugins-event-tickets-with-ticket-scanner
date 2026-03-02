@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.9.2
+Stable tag: 2.9.3
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -214,6 +214,37 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 2.9.3 - 2026-03-02 =
+* New: "Check License" button — recheck premium license status on demand from Options page (next to serial field) and Support Info page. Shows status, last check, expiration, failure count.
+* Improvement: Saving a serial key now immediately checks the license and shows the result inline. On success, the page reloads automatically so premium features are available without manual refresh.
+* Improvement: "Check License Now" button bypasses the 7-day server cache to always get a fresh response
+* Fix: Dismiss button for ticket format warnings did not work — two bugs: nonce parameter name mismatch, and wp_redirect() called during admin_notices (after output started). Dismiss handler now runs on admin_init.
+* Fix: JavaScript error "cannot call methods on dialog prior to initialization" — closeDialog() tried to destroy all dialog elements on page instead of only the target dialog
+* Fix: backend.js could be cached by browser across updates — jQuery.getScript() bypassed WordPress cache busting. Now uses file modification time as additional cache-buster parameter.
+* New: Setup Wizard — multi-step dialog guides new users through use-case selection (Event tickets, Day passes, Memberships, Vouchers) and configures optimal settings automatically. Covers redemption rules, scanner behavior, email delivery (ICS, date, order view), and order processing. Premium users also get PDF attachment settings. Re-launchable via "Start Wizard" button.
+* New: Premium Wizard — one-time dialog when premium is activated, offers to enable recommended premium defaults (PDF email attachment, merge into one PDF). Re-launchable via "Premium Wizard" button (only visible with premium). (#233)
+* New: Export/Import options — backup and restore all plugin settings as JSON file
+* New: "Max redeems per day" option per product — limit how many times a multi-redeem ticket can be redeemed on a single day (0 = unlimited, only total max applies)
+* Improvement: "First Steps" onboarding box upgraded to interactive card with progress bar, auto-detection of completed steps, and action buttons
+* Improvement: Code generation now uses date-based prefix (encoded as 5 letters) to partition address space — virtually eliminates collisions even with short code formats
+* Improvement: Increased code generation retry limit from 100 to 500 attempts
+* Improvement: Ticket detail view now shows WooCommerce order status, billing email, product name, and variation attributes
+* Improvement: Support Info — options list is now hidden behind a button click to reduce page load clutter
+* Improvement: Bulk action dropdown now shows a message when no tickets are selected
+* Improvement: AJAX calls now properly handle network-level errors (timeout, connection lost)
+* Improvement: Cart input fields (name per ticket, restriction code) now auto-save on Enter key (#234)
+* New: Auto-update dialog — after entering a serial key with an outdated premium plugin, automatically checks for updates and offers to install them. Shows release notes for users without an active subscription.
+* Fix: Value-per-ticket dropdown in cart never saved — selector targeted wrong element type and attribute (#234)
+* Fix: Options in-memory cache corruption in _setOptionValuesByKey() — variable name collision caused stale/incorrect values within the same request
+* Fix: Restriction code input in cart crashed on PHP 8.x due to wrong constant name case (META_KEY_CODELIST_RESTRICTION_order_item → _ORDER_ITEM)
+* Fix: False "Ticket format exhausted" warning when free version ticket limit (32) was reached — #208 exception was incorrectly triggering format warning on first attempt
+* Fix: clearFormatWarning() never actually cleared warnings — editList() was called with wrong signature, exception silently caught
+* Fix: "Edit list" link in format warning notice and email pointed to non-existent admin page
+* Fix: Import options failed silently due to WordPress wp_magic_quotes escaping JSON — now handled via stripslashes
+* Fix: Product meta save could trigger PHP warning for undefined array key due to operator precedence bug
+* Fix: Admin ping timeout (e.g. when browser tab is frozen) no longer shows repeated error dialogs
+* Fix: Typo in displayFirstStepsHelp option description ("activet" → "activated")
 
 = 2.9.2 - 2026-02-23 =
 * Fix: Format warning data (attempts, last_email) was never persisted — editList() called with wrong signature and would auto-clear warnings

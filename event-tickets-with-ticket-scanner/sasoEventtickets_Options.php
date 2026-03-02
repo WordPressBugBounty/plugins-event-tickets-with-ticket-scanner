@@ -17,7 +17,9 @@ class sasoEventtickets_Options {
 		$this->_options = [];
 
 		$this->_options[] = $this->getOptionsObject('h99', esc_html__("Display options", 'event-tickets-with-ticket-scanner'),"","heading");
-		$this->_options[] = $this->getOptionsObject('displayFirstStepsHelp', esc_html__("Display the first steps helper info", 'event-tickets-with-ticket-scanner'), esc_html__("If activet then a information widget will be shown at the admin area to guide you through the first steps.", 'event-tickets-with-ticket-scanner'),"checkbox", true, [], true);
+		$this->_options[] = $this->getOptionsObject('displayFirstStepsHelp', esc_html__("Display the first steps helper info", 'event-tickets-with-ticket-scanner'), esc_html__("If activated then an information widget will be shown at the admin area to guide you through the first steps.", 'event-tickets-with-ticket-scanner'),"checkbox", true, [], true);
+		$this->_options[] = $this->getOptionsObject('wizardCompleted', esc_html__("Setup wizard completed", 'event-tickets-with-ticket-scanner'), esc_html__("Stores the plugin version when the setup wizard was completed. Clear this value to show the wizard again.", 'event-tickets-with-ticket-scanner'),"text", "", [], false);
+		$this->_options[] = $this->getOptionsObject('premiumWizardCompleted', esc_html__("Premium wizard completed", 'event-tickets-with-ticket-scanner'), esc_html__("Stores the plugin version when the premium wizard was completed. Clear this value to show the wizard again.", 'event-tickets-with-ticket-scanner'),"text", "", [], false);
 		$this->_options[] = $this->getOptionsObject('displayDateFormat', esc_html__("Your own date format", 'event-tickets-with-ticket-scanner'), esc_html__("If left empty, default will be 'Y/m/d'. Using the php date function format. Y=year, m=month, d=day H:hours, i:minutes, s=seconds", 'event-tickets-with-ticket-scanner'),"text", "Y/m/d", [], true);
 		$this->_options[] = $this->getOptionsObject('displayTimeFormat', esc_html__("Your own time format", 'event-tickets-with-ticket-scanner'), esc_html__("If left empty, default will be 'H:i'. Using the php date function format. H=hours with leading 0, i=minutes with leading zero, s=seconds", 'event-tickets-with-ticket-scanner'),"text", "H:i", [], true);
 		//$this->_options[] = $this->getOptionsObject('displayDateFormatDatePicker', esc_html__("Date format of the date picker", 'event-tickets-with-ticket-scanner'), esc_html__("If left empty, default will be 'yy-mm-dd'. Using the jquery datepicker format.", 'event-tickets-with-ticket-scanner'). __("<ul><li>d - day of month (no leading zero)</li><li>dd - day of month (two digit)</li><li>o - day of the year (no leading zeros)</li><li>oo - day of the year (three digit)</li><li>D - day name short</li><li>DD - day name long</li><li>m - month of year (no leading zero)</li><li>mm - month of year (two digit)</li><li>M - month name short</li><li>MM - month name long</li><li>y - year (two digit)</li><li>yy - year (four digit)</li></ul>", 'event-tickets-with-ticket-scanner'),"text", "yy-mm-dd", [], true);
@@ -664,9 +666,9 @@ class sasoEventtickets_Options {
 		}
 		return $o;
 	}
-	private function _setOptionValuesByKey($key, $field, $value) {
-		foreach ($this->_options as $idx => $value) {
-			if ($value['key'] == $key) {
+	private function _setOptionValuesByKey(string $key, string $field, $value): void {
+		foreach ($this->_options as $idx => $option) {
+			if ($option['key'] === $key) {
 				$this->_options[$idx][$field] = $value;
 				break;
 			}

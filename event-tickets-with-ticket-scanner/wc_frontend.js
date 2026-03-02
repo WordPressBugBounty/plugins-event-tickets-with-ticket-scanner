@@ -192,21 +192,13 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		// finde die code text inputs
 		// eventcoderrestriction is no longer used, but still in the code
 		$('body').find('input[data-input-type="eventcoderestriction"][data-plugin="event"]')
-			.on('keyup',function(){
-				/*
-				$('.cart_totals').block({
-					message: null,
-					overlayCSS: {
-						background: '#fff',
-						opacity: 0.6
-					}
-				});
-				isStoring = false;
-				isChanged = true;
-				let elem = $(this);
-				let code = elem.val().trim();
-				setWaitingTimeout(elem, code);
-				*/
+			.on('keydown',function(e){
+				if (e.which === 13) {
+					e.preventDefault();
+					let elem = $(this);
+					isChanged = true;
+					sendCode(elem, elem.val().trim(), "saso_eventtickets_request_name_per_ticket");
+				}
 			})
 			.on('paste', event=>{
 				isStoring = false;
@@ -240,6 +232,14 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			.removeAttr('disabled');
 
 		$('body').find('input[data-input-type="text"][data-plugin="event"]')
+			.on('keydown',function(e){
+				if (e.which === 13) {
+					e.preventDefault();
+					let elem = $(this);
+					isChanged = true;
+					sendCode(elem, elem.val().trim(), "saso_eventtickets_request_name_per_ticket");
+				}
+			})
 			.on('paste', event=>{
 				isStoring = false;
 				let elem = $(event.srcElement);
@@ -258,17 +258,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			})
 			.removeAttr('disabled');
 
-		$('body').find('input[data-input-type="value"][data-plugin="value"]')
-			.on('paste', event=>{
-				isStoring = false;
-				let elem = $(event.srcElement);
-				let code = (event.clipboardData || window.clipboardData).getData('text');
-				if (typeof code == "string") {
-					code = code.trim();
-					isChanged = true;
-					sendCode(elem, code, "saso_eventtickets_request_value_per_ticket");
-				} else { alert("no text"); }
-			})
+		$('body').find('select[data-input-type="value"][data-plugin="event"]')
 			.on('change',function(){
 				let elem = $(this);
 				let code = elem.val().trim();

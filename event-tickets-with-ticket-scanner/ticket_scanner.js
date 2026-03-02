@@ -930,6 +930,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 if (data._ret.max_redeem_amount > 1 && data.metaObj.wc_ticket.stats_redeemed.length < data._ret.max_redeem_amount) {
                     color = "green";
                 }
+                if (data._ret.max_redeem_per_day > 0 && data._ret.redeems_today >= data._ret.max_redeem_per_day) {
+                    color = "red";
+                }
                 //if (system.last_scanned_ticket.auto_redeem == false) {
                 if (system.redeemed_successfully) {
                     $('<h4 style="color:'+color+' !important;">').html(data._ret.msg_redeemed).appendTo(div);
@@ -1011,6 +1014,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         $('<div>').html(sprintf(/* translators: %s: max redeem amount */__('Max Redeem Amount for this ticket: <b>%s</b>', 'event-tickets-with-ticket-scanner'), data._ret.max_redeem_amount)).appendTo(div);
         if(data._ret.max_redeem_amount > 1) {
             $('<div>').html(sprintf(/* translators: 1: redeemd tickets 2: max redeem */__('Redeem usage: <b>%1$d</b> of <b>%2$d</b>', 'event-tickets-with-ticket-scanner'), data.metaObj.wc_ticket.stats_redeemed.length, data._ret.max_redeem_amount)).appendTo(div);
+        }
+        if (data._ret.max_redeem_per_day > 0) {
+            $('<div>').html(sprintf(/* translators: 1: redeems used today 2: max per day */__('Redeems today: <b>%1$d</b> of <b>%2$d</b>', 'event-tickets-with-ticket-scanner'), data._ret.redeems_today, data._ret.max_redeem_per_day)).appendTo(div);
         }
 
         let div2 = $('<div style="width:50%;display:inline-block;">');
@@ -1330,6 +1336,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             }
             if (data._ret.max_redeem_amount > 1 && data.metaObj.wc_ticket.stats_redeemed.length < data._ret.max_redeem_amount) {
                 allow_redeem = true;
+            }
+            if (data._ret.max_redeem_per_day > 0 && data._ret.redeems_today >= data._ret.max_redeem_per_day) {
+                allow_redeem = false;
             }
             if (allow_redeem) {
                 allow_redeem = canTicketBeRedeemedNow(data);

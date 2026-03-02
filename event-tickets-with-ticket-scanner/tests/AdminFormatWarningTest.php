@@ -90,6 +90,91 @@ class AdminFormatWarningTest extends WP_UnitTestCase {
         $this->assertEquals(10, $result['attempts']);
     }
 
+    // ── encodeDateToLetters / generateCode date prefix ────────────
+
+    public function test_encodeDateToLetters_returns_five_uppercase_letters(): void {
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'encodeDateToLetters');
+        $ref->setAccessible(true);
+        $result = $ref->invoke($this->main->getAdmin());
+        $this->assertEquals(5, strlen($result));
+        $this->assertMatchesRegularExpression('/^[A-Z]{5}$/', $result);
+    }
+
+    public function test_encodeDateToLetters_same_day_same_result(): void {
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'encodeDateToLetters');
+        $ref->setAccessible(true);
+        $a = $ref->invoke($this->main->getAdmin());
+        $b = $ref->invoke($this->main->getAdmin());
+        $this->assertEquals($a, $b);
+    }
+
+    public function test_generateCode_default_contains_date_prefix(): void {
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'generateCode');
+        $ref->setAccessible(true);
+        $code = $ref->invoke($this->main->getAdmin(), '');
+
+        $refDate = new ReflectionMethod($this->main->getAdmin(), 'encodeDateToLetters');
+        $refDate->setAccessible(true);
+        $datePrefix = $refDate->invoke($this->main->getAdmin());
+
+        // Default code starts with date prefix
+        $this->assertStringStartsWith($datePrefix . '-', $code);
+    }
+
+    public function test_generateCode_default_format_three_groups(): void {
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'generateCode');
+        $ref->setAccessible(true);
+        $code = $ref->invoke($this->main->getAdmin(), '');
+
+        // Format: XXXXX-XXXXX-XXXXX (3 groups of 5 with hyphens)
+        $parts = explode('-', $code);
+        $this->assertCount(3, $parts);
+        foreach ($parts as $part) {
+            $this->assertEquals(5, strlen($part));
+        }
+    }
+
+    public function test_generateCode_default_unique_per_call(): void {
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'generateCode');
+        $ref->setAccessible(true);
+        $a = $ref->invoke($this->main->getAdmin(), '');
+        $b = $ref->invoke($this->main->getAdmin(), '');
+        $this->assertNotEquals($a, $b);
+    }
+
+    public function test_generateCode_formatter_without_prefix_gets_date(): void {
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'generateCode');
+        $ref->setAccessible(true);
+
+        $refDate = new ReflectionMethod($this->main->getAdmin(), 'encodeDateToLetters');
+        $refDate->setAccessible(true);
+        $datePrefix = $refDate->invoke($this->main->getAdmin());
+
+        // Formatter with 6 uppercase letters, no prefix
+        $formatterJson = json_encode([
+            'input_amount_letters' => 6,
+            'input_letter_style' => 1,
+            'input_include_numbers' => 0,
+        ]);
+        $code = $ref->invoke($this->main->getAdmin(), $formatterJson);
+        $this->assertStringStartsWith($datePrefix . '-', $code);
+    }
+
+    public function test_generateCode_formatter_with_prefix_keeps_custom(): void {
+        $ref = new ReflectionMethod($this->main->getAdmin(), 'generateCode');
+        $ref->setAccessible(true);
+
+        // Formatter with custom prefix "TIX-"
+        $formatterJson = json_encode([
+            'input_amount_letters' => 6,
+            'input_letter_style' => 1,
+            'input_include_numbers' => 0,
+            'input_prefix_codes' => 'TIX-',
+        ]);
+        $code = $ref->invoke($this->main->getAdmin(), $formatterJson);
+        $this->assertStringStartsWith('TIX-', $code);
+    }
+
     // ── addCodeFromListForOrder ───────────────────────────────────
 
     public function test_addCodeFromListForOrder_throws_for_zero_list(): void {

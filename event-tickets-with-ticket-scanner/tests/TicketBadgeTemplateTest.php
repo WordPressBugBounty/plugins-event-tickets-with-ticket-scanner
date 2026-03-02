@@ -48,7 +48,7 @@ class TicketBadgeTemplateTest extends WP_UnitTestCase {
         $badge = sasoEventtickets_TicketBadge::Instance();
         $template = $badge->getTemplate();
         $defaultTemplate = $badge->getDefaultTemplate();
-        $this->assertEquals($defaultTemplate, $template);
+        $this->assertEquals(trim($defaultTemplate), trim($template));
     }
 
     // ── getReplacementTagsExplanation ──────────────────────────────

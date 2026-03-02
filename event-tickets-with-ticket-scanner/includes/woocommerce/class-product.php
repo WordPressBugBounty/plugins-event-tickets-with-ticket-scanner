@@ -391,6 +391,15 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'description' 		=> __('How often do you allow to redeem the ticket? If you set it to 0, you can redeem the ticket unlimited.', 'event-tickets-with-ticket-scanner'),
 				'desc_tip'    		=> true
 			]);
+			woocommerce_wp_text_input([
+				'id'				=> 'saso_eventtickets_ticket_max_redeem_per_day',
+				'value'       		=> intval(get_post_meta(get_the_ID(), 'saso_eventtickets_ticket_max_redeem_per_day', true)),
+				'label'       		=> __('Max. redeems per day', 'event-tickets-with-ticket-scanner'),
+				'type'				=> 'number',
+				'custom_attributes'	=> ['step' => '1', 'min' => '0'],
+				'description' 		=> __('How often can the ticket be redeemed per day? 0 = unlimited (only total max applies).', 'event-tickets-with-ticket-scanner'),
+				'desc_tip'    		=> true
+			]);
 			woocommerce_wp_textarea_input([
 				'id'          => 'saso_eventtickets_ticket_is_ticket_info',
 				'value'       => get_post_meta( get_the_ID(), 'saso_eventtickets_ticket_is_ticket_info', true ),
@@ -590,12 +599,13 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 
 			$keys_number = [
 				'saso_eventtickets_ticket_max_redeem_amount',
+				'saso_eventtickets_ticket_max_redeem_per_day',
 				'saso_eventtickets_ticket_amount_per_item',
 				'saso_eventtickets_daychooser_offset_start',
 				'saso_eventtickets_daychooser_offset_end'
 			];
 			foreach($keys_number as $key) {
-				if( isset($R[$key]) && !empty($R[$key]) || $R[$key] == "0" ) {
+				if( isset($R[$key]) && (!empty($R[$key]) || $R[$key] == "0") ) {
 					$value = intval($R[$key]);
 					if ($value < 0) $value = 1;
 					update_post_meta( $id, $key, $value );

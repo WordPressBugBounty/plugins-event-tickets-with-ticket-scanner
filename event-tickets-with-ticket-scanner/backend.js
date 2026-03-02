@@ -75,7 +75,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
             } else {
             	cbf && cbf(response.data);
             }
-        });
+        }).fail(function(jqXHR, textStatus) {
+			if (ecbf) ecbf({success:false, data:textStatus});
+			else LAYOUT.renderFatalError(textStatus);
+		});
 	}
 
 	function _makeGet(action, myData, cbf, ecbf, pcbf) {
@@ -103,7 +106,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
             } else {
             	cbf && cbf(response.data);
             }
-        });
+        }).fail(function(jqXHR, textStatus) {
+			if (ecbf) ecbf({success:false, data:textStatus});
+			else LAYOUT.renderFatalError(textStatus);
+		});
 	}
 
 	function getOptionsFromServer(cbf, ecbf, pcbf) {
@@ -164,6 +170,31 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			cbf && cbf();
 			if (key == "wcTicketDesignerTemplateTest") {
 				$("#wcTicketDesignerTemplateTest_button_PDF").prop("disabled", false).text(__('Preview Test Template Code as PDF', 'event-tickets-with-ticket-scanner'));
+			}
+			if (key == "serial") {
+				// Immediately recheck license after serial change
+				let $statusEl = $('[data-key="serial"]').parent().find('.saso-license-inline-status');
+				if ($statusEl.length === 0) {
+					$statusEl = $('<span class="saso-license-inline-status" style="margin-left:10px;">');
+					$('[data-key="serial"]').after($statusEl);
+				}
+				$statusEl.html('<i>'+__('Checking license...', 'event-tickets-with-ticket-scanner')+'</i>');
+				_makePost('recheckLicense', {}, function(result) {
+					if (result) {
+						let color = result.active ? 'green' : 'red';
+						let label = result.active ? __('Active', 'event-tickets-with-ticket-scanner') : __('Inactive', 'event-tickets-with-ticket-scanner');
+						if (result.subscription_type === 'lifetime') label += ' (Lifetime)';
+						$statusEl.html('<span style="color:'+color+';font-weight:bold;">'+label+'</span>');
+						if (result.active) {
+							setTimeout(function() { location.reload(); }, 1500);
+						}
+					}
+				}, function() {
+					$statusEl.html('<span style="color:red;">'+__('Check failed', 'event-tickets-with-ticket-scanner')+'</span>');
+				});
+				if (_getOptions_Versions_getByKey('isOldPremiumDetected')) {
+					__checkPremiumUpdateAfterSerial(value);
+				}
 			}
 		}, null,
 		()=>{
@@ -567,6 +598,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		if (DATA_LISTS !== null) cbf && cbf();
 		_makeGet('getLists', {}, data=>{
 			DATA_LISTS = data;
+			__updateFirstStepsProgress();
 			cbf && cbf(DATA_LISTS);
 		});
 	}
@@ -595,12 +627,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 	}
 
 	function closeDialog(dlg) {
-		$(dlg).dialog( "close" );
+		try {
+			$(dlg).dialog("close");
+		} catch(e) {}
 		$(dlg).html('');
-		$(dlg).dialog("destroy").remove();
-		$(dlg).empty();
+		try {
+			$(dlg).dialog("destroy");
+		} catch(e) {}
 		$(dlg).remove();
-		$('.ui-dialog-content').dialog('destroy');
 	}
 
 	function getUseFulVideosHTML() {
@@ -1007,6 +1041,56 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 		return div;
 	}
+	function _renderLicenseStatus(container, info) {
+		container.html('');
+		if (!info || typeof info === 'undefined') {
+			container.append('<b>'+__('Status', 'event-tickets-with-ticket-scanner')+':</b> '+__('Not checked yet', 'event-tickets-with-ticket-scanner')+'<br>');
+			return;
+		}
+		// Determine status label and color
+		let statusLabel, statusColor;
+		if (typeof info.active !== 'undefined') {
+			// Response from recheckLicense
+			statusLabel = info.active ? __('Active', 'event-tickets-with-ticket-scanner') : __('Inactive', 'event-tickets-with-ticket-scanner');
+			statusColor = info.active ? 'green' : 'red';
+		} else if (info.subscription_type === 'lifetime' || info.timestamp == -1) {
+			statusLabel = __('Active', 'event-tickets-with-ticket-scanner') + ' (Lifetime)';
+			statusColor = 'green';
+		} else if (info.timestamp > 0 && info.timestamp * 1000 > Date.now()) {
+			statusLabel = __('Active', 'event-tickets-with-ticket-scanner');
+			statusColor = 'green';
+		} else if (info.timestamp > 0) {
+			statusLabel = __('Expired', 'event-tickets-with-ticket-scanner');
+			statusColor = 'red';
+		} else {
+			statusLabel = __('Not checked yet', 'event-tickets-with-ticket-scanner');
+			statusColor = 'grey';
+		}
+		container.append('<b>'+__('Status', 'event-tickets-with-ticket-scanner')+':</b> <span style="color:'+statusColor+';font-weight:bold;">'+statusLabel+'</span><br>');
+		// Last successful check
+		if (info.last_success && parseInt(info.last_success) > 0) {
+			let lastDate = new Date(parseInt(info.last_success) * 1000);
+			container.append('<b>'+__('Last successful check', 'event-tickets-with-ticket-scanner')+':</b> '+lastDate.toLocaleString()+'<br>');
+		}
+		// Expiration date
+		if (info.expiration_date && info.expiration_date !== '') {
+			container.append('<b>'+__('Expiration date', 'event-tickets-with-ticket-scanner')+':</b> '+info.expiration_date+'<br>');
+		}
+		// Subscription type
+		if (info.subscription_type && info.subscription_type !== '') {
+			container.append('<b>'+__('Subscription type', 'event-tickets-with-ticket-scanner')+':</b> '+info.subscription_type+'<br>');
+		}
+		// Consecutive failures
+		let failures = parseInt(info.consecutive_failures || 0);
+		if (failures > 0) {
+			container.append('<b>'+__('Consecutive failures', 'event-tickets-with-ticket-scanner')+':</b> <span style="color:red;">'+failures+'</span><br>');
+		}
+		// notvalid flag
+		if (parseInt(info.notvalid || 0) > 0) {
+			container.append('<b>'+__('Server flagged as not valid', 'event-tickets-with-ticket-scanner')+':</b> <span style="color:red;">'+__('Yes', 'event-tickets-with-ticket-scanner')+'</span><br>');
+		}
+	}
+
 	function _displaySupportInfoArea() {
 		STATE = 'support';
 		DIV.html(_getSpinnerHTML());
@@ -1043,6 +1127,25 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				DIV.append('<b>Premium Serial:</b> '+versions.premium_serial+newline);
 				DIV.append('<b>Premium Plugin Version:</b> '+versions.premium+newline);
 				DIV.append('<b>Premium DB Version:</b> '+versions.premium_db+newline);
+			}
+			// License Status section — show whenever premium plugin is installed (even if isPremium is false)
+			if (versions.premium != "" || isPremium() || _getOptions_Versions_getByKey('isOldPremiumDetected')) {
+				DIV.append('<h4 style="margin-bottom:0;">'+__('License Status', 'event-tickets-with-ticket-scanner')+'</h4>');
+				let licenseStatusDiv = $('<div>').appendTo(DIV);
+				_renderLicenseStatus(licenseStatusDiv, reply.infos.premium_expiration);
+				let recheckBtn = $('<button class="button button-secondary" style="margin-top:5px;">').html(__('Check License Now', 'event-tickets-with-ticket-scanner'));
+				recheckBtn.on('click', function() {
+					recheckBtn.prop('disabled', true).html(__('Checking...', 'event-tickets-with-ticket-scanner'));
+					_makePost('recheckLicense', {}, function(result) {
+						recheckBtn.prop('disabled', false).html(__('Check License Now', 'event-tickets-with-ticket-scanner'));
+						if (result) {
+							_renderLicenseStatus(licenseStatusDiv, result);
+						}
+					}, function() {
+						recheckBtn.prop('disabled', false).html(__('Check License Now', 'event-tickets-with-ticket-scanner'));
+					});
+				});
+				DIV.append(recheckBtn);
 			}
 			DIV.append('<h4 style="margin-bottom:0;">Date</h4>');
 			DIV.append('<b>Your default timezone: </b> '+versions.date_default_timezone+newline);
@@ -1099,7 +1202,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			DIV.append('<li><b>PHP QR Code</b> http://sourceforge.net/projects/phpqrcode/ - '+label_version+': 1.1.4</li>');
 			DIV.append('<li><b>FPDI</b> '+label_version+': 2.3.7</li>');
 			DIV.append('<li><b>FPDF</b> '+label_version+': 1.85</li>');
-			DIV.append('<li><b>TCPDF</b> http://www.tcpdf.org - '+label_version+': 6.4.4</li>');
+			DIV.append('<li><b>TCPDF</b> http://www.tcpdf.org - '+label_version+': 6.3.2</li>');
 			DIV.append('<li><b>Javascript QR code scanner:</b> https://github.com/nimiq/qr-scanner - '+label_version+': 1.4.2</li>');
 			DIV.append('<li><b>Javascript Datatable:</b> https://datatables.net/ - '+label_version+': 1.10.21</li>');
 			DIV.append('<li><b>Javascript Raphael:</b> http://raphaeljs.com/ - '+label_version+': 2.3.0</li>');
@@ -1107,21 +1210,24 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			DIV.append('<li><b>html5-qrcode:</b> https://github.com/mebjas/html5-qrcode/ - '+label_version+': 2.3.8</li>');
 
 			DIV.append('<h3 style="margin-bottom:10px;">Options</h3>');
-			// liste alle optionen mit wert auf
-			data.forEach(v=>{
-				if (v.type != 'heading' && v.key != "serial") {
-					if (v.additional && v.additional.doNotRender && v.additional.doNotRender === 1) {}
-					else {
-						let value = v.value;
-						let def = '';
-						if (value == '') {
-							def = ' (DEFAULT used)';
-							value = v.default;
+			let optionsContainer = $('<div/>').appendTo(DIV);
+			$('<button/>').addClass("button button-secondary").html(__('Show all options', 'event-tickets-with-ticket-scanner')).appendTo(optionsContainer).on("click", function(){
+				$(this).remove();
+				data.forEach(v=>{
+					if (v.type != 'heading' && v.key != "serial") {
+						if (v.additional && v.additional.doNotRender && v.additional.doNotRender === 1) {}
+						else {
+							let value = v.value;
+							let def = '';
+							if (value == '') {
+								def = ' (DEFAULT used)';
+								value = v.default;
+							}
+							let text = document.createTextNode(value);
+							optionsContainer.append(`<b>${v.key}${def}:</b> `).append(text).append(`${newline}`);
 						}
-						text = document.createTextNode(value);
-						DIV.append(`<b>${v.key}${def}:</b> `).append(text).append(`${newline}`);
 					}
-				}
+				});
 			});
 
 			/*
@@ -1322,6 +1428,72 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			//div_options.append('<h3>'+_x('Options', 'title', 'event-tickets-with-ticket-scanner')+'</h3>');
 			div_options.append('<p><span class="dashicons dashicons-external"></span><a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/" target="_blank">Click here, to visit the documentation.</a></p>');
 			div_options.append(getUseFulVideosHTML());
+
+			let exportImport_div = $('<div style="padding-top:10px;padding-bottom:10px;">').appendTo(div_options);
+			$('<button class="button">').html(_x('Export Options', 'label', 'event-tickets-with-ticket-scanner'))
+				.on('click', ()=>{
+					_makePost('exportOptions', '', function(result) {
+						if (result) {
+							let json = JSON.stringify(result, null, 2);
+							let blob = new Blob([json], {type: 'application/json'});
+							let url = URL.createObjectURL(blob);
+							let a = document.createElement('a');
+							a.href = url;
+							let date = new Date().toISOString().slice(0, 10);
+							a.download = 'event-tickets-options-' + date + '.json';
+							document.body.appendChild(a);
+							a.click();
+							document.body.removeChild(a);
+							URL.revokeObjectURL(url);
+						}
+					});
+				}).appendTo(exportImport_div);
+			let importFileInput = $('<input type="file" accept=".json" style="display:none;">');
+			exportImport_div.append(importFileInput);
+			$('<button class="button" style="margin-left:5px;">').html(_x('Import Options', 'label', 'event-tickets-with-ticket-scanner'))
+				.on('click', ()=>{
+					importFileInput.val('');
+					importFileInput.trigger('click');
+				}).appendTo(exportImport_div);
+			$('<button class="button" style="margin-left:5px;">').html('<span class="dashicons dashicons-welcome-learn-more" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Start Wizard', 'label', 'event-tickets-with-ticket-scanner'))
+				.on('click', ()=>{ __showSetupWizard(true); })
+				.appendTo(exportImport_div);
+			if (isPremium()) {
+				$('<button class="button" style="margin-left:5px;">').html('<span class="dashicons dashicons-star-filled" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Premium Wizard', 'label', 'event-tickets-with-ticket-scanner'))
+					.on('click', ()=>{ __showPremiumWizard(true); })
+					.appendTo(exportImport_div);
+			}
+			importFileInput.on('change', function() {
+				let file = this.files[0];
+				if (!file) return;
+				let reader = new FileReader();
+				reader.onload = function(e) {
+					let parsed;
+					try {
+						parsed = JSON.parse(e.target.result);
+					} catch(err) {
+						LAYOUT.renderFatalError(__('Invalid JSON file.', 'event-tickets-with-ticket-scanner'));
+						return;
+					}
+					if (!parsed.options || typeof parsed.options !== 'object') {
+						LAYOUT.renderFatalError(__('Invalid options file: missing options data.', 'event-tickets-with-ticket-scanner'));
+						return;
+					}
+					let count = Object.keys(parsed.options).length;
+					LAYOUT.renderYesNo(
+						_x('Import Options', 'title', 'event-tickets-with-ticket-scanner'),
+						__('Import %d options? This will overwrite current settings.', 'event-tickets-with-ticket-scanner').replace('%d', count),
+						()=>{
+							_makePost('importOptions', {options: JSON.stringify(parsed.options)}, function(result) {
+								if (result) {
+									_displayOptionsArea();
+								}
+							});
+						}
+					);
+				};
+				reader.readAsText(file);
+			});
 
 			let menu_band = $('<div style="padding-top:10px;padding-bottom:15px;">').appendTo(div_options);
 			let menu_values = [];
@@ -1551,6 +1723,32 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					}
 
 					elem_input.attr("data-key", v.key);
+
+					if (v.key == "serial") {
+						let serialStatusSpan = $('<span style="margin-left:10px;">');
+						let serialCheckBtn = $('<button class="button button-secondary" style="margin-left:5px;">').html(__('Check License', 'event-tickets-with-ticket-scanner'));
+						serialCheckBtn.on('click', function(e) {
+							e.preventDefault();
+							serialCheckBtn.prop('disabled', true).html(__('Checking...', 'event-tickets-with-ticket-scanner'));
+							serialStatusSpan.html('');
+							_makePost('recheckLicense', {}, function(result) {
+								serialCheckBtn.prop('disabled', false).html(__('Check License', 'event-tickets-with-ticket-scanner'));
+								if (result) {
+									let color = result.active ? 'green' : 'red';
+									let label = result.active ? __('Active', 'event-tickets-with-ticket-scanner') : __('Inactive', 'event-tickets-with-ticket-scanner');
+									if (result.subscription_type === 'lifetime') label += ' (Lifetime)';
+									serialStatusSpan.html('<span style="color:'+color+';font-weight:bold;">'+label+'</span>');
+									if (result.consecutive_failures > 0) {
+										serialStatusSpan.append(' — '+result.consecutive_failures+' '+__('failures', 'event-tickets-with-ticket-scanner'));
+									}
+								}
+							}, function() {
+								serialCheckBtn.prop('disabled', false).html(__('Check License', 'event-tickets-with-ticket-scanner'));
+								serialStatusSpan.html('<span style="color:red;">'+__('Error', 'event-tickets-with-ticket-scanner')+'</span>');
+							});
+						});
+						elem_div.append(serialCheckBtn).append(serialStatusSpan);
+					}
 
 					if (v.key == "wcassignmentUseGlobalSerialFormatter") {
 						let option = __getOptionByKey('wcassignmentUseGlobalSerialFormatter_values');
@@ -2117,32 +2315,561 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		}).html(label+"<br>");
 	}
 
+	var _firstStepsBox = null;
+
 	function __showFirstSteps() {
-		let infoBox = null;
-		// check if option displayFirstStepsHelp is set and active
-		if (_getOptions_isActivatedByKey("displayFirstStepsHelp")) {
-			// render info box with the first steps instructions.
-			infoBox = $('<div style="background:#f9f9f9;border:1px solid #ddd;border:2px solid blue;padding:15px;margin-top:20px;margin-bottom:20px;box-shadow: 0 2px 5px rgba(0,0,0,0.1);border-radius:10px;"/>');
-			infoBox.append($('<h3/>').html(_x('First Steps', 'title', 'event-tickets-with-ticket-scanner')));
-			$('<p/>').html(__('The basic steps to sell tickets, no matter which use case you have.', 'event-tickets-with-ticket-scanner')).appendTo(infoBox);
-			let ul = $('<ol/>').appendTo(infoBox);
-			$('<li/>').html(__('Create a list of tickets if none exists.<br>You can create different lists for different events or purposes. The ticket list need to be assigned to the product.', 'event-tickets-with-ticket-scanner')).appendTo(ul);
-			$('<li/>').html(__('Go to the WooCommerce products and add/change a product.', 'event-tickets-with-ticket-scanner')).appendTo(ul);
-			$('<li/>').html(__('Open the Event Ticket tab and activate the product to be a ticket and assign a ticket list.', 'event-tickets-with-ticket-scanner')).appendTo(ul);
-			$('<li/>').html(__('Adjust the ticket informations if needed.', 'event-tickets-with-ticket-scanner')).appendTo(ul);
-			$('<p/>').html(__('If you want to specialize your tickets, checkout our use case videos and also take a look at the options area with more than 200 options.', 'event-tickets-with-ticket-scanner')).appendTo(infoBox);
-			$('<p/>').html(__('If you need help, please contact us via email. The information is in "Support Info" area - button above.', 'event-tickets-with-ticket-scanner')).appendTo(infoBox);
-			infoBox.append(getUseFulVideosHTML());
-			let btn_dont_show = $('<button class="button button-secondary" style="margin-top:10px;"/>').html(_x("Don't show this again", 'label', 'event-tickets-with-ticket-scanner')).appendTo(infoBox);
-			btn_dont_show.on("click", function(){
-				_saveOptionValue("displayFirstStepsHelp", "0", ()=>{
-					infoBox.slideUp(300, function(){
-						infoBox.remove();
+		if (!_getOptions_isActivatedByKey("displayFirstStepsHelp")) return null;
+
+		let hasTickets = OPTIONS.infos && OPTIONS.infos.ticket && OPTIONS.infos.ticket.counter > 0;
+		let hasRedeemed = OPTIONS.infos && OPTIONS.infos.ticket && OPTIONS.infos.ticket.redeemed_count > 0;
+		// DATA_LISTS may not be loaded yet — steps update later via __updateFirstStepsProgress()
+		let hasLists = DATA_LISTS && DATA_LISTS.length > 0;
+		let productsUrl = myAjax.url.replace('admin-ajax.php', 'edit.php?post_type=product');
+		let scannerUrl = myAjax.ticket_url + 'scanner/';
+
+		let steps = [
+			{key: 'list',    done: hasLists,    label: __('Create a ticket list', 'event-tickets-with-ticket-scanner'), desc: __('Organize your tickets in lists for different events or purposes.', 'event-tickets-with-ticket-scanner'), actionLabel: _x('View lists', 'label', 'event-tickets-with-ticket-scanner'), actionType: 'scroll'},
+			{key: 'product', done: hasTickets,   label: __('Assign list to a WooCommerce product', 'event-tickets-with-ticket-scanner'), desc: __('Open a product, go to the Event Ticket tab, and enable ticketing.', 'event-tickets-with-ticket-scanner'), actionLabel: _x('Go to products', 'label', 'event-tickets-with-ticket-scanner'), actionType: 'link', actionUrl: productsUrl},
+			{key: 'order',   done: hasTickets,   label: __('Process a test order', 'event-tickets-with-ticket-scanner'), desc: __('Place an order and complete it to generate tickets.', 'event-tickets-with-ticket-scanner'), actionLabel: '', actionType: 'none'},
+			{key: 'scan',    done: hasRedeemed,  label: __('Scan a ticket at the entrance', 'event-tickets-with-ticket-scanner'), desc: __('Use the browser-based QR scanner to redeem tickets.', 'event-tickets-with-ticket-scanner'), actionLabel: _x('Open Scanner', 'label', 'event-tickets-with-ticket-scanner'), actionType: 'link', actionUrl: scannerUrl}
+		];
+
+		let doneCount = steps.filter(s => s.done).length;
+
+		// --- Build card ---
+		let card = $('<div class="saso-first-steps-card"/>');
+
+		// Header with progress
+		let header = $('<div class="saso-first-steps-header"/>').appendTo(card);
+		$('<h3/>').html(_x('Getting Started', 'title', 'event-tickets-with-ticket-scanner')).appendTo(header);
+		let progressWrap = $('<div class="saso-first-steps-progress"/>').appendTo(header);
+		let barOuter = $('<div class="saso-first-steps-bar-outer"/>').appendTo(progressWrap);
+		let barInner = $('<div class="saso-first-steps-bar-inner"/>').css('width', (doneCount / steps.length * 100) + '%').appendTo(barOuter);
+		let progressLabel = $('<span class="saso-first-steps-progress-label"/>').text(doneCount + '/' + steps.length).appendTo(progressWrap);
+
+		// Steps list
+		let stepsList = $('<div class="saso-first-steps-list"/>').appendTo(card);
+		steps.forEach((step, i) => {
+			let row = $('<div class="saso-first-steps-step' + (step.done ? ' done' : '') + '" data-step="' + step.key + '"/>');
+			let icon = $('<span class="saso-first-steps-icon"/>').html(step.done ? '&#10003;' : (i + 1)).appendTo(row);
+			let content = $('<div class="saso-first-steps-content"/>').appendTo(row);
+			$('<strong/>').text(step.label).appendTo(content);
+			$('<div class="saso-first-steps-desc"/>').text(step.desc).appendTo(content);
+			if (step.actionLabel && !step.done) {
+				let btn = $('<button class="button button-small"/>').text(step.actionLabel).appendTo(content);
+				if (step.actionType === 'scroll') {
+					btn.on('click', () => {
+						let target = $('h3:contains("' + _x('List of tickets', 'title', 'event-tickets-with-ticket-scanner') + '")');
+						if (target.length) $('html,body').animate({scrollTop: target.offset().top - 50}, 400);
 					});
+				} else if (step.actionType === 'link') {
+					btn.on('click', () => window.open(step.actionUrl, '_blank'));
+				}
+			}
+			row.appendTo(stepsList);
+		});
+
+		// Videos
+		let videosWrap = $('<div class="saso-first-steps-videos"/>').appendTo(card);
+		$(getUseFulVideosHTML()).appendTo(videosWrap);
+
+		// Footer with dismiss
+		let footer = $('<div class="saso-first-steps-footer"/>').appendTo(card);
+		$('<p/>').html(__('If you need help, please contact us via email. The information is in "Support Info" area - button above.', 'event-tickets-with-ticket-scanner')).appendTo(footer);
+		let btn_dont_show = $('<button class="button button-secondary button-small"/>').html(_x("Don't show this again", 'label', 'event-tickets-with-ticket-scanner')).appendTo(footer);
+		btn_dont_show.on("click", function(){
+			_saveOptionValue("displayFirstStepsHelp", "0", ()=>{
+				card.slideUp(300, function(){ card.remove(); _firstStepsBox = null; });
+			});
+		});
+
+		// Inject styles once
+		if (!$('#saso-first-steps-styles').length) {
+			$('<style id="saso-first-steps-styles"/>').text(
+				'.saso-first-steps-card{background:#fff;border:1px solid #c3c4c7;border-left:4px solid #2271b1;padding:20px 24px;margin:20px 0;border-radius:4px;box-shadow:0 1px 1px rgba(0,0,0,.04);}' +
+				'.saso-first-steps-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}' +
+				'.saso-first-steps-header h3{margin:0;font-size:16px;color:#1d2327;}' +
+				'.saso-first-steps-progress{display:flex;align-items:center;gap:10px;}' +
+				'.saso-first-steps-bar-outer{width:120px;height:8px;background:#dcdcde;border-radius:4px;overflow:hidden;}' +
+				'.saso-first-steps-bar-inner{height:100%;background:#2271b1;border-radius:4px;transition:width .4s ease;}' +
+				'.saso-first-steps-progress-label{font-size:13px;color:#646970;font-weight:500;}' +
+				'.saso-first-steps-list{display:flex;flex-direction:column;gap:2px;}' +
+				'.saso-first-steps-step{display:flex;align-items:flex-start;gap:14px;padding:12px 14px;border-radius:4px;transition:background .15s;}' +
+				'.saso-first-steps-step:hover{background:#f6f7f7;}' +
+				'.saso-first-steps-icon{flex-shrink:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;background:#dcdcde;color:#50575e;}' +
+				'.saso-first-steps-step.done .saso-first-steps-icon{background:#00a32a;color:#fff;}' +
+				'.saso-first-steps-content{flex:1;min-width:0;}' +
+				'.saso-first-steps-content strong{display:block;font-size:14px;color:#1d2327;margin-bottom:2px;}' +
+				'.saso-first-steps-step.done .saso-first-steps-content strong{color:#646970;text-decoration:line-through;}' +
+				'.saso-first-steps-desc{font-size:13px;color:#646970;margin-bottom:6px;}' +
+				'.saso-first-steps-content .button{margin-top:2px;}' +
+				'.saso-first-steps-videos{margin-top:14px;padding-top:14px;border-top:1px solid #dcdcde;}' +
+				'.saso-first-steps-videos h3{font-size:14px;margin:0 0 6px;}' +
+				'.saso-first-steps-videos ul{margin:0 0 0 18px;}' +
+				'.saso-first-steps-videos li{margin-bottom:4px;}' +
+				'.saso-first-steps-footer{margin-top:14px;padding-top:14px;border-top:1px solid #dcdcde;display:flex;align-items:center;justify-content:space-between;gap:12px;}' +
+				'.saso-first-steps-footer p{margin:0;font-size:13px;color:#646970;}'
+			).appendTo('head');
+		}
+
+		_firstStepsBox = card;
+		return card;
+	}
+
+	function __updateFirstStepsProgress() {
+		if (!_firstStepsBox) return;
+		let hasLists = DATA_LISTS && DATA_LISTS.length > 0;
+		let hasTickets = OPTIONS.infos && OPTIONS.infos.ticket && OPTIONS.infos.ticket.counter > 0;
+		let hasRedeemed = OPTIONS.infos && OPTIONS.infos.ticket && OPTIONS.infos.ticket.redeemed_count > 0;
+		let states = {list: hasLists, product: hasTickets, order: hasTickets, scan: hasRedeemed};
+		let doneCount = 0;
+		_firstStepsBox.find('.saso-first-steps-step').each(function(){
+			let key = $(this).data('step');
+			let done = states[key] || false;
+			if (done) doneCount++;
+			$(this).toggleClass('done', done);
+			$(this).find('.saso-first-steps-icon').html(done ? '&#10003;' : (Object.keys(states).indexOf(key) + 1));
+			if (done) $(this).find('.button').hide();
+		});
+		_firstStepsBox.find('.saso-first-steps-bar-inner').css('width', (doneCount / 4 * 100) + '%');
+		_firstStepsBox.find('.saso-first-steps-progress-label').text(doneCount + '/4');
+	}
+
+	// ============================================================
+	// Setup Wizard (#187 Phase 2)
+	// ============================================================
+
+	var _wizardPresetQuestions = {
+		'event': [
+			{key: 'wcTicketDontAllowRedeemTicketBeforeStart', label: __('Lock ticket redemption until event starts?', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned?', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'wcTicketDisplayOrderTicketsViewLinkOnMail', label: __('Show "Open Tickets" link in email? All QR codes on one page — ideal for groups.', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets', label: __('Auto-complete orders when all items are tickets? Tickets are generated immediately.', 'event-tickets-with-ticket-scanner'), preset: 1}
+		],
+		'daypass': [
+			{key: 'wcTicketAllowRedeemTicketAfterEnd', label: __('Allow redemption after closing time?', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned?', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'wcTicketDisplayOrderTicketsViewLinkOnMail', label: __('Show "Open Tickets" link in email? All QR codes on one page — ideal for families.', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets', label: __('Auto-complete orders when all items are tickets? Tickets are generated immediately.', 'event-tickets-with-ticket-scanner'), preset: 1}
+		],
+		'membership': [
+			{key: 'wcTicketUserProfileDisplayRedeemAmount', label: __('Show redemption counter to customer? E.g. "15 of 30 visits used"', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'wcTicketShowRedeemBtnOnTicket', label: __('Show self-redeem button on ticket page? For self-service access.', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned? Disable to verify identity first.', 'event-tickets-with-ticket-scanner'), preset: 0}
+		],
+		'voucher': [
+			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned?', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'wcTicketShowRedeemBtnOnTicket', label: __('Show self-redeem button? Customer redeems the voucher themselves.', 'event-tickets-with-ticket-scanner'), preset: 1}
+		]
+	};
+
+	var _wizardUseCases = [
+		{key: 'event', icon: '&#127915;', label: __('Event tickets', 'event-tickets-with-ticket-scanner'), desc: __('Concerts, shows, festivals', 'event-tickets-with-ticket-scanner')},
+		{key: 'daypass', icon: '&#127965;', label: __('Day passes', 'event-tickets-with-ticket-scanner'), desc: __('Theme park, zoo, spa', 'event-tickets-with-ticket-scanner')},
+		{key: 'membership', icon: '&#127183;', label: __('Memberships / Season passes', 'event-tickets-with-ticket-scanner'), desc: __('Recurring access', 'event-tickets-with-ticket-scanner')},
+		{key: 'voucher', icon: '&#127873;', label: __('Vouchers / Simple codes', 'event-tickets-with-ticket-scanner'), desc: __('Gift cards, promo codes', 'event-tickets-with-ticket-scanner')}
+	];
+
+	// ── Premium Update Check after serial key entry ──────────────────
+	function __checkPremiumUpdateAfterSerial(serialValue) {
+		if (!serialValue || serialValue.trim() === '') return;
+		_makePost('checkPremiumUpdate', {}, function(r) {
+			if (r.hasUpdate) {
+				__showPremiumUpdateDialog(r);
+			} else {
+				__showPremiumReleaseNotesHint();
+			}
+		});
+	}
+
+	function __showPremiumUpdateDialog(updateInfo) {
+		let dlg = $('<div/>').html(
+			'<p>' + __('A new premium version is available!', 'event-tickets-with-ticket-scanner') + '</p>' +
+			'<p>' + sprintf(__('Version %s is ready to install.', 'event-tickets-with-ticket-scanner'), '<b>' + updateInfo.newVersion + '</b>') + '</p>' +
+			'<p>' + __('Click the button below to update your premium plugin now.', 'event-tickets-with-ticket-scanner') + '</p>'
+		);
+		dlg.dialog({
+			title: __('Premium Plugin Update', 'event-tickets-with-ticket-scanner'),
+			modal: true,
+			width: 450,
+			buttons: [{
+				text: __('Update Now', 'event-tickets-with-ticket-scanner'),
+				class: 'button button-primary',
+				click: function() { window.location.href = updateInfo.updateUrl; }
+			}, {
+				text: __('Later', 'event-tickets-with-ticket-scanner'),
+				class: 'button',
+				click: function() { $(this).dialog('close'); }
+			}]
+		});
+	}
+
+	function __showPremiumReleaseNotesHint() {
+		let changelogUrl = 'https://vollstart.com/plugins/event-tickets-with-ticket-scanner-premium/changelog.json';
+		let today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+		fetch(changelogUrl + '?t=' + today)
+			.then(function(r) { return r.json(); })
+			.then(function(data) {
+				if (!data.versions || data.versions.length === 0) return;
+				let latest = data.versions[0];
+				let html = '<p>' + sprintf(
+					__('Premium version %s is available with new features:', 'event-tickets-with-ticket-scanner'),
+					'<b>' + latest.version + '</b>'
+				) + '</p><ul>';
+				for (let i = 0; i < latest.changes.length; i++) {
+					html += '<li>' + latest.changes[i] + '</li>';
+				}
+				html += '</ul>';
+				html += '<p><a href="https://vollstart.com/event-tickets-with-woocommerce/" target="_blank" class="button">' +
+					__('Learn more', 'event-tickets-with-ticket-scanner') + '</a></p>';
+				let dlg = $('<div/>').html(html);
+				dlg.dialog({
+					title: __('New Premium Features Available', 'event-tickets-with-ticket-scanner'),
+					modal: false,
+					width: 500,
+					buttons: [{
+						text: __('Close', 'event-tickets-with-ticket-scanner'),
+						class: 'button',
+						click: function() { $(this).dialog('close'); }
+					}]
 				});
+			})
+			.catch(function() { /* silently fail */ });
+	}
+
+	function __showSetupWizard(force) {
+		if (!force) {
+			let wizardVal = _getOptions_getValByKey('wizardCompleted');
+			if (wizardVal && wizardVal !== '') return;
+		}
+
+		// Inject wizard styles once
+		if (!$('#saso-wizard-styles').length) {
+			$('<style id="saso-wizard-styles"/>').text(
+				'.saso-wizard-dialog .ui-dialog-titlebar{background:#2271b1;color:#fff;border:none;border-radius:4px 4px 0 0;padding:12px 16px;}' +
+				'.saso-wizard-dialog .ui-dialog-titlebar-close{display:none;}' +
+				'.saso-wizard-dialog .ui-dialog-buttonpane{border-top:1px solid #dcdcde;padding:12px 16px;}' +
+				'.saso-wizard-dialog .ui-dialog-buttonpane button{margin-left:8px;}' +
+				'.saso-wizard{padding:8px 0;min-height:250px;}' +
+				'.saso-wizard-steps{display:flex;justify-content:center;gap:8px;margin-bottom:20px;}' +
+				'.saso-wizard-step-dot{width:10px;height:10px;border-radius:50%;background:#dcdcde;transition:background .2s;}' +
+				'.saso-wizard-step-dot.active{background:#2271b1;}' +
+				'.saso-wizard-step-dot.done{background:#00a32a;}' +
+				'.saso-wizard-welcome{text-align:center;padding:20px 0;}' +
+				'.saso-wizard-welcome h2{font-size:20px;margin:0 0 10px;color:#1d2327;}' +
+				'.saso-wizard-welcome p{font-size:14px;color:#646970;margin:0 0 6px;}' +
+				'.saso-wizard-usecases{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 4px;}' +
+				'.saso-wizard-usecase{border:2px solid #dcdcde;border-radius:8px;padding:16px;cursor:pointer;transition:border-color .15s,background .15s;text-align:center;}' +
+				'.saso-wizard-usecase:hover{border-color:#2271b1;background:#f0f6fc;}' +
+				'.saso-wizard-usecase.selected{border-color:#2271b1;background:#e7f0f9;}' +
+				'.saso-wizard-usecase-icon{font-size:28px;display:block;margin-bottom:6px;}' +
+				'.saso-wizard-usecase-label{font-size:14px;font-weight:600;color:#1d2327;display:block;}' +
+				'.saso-wizard-usecase-desc{font-size:12px;color:#646970;display:block;margin-top:2px;}' +
+				'.saso-wizard-questions{display:flex;flex-direction:column;gap:14px;padding:0 4px;}' +
+				'.saso-wizard-question{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid #dcdcde;border-radius:6px;background:#fff;}' +
+				'.saso-wizard-question-label{font-size:14px;color:#1d2327;flex:1;padding-right:12px;}' +
+				'.saso-wizard-toggle{position:relative;width:44px;height:24px;flex-shrink:0;}' +
+				'.saso-wizard-toggle input{opacity:0;width:0;height:0;}' +
+				'.saso-wizard-toggle .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;border-radius:24px;transition:.2s;}' +
+				'.saso-wizard-toggle .slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}' +
+				'.saso-wizard-toggle input:checked + .slider{background:#2271b1;}' +
+				'.saso-wizard-toggle input:checked + .slider:before{transform:translateX(20px);}' +
+				'.saso-wizard-done{text-align:center;padding:20px 0;}' +
+				'.saso-wizard-done-icon{font-size:48px;color:#00a32a;display:block;margin-bottom:10px;}' +
+				'.saso-wizard-done h2{font-size:20px;margin:0 0 10px;color:#1d2327;}' +
+				'.saso-wizard-done p{font-size:14px;color:#646970;margin:0 0 6px;}' +
+				'.saso-wizard-done-steps{text-align:left;margin:16px auto;max-width:320px;}' +
+				'.saso-wizard-done-steps li{font-size:13px;color:#1d2327;margin-bottom:4px;}' +
+				'.saso-wizard-tip{margin-top:14px;padding:12px 14px;background:#f0f6fc;border:1px solid #c3c4c7;border-left:3px solid #2271b1;border-radius:4px;font-size:13px;color:#1d2327;}' +
+				'.saso-wizard-tip strong{display:block;margin-bottom:4px;}' +
+				'.saso-wizard-tip span{color:#646970;}'
+			).appendTo('head');
+		}
+
+		var currentStep = 1;
+		var selectedPreset = '';
+		var overrides = {};
+
+		var dlg = $('<div class="saso-wizard"/>');
+
+		function renderStepDots() {
+			var dots = $('<div class="saso-wizard-steps"/>');
+			for (var i = 1; i <= 4; i++) {
+				var cls = 'saso-wizard-step-dot';
+				if (i < currentStep) cls += ' done';
+				if (i === currentStep) cls += ' active';
+				$('<span/>').addClass(cls).appendTo(dots);
+			}
+			return dots;
+		}
+
+		function renderStep() {
+			dlg.empty();
+			dlg.append(renderStepDots());
+
+			if (currentStep === 1) {
+				var welcome = $('<div class="saso-wizard-welcome"/>');
+				$('<h2/>').text(__('Welcome to Event Tickets!', 'event-tickets-with-ticket-scanner')).appendTo(welcome);
+				$('<p/>').text(__("Let's configure your ticketing system.", 'event-tickets-with-ticket-scanner')).appendTo(welcome);
+				$('<p/>').text(__('This takes less than 2 minutes.', 'event-tickets-with-ticket-scanner')).appendTo(welcome);
+				dlg.append(welcome);
+
+				dlg.dialog('option', 'buttons', [
+					{text: __("Skip, I'll configure manually", 'event-tickets-with-ticket-scanner'), class: 'button', click: function() { skipWizard(); }},
+					{text: __('Start Setup', 'event-tickets-with-ticket-scanner'), class: 'button button-primary', click: function() { currentStep = 2; renderStep(); }}
+				]);
+			}
+			else if (currentStep === 2) {
+				var wrap = $('<div class="saso-wizard-usecases"/>');
+				_wizardUseCases.forEach(function(uc) {
+					var card = $('<div class="saso-wizard-usecase"/>').attr('data-preset', uc.key);
+					if (uc.key === selectedPreset) card.addClass('selected');
+					$('<span class="saso-wizard-usecase-icon"/>').html(uc.icon).appendTo(card);
+					$('<span class="saso-wizard-usecase-label"/>').text(uc.label).appendTo(card);
+					$('<span class="saso-wizard-usecase-desc"/>').text(uc.desc).appendTo(card);
+					card.on('click', function() {
+						selectedPreset = uc.key;
+						overrides = {};
+						wrap.find('.saso-wizard-usecase').removeClass('selected');
+						$(this).addClass('selected');
+						updateButtons();
+					});
+					wrap.append(card);
+				});
+				dlg.append(wrap);
+
+				function updateButtons() {
+					dlg.dialog('option', 'buttons', [
+						{text: __('Back', 'event-tickets-with-ticket-scanner'), class: 'button', click: function() { currentStep = 1; renderStep(); }},
+						{text: __('Next', 'event-tickets-with-ticket-scanner'), class: 'button button-primary', disabled: !selectedPreset, click: function() {
+							if (!selectedPreset) return;
+							currentStep = 3;
+							renderStep();
+						}}
+					]);
+				}
+				updateButtons();
+			}
+			else if (currentStep === 3) {
+				var questions = _wizardPresetQuestions[selectedPreset] || [];
+				var qWrap = $('<div class="saso-wizard-questions"/>');
+
+				var ucLabel = '';
+				_wizardUseCases.forEach(function(uc) { if (uc.key === selectedPreset) ucLabel = uc.label; });
+				$('<p/>').css({fontSize:'14px',color:'#1d2327',margin:'0 4px 10px',fontWeight:'600'}).text(ucLabel).appendTo(qWrap);
+
+				questions.forEach(function(q) {
+					var row = $('<div class="saso-wizard-question"/>');
+					$('<span class="saso-wizard-question-label"/>').text(q.label).appendTo(row);
+					var toggle = $('<label class="saso-wizard-toggle"/>');
+					var val = typeof overrides[q.key] !== 'undefined' ? overrides[q.key] : q.preset;
+					var input = $('<input type="checkbox"/>').prop('checked', !!val);
+					input.on('change', function() {
+						overrides[q.key] = $(this).prop('checked') ? 1 : 0;
+					});
+					toggle.append(input);
+					toggle.append($('<span class="slider"/>'));
+					row.append(toggle);
+					qWrap.append(row);
+				});
+
+				if (!isPremium()) {
+					var tip = $('<div class="saso-wizard-tip"/>');
+					$('<strong/>').text('&#9889; ' + __('Tip: PDF attachment to email', 'event-tickets-with-ticket-scanner')).appendTo(tip);
+					$('<span/>').text(__('With the Premium version you can attach PDF tickets directly to the order email — as individual files or merged into one PDF.', 'event-tickets-with-ticket-scanner')).appendTo(tip);
+					qWrap.append(tip);
+				} else {
+					var premiumQuestions = [];
+					if (selectedPreset === 'event' || selectedPreset === 'daypass') {
+						premiumQuestions.push({key: 'wcTicketAttachTicketToMailAsOnePDF', label: __('Attach all tickets as one PDF to the order email?', 'event-tickets-with-ticket-scanner'), preset: 1});
+					} else {
+						premiumQuestions.push({key: 'wcTicketAttachTicketToMail', label: __('Attach PDF ticket to the order email?', 'event-tickets-with-ticket-scanner'), preset: 1});
+					}
+					if (premiumQuestions.length > 0) {
+						var premLabel = $('<p/>').css({fontSize:'13px',color:'#2271b1',margin:'10px 4px 6px',fontWeight:'600'}).text(__('Premium', 'event-tickets-with-ticket-scanner'));
+						qWrap.append(premLabel);
+						premiumQuestions.forEach(function(q) {
+							var row = $('<div class="saso-wizard-question"/>');
+							$('<span class="saso-wizard-question-label"/>').text(q.label).appendTo(row);
+							var toggle = $('<label class="saso-wizard-toggle"/>');
+							var val = typeof overrides[q.key] !== 'undefined' ? overrides[q.key] : q.preset;
+							var input = $('<input type="checkbox"/>').prop('checked', !!val);
+							input.on('change', function() {
+								overrides[q.key] = $(this).prop('checked') ? 1 : 0;
+							});
+							toggle.append(input);
+							toggle.append($('<span class="slider"/>'));
+							row.append(toggle);
+							qWrap.append(row);
+						});
+					}
+				}
+
+				dlg.append(qWrap);
+
+				dlg.dialog('option', 'buttons', [
+					{text: __('Back', 'event-tickets-with-ticket-scanner'), class: 'button', click: function() { currentStep = 2; renderStep(); }},
+					{text: __('Apply & Finish', 'event-tickets-with-ticket-scanner'), class: 'button button-primary', click: function() { applyPreset(); }}
+				]);
+			}
+			else if (currentStep === 4) {
+				var done = $('<div class="saso-wizard-done"/>');
+				$('<span class="saso-wizard-done-icon"/>').html('&#10003;').appendTo(done);
+				$('<h2/>').text(__("You're all set!", 'event-tickets-with-ticket-scanner')).appendTo(done);
+
+				var ucLabel2 = '';
+				_wizardUseCases.forEach(function(uc) { if (uc.key === selectedPreset) ucLabel2 = uc.label; });
+				$('<p/>').text(sprintf(__('Your settings have been configured for %s.', 'event-tickets-with-ticket-scanner'), ucLabel2)).appendTo(done);
+
+				var nextSteps = $('<ol class="saso-wizard-done-steps"/>');
+				$('<li/>').text(__('Create a ticket list', 'event-tickets-with-ticket-scanner')).appendTo(nextSteps);
+				$('<li/>').text(__('Enable tickets on a WooCommerce product', 'event-tickets-with-ticket-scanner')).appendTo(nextSteps);
+				$('<li/>').text(__('Place a test order', 'event-tickets-with-ticket-scanner')).appendTo(nextSteps);
+				done.append(nextSteps);
+				dlg.append(done);
+
+				var scannerUrl = myAjax.ticket_url + 'scanner/';
+				dlg.dialog('option', 'buttons', [
+					{text: __('Open Options', 'event-tickets-with-ticket-scanner'), class: 'button', click: function() {
+						closeDialog(dlg);
+						var settingsBtn = $('[data-action="settings"]');
+						if (settingsBtn.length) settingsBtn.trigger('click');
+					}},
+					{text: __('Close', 'event-tickets-with-ticket-scanner'), class: 'button button-primary', click: function() { closeDialog(dlg); }}
+				]);
+			}
+		}
+
+		function skipWizard() {
+			_saveOptionValue('wizardCompleted', myAjax._plugin_version, function() {
+				closeDialog(dlg);
 			});
 		}
-		return infoBox; // jquery object
+
+		function applyPreset() {
+			dlg.dialog('option', 'buttons', []);
+			dlg.empty().html('<div style="text-align:center;padding:40px 0;">' + _getSpinnerHTML(__('Applying settings...', 'event-tickets-with-ticket-scanner')) + '</div>');
+			_makePost('applyWizardPreset', {preset: selectedPreset, overrides: JSON.stringify(overrides)}, function() {
+				currentStep = 4;
+				renderStep();
+			}, function(err) {
+				currentStep = 3;
+				renderStep();
+				alert(__('Error applying settings. Please try again.', 'event-tickets-with-ticket-scanner'));
+			});
+		}
+
+		dlg.dialog({
+			title: __('Setup Wizard', 'event-tickets-with-ticket-scanner'),
+			modal: true,
+			width: 550,
+			minHeight: 350,
+			dialogClass: 'saso-wizard-dialog',
+			closeOnEscape: false,
+			buttons: [],
+			open: function() { renderStep(); }
+		});
+	}
+
+	// ── Premium Wizard (#233) ──────────────────────────────────────
+
+	function __showPremiumWizard(force) {
+		if (!isPremium()) return;
+		if (!force) {
+			let val = _getOptions_getValByKey('premiumWizardCompleted');
+			if (val && val !== '') return;
+			// Don't show if setup wizard hasn't been completed yet (let that run first)
+			let setupVal = _getOptions_getValByKey('wizardCompleted');
+			if (!setupVal || setupVal === '') return;
+		}
+
+		let dlg = $('<div class="saso-wizard"/>');
+		let step = 1;
+
+		function renderStep() {
+			dlg.empty();
+			if (step === 1) {
+				dlg.html(
+					'<div style="text-align:center;margin:20px 0 10px;">' +
+						'<span style="font-size:48px;">&#11088;</span>' +
+						'<h2 style="margin:10px 0 5px;">' + __('Premium Activated!', 'event-tickets-with-ticket-scanner') + '</h2>' +
+						'<p style="color:#666;">' + __('You now have access to these features:', 'event-tickets-with-ticket-scanner') + '</p>' +
+					'</div>' +
+					'<ul style="margin:0 0 15px 20px;line-height:1.8;">' +
+						'<li>' + __('PDF ticket attachment in emails', 'event-tickets-with-ticket-scanner') + '</li>' +
+						'<li>' + __('Ticket Designer (custom PDF templates)', 'event-tickets-with-ticket-scanner') + '</li>' +
+						'<li>' + __('Badge printing', 'event-tickets-with-ticket-scanner') + '</li>' +
+						'<li>' + __('Seating plans', 'event-tickets-with-ticket-scanner') + '</li>' +
+					'</ul>' +
+					'<div style="background:#f0f6fc;border:1px solid #c3d9ed;border-radius:6px;padding:12px;margin:10px 0;">' +
+						'<strong>' + __('Recommended:', 'event-tickets-with-ticket-scanner') + '</strong> ' +
+						__('Enable PDF ticket attachment in emails? Customers receive their tickets as PDF directly in the order confirmation email.', 'event-tickets-with-ticket-scanner') +
+					'</div>'
+				);
+				dlg.dialog('option', 'buttons', [
+					{
+						text: __('Enable Recommended Settings', 'event-tickets-with-ticket-scanner'),
+						class: 'button button-primary',
+						click: function() {
+							dlg.html('<div style="text-align:center;padding:40px;">' + _getSpinnerHTML() + '</div>');
+							dlg.dialog('option', 'buttons', []);
+							_makePost('applyPremiumDefaults', {}, function(r) {
+								if (OPTIONS.mapKeys['premiumWizardCompleted']) OPTIONS.mapKeys['premiumWizardCompleted'].value = r._version || '1';
+								step = 2;
+								renderStep();
+							});
+						}
+					},
+					{
+						text: _x('Skip', 'button', 'event-tickets-with-ticket-scanner'),
+						class: 'button',
+						click: function() {
+							_saveOptionValue('premiumWizardCompleted', '1', function() {
+								if (OPTIONS.mapKeys['premiumWizardCompleted']) OPTIONS.mapKeys['premiumWizardCompleted'].value = '1';
+								dlg.dialog('close');
+								dlg.dialog('destroy');
+								dlg.remove();
+							});
+						}
+					}
+				]);
+			} else if (step === 2) {
+				dlg.html(
+					'<div style="text-align:center;margin:20px 0 10px;">' +
+						'<span style="font-size:48px;">&#9989;</span>' +
+						'<h2 style="margin:10px 0 5px;">' + __('Premium settings applied!', 'event-tickets-with-ticket-scanner') + '</h2>' +
+					'</div>' +
+					'<ul style="margin:0 0 15px 20px;line-height:1.8;">' +
+						'<li>' + __('PDF attachment in emails: enabled', 'event-tickets-with-ticket-scanner') + '</li>' +
+						'<li>' + __('Merge into one PDF: enabled', 'event-tickets-with-ticket-scanner') + '</li>' +
+						'<li>' + __('Max attachments: 21', 'event-tickets-with-ticket-scanner') + '</li>' +
+					'</ul>' +
+					'<p style="color:#666;text-align:center;">' + __('You can change these anytime in Options.', 'event-tickets-with-ticket-scanner') + '</p>'
+				);
+				dlg.dialog('option', 'buttons', [
+					{
+						text: __('Close', 'event-tickets-with-ticket-scanner'),
+						class: 'button button-primary',
+						click: function() {
+							dlg.dialog('close');
+							dlg.dialog('destroy');
+							dlg.remove();
+						}
+					}
+				]);
+			}
+		}
+
+		dlg.dialog({
+			title: __('Premium Features', 'event-tickets-with-ticket-scanner'),
+			modal: true,
+			width: 480,
+			minHeight: 280,
+			dialogClass: 'saso-wizard-dialog',
+			closeOnEscape: false,
+			buttons: [],
+			open: function() { renderStep(); }
+		});
 	}
 
 	class Layout {
@@ -2155,6 +2882,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		}
 		renderMainBody() {
 			let infoBoxFirstSteps = __showFirstSteps();
+			__showSetupWizard();
+			__showPremiumWizard();
 
 			// display upgrade to premium link
 			if (!isPremium()) {
@@ -2700,7 +3429,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				getDataLists(()=>{
 					let id_liste = myAjax.divPrefix+'_tabelle_liste';
 					let tabelle_liste = $('<table/>').attr("id", id_liste);
-					tabelle_liste.html('<thead><tr><th align="left">'+_x('Name', 'label', 'event-tickets-with-ticket-scanner')+'</th><th align="left">'+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+'</th><th></th></tr></thead>');
+					tabelle_liste.html('<thead><tr><th align="left">'+_x('Name', 'label', 'event-tickets-with-ticket-scanner')+'</th><th align="left">'+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+'</th><th style="width:300px"></th></tr></thead>');
 					tplace.html(tabelle_liste);
 
 					let table = $('#'+id_liste);
@@ -2934,6 +3663,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 								fkt = BulkActions.codes[val].fkt;
 							}
 							fkt && fkt(selectedElems, tabelle_codes_datatable);
+						} else {
+							LAYOUT.renderInfoBox(_x('Bulk Action', 'title', 'event-tickets-with-ticket-scanner'), __('Please select at least one ticket first.', 'event-tickets-with-ticket-scanner'));
 						}
 					}
 					drop_codes_bulk.val('');
@@ -3166,7 +3897,19 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 								if (typeof metaObj['woocommerce'] !== "undefined") {
 									if (metaObj.woocommerce.order_id !== 0) {
 										div.append($("<div>").html('<b>'+_x('Order from', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').text(DateFormatStringToDateTimeText(metaObj.woocommerce.creation_date)+' ('+metaObj.woocommerce.creation_date+')')));
+										if (dataMeta.woocommerce && dataMeta.woocommerce._order_status) {
+											div.append($("<div>").html('<b>'+_x('Order Status', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').text(dataMeta.woocommerce._order_status)));
+										}
+										if (dataMeta.woocommerce && dataMeta.woocommerce._billing_email) {
+											div.append($("<div>").html('<b>'+_x('Billing Email', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').text(dataMeta.woocommerce._billing_email)));
+										}
 										div.append($("<div>").html('<b>'+_x('Product Id', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').html(metaObj.woocommerce.product_id+' <a target="_blank" href="post.php?post='+encodeURIComponent(metaObj.woocommerce.product_id)+'&action=edit">'+_x('Show Product', 'label', 'event-tickets-with-ticket-scanner')+'</a>')));
+										if (dataMeta.woocommerce && dataMeta.woocommerce._product_name) {
+											div.append($("<div>").html('<b>'+_x('Product', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').text(dataMeta.woocommerce._product_name)));
+										}
+										if (dataMeta.woocommerce && dataMeta.woocommerce._variation_attributes) {
+											div.append($("<div>").html('<b>'+_x('Variation', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<span>').text(dataMeta.woocommerce._variation_attributes)));
+										}
 									}
 								}
 								if (typeof metaObj.wc_ticket.subs !== "undefined" && metaObj.wc_ticket.subs.length > 0) {
@@ -4092,7 +4835,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
             let now = new Date().getTime();
             if (now - last_check > 240000) {
                 _makeGet('ping', [], data=>{
-                });
+                }, ()=>{/* silently ignore ping errors (e.g. timeout when tab is frozen) */});
             }
         }, 60000);
     }

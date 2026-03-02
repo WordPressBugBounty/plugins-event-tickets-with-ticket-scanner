@@ -3218,3 +3218,21 @@ msgstr ""
 #: index.php
 msgid "Your server is running PHP %1$s. This plugin requires PHP %2$s or higher. Please upgrade PHP to ensure full compatibility."
 msgstr "Ihr Server nutzt PHP %1$s. Dieses Plugin benötigt PHP %2$s oder höher. Bitte aktualisieren Sie PHP, um volle Kompatibilität sicherzustellen."
+
+
+#: backend.js
+msgid "Please select at least one ticket first."
+msgstr "Bitte wähle zuerst mindestens ein Ticket aus."
+
+msgid "Max. redeems per day"
+msgstr "Max. Einlösungen pro Tag"
+
+msgid "How often can the ticket be redeemed per day? 0 = unlimited (only total max applies)."
+msgstr "Wie oft darf das Ticket pro Tag eingelöst werden? 0 = unbegrenzt (nur das Gesamtmaximum gilt)."
+
+msgid "Daily redeem limit reached: %1$d of %2$d. Try again tomorrow."
+msgstr "Tägliches Einlöselimit erreicht: %1$d von %2$d. Versuche es morgen erneut."
+
+msgid "Redeems today: <b>%1$d</b> of <b>%2$d</b>"
+msgstr "Einlösungen heute: <b>%1$d</b> von <b>%2$d</b>"
+
