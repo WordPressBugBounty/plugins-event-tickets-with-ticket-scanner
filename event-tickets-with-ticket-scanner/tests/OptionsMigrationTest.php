@@ -279,4 +279,70 @@ class OptionsMigrationTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey('migrated', $result);
 		$this->assertEquals('1', get_option('saso_eventtickets_options_migrated'));
 	}
+
+	// ── Serial key survives migration ──────────────────────
+
+	/**
+	 * Simulate premium's serial option being added to the options array,
+	 * as happens in production when premium's _initOptions() runs.
+	 */
+	private function injectSerialOption(string $serial): void {
+		$serialOption = $this->options->getOptionsObject(
+			'serial', 'Premium Serial Key', '', 'text', $serial
+		);
+		// Use reflection to prepend to _options like premium does
+		$ref = new ReflectionProperty($this->options, '_options');
+		$ref->setAccessible(true);
+		$opts = $ref->getValue($this->options);
+		array_unshift($opts, $serialOption);
+		$ref->setValue($this->options, $opts);
+	}
+
+	public function test_serial_value_available_after_migration(): void {
+		$testSerial = 'TEST-SERIAL-' . wp_generate_password(8, false);
+		update_option('saso-event-tickets-premium_serial', $testSerial);
+
+		// Migrate options
+		$this->admin->migrateOptionsToCustomTable();
+		$this->options->resetMigrationCache();
+
+		// Inject serial option like premium would (serial is NOT in custom table)
+		$this->injectSerialOption($testSerial);
+
+		$value = $this->options->getOptionValue('serial');
+		$this->assertNotEquals('0', $value, 'Serial must not be 0 after migration');
+		$this->assertNotEquals(0, $value, 'Serial must not be integer 0 after migration');
+		$this->assertNotEmpty($value, 'Serial must not be empty after migration');
+		$this->assertEquals($testSerial, $value, 'Serial must match the value from wp_options');
+
+		// Cleanup
+		delete_option('saso-event-tickets-premium_serial');
+	}
+
+	public function test_serial_value_not_zero_when_absent_from_custom_table(): void {
+		$testSerial = 'ABSENT-TEST-' . wp_generate_password(8, false);
+		update_option('saso-event-tickets-premium_serial', $testSerial);
+
+		// Set migration complete but do NOT put serial in custom table
+		update_option('saso_eventtickets_options_migrated', '1');
+		$this->options->resetMigrationCache();
+
+		// Inject serial option like premium would
+		$this->injectSerialOption($testSerial);
+
+		$value = $this->options->getOptionValue('serial');
+		$this->assertNotEquals('0', $value, 'Serial must not be 0 when absent from custom table');
+		$this->assertNotEquals(0, $value, 'Serial must not be integer 0');
+		$this->assertEquals($testSerial, $value, 'Serial must fall back to default (wp_options value)');
+
+		// Cleanup
+		delete_option('saso-event-tickets-premium_serial');
+	}
+
+	public function test_getOptionsObject_initializes_value_to_default(): void {
+		$opt = $this->options->getOptionsObject('testkey', 'Label', '', 'text', 'my-default');
+		$this->assertEquals('my-default', $opt['value'],
+			'getOptionsObject must initialize value to $def, not 0');
+		$this->assertEquals('my-default', $opt['default']);
+	}
 }

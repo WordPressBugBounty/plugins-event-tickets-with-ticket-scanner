@@ -6,6 +6,7 @@ class sasoEventtickets_Options {
 	private $_prefix;
 	private bool $_allLoaded = false;
 	private ?bool $_migrationComplete = null;
+	private ?array $_dbValuesCache = null;
 
 	public function __construct($MAIN, $_prefix) {
 		$this->MAIN = $MAIN;
@@ -29,26 +30,36 @@ class sasoEventtickets_Options {
 	public function resetMigrationCache(): void {
 		$this->_migrationComplete = null;
 		$this->_allLoaded = false;
+		$this->_dbValuesCache = null;
+		// Reset per-option loaded flags so values are re-read from DB
+		if (is_array($this->_options)) {
+			foreach ($this->_options as $idx => $option) {
+				$this->_options[$idx]['_isLoaded'] = false;
+			}
+		}
 	}
 
 	/**
 	 * Bulk-load all options from the custom table in a single query.
 	 */
 	private function _loadAllFromCustomTable(): void {
-		global $wpdb;
-		$table = $this->MAIN->getDB()->getTabelle('options');
-		$rows = $wpdb->get_results("SELECT option_key, option_value FROM {$table}", ARRAY_A);
-
-		$dbValues = [];
-		if (is_array($rows)) {
-			foreach ($rows as $row) {
-				$dbValues[$row['option_key']] = $row['option_value'];
+		// Cache DB values on first call (single query), reuse for late-added options
+		if ($this->_dbValuesCache === null) {
+			global $wpdb;
+			$table = $this->MAIN->getDB()->getTabelle('options');
+			$rows = $wpdb->get_results("SELECT option_key, option_value FROM {$table}", ARRAY_A);
+			$this->_dbValuesCache = [];
+			if (is_array($rows)) {
+				foreach ($rows as $row) {
+					$this->_dbValuesCache[$row['option_key']] = $row['option_value'];
+				}
 			}
 		}
 
 		foreach ($this->_options as $idx => $option) {
-			if (isset($dbValues[$option['key']])) {
-				$v = $dbValues[$option['key']];
+			if ($option['_isLoaded']) continue;
+			if (isset($this->_dbValuesCache[$option['key']])) {
+				$v = $this->_dbValuesCache[$option['key']];
 				$decoded = json_decode($v, true);
 				if (is_array($decoded)) {
 					$v = $decoded;
@@ -57,6 +68,7 @@ class sasoEventtickets_Options {
 				}
 				$this->_options[$idx]['value'] = $v;
 			}
+			// If not in DB, value stays as default (set by getOptionsObject)
 			$this->_options[$idx]['_isLoaded'] = true;
 		}
 	}
@@ -725,7 +737,7 @@ class sasoEventtickets_Options {
 			'id'=>$this->_prefix.$key,
 			'label'=>$label,
 			'desc'=>$desc,
-			'value'=>0,
+			'value'=>$def,
 			'type'=>$type,
 			'default'=>$def,
 			'additional'=>$additional,
@@ -748,11 +760,9 @@ class sasoEventtickets_Options {
 	}
 	public function getOptions() {
 		if ($this->_isMigrationComplete()) {
-			// Custom table: single query, guarded by _allLoaded flag
-			if (!$this->_allLoaded) {
-				$this->_loadAllFromCustomTable();
-				$this->_allLoaded = true;
-			}
+			// Custom table: single DB query (cached), per-option _isLoaded check
+			// (re-entrant safe — options added after first load get values from cache)
+			$this->_loadAllFromCustomTable();
 		} else {
 			// Legacy wp_options: per-option _isLoaded check (re-entrant safe
 			// because initOptions() triggers getOptions() mid-build via PDF font setup)
@@ -824,6 +834,7 @@ class sasoEventtickets_Options {
 		do_action($this->MAIN->_do_action_prefix.'options_deleteAllOptionValues', $this->_options);
 		$this->_options = [];
 		$this->_allLoaded = false;
+		$this->_dbValuesCache = null;
 		$this->initOptions(); // Re-populate option definitions with defaults
 		return true;
 	}

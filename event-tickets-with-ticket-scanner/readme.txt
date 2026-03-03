@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.9.4
+Stable tag: 2.9.5
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -214,6 +214,9 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 2.9.5 - 2026-03-03 =
+* Fix: Premium serial key displayed as 0 after options migration — premium features appeared lost. Options added late during initialization (e.g. by the premium plugin) are now loaded correctly from the custom table.
 
 = 2.9.4 - 2026-03-03 =
 * Performance: Plugin options migrated from individual wp_options rows to a dedicated custom table — all settings now load in a single query instead of 150+ separate queries (#73)
