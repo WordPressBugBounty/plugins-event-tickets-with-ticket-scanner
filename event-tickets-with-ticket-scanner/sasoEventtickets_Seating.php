@@ -361,6 +361,14 @@ class sasoEventtickets_Seating {
 					$ret = $this->handleDeleteSeat($data);
 					break;
 
+				// Export / Import
+				case "exportSeatsCSV":
+					$this->handleExportSeatsCSV($data);
+					return; // CSV sends own headers + die(), no JSON response
+				case "importSeatsCSV":
+					$ret = $this->handleImportSeatsCSV($data);
+					break;
+
 				// Statistics
 				case "getStats":
 					$ret = $this->handleGetStats($data);
@@ -611,5 +619,206 @@ class sasoEventtickets_Seating {
 	 */
 	public function getSeatsWithStatus(int $planId, int $productId, ?string $eventDate = null): array {
 		return $this->getBlockManager()->getSeatsWithStatus($planId, $productId, $eventDate);
+	}
+
+	// =========================================================================
+	// Export (#209)
+	// =========================================================================
+
+	/**
+	 * Prepare seats data for CSV export.
+	 *
+	 * @param int $plan_id Seating plan ID
+	 * @return array Array of associative arrays with CSV columns
+	 */
+	public function prepareSeatsForExport(int $plan_id): array {
+		$plan = $this->getPlanManager()->getById($plan_id);
+		if (!$plan) {
+			throw new \Exception('Plan not found');
+		}
+		$seats = $this->getSeatManager()->getByPlanId($plan_id, false, false);
+
+		$csvData = [];
+		foreach ($seats as $seat) {
+			$meta = is_string($seat['meta'])
+				? json_decode($seat['meta'], true)
+				: ($seat['meta'] ?? []);
+			$csvData[] = [
+				'identifier'     => $seat['seat_identifier'],
+				'label'          => $meta['seat_label'] ?? '',
+				'category'       => $meta['seat_category'] ?? '',
+				'active'         => $seat['aktiv'] ? 'yes' : 'no',
+				'sort_order'     => $seat['sort_order'] ?? 0,
+				'description'    => $meta['description'] ?? '',
+				'capacity'       => $meta['capacity'] ?? 1,
+				'price_modifier' => $meta['price_modifier'] ?? 0,
+			];
+		}
+		return $csvData;
+	}
+
+	/**
+	 * Export seats as CSV download.
+	 * Sends HTTP headers and exits — no return.
+	 */
+	private function handleExportSeatsCSV(array $data): void {
+		if (!$this->MAIN->isPremium()) {
+			throw new \Exception('Premium feature');
+		}
+		$plan_id = intval($data['plan_id'] ?? 0);
+		if ($plan_id <= 0) {
+			throw new \Exception('Missing plan_id');
+		}
+		$plan = $this->getPlanManager()->getById($plan_id);
+		if (!$plan) {
+			throw new \Exception('Plan not found');
+		}
+		$csvData = $this->prepareSeatsForExport($plan_id);
+		$planName = sanitize_file_name($plan['name']);
+		$filename = 'seats-' . $planName . '-' . wp_date('Y-m-d') . '.csv';
+		SASO_EVENTTICKETS::_basics_sendeDateiCSVvonDBdaten($csvData, $filename, ';');
+	}
+
+	/**
+	 * Import seats from CSV data.
+	 * Creates new seats and updates existing ones (matched by identifier).
+	 *
+	 * @param array $data Must contain 'plan_id' and 'rows' (array of CSV row objects)
+	 * @return array Import results with created/updated/skipped counts
+	 */
+	/**
+	 * Known CSV columns for seat import.
+	 * Maps CSV column name → meta key (or null for non-meta fields).
+	 */
+	private const IMPORT_KNOWN_COLUMNS = [
+		'identifier'     => null, // seat_identifier, not meta
+		'label'          => 'seat_label',
+		'category'       => 'seat_category',
+		'active'         => null, // aktiv flag, not meta
+		'sort_order'     => null, // sort_order, not meta
+		'description'    => 'description',
+		'capacity'       => 'capacity',
+		'price_modifier' => 'price_modifier',
+	];
+
+	public function importSeatsCSV(array $data): array {
+		$plan_id = intval($data['plan_id'] ?? 0);
+		if ($plan_id <= 0) {
+			throw new \Exception('Missing plan_id');
+		}
+		$plan = $this->getPlanManager()->getById($plan_id);
+		if (!$plan) {
+			throw new \Exception('Plan not found');
+		}
+		$rows = $data['rows'] ?? [];
+		if (empty($rows)) {
+			throw new \Exception('No rows to import');
+		}
+
+		// Detect unknown columns from CSV headers
+		$csvColumns = array_keys($rows[0] ?? []);
+		$knownColumns = array_keys(self::IMPORT_KNOWN_COLUMNS);
+		$ignoredColumns = array_values(array_diff($csvColumns, $knownColumns));
+
+		$seatManager = $this->getSeatManager();
+		$created = 0;
+		$updated = 0;
+		$skipped = 0;
+
+		foreach ($rows as $row) {
+			$identifier = trim($row['identifier'] ?? '');
+			if ($identifier === '') {
+				$skipped++;
+				continue;
+			}
+
+			$existing = $seatManager->getByIdentifier($plan_id, $identifier);
+
+			// Build meta: for updates, merge with existing; for creates, use defaults
+			if ($existing) {
+				$existingMeta = is_string($existing['meta'])
+					? json_decode($existing['meta'], true)
+					: ($existing['meta'] ?? []);
+				$meta = is_array($existingMeta) ? $existingMeta : [];
+			} else {
+				$meta = [
+					'seat_label'     => '',
+					'seat_category'  => '',
+					'description'    => '',
+					'capacity'       => 1,
+					'price_modifier' => 0,
+				];
+			}
+
+			// Only overwrite meta fields that are actually present in the CSV row
+			if (array_key_exists('label', $row)) {
+				$meta['seat_label'] = sanitize_text_field($row['label']);
+			}
+			if (array_key_exists('category', $row)) {
+				$meta['seat_category'] = sanitize_text_field($row['category']);
+			}
+			if (array_key_exists('description', $row)) {
+				$meta['description'] = sanitize_text_field($row['description']);
+			}
+			if (array_key_exists('capacity', $row)) {
+				$meta['capacity'] = max(1, intval($row['capacity']));
+			}
+			if (array_key_exists('price_modifier', $row)) {
+				$meta['price_modifier'] = floatval($row['price_modifier']);
+			}
+
+			$aktiv = array_key_exists('active', $row)
+				? (($row['active'] === 'yes') ? 1 : 0)
+				: ($existing ? (int) $existing['aktiv'] : 1);
+
+			if ($existing) {
+				$updateData = [
+					'aktiv' => $aktiv,
+					'meta' => $meta,
+				];
+				if (isset($row['sort_order']) && $row['sort_order'] !== '') {
+					$updateData['sort_order'] = intval($row['sort_order']);
+				}
+				$seatManager->update($updateData, $existing['id']);
+				$updated++;
+			} else {
+				try {
+					$createData = [
+						'seat_identifier' => sanitize_text_field($identifier),
+						'aktiv' => $aktiv,
+						'meta' => $meta,
+					];
+					if (isset($row['sort_order']) && $row['sort_order'] !== '') {
+						$createData['sort_order'] = intval($row['sort_order']);
+					}
+					$seatManager->create($plan_id, $createData);
+					$created++;
+				} catch (\Exception $e) {
+					$skipped++;
+				}
+			}
+		}
+
+		$result = [
+			'created' => $created,
+			'updated' => $updated,
+			'skipped' => $skipped,
+			'ignored_columns' => $ignoredColumns,
+			'message' => sprintf(
+				__('%d created, %d updated, %d skipped', 'event-tickets-with-ticket-scanner'),
+				$created, $updated, $skipped
+			),
+		];
+
+		return $result;
+	}
+
+	private function handleImportSeatsCSV(array $data): array {
+		if (!$this->MAIN->isPremium()) {
+			throw new \Exception('Premium feature');
+		}
+		$rows = isset($data['rows']) ? json_decode(stripslashes($data['rows']), true) : [];
+		$data['rows'] = is_array($rows) ? $rows : [];
+		return $this->importSeatsCSV($data);
 	}
 }

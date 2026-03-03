@@ -41,6 +41,12 @@ require "{$_tests_dir}/includes/bootstrap.php";
 // Create plugin tables in the test database.
 sasoEventtickets::Instance()->getDB()->installiereTabellen(true);
 
+// Reset options migration flag AFTER table creation so existing tests run in
+// legacy wp_options mode. The DB upgrade (v1.11) sets this flag during migration,
+// so we must clear it afterwards. OptionsMigrationTest manages the flag itself.
+delete_option('saso_eventtickets_options_migrated');
+sasoEventtickets::Instance()->getOptions()->resetMigrationCache();
+
 // Create WooCommerce tables in the test database.
 if (class_exists('WooCommerce')) {
     WC_Install::install();

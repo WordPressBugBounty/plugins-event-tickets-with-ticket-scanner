@@ -944,6 +944,98 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 		});
 	}
 
+	function handleImportCSV(file) {
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			var rows = parseCSV(e.target.result);
+			if (!rows || rows.length === 0) {
+				showNotice(__('No valid rows found in CSV file.', 'event-tickets-with-ticket-scanner'), 'error');
+				return;
+			}
+			var msg = __('Import %d rows? Existing seats with matching identifiers will be updated.', 'event-tickets-with-ticket-scanner').replace('%d', rows.length);
+			if (!confirm(msg)) return;
+
+			makeRequest('importSeatsCSV', {
+				plan_id: currentPlanId,
+				rows: JSON.stringify(rows)
+			}, function(data) {
+				var parts = [];
+				if (data.created > 0) parts.push(data.created + ' ' + __('created', 'event-tickets-with-ticket-scanner'));
+				if (data.updated > 0) parts.push(data.updated + ' ' + __('updated', 'event-tickets-with-ticket-scanner'));
+				if (data.skipped > 0) parts.push(data.skipped + ' ' + __('skipped', 'event-tickets-with-ticket-scanner'));
+				var msg = __('Import complete:', 'event-tickets-with-ticket-scanner') + ' ' + parts.join(', ');
+				if (data.ignored_columns && data.ignored_columns.length > 0) {
+					msg += '\n' + __('Ignored unknown columns:', 'event-tickets-with-ticket-scanner') + ' ' + data.ignored_columns.join(', ');
+				}
+				showNotice(msg);
+				loadSeats();
+			}, function(error) {
+				showNotice(error || __('Import failed.', 'event-tickets-with-ticket-scanner'), 'error');
+			});
+		};
+		reader.readAsText(file);
+	}
+
+	function parseCSV(text) {
+		var lines = text.split(/\r?\n/);
+		if (lines.length < 2) return [];
+
+		// Detect delimiter: semicolon (from our export) or comma
+		var firstLine = lines[0];
+		var delimiter = firstLine.indexOf(';') !== -1 ? ';' : ',';
+
+		var headers = lines[0].split(delimiter).map(function(h) {
+			return h.trim().replace(/^["']|["']$/g, '');
+		});
+
+		// Require identifier column
+		if (headers.indexOf('identifier') === -1) return [];
+
+		var rows = [];
+		for (var i = 1; i < lines.length; i++) {
+			var line = lines[i].trim();
+			if (!line) continue;
+
+			var values = splitCSVLine(line, delimiter);
+			var row = {};
+			for (var j = 0; j < headers.length; j++) {
+				row[headers[j]] = values[j] || '';
+			}
+			rows.push(row);
+		}
+		return rows;
+	}
+
+	function splitCSVLine(line, delimiter) {
+		var result = [];
+		var current = '';
+		var inQuotes = false;
+		for (var i = 0; i < line.length; i++) {
+			var ch = line[i];
+			if (inQuotes) {
+				if (ch === '"' && line[i + 1] === '"') {
+					current += '"';
+					i++;
+				} else if (ch === '"') {
+					inQuotes = false;
+				} else {
+					current += ch;
+				}
+			} else {
+				if (ch === '"') {
+					inQuotes = true;
+				} else if (ch === delimiter) {
+					result.push(current.trim());
+					current = '';
+				} else {
+					current += ch;
+				}
+			}
+		}
+		result.push(current.trim());
+		return result;
+	}
+
 	// =========================================================================
 	// Batch Operations
 	// =========================================================================
@@ -1107,6 +1199,20 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 		$wrap.on('click.sasoSeating', '.saso-add-plan', function() { openPlanModal(null); });
 		$wrap.on('click.sasoSeating', '.saso-back-to-plans', function() { showPlansView(); });
 		$wrap.on('click.sasoSeating', '.saso-add-seat', function() { openSeatModal(null); });
+		$wrap.on('click.sasoSeating', '.saso-export-seats-csv', function() {
+			if (!currentPlanId) return;
+			let url = BASIC._requestURL('seating', {c: 'exportSeatsCSV', plan_id: currentPlanId});
+			window.open(url, '_blank');
+		});
+		$wrap.on('click.sasoSeating', '.saso-import-seats-csv', function() {
+			if (!currentPlanId) return;
+			$wrap.find('.saso-import-csv-file').val('').trigger('click');
+		});
+		$wrap.on('change.sasoSeating', '.saso-import-csv-file', function() {
+			var file = this.files[0];
+			if (!file) return;
+			handleImportCSV(file);
+		});
 
 		// Modal buttons
 		$wrap.on('click.sasoSeating', '.saso-save-plan', function() { savePlan(); });
@@ -1198,6 +1304,8 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 						<span class="dashicons dashicons-format-image"></span>
 						${__('Show Layout', 'event-tickets-with-ticket-scanner')}
 					</button>
+					${myAjax._isPremium ? '<button type="button" class="button saso-export-seats-csv"><span class="dashicons dashicons-download" style="vertical-align:middle;margin-right:2px;"></span>' + __('Export CSV', 'event-tickets-with-ticket-scanner') + '</button>' : ''}
+					${myAjax._isPremium ? '<button type="button" class="button saso-import-seats-csv"><span class="dashicons dashicons-upload" style="vertical-align:middle;margin-right:2px;"></span>' + __('Import CSV', 'event-tickets-with-ticket-scanner') + '</button><input type="file" class="saso-import-csv-file" accept=".csv" style="display:none;">' : ''}
 					<span class="saso-seats-count"></span>
 				</div>
 				<div class="saso-batch-toolbar" style="display:none;">

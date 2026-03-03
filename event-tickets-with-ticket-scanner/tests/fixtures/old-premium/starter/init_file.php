@@ -1,0 +1,14 @@
+<?php
+defined('ABSPATH') or die('Direct access not allowed');
+if (isset($_GET['VollstartValidatorDebug'])) {
+	defined('WP_DEBUG') or define( 'WP_DEBUG', true );
+	ini_set('display_startup_errors', 'On');
+	error_reporting(2147483647); // max future error values
+	ini_set('display_errors', 'On');
+}
+/*
+$tz = wp_timezone_string();
+if (empty($tz)) $tz = date_default_timezone_get();
+date_default_timezone_set($tz);
+*/
+?>

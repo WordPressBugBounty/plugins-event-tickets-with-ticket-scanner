@@ -85,9 +85,62 @@ class BaseLimitsTest extends WP_UnitTestCase {
     }
 
     public function test_isMaxReachedForTickets_very_high_count(): void {
-        // Free version limit is 32 — very high count should exceed (return false)
+        // Free version limit is 50 — very high count should exceed (return false)
         $result = $this->main->getBase()->_isMaxReachedForTickets(999999);
         $this->assertFalse($result, 'Very high ticket count should exceed free limit');
+    }
+
+    // ── Counter brake (delete+recreate prevention) ───────────────
+
+    public function test_counter_brake_allows_when_counter_is_zero(): void {
+        update_option($this->main->getPrefix() . 'mvct', 0);
+        $result = $this->main->getBase()->_isMaxReachedForTickets(5);
+        $this->assertTrue($result, 'Counter=0 should not block');
+    }
+
+    public function test_counter_brake_allows_within_grace(): void {
+        // Counter 200, current total 100 → difference 100 < 150 grace → allowed
+        update_option($this->main->getPrefix() . 'mvct', 200);
+        $result = $this->main->getBase()->_isMaxReachedForTickets(100);
+        // Note: total 100 > codes_total(50) → already blocked by first check
+        // Test with total within limit
+        update_option($this->main->getPrefix() . 'mvct', 60);
+        $result = $this->main->getBase()->_isMaxReachedForTickets(10);
+        $this->assertTrue($result, 'Counter within grace period should allow');
+    }
+
+    public function test_counter_brake_blocks_when_exceeding_grace(): void {
+        // Counter 300, current total 10 → 300 > (10+150)=160 → blocked
+        update_option($this->main->getPrefix() . 'mvct', 300);
+        $result = $this->main->getBase()->_isMaxReachedForTickets(10);
+        $this->assertFalse($result, 'Counter far exceeding total+grace should block');
+    }
+
+    public function test_counter_brake_does_not_block_premium(): void {
+        // Premium has codes_total=0 → first check returns true (unlimited), counter never reached
+        // Simulate by passing total=0 with codes_total=0 logic
+        $maxVal = $this->main->getBase()->getMaxValue('codes_total');
+        if ($maxVal === 0) {
+            // Premium: should always return true regardless of counter
+            update_option($this->main->getPrefix() . 'mvct', 999999);
+            $result = $this->main->getBase()->_isMaxReachedForTickets(0);
+            $this->assertTrue($result);
+        } else {
+            // Free version in test env: codes_total > 0, skip this test
+            $this->markTestSkipped('Only relevant for premium (codes_total=0)');
+        }
+    }
+
+    public function test_counter_brake_boundary_at_grace_limit(): void {
+        // Counter exactly at total+150 → NOT exceeded (needs to be greater than)
+        update_option($this->main->getPrefix() . 'mvct', 160);
+        $result = $this->main->getBase()->_isMaxReachedForTickets(10);
+        $this->assertTrue($result, 'Counter exactly at grace boundary should still allow');
+
+        // Counter one above → blocked
+        update_option($this->main->getPrefix() . 'mvct', 161);
+        $result = $this->main->getBase()->_isMaxReachedForTickets(10);
+        $this->assertFalse($result, 'Counter one above grace boundary should block');
     }
 
     // ── _isMaxReachedForAuthtokens ───────────────────────────────

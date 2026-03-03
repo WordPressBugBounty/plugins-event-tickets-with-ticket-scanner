@@ -4,11 +4,128 @@ class sasoEventtickets_Options {
 	private $_options;
 	private $MAIN;
 	private $_prefix;
+	private bool $_allLoaded = false;
+	private ?bool $_migrationComplete = null;
+
 	public function __construct($MAIN, $_prefix) {
 		$this->MAIN = $MAIN;
 		$this->_prefix = $_prefix;
 	}
+
+	/**
+	 * Check if options have been migrated from wp_options to custom table.
+	 * Result is cached for the duration of the request.
+	 */
+	private function _isMigrationComplete(): bool {
+		if ($this->_migrationComplete === null) {
+			$this->_migrationComplete = (get_option('saso_eventtickets_options_migrated', '0') === '1');
+		}
+		return $this->_migrationComplete;
+	}
+
+	/**
+	 * Reset migration cache — called after migration completes within the same request.
+	 */
+	public function resetMigrationCache(): void {
+		$this->_migrationComplete = null;
+		$this->_allLoaded = false;
+	}
+
+	/**
+	 * Bulk-load all options from the custom table in a single query.
+	 */
+	private function _loadAllFromCustomTable(): void {
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('options');
+		$rows = $wpdb->get_results("SELECT option_key, option_value FROM {$table}", ARRAY_A);
+
+		$dbValues = [];
+		if (is_array($rows)) {
+			foreach ($rows as $row) {
+				$dbValues[$row['option_key']] = $row['option_value'];
+			}
+		}
+
+		foreach ($this->_options as $idx => $option) {
+			if (isset($dbValues[$option['key']])) {
+				$v = $dbValues[$option['key']];
+				$decoded = json_decode($v, true);
+				if (is_array($decoded)) {
+					$v = $decoded;
+				} else if (!is_array($v)) {
+					$v = stripslashes($v);
+				}
+				$this->_options[$idx]['value'] = $v;
+			}
+			$this->_options[$idx]['_isLoaded'] = true;
+		}
+	}
+
+	/**
+	 * Load all options from wp_options (legacy, pre-migration behavior).
+	 */
+	private function _loadAllFromWpOptions(): void {
+		foreach ($this->_options as $idx => $option) {
+			if ($option['_isLoaded'] == false) {
+				$v = get_option($option['id'], $option['default']);
+				if (!is_array($v)) {
+					$v = stripslashes($v);
+				}
+				$this->_options[$idx]['value'] = $v;
+				$this->_options[$idx]['_isLoaded'] = true;
+			}
+		}
+	}
+
+	/**
+	 * Write a single option to the custom table (INSERT or UPDATE).
+	 */
+	private function _writeToCustomTable(string $key, $value): void {
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('options');
+		$storeValue = is_array($value) ? json_encode($value) : (string) $value;
+
+		$wpdb->replace($table, [
+			'option_key'   => $key,
+			'option_value' => $storeValue,
+			'updated_at'   => wp_date('Y-m-d H:i:s'),
+			'updated_by'   => get_current_user_id(),
+		]);
+	}
+
+	/**
+	 * Delete a single option from the custom table.
+	 */
+	private function _deleteFromCustomTable(string $key): void {
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('options');
+		$wpdb->delete($table, ['option_key' => $key]);
+	}
+
+	/**
+	 * Log an option change to the history table.
+	 * Only logs if the value actually changed.
+	 */
+	private function _logOptionChange(string $key, $oldValue, $newValue): void {
+		$oldStr = is_array($oldValue) ? json_encode($oldValue) : (string) $oldValue;
+		$newStr = is_array($newValue) ? json_encode($newValue) : (string) $newValue;
+		if ($oldStr === $newStr) {
+			return;
+		}
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('options_history');
+		$wpdb->insert($table, [
+			'option_key' => $key,
+			'old_value'  => $oldStr,
+			'new_value'  => $newStr,
+			'changed_by' => get_current_user_id(),
+			'changed_at' => wp_date('Y-m-d H:i:s'),
+		]);
+	}
+
 	public function initOptions() {
+		$this->_allLoaded = false;
+
 		$order_status = [];
 		if (function_exists("wc_get_order_statuses")) {
 			$order_status = wc_get_order_statuses();
@@ -620,19 +737,26 @@ class sasoEventtickets_Options {
 	}
 	public function loadOptionFromWP($option_id, $default=null, $prefix=null) {
 		if ($prefix == null) $prefix = $this->_prefix;
-		return get_option( $prefix.$option_id, $default );
+		// For framework options post-migration, read from custom table
+		if ($this->_isMigrationComplete() && $prefix === $this->_prefix) {
+			$option = $this->getOption($option_id);
+			if ($option !== null) {
+				return $this->_getOptionValue($option);
+			}
+		}
+		return get_option($prefix.$option_id, $default);
 	}
 	public function getOptions() {
-		foreach($this->_options as $idx => $option) {
-			if ($option['_isLoaded'] == false) {
-				$v = get_option( $option['id'], $option['default']);
-				if (!is_array($v)) {
-					$v = stripslashes($v);
-				}
-				$option['value'] = $v;
-				$option['_isLoaded'] = true;
-				$this->_options[$idx] = $option;
+		if ($this->_isMigrationComplete()) {
+			// Custom table: single query, guarded by _allLoaded flag
+			if (!$this->_allLoaded) {
+				$this->_loadAllFromCustomTable();
+				$this->_allLoaded = true;
 			}
+		} else {
+			// Legacy wp_options: per-option _isLoaded check (re-entrant safe
+			// because initOptions() triggers getOptions() mid-build via PDF font setup)
+			$this->_loadAllFromWpOptions();
 		}
 		return $this->_options;
 	}
@@ -687,27 +811,42 @@ class sasoEventtickets_Options {
 		return true;
 	}
 	public function deleteAllOptionValues() {
-		$allOption = $this->getOptions();
-		foreach ($allOption as $option) {
-			$this->deleteOption($option['key']);
+		if ($this->_isMigrationComplete()) {
+			global $wpdb;
+			$table = $this->MAIN->getDB()->getTabelle('options');
+			$wpdb->query("TRUNCATE TABLE {$table}");
+		} else {
+			$allOption = $this->getOptions();
+			foreach ($allOption as $option) {
+				delete_option($option['id']);
+			}
 		}
-		do_action( $this->MAIN->_do_action_prefix.'options_deleteAllOptionValues', $allOption );
+		do_action($this->MAIN->_do_action_prefix.'options_deleteAllOptionValues', $this->_options);
+		$this->_options = [];
+		$this->_allLoaded = false;
+		$this->initOptions(); // Re-populate option definitions with defaults
 		return true;
 	}
 	public function deleteOption($key) {
 		foreach ($this->_options as $idx => $value) {
 			if ($value['key'] == $key) {
-				delete_option( $value['id'] );
+				$this->_logOptionChange($key, $value['value'], '');
+				if ($this->_isMigrationComplete()) {
+					$this->_deleteFromCustomTable($key);
+				} else {
+					delete_option($value['id']);
+				}
 				unset($this->_options[$idx]);
+				do_action($this->MAIN->_do_action_prefix.'options_deleteOption', $key);
 				return true;
 			}
 		}
-		do_action( $this->MAIN->_do_action_prefix.'options_deleteOption', $key);
 		return false;
 	}
 	public function changeOption($data) {
 		$option = $this->getOption($data['key']);
 		if ($option != null) {
+			$oldValue = $option['value'];
 			if ($option['type'] == "checkbox") {
 				$v = intval($data['value']);
 			} else {
@@ -722,8 +861,13 @@ class sasoEventtickets_Options {
 				}
 				$v = $data['value'];
 			}
-			update_option($option['id'], $v, false);
+			if ($this->_isMigrationComplete()) {
+				$this->_writeToCustomTable($data['key'], $v);
+			} else {
+				update_option($option['id'], $v, false);
+			}
 			$this->_setOptionValuesByKey($data['key'], 'value', $v);
+			$this->_logOptionChange($data['key'], $oldValue, $v);
 		}
 		// When serial key is changed via basic plugin (old premium compat), also store in the
 		// option that PUC and the license check read from.

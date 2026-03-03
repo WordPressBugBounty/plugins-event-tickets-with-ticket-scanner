@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.9.3
+ * Version: 2.9.4
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.9.3');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.9.4');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -249,8 +249,8 @@ class sasoEventtickets {
 			$min_premium_version = '1.6.0';
 
 			if (class_exists('sasoEventtickets_PremiumFunctions')) {
-				if (defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')
-					&& version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<')) {
+				if (!defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')
+					|| version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<')) {
 					// Old premium detected — do NOT load, run as free to prevent fatal errors
 					$this->_oldPremiumDetected = true;
 				} else {
@@ -287,8 +287,8 @@ class sasoEventtickets {
 		}
 
 		$min_premium_version = '1.6.0';
-		if (defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')
-			&& version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<')) {
+		if (!defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')
+			|| version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<')) {
 			$this->_oldPremiumDetected = true;
 			return;
 		}
@@ -447,6 +447,7 @@ class sasoEventtickets {
 		add_action( 'admin_notices', [$this, 'showOutdatedPremiumWarning'] );
 		add_action( 'admin_notices', [$this, 'showFormatWarning'] );
 		add_action( 'admin_notices', [$this, 'showPhpVersionWarning'] );
+		add_action( 'admin_notices', [$this, 'showOptionsMigrationNotice'] );
 
 		if (basename($_SERVER['SCRIPT_NAME']) == "admin-ajax.php") {
 			add_action('wp_ajax_'.$this->_prefix.'_executeAdminSettings', [$this,'executeAdminSettings_a'], 10, 0);
@@ -701,6 +702,7 @@ class sasoEventtickets {
 	}
 	public function relay_sasoEventtickets_cronjob_daily() {
 		$this->getTicketHandler()->cronJobDaily();
+		$this->getAdmin()->cleanupOptionsHistory();
 	}
 
 	public function plugin_deactivated() {
@@ -719,6 +721,13 @@ class sasoEventtickets {
 	public function plugin_activated($is_network_wide=false) { // und auch für updates, macht es einfacher
 		$this->getDB(); // um installiere Tabellen auszuführen
     	update_option('SASO_EVENTTICKETS_PLUGIN_VERSION', SASO_EVENTTICKETS_PLUGIN_VERSION);
+		// Only reset migration flag if options exist in wp_options (downgrade scenario).
+		// Do NOT blindly delete — the migration already removed options from wp_options,
+		// so deleting the flag would cause one request to read empty wp_options → all defaults.
+		$sentinelKey = $this->_prefix . 'qrAttachQRFilesToMailAsOnePDF';
+		if (get_option($sentinelKey, '__NOT_SET__') !== '__NOT_SET__') {
+			delete_option('saso_eventtickets_options_migrated');
+		}
 		$this->getAdmin()->generateFirstCodeList();
 		$this->cronjob_daily_activate();
 		do_action( $this->_do_action_prefix.'activated' );
@@ -1823,6 +1832,41 @@ class sasoEventtickets {
 			wp_redirect(remove_query_arg(['saso_eventtickets_clear_format_warning', '_wpnonce']));
 			exit;
 		}
+	}
+
+	/**
+	 * Show admin notice when options migration from wp_options to custom table is incomplete.
+	 * Includes a button to manually trigger the migration.
+	 */
+	public function showOptionsMigrationNotice(): void {
+		if (!current_user_can('manage_options')) {
+			return;
+		}
+		// Fast path: migration already done
+		if (get_option('saso_eventtickets_options_migrated', '0') === '1') {
+			return;
+		}
+		// Check if custom table exists (DB upgrade may not have run yet)
+		global $wpdb;
+		$table = $wpdb->prefix . 'saso_eventtickets_options';
+		if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table)) !== $table) {
+			return;
+		}
+		// Check sentinel: is the last known option still in wp_options?
+		$sentinelKey = $this->_prefix . 'qrAttachQRFilesToMailAsOnePDF';
+		if (get_option($sentinelKey, '__NOT_SET__') === '__NOT_SET__') {
+			// Sentinel gone — migration probably completed, set flag
+			update_option('saso_eventtickets_options_migrated', '1');
+			return;
+		}
+		// Migration incomplete — show admin notice with button
+		$nonce = wp_create_nonce($this->_prefix);
+		printf(
+			'<div class="notice notice-warning"><p><strong>Event Tickets:</strong> %s <button class="button button-primary" onclick="sasoEventticketsMigrateOptions(this)" data-nonce="%s">%s</button></p></div>',
+			esc_html__('Options migration to custom database table is incomplete.', 'event-tickets-with-ticket-scanner'),
+			esc_attr($nonce),
+			esc_html__('Migrate Options', 'event-tickets-with-ticket-scanner')
+		);
 	}
 
 	public function showFormatWarning(): void {

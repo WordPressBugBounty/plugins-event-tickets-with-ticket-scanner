@@ -26,7 +26,7 @@ class sasoEventtickets_AdminSettings {
 
 		// Defense in depth: require manage_options for sensitive actions
 		$sensitive_actions = [
-			'changeOption', 'resetOptions', 'deleteOptions', 'exportOptions', 'importOptions', 'applyWizardPreset', 'applyPremiumDefaults', 'checkPremiumUpdate', 'recheckLicense',
+			'changeOption', 'resetOptions', 'deleteOptions', 'exportOptions', 'importOptions', 'applyWizardPreset', 'applyPremiumDefaults', 'checkPremiumUpdate', 'recheckLicense', 'migrateOptionsToCustomTable', 'getOptionsHistory', 'revertOption', 'cleanupOptionsHistory', 'dismissSuggestion',
 			'emptyTableCodes', 'emptyTableLists', 'emptyTableErrorLogs',
 			'removeCode', 'removeCodes', 'removeAllCodesFromList',
 			'addAuthtoken', 'editAuthtoken', 'removeAuthtoken',
@@ -164,6 +164,22 @@ class sasoEventtickets_AdminSettings {
 					break;
 				case "recheckLicense":
 					$ret = $this->recheckLicense();
+					break;
+				case "migrateOptionsToCustomTable":
+					$ret = $this->migrateOptionsToCustomTable();
+					break;
+				case "getOptionsHistory":
+					$ret = $this->getOptionsHistory($data, SASO_EVENTTICKETS::getRequest());
+					$justJSON = true;
+					break;
+				case "revertOption":
+					$ret = $this->revertOption($data);
+					break;
+				case "cleanupOptionsHistory":
+					$ret = $this->cleanupOptionsHistory();
+					break;
+				case "dismissSuggestion":
+					$ret = $this->dismissSuggestion($data);
 					break;
 				case "resetOptions":
 					$ret = $this->resetOptions($data);
@@ -410,6 +426,7 @@ class sasoEventtickets_AdminSettings {
 
 			$ret = ['options'=>$options, 'options_special'=>$options_special, 'meta_tags_keys'=>$tags, 'versions'=>$versions, 'infos'=>$infos, 'tickets_for_testing'=>$tickets_for_testing, 'ticket_templates'=>$ticket_templates];
 		}
+		$ret['dismissed_suggestions'] = $this->getDismissedSuggestions();
 
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'admin_getOptions', $ret );
 
@@ -462,10 +479,7 @@ class sasoEventtickets_AdminSettings {
 				$skipped++;
 				continue;
 			}
-			if ($option['type'] === 'checkbox') {
-				$value = intval($value);
-			}
-			update_option($option['id'], $value, false);
+			$this->MAIN->getOptions()->changeOption(['key' => $key, 'value' => $value]);
 			$imported++;
 		}
 		return ['imported' => $imported, 'skipped' => $skipped];
@@ -2477,10 +2491,184 @@ class sasoEventtickets_AdminSettings {
 			}
 		}
 
-		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'performJobsAfterDBUpgraded')) {
-			$this->MAIN->getPremiumFunctions()->performJobsAfterDBUpgraded($dbversion, $dbversion_pre);
+		// v1.11: Migrate options from wp_options to custom table
+		if (version_compare($dbversion, '1.11', '>=') && version_compare($dbversion_pre, '1.11', '<')) {
+			$this->migrateOptionsToCustomTable();
 		}
-		do_action( $this->MAIN->_do_action_prefix.'performJobsAfterDBUpgraded', $dbversion, $dbversion_pre );
+
+		// v1.13: Add changed_at index to options_history
+		if (version_compare($dbversion, '1.13', '>=') && version_compare($dbversion_pre, '1.13', '<')) {
+			global $wpdb;
+			$table = $this->MAIN->getDB()->getTabelle('options_history');
+			$indexes = $wpdb->get_results("SHOW INDEX FROM {$table} WHERE Key_name = 'changed_at'");
+			if (empty($indexes)) {
+				$wpdb->query("CREATE INDEX changed_at ON {$table} (changed_at)");
+			}
+		}
+
+		// Premium and hook calls wrapped in try/catch — an exception here must NOT
+		// prevent update_option(db_version) from being saved in installiereTabellen(),
+		// otherwise the upgrade re-runs on every request → infinite crash loop.
+		try {
+			if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'performJobsAfterDBUpgraded')) {
+				$this->MAIN->getPremiumFunctions()->performJobsAfterDBUpgraded($dbversion, $dbversion_pre);
+			}
+		} catch (\Throwable $e) {
+			$this->logErrorToDB($e, null, 'Premium upgrade job failed: ' . $e->getMessage());
+		}
+		try {
+			do_action( $this->MAIN->_do_action_prefix.'performJobsAfterDBUpgraded', $dbversion, $dbversion_pre );
+		} catch (\Throwable $e) {
+			$this->logErrorToDB($e, null, 'Upgrade action hook failed: ' . $e->getMessage());
+		}
+	}
+
+	/**
+	 * Migrate all plugin options from wp_options to the custom saso_eventtickets_options table.
+	 * Each option is migrated atomically (INSERT IGNORE + DELETE) so a crash at any point
+	 * leaves the system in a recoverable state.
+	 */
+	public function migrateOptionsToCustomTable(): array {
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('options');
+		$prefix = $this->MAIN->getPrefix();
+		$options = $this->MAIN->getOptions()->getOptions();
+		$migrated = 0;
+		$skipped = 0;
+
+		foreach ($options as $option) {
+			if ($option['type'] === 'heading') {
+				continue;
+			}
+
+			$wpOptionKey = $prefix . $option['key'];
+			$value = get_option($wpOptionKey, null);
+
+			if ($value === null) {
+				$skipped++;
+				continue;
+			}
+
+			// Store in custom table (REPLACE — idempotent, updates value if already exists from partial migration)
+			$storeValue = is_array($value) ? json_encode($value) : (string) $value;
+			$wpdb->replace($table, [
+				'option_key'   => $option['key'],
+				'option_value' => $storeValue,
+				'updated_at'   => wp_date('Y-m-d H:i:s'),
+				'updated_by'   => get_current_user_id(),
+			]);
+
+			// Delete from wp_options
+			delete_option($wpOptionKey);
+			$migrated++;
+		}
+
+		// Mark migration complete
+		update_option('saso_eventtickets_options_migrated', '1');
+		$this->MAIN->getOptions()->resetMigrationCache();
+
+		return ['migrated' => $migrated, 'skipped' => $skipped];
+	}
+
+	/**
+	 * Get options change history for DataTable (server-side processing).
+	 */
+	public function getOptionsHistory(array $data, array $request): array {
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('options_history');
+		$usersTable = $wpdb->users;
+
+		$length = isset($request['length']) ? intval($request['length']) : 0;
+		$draw = isset($request['draw']) ? intval($request['draw']) : 1;
+		$start = isset($request['start']) ? intval($request['start']) : 0;
+
+		$order_column = 'h.changed_at';
+		if (isset($request['order'])) {
+			$order_columns = ['', 'h.changed_at', 'h.option_key', 'h.old_value', 'h.new_value', 'u.display_name'];
+			$colIdx = intval($request['order'][0]['column']);
+			if (isset($order_columns[$colIdx]) && $order_columns[$colIdx] !== '') {
+				$order_column = $order_columns[$colIdx];
+			}
+		}
+		$order_dir = (isset($request['order'][0]['dir']) && $request['order'][0]['dir'] === 'asc') ? 'asc' : 'desc';
+
+		$search = '';
+		if (isset($request['search']['value'])) {
+			$search = $this->MAIN->getDB()->reinigen_in($request['search']['value']);
+		}
+
+		$sql = "SELECT h.*, u.display_name AS changed_by_name FROM {$table} h LEFT JOIN {$usersTable} u ON h.changed_by = u.ID";
+		$whereJoin = '';
+		$whereCount = '';
+		if ($search !== '') {
+			$searchClean = $this->MAIN->getCore()->clearCode($search);
+			$whereJoin = " WHERE h.option_key LIKE '%{$searchClean}%' OR h.old_value LIKE '%{$search}%' OR h.new_value LIKE '%{$search}%'";
+			$whereCount = "option_key LIKE '%{$searchClean}%' OR old_value LIKE '%{$search}%' OR new_value LIKE '%{$search}%'";
+			$sql .= $whereJoin;
+		}
+		$sql .= " ORDER BY {$order_column} {$order_dir}";
+		if ($length > 0) {
+			$sql .= " LIMIT {$start}, {$length}";
+		}
+
+		$rows = $this->MAIN->getDB()->_db_datenholen($sql);
+		$recordsTotal = $this->MAIN->getDB()->_db_getRecordCountOfTable('options_history');
+		$recordsFiltered = $recordsTotal;
+		if ($whereCount !== '') {
+			$recordsFiltered = $this->MAIN->getDB()->_db_getRecordCountOfTable('options_history', $whereCount);
+		}
+
+		return [
+			'draw' => $draw,
+			'recordsTotal' => intval($recordsTotal),
+			'recordsFiltered' => intval($recordsFiltered),
+			'data' => $rows,
+		];
+	}
+
+	/**
+	 * Revert an option to a previous value from history.
+	 */
+	public function revertOption(array $data): array {
+		if (!isset($data['history_id'])) {
+			throw new Exception('history_id is required');
+		}
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('options_history');
+		$row = $wpdb->get_row($wpdb->prepare(
+			"SELECT option_key, old_value FROM {$table} WHERE id = %d", intval($data['history_id'])
+		), ARRAY_A);
+		if (!$row) {
+			throw new Exception('History entry not found');
+		}
+		$decoded = json_decode($row['old_value'], true);
+		$value = is_array($decoded) ? $decoded : $row['old_value'];
+		$this->MAIN->getOptions()->changeOption(['key' => $row['option_key'], 'value' => $value]);
+		return ['reverted' => true, 'option_key' => $row['option_key']];
+	}
+
+	/**
+	 * Delete history entries older than 90 days.
+	 */
+	public function cleanupOptionsHistory(): array {
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('options_history');
+		$keep = 10;
+		$deleted = 0;
+		$keys = $wpdb->get_col("SELECT DISTINCT option_key FROM {$table}");
+		foreach ($keys as $key) {
+			$minId = $wpdb->get_var($wpdb->prepare(
+				"SELECT id FROM {$table} WHERE option_key = %s ORDER BY id DESC LIMIT 1 OFFSET %d",
+				$key, $keep
+			));
+			if ($minId) {
+				$deleted += intval($wpdb->query($wpdb->prepare(
+					"DELETE FROM {$table} WHERE option_key = %s AND id <= %d",
+					$key, $minId
+				)));
+			}
+		}
+		return ['deleted' => $deleted];
 	}
 
 	function show_user_profile($profileuser) {
@@ -2865,6 +3053,45 @@ class sasoEventtickets_AdminSettings {
 		} catch (Exception $e) {
 			$this->logErrorToDB($e, "", "clearFormatWarning for list $list_id");
 		}
+	}
+
+	// ── Context-Wizards: dismissed suggestions per user (#232) ──
+
+	/**
+	 * Get the list of permanently dismissed suggestion IDs for the current user.
+	 *
+	 * @return string[]
+	 */
+	public function getDismissedSuggestions(): array {
+		$user_id = get_current_user_id();
+		if ($user_id === 0) {
+			return [];
+		}
+		$dismissed = get_user_meta($user_id, 'saso_eventtickets_dismissed_suggestions', true);
+		return is_array($dismissed) ? $dismissed : [];
+	}
+
+	/**
+	 * Permanently dismiss a suggestion for the current user.
+	 *
+	 * @param array $data Must contain 'suggestion_id'
+	 * @return array Updated dismissed list
+	 */
+	public function dismissSuggestion(array $data): array {
+		$user_id = get_current_user_id();
+		if ($user_id === 0) {
+			throw new \Exception('You must be logged in to dismiss suggestions.');
+		}
+		$suggestion_id = sanitize_text_field($data['suggestion_id'] ?? '');
+		if ($suggestion_id === '') {
+			throw new \Exception('Missing suggestion_id parameter.');
+		}
+		$dismissed = $this->getDismissedSuggestions();
+		if (!in_array($suggestion_id, $dismissed, true)) {
+			$dismissed[] = $suggestion_id;
+			update_user_meta($user_id, 'saso_eventtickets_dismissed_suggestions', $dismissed);
+		}
+		return ['dismissed' => $dismissed];
 	}
 }
 ?>

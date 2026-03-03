@@ -1,11 +1,11 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventticketsDB extends sasoEventtickets_DB {
-	public $dbversion = '1.10';
+	public $dbversion = '1.13';
 	public function __construct($MAIN) {
 		$this->MAIN = $MAIN;
 		parent::$dbprefix = "saso_eventtickets_";
-		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks'];
+		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks', 'options', 'options_history'];
 		$this->init();
 	}
 
@@ -177,6 +177,32 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				"CREATE INDEX idx5 ON ".$this->getTabelle('seat_blocks')." (order_id)",
 				"CREATE INDEX idx6 ON ".$this->getTabelle('seat_blocks')." (code_id)"
 			]
+		];
+		// Options table - v1.11: replaces individual wp_options rows with single table
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('options')." (
+				option_key varchar(191) NOT NULL DEFAULT '',
+				option_value longtext NOT NULL DEFAULT '',
+				updated_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				updated_by int(32) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY (option_key)) ".$this->getCharsetCollate().";",
+			"additional"=>[]
+		];
+		// Options history table - v1.12: tracks changes to plugin options
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('options_history')." (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				option_key varchar(191) NOT NULL DEFAULT '',
+				old_value text NOT NULL,
+				new_value text NOT NULL,
+				changed_by int(32) unsigned NOT NULL DEFAULT 0,
+				changed_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				PRIMARY KEY (id),
+				KEY option_key_changed_at (option_key, changed_at),
+				KEY changed_at (changed_at)) ".$this->getCharsetCollate().";",
+			"additional"=>[]
 		];
 		$tabellen = apply_filters( $this->MAIN->_add_filter_prefix.'db_system_installiereTabellen', $tabellen );
 		do_action( $this->MAIN->_do_action_prefix.'db_system_installiereTabellen', $tabellen );
@@ -361,14 +387,23 @@ class sasoEventtickets_DB {
 				}
 			}
 
-			update_option( self::$dbprefix."db_version", $this->dbversion );
+			// Run upgrade jobs BEFORE saving the new db_version.
+			// This ensures that if any job (e.g. options migration) crashes,
+			// the next request re-runs the entire upgrade — all jobs are idempotent.
+			// Note: premium/hook calls inside performJobsAfterDBUpgraded are wrapped
+			// in try/catch to prevent an infinite crash loop if they throw.
 			if ($this->callerValue == "basic") {
 				$this->MAIN->getAdmin()->performJobsAfterDBUpgraded($this->dbversion, $installed_ver);
 			} else { // wenn für die prem DB dann direkt aufruf
-				if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'performJobsAfterPremDBUpgraded')) {
-					$this->MAIN->getPremiumFunctions()->performJobsAfterPremDBUpgraded($this->dbversion, $installed_ver);
+				try {
+					if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'performJobsAfterPremDBUpgraded')) {
+						$this->MAIN->getPremiumFunctions()->performJobsAfterPremDBUpgraded($this->dbversion, $installed_ver);
+					}
+				} catch (\Throwable $e) {
+					$this->MAIN->getAdmin()->logErrorToDB($e, null, 'Premium DB upgrade job failed: ' . $e->getMessage());
 				}
 			}
+			update_option( self::$dbprefix."db_version", $this->dbversion );
 		}
 	}
 	public static function plugin_deactivated() {

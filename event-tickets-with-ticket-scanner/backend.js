@@ -23,7 +23,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		meta_tags_keys:{list:[], mapKeys:{}},
 		infos:{},
 		tickets_for_testing:[],
-		options_special:{}
+		options_special:{},
+		dismissed_suggestions:[]
 	};
 
 	var STATE = null;
@@ -242,6 +243,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		if (optionData.options_special) {
 			OPTIONS.options_special = optionData.options_special;
 		}
+		OPTIONS.dismissed_suggestions = optionData.dismissed_suggestions || [];
 
 		if (isPremium()) {
 			let serial = _getOptions_getValByKey('serial');
@@ -1399,6 +1401,19 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let tabSeatingplan = $('<div id="tab-seatingplan" class="tab-content"/>');
 			tabs.append(tabSeatingplan);
 
+			// change history tab
+			let tabNavHistory = $('<li><a href="#tab-options-history">' + _x('Change History', 'label', 'event-tickets-with-ticket-scanner') + '</a></li>');
+			let tabHistory = $('<div id="tab-options-history" class="tab-content"/>');
+			let historyRendered = false;
+			tabNavHistory.on("click", ()=>{
+				if (!historyRendered) {
+					historyRendered = true;
+					__renderTabelleOptionsHistory(tabHistory);
+				}
+			});
+			tabNav.append(tabNavHistory);
+			tabs.append(tabHistory);
+
 			DIV.append(tabs);
 
 			// Populate Options tab
@@ -1864,6 +1879,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					elem_div.appendTo(div_options);
 				}
 			});
+			__renderContextSuggestions(div_options);
 			if (window.location.hash != "") {
 				window.setTimeout(()=>{
 					let h = window.location.hash;
@@ -1887,6 +1903,103 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					}
 				}
 			}, 250)
+
+			function __renderTabelleOptionsHistory(container) {
+				container.html('');
+				let tabelle_history_datatable;
+				let table_id = myAjax.divPrefix+'_tabelle_options_history';
+
+				$('<div style="text-align:right;margin-bottom:10px;">')
+					.append($('<button>').html(__('Refresh table', 'event-tickets-with-ticket-scanner')).addClass("button-secondary").on("click", ()=>{
+						tabelle_history_datatable.ajax.reload();
+					}))
+					.appendTo(container);
+
+				let tabelle = $('<table/>').attr("id", table_id);
+				tabelle.html('<thead><tr>'
+					+'<th></th>'
+					+'<th align="left">'+_x('Date', 'label', 'event-tickets-with-ticket-scanner')+'</th>'
+					+'<th align="left">'+_x('Option', 'label', 'event-tickets-with-ticket-scanner')+'</th>'
+					+'<th align="left">'+_x('Old Value', 'label', 'event-tickets-with-ticket-scanner')+'</th>'
+					+'<th align="left">'+_x('New Value', 'label', 'event-tickets-with-ticket-scanner')+'</th>'
+					+'<th align="left">'+_x('Changed By', 'label', 'event-tickets-with-ticket-scanner')+'</th>'
+					+'<th></th>'
+					+'</tr></thead>');
+				container.append(tabelle);
+
+				$(tabelle).DataTable().clear().destroy();
+				tabelle_history_datatable = $(tabelle).DataTable({
+					"responsive": true,
+					"searching": true,
+					"ordering": true,
+					"processing": true,
+					"serverSide": true,
+					"stateSave": false,
+					"pageLength": 25,
+					"ajax": {
+						url: _requestURL('getOptionsHistory'),
+						type: 'POST',
+					},
+					"order": [[ 1, "desc" ]],
+					"columns": [
+						{"data": null, "className": 'details-control', "orderable": false, "defaultContent": '', "width": 10},
+						{"data": "changed_at", "orderable": true, "width": 140},
+						{"data": "option_key", "orderable": true},
+						{"data": "old_value", "orderable": false, "render": function(data) {
+							if (data && data.length > 60) return '<span title="'+destroy_tags(data)+'">'+destroy_tags(data.substring(0, 60))+'&hellip;</span>';
+							return destroy_tags(data);
+						}},
+						{"data": "new_value", "orderable": false, "render": function(data) {
+							if (data && data.length > 60) return '<span title="'+destroy_tags(data)+'">'+destroy_tags(data.substring(0, 60))+'&hellip;</span>';
+							return destroy_tags(data);
+						}},
+						{"data": "changed_by_name", "orderable": true, "width": 120, "defaultContent": ""},
+						{"data": null, "orderable": false, "width": 80, "render": function(data, type, row) {
+							return '<button class="button button-small saso-revert-btn" data-history-id="'+row.id+'">'+_x('Revert', 'label', 'event-tickets-with-ticket-scanner')+'</button>';
+						}},
+					]
+				});
+				tabelle.css("width", "100%");
+
+				// details-control: expand row to show full values
+				$('#'+table_id+' tbody').on('click', 'td.details-control', e=>{
+					var tr = $(e.target).parents('tr');
+					var row = tabelle_history_datatable.row(tr);
+					if (row.child.isShown()) {
+						row.child.hide();
+						tr.removeClass('shown');
+					} else {
+						let d = row.data();
+						row.child(
+							'<div style="padding:5px 10px;">'
+							+'<b>'+_x('Old Value', 'label', 'event-tickets-with-ticket-scanner')+':</b><pre style="white-space:pre-wrap;max-height:200px;overflow:auto;">'+destroy_tags(d.old_value)+'</pre>'
+							+'<b>'+_x('New Value', 'label', 'event-tickets-with-ticket-scanner')+':</b><pre style="white-space:pre-wrap;max-height:200px;overflow:auto;">'+destroy_tags(d.new_value)+'</pre>'
+							+'</div>'
+						).show();
+						tr.addClass('shown');
+					}
+				});
+
+				// revert button
+				$('#'+table_id+' tbody').on('click', '.saso-revert-btn', e=>{
+					let btn = $(e.target);
+					let historyId = btn.data('history-id');
+					let tr = btn.closest('tr');
+					let row = tabelle_history_datatable.row(tr);
+					let d = row.data();
+					LAYOUT.renderYesNo(
+						_x('Revert Option', 'title', 'event-tickets-with-ticket-scanner'),
+						sprintf(__('Revert option "%s" to its previous value?', 'event-tickets-with-ticket-scanner'), d.option_key),
+						()=>{
+							_makePost('revertOption', {history_id: historyId}, function(result) {
+								if (result) {
+									_displayOptionsArea();
+								}
+							});
+						}
+					);
+				});
+			}
 
 		});
 	}
@@ -2314,6 +2427,283 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		    "margin-right": "15px"
 		}).html(label+"<br>");
 	}
+
+	// ── Context-Wizards: smart suggestions on options page (#232) ──
+
+	var _sessionDismissedSuggestions = [];
+
+	function __getContextSuggestions() {
+		return [
+			// ── Email Cluster ──
+			{
+				id: 'email_ics_attach',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('wcTicketAttachTicketToMail')
+						&& !_getOptions_isActivatedByKey('wcTicketAttachICSToMail');
+				},
+				targetKey: 'wcTicketAttachICSToMail',
+				targetVal: 1,
+				premium: true
+			},
+			{
+				id: 'email_download_all_pdf',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('wcTicketAttachTicketToMail')
+						&& !_getOptions_isActivatedByKey('wcTicketDisplayDownloadAllTicketsPDFButtonOnMail');
+				},
+				targetKey: 'wcTicketDisplayDownloadAllTicketsPDFButtonOnMail',
+				targetVal: 1,
+				premium: true
+			},
+			{
+				id: 'email_badge_link',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('wcTicketBadgeDisplayButtonOnDetail')
+						&& !_getOptions_isActivatedByKey('wcTicketBadgeAttachLinkToMail');
+				},
+				targetKey: 'wcTicketBadgeAttachLinkToMail',
+				targetVal: 1,
+				premium: false
+			},
+			{
+				id: 'email_view_link_when_pdf_hidden',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('wcTicketDontDisplayPDFButtonOnMail')
+						&& !_getOptions_isActivatedByKey('wcTicketDisplayOrderTicketsViewLinkOnMail');
+				},
+				targetKey: 'wcTicketDisplayOrderTicketsViewLinkOnMail',
+				targetVal: 1,
+				premium: false
+			},
+			// ── Scanner Cluster ──
+			{
+				id: 'scanner_auto_redeem',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('ticketScannerStartCamWithoutButtonClicked')
+						&& !_getOptions_isActivatedByKey('ticketScannerScanAndRedeemImmediately');
+				},
+				targetKey: 'ticketScannerScanAndRedeemImmediately',
+				targetVal: 1,
+				premium: false
+			},
+			{
+				id: 'scanner_vibrate',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('ticketScannerScanAndRedeemImmediately')
+						&& !_getOptions_isActivatedByKey('ticketScannerVibrate');
+				},
+				targetKey: 'ticketScannerVibrate',
+				targetVal: 1,
+				premium: false
+			},
+			{
+				id: 'scanner_confirmed_count',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('wcTicketAllowRedeemTicketAfterEnd')
+						&& !_getOptions_isActivatedByKey('wcTicketScannerDisplayConfirmedCount');
+				},
+				targetKey: 'wcTicketScannerDisplayConfirmedCount',
+				targetVal: 1,
+				premium: false
+			},
+			// ── Ticket Display Cluster ──
+			{
+				id: 'display_date_on_product',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('wcTicketDisplayDateOnMail')
+						&& !_getOptions_isActivatedByKey('wcTicketDisplayDateOnPrdDetail');
+				},
+				targetKey: 'wcTicketDisplayDateOnPrdDetail',
+				targetVal: 1,
+				premium: false
+			},
+			{
+				id: 'display_customer_note',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('wcTicketShowInputFieldsOnCheckoutPage')
+						&& !_getOptions_isActivatedByKey('wcTicketDisplayCustomerNote');
+				},
+				targetKey: 'wcTicketDisplayCustomerNote',
+				targetVal: 1,
+				premium: false
+			},
+			{
+				id: 'display_redirect_after_redeem',
+				trigger: function() {
+					return _getOptions_isActivatedByKey('wcTicketShowRedeemBtnOnTicket')
+						&& !_getOptions_isActivatedByKey('wcTicketRedirectUser');
+				},
+				targetKey: 'wcTicketRedirectUser',
+				targetVal: 1,
+				premium: false
+			},
+			// ── Security Cluster (Premium) ──
+			{
+				id: 'security_ip_block',
+				trigger: function() {
+					return isPremium()
+						&& !_getOptions_isActivatedByKey('activateUserIPBlock');
+				},
+				targetKey: 'activateUserIPBlock',
+				targetVal: 1,
+				premium: true
+			},
+			{
+				id: 'security_ip_tracking',
+				trigger: function() {
+					return isPremium()
+						&& !_getOptions_isActivatedByKey('trackIPCodeChecker');
+				},
+				targetKey: 'trackIPCodeChecker',
+				targetVal: 1,
+				premium: true
+			}
+		];
+	}
+
+	function __getSuggestionMessage(id) {
+		var messages = {
+			'email_ics_attach': {
+				context: __('You have PDF ticket attachment enabled for emails.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you also want to attach the ICS calendar file to the purchase emails?', 'event-tickets-with-ticket-scanner')
+			},
+			'email_download_all_pdf': {
+				context: __('You have PDF ticket attachment enabled for emails.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you also want to include a "Download all tickets as one PDF" link in the email?', 'event-tickets-with-ticket-scanner')
+			},
+			'email_badge_link': {
+				context: __('You show the badge download button on the ticket detail page.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you also want to include the badge download link in the purchase emails?', 'event-tickets-with-ticket-scanner')
+			},
+			'email_view_link_when_pdf_hidden': {
+				context: __('You have hidden the PDF download button on purchase emails.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you want to show the "View all tickets" link in the email instead?', 'event-tickets-with-ticket-scanner')
+			},
+			'scanner_auto_redeem': {
+				context: __('You have auto-start camera enabled for the ticket scanner.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you also want to enable automatic ticket redemption on scan?', 'event-tickets-with-ticket-scanner')
+			},
+			'scanner_vibrate': {
+				context: __('You have automatic scan-and-redeem enabled.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you also want to enable haptic feedback (vibration) when a ticket is scanned?', 'event-tickets-with-ticket-scanner')
+			},
+			'scanner_confirmed_count': {
+				context: __('You allow tickets to be redeemed after the event end date.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you also want to display the confirmed scan count on the ticket scanner?', 'event-tickets-with-ticket-scanner')
+			},
+			'display_date_on_product': {
+				context: __('You show the event date on the purchase order email.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you also want to show the event date on the product detail page?', 'event-tickets-with-ticket-scanner')
+			},
+			'display_customer_note': {
+				context: __('You show input fields on the checkout page.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you also want to display the customer note on the ticket PDF?', 'event-tickets-with-ticket-scanner')
+			},
+			'display_redirect_after_redeem': {
+				context: __('You show the self-redeem button on the ticket detail page.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you also want to redirect the customer after they redeem their ticket?', 'event-tickets-with-ticket-scanner')
+			},
+			'security_ip_block': {
+				context: __('You have the premium plugin active.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you want to enable IP blocking to protect against brute-force ticket validation attempts?', 'event-tickets-with-ticket-scanner')
+			},
+			'security_ip_tracking': {
+				context: __('You have the premium plugin active.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you want to enable IP tracking for ticket validation requests?', 'event-tickets-with-ticket-scanner')
+			}
+		};
+		return messages[id] || {context: '', question: ''};
+	}
+
+	function __renderContextSuggestions(container) {
+		container.find('.saso-context-suggestions').remove();
+
+		var suggestions = __getContextSuggestions();
+		var dismissed = (OPTIONS.dismissed_suggestions || []).concat(_sessionDismissedSuggestions);
+
+		var active = suggestions.filter(function(s) {
+			if (s.premium && !isPremium()) return false;
+			if (dismissed.indexOf(s.id) >= 0) return false;
+			try { return s.trigger(); } catch(e) { return false; }
+		});
+
+		active = active.slice(0, 3);
+		if (active.length === 0) return;
+
+		if (!$('#saso-ctx-suggestions-styles').length) {
+			$('<style id="saso-ctx-suggestions-styles"/>').text(
+				'.saso-context-suggestions{margin:15px 0 20px 0;}' +
+				'.saso-ctx-card{background:#fff;border:1px solid #c3c4c7;border-left:4px solid #dba617;padding:14px 18px;margin-bottom:10px;border-radius:4px;box-shadow:0 1px 1px rgba(0,0,0,.04);}' +
+				'.saso-ctx-body{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}' +
+				'.saso-ctx-icon{color:#dba617;font-size:22px;flex-shrink:0;margin-top:2px;}' +
+				'.saso-ctx-text{flex:1;}' +
+				'.saso-ctx-context{font-size:13px;color:#646970;margin-bottom:3px;}' +
+				'.saso-ctx-question{font-size:14px;color:#1d2327;font-weight:500;}' +
+				'.saso-ctx-buttons{display:flex;gap:8px;align-items:center;}' +
+				'.saso-ctx-btn-dismiss{color:#646970!important;text-decoration:none!important;}'
+			).appendTo('head');
+		}
+
+		var wrap = $('<div class="saso-context-suggestions"/>');
+
+		active.forEach(function(s) {
+			var msg = __getSuggestionMessage(s.id);
+			var card = $('<div class="saso-ctx-card" data-suggestion-id="' + s.id + '"/>');
+
+			var body = $('<div class="saso-ctx-body"/>');
+			$('<span class="saso-ctx-icon dashicons dashicons-lightbulb"/>').appendTo(body);
+			var textWrap = $('<div class="saso-ctx-text"/>').appendTo(body);
+			$('<div class="saso-ctx-context"/>').text(msg.context).appendTo(textWrap);
+			$('<div class="saso-ctx-question"/>').text(msg.question).appendTo(textWrap);
+			card.append(body);
+
+			var btnWrap = $('<div class="saso-ctx-buttons"/>');
+
+			$('<button class="button button-primary button-small"/>')
+				.text(__('Yes, enable', 'event-tickets-with-ticket-scanner'))
+				.on('click', function() {
+					_makePost('changeOption', {'key': s.targetKey, 'value': s.targetVal}, function() {
+						if (OPTIONS.mapKeys[s.targetKey]) {
+							OPTIONS.mapKeys[s.targetKey].value = s.targetVal;
+						}
+						_sessionDismissedSuggestions.push(s.id);
+						card.slideUp(300, function() {
+							card.remove();
+							var optionRow = $('[data-key="' + s.targetKey + '"]').closest('div');
+							if (optionRow.length) {
+								optionRow.css('background-color', '#e7f5e7');
+								setTimeout(function() { optionRow.css('background-color', ''); }, 2000);
+							}
+							__renderContextSuggestions(container);
+						});
+					});
+				}).appendTo(btnWrap);
+
+			$('<button class="button button-secondary button-small"/>')
+				.text(__('No thanks', 'event-tickets-with-ticket-scanner'))
+				.on('click', function() {
+					_sessionDismissedSuggestions.push(s.id);
+					card.slideUp(300, function() { card.remove(); __renderContextSuggestions(container); });
+				}).appendTo(btnWrap);
+
+			$('<button class="button button-link button-small saso-ctx-btn-dismiss"/>')
+				.text(__("Don't ask again", 'event-tickets-with-ticket-scanner'))
+				.on('click', function() {
+					_makePost('dismissSuggestion', {suggestion_id: s.id}, function() {
+						if (!OPTIONS.dismissed_suggestions) OPTIONS.dismissed_suggestions = [];
+						OPTIONS.dismissed_suggestions.push(s.id);
+						card.slideUp(300, function() { card.remove(); __renderContextSuggestions(container); });
+					});
+				}).appendTo(btnWrap);
+
+			card.append(btnWrap);
+			wrap.append(card);
+		});
+
+		container.prepend(wrap);
+	}
+
+	// ── End Context-Wizards ──
 
 	var _firstStepsBox = null;
 
@@ -4890,4 +5280,29 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 }
 if (typeof Ajax_sasoEventtickets !== "undefined") {
 	window.sasoEventtickets_backend = sasoEventtickets(Ajax_sasoEventtickets);
+}
+
+/**
+ * Global handler for the "Migrate Options" admin notice button.
+ * Called via onclick from the admin notice rendered by showOptionsMigrationNotice().
+ */
+function sasoEventticketsMigrateOptions(btn) {
+	btn.disabled = true;
+	btn.textContent = '...';
+	jQuery.post(Ajax_sasoEventtickets.url, {
+		action: Ajax_sasoEventtickets.action,
+		a_sngmbh: 'migrateOptionsToCustomTable',
+		nonce: Ajax_sasoEventtickets.nonce
+	}, function(response) {
+		if (response && response.data) {
+			btn.textContent = 'Done! (' + (response.data.migrated || 0) + ' migrated)';
+			setTimeout(function() { location.reload(); }, 1500);
+		} else {
+			btn.textContent = 'Error';
+			btn.disabled = false;
+		}
+	}).fail(function() {
+		btn.textContent = 'Error';
+		btn.disabled = false;
+	});
 }

@@ -48,8 +48,8 @@ class sasoEventtickets_Base {
 	public function _isMaxReachedForTickets($total) {
 		if ($this->getMaxValue('codes_total') == 0) return true;
 		if ($total > $this->getMaxValue('codes_total')) return false;
-		//$mvct = $this->getOverallTicketCounterValue();
-		//if ( $mvct > 0 && $mvct > ($total+150)) return false;
+		$mvct = $this->getOverallTicketCounterValue();
+		if ($mvct > 0 && $mvct > ($total + 150)) return false;
 		return true;
 	}
 	public function _isMaxReachedForAuthtokens($total) {

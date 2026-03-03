@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.9.3
+Stable tag: 2.9.4
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -214,6 +214,17 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 2.9.4 - 2026-03-03 =
+* Performance: Plugin options migrated from individual wp_options rows to a dedicated custom table — all settings now load in a single query instead of 150+ separate queries (#73)
+* New: Options change history — tracks who changed which setting, when, with old and new values. Revert button to restore previous values. Keeps last 10 entries per option, older entries cleaned up automatically. Available in Options > Change History tab (#73)
+* New: Context-Wizards — smart suggestions on the options page based on your current configuration. Detects related settings and offers to enable them with one click. Covers email attachments, scanner presets, ticket display, and security settings. Dismissals are per-user (#232)
+* New: Export and import seating plan seats via CSV for backup, external editing, or transfer between plans (Premium) (#209)
+* Fix: Old premium plugin (< 1.6.0 or without version constant) caused crash instead of being gracefully blocked
+* Fix: Options migration is now abort-safe — if interrupted, it resumes on next page load instead of silently losing settings. Existing values are updated correctly on re-run.
+* Fix: Database upgrade jobs now run before saving the new DB version, preventing incomplete upgrades from being marked as finished
+* Fix: Premium or third-party upgrade hooks that throw exceptions are now caught and logged instead of causing an infinite crash loop
+* Security: Activate global ticket counter brake to prevent free limit bypass via delete-and-recreate
 
 = 2.9.3 - 2026-03-02 =
 * New: "Check License" button — recheck premium license status on demand from Options page (next to serial field) and Support Info page. Shows status, last check, expiration, failure count.
