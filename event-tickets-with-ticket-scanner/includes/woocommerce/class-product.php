@@ -129,7 +129,8 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 					'_backendJS'=>trailingslashit( plugin_dir_url( dirname(dirname(__FILE__)) ) ) . 'backend.js?_v='.$this->MAIN->getPluginVersion(),
 					'_premJS'=>$prem_JS_file,
 					'_divAreaId'=>'saso_eventtickets_list_format_area',
-					'formatterInputFieldDataId'=>'saso_eventtickets_list_formatter_values'
+					'formatterInputFieldDataId'=>'saso_eventtickets_list_formatter_values',
+					'ticket_base_url'=>$this->MAIN->getCore()->getTicketURLBase()
 				] // werte in der js variable
 				);
 			wp_enqueue_script('SasoEventticketsValidator_WC_backend');
@@ -876,6 +877,15 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 			<p>Display all Tickets Infos</p>
 			<button disabled data-id="<?php echo esc_attr($this->MAIN->getPrefix()."btn_download_ticket_infos"); ?>" class="button button-primary">Print Ticket Infos</button>
 			<?php
+			// Calendar button — only for daychooser products (#191)
+			$product_id = isset($_GET['post']) ? intval($_GET['post']) : 0;
+			if ($product_id > 0 && get_post_meta($product_id, self::META_PRODUCT_IS_DAYCHOOSER, true) === 'yes') {
+				?>
+				<p><?php esc_html_e('Sold Tickets Calendar', 'event-tickets-with-ticket-scanner'); ?></p>
+				<button disabled data-id="<?php echo esc_attr($this->MAIN->getPrefix()."btn_product_calendar"); ?>" class="button button-primary"><?php esc_html_e('View Calendar', 'event-tickets-with-ticket-scanner'); ?></button>
+				<button disabled data-id="<?php echo esc_attr($this->MAIN->getPrefix()."btn_product_calendar_print"); ?>" class="button"><?php esc_html_e('Print List', 'event-tickets-with-ticket-scanner'); ?></button>
+				<?php
+			}
 			do_action( $this->MAIN->_do_action_prefix.'wc_product_display_side_box', [] );
 		}
 
@@ -1131,6 +1141,104 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 					$pdf->setBackgroundImage($mediaData['for_pdf']);
 				}
 			}
+		}
+
+		// ── Product Calendar (#191) ─────────────────────────────────
+
+		/**
+		 * Get aggregated ticket counts per date for a daychooser product.
+		 *
+		 * @param array $data {product_id: int}
+		 * @return array{dates: array<string,int>, product_id: int, is_daychooser: bool}
+		 * @throws Exception If product_id is invalid (#7001)
+		 */
+		public function getProductCalendarData(array $data): array {
+			$product_id = isset($data['product_id']) ? (int)$data['product_id'] : 0;
+			if ($product_id <= 0) {
+				throw new Exception('#7001 ' . esc_html__('invalid product_id', 'event-tickets-with-ticket-scanner'));
+			}
+
+			$is_daychooser = get_post_meta($product_id, self::META_PRODUCT_IS_DAYCHOOSER, true) === 'yes';
+			if (!$is_daychooser) {
+				return ['dates' => [], 'product_id' => $product_id, 'is_daychooser' => false];
+			}
+
+			$db          = $this->MAIN->getDB();
+			$codes_table = $db->getTabelle('codes');
+
+			$rows = $db->_db_datenholen_prepared(
+				"SELECT JSON_UNQUOTE(JSON_EXTRACT(meta, '$.wc_ticket.day_per_ticket')) AS ticket_date,
+				        COUNT(*) AS ticket_count
+				 FROM {$codes_table}
+				 WHERE aktiv = 1
+				   AND JSON_EXTRACT(meta, '$.wc_ticket.is_daychooser') = 1
+				   AND JSON_EXTRACT(meta, '$.woocommerce.product_id') = %d
+				 GROUP BY ticket_date
+				 ORDER BY ticket_date",
+				[$product_id]
+			);
+
+			$dates = [];
+			foreach ($rows as $row) {
+				if (!empty($row['ticket_date']) && $row['ticket_date'] !== 'null') {
+					$dates[$row['ticket_date']] = (int)$row['ticket_count'];
+				}
+			}
+
+			return [
+				'dates'         => $dates,
+				'product_id'    => $product_id,
+				'is_daychooser' => true,
+			];
+		}
+
+		/**
+		 * Get individual ticket codes for a product + date combination (calendar drill-down).
+		 *
+		 * @param array $data {product_id: int, date: string (Y-m-d)}
+		 * @return array List of ticket detail arrays
+		 * @throws Exception If product_id (#7002) or date (#7003) is invalid
+		 */
+		public function getProductCalendarDetails(array $data): array {
+			$product_id = isset($data['product_id']) ? (int)$data['product_id'] : 0;
+			$date       = isset($data['date']) ? sanitize_text_field($data['date']) : '';
+
+			if ($product_id <= 0) {
+				throw new Exception('#7002 ' . esc_html__('invalid product_id', 'event-tickets-with-ticket-scanner'));
+			}
+			if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+				throw new Exception('#7003 ' . esc_html__('invalid date format — expected Y-m-d', 'event-tickets-with-ticket-scanner'));
+			}
+
+			$db          = $this->MAIN->getDB();
+			$codes_table = $db->getTabelle('codes');
+
+			$rows = $db->_db_datenholen_prepared(
+				"SELECT id, code, code_display, order_id, redeemed, meta
+				 FROM {$codes_table}
+				 WHERE aktiv = 1
+				   AND JSON_EXTRACT(meta, '$.wc_ticket.is_daychooser') = 1
+				   AND JSON_EXTRACT(meta, '$.woocommerce.product_id') = %d
+				   AND JSON_UNQUOTE(JSON_EXTRACT(meta, '$.wc_ticket.day_per_ticket')) = %s
+				 ORDER BY id ASC",
+				[$product_id, $date]
+			);
+
+			$results = [];
+			foreach ($rows as $row) {
+				$meta      = @json_decode($row['meta'], true);
+				$wc_ticket = is_array($meta) ? ($meta['wc_ticket'] ?? []) : [];
+
+				$results[] = [
+					'code'             => $row['code'],
+					'code_display'     => $row['code_display'] ?: $row['code'],
+					'order_id'         => (int)$row['order_id'],
+					'redeemed'         => (int)$row['redeemed'],
+					'public_ticket_id' => $wc_ticket['_public_ticket_id'] ?? '',
+				];
+			}
+
+			return $results;
 		}
 	}
 }

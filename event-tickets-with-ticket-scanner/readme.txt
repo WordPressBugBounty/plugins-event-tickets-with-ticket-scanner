@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.9.5
+Stable tag: 2.9.6
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -214,6 +214,20 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 2.9.6 - 2026-03-10 =
+* New: Daily Redemption Summary — view redeemed tickets across all products for any date range (Premium)
+* New: No-Show count in Attendance view showing unredeemed tickets per event (Premium)
+* New: Drill-down from Attendance rows to individual ticket codes with order links (Premium)
+* New: Export Attendance data as CSV (Premium)
+* Improvement: Seating CSV export/import now includes visual designer data — position, rotation, shape, and color survive roundtrip (Premium) (#209)
+* Fix: Seating CSV export appended JSON artifact at end of file — missing exit after CSV output (#209)
+* New: Calendar view and printable ticket list on product edit page for daychooser products (#191)
+* Performance: Lazy-load single options via getOption() instead of bulk-loading all options
+* New: License Server Connectivity Check — diagnostic button in Support area tests if vollstart.com license/update server is reachable. Shows connection status, response time, and detailed error messages. Helps diagnose Premium update issues caused by firewalls, DNS problems, or network restrictions.
+* Improvement: Subscription expiration warnings now distinguish between license types — lifetime/onetime licenses show no warning (continue working with Basic < 2.8.0), monthly subscriptions warn about payment processing, yearly subscriptions warn about expiration.
+* Improvement: Renamed "Serial Key" to "License Key" in all user-facing strings for clarity
+* Improvement: Complete translations for all 11 languages (DE, ES, FR, HU, IT, JA, NL, PT_BR, PT_PT, ZH_CN, DE_CH) — 100% coverage
 
 = 2.9.5 - 2026-03-03 =
 * Fix: Premium serial key displayed as 0 after options migration — premium features appeared lost. Options added late during initialization (e.g. by the premium plugin) are now loaded correctly from the custom table.

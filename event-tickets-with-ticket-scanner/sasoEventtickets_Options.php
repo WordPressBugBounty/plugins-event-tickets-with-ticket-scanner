@@ -4,7 +4,6 @@ class sasoEventtickets_Options {
 	private $_options;
 	private $MAIN;
 	private $_prefix;
-	private bool $_allLoaded = false;
 	private ?bool $_migrationComplete = null;
 	private ?array $_dbValuesCache = null;
 
@@ -29,9 +28,7 @@ class sasoEventtickets_Options {
 	 */
 	public function resetMigrationCache(): void {
 		$this->_migrationComplete = null;
-		$this->_allLoaded = false;
 		$this->_dbValuesCache = null;
-		// Reset per-option loaded flags so values are re-read from DB
 		if (is_array($this->_options)) {
 			foreach ($this->_options as $idx => $option) {
 				$this->_options[$idx]['_isLoaded'] = false;
@@ -41,9 +38,9 @@ class sasoEventtickets_Options {
 
 	/**
 	 * Bulk-load all options from the custom table in a single query.
+	 * Populates _dbValuesCache so subsequent getOption() calls are instant.
 	 */
 	private function _loadAllFromCustomTable(): void {
-		// Cache DB values on first call (single query), reuse for late-added options
 		if ($this->_dbValuesCache === null) {
 			global $wpdb;
 			$table = $this->MAIN->getDB()->getTabelle('options');
@@ -55,21 +52,9 @@ class sasoEventtickets_Options {
 				}
 			}
 		}
-
 		foreach ($this->_options as $idx => $option) {
 			if ($option['_isLoaded']) continue;
-			if (isset($this->_dbValuesCache[$option['key']])) {
-				$v = $this->_dbValuesCache[$option['key']];
-				$decoded = json_decode($v, true);
-				if (is_array($decoded)) {
-					$v = $decoded;
-				} else if (!is_array($v)) {
-					$v = stripslashes($v);
-				}
-				$this->_options[$idx]['value'] = $v;
-			}
-			// If not in DB, value stays as default (set by getOptionsObject)
-			$this->_options[$idx]['_isLoaded'] = true;
+			$this->_applyDbCacheToOption($idx);
 		}
 	}
 
@@ -87,6 +72,58 @@ class sasoEventtickets_Options {
 				$this->_options[$idx]['_isLoaded'] = true;
 			}
 		}
+	}
+
+	/**
+	 * Load a single option by its index. Uses bulk cache if available,
+	 * otherwise a single DB query. Called by getOption() for lazy loading.
+	 */
+	private function _loadSingleOption(int $idx): void {
+		$option = $this->_options[$idx];
+		if ($this->_isMigrationComplete()) {
+			// Fast path: bulk cache already populated by getOptions()
+			if ($this->_dbValuesCache !== null) {
+				$this->_applyDbCacheToOption($idx);
+			} else {
+				// Single DB query — only when getOptions() was never called
+				global $wpdb;
+				$table = $this->MAIN->getDB()->getTabelle('options');
+				$v = $wpdb->get_var($wpdb->prepare(
+					"SELECT option_value FROM {$table} WHERE option_key = %s",
+					$option['key']
+				));
+				if ($v !== null) {
+					$decoded = json_decode($v, true);
+					$this->_options[$idx]['value'] = is_array($decoded) ? $decoded : stripslashes($v);
+				}
+				$this->_options[$idx]['_isLoaded'] = true;
+			}
+		} else {
+			$v = get_option($option['id'], $option['default']);
+			if (!is_array($v)) {
+				$v = stripslashes($v);
+			}
+			$this->_options[$idx]['value'] = $v;
+			$this->_options[$idx]['_isLoaded'] = true;
+		}
+	}
+
+	/**
+	 * Apply a cached DB value to a single option (from bulk cache).
+	 */
+	private function _applyDbCacheToOption(int $idx): void {
+		$key = $this->_options[$idx]['key'];
+		if (isset($this->_dbValuesCache[$key])) {
+			$v = $this->_dbValuesCache[$key];
+			$decoded = json_decode($v, true);
+			if (is_array($decoded)) {
+				$v = $decoded;
+			} else if (!is_array($v)) {
+				$v = stripslashes($v);
+			}
+			$this->_options[$idx]['value'] = $v;
+		}
+		$this->_options[$idx]['_isLoaded'] = true;
 	}
 
 	/**
@@ -136,7 +173,6 @@ class sasoEventtickets_Options {
 	}
 
 	public function initOptions() {
-		$this->_allLoaded = false;
 
 		$order_status = [];
 		if (function_exists("wc_get_order_statuses")) {
@@ -703,18 +739,31 @@ class sasoEventtickets_Options {
 		$this->_options[] = $this->getOptionsObject('qrAttachQRPdfToEmail', __("Attach QR pdf to purchase email", 'event-tickets-with-ticket-scanner'), __("If active, then the QR as an pdf will be attached to the purchase email. The settings are taken from the ticket settings for purchase email.", 'event-tickets-with-ticket-scanner'), "checkbox", "", [], false, 'https://youtu.be/lIer7r3U5q0');
 		$this->_options[] = $this->getOptionsObject('qrAttachQRFilesToMailAsOnePDF', __("Attach QR PDF to purchase email as one PDF instead of single PDFs", 'event-tickets-with-ticket-scanner'), __("If active, the ticket QR code files are merged into one PDF and will be added as an attachment to the mails.", 'event-tickets-with-ticket-scanner'), "checkbox", "", [], false, 'https://youtu.be/8ZsXV95XGnw');
 
-		// Premium-Options (inkl. Serial-Eingabefeld) anzeigen wenn Premium-Plugin installiert ist,
+		// Premium-Options (inkl. License-Key-Eingabefeld) anzeigen wenn Premium-Plugin installiert ist,
 		// unabhängig vom Subscription-Validierungsstatus. Sonst kann der User seinen Key nicht eingeben.
 		if (method_exists($this->MAIN->getPremiumFunctions(), '_initOptions')) {
 			$this->_options = $this->MAIN->getPremiumFunctions()->_initOptions($this->_options);
-		} elseif ($this->MAIN->isOldPremiumDetected()) {
-			// Old premium detected but not loaded — show serial key field so user can enter/update
+		} elseif ($this->MAIN->isOldPremiumDetected() || $this->MAIN->isStarterOrStopDetected()) {
+			// Old premium, Starter, or Stop plugin detected — show license key field so user can enter/update
 			// their key, which PUC (in the premium plugin) needs to check for updates.
 			$serial = trim(get_option("saso-event-tickets-premium_serial", ""));
+
+			// Different description based on plugin type
+			if ($this->MAIN->isStarterOrStopDetected()) {
+				$is_stop = defined('SASO_EVENTTICKETS_STOP_VERSION');
+				if ($is_stop) {
+					$desc = __("Your subscription has expired. Please renew your license to continue using Premium features.", 'event-tickets-with-ticket-scanner');
+				} else {
+					$desc = __("Enter your Premium license key, then update to the latest Premium version within the Plugins page.", 'event-tickets-with-ticket-scanner');
+				}
+			} else {
+				$desc = __("Enter your Premium license key. After updating the Premium plugin to version 1.6.0+, all premium features will be restored.", 'event-tickets-with-ticket-scanner');
+			}
+
 			$serialOption = $this->getOptionsObject(
 				'serial',
-				__("Premium Serial Key", 'event-tickets-with-ticket-scanner'),
-				__("Enter your premium licence key. After updating the Premium plugin to version 1.6.0+, all premium features will be restored.", 'event-tickets-with-ticket-scanner'),
+				__("Premium License Key", 'event-tickets-with-ticket-scanner'),
+				$desc,
 				"text",
 				$serial
 			);
@@ -758,14 +807,15 @@ class sasoEventtickets_Options {
 		}
 		return get_option($prefix.$option_id, $default);
 	}
+	/**
+	 * Get ALL options with values loaded. Triggers bulk DB load.
+	 * Use for admin pages where all options are displayed.
+	 * For reading a single option, use getOptionValue() instead (lazy, single query).
+	 */
 	public function getOptions() {
 		if ($this->_isMigrationComplete()) {
-			// Custom table: single DB query (cached), per-option _isLoaded check
-			// (re-entrant safe — options added after first load get values from cache)
 			$this->_loadAllFromCustomTable();
 		} else {
-			// Legacy wp_options: per-option _isLoaded check (re-entrant safe
-			// because initOptions() triggers getOptions() mid-build via PDF font setup)
 			$this->_loadAllFromWpOptions();
 		}
 		return $this->_options;
@@ -787,18 +837,22 @@ class sasoEventtickets_Options {
 		}
 		return $ret;
 	}
+	/**
+	 * Get a single option by key. Lazy: loads only this option from DB if not yet cached.
+	 * Does NOT trigger a bulk load — use getOptions() for that (admin page).
+	 */
 	public function getOption($key) {
-		$o = null;
 		$key = trim($key);
-		if (empty($key)) return $o;
-		$options = $this->getOptions();
-		foreach($options as $option) {
+		if (empty($key)) return null;
+		foreach ($this->_options as $idx => $option) {
 			if ($option['key'] === $key) {
-				$o = $option;
-				break;
+				if (!$option['_isLoaded']) {
+					$this->_loadSingleOption($idx);
+				}
+				return $this->_options[$idx];
 			}
 		}
-		return $o;
+		return null;
 	}
 	private function _setOptionValuesByKey(string $key, string $field, $value): void {
 		foreach ($this->_options as $idx => $option) {
@@ -833,9 +887,8 @@ class sasoEventtickets_Options {
 		}
 		do_action($this->MAIN->_do_action_prefix.'options_deleteAllOptionValues', $this->_options);
 		$this->_options = [];
-		$this->_allLoaded = false;
 		$this->_dbValuesCache = null;
-		$this->initOptions(); // Re-populate option definitions with defaults
+		$this->initOptions();
 		return true;
 	}
 	public function deleteOption($key) {
@@ -846,6 +899,9 @@ class sasoEventtickets_Options {
 					$this->_deleteFromCustomTable($key);
 				} else {
 					delete_option($value['id']);
+				}
+				if ($this->_dbValuesCache !== null) {
+					unset($this->_dbValuesCache[$key]);
 				}
 				unset($this->_options[$idx]);
 				do_action($this->MAIN->_do_action_prefix.'options_deleteOption', $key);
@@ -878,11 +934,15 @@ class sasoEventtickets_Options {
 				update_option($option['id'], $v, false);
 			}
 			$this->_setOptionValuesByKey($data['key'], 'value', $v);
+			// Keep bulk cache in sync so future reads stay consistent
+			if ($this->_dbValuesCache !== null) {
+				$this->_dbValuesCache[$data['key']] = is_array($v) ? json_encode($v) : (string) $v;
+			}
 			$this->_logOptionChange($data['key'], $oldValue, $v);
 		}
-		// When serial key is changed via basic plugin (old premium compat), also store in the
+		// When license key is changed via basic plugin (old premium compat), also store in the
 		// option that PUC and the license check read from.
-		if ($data['key'] === 'serial' && $this->MAIN->isOldPremiumDetected()) {
+		if ($data['key'] === 'serial' && ($this->MAIN->isOldPremiumDetected() || $this->MAIN->isStarterOrStopDetected())) {
 			update_option("saso-event-tickets-premium_serial", trim($data['value']));
 		}
 		do_action( $this->MAIN->_do_action_prefix.'changeOption', $data);

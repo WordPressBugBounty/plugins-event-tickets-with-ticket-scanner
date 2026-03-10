@@ -643,6 +643,7 @@ class sasoEventtickets_Seating {
 			$meta = is_string($seat['meta'])
 				? json_decode($seat['meta'], true)
 				: ($seat['meta'] ?? []);
+			$shapeConfig = $meta['shape_config'] ?? [];
 			$csvData[] = [
 				'identifier'     => $seat['seat_identifier'],
 				'label'          => $meta['seat_label'] ?? '',
@@ -652,6 +653,13 @@ class sasoEventtickets_Seating {
 				'description'    => $meta['description'] ?? '',
 				'capacity'       => $meta['capacity'] ?? 1,
 				'price_modifier' => $meta['price_modifier'] ?? 0,
+				'pos_x'          => $meta['pos_x'] ?? 0,
+				'pos_y'          => $meta['pos_y'] ?? 0,
+				'rotation'       => $meta['rotation'] ?? 0,
+				'shape_type'     => $meta['shape_type'] ?? 'rect',
+				'shape_width'    => $shapeConfig['width'] ?? 30,
+				'shape_height'   => $shapeConfig['height'] ?? 30,
+				'color'          => $meta['color'] ?? '#4CAF50',
 			];
 		}
 		return $csvData;
@@ -677,6 +685,7 @@ class sasoEventtickets_Seating {
 		$planName = sanitize_file_name($plan['name']);
 		$filename = 'seats-' . $planName . '-' . wp_date('Y-m-d') . '.csv';
 		SASO_EVENTTICKETS::_basics_sendeDateiCSVvonDBdaten($csvData, $filename, ';');
+		exit;
 	}
 
 	/**
@@ -699,6 +708,13 @@ class sasoEventtickets_Seating {
 		'description'    => 'description',
 		'capacity'       => 'capacity',
 		'price_modifier' => 'price_modifier',
+		'pos_x'          => 'pos_x',
+		'pos_y'          => 'pos_y',
+		'rotation'       => 'rotation',
+		'shape_type'     => 'shape_type',
+		'shape_width'    => null, // shape_config.width, special handling
+		'shape_height'   => null, // shape_config.height, special handling
+		'color'          => 'color',
 	];
 
 	public function importSeatsCSV(array $data): array {
@@ -747,6 +763,12 @@ class sasoEventtickets_Seating {
 					'description'    => '',
 					'capacity'       => 1,
 					'price_modifier' => 0,
+					'pos_x'          => 0,
+					'pos_y'          => 0,
+					'rotation'       => 0,
+					'shape_type'     => 'rect',
+					'shape_config'   => ['width' => 30, 'height' => 30],
+					'color'          => '#4CAF50',
 				];
 			}
 
@@ -765,6 +787,32 @@ class sasoEventtickets_Seating {
 			}
 			if (array_key_exists('price_modifier', $row)) {
 				$meta['price_modifier'] = floatval($row['price_modifier']);
+			}
+			if (array_key_exists('pos_x', $row)) {
+				$meta['pos_x'] = floatval($row['pos_x']);
+			}
+			if (array_key_exists('pos_y', $row)) {
+				$meta['pos_y'] = floatval($row['pos_y']);
+			}
+			if (array_key_exists('rotation', $row)) {
+				$meta['rotation'] = intval($row['rotation']);
+			}
+			if (array_key_exists('shape_type', $row)) {
+				$meta['shape_type'] = sanitize_text_field($row['shape_type']);
+			}
+			if (array_key_exists('shape_width', $row) || array_key_exists('shape_height', $row)) {
+				if (!isset($meta['shape_config']) || !is_array($meta['shape_config'])) {
+					$meta['shape_config'] = ['width' => 30, 'height' => 30];
+				}
+				if (array_key_exists('shape_width', $row)) {
+					$meta['shape_config']['width'] = max(1, intval($row['shape_width']));
+				}
+				if (array_key_exists('shape_height', $row)) {
+					$meta['shape_config']['height'] = max(1, intval($row['shape_height']));
+				}
+			}
+			if (array_key_exists('color', $row)) {
+				$meta['color'] = sanitize_hex_color($row['color']) ?: '#4CAF50';
 			}
 
 			$aktiv = array_key_exists('active', $row)

@@ -159,6 +159,12 @@ class sasoEventtickets_WC {
 				case "downloadPDFTicketBadge":
 					$this->MAIN->getAdmin()->downloadPDFTicketBadge($data);
 					exit;
+				case "getProductCalendarData":
+					$ret = $this->getProductManager()->getProductCalendarData($data);
+					break;
+				case "getProductCalendarDetails":
+					$ret = $this->getProductManager()->getProductCalendarDetails($data);
+					break;
 				default:
 					throw new Exception("#6000 ".sprintf(/* translators: %s: name of called function */esc_html__('function "%s" in wc backend not implemented', 'event-tickets-with-ticket-scanner'), $a));
 			}

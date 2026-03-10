@@ -335,3 +335,8 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     outline: none;
     box-shadow: none;
 }
+
+/* Product Calendar (#191) */
+.ui-dialog table.widefat td:hover {
+    background-color: #e8f0fe !important;
+}

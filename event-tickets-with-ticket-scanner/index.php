@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.9.5
+ * Version: 2.9.6
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Text Domain: event-tickets-with-ticket-scanner
@@ -20,7 +20,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.9.5');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.9.6');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -48,6 +48,8 @@ class sasoEventtickets {
 	private $_premium_plugin_name = 'event-tickets-with-ticket-scanner-premium';
 	private $_premium_function_file = 'sasoEventtickets_PremiumFunctions.php';
 	private $PREMFUNCTIONS = null;
+	private $_oldPremiumDetected = false;
+	private $_starterOrStopDetected = false;
 	private $BASE = null;
 	private $CORE = null;
 	private $ADMIN = null;
@@ -233,11 +235,13 @@ class sasoEventtickets {
 		$this->loadOnce('sasoEventtickets_Seating');
 		return sasoEventtickets_Seating::Instance($this);
 	}
-	/** @var bool Flag: old premium detected but not loaded due to incompatibility */
-	private bool $_oldPremiumDetected = false;
 
 	public function isOldPremiumDetected(): bool {
 		return $this->_oldPremiumDetected;
+	}
+
+	public function isStarterOrStopDetected(): bool {
+		return $this->_starterOrStopDetected;
 	}
 
 	public function getPremiumFunctions() {
@@ -245,22 +249,54 @@ class sasoEventtickets {
 			$this->_isPrem = false;
 			$this->PREMFUNCTIONS = new sasoEventtickets_fakeprem();
 
-			// Minimum required premium version — older versions are incompatible and will not be loaded
-			$min_premium_version = '1.6.0';
-
+			// Check for Premium class - function-based compatibility check
 			if (class_exists('sasoEventtickets_PremiumFunctions')) {
-				if (!defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')
-					|| version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<')) {
-					// Old premium detected — do NOT load, run as free to prevent fatal errors
+				// Check if this is Starter or Stop plugin (both are "update-only" placeholders)
+				$is_starter_or_stop = defined('SASO_EVENTTICKETS_STARTER_VERSION') || defined('SASO_EVENTTICKETS_STOP_VERSION');
+
+				if ($is_starter_or_stop) {
+					// Starter/Stop plugin detected - treat as "premium not active"
+					// Show message: Enter license, then update via plugin area
+					$this->_starterOrStopDetected = true;
+					$this->PREMFUNCTIONS = new sasoEventtickets_fakeprem();
+				} elseif (!defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')) {
+					// Premium plugin exists but no version defined - likely very old or corrupted
 					$this->_oldPremiumDetected = true;
 				} else {
-					try {
-						$this->PREMFUNCTIONS = new sasoEventtickets_PremiumFunctions($this, plugin_dir_path(__FILE__), $this->_prefix, $this->getDB());
-						$this->_isPrem = $this->PREMFUNCTIONS->isPremium();
-					} catch (\Throwable $e) {
-						$this->PREMFUNCTIONS = new sasoEventtickets_fakeprem();
-						$this->_isPrem = false;
-						error_log('Event Tickets: Premium load failed: ' . $e->getMessage());
+					// Check version AND function compatibility
+					$min_premium_version = '1.6.0';
+
+					if (version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<')) {
+						// Version too old - check if required functions exist
+						$prem_class = new sasoEventtickets_PremiumFunctions($this, plugin_dir_path(__FILE__), $this->_prefix, $this->getDB());
+
+						// Check for critical methods that were added/changed in 1.6.0
+						$has_required_methods = method_exists($prem_class, 'maxValues')
+							&& method_exists($prem_class, 'getSeatingPlanById')
+							&& method_exists($prem_class, 'generateTicketPdf');
+
+						if (!$has_required_methods) {
+							// Missing required functions even though version might say otherwise
+							$this->_oldPremiumDetected = true;
+						} else {
+							// Functions exist - load it
+							try {
+								$this->PREMFUNCTIONS = $prem_class;
+								$this->_isPrem = $this->PREMFUNCTIONS->isPremium();
+							} catch (Exception $e) {
+								// Error loading premium - fall back to free
+								$this->_oldPremiumDetected = true;
+							}
+						}
+					} else {
+						// Version is OK - try to load
+						try {
+							$this->PREMFUNCTIONS = new sasoEventtickets_PremiumFunctions($this, plugin_dir_path(__FILE__), $this->_prefix, $this->getDB());
+							$this->_isPrem = $this->PREMFUNCTIONS->isPremium();
+						} catch (Exception $e) {
+							// Error loading premium - fall back to free
+							$this->_oldPremiumDetected = true;
+						}
 					}
 				}
 			} else {
@@ -284,6 +320,12 @@ class sasoEventtickets {
 		}
 		if ($this->PREMFUNCTIONS instanceof sasoEventtickets_PremiumFunctions) {
 			return; // Already loaded
+		}
+
+		// Check for Starter/Stop plugin first (update-only placeholders, no premium features)
+		if (defined('SASO_EVENTTICKETS_STARTER_VERSION') || defined('SASO_EVENTTICKETS_STOP_VERSION')) {
+			$this->_starterOrStopDetected = true;
+			return;
 		}
 
 		$min_premium_version = '1.6.0';
@@ -352,6 +394,7 @@ class sasoEventtickets {
 	 */
 	public function invalidatePremiumCache(): void {
 		$this->_isPrem = null;
+		$this->PREMFUNCTIONS = null;
 	}
 	public function getPrefix() {
 		return $this->_prefix;
@@ -1749,48 +1792,141 @@ class sasoEventtickets {
 			return;
 		}
 
-		if (!$this->isOldPremiumDetected()) {
+		$starter_or_stop = $this->isStarterOrStopDetected();
+		$old_premium = $this->isOldPremiumDetected();
+
+		if (!$starter_or_stop && !$old_premium) {
 			return;
 		}
 
 		$old_version = defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')
 			? SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION
 			: __('unknown', 'event-tickets-with-ticket-scanner');
+
 		$upgrade_url = 'https://vollstart.com/event-tickets-with-ticket-scanner/';
 		$support_url = 'https://vollstart.com/support/';
+		$premium_url = 'https://vollstart.com/downloads/event-tickets-with-ticket-scanner/';
 
-		echo '<div class="notice notice-error" style="border-left-color:#dc3232;padding:12px 15px;">';
-		echo '<p style="font-size:14px;font-weight:bold;margin:0 0 8px 0;">';
+		echo '<div class="notice notice-error" style="border-left-color:#dc3232;padding:15px 20px;">';
+		echo '<p style="font-size:15px;font-weight:bold;margin:0 0 10px 0;color:#dc2626;">';
 		echo '&#9888; ';
-		printf(
-			esc_html__('Event Tickets: Your Premium plugin (v%s) is not compatible with this version of Event Tickets.', 'event-tickets-with-ticket-scanner'),
-			esc_html($old_version)
-		);
+
+		if ($starter_or_stop) {
+			$is_stop = defined('SASO_EVENTTICKETS_STOP_VERSION');
+			if ($is_stop) {
+				printf(
+					esc_html__('Event Tickets: Your Premium subscription has expired. Please renew your license to continue using Premium features.', 'event-tickets-with-ticket-scanner')
+				);
+			} else {
+				printf(
+					esc_html__('Event Tickets: The Starter plugin is installed. Please update to the latest Premium version within the Plugins page.', 'event-tickets-with-ticket-scanner')
+				);
+			}
+		} else {
+			printf(
+				esc_html__('Event Tickets: Your Premium plugin (v%s) is outdated and not compatible with this version.', 'event-tickets-with-ticket-scanner'),
+				esc_html($old_version)
+			);
+		}
 		echo '</p>';
-		echo '<p style="margin:0 0 8px 0;">';
-		esc_html_e('To prevent errors on your website, premium features have been temporarily disabled. Your tickets and data are safe.', 'event-tickets-with-ticket-scanner');
+
+		if ($starter_or_stop) {
+			// Starter/Stop plugin - different messages
+			$is_stop = defined('SASO_EVENTTICKETS_STOP_VERSION');
+			$hasSerial = !empty(trim(get_option("saso-event-tickets-premium_serial", "")));
+
+			echo '<div style="background:#f8f9fa;border-left:4px solid #2563eb;padding:12px;margin:12px 0;">';
+
+			if ($is_stop) {
+				// Stop plugin - subscription expired, PUC can update once license is renewed
+				echo '<p style="margin:0 0 10px 0;"><strong>' . esc_html__('Solution: Renew Your Premium License', 'event-tickets-with-ticket-scanner') . '</strong></p>';
+				echo '<ol style="margin:0 0 12px 20px;padding-left:20px;">';
+				echo '<li style="margin:0 0 6px 0;">' . esc_html__('Renew your license', 'event-tickets-with-ticket-scanner') . '</li>';
+				if ($hasSerial) {
+					echo '<li style="margin:0 0 6px 0;">' . esc_html__('Update your license key in Event Tickets settings', 'event-tickets-with-ticket-scanner') . '</li>';
+				} else {
+					echo '<li style="margin:0 0 6px 0;">' . esc_html__('Enter your license key in Event Tickets settings', 'event-tickets-with-ticket-scanner') . '</li>';
+				}
+				echo '<li style="margin:0 0 6px 0;">' . esc_html__('Click "Check License" to verify your new subscription', 'event-tickets-with-ticket-scanner') . '</li>';
+				echo '<li style="margin:0;">' . esc_html__('Update the Premium plugin via Plugins > Updates', 'event-tickets-with-ticket-scanner') . '</li>';
+				echo '</ol>';
+				printf(
+					'<p style="margin:0 0 8px 0;"><a href="%s" class="button button-primary button-hero" target="_blank">%s</a></p>',
+					esc_url($upgrade_url . '?utm_source=plugin&utm_medium=stop-notice&utm_campaign=renew-license'),
+					esc_html__('Renew License', 'event-tickets-with-ticket-scanner')
+				);
+				echo '<p style="margin:0;font-size:13px;color:#666;">';
+				esc_html_e('Contact support via support@vollstart.com if you think this is not correct.', 'event-tickets-with-ticket-scanner');
+				echo '</p>';
+			} else {
+				// Starter plugin - just update within plugins area
+				echo '<p style="margin:0 0 10px 0;"><strong>' . esc_html__('Solution: Update to Premium via Plugins Page', 'event-tickets-with-ticket-scanner') . '</strong></p>';
+				echo '<p style="margin:0 0 8px 0;">';
+				esc_html_e('The Starter plugin needs to be updated to Premium. Please update within the Plugins page:', 'event-tickets-with-ticket-scanner');
+				echo '</p>';
+				echo '<ol style="margin:0 0 12px 20px;padding-left:20px;">';
+				if (!$hasSerial) {
+					echo '<li style="margin:0 0 6px 0;">' . esc_html__('Enter your license key in Event Tickets settings', 'event-tickets-with-ticket-scanner') . '</li>';
+				}
+				echo '<li style="margin:0 0 6px 0;">' . esc_html__('Go to Plugins > Add New > Upload Plugin', 'event-tickets-with-ticket-scanner') . '</li>';
+				echo '<li style="margin:0 0 6px 0;">' . esc_html__('Upload the Premium ZIP file', 'event-tickets-with-ticket-scanner') . '</li>';
+				echo '<li style="margin:0 0 6px 0;">' . esc_html__('WordPress will replace the Starter plugin with Premium', 'event-tickets-with-ticket-scanner') . '</li>';
+				echo '<li style="margin:0;">' . esc_html__('Click "Replace current with uploaded" and activate', 'event-tickets-with-ticket-scanner') . '</li>';
+				echo '</ol>';
+			}
+
+			echo '</div>';
+		} else {
+			// Old premium detected - update instructions
+			echo '<div style="background:#f8f9fa;border-left:4px solid #2563eb;padding:12px;margin:12px 0;">';
+			echo '<p style="margin:0 0 10px 0;"><strong>' . esc_html__('Solution: Update Premium Plugin', 'event-tickets-with-ticket-scanner') . '</strong></p>';
+			echo '<p style="margin:0 0 8px 0;">';
+			esc_html_e('Your current Premium plugin is outdated and incompatible. Premium features have been temporarily disabled to prevent errors. Your tickets and data are safe.', 'event-tickets-with-ticket-scanner');
+			echo '</p>';
+			echo '<p style="margin:0 0 8px 0;">';
+			printf(
+				esc_html__('Required version: 1.6.0 or higher. You have: %s', 'event-tickets-with-ticket-scanner'),
+				'<strong>' . esc_html($old_version) . '</strong>'
+			);
+			echo '</p>';
+			echo '<p style="margin:0 0 12px 0;">';
+			esc_html_e('To restore premium features:', 'event-tickets-with-ticket-scanner');
+			echo '</p>';
+			echo '<ol style="margin:0 0 12px 20px;padding-left:20px;">';
+			echo '<li style="margin:0 0 6px 0;">' . sprintf(
+				/* translators: %s: URL to account */
+				esc_html__('Download the latest Premium from your %1$saccount%2$s', 'event-tickets-with-ticket-scanner'),
+				'<a href="' . esc_url($upgrade_url) . '" target="_blank"><strong>',
+				'</strong></a>'
+			) . '</li>';
+			echo '<li style="margin:0 0 6px 0;">' . esc_html__('Go to Plugins > Add New > Upload Plugin', 'event-tickets-with-ticket-scanner') . '</li>';
+			echo '<li style="margin:0 0 6px 0;">' . esc_html__('Upload the new Premium ZIP file', 'event-tickets-with-ticket-scanner') . '</li>';
+			echo '<li style="margin:0;">' . esc_html__('WordPress will ask to replace - confirm to update', 'event-tickets-with-ticket-scanner') . '</li>';
+			echo '</ol>';
+			echo '<p style="margin:0;">';
+			printf(
+				'<a href="' . esc_url($support_url) . '" class="button" style="margin-right:8px;" target="_blank">%s</a>',
+				esc_html__('Contact Support', 'event-tickets-with-ticket-scanner')
+			);
+			echo '</p>';
+		}
+
+		echo '</div>'; // End gray box
+
+		echo '<p style="margin:12px 0 0 0;font-style:italic;color:#666;font-size:13px;">';
+		esc_html_e('Your tickets, orders, and data are completely safe. You can continue using the basic features while updating.', 'event-tickets-with-ticket-scanner');
 		echo '</p>';
-		echo '<p style="margin:0 0 8px 0;">';
-		printf(
-			esc_html__('Please update the Premium plugin to version 1.6.0 or higher to restore all premium features. You can download the latest version from your %1$saccount%2$s or %3$scontact support%4$s for help.', 'event-tickets-with-ticket-scanner'),
-			'<a href="' . esc_url($upgrade_url) . '" target="_blank"><strong>',
-			'</strong></a>',
-			'<a href="' . esc_url($support_url) . '" target="_blank">',
-			'</a>'
-		);
-		echo '</p>';
-		echo '<p style="margin:0 0 8px 0;font-style:italic;color:#666;">';
-		esc_html_e('How to update: Go to Plugins > Add New > Upload Plugin, then upload the new Premium ZIP file. WordPress will ask to replace the existing version.', 'event-tickets-with-ticket-scanner');
-		echo '</p>';
+
 		$downgrade_url = 'https://plugins.trac.wordpress.org/browser/event-tickets-with-ticket-scanner/tags';
-		echo '<p style="margin:0;font-style:italic;color:#666;">';
+		echo '<p style="margin:6px 0 0 0;font-style:italic;color:#666;font-size:13px;">';
 		printf(
 			esc_html__('Alternatively, your old Premium plugin still works with basic plugin versions below 2.8.0. You can %1$sdowngrade the basic plugin here%2$s.', 'event-tickets-with-ticket-scanner'),
 			'<a href="' . esc_url($downgrade_url) . '" target="_blank">',
 			'</a>'
 		);
 		echo '</p>';
-		echo '</div>';
+
+		echo '</div>'; // End notice
 	}
 
 	/**

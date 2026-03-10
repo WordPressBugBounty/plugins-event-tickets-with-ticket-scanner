@@ -36,6 +36,8 @@ class sasoEventtickets_AdminSettings {
 			'removeWoocommerceOrderInfoFromCode', 'removeWoocommerceRstrPurchaseInfoFromCode',
 			'removeUserRegistrationFromCode', 'removeUsedInformationFromCode',
 			'removeUsedInformationFromCodeBulk', 'editTicketMetaEntry',
+			'getRedemptionSummary', 'getRedemptionDetails', 'downloadRedemptionSummary',
+			'checkLicenseServer',
 		];
 		if (in_array(trim($a), $sensitive_actions) && !current_user_can('manage_options')) {
 			if (!$this->MAIN->isUserAllowedToAccessAdminArea()) {
@@ -241,6 +243,18 @@ class sasoEventtickets_AdminSettings {
 				case "ping":
 					$ret = $this->ping($data);
 					break;
+				case "getRedemptionSummary":
+					$ret = $this->getRedemptionSummary($data);
+					break;
+				case "getRedemptionDetails":
+					$ret = $this->getRedemptionDetails($data);
+					break;
+				case "downloadRedemptionSummary":
+					$this->downloadRedemptionSummary($data);
+					break;
+				case "checkLicenseServer":
+					$ret = $this->checkLicenseServer($data);
+					break;
 				default:
 					throw new Exception(sprintf(esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'), $a));
 			}
@@ -273,6 +287,255 @@ class sasoEventtickets_AdminSettings {
 	private function executeJSONSeating($data) {
 		if (!isset($data['c'])) throw new Exception("#8501 seating action parameter is missing");
 		return $this->MAIN->getSeating()->executeJSON($data['c'], $data);
+	}
+
+	/**
+	 * Daily Redemption Summary — aggregated redeemed ticket counts by date and list/product.
+	 * Premium feature (#236).
+	 *
+	 * @param array $data {date_from?: string, date_to?: string} Y-m-d format, defaults to today
+	 * @return array {summary: {total_redeemed, total_codes, date_from, date_to}, rows: [...]}
+	 */
+	public function getRedemptionSummary(array $data): array {
+		if (!$this->MAIN->isPremium()) {
+			throw new Exception("#9701 premium is required for redemption summary");
+		}
+
+		$today = wp_date('Y-m-d');
+		$date_from = isset($data['date_from']) && $data['date_from'] !== '' ? sanitize_text_field($data['date_from']) : $today;
+		$date_to   = isset($data['date_to'])   && $data['date_to']   !== '' ? sanitize_text_field($data['date_to'])   : $today;
+
+		if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_from) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_to)) {
+			throw new Exception("#9702 invalid date format — expected Y-m-d");
+		}
+
+		$db = $this->MAIN->getDB();
+		$codes_table = $db->getTabelle('codes');
+		$lists_table = $db->getTabelle('lists');
+
+		// 1. Build list_id → {list_name, product_id, product_name} mapping
+		$lists = $db->_db_datenholen("SELECT id, name FROM {$lists_table}");
+		$list_map = [];
+		foreach ($lists as $list) {
+			$list_map[(int)$list['id']] = [
+				'list_name'    => $list['name'],
+				'product_id'   => 0,
+				'product_name' => '',
+			];
+		}
+
+		// Find WooCommerce products linked to each list
+		global $wpdb;
+		$product_links = $wpdb->get_results(
+			"SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = 'saso_eventtickets_list' AND meta_value != ''",
+			ARRAY_A
+		);
+		foreach ($product_links as $link) {
+			$lid = (int)$link['meta_value'];
+			if (isset($list_map[$lid]) && $list_map[$lid]['product_id'] === 0) {
+				$pid = (int)$link['post_id'];
+				$list_map[$lid]['product_id']   = $pid;
+				$list_map[$lid]['product_name'] = get_the_title($pid);
+			}
+		}
+
+		// 2. Get total codes per list (for "total_in_list" column)
+		$totals_raw = $db->_db_datenholen("SELECT list_id, COUNT(*) as cnt FROM {$codes_table} GROUP BY list_id");
+		$totals_per_list = [];
+		foreach ($totals_raw as $row) {
+			$totals_per_list[(int)$row['list_id']] = (int)$row['cnt'];
+		}
+
+		// 2b. Get no-show count per list (unredeemed WC tickets)
+		$no_show_raw = $db->_db_datenholen(
+			"SELECT list_id, COUNT(*) as cnt FROM {$codes_table}
+			 WHERE redeemed = 0 AND JSON_EXTRACT(meta, '$.wc_ticket.is_ticket') = 1
+			 GROUP BY list_id"
+		);
+		$no_show_per_list = [];
+		foreach ($no_show_raw as $row) {
+			$no_show_per_list[(int)$row['list_id']] = (int)$row['cnt'];
+		}
+
+		// 3. Fetch all redeemed codes with meta
+		$redeemed_codes = $db->_db_datenholen(
+			"SELECT id, list_id, meta FROM {$codes_table} WHERE redeemed = 1"
+		);
+
+		// 4. Aggregate by date + list_id
+		$agg = []; // key: "Y-m-d|list_id" → count
+		$total_redeemed = 0;
+
+		foreach ($redeemed_codes as $code) {
+			$meta = @json_decode($code['meta'], true);
+			if (!is_array($meta)) continue;
+
+			$wc = $meta['wc_ticket'] ?? [];
+			$redemption_dates = [];
+
+			// Multi-use tickets: each entry in stats_redeemed is a separate redemption
+			$stats = $wc['stats_redeemed'] ?? [];
+			if (is_array($stats) && count($stats) > 0) {
+				foreach ($stats as $stat) {
+					if (!empty($stat['redeemed_date'])) {
+						$redemption_dates[] = substr($stat['redeemed_date'], 0, 10);
+					}
+				}
+			} elseif (!empty($wc['redeemed_date'])) {
+				// Single-use: only redeemed_date
+				$redemption_dates[] = substr($wc['redeemed_date'], 0, 10);
+			}
+
+			$list_id = (int)$code['list_id'];
+			foreach ($redemption_dates as $rd) {
+				if ($rd < $date_from || $rd > $date_to) continue;
+				$key = $rd . '|' . $list_id;
+				if (!isset($agg[$key])) {
+					$agg[$key] = 0;
+				}
+				$agg[$key]++;
+				$total_redeemed++;
+			}
+		}
+
+		// 5. Build result rows
+		$rows = [];
+		foreach ($agg as $key => $count) {
+			[$date, $lid_str] = explode('|', $key);
+			$lid = (int)$lid_str;
+			$info = $list_map[$lid] ?? ['list_name' => '', 'product_id' => 0, 'product_name' => ''];
+			$rows[] = [
+				'date'           => $date,
+				'list_id'        => $lid,
+				'list_name'      => $info['list_name'],
+				'product_id'     => $info['product_id'],
+				'product_name'   => $info['product_name'],
+				'redeemed_count' => $count,
+				'total_in_list'  => $totals_per_list[$lid] ?? 0,
+				'no_show_count'  => $no_show_per_list[$lid] ?? 0,
+			];
+		}
+
+		// Sort by date DESC, list_name ASC
+		usort($rows, function ($a, $b) {
+			$cmp = strcmp($b['date'], $a['date']);
+			return $cmp !== 0 ? $cmp : strcmp($a['list_name'], $b['list_name']);
+		});
+
+		// Total codes in all lists that have redemptions in the date range
+		$involved_lists = array_unique(array_column($rows, 'list_id'));
+		$total_codes = 0;
+		$total_no_show = 0;
+		foreach ($involved_lists as $lid) {
+			$total_codes += $totals_per_list[$lid] ?? 0;
+			$total_no_show += $no_show_per_list[$lid] ?? 0;
+		}
+
+		return [
+			'summary' => [
+				'total_redeemed' => $total_redeemed,
+				'total_codes'    => $total_codes,
+				'total_no_show'  => $total_no_show,
+				'date_from'      => $date_from,
+				'date_to'        => $date_to,
+			],
+			'rows' => $rows,
+		];
+	}
+
+	/**
+	 * Get individual redeemed ticket codes for a specific date + list combination.
+	 * Drill-down data for the Attendance table (#236).
+	 */
+	public function getRedemptionDetails(array $data): array {
+		if (!$this->MAIN->isPremium()) {
+			throw new Exception("#9703 premium is required for redemption details");
+		}
+
+		$date = isset($data['date']) ? sanitize_text_field($data['date']) : '';
+		$list_id = isset($data['list_id']) ? (int)$data['list_id'] : 0;
+
+		if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+			throw new Exception("#9704 invalid date format — expected Y-m-d");
+		}
+		if ($list_id <= 0) {
+			throw new Exception("#9705 invalid list_id");
+		}
+
+		$db = $this->MAIN->getDB();
+		$codes_table = $db->getTabelle('codes');
+
+		$redeemed_codes = $db->_db_datenholen(
+			"SELECT code, code_display, order_id, meta FROM {$codes_table} WHERE list_id = " . intval($list_id) . " AND redeemed = 1"
+		);
+
+		$results = [];
+		foreach ($redeemed_codes as $code) {
+			$meta = @json_decode($code['meta'], true);
+			if (!is_array($meta)) continue;
+
+			$wc = $meta['wc_ticket'] ?? [];
+
+			// Multi-use tickets
+			$stats = $wc['stats_redeemed'] ?? [];
+			if (is_array($stats) && count($stats) > 0) {
+				foreach ($stats as $stat) {
+					if (!empty($stat['redeemed_date'])) {
+						$rd = substr($stat['redeemed_date'], 0, 10);
+						if ($rd === $date) {
+							$results[] = [
+								'code'          => $code['code'],
+								'code_display'  => $code['code_display'] ?: $code['code'],
+								'order_id'      => (int)$code['order_id'],
+								'redeemed_date' => $rd,
+								'redeemed_time' => substr($stat['redeemed_date'], 11, 8),
+							];
+						}
+					}
+				}
+			} elseif (!empty($wc['redeemed_date'])) {
+				$rd = substr($wc['redeemed_date'], 0, 10);
+				if ($rd === $date) {
+					$results[] = [
+						'code'          => $code['code'],
+						'code_display'  => $code['code_display'] ?: $code['code'],
+						'order_id'      => (int)$code['order_id'],
+						'redeemed_date' => $rd,
+						'redeemed_time' => substr($wc['redeemed_date'], 11, 8),
+					];
+				}
+			}
+		}
+
+		usort($results, function ($a, $b) {
+			return strcmp($a['redeemed_time'], $b['redeemed_time']);
+		});
+
+		return $results;
+	}
+
+	/**
+	 * Download the redemption summary as CSV (#236).
+	 */
+	private function downloadRedemptionSummary(array $data): void {
+		$result = $this->getRedemptionSummary($data);
+
+		$csvRows = [];
+		foreach ($result['rows'] as $row) {
+			$csvRows[] = [
+				'Date'          => $row['date'],
+				'Event / List'  => $row['list_name'],
+				'Product'       => $row['product_name'],
+				'Product ID'    => $row['product_id'],
+				'Redeemed'      => $row['redeemed_count'],
+				'Total in List' => $row['total_in_list'],
+				'No Show'       => $row['no_show_count'],
+			];
+		}
+
+		$filename = 'redemption-summary-' . $result['summary']['date_from'] . '-to-' . $result['summary']['date_to'] . '.csv';
+		SASO_EVENTTICKETS::_basics_sendeDateiCSVvonDBdaten($csvRows, $filename, ',');
+		exit;
 	}
 
 	private function repairTables() {
@@ -383,6 +646,7 @@ class sasoEventtickets_AdminSettings {
 				'plugin_version' => defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION') ? SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION : SASO_EVENTTICKETS_PLUGIN_VERSION
 			];
 			$versions["isOldPremiumDetected"] = $this->MAIN->isOldPremiumDetected();
+			$versions["isStarterOrStopDetected"] = $this->MAIN->isStarterOrStopDetected();
 			$versions["date_default_timezone"] = date_default_timezone_get();
 			$versions["date_WP_timezone"] = wp_timezone_string();
 			$versions["date_WP_timezone_time"] = $this->wpdocs_custom_timezone_string();
@@ -3053,6 +3317,66 @@ class sasoEventtickets_AdminSettings {
 		} catch (Exception $e) {
 			$this->logErrorToDB($e, "", "clearFormatWarning for list $list_id");
 		}
+	}
+
+	/**
+	 * Check if the license/update server is reachable.
+	 * Useful for diagnosing Premium update issues.
+	 *
+	 * @param array $data
+	 * @return array Result with 'success' (bool), 'time' (ms), 'message' (string)
+	 */
+	public function checkLicenseServer($data) {
+		$start_time = microtime(true);
+
+		// Test vollstart.com reachability
+		$test_url = 'https://vollstart.com/';
+		$response = wp_remote_get($test_url, [
+			'timeout' => 10,
+			'sslverify' => true,
+			'user-agent' => 'Event-Tickets-License-Check/' . $this->MAIN->getPluginVersion()
+		]);
+
+		$time_ms = round((microtime(true) - $start_time) * 1000);
+
+		if (is_wp_error($response)) {
+			$error_msg = $response->get_error_message();
+			return [
+				'success' => false,
+				'reachable' => false,
+				'time' => $time_ms,
+				'message' => sprintf(
+					__('License server NOT reachable. Error: %s', 'event-tickets-with-ticket-scanner'),
+					esc_html($error_msg)
+				),
+				'error' => $error_msg
+			];
+		}
+
+		$http_code = wp_remote_retrieve_response_code($response);
+		if ($http_code >= 200 && $http_code < 300) {
+			return [
+				'success' => true,
+				'reachable' => true,
+				'time' => $time_ms,
+				'message' => sprintf(
+					__('License server reachable! Response time: %d ms', 'event-tickets-with-ticket-scanner'),
+					$time_ms
+				),
+				'http_code' => $http_code
+			];
+		}
+
+		return [
+			'success' => false,
+			'reachable' => false,
+			'time' => $time_ms,
+			'message' => sprintf(
+				__('License server returned unexpected HTTP code: %d', 'event-tickets-with-ticket-scanner'),
+				$http_code
+			),
+			'http_code' => $http_code
+		];
 	}
 
 	// ── Context-Wizards: dismissed suggestions per user (#232) ──

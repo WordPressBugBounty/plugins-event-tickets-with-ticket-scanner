@@ -245,11 +245,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		}
 		OPTIONS.dismissed_suggestions = optionData.dismissed_suggestions || [];
 
-		if (isPremium()) {
+		let _hasPremiumVersion = _getOptions_Versions_getByKey('premium') != '';
+		if (_hasPremiumVersion) {
 			let serial = _getOptions_getValByKey('serial');
 			if (serial == '') {
 				if (STATE != "options") {
-					let errortext = __("You are using the premium version. Many thanks, please enter your serial key within the options", 'event-tickets-with-ticket-scanner');
+					let errortext = __("Please enter your Premium license key in the settings to activate your subscription.", 'event-tickets-with-ticket-scanner');
 					let i = confirm(errortext);
 					if (i) {
 						_displayOptionsArea();
@@ -265,8 +266,28 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					let today = new Date();
 					if (expirationDate <= today || toCheck >= expirationDate) {
 						let msg = typeof expiration.message !== "undefined" && expiration.message != "" ? '<br>'+expiration.message : '';
-						let info_box = $('<div style="background-color:red;color:white;padding:10px;">').html("Your premium license expires soon, at the "+expiration.expiration_date+ ' '+expiration.timezone+'<br>It will work, but no updates are possible for the premium plugin after the expiration date.<br>'+msg+'You can <a target="_blank" style="color:white;font-weight:bold;" href="https://vollstart.com/event-tickets-with-ticket-scanner/">renew your premium license here</a>.');
-						$('body').find('div[data-id="plugin_info_area"').html(info_box);
+
+						// Only warn for subscriptions, NOT for lifetime/onetime licenses
+						// Lifetime licenses continue working with Basic < 2.8.0
+						let subType = expiration.subscription_type || '';
+						let isLifetime = subType === 'lifetime' || subType === 'onetime' || !subType;
+
+						if (!isLifetime) {
+							// Monthly or Yearly subscription - Premium will STOP
+							let isMonthly = subType.toLowerCase().includes('month');
+							let title, bodyText;
+
+							if (isMonthly) {
+								title = "Your monthly subscription payment is due soon!";
+								bodyText = "Your premium license will be <strong>disabled</strong> if the payment fails on "+expiration.expiration_date+ ' '+expiration.timezone+'.<br>Please ensure your payment method is up to date.<br>'+msg+'After payment failure, the plugin will revert to Basic features only.<br>You can manage your subscription in your <a target=\"_blank\" style=\"color:white;font-weight:bold;\" href=\"https://vollstart.com/event-tickets-with-ticket-scanner/\">account settings</a>.';
+							} else {
+								title = "Your premium license expires soon!";
+								bodyText = "Your premium license will be <strong>disabled</strong> on "+expiration.expiration_date+ ' '+expiration.timezone+'.<br>It will revert to Basic features only after expiration.<br>'+msg+'You can <a target=\"_blank\" style=\"color:white;font-weight:bold;\" href=\"https://vollstart.com/event-tickets-with-ticket-scanner/\">renew your premium license here</a>.';
+							}
+
+							let info_box = $('<div style="background-color:#dc3232;color:white;padding:10px;border-left:4px solid #dc3232;">').html("<strong>"+title+"</strong><br>"+bodyText);
+							$('body').find('div[data-id="plugin_info_area"]').html(info_box);
+						}
 					}
 				}
 			}
@@ -1126,7 +1147,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			DIV.append('<b>Basic Plugin Version:</b> '+versions.basic+newline);
 			DIV.append('<b>Basic DB Version:</b> '+versions.db+newline);
 			if (versions.premium != "") {
-				DIV.append('<b>Premium Serial:</b> '+versions.premium_serial+newline);
+				DIV.append('<b>Premium License Key:</b> '+versions.premium_serial+newline);
 				DIV.append('<b>Premium Plugin Version:</b> '+versions.premium+newline);
 				DIV.append('<b>Premium DB Version:</b> '+versions.premium_db+newline);
 			}
@@ -1149,6 +1170,36 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				});
 				DIV.append(recheckBtn);
 			}
+
+			// License Server Connectivity Check — always show, even without Premium
+			DIV.append('<h4 style="margin-bottom:0;">License Server Connectivity</h4>');
+			DIV.append('<p>Check if the license/update server is reachable. If not, Premium updates will not work.</p>');
+			DIV.append('<button id="test-license-server-btn" class="button button-secondary" style="margin-right:8px;">Check License Server</button>');
+			DIV.append('<span id="test-license-server-result" style="font-size:13px;"></span>');
+			DIV.append('<br><br>');
+
+			// Click handler via event delegation
+			$(document).on('click', '#test-license-server-btn', function() {
+				let $btn = $(this);
+				let $result = $('#test-license-server-result');
+
+				$btn.prop('disabled', true).text('Checking...');
+				$result.html('<span style="color:#666;">Connecting...</span>');
+
+				_makePost('checkLicenseServer', {}, function(response) {
+					$btn.prop('disabled', false).text('Check License Server');
+
+					if (response.success && response.reachable) {
+						$result.html('<span style="color:#00a32a;font-weight:bold;">✓ ' + response.message + '</span>');
+					} else {
+						$result.html('<span style="color:#d63638;font-weight:bold;">✗ ' + response.message + '</span>');
+					}
+				}, function(error) {
+					$btn.prop('disabled', false).text('Check License Server');
+					$result.html('<span style="color:#d63638;font-weight:bold;">✗ Connection failed</span>');
+				});
+			});
+
 			DIV.append('<h4 style="margin-bottom:0;">Date</h4>');
 			DIV.append('<b>Your default timezone: </b> '+versions.date_default_timezone+newline);
 			DIV.append('<b>Your WP timezone: </b> '+versions.date_WP_timezone+newline);
@@ -2004,6 +2055,182 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		});
 	}
 
+	// ── Daily Redemption Summary / Attendance (#236) ──
+
+	function _displayAttendanceArea() {
+		STATE = 'attendance';
+		DIV.html(_getSpinnerHTML());
+
+		DIV.html(getBackButtonDiv());
+		DIV.append('<h3>' + _x('Daily Redemption Summary', 'title', 'event-tickets-with-ticket-scanner') + '</h3>');
+
+		// Date range filter + Export button
+		let today = new Date().toISOString().split('T')[0];
+		let div_filters = $('<div/>').css({'padding':'15px','background':'white','border-radius':'5px','margin-bottom':'15px','display':'flex','gap':'15px','align-items':'flex-end','flex-wrap':'wrap'}).appendTo(DIV);
+
+		let div_from = _createDivInput(_x('From', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
+		let input_from = $('<input type="date"/>').val(today).css('padding','4px 8px').appendTo(div_from);
+
+		let div_to = _createDivInput(_x('To', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
+		let input_to = $('<input type="date"/>').val(today).css('padding','4px 8px').appendTo(div_to);
+
+		let btn_load = $('<button/>').addClass("button-primary").css({'margin-bottom':'15px'}).html(_x('Load', 'button', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
+
+		let btn_export = $('<button/>').addClass("button-secondary").css({'margin-bottom':'15px','margin-left':'5px'}).html('<span class="dashicons dashicons-download" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Export CSV', 'button', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
+		btn_export.on("click", function() {
+			let df = input_from.val(), dt = input_to.val();
+			if (!df || !dt) return;
+			window.open(_requestURL('downloadRedemptionSummary', {date_from: df, date_to: dt}), '_blank');
+		});
+
+		// Summary cards
+		let div_summary = $('<div/>').css({'display':'flex','gap':'20px','margin-bottom':'15px'}).appendTo(DIV);
+		let cardStyle = {'padding':'15px','background':'white','border-radius':'5px','flex':'1','text-align':'center','border':'1px solid #c3c4c7'};
+		let card_redeemed = $('<div/>').css(cardStyle).appendTo(div_summary);
+		let card_total = $('<div/>').css(cardStyle).appendTo(div_summary);
+		let card_noshow = $('<div/>').css(cardStyle).appendTo(div_summary);
+
+		// Table area
+		let div_table = $('<div/>').css({'background':'white','padding':'15px','border-radius':'5px','border':'1px solid #c3c4c7'}).appendTo(DIV);
+
+		let tabelle_attendance_datatable = null;
+
+		function __loadData() {
+			let date_from = input_from.val();
+			let date_to = input_to.val();
+			if (!date_from || !date_to) return;
+
+			div_table.html(_getSpinnerHTML());
+			card_redeemed.html('...');
+			card_total.html('...');
+			card_noshow.html('...');
+
+			_makeGet('getRedemptionSummary', {date_from: date_from, date_to: date_to}, function(data) {
+				// Summary cards
+				card_redeemed.html(
+					'<h2 style="margin:0;color:#2e74b5;">' + data.summary.total_redeemed + '</h2>' +
+					'<p style="margin:5px 0 0;">' + _x('Redeemed', 'label', 'event-tickets-with-ticket-scanner') + '</p>'
+				);
+				card_total.html(
+					'<h2 style="margin:0;color:#666;">' + data.summary.total_codes + '</h2>' +
+					'<p style="margin:5px 0 0;">' + _x('Total Tickets', 'label', 'event-tickets-with-ticket-scanner') + '</p>'
+				);
+				card_noshow.html(
+					'<h2 style="margin:0;color:#d63638;">' + data.summary.total_no_show + '</h2>' +
+					'<p style="margin:5px 0 0;">' + _x('No Show', 'label', 'event-tickets-with-ticket-scanner') + '</p>'
+				);
+
+				// Build DataTable
+				let table_id = myAjax.divPrefix + '_tabelle_attendance';
+				let tabelle = $('<table/>').attr("id", table_id);
+				tabelle.html(
+					'<thead><tr>' +
+					'<th></th>' +
+					'<th>' + _x('Date', 'column', 'event-tickets-with-ticket-scanner') + '</th>' +
+					'<th>' + _x('Event / List', 'column', 'event-tickets-with-ticket-scanner') + '</th>' +
+					'<th>' + _x('Product', 'column', 'event-tickets-with-ticket-scanner') + '</th>' +
+					'<th>' + _x('Redeemed', 'column', 'event-tickets-with-ticket-scanner') + '</th>' +
+					'<th>' + _x('Total in List', 'column', 'event-tickets-with-ticket-scanner') + '</th>' +
+					'<th>' + _x('No Show', 'column', 'event-tickets-with-ticket-scanner') + '</th>' +
+					'</tr></thead>' +
+					'<tfoot><tr><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>'
+				);
+				div_table.html(tabelle);
+
+				if (tabelle_attendance_datatable) {
+					try { tabelle_attendance_datatable.destroy(); } catch(e) {}
+				}
+
+				tabelle_attendance_datatable = $('#' + table_id).DataTable({
+					"responsive": true,
+					"searching": true,
+					"ordering": true,
+					"processing": false,
+					"serverSide": false,
+					"stateSave": false,
+					"paging": data.rows.length > 25,
+					"pageLength": 25,
+					"data": data.rows,
+					"order": [[1, "desc"], [2, "asc"]],
+					"columns": [
+						{"data": null, "className": "details-control", "orderable": false, "defaultContent": "", "width": 10},
+						{"data": "date", "orderable": true},
+						{"data": "list_name", "orderable": true, "render": function(d){ return d || '-'; }},
+						{"data": "product_name", "orderable": true, "render": function(d, type, row){
+							return row.product_id > 0 ? d + ' <small>(#' + row.product_id + ')</small>' : (d || '-');
+						}},
+						{"data": "redeemed_count", "orderable": true, "className": "dt-right"},
+						{"data": "total_in_list", "orderable": true, "className": "dt-right"},
+						{"data": "no_show_count", "orderable": true, "className": "dt-right"}
+					],
+					"footerCallback": function() {
+						let api = this.api();
+						let sumRedeemed = api.column(4).data().reduce(function(a, b){ return a + b; }, 0);
+						let sumTotal = api.column(5).data().reduce(function(a, b){ return a + b; }, 0);
+						let sumNoShow = api.column(6).data().reduce(function(a, b){ return a + b; }, 0);
+						$(api.column(0).footer()).html('');
+						$(api.column(1).footer()).html('<b>' + _x('Total', 'label', 'event-tickets-with-ticket-scanner') + '</b>');
+						$(api.column(2).footer()).html('');
+						$(api.column(3).footer()).html('');
+						$(api.column(4).footer()).html('<b>' + sumRedeemed + '</b>');
+						$(api.column(5).footer()).html('<b>' + sumTotal + '</b>');
+						$(api.column(6).footer()).html('<b>' + sumNoShow + '</b>');
+					}
+				});
+				tabelle.css("width", "100%");
+
+				// Drill-down: click details-control to show individual codes
+				$('#' + table_id + ' tbody').on('click', 'td.details-control', function() {
+					let tr = $(this).closest('tr');
+					let row = tabelle_attendance_datatable.row(tr);
+					if (row.child.isShown()) {
+						row.child.hide();
+						tr.removeClass('shown');
+					} else {
+						let d = row.data();
+						let childDiv = $('<div/>').css('padding', '5px 10px').html(_getSpinnerHTML());
+						row.child(childDiv).show();
+						tr.addClass('shown');
+
+						_makeGet('getRedemptionDetails', {date: d.date, list_id: d.list_id}, function(details) {
+							if (!details || details.length === 0) {
+								childDiv.html('<p><i>' + _x('No individual ticket data available.', 'label', 'event-tickets-with-ticket-scanner') + '</i></p>');
+								return;
+							}
+							let html = '<table class="widefat striped" style="margin:5px 0;">' +
+								'<thead><tr>' +
+								'<th>' + _x('Ticket', 'column', 'event-tickets-with-ticket-scanner') + '</th>' +
+								'<th>' + _x('Order', 'column', 'event-tickets-with-ticket-scanner') + '</th>' +
+								'<th>' + _x('Redeemed At', 'column', 'event-tickets-with-ticket-scanner') + '</th>' +
+								'</tr></thead><tbody>';
+							for (let i = 0; i < details.length; i++) {
+								let item = details[i];
+								let orderLink = item.order_id > 0
+									? '#' + item.order_id + ' <a target="_blank" href="post.php?post=' + item.order_id + '&action=edit">' + _x('View', 'label', 'event-tickets-with-ticket-scanner') + '</a>'
+									: '-';
+								html += '<tr><td>' + item.code_display + '</td><td>' + orderLink + '</td><td>' + item.redeemed_time + '</td></tr>';
+							}
+							html += '</tbody></table>';
+							childDiv.html(html);
+						}, function() {
+							childDiv.html('<p style="color:red;">' + _x('Error loading details.', 'label', 'event-tickets-with-ticket-scanner') + '</p>');
+						});
+					}
+				});
+			}, function(response) {
+				div_table.html('<p style="color:red;">' + (response.data || _x('Error loading data.', 'label', 'event-tickets-with-ticket-scanner')) + '</p>');
+				card_redeemed.html('-');
+				card_total.html('-');
+				card_noshow.html('-');
+			});
+		}
+
+		btn_load.on("click", __loadData);
+		__loadData();
+	}
+
+	// ── End Attendance ──
+
 	function getSuffixFromFilename(filename) {
 		let extension = filename.slice(filename.lastIndexOf('.') + 1);
 		return extension;
@@ -2138,6 +2365,15 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			.on("click", ()=>{
 				_displayAuthTokensArea();
 			}).appendTo(btn_grp);
+		if (isPremium()) {
+			$('<button/>')
+				.addClass("event-tickets-with-ticket-scanner-topmenu-item")
+				.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'attendance')
+				.html(_x('Attendance', 'label', 'event-tickets-with-ticket-scanner'))
+				.on("click", ()=>{
+					_displayAttendanceArea();
+				}).appendTo(btn_grp);
+		}
 		$('<button/>')
 			.addClass("event-tickets-with-ticket-scanner-topmenu-item")
 			.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'options')
@@ -5252,6 +5488,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					_displayAuthTokensArea();
 				} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'faq') {
 					_displayFAQArea();
+				} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'attendance' && isPremium()) {
+					_displayAttendanceArea();
 				} else {
 					LAYOUT.renderAdminPageLayout();
 				}
