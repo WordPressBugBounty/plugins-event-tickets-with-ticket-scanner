@@ -2,7 +2,7 @@
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires PHP: 8.1
-Stable tag: 2.9.7
+Stable tag: 2.9.8
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -214,6 +214,9 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 2.9.8 - 2026-03-11 =
+* Fix: TypeError in WooCommerce email preview and order emails — removed strict type hints from all WooCommerce hook callbacks to prevent crashes with different WC versions
 
 = 2.9.7 - 2026-03-11 =
 * Fix: Options migration safety net — premium options (e.g. PDF ticket attachment) are now preserved even if the premium plugin was inactive during the database migration from wp_options to the custom options table

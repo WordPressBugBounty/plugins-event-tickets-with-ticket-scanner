@@ -132,7 +132,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param int $order_id Order ID
 		 * @return void
 		 */
-		public function woocommerce_thankyou(int $order_id = 0): void {
+		public function woocommerce_thankyou($order_id = 0): void {
 			$order_id = intval($order_id);
 			if ($order_id <= 0) {
 				return;
@@ -1482,7 +1482,9 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param int $variation_id Variation ID
 		 * @return array Modified cart item data
 		 */
-		public function woocommerce_add_cart_item_data_handler(array $cart_item_data, int $product_id, int $variation_id = 0): array {
+		public function woocommerce_add_cart_item_data_handler(array $cart_item_data, $product_id, $variation_id = 0): array {
+		$product_id = intval($product_id);
+		$variation_id = intval($variation_id);
 			// If "separate cart items" option is active, add seat unique key to prevent merging
 			// Option OFF (default): All seats in one cart item (dates/seats appended in add_to_cart_handler)
 			// Option ON: Each seat = separate cart item
@@ -1524,7 +1526,9 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param int $quantity Quantity
 		 * @return bool Validation result
 		 */
-		public function woocommerce_add_to_cart_validation_handler(bool $passed, int $product_id, int $quantity): bool {
+		public function woocommerce_add_to_cart_validation_handler($passed, $product_id, $quantity): bool {
+		$product_id = intval($product_id);
+		$quantity = intval($quantity);
 			// Daychooser validation
 			if (isset($_REQUEST["is_daychooser"]) && $_REQUEST["is_daychooser"] == "1") {
 				// Verify nonce if present
@@ -1695,7 +1699,10 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param array $cart_item_data Cart item data
 		 * @return void
 		 */
-		public function woocommerce_add_to_cart_handler(string $cart_item_key, int $product_id, int $quantity, int $variation_id, array $variation, array $cart_item_data): void {
+		public function woocommerce_add_to_cart_handler($cart_item_key, $product_id, $quantity, $variation_id, array $variation, array $cart_item_data): void {
+		$product_id = intval($product_id);
+		$quantity = intval($quantity);
+		$variation_id = intval($variation_id);
 			$cart = WC()->cart->cart_contents;
 
 			if (!isset($cart[$cart_item_key])) {
@@ -1838,7 +1845,9 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param \WC_Cart|null $cart Cart object (optional, not used)
 		 * @return void
 		 */
-		public function woocommerce_after_cart_item_quantity_update_handler(string $cart_item_key, int $quantity, int $old_quantity, ?\WC_Cart $cart = null): void {
+		public function woocommerce_after_cart_item_quantity_update_handler($cart_item_key, $quantity, $old_quantity, ?\WC_Cart $cart = null): void {
+		$quantity = intval($quantity);
+		$old_quantity = intval($old_quantity);
 			if ($quantity == $old_quantity) {
 				return;
 			}
@@ -1960,7 +1969,8 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param int $quantity New quantity
 		 * @return bool Whether validation passed
 		 */
-		public function woocommerce_update_cart_validation_handler(bool $passed, string $cart_item_key, array $values, int $quantity): bool {
+		public function woocommerce_update_cart_validation_handler($passed, $cart_item_key, array $values, $quantity): bool {
+		$quantity = intval($quantity);
 			if (!$passed) {
 				return $passed;
 			}

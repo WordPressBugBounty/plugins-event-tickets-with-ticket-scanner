@@ -56,7 +56,8 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param int $order_id The new order ID
 		 * @return void
 		 */
-		public function woocommerce_new_order(int $order_id): void {
+		public function woocommerce_new_order($order_id): void {
+		$order_id = intval($order_id);
 			if (WC() !== null && WC()->session !== null) {
 				WC()->session->__unset('saso_eventtickets_request_name_per_ticket');
 				WC()->session->__unset('saso_eventtickets_request_value_per_ticket');
@@ -145,7 +146,8 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param string $new_status New order status
 		 * @return void
 		 */
-		public function woocommerce_order_status_changed(int $order_id, string $old_status, string $new_status): void {
+		public function woocommerce_order_status_changed($order_id, $old_status, $new_status): void {
+		$order_id = intval($order_id);
 			// Don't generate tickets for refunded or cancelled orders
 			if ($new_status != "refunded" && $new_status != "cancelled" && $new_status != "wc-refunded" && $new_status != "wc-cancelled") {
 				$this->add_serialcode_to_order($order_id); // Generate tickets - may have been manually added products
@@ -471,7 +473,9 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param int $refund_id Refund ID
 		 * @return void
 		 */
-		public function woocommerce_order_partially_refunded(int $order_id, int $refund_id): void {
+		public function woocommerce_order_partially_refunded($order_id, $refund_id): void {
+		$order_id = intval($order_id);
+		$refund_id = intval($refund_id);
 			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcassignmentOrderItemRefund')) {
 				$order = wc_get_order($order_id);
 
@@ -562,7 +566,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param WC_Order_Item $item Order item
 		 * @return string Modified display key
 		 */
-		public function woocommerce_order_item_display_meta_key(string $display_key, $meta, $item): string {
+		public function woocommerce_order_item_display_meta_key($display_key, $meta, $item): string {
 			if (is_admin() && $item->get_type() === 'line_item') {
 				// Change displayed label for specific order item meta key
 				if ($meta->key === self::META_ORDER_ITEM_CODES) {
@@ -625,7 +629,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param WC_Order_Item $item Order item
 		 * @return string Modified meta value
 		 */
-		public function woocommerce_order_item_display_meta_value(string $meta_value, $meta, $item): string {
+		public function woocommerce_order_item_display_meta_value($meta_value, $meta, $item): string {
 			if (is_admin() && $item->get_type() === 'line_item') {
 				if ($meta->key === self::META_ORDER_ITEM_CODES) {
 					$codes = explode(",", $meta_value);
@@ -700,7 +704,8 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param bool $plain_text Whether to render as plain text (for email) or HTML
 		 * @return void
 		 */
-		public function woocommerce_order_item_meta_start(int $item_id, $item, $order, bool $plain_text = false): void {
+		public function woocommerce_order_item_meta_start($item_id, $item, $order, bool $plain_text = false): void {
+			$item_id = intval($item_id);
 			$this->add_serialcode_to_order($order->get_id()); // falls noch welche fehlen, dann vor der E-Mail noch hinzufügen
 
 			$order = $this->set_wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets($order);
@@ -1110,7 +1115,8 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param int $item_get_id Order item ID
 		 * @return void
 		 */
-		public function woocommerce_delete_order_item(int $item_get_id): void {
+		public function woocommerce_delete_order_item($item_get_id): void {
+		$item_get_id = intval($item_get_id);
 			// Handle restriction codes
 			$code = wc_get_order_item_meta($item_get_id, self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM, true);
 			if (!empty($code)) {
@@ -1405,7 +1411,8 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param int $id Order ID
 		 * @return void
 		 */
-		public function woocommerce_delete_order(int $id): void {
+		public function woocommerce_delete_order($id): void {
+		$id = intval($id);
 			$this->removeAllTicketsFromOrder(['order_id' => $id]);
 		}
 
@@ -1436,7 +1443,8 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param int $id Refund ID
 		 * @return void
 		 */
-		public function woocommerce_delete_order_refund(int $id): void {
+		public function woocommerce_delete_order_refund($id): void {
+		$id = intval($id);
 			if ($this->refund_parent_id) {
 				$this->add_serialcode_to_order($this->refund_parent_id); // add missing ticket numbers
 			} else {
@@ -1713,7 +1721,8 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param array $address_data Address data from checkout
 		 * @return void
 		 */
-		public function woocommerce_checkout_update_order_meta(int $order_id, $address_data): void {
+		public function woocommerce_checkout_update_order_meta($order_id, $address_data): void {
+		$order_id = intval($order_id);
 			// Legacy option - not in use anymore but kept for old installations
 			if (!$this->MAIN->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
 				return;

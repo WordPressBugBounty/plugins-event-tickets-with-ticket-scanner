@@ -523,7 +523,8 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 		 * @param WP_Post $post Post object
 		 * @return void
 		 */
-		public function woocommerce_process_product_meta(int $id, $post): void {
+		public function woocommerce_process_product_meta($id, $post): void {
+		$id = intval($id);
 			$R = SASO_EVENTTICKETS::getRequest();
 
 			$key = 'saso_eventtickets_list';
@@ -661,7 +662,8 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 		 * @param WP_Post $variation Variation post object
 		 * @return void
 		 */
-		public function woocommerce_product_after_variable_attributes(int $loop, array $variation_data, $variation): void {
+		public function woocommerce_product_after_variable_attributes($loop, array $variation_data, $variation): void {
+		$loop = intval($loop);
 			echo '<div class="form-row form-row-full form-field">';
 			woocommerce_wp_checkbox(
 				array(
@@ -755,7 +757,9 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 		 * @param int $i Loop index
 		 * @return void
 		 */
-		public function woocommerce_save_product_variation(int $variation_id, int $i): void {
+		public function woocommerce_save_product_variation($variation_id, $i): void {
+		$variation_id = intval($variation_id);
+		$i = intval($i);
 			$R = SASO_EVENTTICKETS::getRequest();
 
 			// Checkbox - is NOT a ticket
