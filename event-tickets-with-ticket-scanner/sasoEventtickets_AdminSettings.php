@@ -2800,10 +2800,13 @@ class sasoEventtickets_AdminSettings {
 		$migrated = 0;
 		$skipped = 0;
 
+		// Collect known option keys from the framework definitions
+		$knownKeys = [];
 		foreach ($options as $option) {
-			if ($option['type'] === 'heading') {
+			if ($option['type'] === 'heading' || $option['type'] === 'desc') {
 				continue;
 			}
+			$knownKeys[$option['key']] = true;
 
 			$wpOptionKey = $prefix . $option['key'];
 			$value = get_option($wpOptionKey, null);
@@ -2824,6 +2827,35 @@ class sasoEventtickets_AdminSettings {
 
 			// Delete from wp_options
 			delete_option($wpOptionKey);
+			$migrated++;
+		}
+
+		// Safety net: migrate any remaining wp_options with our prefix that were NOT
+		// in the framework definitions (e.g. premium options if premium plugin was not
+		// active during this migration, or options from older versions).
+		$prefixLen = strlen($prefix);
+		$remaining = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$prefix . '%'
+			),
+			ARRAY_A
+		);
+		foreach ($remaining as $row) {
+			$key = substr($row['option_name'], $prefixLen);
+			// Skip internal/system keys and keys already migrated
+			if (empty($key) || isset($knownKeys[$key]) || $key === '_premium_serial_expiration') {
+				continue;
+			}
+			$value = $row['option_value'];
+			$storeValue = is_array($value) ? json_encode($value) : (string) $value;
+			$wpdb->replace($table, [
+				'option_key'   => $key,
+				'option_value' => $storeValue,
+				'updated_at'   => wp_date('Y-m-d H:i:s'),
+				'updated_by'   => get_current_user_id(),
+			]);
+			delete_option($row['option_name']);
 			$migrated++;
 		}
 
