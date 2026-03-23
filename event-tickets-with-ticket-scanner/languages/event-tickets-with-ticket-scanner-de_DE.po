@@ -8069,3 +8069,15 @@ msgstr "Funktion \"%s\" im WC Backend nicht implementiert"
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "Mögliche Anzahl an Tickets verbraucht. Hinzugefügt:"
+
+#: index.php (FOMO banner)
+msgid "You're missing %d new premium features!"
+msgstr "Dir entgehen %d neue Premium-Funktionen!"
+
+#: index.php (FOMO banner)
+msgid "...and %d more"
+msgstr "...und %d weitere"
+
+#: index.php (FOMO banner)
+msgid "Renew now"
+msgstr "Jetzt verlängern"

@@ -5681,3 +5681,15 @@ msgstr ""
 #, php-format
 msgid "function \"%s\" in wc backend not implemented"
 msgstr ""
+
+#: index.php (FOMO banner)
+msgid "You're missing %d new premium features!"
+msgstr ""
+
+#: index.php (FOMO banner)
+msgid "...and %d more"
+msgstr ""
+
+#: index.php (FOMO banner)
+msgid "Renew now"
+msgstr ""

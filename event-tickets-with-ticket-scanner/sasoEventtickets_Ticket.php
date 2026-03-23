@@ -125,7 +125,9 @@ final class sasoEventtickets_Ticket {
 		if (isset($info['subscription_type']) && $info['subscription_type'] === 'lifetime') return true;
 
 		// Zu viele Fehler hintereinander = inaktiv
-		if (intval($info['consecutive_failures'] ?? 0) >= 5) return false;
+		// Schwelle 10 statt 5: ein kurzer Serverausfall (z.B. Wartung) soll nicht
+		// sofort Premium deaktivieren. Bei 7-Tage-Intervall = 70 Tage Toleranz.
+		if (intval($info['consecutive_failures'] ?? 0) >= 10) return false;
 
 		// Checksum-Prüfung: wurden Werte manipuliert?
 		if (!$this->verifyExpirationChecksum($info)) return false;
@@ -144,8 +146,10 @@ final class sasoEventtickets_Ticket {
 			return (time() - $first_seen) < (3 * 86400);
 		}
 
-		// Letzter erfolgreicher Check zu alt (>10 Tage) = inaktiv
-		if ((time() - $last_success) > (10 * 86400)) return false;
+		// Letzter erfolgreicher Check zu alt (>21 Tage) = inaktiv
+		// 21 statt 10 Tage: gibt dem System mehr Zeit, sich von einem
+		// Serverausfall zu erholen, bevor Premium deaktiviert wird.
+		if ((time() - $last_success) > (21 * 86400)) return false;
 
 		// Kein Timestamp vom Server = inaktiv (außer in Grace Period)
 		if (empty($info['timestamp']) || $info['timestamp'] <= 0) return false;
@@ -207,6 +211,12 @@ final class sasoEventtickets_Ticket {
 				$info_obj["last_success"] = 0;
 				unset($info_obj["notvalid"]);
 			}
+			// Force-check with failures = deadlock recovery: reset failures so the
+			// server response can actually fix the state (otherwise isSubscriptionActive
+			// stays false even after a successful server check).
+			if ($force && intval($info_obj["consecutive_failures"] ?? 0) > 0) {
+				$info_obj["consecutive_failures"] = 0;
+			}
 			$info_obj["_serial_hash"] = $serial_hash;
 
 			$doCheck = false;
@@ -240,10 +250,11 @@ final class sasoEventtickets_Ticket {
 
 				$response = wp_remote_get($url, ['timeout' => 45]);
 				if (is_wp_error($response)) {
-					// Network error
+					// Network error — count as transient failure (half weight)
 					$info_obj["consecutive_failures"] = intval($info_obj["consecutive_failures"] ?? 0) + 1;
 					$info_obj["last_run"] = time();
 				} else {
+					$http_code = intval(wp_remote_retrieve_response_code($response));
 					$body = wp_remote_retrieve_body( $response );
 					$data = json_decode( $body, true );
 					if (isset($data["isCheckCall"]) && $data["isCheckCall"] == 1) {
@@ -259,9 +270,14 @@ final class sasoEventtickets_Ticket {
 						foreach (['timestamp', 'expiration_date', 'timezone', 'notvalid', 'isCheckCall', 'subscription_type', 'grace_period_days'] as $key) {
 							if (isset($data[$key])) $info_obj[$key] = $data[$key];
 						}
-					} else {
-						// HTTP OK but invalid serial or server error — throttle retries
+					} elseif ($http_code >= 500 || empty($body) || $data === null) {
+						// Server error (5xx), empty body, or non-JSON response (maintenance page, etc.)
+						// Treat as transient — count failure but don't touch last_success
 						$info_obj["consecutive_failures"] = intval($info_obj["consecutive_failures"] ?? 0) + 1;
+						$info_obj["last_run"] = time();
+					} else {
+						// HTTP OK with parseable JSON but no isCheckCall — genuine rejection
+						$info_obj["consecutive_failures"] = intval($info_obj["consecutive_failures"] ?? 0) + 2;
 						$info_obj["last_run"] = time();
 					}
 				}

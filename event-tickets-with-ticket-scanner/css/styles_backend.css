@@ -1,7 +1,61 @@
+/* ==========================================================================
+   Event Tickets with Ticket Scanner - Backend Styles
+   Modern SaaS-style admin UI
+   ========================================================================== */
+
+/* --- Custom Properties (scoped to admin page) --- */
+.event-tickets-with-ticket-scanner-admin-page {
+    --et-primary: #9333ea;
+    --et-primary-hover: #7c22d0;
+    --et-primary-light: #f3e8ff;
+    --et-success: #22c55e;
+    --et-success-hover: #16a34a;
+    --et-danger: #ef4444;
+    --et-danger-hover: #dc2626;
+    --et-bg: #f8fafc;
+    --et-card-bg: #ffffff;
+    --et-border: #e5e7eb;
+    --et-border-light: #f3f4f6;
+    --et-text: #111827;
+    --et-text-secondary: #6b7280;
+    --et-text-muted: #9ca3af;
+    --et-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --et-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --et-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --et-radius: 12px;
+    --et-radius-sm: 8px;
+    --et-spacing: 24px;
+    --et-spacing-sm: 16px;
+    --et-spacing-xs: 8px;
+    --et-transition: 0.15s ease;
+}
+
+/* --- Base Layout --- */
 .sngmbh_container {
     /*width: 98%;*/
 }
 
+.event-tickets-with-ticket-scanner-admin-page {
+    padding-top: 10px;
+    padding-right: 10px;
+}
+
+/* et-ready is added by JS after init — the initial opacity:0 is inline in index.php
+   so the page stays hidden until CSS + JS are both loaded */
+.event-tickets-with-ticket-scanner-admin-page.et-ready {
+    opacity: 1;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .sngmbh_container {
+    animation: et-fade-in 0.3s ease;
+}
+
+@keyframes et-fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Bootstrap-like form utilities --- */
 .sngmbh_mb-3, .sngmbh_my-3 {
     margin-bottom: 1rem!important;
 }
@@ -30,9 +84,9 @@
     margin-bottom: .5rem!important;
 }
 @media (prefers-reduced-motion: reduce) {
-	.sngmbh_form-control {
-    	transition: none;
-	}
+    .sngmbh_form-control {
+        transition: none;
+    }
 }
 .sngmbh_form-control {
     display: block;
@@ -67,13 +121,10 @@
 [type=button]:not(:disabled), [type=reset]:not(:disabled), [type=submit]:not(:disabled), button:not(:disabled) {
     cursor: pointer;
 }
-.sngmbh_mb-2, .sngmbh_my-2 {
-    margin-bottom: .5rem!important;
-}
 @media (prefers-reduced-motion: reduce) {
-	.sngmbh_btn {
-	    transition: none;
-	}
+    .sngmbh_btn {
+        transition: none;
+    }
 }
 .sngmbh_btn {
     display: inline-block;
@@ -109,6 +160,9 @@
     -webkit-appearance: button;
 }
 
+/* ==========================================================================
+   Header Bar
+   ========================================================================== */
 .event-tickets-with-ticket-scanner-header {
     background-color: #9333ea;
     color: #ffffff;
@@ -163,33 +217,7 @@
     gap: 8px;
 }
 
-/* Button, der später per JS eingefügt wird */
-.event-tickets-with-ticket-scanner-upgrade-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 14px;
-    border-radius: 999px;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    background-color: #22c55e;
-    color: #ffffff !important;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(22, 163, 74, 0.35);
-}
-
-.event-tickets-with-ticket-scanner-upgrade-btn:hover {
-    filter: brightness(1.05);
-}
-
-.event-tickets-with-ticket-scanner-upgrade-btn:focus {
-    outline: 2px solid #ffffff;
-    outline-offset: 2px;
-}
-
-/* Responsive */
+/* Responsive header */
 @media (max-width: 782px) {
     .event-tickets-with-ticket-scanner-header {
         flex-wrap: wrap;
@@ -202,11 +230,10 @@
         justify-content: flex-end;
     }
 }
-.event-tickets-with-ticket-scanner-admin-page {
-    padding-top:10px;
-    padding-right:10px;
-}
 
+/* ==========================================================================
+   Upgrade Button (white pill style)
+   ========================================================================== */
 .event-tickets-with-ticket-scanner-upgrade-btn {
     display: inline-flex;
     align-items: center;
@@ -240,6 +267,9 @@
     display: block;
 }
 
+/* ==========================================================================
+   Topbar & Navigation
+   ========================================================================== */
 .event-tickets-with-ticket-scanner-topbar {
     display: flex;
     justify-content: space-between;
@@ -284,7 +314,7 @@
     transform: translateY(1px);
 }
 
-/* Top-Menü rechts */
+/* Top menu (pill buttons) */
 .event-tickets-with-ticket-scanner-topmenu {
     display: flex;
     flex-wrap: wrap;
@@ -292,10 +322,9 @@
     justify-content: flex-end;
 }
 
-/* === RESET + STYLE NUR FÜR TOPMENU BUTTONS === */
+/* === RESET + STYLE FOR TOPMENU BUTTONS === */
 button.event-tickets-with-ticket-scanner-topmenu-item,
 button.event-tickets-with-ticket-scanner-topmenu-item-active {
-    /* alles andere killen */
     all: unset;
     box-sizing: border-box;
 
@@ -319,24 +348,758 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active {
     transition: background 0.15s ease, color 0.15s ease;
 }
 
-/* Hover: grauer Pill-Hintergrund */
 button.event-tickets-with-ticket-scanner-topmenu-item:hover {
     background: #f3f4f6;
 }
 
-/* Aktiv: dauerhaft grauer Pill-Hintergrund */
 button.event-tickets-with-ticket-scanner-topmenu-item-active {
     background: #cececf;
 }
 
-/* optional: kein Fokusrahmen */
 button.event-tickets-with-ticket-scanner-topmenu-item:focus,
 button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     outline: none;
     box-shadow: none;
 }
 
-/* Product Calendar (#191) */
+/* ==========================================================================
+   Card System
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-card {
+    background: var(--et-card-bg);
+    border-radius: var(--et-radius);
+    padding: var(--et-spacing);
+    box-shadow: var(--et-shadow);
+    border: 1px solid var(--et-border);
+    margin-bottom: var(--et-spacing-sm);
+    transition: box-shadow var(--et-transition);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-card:hover {
+    box-shadow: var(--et-shadow-md);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-card-header {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--et-text);
+    margin-bottom: var(--et-spacing-sm);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--et-border-light);
+    display: flex;
+    align-items: center;
+}
+
+/* Section titles (h3 inside plugin) */
+.event-tickets-with-ticket-scanner-admin-page .et-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--et-text);
+    margin: var(--et-spacing) 0 var(--et-spacing-sm) 0;
+    padding: 0;
+}
+
+/* Links inside cards */
+.event-tickets-with-ticket-scanner-admin-page .et-card a {
+    color: var(--et-primary);
+    text-decoration: none;
+    transition: color var(--et-transition);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-card a:hover {
+    color: var(--et-primary-hover);
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   Spinner
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    animation: et-fade-in 0.3s ease;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-spinner-text {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--et-text-secondary);
+    font-weight: 500;
+}
+
+/* Modern dual-ring spinner (overrides the inline JS version) */
+.event-tickets-with-ticket-scanner-admin-page .lds-dual-ring {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 28px;
+    height: 28px;
+    margin: 4px;
+    border-radius: 50%;
+    border: 3px solid var(--et-primary);
+    border-color: var(--et-primary) transparent var(--et-primary) transparent;
+    animation: lds-dual-ring 0.8s linear infinite;
+}
+
+/* Overlay spinner (fixed position) */
+.event-tickets-with-ticket-scanner-admin-page .et-spinner-overlay {
+    display: none;
+    position: fixed;
+    z-index: 1031;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--et-card-bg);
+    border: 1px solid var(--et-border);
+    padding: 24px 32px;
+    border-radius: var(--et-radius);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Content loading area */
+.event-tickets-with-ticket-scanner-admin-page .et-content-area {
+    min-height: 200px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-footer {
+    margin-top: 60px;
+    padding-top: var(--et-spacing);
+    border-top: 1px solid var(--et-border);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--et-spacing-sm);
+    margin-bottom: var(--et-spacing);
+}
+
+@media (max-width: 900px) {
+    .event-tickets-with-ticket-scanner-admin-page .et-footer-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-card {
+    margin-bottom: 0;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-card p {
+    color: var(--et-text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-card a {
+    color: var(--et-primary);
+    font-weight: 500;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-card a:hover {
+    color: var(--et-primary-hover);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-shortcodes {
+    margin-top: var(--et-spacing-sm);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-shortcodes h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--et-text);
+    margin: var(--et-spacing) 0 var(--et-spacing-xs) 0;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-shortcodes p {
+    color: var(--et-text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-shortcodes b {
+    display: inline-block;
+    background: var(--et-primary-light);
+    color: var(--et-primary);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: monospace;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-shortcodes ul {
+    color: var(--et-text-secondary);
+    font-size: 13px;
+    line-height: 1.8;
+    padding-left: 20px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-shortcodes li b {
+    background: none;
+    color: var(--et-text);
+    padding: 0;
+    font-family: inherit;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-credits {
+    text-align: center;
+    padding: var(--et-spacing-sm) 0;
+    color: var(--et-text-muted);
+    font-size: 12px;
+    border-top: 1px solid var(--et-border-light);
+    margin-top: var(--et-spacing);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-credits a {
+    color: var(--et-text-secondary);
+    text-decoration: none;
+    transition: color var(--et-transition);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-footer-credits a:hover {
+    color: var(--et-primary);
+}
+
+/* ==========================================================================
+   DataTables inside cards
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-card table.dataTable {
+    border-collapse: collapse;
+    width: 100% !important;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-card table.dataTable thead th {
+    background: var(--et-bg);
+    border-bottom: 2px solid var(--et-border);
+    color: var(--et-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 10px 12px;
+    vertical-align: bottom;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-card table.dataTable tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--et-border-light);
+    font-size: 13px;
+    color: var(--et-text);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-card table.dataTable tbody tr:nth-child(even) {
+    background-color: var(--et-bg);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-card table.dataTable tbody tr:hover {
+    background-color: var(--et-primary-light);
+}
+
+/* ==========================================================================
+   Buttons (brand-styled within plugin context)
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .button-primary {
+    background: var(--et-primary) !important;
+    border-color: var(--et-primary) !important;
+    color: #fff !important;
+    border-radius: 6px;
+    padding: 4px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background var(--et-transition), box-shadow var(--et-transition);
+    box-shadow: none;
+    text-shadow: none;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .button-primary:hover,
+.event-tickets-with-ticket-scanner-admin-page .button-primary:focus {
+    background: var(--et-primary-hover) !important;
+    border-color: var(--et-primary-hover) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 4px rgba(147, 51, 234, 0.3) !important;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .button-secondary,
+.event-tickets-with-ticket-scanner-admin-page .button {
+    border-radius: 6px;
+    padding: 4px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all var(--et-transition);
+}
+
+/* ==========================================================================
+   Badges
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-badge-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-badge-danger {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-badge-purple {
+    background: var(--et-primary-light);
+    color: var(--et-primary);
+}
+
+/* ==========================================================================
+   Stats Cards (attendance summary)
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-stats-card {
+    background: var(--et-card-bg);
+    border-radius: var(--et-radius-sm);
+    padding: var(--et-spacing-sm) var(--et-spacing);
+    border: 1px solid var(--et-border);
+    text-align: center;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-stats-card .et-stats-number {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--et-text);
+    line-height: 1.2;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-stats-card .et-stats-label {
+    font-size: 12px;
+    color: var(--et-text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   Headings inside plugin
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .sngmbh_container h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--et-text);
+    margin: 0 0 var(--et-spacing-sm) 0;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .sngmbh_container h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--et-text);
+    margin: var(--et-spacing-sm) 0 var(--et-spacing-xs) 0;
+}
+
+/* ==========================================================================
+   Form inputs inside plugin
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page input[type="text"],
+.event-tickets-with-ticket-scanner-admin-page input[type="number"],
+.event-tickets-with-ticket-scanner-admin-page input[type="date"],
+.event-tickets-with-ticket-scanner-admin-page input[type="email"],
+.event-tickets-with-ticket-scanner-admin-page input[type="url"],
+.event-tickets-with-ticket-scanner-admin-page select,
+.event-tickets-with-ticket-scanner-admin-page textarea {
+    border-radius: 6px;
+    border: 1px solid var(--et-border);
+    transition: border-color var(--et-transition), box-shadow var(--et-transition);
+}
+
+.event-tickets-with-ticket-scanner-admin-page input[type="text"]:focus,
+.event-tickets-with-ticket-scanner-admin-page input[type="number"]:focus,
+.event-tickets-with-ticket-scanner-admin-page input[type="date"]:focus,
+.event-tickets-with-ticket-scanner-admin-page input[type="email"]:focus,
+.event-tickets-with-ticket-scanner-admin-page input[type="url"]:focus,
+.event-tickets-with-ticket-scanner-admin-page select:focus,
+.event-tickets-with-ticket-scanner-admin-page textarea:focus {
+    border-color: var(--et-primary);
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.15);
+    outline: none;
+}
+
+/* ==========================================================================
+   Key-Value Table (support info rows)
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-kv-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-kv-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--et-border-light);
+    font-size: 13px;
+    gap: 12px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-kv-row:last-child {
+    border-bottom: none;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-kv-label {
+    color: var(--et-text-secondary);
+    font-weight: 500;
+    min-width: 180px;
+    flex-shrink: 0;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-kv-value {
+    color: var(--et-text);
+    font-weight: 400;
+}
+
+/* ==========================================================================
+   Support Textarea (copy-paste block)
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-support-textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 12px 14px;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--et-text);
+    background: var(--et-bg);
+    border: 1px solid var(--et-border);
+    border-radius: var(--et-radius-sm);
+    resize: vertical;
+    cursor: text;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-support-textarea:focus {
+    border-color: var(--et-primary);
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.15);
+    outline: none;
+}
+
+/* ==========================================================================
+   Support Page Quick Links
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-support-quicklinks {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--et-spacing-sm);
+    margin-bottom: var(--et-spacing);
+}
+
+@media (max-width: 1100px) {
+    .event-tickets-with-ticket-scanner-admin-page .et-support-quicklinks {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .event-tickets-with-ticket-scanner-admin-page .et-support-quicklinks {
+        grid-template-columns: 1fr;
+    }
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-support-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    text-decoration: none;
+    transition: box-shadow var(--et-transition), transform 0.1s ease;
+}
+
+.event-tickets-with-ticket-scanner-admin-page a.et-support-link:hover {
+    box-shadow: var(--et-shadow-md);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-support-link .dashicons {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-support-link strong {
+    display: block;
+    color: var(--et-text);
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-support-link span {
+    color: var(--et-text-secondary);
+    font-size: 12px;
+}
+
+/* ==========================================================================
+   Library List
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-lib-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-lib-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--et-border-light);
+    font-size: 13px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-lib-list li:last-child {
+    border-bottom: none;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-lib-name {
+    font-weight: 500;
+    color: var(--et-text);
+}
+
+/* ==========================================================================
+   jQuery UI Dialog — Modern Override
+   ========================================================================== */
+
+/* Overlay backdrop */
+.ui-widget-overlay {
+    background: rgba(15, 23, 42, 0.4) !important;
+    backdrop-filter: blur(2px);
+    opacity: 1 !important;
+}
+
+/* Dialog container */
+.ui-dialog {
+    border: none !important;
+    border-radius: 16px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    padding: 0 !important;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Title bar */
+.ui-dialog .ui-dialog-titlebar {
+    background: #9333ea !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 16px 20px !important;
+    color: #fff !important;
+}
+
+.ui-dialog .ui-dialog-title {
+    color: #fff !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    float: none !important;
+    width: auto !important;
+}
+
+/* Title bar needs relative for close button positioning */
+.ui-dialog .ui-dialog-titlebar {
+    position: relative !important;
+}
+
+/* Close button in title bar — pinned to top-right, not centered vertically */
+.ui-dialog .ui-dialog-titlebar-close {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 28px !important;
+    height: 28px !important;
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transition: background 0.15s ease;
+}
+
+.ui-dialog .ui-dialog-titlebar-close:hover {
+    background: rgba(255, 255, 255, 0.35) !important;
+}
+
+.ui-dialog .ui-dialog-titlebar-close .ui-icon {
+    background-image: none !important;
+}
+
+.ui-dialog .ui-dialog-titlebar-close .ui-icon::before {
+    content: "\00d7";
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    line-height: 28px;
+    color: #fff;
+    font-style: normal;
+}
+
+/* No-close variant (hide close button) */
+.ui-dialog.no-close .ui-dialog-titlebar-close {
+    display: none;
+}
+
+/* Dialog content area */
+.ui-dialog .ui-dialog-content {
+    padding: 24px !important;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #111827;
+}
+
+.ui-dialog .ui-dialog-content p {
+    margin: 0 0 12px 0;
+}
+
+.ui-dialog .ui-dialog-content form {
+    margin: 0;
+}
+
+.ui-dialog .ui-dialog-content input[type="text"],
+.ui-dialog .ui-dialog-content input[type="number"],
+.ui-dialog .ui-dialog-content input[type="email"],
+.ui-dialog .ui-dialog-content select,
+.ui-dialog .ui-dialog-content textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    box-sizing: border-box;
+}
+
+.ui-dialog .ui-dialog-content input[type="text"]:focus,
+.ui-dialog .ui-dialog-content input[type="number"]:focus,
+.ui-dialog .ui-dialog-content input[type="email"]:focus,
+.ui-dialog .ui-dialog-content select:focus,
+.ui-dialog .ui-dialog-content textarea:focus {
+    border-color: #9333ea;
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.15);
+    outline: none;
+}
+
+.ui-dialog .ui-dialog-content input[type="checkbox"] {
+    accent-color: #9333ea;
+}
+
+/* Button pane */
+.ui-dialog .ui-dialog-buttonpane {
+    border-top: 1px solid #f3f4f6 !important;
+    background: #f8fafc !important;
+    padding: 12px 20px !important;
+    margin-top: 0 !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+    float: right;
+    display: flex;
+    gap: 8px;
+}
+
+.ui-dialog .ui-dialog-buttonpane button {
+    border-radius: 8px !important;
+    padding: 6px 18px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid #e5e7eb !important;
+    background: #fff !important;
+    color: #111827 !important;
+    margin: 0 !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane button:first-child {
+    background: #9333ea !important;
+    border-color: #9333ea !important;
+    color: #fff !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane button:first-child:hover {
+    background: #7c22d0 !important;
+    border-color: #7c22d0 !important;
+    box-shadow: 0 2px 4px rgba(147, 51, 234, 0.3);
+}
+
+.ui-dialog .ui-dialog-buttonpane button:hover {
+    background: #f3f4f6 !important;
+    border-color: #d1d5db !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane button:first-child:hover {
+    background: #7c22d0 !important;
+    color: #fff !important;
+}
+
+/* Delete/danger button styling inside dialogs */
+.ui-dialog .sngmbh_btn-delete {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: #fff !important;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.ui-dialog .sngmbh_btn-delete:hover {
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+}
+
+/* Tables inside dialogs */
 .ui-dialog table.widefat td:hover {
-    background-color: #e8f0fe !important;
+    background-color: #f3e8ff !important;
+}
+
+/* Spinner inside dialog */
+.ui-dialog .et-spinner {
+    padding: 30px 0;
+}
+
+.ui-dialog .lds-dual-ring:after {
+    border-color: #9333ea transparent #9333ea transparent;
+}
+
+/* Wizard dialog override — already has custom styles, just align border-radius */
+.saso-wizard-dialog.ui-dialog {
+    border-radius: 12px !important;
+}
+
+.saso-wizard-dialog .ui-dialog-titlebar {
+    border-radius: 0 !important;
 }

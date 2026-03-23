@@ -643,7 +643,10 @@ class sasoEventtickets_AdminSettings {
 				'premium_serial'=>$this->getOptionValue("serial", "-"),
 				'is_wc_available'=>class_exists( 'WooCommerce' ) ? 1 : 0,
 				'IS_PRETTY_PERMALINK_ACTIVATED' => get_option('permalink_structure') ? true :false,
-				'plugin_version' => defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION') ? SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION : SASO_EVENTTICKETS_PLUGIN_VERSION
+				'plugin_version' => defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION') ? SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION : SASO_EVENTTICKETS_PLUGIN_VERSION,
+				'requires_wp' => '6.0',
+				'tested_up_to' => '6.9',
+				'requires_php' => '8.1'
 			];
 			$versions["isOldPremiumDetected"] = $this->MAIN->isOldPremiumDetected();
 			$versions["isStarterOrStopDetected"] = $this->MAIN->isStarterOrStopDetected();

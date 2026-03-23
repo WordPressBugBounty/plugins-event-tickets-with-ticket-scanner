@@ -1,8 +1,9 @@
 === Event Tickets with Ticket Scanner ===
 Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
+Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 2.9.8
+Stable tag: 2.9.9
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -214,6 +215,17 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 2.9.9 - 2026-03-23 =
+* Improvement: License check resilience — brief server outages no longer disable premium features; raised failure threshold from 5 to 10, extended staleness window from 10 to 21 days, and server errors (5xx, empty body) now count as transient failures instead of genuine rejections
+* Fix: "Check License" button now resets failure counter before server check — previously, accumulated failures from a server outage could prevent recovery even after the server was back online
+* Improvement: Modern admin UI redesign — card-based layout with consistent spacing, branded purple accent color, professional footer grid, improved DataTable styling, smooth loading animations, and responsive design
+* New: Plugin header now includes Requires at least, Tested up to, and Requires PHP — displayed in support info area for easier troubleshooting
+* Fix: Corrected 10 English typos in source strings that caused translation mismatches (e.g. successfull, duplicat, choosen)
+* Fix: No more flash of unstyled content when loading admin page
+* Improvement: Regenerated all German backend translations — from 162 to 451 strings (full coverage)
+* New: FOMO banner for expired premium subscriptions — shows new features released since expiration with dismissible 30-day reminder
+* Fix: Added missing License header to plugin file to satisfy WordPress.org plugin check
 
 = 2.9.8 - 2026-03-11 =
 * Fix: TypeError in WooCommerce email preview and order emails — removed strict type hints from all WooCommerce hook callbacks to prevent crashes with different WC versions

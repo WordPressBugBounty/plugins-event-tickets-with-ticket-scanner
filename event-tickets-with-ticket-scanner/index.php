@@ -3,11 +3,16 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.9.8
+ * Version: 2.9.9
  * Author: Vollstart
  * Author URI: https://vollstart.com
+ * Requires at least: 6.0
+ * Tested up to: 6.9
+ * Requires PHP: 8.1
  * Text Domain: event-tickets-with-ticket-scanner
-  *
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ *
  * Event Tickets with Ticket Scanner is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -20,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.9.8');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.9.9');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -487,10 +492,12 @@ class sasoEventtickets {
 		add_action( 'show_user_profile', [$this, 'show_user_profile'] );
 		add_action( 'admin_init', [$this, 'handleFormatWarningDismiss'] );
 		add_action( 'admin_notices', [$this, 'showSubscriptionWarning'] );
+		add_action( 'admin_notices', [$this, 'showFomoBanner'] );
 		add_action( 'admin_notices', [$this, 'showOutdatedPremiumWarning'] );
 		add_action( 'admin_notices', [$this, 'showFormatWarning'] );
 		add_action( 'admin_notices', [$this, 'showPhpVersionWarning'] );
 		add_action( 'admin_notices', [$this, 'showOptionsMigrationNotice'] );
+		add_action( 'wp_ajax_saso_et_dismiss_fomo', [$this, 'ajaxDismissFomo'] );
 
 		if (basename($_SERVER['SCRIPT_NAME']) == "admin-ajax.php") {
 			add_action('wp_ajax_'.$this->_prefix.'_executeAdminSettings', [$this,'executeAdminSettings_a'], 10, 0);
@@ -852,6 +859,7 @@ class sasoEventtickets {
 		$version_tail_add = "";
 		if ($versions['debug'] != "") $version_tail_add .= 'DEBUG: '.$versions['debug'].', LANG: '.determine_locale();
 		?>
+		<style>.event-tickets-with-ticket-scanner-admin-page{opacity:0;transition:opacity .3s ease}.event-tickets-with-ticket-scanner-admin-page.et-ready{opacity:1}</style>
 		<div class="event-tickets-with-ticket-scanner-admin-page">
 			<div class="event-tickets-with-ticket-scanner-header">
 				<div class="event-tickets-with-ticket-scanner-header-left">
@@ -876,78 +884,93 @@ class sasoEventtickets {
 
 			<div style="clear:both;" data-id="plugin_addons"></div>
 			<div style="clear:both;" data-id="plugin_info_area"></div>
-			<div style="clear:both;" id="<?php echo esc_attr($this->_divId); ?>">...loading...</div>
-			<div style="margin-top:100px;">
-				<hr>
+			<div style="clear:both;" id="<?php echo esc_attr($this->_divId); ?>" class="et-content-area">
+				<div class="et-loading"><span class="lds-dual-ring"></span></div>
+			</div>
+			<div class="et-footer">
 				<a name="shortcodedetails"></a>
-				<h3>Documentation</h3>
-				<p><span class="dashicons dashicons-external"></span><a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/" target="_blank">Click here, to visit the documentation of this plugin.</a></p>
-				<h3><?php esc_html_e('Plugin Rating', 'event-tickets-with-ticket-scanner'); ?></h3>
-				<p><?php esc_html_e('If you like our plugin, then please give us a', 'event-tickets-with-ticket-scanner'); ?> <a target="_blank" href="https://wordpress.org/support/plugin/event-tickets-with-ticket-scanner/reviews?rate=5#new-post">★★★★★ 5-Star Rating</a>.</p>
-				<h3><?php esc_html_e('Ticket Sale option', 'event-tickets-with-ticket-scanner'); ?></h3>
-				<p><?php esc_html_e('You can use this plugin to sell tickets and even redeem them. Check out the documentation for', 'event-tickets-with-ticket-scanner'); ?> <a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/#ticket"><?php esc_html_e('more details here', 'event-tickets-with-ticket-scanner'); ?></a>.</p>
-				<h3><?php esc_html_e('Premium Homepage', 'event-tickets-with-ticket-scanner'); ?></h3>
-				<p><?php esc_html_e('You can find more details about the', 'event-tickets-with-ticket-scanner'); ?> <a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/"><?php esc_html_e('premium version here', 'event-tickets-with-ticket-scanner'); ?></a>.</p>
-				<!--
-				<h3>Shortcode parameter In- & Output</h3>
-				<a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/" target="_blank">Click here for more help about the options</a>
-				<p>You can use your own HTML input, output and trigger component. If you add the parameters (all 3 mandatory to use this feature), then the default input area will not be rendered.</p>
-				<ul>
-					<li><b>inputid</b><br>inputid="html-element-id". The value of this component will be taken. It need to be an HTML input element. We will access the value-parameter of it.</li>
-					<li><b>triggerid</b><br>triggerid="html-element-id". The onclick event of this component will be replaced by our function to call the server validation with the code.</li>
-					<li><b>outputid</b><br>outputid="html-element-id". The content of this component will be replaced by the server result after the check . We will use the innerHTML property of it, so use a DIV, SPAN, TD or similar for best results.</li>
-				</ul>
-				<h3>Shortcode parameter Javascript</h3>
-				<p>You can add your Javascript function name. Both parameters are optional and not required. If functions will be called before the code is sent to the server or displaying the result.</p>
-				<ul>
-					<li><b>jspre</b><br>jspre="function-name". The function will be called. The input parameter will be the code. If your function returns a value, than this returned value will be used otherwise the entered code will be used.</li>
-					<li><b>jsafter</b><br>jsafter="function-name". The function will be called. The input parameter will be the result JSON object from the server.</li>
-				</ul>
-				-->
-				<h3><?php esc_html_e('Shortcode to display the event calendar form within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
-				<b>[<?php echo esc_html($this->_shortcode_eventviews); ?>]</b>
-				<p><?php esc_html_e('The event calendar form will be displayed. You can add the following parameters to change the output:', 'event-tickets-with-ticket-scanner'); ?></p>
-				<ul>
-					<!--<li>view<br>Values: calendar, list or calendar|list<br>Default: list</li>-->
-					<li>months_to_show<br>Values can be a number higher than 0. Default: 3</li>
-				</ul>
-				<p>CSS file: <a href="<?php echo plugins_url( "",__FILE__ ); ?>/css/calendar.css" target="_blank">calendar.css</a></p>
-				<h3><?php esc_html_e('Shortcode to display the assigned tickets and codes of an user within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
-				<b>[<?php echo esc_html($this->_shortcode_mycode); ?>]</b>
-				<p><?php esc_html_e('Displays tickets assigned to the current logged-in user (default) or tickets from a specific order.', 'event-tickets-with-ticket-scanner'); ?></p>
-				<ul>
-					<li><b>order_id</b> - <?php esc_html_e('Show tickets from a specific order instead of user tickets. Security: User must own the order or have valid order key in URL.', 'event-tickets-with-ticket-scanner'); ?><br>
-					<?php esc_html_e('Example:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_mycode); ?> order_id="123"]</li>
-					<li><b>format</b> - <?php esc_html_e('Output format. Values: json', 'event-tickets-with-ticket-scanner'); ?></li>
-					<li><b>display</b> - <?php esc_html_e('Fields to show (comma-separated). Values: codes, validation, user, used, confirmedCount, woocommerce, wc_rp, wc_ticket', 'event-tickets-with-ticket-scanner'); ?></li>
-					<li><b>download_all_pdf</b> - <?php esc_html_e('Show download button for all tickets as one PDF. Values: true/false', 'event-tickets-with-ticket-scanner'); ?></li>
-				</ul>
-				<p>
-					<?php esc_html_e('Example with JSON output:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_mycode); ?> format="json" display="code,wc_ticket"]
-				</p>
-				<h3><?php esc_html_e('Shortcode to display the ticket scanner within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
-				<?php esc_html_e('Useful if you cannot open the ticket scanner due to security issues.', 'event-tickets-with-ticket-scanner'); ?><br>
-				<b>[<?php echo esc_html($this->_shortcode_ticket_scanner); ?>]</b>
-				<h3><?php esc_html_e('Shortcode to display ticket detail view within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
-				<?php esc_html_e('Useful if the /ticket/ URL path does not work on your server.', 'event-tickets-with-ticket-scanner'); ?><br>
-				<b>[<?php echo esc_html($this->_shortcode_ticket_detail); ?>]</b>
-				<p>
-					<?php esc_html_e('Usage: Add the shortcode to a page and access it with ?ticket=YOUR-TICKET-CODE in the URL.', 'event-tickets-with-ticket-scanner'); ?><br>
-					<?php esc_html_e('Example:', 'event-tickets-with-ticket-scanner'); ?> yoursite.com/ticket-page/?ticket=ABC-123-XYZ<br>
-					<?php esc_html_e('Or use the code attribute:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_ticket_detail); ?> code="ABC-123-XYZ"]
-				</p>
-				<h3><?php esc_html_e('PHP Filters', 'event-tickets-with-ticket-scanner'); ?></h3>
-				<p><?php esc_html_e('You can use PHP code to register your filter functions for the validation check.', 'event-tickets-with-ticket-scanner'); ?>
-				<a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/#filters" target="_blank"><?php esc_html_e('Click here for more help about the functions', 'event-tickets-with-ticket-scanner'); ?></a>
-				</p>
-				<ul>
-					<li>add_filter('<?php echo $this->_add_filter_prefix.'beforeCheckCodePre'; ?>', 'myfunc', 20, 1)</li>
-					<li>add_filter('<?php echo $this->_add_filter_prefix.'beforeCheckCode'; ?>', 'myfunc', 20, 1)</li>
-					<li>add_filter('<?php echo $this->_add_filter_prefix.'afterCheckCodePre'; ?>', 'myfunc', 20, 1)</li>
-					<li>add_filter('<?php echo $this->_add_filter_prefix.'afterCheckCode'; ?>', 'myfunc', 20, 1)</li>
-				</ul>
-				<p>More BETA filters and actions hooks can be found <a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/ticket-plugin-api/" target="_blank">here (NOT STABLE, be aware that they might be changed in the future)</a>.
-				<p style="text-align:center;"><a target="_blank" href="https://vollstart.com">VOLLSTART</a> - More plugins: <a target="_blank" href="https://wordpress.org/plugins/serial-codes-generator-and-validator/">Serial Code Validator</a></p>
+				<div class="et-footer-grid">
+					<div class="et-card et-footer-card">
+						<div class="et-card-header">
+							<span class="dashicons dashicons-book" style="color:#9333ea;margin-right:6px;"></span>
+							Documentation
+						</div>
+						<p><a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/" target="_blank"><?php esc_html_e('Click here, to visit the documentation of this plugin.', 'event-tickets-with-ticket-scanner'); ?></a></p>
+						<p style="margin-top:12px;"><?php esc_html_e('You can use this plugin to sell tickets and even redeem them. Check out the documentation for', 'event-tickets-with-ticket-scanner'); ?> <a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/#ticket"><?php esc_html_e('more details here', 'event-tickets-with-ticket-scanner'); ?></a>.</p>
+					</div>
+					<div class="et-card et-footer-card">
+						<div class="et-card-header">
+							<span class="dashicons dashicons-star-filled" style="color:#f59e0b;margin-right:6px;"></span>
+							<?php esc_html_e('Plugin Rating', 'event-tickets-with-ticket-scanner'); ?>
+						</div>
+						<p><?php esc_html_e('If you like our plugin, then please give us a', 'event-tickets-with-ticket-scanner'); ?> <a target="_blank" href="https://wordpress.org/support/plugin/event-tickets-with-ticket-scanner/reviews?rate=5#new-post">5-Star Rating</a>.</p>
+					</div>
+					<div class="et-card et-footer-card">
+						<div class="et-card-header">
+							<span class="dashicons dashicons-superhero" style="color:#9333ea;margin-right:6px;"></span>
+							<?php esc_html_e('Premium Homepage', 'event-tickets-with-ticket-scanner'); ?>
+						</div>
+						<p><?php esc_html_e('You can find more details about the', 'event-tickets-with-ticket-scanner'); ?> <a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/"><?php esc_html_e('premium version here', 'event-tickets-with-ticket-scanner'); ?></a>.</p>
+					</div>
+				</div>
+
+				<div class="et-card et-footer-shortcodes">
+					<div class="et-card-header">
+						<span class="dashicons dashicons-shortcode" style="color:#9333ea;margin-right:6px;"></span>
+						<?php esc_html_e('Shortcodes', 'event-tickets-with-ticket-scanner'); ?>
+					</div>
+
+					<h3><?php esc_html_e('Shortcode to display the event calendar form within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
+					<b>[<?php echo esc_html($this->_shortcode_eventviews); ?>]</b>
+					<p><?php esc_html_e('The event calendar form will be displayed. You can add the following parameters to change the output:', 'event-tickets-with-ticket-scanner'); ?></p>
+					<ul>
+						<li>months_to_show - Values can be a number higher than 0. Default: 3</li>
+					</ul>
+					<p>CSS file: <a href="<?php echo plugins_url( "",__FILE__ ); ?>/css/calendar.css" target="_blank">calendar.css</a></p>
+
+					<h3><?php esc_html_e('Shortcode to display the assigned tickets and codes of an user within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
+					<b>[<?php echo esc_html($this->_shortcode_mycode); ?>]</b>
+					<p><?php esc_html_e('Displays tickets assigned to the current logged-in user (default) or tickets from a specific order.', 'event-tickets-with-ticket-scanner'); ?></p>
+					<ul>
+						<li><b>order_id</b> - <?php esc_html_e('Show tickets from a specific order instead of user tickets. Security: User must own the order or have valid order key in URL.', 'event-tickets-with-ticket-scanner'); ?><br>
+						<?php esc_html_e('Example:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_mycode); ?> order_id="123"]</li>
+						<li><b>format</b> - <?php esc_html_e('Output format. Values: json', 'event-tickets-with-ticket-scanner'); ?></li>
+						<li><b>display</b> - <?php esc_html_e('Fields to show (comma-separated). Values: codes, validation, user, used, confirmedCount, woocommerce, wc_rp, wc_ticket', 'event-tickets-with-ticket-scanner'); ?></li>
+						<li><b>download_all_pdf</b> - <?php esc_html_e('Show download button for all tickets as one PDF. Values: true/false', 'event-tickets-with-ticket-scanner'); ?></li>
+					</ul>
+					<p>
+						<?php esc_html_e('Example with JSON output:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_mycode); ?> format="json" display="code,wc_ticket"]
+					</p>
+
+					<h3><?php esc_html_e('Shortcode to display the ticket scanner within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
+					<?php esc_html_e('Useful if you cannot open the ticket scanner due to security issues.', 'event-tickets-with-ticket-scanner'); ?><br>
+					<b>[<?php echo esc_html($this->_shortcode_ticket_scanner); ?>]</b>
+
+					<h3><?php esc_html_e('Shortcode to display ticket detail view within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
+					<?php esc_html_e('Useful if the /ticket/ URL path does not work on your server.', 'event-tickets-with-ticket-scanner'); ?><br>
+					<b>[<?php echo esc_html($this->_shortcode_ticket_detail); ?>]</b>
+					<p>
+						<?php esc_html_e('Usage: Add the shortcode to a page and access it with ?ticket=YOUR-TICKET-CODE in the URL.', 'event-tickets-with-ticket-scanner'); ?><br>
+						<?php esc_html_e('Example:', 'event-tickets-with-ticket-scanner'); ?> yoursite.com/ticket-page/?ticket=ABC-123-XYZ<br>
+						<?php esc_html_e('Or use the code attribute:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_ticket_detail); ?> code="ABC-123-XYZ"]
+					</p>
+
+					<h3><?php esc_html_e('PHP Filters', 'event-tickets-with-ticket-scanner'); ?></h3>
+					<p><?php esc_html_e('You can use PHP code to register your filter functions for the validation check.', 'event-tickets-with-ticket-scanner'); ?>
+					<a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/#filters" target="_blank"><?php esc_html_e('Click here for more help about the functions', 'event-tickets-with-ticket-scanner'); ?></a>
+					</p>
+					<ul>
+						<li>add_filter('<?php echo $this->_add_filter_prefix.'beforeCheckCodePre'; ?>', 'myfunc', 20, 1)</li>
+						<li>add_filter('<?php echo $this->_add_filter_prefix.'beforeCheckCode'; ?>', 'myfunc', 20, 1)</li>
+						<li>add_filter('<?php echo $this->_add_filter_prefix.'afterCheckCodePre'; ?>', 'myfunc', 20, 1)</li>
+						<li>add_filter('<?php echo $this->_add_filter_prefix.'afterCheckCode'; ?>', 'myfunc', 20, 1)</li>
+					</ul>
+					<p>More BETA filters and actions hooks can be found <a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/ticket-plugin-api/" target="_blank">here (NOT STABLE, be aware that they might be changed in the future)</a>.</p>
+				</div>
+
+				<div class="et-footer-credits">
+					<a target="_blank" href="https://vollstart.com">VOLLSTART</a> &middot; More plugins: <a target="_blank" href="https://wordpress.org/plugins/serial-codes-generator-and-validator/">Serial Code Validator</a>
+				</div>
 			</div>
 	  	</div>
 		<?php
@@ -1777,6 +1800,82 @@ class sasoEventtickets {
 			}
 			echo '</p></div>';
 		}
+	}
+
+	/**
+	 * FOMO banner: show missed premium features to users with expired subscriptions.
+	 * Dismissable for 30 days, then re-appears with an even longer feature list.
+	 */
+	public function showFomoBanner(): void {
+		if (!current_user_can('manage_options')) return;
+		if ($this->isPremium()) return;
+		if (!class_exists('sasoEventtickets_PremiumFunctions')) return;
+		if ($this->isStarterOrStopDetected()) return;
+		if ($this->isOldPremiumDetected()) return;
+
+		$info = $this->getTicketHandler()->get_expiration();
+
+		if (empty($info['expiration_date'])) return;
+		if (isset($info['subscription_type']) && $info['subscription_type'] === 'lifetime') return;
+
+		$expired_ts = strtotime($info['expiration_date']);
+		if (!$expired_ts || $expired_ts > time()) return;
+
+		if (get_transient('saso_et_fomo_dismissed')) return;
+
+		$json_path = plugin_dir_path(__FILE__) . 'changelog-features.json';
+		if (!file_exists($json_path)) return;
+
+		$changelog = json_decode(file_get_contents($json_path), true);
+		if (!is_array($changelog)) return;
+
+		$missed = [];
+		foreach ($changelog as $release) {
+			$release_ts = strtotime($release['date'] ?? '');
+			if ($release_ts && $release_ts > $expired_ts && !empty($release['features'])) {
+				foreach ($release['features'] as $feat) {
+					$missed[] = $feat;
+				}
+			}
+		}
+
+		if (empty($missed)) return;
+
+		$total = count($missed);
+		$show = array_slice($missed, 0, 5);
+		$renewal_url = 'https://vollstart.com/event-tickets-with-ticket-scanner/';
+		$nonce = wp_create_nonce('saso_et_dismiss_fomo');
+
+		echo '<div class="notice notice-info is-dismissible" id="saso-et-fomo-banner" style="border-left-color:#9333ea;">';
+		echo '<p><strong>';
+		printf(
+			/* translators: %d: number of missed features */
+			esc_html__("You're missing %d new premium features!", 'event-tickets-with-ticket-scanner'),
+			$total
+		);
+		echo '</strong></p>';
+		echo '<ul style="list-style:disc;margin-left:20px;">';
+		foreach ($show as $feat) {
+			echo '<li>' . esc_html($feat) . '</li>';
+		}
+		if ($total > 5) {
+			printf('<li><em>' . esc_html__('...and %d more', 'event-tickets-with-ticket-scanner') . '</em></li>', $total - 5);
+		}
+		echo '</ul>';
+		echo '<p><a href="' . esc_url($renewal_url) . '" target="_blank" class="button button-primary" style="background:#9333ea;border-color:#7c22d0;">';
+		esc_html_e('Renew now', 'event-tickets-with-ticket-scanner');
+		echo '</a></p>';
+		echo '</div>';
+		echo '<script>jQuery(function($){$("#saso-et-fomo-banner").on("click",".notice-dismiss",function(){$.post(ajaxurl,{action:"saso_et_dismiss_fomo",_wpnonce:"' . $nonce . '"});});});</script>';
+	}
+
+	/**
+	 * AJAX handler: dismiss FOMO banner for 30 days
+	 */
+	public function ajaxDismissFomo(): void {
+		check_ajax_referer('saso_et_dismiss_fomo');
+		set_transient('saso_et_fomo_dismissed', 1, 30 * DAY_IN_SECONDS);
+		wp_send_json_success();
 	}
 
 	/**

@@ -1,0 +1,95 @@
+[
+  {
+    "version": "1.6.3",
+    "date": "2026-03-18",
+    "features": [
+      "Modern admin UI redesign with card-based layout",
+      "Full German translation coverage (451 strings)",
+      "Fixed broken translation calls"
+    ]
+  },
+  {
+    "version": "1.6.2",
+    "date": "2026-02-23",
+    "features": [
+      "PHP 8.x compatibility fix for plugin loading order",
+      "Admin notice when license key is about to expire"
+    ]
+  },
+  {
+    "version": "1.6.1",
+    "date": "2026-02-16",
+    "features": [
+      "Full bleed mode for edge-to-edge PDF ticket backgrounds",
+      "Subscription expiration check in premium detection"
+    ]
+  },
+  {
+    "version": "1.6.0",
+    "date": "2026-01-20",
+    "features": [
+      "Seating plan features",
+      "Improved compatibility with Basic plugin v2.8+"
+    ]
+  },
+  {
+    "version": "1.5.6",
+    "date": "2025-11-29",
+    "features": [
+      "Updated plugin update checker library"
+    ]
+  },
+  {
+    "version": "1.5.5",
+    "date": "2025-09-30",
+    "features": [
+      "Order tickets QR code display fix",
+      "Tracked IPs display on ticket details"
+    ]
+  },
+  {
+    "version": "1.5.2",
+    "date": "2025-04-07",
+    "features": [
+      "Display redeemed ticket count at scanner",
+      "Display non-redeemed ticket count at scanner"
+    ]
+  },
+  {
+    "version": "1.5.0",
+    "date": "2025-02-23",
+    "features": [
+      "WooCommerce HPOS support for meta boxes",
+      "Multiple ticket templates per product or list"
+    ]
+  },
+  {
+    "version": "1.4.4",
+    "date": "2025-02-05",
+    "features": [
+      "Exclusion days for day chooser tickets"
+    ]
+  },
+  {
+    "version": "1.4.3",
+    "date": "2024-12-04",
+    "features": [
+      "No-show logs within product detail view"
+    ]
+  },
+  {
+    "version": "1.4.1",
+    "date": "2024-08-28",
+    "features": [
+      "Hide ticket details before event start",
+      "Deny redeem after event started"
+    ]
+  },
+  {
+    "version": "1.4.0",
+    "date": "2024-07-09",
+    "features": [
+      "Auto-redeem all tickets by order status"
+    ]
+  }
+]
