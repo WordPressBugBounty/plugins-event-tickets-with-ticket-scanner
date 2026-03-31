@@ -250,11 +250,47 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let serial = _getOptions_getValByKey('serial');
 			if (serial == '') {
 				if (STATE != "options") {
-					let errortext = __("Please enter your Premium license key in the settings to activate your subscription.", 'event-tickets-with-ticket-scanner');
-					let i = confirm(errortext);
-					if (i) {
-						_displayOptionsArea();
-					}
+					let dlgContent = $('<div/>');
+					dlgContent.append('<p>'+__('Thank you for using the Premium version!', 'event-tickets-with-ticket-scanner')+'</p>');
+					dlgContent.append('<p>'+__('Please enter your license key to activate updates and premium features.', 'event-tickets-with-ticket-scanner')+'</p>');
+					let serialInput = $('<input type="text" style="width:100%;padding:8px;font-size:14px;border:1px solid #ccc;border-radius:4px;" placeholder="XXXX-XXXX-XXXX-XXXX"/>');
+					dlgContent.append(serialInput);
+					let statusDiv = $('<div/>').css({"margin-top":"10px","display":"none"});
+					dlgContent.append(statusDiv);
+					dlgContent.dialog({
+						title: __('Premium License Key', 'event-tickets-with-ticket-scanner'),
+						modal: true,
+						width: 450,
+						dialogClass: "no-close",
+						open: function() { setTimeout(function(){ serialInput.focus(); }, 100); },
+						buttons: [
+							{
+								text: __('Activate', 'event-tickets-with-ticket-scanner'),
+								class: "button-primary",
+								click: function() {
+									let key = serialInput.val().trim();
+									if (key === '') {
+										statusDiv.html('<span style="color:red;">'+__('Please enter a license key.', 'event-tickets-with-ticket-scanner')+'</span>').show();
+										return;
+									}
+									statusDiv.html(_getSpinnerHTML()).show();
+									serialInput.prop('disabled', true);
+									_makePost('changeOption', {key:'serial', value:key}, function() {
+										statusDiv.html('<span style="color:green;">'+__('License key saved. Checking license...', 'event-tickets-with-ticket-scanner')+'</span>');
+										setTimeout(function(){ location.reload(); }, 1500);
+									}, function(err) {
+										statusDiv.html('<span style="color:red;">'+__('Error:', 'event-tickets-with-ticket-scanner')+' '+(err && err.data ? err.data : 'unknown')+'</span>').show();
+										serialInput.prop('disabled', false);
+									});
+								}
+							},
+							{
+								text: __('Later', 'event-tickets-with-ticket-scanner'),
+								class: "button-secondary",
+								click: function() { $(this).dialog("close"); }
+							}
+						]
+					});
 				}
 			}
 			if (serial != "" && typeof OPTIONS.infos.premium_expiration !== "undefined") {
@@ -4168,7 +4204,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 									return '<span style="display:none;">'+data+'</span>'+DateFormatStringToDateTimeText(data);
 								}
 							},
-		    				{"data":null,"orderable":false,"defaultContent":'',"className":"buttons dt-right","width":180,
+		    				{"data":null,"orderable":false,"defaultContent":'',"className":"buttons dt-right dt-nowrap","width":180,
 		    					"render": function ( data, type, row ) {
 		    						return '<button class="button-secondary" data-type="showCodes">'+_x('Tickets', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="deleteAllTickets" style="color:#b32d2e;">'+_x('Delete All Tickets', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button>';
 		                		}
@@ -4310,7 +4346,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.confirmedCount+'<th align="left">'
 					+_x('Redeemed', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.redeemAmount+'<th>'
 					+_x('OrderId', 'label', 'event-tickets-with-ticket-scanner')+'</th><th>CVV</th><th>'
-					+_x('Status', 'label', 'event-tickets-with-ticket-scanner')+'</th><th style="min-width:290px"></th></tr></thead><tfoot><th colspan="10" style="text-align:left;font-weight:normal;padding-left:0;padding-bottom:0;"></th></tfoot>');
+					+_x('Status', 'label', 'event-tickets-with-ticket-scanner')+'</th><th ></th></tr></thead><tfoot><th colspan="10" style="text-align:left;font-weight:normal;padding-left:0;padding-bottom:0;"></th></tfoot>');
 				tabelle_codes.find('input[data-id="checkAll"]').on('click', (e)=> {
 					let isChecked = $(e.currentTarget).prop('checked');
 					let found = false;
@@ -4450,7 +4486,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						if (data.aktiv === "2") return '<span style="color:red;">'+_x('stolen', 'label', 'event-tickets-with-ticket-scanner')+'</span>'+_stat;
 						return data.aktiv === "1" ? '<span style="color:green;">'+__('active', 'event-tickets-with-ticket-scanner')+'</span>'+_stat : '<span style="color:grey;">'+_x('is inactiv', 'label', 'event-tickets-with-ticket-scanner')+'</span>'+_stat;
 					}},
-					{"data":null,"orderable":false,"defaultContent":'',"className":"buttons dt-right",
+					{"data":null,"orderable":false,"defaultContent":'',"className":"buttons dt-right dt-nowrap","width":"120px",
 						"render": function ( data, type, row ) {
 							return '<button class="button-secondary" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button>';
 						}
@@ -5559,9 +5595,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 	function init() {
 		addStyleCode('.lds-dual-ring {display:inline-block;width:40px;height:40px;}.lds-dual-ring:after {content:" ";display:block;width:28px;height:28px;margin:4px;border-radius:50%;border:3px solid #9333ea;border-color:#9333ea transparent #9333ea transparent;animation:lds-dual-ring 0.8s linear infinite;}@keyframes lds-dual-ring {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}');
-		addStyleTag(myAjax._plugin_home_url+'/css/styles_backend.css', null, function() {
-			$('.event-tickets-with-ticket-scanner-admin-page').addClass('et-ready');
-		});
+		// CSS is now loaded via wp_enqueue_style in PHP
+		$('.event-tickets-with-ticket-scanner-admin-page').addClass('et-ready');
 
 		addScriptTag(myAjax._plugin_home_url+'/3rd/ace/ace.js');
 

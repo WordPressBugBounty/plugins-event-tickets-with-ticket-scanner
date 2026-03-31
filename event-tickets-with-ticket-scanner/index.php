@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 2.9.9
+ * Version: 3.0.0
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '2.9.9');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.0');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -799,7 +799,7 @@ class sasoEventtickets {
 		$allowed = $this->isUserAllowedToAccessAdminArea();
 		$allowed = apply_filters( $this->_add_filter_prefix.'main_options_page', $allowed );
 		if ($allowed) {
-			add_options_page(__('Event Tickets', 'event-tickets-with-ticket-scanner'), 'Event Tickets', 'manage_options', 'event-tickets-with-ticket-scanner', [$this,'options_page']);
+			//add_options_page(__('Event Tickets', 'event-tickets-with-ticket-scanner'), 'Event Tickets', 'manage_options', 'event-tickets-with-ticket-scanner', [$this,'options_page']);
 			add_menu_page( __('Event Tickets', 'event-tickets-with-ticket-scanner'), 'Event Tickets', 'read', 'event-tickets-with-ticket-scanner', [$this,'options_page'], plugins_url( "",__FILE__ )."/img/icon_event-tickets-with-ticket-scanner_18px.gif", null );
 		}
 		do_action( $this->_do_action_prefix.'main_register_options_page' );
@@ -813,6 +813,12 @@ class sasoEventtickets {
 		}
 
 		wp_enqueue_style("wp-jquery-ui-dialog");
+		wp_enqueue_style(
+			'event-tickets-backend',
+			plugins_url('css/styles_backend.css', __FILE__),
+			array(),
+			$this->getPluginVersion()
+		);
 
 		$js_url = "jquery.qrcode.min.js?_v=".$this->_js_version;
 		wp_register_script('ajax_script2', plugins_url( "3rd/".$js_url,__FILE__ ), array('jquery', 'jquery-ui-dialog'));
@@ -1702,6 +1708,18 @@ class sasoEventtickets {
 			'msgCheck5'=>$this->getOptions()->getOptionValue('textValidationMessage5'),
 			'msgCheck6'=>$this->getOptions()->getOptionValue('textValidationMessage6')
 		];
+		$enableQR = $this->getOptions()->isOptionCheckboxActive('enableQRScanner');
+		$vars['_enableQRScanner'] = $enableQR;
+		if ($enableQR) {
+			wp_enqueue_script(
+				'saso-html5-qrcode',
+				plugins_url('3rd/html5-qrcode.min.js', __FILE__),
+				array(),
+				$this->_js_version,
+				true
+			);
+		}
+
 		$vars = apply_filters( $this->_add_filter_prefix.'main_replaceShortcode', $vars );
 
 		if ($this->isPremium() && method_exists($this->getPremiumFunctions(), "addJSFrontFile")) $this->getPremiumFunctions()->addJSFrontFile();

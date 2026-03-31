@@ -193,10 +193,17 @@ function SasoEventticketsValidator(_myAjaxVar) {
 			let textValidationBtnBgColor = _getOptions_getValByKey('textValidationBtnBgColor').replace(/"/g,'').replace(/;/g,'');
 			let textValidationBtnBrdColor = _getOptions_getValByKey('textValidationBtnBrdColor').replace(/"/g,'').replace(/;/g,'');
 			let textValidationBtnTextColor = _getOptions_getValByKey('textValidationBtnTextColor').replace(/"/g,'').replace(/;/g,'');
+			let qrBtnHtml = '';
+			if (myAjax._enableQRScanner) {
+				qrBtnHtml = '<button type="button" data-qr-btn="'+input_id+'" class="sngmbh_btn sngmbh_btn-qr-scanner sngmbh_mb-2" title="'+__('Scan QR Code', 'event-tickets-with-ticket-scanner')+'">'
+					+ '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/><line x1="6" y1="6" x2="6" y2="6"/><line x1="18" y1="6" x2="18" y2="6"/><line x1="6" y1="18" x2="6" y2="18"/></svg>'
+					+ '</button>';
+			}
 			let t = '<div class="sngmbh_container">'
 			+ '<div class="sngmbh_input-group sngmbh_mb-3">'
 			+ '<input required type="text" class="sngmbh_form-control sngmbh_mb-2" data-input="'+input_id+'" placeholder="'+inputFieldPlaceholder+'">'
 			+ '<div class="sngmbh_input-group-append">'
+			+ qrBtnHtml
 			+ '<button type="submit" data-btn="'+btn_id+'" class="sngmbh_btn sngmbh_btn-primary sngmbh_mb-2" style="'
 			+ (textValidationBtnBgColor ? 'background-color:'+textValidationBtnBgColor+';' : '')
 			+ (textValidationBtnBrdColor ? 'border-color:'+textValidationBtnBrdColor+';' : '')
@@ -204,6 +211,7 @@ function SasoEventticketsValidator(_myAjaxVar) {
 			+ '">'+btnLabel+'</button>'
 			+ '</div>'
 			+ '</div>'
+			+ (myAjax._enableQRScanner ? '<div data-qr-reader="'+input_id+'" style="display:none;"></div>' : '')
 			+ '</div>';
 			return t;
 		}
@@ -405,6 +413,65 @@ function SasoEventticketsValidator(_myAjaxVar) {
 				cvv = parts[1].trim();
 			}
 			__callCheckService(cvv);
+		}
+
+		_initQRScanner();
+	}
+
+	var QR_SCANNER = null;
+	var QR_READER_ELEM = null;
+
+	function _initQRScanner() {
+		if (!myAjax._enableQRScanner) return;
+		if (typeof Html5QrcodeScanner === 'undefined') return;
+
+		let input_id = _prefix + 'code';
+		var qrBtn = document.querySelector('[data-qr-btn="'+input_id+'"]');
+		QR_READER_ELEM = document.querySelector('[data-qr-reader="'+input_id+'"]');
+
+		if (!qrBtn || !QR_READER_ELEM) return;
+
+		qrBtn.addEventListener('click', function() {
+			if (QR_READER_ELEM.style.display === 'none') {
+				_startQRScanner();
+				qrBtn.classList.add('sngmbh_btn-qr-scanner--active');
+			} else {
+				_stopQRScanner();
+				qrBtn.classList.remove('sngmbh_btn-qr-scanner--active');
+			}
+		});
+	}
+
+	function _startQRScanner() {
+		QR_READER_ELEM.style.display = 'block';
+		QR_READER_ELEM.id = _prefix + 'qr_reader';
+
+		QR_SCANNER = new Html5QrcodeScanner(
+			QR_READER_ELEM.id,
+			{ fps: 10, qrbox: { width: 250, height: 250 }, rememberLastUsedCamera: true },
+			false
+		);
+		QR_SCANNER.render(_onQRScanSuccess);
+	}
+
+	function _onQRScanSuccess(decodedText) {
+		CODE_ELEMENT.value = decodedText.trim();
+		_stopQRScanner();
+		var qrBtn = document.querySelector('[data-qr-btn="'+_prefix+'code"]');
+		if (qrBtn) qrBtn.classList.remove('sngmbh_btn-qr-scanner--active');
+		if (BUTTON_ELEMENT) {
+			BUTTON_ELEMENT.click();
+		}
+	}
+
+	function _stopQRScanner() {
+		if (QR_SCANNER != null) {
+			QR_SCANNER.clear().catch(function() {});
+			QR_SCANNER = null;
+		}
+		if (QR_READER_ELEM) {
+			QR_READER_ELEM.style.display = 'none';
+			QR_READER_ELEM.innerHTML = '';
 		}
 	}
 

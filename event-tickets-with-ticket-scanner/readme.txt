@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 2.9.9
+Stable tag: 3.0.0
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -215,6 +215,15 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.0.0 - 2026-03-31 =
+* Fix: Admin CSS was cached by Cloudflare/browsers after plugin updates — added version-based cache buster to dynamically loaded stylesheet
+* Fix: Scoped global CSS button selectors to plugin container — no longer affects WP admin sidebar
+* Fix: Backend CSS now loaded via wp_enqueue_style instead of JS injection (prevents layout shift)
+* Fix: Removed duplicate Settings submenu entry (top-level menu only)
+* New: QR code scanner on the validator form — users can scan QR codes with their device camera instead of typing codes manually (enable in plugin settings)
+* New: License key prompt dialog on settings page instead of browser alert — with direct link to options page
+* Fix: Ticket table button column no longer forces minimum width (cleaner layout on small screens)
 
 = 2.9.9 - 2026-03-23 =
 * Improvement: License check resilience — brief server outages no longer disable premium features; raised failure threshold from 5 to 10, extended staleness window from 10 to 21 days, and server errors (5xx, empty body) now count as transient failures instead of genuine rejections

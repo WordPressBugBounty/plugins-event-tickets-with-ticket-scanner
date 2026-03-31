@@ -167,3 +167,42 @@
     background-position: right calc(.375em + .1875rem) center;
     background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
+
+/* QR Scanner Button */
+.sngmbh_btn-qr-scanner {
+    background-color: #6c757d;
+    border: 1px solid #6c757d;
+    color: #fff;
+    padding: .375rem .5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: .25rem;
+    margin-right: 4px;
+}
+.sngmbh_btn-qr-scanner:hover,
+.sngmbh_btn-qr-scanner:focus {
+    background-color: #5a6268;
+    border-color: #545b62;
+    color: #fff;
+}
+.sngmbh_btn-qr-scanner--active {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.sngmbh_btn-qr-scanner--active:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* QR Scanner Reader Area */
+[data-qr-reader] {
+    max-width: 500px;
+    margin: 10px auto;
+}
+@media (max-width: 576px) {
+    [data-qr-reader] {
+        max-width: 100%;
+    }
+}

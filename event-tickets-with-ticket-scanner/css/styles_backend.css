@@ -118,7 +118,7 @@
     position: relative;
     z-index: 2;
 }
-[type=button]:not(:disabled), [type=reset]:not(:disabled), [type=submit]:not(:disabled), button:not(:disabled) {
+.event-tickets-with-ticket-scanner-admin-page [type=button]:not(:disabled), .event-tickets-with-ticket-scanner-admin-page [type=reset]:not(:disabled), .event-tickets-with-ticket-scanner-admin-page [type=submit]:not(:disabled), .event-tickets-with-ticket-scanner-admin-page button:not(:disabled) {
     cursor: pointer;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -156,7 +156,7 @@
     background-color: #ff0000;
     border-color: #ff0000;
 }
-[type=button], [type=reset], [type=submit], button {
+.event-tickets-with-ticket-scanner-admin-page [type=button], .event-tickets-with-ticket-scanner-admin-page [type=reset], .event-tickets-with-ticket-scanner-admin-page [type=submit], .event-tickets-with-ticket-scanner-admin-page button {
     -webkit-appearance: button;
 }
 
