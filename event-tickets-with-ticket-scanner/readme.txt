@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -215,6 +215,10 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.0.1 - 2026-04-07 =
+* Improvement: Updated all translations — regenerated POT from source, added 188 new strings, all 11 languages at 100% (de, es, fr, hu, it, ja, nl, pt_BR, pt_PT, zh_CN)
+* Improvement: Premium plugin labels (Ticket Template, Excluded Days, License Key etc.) now included in translations
 
 = 3.0.0 - 2026-03-31 =
 * Fix: Admin CSS was cached by Cloudflare/browsers after plugin updates — added version-based cache buster to dynamically loaded stylesheet
