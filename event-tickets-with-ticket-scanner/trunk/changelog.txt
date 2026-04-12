@@ -1,3 +1,138 @@
+= 2.7.10 - 2025-10-14 =
+* Fix for the created time within the admin area on the tables (tickets, ticket list, auths).
+* Fix for polygon plugin that is overwritting a WPML function and prevents to get the correct porduct id.
+* Adjust the order of the tickets table to use the created date as default.
+* Fix for date picker with plugins, that are messing up the date information on the cart item.
+
+= 2.7.9 - 2025-09-30 =
+* Add an update checkout to reflect the changed input values if you use a single page for cart and checkout.
+* Add First Steps box to the admin area for new users.
+* Add link to the BETA chat bot for faster help - using ChatGPT for now.
+* Added a warning, if you try to add ticket numbers without having a ticket list.
+* Add info if the datatable for the ticket list is empty.
+* Add info if the datatable for the tickets is empty.
+* Add release notes as link within the support area.
+* New option to allow subscription using the same ticket number as the parent order - wcassignmentExtendTicketWithSubscription.
+* Fix for ticket scanner url if option wcTicketCompatibilityModeURLPath is used.
+* Add ticket scanner URL with public ticket number to the ticket details in the admin area.
+* Adjust date and time output at the admin area to use your date and time format.
+
+= 2.7.8 - 2025-09-15 =
+* Fix the switched column value of redeemed and redeemed.
+* Fix the missing date on the ticket.
+
+= 2.7.7 - 2025-09-08 =
+* Add fix for WPML products for the order email.
+* Fix for display chosen date from the date picker to the WCPDF plugin if used.
+* Fix for format display of chosen date on the email.
+* Fix for format display of chosen date on the thank you page.
+* Add more support for WPML.
+* Add new label for the date picker. If the date is in the past then the value of option wcTicketLabelCartForDaychooserPassedDate will be shown.
+* Fix for cleaning up the session if an product is removed from the cart.
+* Add date picker to the shop page for day chooser products.
+* Add date picker to the product page for day chooser products.
+* Label wcTicketLabelPDFDownloadHeading can be excluded from rendering by entering an empty space.
+
+= 2.7.6 - 2025-08-22 =
+* Add name and language indicator to the font chooser option wcTicketPDFFontFamily
+* Listed more libraries in the support area
+* Removed the list with all available options from the support area
+* New option to set the order status if the ticket is viewed or downloaded. Warning, this is tricky, if you have no clue for what it could be used, please do not use it. Option: ticketScannerSetOrderStatusAfterTicketView.
+* Fix display order ticket paid date for non paid tickets.
+* Adopt ticket scanner to process also prefix "order-" as an order ticket number - fix bug before premum version 1.5.5.
+
+= 2.7.5 - 2025-07-09 =
+* Add check of the user input for the date picker. If the start and end date is set on the product, then the validation will make sure, the date is entered and also within the date range.
+* New option to prevent downloads of tickets (secured downloads), badges and ICS files if the user is not logged in. To use this, activate wcTicketAllowOnlyLoggedinToDownload.
+* New option if you want to redirect not logged in users during the secured download - wcTicketAllowOnlyLoggedinToDownloadRedirectURL.
+
+= 2.7.4 - 2025-07-01 =
+* Fix background image for ticket badges.
+
+= 2.7.3 - 2025-06-24 =
+* Fix for missing parent product id with wpml within the tickets
+* Added languages for ticket scanner (ch_CN, es_ES, fr_FR, it_IT, ja_JP, nl_NL. pt_BR, pt_PT)
+
+= 2.7.2 - 2025-06-17 =
+* Fix qr content on ticket badge
+
+= 2.7.1 - 2025-06-12 =
+* Fix ticket scanner - it was prepared by accident to have a bit of code that is new approach.
+
+= 2.7.0 - 2025-06-11 =
+* Fix removing the ticket numbers from the order item, even if the tickets are already deleted.
+* Changed the premium license link.
+* Fix wrong QR code on QR code image and PDF if you use your own qr code content with option qrOwnQRContent.
+* Fix wrong QR code on ticket badge if you use your own qr code content with option qrOwnQRContent.
+
+= 2.6.11 - 2025-05-28 =
+* Fix PDF ob_clean notice.
+* Fix wrong version number.
+* Fix cart (datepicker, text-value, option-value) value saving within the cart view and checkout.
+* Fix update all dates on the cart view and checkout.
+
+= 2.6.10 - 2025-05-26 =
+* Add shortcode to display all options/features.
+* Added ticket title and sub title (variation name) above the buttons for the distract free view of the scanned ticket.
+* Display last redeem operation with the redeem information on the ticket scanner.
+* Add redeem button to the top for fast redeem operation after the ticket is retrieved on the ticket scanner.
+* New option to preset the ticket scanner to display the short description in distract free mode - ticketScannerHideTicketInformationShowShortDesc
+* Bug fix for missing orders if the order will be checked for "is-paid"
+
+= 2.6.9 = 2025-05-19 =
+* Fix date picker saving value at cart.
+* Reinit the date picker fields if the cart was updated.
+
+= 2.6.8 - 2025-05-13 =
+* Fix issue with variable products on the order view.
+
+= 2.6.7 - 2025-05-13 =
+* Add is_daychooser and day_per_ticket to the export. You have the meta information now direct as a column: meta_wc_ticket_is_daychooser, meta_wc_ticket_day_per_ticket.
+* Add new filter for ticket numbers in the admin to search for a chosen date on the tickets. Search value is DAYPERTICKET:YYYY-MM-DD. You can also search for YYYY-MM or just YYYY.
+* You can now add and & to the search within the ticket admin to search for more than one filter. But limited to filters and one normal search. E.g. PRODUCTID:123 & ORDERID:123 & ticketnumber.
+* You can download the ticket badges from within the order now
+
+= 2.6.6 - 2025-05-06 =
+* Added more help videos to the options
+
+= 2.6.5 - 2025-05-05 =
+* Added list of third party libraries to the support information area.
+* Ticket scanner has a new option to use the old QR code scanner library for compatibility mode in case your iphone is not working as expected.
+* Admin area is refreshing the security code (nonce) automatically if open.
+* Add an newline to put the date on the next line in the order items table.
+* Thank you page uses now the new WooCommerce hook.
+* Added font for PDF Roboto and Newsreader to support more languages.
+
+= 2.6.4 - 2025-04-24 =
+* Basic WPML plugin support added.
+* Optimized the plugin speed a little bit.
+
+= 2.6.3 - 2025-04-16=
+* Datatables in the admin made width=100%.
+* Add checks for used 3rd party php classes, so that they will not be re-added to php - what could cause conflicts.
+* Display customer name is now using $order->get_formatted_billing_full_name.
+
+= 2.6.2 - 2025-04-07 =
+* Two columns added to the export: is_daychooser and day_per_ticket.
+* Preparation to display the redeemed and not redeemed tickets at the ticket scanner - with premium 1.5.2 available.
+* Changing title of the admin area from Event Tickets with Woocommerce to Event Tickets with Ticket Scanner
+* Fixed the default value for Date2Text Javascript function on the ticket.
+* Ticket scanner is now checking at least every 4 minutes for a new nonce security token, to prevent access error message.
+* Fix for the date chooser - it will prevent allowing to choose a date before today.
+
+= 2.6.1 - 2025-03-18 =
+* Bug fix new check of the option value is active
+
+= 2.6.0 - 2025-03-17 =
+* Bug fix for unchecking of product checkboxes in the event tickets tab
+* New shortcode [sasoEventTicketsValidator_eventsview]. Add event calendar view for events with an start date. Missing end date will be treated like same day.
+* Option wcassignmentDoNotPutOnEmail re-added :)
+* Option wcassignmentDoNotPutOnPDF re-added :)
+* Small optimizations on options call and find products to make them private after expired
+* Format for date and time is also passed to the outputs
+* Ticket scanner is showing now always the variant name at the top - even if the option is deactivated. For the ticket view and PDF it is still the same.
+* Ticket scanner text input field for hardware qr code scanner accepts also "'" as divider of the public ticket number.
+
 = 2.5.9 - 2025-02-21 =
 * Bug fix unused action that causes woocommerce to crash
 

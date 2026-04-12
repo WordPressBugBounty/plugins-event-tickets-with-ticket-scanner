@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.0.1
+ * Version: 3.0.2
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.1');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.2');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -268,39 +268,46 @@ class sasoEventtickets {
 					// Premium plugin exists but no version defined - likely very old or corrupted
 					$this->_oldPremiumDetected = true;
 				} else {
-					// Check version AND function compatibility
-					$min_premium_version = '1.6.0';
+					// Compatibility check BEFORE instantiation — the premium constructor
+					// registers 25+ WordPress hooks on $this. If we instantiate first and
+					// discard the object afterwards, WP keeps the callbacks alive in memory
+					// and fires them later, which crashes the site on old premiums that
+					// reference methods removed in the WC manager refactor (2.7.x+).
+					//
+					// Use ReflectionClass to inspect methods WITHOUT running the constructor.
+					$min_premium_version = '1.5.0';
+					$version_too_old = version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<');
 
-					if (version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<')) {
-						// Version too old - check if required functions exist
-						$prem_class = new sasoEventtickets_PremiumFunctions($this, plugin_dir_path(__FILE__), $this->_prefix, $this->getDB());
+					// Fingerprint methods added in Premium 1.5.0 — Premium 1.5.x still works
+					// with the current basic because it only calls the deprecated proxies
+					// getTicketsFromOrder() / add_serialcode_to_order(). 1.3.x / 1.4.x do
+					// not have these methods and their hook callbacks crash later.
+					$has_required_methods = false;
+					try {
+						$reflection = new ReflectionClass('sasoEventtickets_PremiumFunctions');
+						$has_required_methods = $reflection->hasMethod('maxValues')
+							&& $reflection->hasMethod('ticket_outputTicketInfo_template')
+							&& $reflection->hasMethod('wc_order_add_meta_boxes');
+					} catch (\Throwable $e) {
+						// Reflection itself failed — treat as incompatible
+						$has_required_methods = false;
+					}
 
-						// Check for critical methods that were added/changed in 1.6.0
-						$has_required_methods = method_exists($prem_class, 'maxValues')
-							&& method_exists($prem_class, 'getSeatingPlanById')
-							&& method_exists($prem_class, 'generateTicketPdf');
-
-						if (!$has_required_methods) {
-							// Missing required functions even though version might say otherwise
-							$this->_oldPremiumDetected = true;
-						} else {
-							// Functions exist - load it
-							try {
-								$this->PREMFUNCTIONS = $prem_class;
-								$this->_isPrem = $this->PREMFUNCTIONS->isPremium();
-							} catch (Exception $e) {
-								// Error loading premium - fall back to free
-								$this->_oldPremiumDetected = true;
-							}
-						}
+					if ($version_too_old || !$has_required_methods) {
+						// Old premium detected — DO NOT instantiate. Instantiating would
+						// register hooks that crash later when WooCommerce fires events.
+						$this->_oldPremiumDetected = true;
+						error_log('Event Tickets: Incompatible old premium detected (v' . SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION . ') — not instantiated to prevent hook crashes.');
 					} else {
-						// Version is OK - try to load
+						// Version and methods are OK — safe to instantiate.
+						// Keep try/catch as safety net for unexpected constructor errors.
 						try {
 							$this->PREMFUNCTIONS = new sasoEventtickets_PremiumFunctions($this, plugin_dir_path(__FILE__), $this->_prefix, $this->getDB());
 							$this->_isPrem = $this->PREMFUNCTIONS->isPremium();
-						} catch (Exception $e) {
-							// Error loading premium - fall back to free
+						} catch (\Throwable $e) {
 							$this->_oldPremiumDetected = true;
+							$this->PREMFUNCTIONS = new sasoEventtickets_fakeprem();
+							error_log('Event Tickets: Premium instantiation failed: ' . $e->getMessage());
 						}
 					}
 				}
@@ -333,10 +340,28 @@ class sasoEventtickets {
 			return;
 		}
 
-		$min_premium_version = '1.6.0';
+		$min_premium_version = '1.5.0';
 		if (!defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')
 			|| version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, $min_premium_version, '<')) {
 			$this->_oldPremiumDetected = true;
+			return;
+		}
+
+		// Reflection-based method check BEFORE instantiation — same reason as in
+		// getPremiumFunctions(): old premium constructors register hooks that crash
+		// later if methods were removed in the WC manager refactor.
+		// Fingerprint methods added in Premium 1.5.0.
+		try {
+			$reflection = new ReflectionClass('sasoEventtickets_PremiumFunctions');
+			$has_required_methods = $reflection->hasMethod('maxValues')
+				&& $reflection->hasMethod('ticket_outputTicketInfo_template')
+				&& $reflection->hasMethod('wc_order_add_meta_boxes');
+		} catch (\Throwable $e) {
+			$has_required_methods = false;
+		}
+		if (!$has_required_methods) {
+			$this->_oldPremiumDetected = true;
+			error_log('Event Tickets: Incompatible old premium detected in late-load — not instantiated.');
 			return;
 		}
 
@@ -511,21 +536,30 @@ class sasoEventtickets {
 
 	/**
 	 * Periodic license check on admin page loads.
-	 * Runs at most once per 24h to catch cases where WP Cron is disabled.
+	 * Hard-throttled via site transient so that even if many admin requests come in
+	 * (bots, health-checks, other plugins hammering admin-ajax) only one actual
+	 * license call fires per interval.
 	 */
 	public function periodicLicenseCheck(): void {
+		// Hard throttle: site transient = max 1 check per interval, independent of
+		// option-based last_run throttling below. Prevents runaway requests when
+		// admin pages are hit rapidly (monitoring tools, page builders, broken cron).
+		$throttleKey = 'saso_et_periodic_license_check_lock';
+		if (get_site_transient($throttleKey)) return;
+
 		// Also run when premium plugin is installed with a serial key but isPremium() is false
 		// This breaks the deadlock where isPremium()=false prevents the license check from ever running
 		$hasPremiumPlugin = class_exists('sasoEventtickets_PremiumFunctions');
 		$hasSerial = !empty(trim(get_option("saso-event-tickets-premium_serial", "")));
 		if (!$this->isPremium() && !($hasPremiumPlugin && $hasSerial)) return;
 
+		// Set throttle lock IMMEDIATELY — before any other work — so concurrent
+		// admin_init calls bail out. Full interval even on recovery mode.
+		$interval = $this->isPremium() ? 86400 : 3600;
+		set_site_transient($throttleKey, time(), $interval);
+
 		$info = $this->getTicketHandler()->get_expiration();
 		$last_run = intval($info['last_run']);
-
-		// Maximal 1x pro 24h, nicht bei jedem Page Load
-		// In recovery mode (not premium but has serial), check more frequently (every 1h)
-		$interval = $this->isPremium() ? 86400 : 3600;
 		if ($last_run > 0 && (time() - $last_run) < $interval) return;
 
 		// Check ausführen
@@ -585,6 +619,13 @@ class sasoEventtickets {
 		//$this->wc_checkTicketDetailPage();
 		add_action('rest_api_init', function () {
 			SASO_EVENTTICKETS::setRestRoutesTicket();
+			// Vollstart Wallet REST API (only if enabled)
+			if ($this->getOptions()->isOptionCheckboxActive('walletVollstartEnable')) {
+				include_once plugin_dir_path(__FILE__) . 'includes/wallet/class-wallet-rest.php';
+				$walletRest = new sasoEventtickets_Wallet_REST($this);
+				$walletRest->register_routes();
+				$walletRest->register_cors();
+			}
 		});
 
 		add_action('woocommerce_after_shop_loop_item', [$this, 'relay_woocommerce_after_shop_loop_item'], 9); // with 9 we are just before the add to cart button
@@ -596,8 +637,75 @@ class sasoEventtickets {
 		add_filter('woocommerce_update_cart_validation', [$this, 'relay_woocommerce_update_cart_validation'], 10, 4);
 		add_action('woocommerce_before_add_to_cart_button', [$this, 'relay_woocommerce_before_add_to_cart_button'], 15);
 
+		// Vollstart Wallet: "Add to Wallet" button on ticket detail page
+		add_action($this->_do_action_prefix . 'ticket_outputTicketInfo_after', [$this, 'wallet_render_ticket_button'], 10, 2);
+
+		// Vollstart Wallet: link in order emails
+		add_action($this->_do_action_prefix . 'woocommerce-hooks_woocommerce_email_order_meta', [$this, 'wallet_render_email_link'], 10, 4);
+
 		do_action( $this->_do_action_prefix.'main_WooCommercePluginLoaded' );
 	}
+
+	/**
+	 * Render the "Add to Vollstart Wallet" button on the ticket detail page.
+	 */
+	public function wallet_render_ticket_button(array $codeObj, bool $forPDFOutput): void {
+		if ($forPDFOutput) return;
+		if (!$this->getOptions()->isOptionCheckboxActive('walletVollstartEnable')) return;
+
+		$codeObj = $this->getCore()->setMetaObj($codeObj);
+		$metaObj = $codeObj['metaObj'];
+		$walletUrl = $metaObj['wc_ticket']['_wallet_url'] ?? '';
+		if (empty($walletUrl)) return;
+
+		echo '<p style="text-align:center;margin-top:10px;">';
+		echo '<a class="button" href="' . esc_url($walletUrl) . '" target="_blank" rel="noopener">';
+		echo esc_html__('Add to Vollstart Wallet', 'event-tickets-with-ticket-scanner');
+		echo '</a>';
+		echo '</p>';
+	}
+
+	/**
+	 * Render Vollstart Wallet links in WooCommerce order emails.
+	 */
+	public function wallet_render_email_link($order, bool $sent_to_admin, bool $plain_text, $email): void {
+		if ($sent_to_admin) return;
+		if (!$this->getOptions()->isOptionCheckboxActive('walletVollstartEnable')) return;
+
+		$codes = $this->getCore()->getCodesByOrderId($order->get_id());
+		if (empty($codes)) return;
+
+		$walletLinks = [];
+		foreach ($codes as $codeRow) {
+			try {
+				$codeObj = $this->getCore()->retrieveCodeByCode($codeRow['code']);
+				$codeObj = $this->getCore()->setMetaObj($codeObj);
+				$metaObj = $codeObj['metaObj'];
+				if (intval($metaObj['wc_ticket']['is_ticket'] ?? 0) !== 1) continue;
+				$walletUrl = $metaObj['wc_ticket']['_wallet_url'] ?? '';
+				if (empty($walletUrl)) continue;
+
+				$walletLinks[] = $walletUrl;
+			} catch (\Exception $e) {
+				continue;
+			}
+		}
+
+		if (empty($walletLinks)) return;
+
+		if ($plain_text) {
+			echo "\n" . __('Add to Vollstart Wallet', 'event-tickets-with-ticket-scanner') . ":\n";
+			foreach ($walletLinks as $url) {
+				echo $url . "\n";
+			}
+		} else {
+			echo '<p><b>' . esc_html__('Add to Vollstart Wallet', 'event-tickets-with-ticket-scanner') . '</b></p>';
+			foreach ($walletLinks as $url) {
+				echo '<p><a href="' . esc_url($url) . '" target="_blank" rel="noopener">' . esc_html__('Add to Wallet', 'event-tickets-with-ticket-scanner') . '</a></p>';
+			}
+		}
+	}
+
 	public function relay_woocommerce_after_shop_loop_item() {
 		$this->getWC()->getFrontendManager()->woocommerce_after_shop_loop_item_handler();
 	}
@@ -851,6 +959,10 @@ class sasoEventtickets {
 			'divId' => $this->_divId,
 			'jsFiles' => plugins_url( 'backend.js?_v='.$this->_js_version.'&_f='.filemtime(__DIR__.'/backend.js'),__FILE__ )
 		);
+		// Version notices for "What's New" banner
+		$versionNoticesFile = __DIR__ . '/version-notices.json';
+		$vars['_versionNotices'] = file_exists($versionNoticesFile) ? json_decode(file_get_contents($versionNoticesFile), true) : [];
+
 		$vars = apply_filters( $this->_add_filter_prefix.'main_options_page', $vars );
         wp_localize_script(
             'ajax_script_backend',

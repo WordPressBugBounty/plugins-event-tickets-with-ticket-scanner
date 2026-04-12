@@ -231,6 +231,12 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 
 		public static function setRestRoutesTicket() {
 			$prefix = SASO_EVENTTICKETS::getRESTPrefixURL();
+			register_rest_route($prefix.'/ticket/scanner', '/pwa-manifest', [
+				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_pwa_manifest', 'permission_callback'=>function(){return true;}]
+			]);
+			register_rest_route($prefix.'/ticket/scanner', '/pwa-sw', [
+				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_pwa_sw', 'permission_callback'=>function(){return true;}]
+			]);
 			register_rest_route($prefix.'/ticket/scanner', '/ping', [
 				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_ping', 'permission_callback'=>function(){return true;}]
 			]);
@@ -242,6 +248,9 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			]);
 			register_rest_route($prefix.'/ticket/scanner', '/downloadPDFTicketBadge', [
 				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_downloadPDFTicketBadge', 'args'=>['code'=>['required'=>true]], 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
+			]);
+			register_rest_route($prefix.'/ticket/scanner', '/seating_plan', [
+				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_seating_plan', 'args'=>['plan_id'=>['required'=>true], 'seat_id'=>['required'=>false]], 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
 			]);
 		}
 		public static function rest_permission_callback($web_request) {
@@ -290,17 +299,75 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 		}
 		public static function rest_downloadPDFTicketBadge($web_request) {
 			try {
-				$a = SASO_EVENTTICKETS::issetRPara('action') ? SASO_EVENTTICKETS::getRequestPara('action') : "";
 				global $sasoEventtickets;
-				if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-					$sasoEventtickets->getAdmin()->executeJSON($a, $_POST, true, false);
-				} else {
-					$sasoEventtickets->getAdmin()->executeJSON($a, $_GET, true, false);
+				$code = $web_request->get_param('code');
+				if (empty($code)) {
+					throw new Exception("#6100 ticket code parameter is missing");
 				}
+				$codeObj = $sasoEventtickets->getCore()->retrieveCodeByCode($code);
+				if (empty($codeObj)) {
+					throw new Exception("#6101 ticket code not found");
+				}
+				$badgeHandler = $sasoEventtickets->getTicketBadgeHandler();
+				$badgeHandler->downloadPDFTicketBadge($codeObj);
+				exit;
 			} catch (Exception $e) {
 				wp_send_json_error($e->getMessage());
 			}
 		}
+		public static function rest_seating_plan($web_request) {
+			try {
+				include_once plugin_dir_path(__FILE__)."sasoEventtickets_Ticket.php";
+				$ticket = sasoEventtickets_Ticket::Instance($_SERVER["REQUEST_URI"]);
+				$ret = $ticket->rest_seating_plan($web_request);
+				$ret['nonce'] = wp_create_nonce( 'wp_rest' );
+				wp_send_json_success($ret);
+			} catch (Exception $e) {
+				wp_send_json_error($e->getMessage());
+			}
+		}
+		public static function rest_pwa_manifest($web_request) {
+			global $sasoEventtickets;
+			$scannerUrl = $sasoEventtickets->getCore()->getTicketURLBase() . 'scanner/';
+			$scope = wp_parse_url($scannerUrl, PHP_URL_PATH);
+			$iconBase = plugins_url('img/', __FILE__);
+			$themeColor = $sasoEventtickets->getOptions()->getOptionValue('ticketScannerThemeColor', '#2e74b5');
+			if (empty($themeColor)) $themeColor = '#2e74b5';
+			$manifest = [
+				'name'             => 'Ticket Scanner',
+				'short_name'       => 'Scanner',
+				'display'          => 'standalone',
+				'orientation'      => 'portrait',
+				'theme_color'      => $themeColor,
+				'background_color' => '#ffffff',
+				'start_url'        => $scannerUrl,
+				'scope'            => $scope,
+				'icons'            => [
+					['src' => $iconBase . 'pwa-icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
+					['src' => $iconBase . 'pwa-icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],
+				],
+			];
+			return new WP_REST_Response($manifest, 200, ['Content-Type' => 'application/manifest+json']);
+		}
+
+		public static function rest_pwa_sw($web_request) {
+			global $sasoEventtickets;
+			$swFile = plugin_dir_path(__FILE__) . 'pwa-sw.js';
+			if (!file_exists($swFile)) {
+				return new WP_Error('not_found', 'Service worker not found', ['status' => 404]);
+			}
+			$js = file_get_contents($swFile);
+			$version = defined('SASO_EVENTTICKETS_PLUGIN_VERSION') ? SASO_EVENTTICKETS_PLUGIN_VERSION : '1';
+			$js = str_replace('ticket-scanner-v1', 'ticket-scanner-' . $version, $js);
+			$scannerUrl = $sasoEventtickets->getCore()->getTicketURLBase() . 'scanner/';
+			$scope = wp_parse_url($scannerUrl, PHP_URL_PATH);
+			header('Content-Type: application/javascript');
+			header('Service-Worker-Allowed: ' . $scope);
+			header('Cache-Control: no-cache');
+			echo $js;
+			exit;
+		}
+
 		public static function isOrderPaid($order) {
 			if ($order === null || !is_object($order) || !is_a($order, 'WC_Order')) {
 				return false;
@@ -309,21 +376,30 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			$ok_order_statuses = wc_get_is_paid_statuses(); // array( 'processing', 'completed' )
 			return in_array($order_status, $ok_order_statuses);
 		}
-		public static function time() {
-			//return current_time("timestamp");
-			$timezone = wp_timezone();
-			$datetime = new DateTime( 'now', $timezone );
-			return $datetime->getTimestamp();
+
+		/**
+		 * @deprecated Since 2.8.0 - Use current_time('timestamp') or time() instead
+		 * Kept for backward compatibility with older premium plugin versions
+		 */
+		public static function time(): int {
+			return current_time('timestamp');
 		}
-		public static function date($format, $timestamp=0, $timezone=null) {
-			// wp_date( $format, $timestamp, $timezone );
-			if (empty($timezone)) $timezone = wp_timezone();
-			$datetime = new DateTime( 'now', $timezone );
-			if ($timestamp > 1) {
+
+		/**
+		 * @deprecated Since 2.8.0 - Use wp_date() instead
+		 * Kept for backward compatibility with older premium plugin versions
+		 */
+		public static function date(string $format, int $timestamp = 0, ?\DateTimeZone $timezone = null): string {
+			if (empty($timezone)) {
+				$timezone = wp_timezone();
+			}
+			$datetime = new DateTime('now', $timezone);
+			if ($timestamp > 0) {
 				$datetime->setTimestamp($timestamp);
 			}
-			return $datetime->format( $format );
+			return $datetime->format($format);
 		}
+
 		public static function is_assoc_array($array) {
 			if (!is_array($array)) {
 				return false;
@@ -341,6 +417,13 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 				*/
 			}
 		}
+
+		/** Sichere Sanitisierung: nur YYYY-MM-DD zulassen */
+		public static function sanitize_date_from_datepicker($date) {
+			$date = substr((string)$date, 0, 10);
+			return preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ? $date : '';
+		}
+
 	}
 }
 ?>

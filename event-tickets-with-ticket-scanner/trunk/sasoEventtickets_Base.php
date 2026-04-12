@@ -23,11 +23,8 @@ class sasoEventtickets_Base {
 			$this->_isPremInitialized = true;
 		}
 	}
-	public function getTicketHandler() {
-		return $this->MAIN->getTicketHandler();
-	}
 	public function increaseGlobalTicketCounter($a=1) {
-		$mvct = $this->MAIN->getBase()->getOverallTicketCounterValue() + $a;
+		$mvct = $this->getOverallTicketCounterValue() + $a;
 		update_option($this->MAIN->getPrefix()."mvct", $mvct);
 		do_action( $this->MAIN->_do_action_prefix.'base_increaseGlobalTicketCounter', $mvct );
 	}
@@ -51,8 +48,8 @@ class sasoEventtickets_Base {
 	public function _isMaxReachedForTickets($total) {
 		if ($this->getMaxValue('codes_total') == 0) return true;
 		if ($total > $this->getMaxValue('codes_total')) return false;
-		//$mvct = $this->getOverallTicketCounterValue();
-		//if ( $mvct > 0 && $mvct > ($total+150)) return false;
+		$mvct = $this->getOverallTicketCounterValue();
+		if ($mvct > 0 && $mvct > ($total + 150)) return false;
 		return true;
 	}
 	public function _isMaxReachedForAuthtokens($total) {

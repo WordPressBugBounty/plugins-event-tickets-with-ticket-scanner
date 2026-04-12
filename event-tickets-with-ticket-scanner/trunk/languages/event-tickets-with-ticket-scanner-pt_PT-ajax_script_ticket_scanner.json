@@ -1,6 +1,6 @@
 {
     "translation-revision-date": "2025-06-23 11:12+01:00",
-    "generator": "WP-CLI\/2.7.1",
+    "generator": "WP-CLI/2.7.1",
     "source": "ticket_scanner.js",
     "domain": "event-tickets-with-ticket-scanner",
     "locale_data": {
@@ -91,8 +91,8 @@
             "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
                 "Não foi possível encontrar o número do bilhete público no código QR. Por favor, tente um código QR de um bilhete."
             ],
-            "Confirmed status validation check counter: <b>%s<\/b>": [
-                "Contador de verificação de validação de estado confirmado: <b>%s<\/b>"
+            "Confirmed status validation check counter: <b>%s</b>": [
+                "Contador de verificação de validação de estado confirmado: <b>%s</b>"
             ],
             "Display short description if ticket information is hidden": [
                 "Exibir breve descrição se a informação do bilhete estiver oculta"
@@ -148,8 +148,8 @@
             "label\u0004Redeem Ticket": [
                 "Resgatar Bilhete"
             ],
-            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
-                "Valor Máximo de Resgate para este bilhete: <b>%s<\/b>"
+            "Max Redeem Amount for this ticket: <b>%s</b>": [
+                "Valor Máximo de Resgate para este bilhete: <b>%s</b>"
             ],
             "no code found": [
                 "nenhum código encontrado"
@@ -157,8 +157,8 @@
             "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
                 "Conteúdo do código QR desconhecido. Não é possível extrair os dados corretamente. Por favor, tente um código QR de um bilhete."
             ],
-            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
-                "Utilização do resgate: <b>%1$d<\/b> de <b>%2$d<\/b>"
+            "Redeem usage: <b>%1$d</b> of <b>%2$d</b>": [
+                "Utilização do resgate: <b>%1$d</b> de <b>%2$d</b>"
             ],
             "Redeemable from %s": [
                 "Resgatável a partir de %s"
@@ -219,6 +219,9 @@
             ],
             "Use old ticket scanner library - compatibility mode": [
                 "Usar biblioteca antiga do leitor de bilhetes - modo de compatibilidade"
+            ],
+            "Last scan: %s": [
+                "Última digitalização: %s"
             ]
         }
     }

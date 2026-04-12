@@ -7,19 +7,7 @@ class sasoEventtickets_Frontend {
 		$this->MAIN = $MAIN;
 	}
 
-	private function getDB() {
-		return $this->MAIN->getDB();
-	}
-	private function getBase() {
-		return $this->MAIN->getBase();
-	}
-	private function getCore() {
-		return $this->MAIN->getCore();
-	}
-
 	public function executeJSON($a, $data=[]) {
-		$ret = "";
-		$justJSON = false;
 		try {
 			switch (trim($a)) {
 				case "checkCode":
@@ -35,18 +23,18 @@ class sasoEventtickets_Frontend {
 					$ret = $this->executeJSONPremium($data);
 					break;
 				default:
-					throw new Exception(sprintf(esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner')));
+					throw new Exception(sprintf(esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'), $a));
 			}
 		} catch(Exception $e) {
-			//$this->MAIN->getAdmin()->logErrorToDB($e);
-			return wp_send_json_error (['msg'=>$e->getMessage()]);
+			return wp_send_json_error(['msg'=>$e->getMessage()]);
 		}
-		if ($justJSON) return wp_send_json($ret);
-		else return wp_send_json_success( $ret );
+		return wp_send_json_success($ret);
 	}
 
 	private function executeJSONPremium($data) {
-		if (!$this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'executeFrontendJSON')) throw new Exception("#9001a premium is not active");
+		if (!$this->MAIN->isPremium() || !method_exists($this->MAIN->getPremiumFunctions(), 'executeFrontendJSON')) {
+			throw new Exception("#9001a premium is not active");
+		}
 		if (!isset($data['d'])) throw new Exception("#9002a premium action is missing");
 		return $this->MAIN->getPremiumFunctions()->executeFrontendJSON($data['d'], $data);
 	}
@@ -61,7 +49,7 @@ class sasoEventtickets_Frontend {
 
 	public function isUsed($codeObj) {
 		$ret = false;
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		if (!empty($metaObj['used']['reg_request'])) {
 			$ret = true;
 		}
@@ -71,7 +59,7 @@ class sasoEventtickets_Frontend {
 	public function markAsUsed($codeObj, $force=false) {
 		if ($force || $this->MAIN->getOptions()->isOptionCheckboxActive('oneTimeUseOfRegisterCode')) {
 			if ($codeObj['aktiv'] == 1) {
-				$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+				$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 				// check ob nicht schon used
 				if (!empty($metaObj['used']['reg_request'])) {
 					$codeObj['_valid'] = 5; // used
@@ -87,7 +75,7 @@ class sasoEventtickets_Frontend {
 						// check if code has list
 						if ($codeObj['list_id'] > 0) {
 							// lade liste , um auf code list ebene einen abweichenden Wert zu prüfen
-							$listObj = $this->getCore()->getListById($codeObj['list_id']);
+							$listObj = $this->MAIN->getCore()->getListById($codeObj['list_id']);
 							$listObjMeta = [];
 							// check if code has in metaObj a value set and if it is > 0
 							if (isset($listObj["meta"]) && $listObj["meta"] != "")  {
@@ -101,9 +89,9 @@ class sasoEventtickets_Frontend {
 					}
 					if ($optionCount <= $confirmedCount) {
 						$metaObj = $this->addNewUsedEntryToMetaObject($metaObj);
-						$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
-						$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
-						$this->getCore()->triggerWebhooks(6, $codeObj);
+						$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+						$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+						$this->MAIN->getCore()->triggerWebhooks(6, $codeObj);
 					}
 				}
 			}
@@ -114,7 +102,7 @@ class sasoEventtickets_Frontend {
 
 	private function checkTicket($codeObj) {
 		if ($codeObj != null && isset($codeObj['order_id']) && $codeObj['order_id'] > 0) {
-			$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 			if (isset($metaObj['woocommerce'])
 				&& $metaObj['woocommerce']['order_id'] > 0
 				&& isset($metaObj['wc_ticket'])
@@ -131,9 +119,9 @@ class sasoEventtickets_Frontend {
 	private function addNewUsedEntryToMetaObject($metaObj) {
 		// darf auf used setzen, die letzte IP wird genutzt.
 		if (!isset($metaObj['used'])) $metaObj['used'] = [];
-		$metaObj['used']['reg_request'] = date("Y-m-d H:i:s", current_time("timestamp"));
-		$metaObj['used']['reg_request_tz'] = date_default_timezone_get();
-		$metaObj['used']['reg_ip'] = $this->getCore()->getRealIpAddr();
+		$metaObj['used']['reg_request'] = wp_date("Y-m-d H:i:s");
+		$metaObj['used']['reg_request_tz'] = wp_timezone_string();
+		$metaObj['used']['reg_ip'] = $this->MAIN->getCore()->getRealIpAddr();
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('oneTimeUseOfRegisterCodeWPuser')) {
 			$metaObj['used']['reg_userid'] = get_current_user_id();
 		}
@@ -174,20 +162,20 @@ class sasoEventtickets_Frontend {
 				if (isset($codeObj["metaObj"])) {
 					$metaObj = $codeObj["metaObj"];
 				} else {
-					$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+					$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 				}
 				$confirmedCount = isset($metaObj['confirmedCount']) ? intval($metaObj['confirmedCount']) : 0;
 				if ($confirmedCount == 0) {
-					$metaObj['validation']['first_success'] = date("Y-m-d H:i:s", current_time("timestamp"));
+					$metaObj['validation']['first_success'] = wp_date("Y-m-d H:i:s");
 					$metaObj['validation']['first_success_tz'] = wp_timezone_string();
-					$metaObj['validation']['first_ip'] = $this->getCore()->getRealIpAddr();
+					$metaObj['validation']['first_ip'] = $this->MAIN->getCore()->getRealIpAddr();
 				}
-				$metaObj['validation']['last_success'] = date("Y-m-d H:i:s", current_time("timestamp"));
+				$metaObj['validation']['last_success'] = wp_date("Y-m-d H:i:s");
 				$metaObj['validation']['last_success_tz'] = wp_timezone_string();
 
 				$metaObj['confirmedCount'] = $confirmedCount + 1;
-				$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
-				$this->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+				$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+				$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
 				if (isset($codeObj["metaObj"])) {
 					$codeObj["metaObj"] = $metaObj;
 				}
@@ -199,37 +187,16 @@ class sasoEventtickets_Frontend {
 
 	private function setStatusMessages($codeObj) {
 		if(!isset($codeObj['_retObject'])) $codeObj['_retObject'] = [];
-		switch ($codeObj['_valid']) {
-			case 0:
-				$codeObj['_retObject']['message'] = ['ok'=>false, 'text'=>$this->MAIN->getOptions()->getOptionValue('textValidationMessage'.$codeObj['_valid'])];
-				break;
-			case 1:
-				$codeObj['_retObject']['message'] = ['ok'=>true, 'text'=>$this->MAIN->getOptions()->getOptionValue('textValidationMessage'.$codeObj['_valid'])];
-				break;
-			case 2:
-				$codeObj['_retObject']['message'] = ['ok'=>false, 'text'=>$this->MAIN->getOptions()->getOptionValue('textValidationMessage'.$codeObj['_valid'])];
-				break;
-			case 3:
-				$codeObj['_retObject']['message'] = ['ok'=>true, 'text'=>$this->MAIN->getOptions()->getOptionValue('textValidationMessage'.$codeObj['_valid'])];
-				break;
-			case 4:
-				$codeObj['_retObject']['message'] = ['ok'=>true, 'text'=>$this->MAIN->getOptions()->getOptionValue('textValidationMessage'.$codeObj['_valid'])];
-				break;
-			case 5:
-				$codeObj['_retObject']['message'] = ['ok'=>true, 'text'=>$this->MAIN->getOptions()->getOptionValue('textValidationMessage'.$codeObj['_valid'])];
-				break;
-			case 6:
-				$codeObj['_retObject']['message'] = ['ok'=>false, 'text'=>$this->MAIN->getOptions()->getOptionValue('textValidationMessage'.$codeObj['_valid'])];
-				break;
-			case 7:
-				$codeObj['_retObject']['message'] = ['ok'=>false, 'text'=>$this->MAIN->getOptions()->getOptionValue('textValidationMessage'.$codeObj['_valid'])];
-				break;
-			case 8:
-				$codeObj['_retObject']['message'] = ['ok'=>false, 'text'=>$this->MAIN->getOptions()->getOptionValue('textValidationMessage'.$codeObj['_valid'])];
-				break;
-								}
+		// Success states: 1=valid, 3=registered, 4=expired(info), 5=used
+		$successStates = [1, 3, 4, 5];
+		$isSuccess = in_array($codeObj['_valid'], $successStates);
+
+		$codeObj['_retObject']['message'] = [
+			'ok' => $isSuccess,
+			'text' => $this->MAIN->getOptions()->getOptionValue('textValidationMessage' . $codeObj['_valid'])
+		];
 		if (isset($codeObj['_retObject']['message']['text']) && !empty($codeObj['_retObject']['message']['text'])) {
-			$codeObj['_retObject']['message']['text'] = $this->getCore()->replaceURLParameters($codeObj['_retObject']['message']['text'], $codeObj);
+			$codeObj['_retObject']['message']['text'] = $this->MAIN->getCore()->replaceURLParameters($codeObj['_retObject']['message']['text'], $codeObj);
 		}
 		$codeObj = apply_filters( $this->MAIN->_add_filter_prefix.'frontend_setStatusMessages', $codeObj );
 		return $codeObj;
@@ -238,7 +205,7 @@ class sasoEventtickets_Frontend {
 	private function displayMessageValue($codeObj) {
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('displayUserRegistrationOfCode')) {
 			if ($codeObj['_valid'] == 3) {
-				$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+				$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 				if (isset($metaObj['user']) && isset($metaObj['user']['value'])) {
 					if(!isset($codeObj['_retObject'])) $codeObj['_retObject'] = [];
 					$text = "";
@@ -254,15 +221,15 @@ class sasoEventtickets_Frontend {
 		}
 
 		if ($codeObj['_valid'] == 1) {
-			$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 
 			$date_format = $this->MAIN->getOptions()->getOptionDateFormat();
 
 			if ($codeObj['list_id'] != 0) {
 				if ($this->MAIN->getOptions()->isOptionCheckboxActive('displayCodeListDescriptionIfValid')) {
 					// hole code list
-					$listObj = $this->getCore()->getListById($codeObj['list_id']);
-					$metaObj = $this->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+					$listObj = $this->MAIN->getCore()->getListById($codeObj['list_id']);
+					$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
 					// setze message
 					if (isset($metaObj['desc']) && !empty($metaObj['desc'])) {
 						if(!isset($codeObj['_retObject'])) $codeObj['_retObject'] = [];
@@ -279,7 +246,8 @@ class sasoEventtickets_Frontend {
 				if (!empty($label) && strpos($label, '{VALIDATION-FIRST_SUCCESS}') === false ) {
 					$label .= " {VALIDATION-FIRST_SUCCESS}";
 				}
-				$label = str_replace('{VALIDATION-FIRST_SUCCESS}', date($date_format, strtotime($metaObj['validation']['first_success'])), $label);
+				// Use date_i18n with gmt=true - first_success is stored in local time, gmt=true prevents timezone conversion but still translates month/day names
+			$label = str_replace('{VALIDATION-FIRST_SUCCESS}', date_i18n($date_format, strtotime($metaObj['validation']['first_success']), true), $label);
 				$label = str_replace('{VALIDATION-FIRST_SUCCESS_TZ}', $metaObj['validation']['first_success_tz'], $label);
 				$codeObj['_retObject']['message']['text'] .= "<br>".$label;
 			}
@@ -289,7 +257,8 @@ class sasoEventtickets_Frontend {
 				if (!empty($label) && strpos($label, '{VALIDATION-LAST_SUCCESS}') === false ) {
 					$label .= " {VALIDATION-LAST_SUCCESS}";
 				}
-				$label = str_replace('{VALIDATION-LAST_SUCCESS}', date($date_format, strtotime($metaObj['validation']['last_success'])), $label);
+				// Use date_i18n with gmt=true - last_success is stored in local time, gmt=true prevents timezone conversion but still translates month/day names
+			$label = str_replace('{VALIDATION-LAST_SUCCESS}', date_i18n($date_format, strtotime($metaObj['validation']['last_success']), true), $label);
 				$label = str_replace('{VALIDATION-LAST_SUCCESS_TZ}', $metaObj['validation']['last_success_tz'], $label);
 				$codeObj['_retObject']['message']['text'] .= "<br>".$label;
 			}
@@ -309,7 +278,7 @@ class sasoEventtickets_Frontend {
 		}
 
 		if (isset($codeObj['_retObject']['message']['text']) && !empty($codeObj['_retObject']['message']['text'])) {
-			$codeObj['_retObject']['message']['text'] = $this->getCore()->replaceURLParameters($codeObj['_retObject']['message']['text'], $codeObj);
+			$codeObj['_retObject']['message']['text'] = $this->MAIN->getCore()->replaceURLParameters($codeObj['_retObject']['message']['text'], $codeObj);
 		}
 		$codeObj = apply_filters( $this->MAIN->_add_filter_prefix.'frontend_displayMessageValue', $codeObj );
 		return $codeObj;
@@ -331,8 +300,9 @@ class sasoEventtickets_Frontend {
 		$data = apply_filters($this->MAIN->_add_filter_prefix.'beforeCheckCode', $data);
 
 		$valid = 1;
+		$codeObj = [];
 		try {
-			$codeObj = $this->getCore()->retrieveCodeByCode($data['code'], false);
+			$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code'], false);
 			$codeObj['_data_code'] = urlencode(trim($data['code']));
 			if ($codeObj['aktiv'] != 1) $valid = 2;
 			if ($codeObj['aktiv'] == 2) $valid = 7; // stolen
@@ -347,9 +317,9 @@ class sasoEventtickets_Frontend {
 			}
 
 			if ($valid == 1) {
-				if($this->getCore()->checkCodeExpired($codeObj)) {
+				if($this->MAIN->getCore()->checkCodeExpired($codeObj)) {
 					$valid = 4;
-				} else if($this->getCore()->isCodeIsRegistered($codeObj)) {
+				} else if($this->MAIN->getCore()->isCodeIsRegistered($codeObj)) {
 					$valid = 3;
 				}
 			}
@@ -378,7 +348,7 @@ class sasoEventtickets_Frontend {
 			}
 		}
 
-		$this->getCore()->triggerWebhooks($codeObj['_valid'], $codeObj);
+		$this->MAIN->getCore()->triggerWebhooks($codeObj['_valid'], $codeObj);
 
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'afterCheckCode')) {
 			$codeObj = $this->MAIN->getPremiumFunctions()->afterCheckCode($codeObj);
@@ -397,25 +367,25 @@ class sasoEventtickets_Frontend {
 	private function registerToCode($data) {
 		if(!isset($data['code'])) throw new Exception("#9201 code parameter missing");
 		if(!isset($data['value'])) throw new Exception("#9202 value parameter missing");
-		$codeObj = $this->getCore()->retrieveCodeByCode($data['code']);
+		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		if ($codeObj['aktiv'] != 1) throw new Exception("#9205 ticket number not correct");
-		if ($this->getCore()->checkCodeExpired($codeObj)) throw new Exception("#9206 ticket expired");
-		if ($this->getCore()->isCodeIsRegistered($codeObj)) throw new Exception("#9207 ticket already taken - cannot register user to this ticket");
+		if ($this->MAIN->getCore()->checkCodeExpired($codeObj)) throw new Exception("#9206 ticket expired");
+		if ($this->MAIN->getCore()->isCodeIsRegistered($codeObj)) throw new Exception("#9207 ticket already taken - cannot register user to this ticket");
 		// speicher registrierung
-		$metaObj = $this->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		$metaObj['user']['value'] = htmlentities($data['value']);
-		$metaObj['user']['reg_ip'] = $this->getCore()->getRealIpAddr();
+		$metaObj['user']['reg_ip'] = $this->MAIN->getCore()->getRealIpAddr();
 		$metaObj['user']['reg_approved'] = 1; // auto approval
-		$metaObj['user']['reg_request'] = date("Y-m-d H:i:s", current_time("timestamp"));
-		$metaObj['user']['reg_request_tz'] = date_default_timezone_get();
+		$metaObj['user']['reg_request'] = wp_date("Y-m-d H:i:s");
+		$metaObj['user']['reg_request_tz'] = wp_timezone_string();
 		$metaObj['user']['reg_userid'] = 0;
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('allowUserRegisterCodeWPuserid')) {
 			$metaObj['user']['reg_userid'] = get_current_user_id();
 		}
-		$codeObj['meta'] = $this->getCore()->json_encode_with_error_handling($metaObj);
-		$this->getDB()->update("codes", ["meta"=>$codeObj['meta'], "user_id"=>$metaObj['user']['reg_userid']], ['id'=>$codeObj['id']]);
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta'], "user_id"=>$metaObj['user']['reg_userid']], ['id'=>$codeObj['id']]);
 		// send webhook if activated
-		$this->getCore()->triggerWebhooks(7, $codeObj);
+		$this->MAIN->getCore()->triggerWebhooks(7, $codeObj);
 		do_action( $this->MAIN->_do_action_prefix.'frontend_registerToCode', $data, $codeObj );
 		return $metaObj;
 	}

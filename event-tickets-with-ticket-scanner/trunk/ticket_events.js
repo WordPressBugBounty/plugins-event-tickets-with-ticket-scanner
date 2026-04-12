@@ -79,6 +79,12 @@ jQuery(document).ready(()=>{
             });
         }
 
+        // Pass through debug parameter if set in URL
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('VollstartValidatorDebug')) {
+            _data['VollstartValidatorDebug'] = urlParams.get('VollstartValidatorDebug') || '1';
+        }
+
         let url = myAjax.url;
         if (IS_PRETTY_PERMALINK_ACTIVATED == false) {
             url = myAjax.non_pretty_permalink_url;

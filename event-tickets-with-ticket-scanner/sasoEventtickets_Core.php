@@ -144,6 +144,7 @@ class sasoEventtickets_Core {
 				'set_by_admin_date_tz'=>'',
 				'idcode'=>'',
 				'_url'=>'',
+				'_wallet_url'=>'',
 				'_public_ticket_id'=>'',
 				'stats_redeemed'=>[],
 				'name_per_ticket'=>'',
@@ -225,6 +226,7 @@ class sasoEventtickets_Core {
 			if (empty($metaObj['wc_ticket']['_public_ticket_id'])) $metaObj['wc_ticket']['_public_ticket_id'] = $this->getTicketId($codeObj, $metaObj);
 			if (empty($metaObj['wc_ticket']['_qr_content'])) $metaObj['wc_ticket']['_qr_content'] = $this->getQRCodeContent($codeObj, $metaObj);
 			$metaObj['wc_ticket']['_url'] = $this->getTicketURL($codeObj, $metaObj);
+			$metaObj['wc_ticket']['_wallet_url'] = $this->getWalletImportURL($metaObj['wc_ticket']['_public_ticket_id']);
 		}
 
 		// update validation fields
@@ -801,6 +803,13 @@ class sasoEventtickets_Core {
 		$url = $baseURL."scanner/?code=".urlencode($ticket_id);
 		$url = apply_filters( $this->MAIN->_add_filter_prefix.'core_getTicketScannerURL', $url, $ticket_id );
 		return $url;
+	}
+	public function getWalletImportURL(string $publicTicketId): string {
+		$url = 'https://wallet.vollstart.com/add?' . http_build_query([
+			'shop'   => site_url(),
+			'ticket' => $publicTicketId,
+		]);
+		return apply_filters($this->MAIN->_add_filter_prefix . 'core_getWalletImportURL', $url, $publicTicketId);
 	}
 	public function getTicketURLPath($defaultPath=false) {
 		$p = $this->getTicketURLBase($defaultPath);

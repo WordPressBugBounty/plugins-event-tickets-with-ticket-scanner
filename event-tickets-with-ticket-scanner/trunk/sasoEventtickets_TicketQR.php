@@ -41,7 +41,9 @@ class sasoEventtickets_TicketQR {
         $this->checkFilePath();
         //$width = $this->size_width > 0 ? $this->size_width : 80;
         //$height = $this->size_height > 0 ? $this->size_height : 80;
-        require_once("vendors/phpqrcode/qrlib.php");
+        if (!class_exists('QRcode1')) {
+            @require_once(__DIR__.'/vendors/phpqrcode/qrlib.php');
+        }
         $PNG_TEMP_DIR = $this->filepath;
         $filename = $PNG_TEMP_DIR."ticketqr_".$ticket_id.".jpg";
         $errorCorrectionLevel = 'L';

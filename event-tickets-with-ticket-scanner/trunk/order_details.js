@@ -169,7 +169,9 @@ function sasoEventtickets_order_detail() {
 
             if (DATA.order.wcTicketDisplayDownloadAllTicketsPDFButtonOnOrderdetail !== "undefined" && DATA.order.wcTicketDisplayDownloadAllTicketsPDFButtonOnOrderdetail == 1) {
                 let div_appendix = $('<div style="margin-top:50px;">').appendTo(div);
-                $('<h2>').html(DATA.order.wcTicketLabelPDFDownloadHeading).appendTo(div_appendix);
+                if (DATA.order.wcTicketLabelPDFDownloadHeading && DATA.order.wcTicketLabelPDFDownloadHeading.trim() != "") {
+                    $('<h2>').html(DATA.order.wcTicketLabelPDFDownloadHeading).appendTo(div_appendix);
+                }
                 $('<p>').append(
                     $('<a href="'+DATA.order.url_order_tickets+'" target="_blank">')
                         .html(DATA.order.wcTicketLabelPDFDownload)

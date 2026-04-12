@@ -2917,6 +2917,17 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				targetKey: 'trackIPCodeChecker',
 				targetVal: 1,
 				premium: true
+			},
+			// ── Wallet ──
+			{
+				id: 'wallet_vollstart_enable',
+				trigger: function() {
+					return OPTIONS.infos && OPTIONS.infos.ticket && OPTIONS.infos.ticket.counter > 0
+						&& !_getOptions_isActivatedByKey('walletVollstartEnable');
+				},
+				targetKey: 'walletVollstartEnable',
+				targetVal: 1,
+				premium: false
 			}
 		];
 	}
@@ -2970,6 +2981,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			'security_ip_tracking': {
 				context: __('You have the premium plugin active.', 'event-tickets-with-ticket-scanner'),
 				question: __('Do you want to enable IP tracking for ticket validation requests?', 'event-tickets-with-ticket-scanner')
+			},
+			'wallet_vollstart_enable': {
+				context: __('Your customers can collect their tickets in the free Vollstart Wallet app.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you want to enable the "Add to Vollstart Wallet" button on ticket pages and in emails?', 'event-tickets-with-ticket-scanner')
 			}
 		};
 		return messages[id] || {context: '', question: ''};
@@ -3064,6 +3079,70 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 	}
 
 	// ── End Context-Wizards ──
+
+	// ── Version Notices ("What's New") ──
+
+	function __showVersionNotices() {
+		var seenVersion = _getOptions_getValByKey('versionNoticeSeen');
+		var currentVersion = myAjax._plugin_version;
+		if (seenVersion === currentVersion) return null;
+
+		var notices = myAjax._versionNotices;
+		if (!notices || !Array.isArray(notices) || notices.length === 0) return null;
+
+		var typeColors = {
+			'feature': {border: '#0071e3', bg: '#eef4ff', icon: '&#9733;', iconColor: '#0071e3'},
+			'info':    {border: '#6b7280', bg: '#f9fafb', icon: '&#8505;', iconColor: '#6b7280'},
+			'warning': {border: '#d97706', bg: '#fffbeb', icon: '&#9888;', iconColor: '#d97706'}
+		};
+
+		var wrap = $('<div class="et-version-notices"/>');
+
+		if (!$('#et-version-notices-styles').length) {
+			$('<style id="et-version-notices-styles"/>').text(
+				'.et-version-notices{margin:15px 0 20px 0;}' +
+				'.et-vn-card{background:#fff;border:1px solid #c3c4c7;padding:16px 20px;margin-bottom:10px;border-radius:6px;box-shadow:0 1px 1px rgba(0,0,0,.04);}' +
+				'.et-vn-body{display:flex;align-items:flex-start;gap:12px;}' +
+				'.et-vn-icon{font-size:20px;flex-shrink:0;margin-top:1px;}' +
+				'.et-vn-text{flex:1;}' +
+				'.et-vn-title{font-size:14px;font-weight:600;color:#1d2327;margin-bottom:3px;}' +
+				'.et-vn-msg{font-size:13px;color:#50575e;line-height:1.5;}' +
+				'.et-vn-link{font-size:13px;margin-left:4px;}' +
+				'.et-vn-dismiss{margin-top:12px;text-align:right;}' +
+				'.et-vn-dismiss-btn{color:#646970!important;text-decoration:none!important;font-size:13px;cursor:pointer;background:none;border:none;}'
+			).appendTo('head');
+		}
+
+		notices.forEach(function(n) {
+			var colors = typeColors[n.type] || typeColors.info;
+			var card = $('<div class="et-vn-card"/>').css('border-left', '4px solid ' + colors.border).css('background', colors.bg);
+			var body = $('<div class="et-vn-body"/>');
+			$('<span class="et-vn-icon"/>').html(colors.icon).css('color', colors.iconColor).appendTo(body);
+			var textWrap = $('<div class="et-vn-text"/>');
+			$('<div class="et-vn-title"/>').text(n.title).appendTo(textWrap);
+			var msgEl = $('<div class="et-vn-msg"/>').text(n.message);
+			if (n.link && n.linkText) {
+				msgEl.append(' ');
+				$('<a class="et-vn-link"/>').attr('href', n.link).attr('target', '_blank').text(n.linkText + ' →').appendTo(msgEl);
+			}
+			textWrap.append(msgEl);
+			body.append(textWrap);
+			card.append(body);
+			wrap.append(card);
+		});
+
+		var dismissRow = $('<div class="et-vn-dismiss"/>');
+		$('<button class="et-vn-dismiss-btn"/>')
+			.text(__("Dismiss", 'event-tickets-with-ticket-scanner'))
+			.on('click', function() {
+				_saveOptionValue('versionNoticeSeen', currentVersion, function() {
+					wrap.slideUp(300, function() { wrap.remove(); });
+				});
+			}).appendTo(dismissRow);
+		wrap.append(dismissRow);
+
+		return wrap;
+	}
 
 	var _firstStepsBox = null;
 
@@ -3194,22 +3273,26 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			{key: 'wcTicketDontAllowRedeemTicketBeforeStart', label: __('Lock ticket redemption until event starts?', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned?', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'wcTicketDisplayOrderTicketsViewLinkOnMail', label: __('Show "Open Tickets" link in email? All QR codes on one page — ideal for groups.', 'event-tickets-with-ticket-scanner'), preset: 1},
-			{key: 'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets', label: __('Auto-complete orders when all items are tickets? Tickets are generated immediately.', 'event-tickets-with-ticket-scanner'), preset: 1}
+			{key: 'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets', label: __('Auto-complete orders when all items are tickets? Tickets are generated immediately.', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'walletVollstartEnable', label: __('Enable Vollstart Wallet? Customers can collect tickets in the free wallet app.', 'event-tickets-with-ticket-scanner'), preset: 1}
 		],
 		'daypass': [
 			{key: 'wcTicketAllowRedeemTicketAfterEnd', label: __('Allow redemption after closing time?', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned?', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'wcTicketDisplayOrderTicketsViewLinkOnMail', label: __('Show "Open Tickets" link in email? All QR codes on one page — ideal for families.', 'event-tickets-with-ticket-scanner'), preset: 1},
-			{key: 'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets', label: __('Auto-complete orders when all items are tickets? Tickets are generated immediately.', 'event-tickets-with-ticket-scanner'), preset: 1}
+			{key: 'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets', label: __('Auto-complete orders when all items are tickets? Tickets are generated immediately.', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'walletVollstartEnable', label: __('Enable Vollstart Wallet? Customers can collect tickets in the free wallet app.', 'event-tickets-with-ticket-scanner'), preset: 1}
 		],
 		'membership': [
 			{key: 'wcTicketUserProfileDisplayRedeemAmount', label: __('Show redemption counter to customer? E.g. "15 of 30 visits used"', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'wcTicketShowRedeemBtnOnTicket', label: __('Show self-redeem button on ticket page? For self-service access.', 'event-tickets-with-ticket-scanner'), preset: 1},
-			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned? Disable to verify identity first.', 'event-tickets-with-ticket-scanner'), preset: 0}
+			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned? Disable to verify identity first.', 'event-tickets-with-ticket-scanner'), preset: 0},
+			{key: 'walletVollstartEnable', label: __('Enable Vollstart Wallet? Customers can collect tickets in the free wallet app.', 'event-tickets-with-ticket-scanner'), preset: 1}
 		],
 		'voucher': [
 			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned?', 'event-tickets-with-ticket-scanner'), preset: 1},
-			{key: 'wcTicketShowRedeemBtnOnTicket', label: __('Show self-redeem button? Customer redeems the voucher themselves.', 'event-tickets-with-ticket-scanner'), preset: 1}
+			{key: 'wcTicketShowRedeemBtnOnTicket', label: __('Show self-redeem button? Customer redeems the voucher themselves.', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'walletVollstartEnable', label: __('Enable Vollstart Wallet? Customers can collect tickets in the free wallet app.', 'event-tickets-with-ticket-scanner'), preset: 1}
 		]
 	};
 
@@ -3631,6 +3714,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			$("body").append(this.div_spinner);
 		}
 		renderMainBody() {
+			let versionNotices = __showVersionNotices();
 			let infoBoxFirstSteps = __showFirstSteps();
 			__showSetupWizard();
 			__showPremiumWizard();
@@ -3651,6 +3735,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					.html($('<div/>').addClass("event-tickets-with-ticket-scanner-topbar-left"))
 					.append(_displaySettingAreaButton())
 			);
+			if (versionNotices) {
+				div_body.append(versionNotices);
+			}
 			if (infoBoxFirstSteps) {
 				div_body.append(infoBoxFirstSteps);
 			}
@@ -5126,6 +5213,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						$("<div>").html('<b>Ticket Scanner:</b> <a target="_blank" href="'+_getTicketScannerURL()+encodeURIComponent(metaObj.wc_ticket._public_ticket_id)+'">Open Ticket Scanner with ticket</a>').appendTo(div);
 						$("<div>").html('<b>Order Ticket Page:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_page_url+'">Open Order Ticket Page</a>').appendTo(div);
 						$("<div>").html('<b>Order PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_url+'">Open Order Ticket PDF</a>').appendTo(div);
+						if (_getOptions_isActivatedByKey('walletVollstartEnable') && metaObj.wc_ticket._wallet_url) {
+							$("<div>").html('<b>'+__('Wallet Test', 'event-tickets-with-ticket-scanner')+':</b> <a target="_blank" href="'+metaObj.wc_ticket._wallet_url+'">'+__('Import ticket to Vollstart Wallet for testing', 'event-tickets-with-ticket-scanner')+'</a>').appendTo(div);
+						}
 					}
 
 					let btngrp = $('<div style="margin-top:10px;">').appendTo(div);

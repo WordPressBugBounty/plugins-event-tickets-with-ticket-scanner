@@ -1,6 +1,6 @@
 {
     "translation-revision-date": "2025-06-23 10:56+01:00",
-    "generator": "WP-CLI\/2.7.1",
+    "generator": "WP-CLI/2.7.1",
     "source": "ticket_scanner.js",
     "domain": "event-tickets-with-ticket-scanner",
     "locale_data": {
@@ -20,7 +20,7 @@
                 "Auth Token Set"
             ],
             "attr\u0004Type in the ticket number and hit ENTER (optional to scanning)": [
-                "Ticketnummer eingeben und EINGABE dr\u00fccken (optional f\u00fcr das Scannen)"
+                "Ticketnummer eingeben und EINGABE drücken (optional für das Scannen)"
             ],
             "Bought at %s": [
                 "Gekauft am %s"
@@ -53,7 +53,7 @@
                 "Feb"
             ],
             "cal\u0004Mar": [
-                "M\u00e4r"
+                "Mär"
             ],
             "cal\u0004Apr": [
                 "Apr"
@@ -83,10 +83,10 @@
                 "Dez"
             ],
             "Cannot find the public ticket number in the QR code. Please try a QR code of a ticket.": [
-                "Kann die \u00f6ffentliche Ticketnummer im QR-Code nicht finden. Bitte versuche einen QR-Code eines Tickets."
+                "Kann die öffentliche Ticketnummer im QR-Code nicht finden. Bitte versuche einen QR-Code eines Tickets."
             ],
-            "Confirmed status validation check counter: <b>%s<\/b>": [
-                "Best\u00e4tigte Statuschecks-Z\u00e4hler: <b>(%s)<\/b>"
+            "Confirmed status validation check counter: <b>%s</b>": [
+                "Bestätigte Statuschecks-Zähler: <b>(%s)</b>"
             ],
             "Display short description if ticket information is hidden": [
                 "Kurze Produktbeschreibung anzeigen, wenn Ticketinformationen ausgeblendet sind"
@@ -95,7 +95,7 @@
                 "Verfall am %s"
             ],
             "Expires after %1$d days (%2$s)": [
-                "Verf\u00e4llt nach %1$d Tagen (%2$s)"
+                "Verfällt nach %1$d Tagen (%2$s)"
             ],
             "Failed to redeem": [
                 "Fehler beim Entwerten"
@@ -122,7 +122,7 @@
                 "Download PDF"
             ],
             "label\u0004Includes": [
-                "Enth\u00e4lt"
+                "Enthält"
             ],
             "label\u0004Ok": [
                 "Ok"
@@ -142,8 +142,8 @@
             "label\u0004Redeem Ticket": [
                 "Entwerte Ticket"
             ],
-            "Max Redeem Amount for this ticket: <b>%s<\/b>": [
-                "Maximale Anzahl an m\u00f6glichen Entwertungen: <b>%s<\/b>"
+            "Max Redeem Amount for this ticket: <b>%s</b>": [
+                "Maximale Anzahl an möglichen Entwertungen: <b>%s</b>"
             ],
             "no code found": [
                 "Kein Code gefunden"
@@ -151,14 +151,14 @@
             "%s Products, %s Tickets": [
                 "%s Produkte, %s Tickets"
             ],
-            "Redeem usage: <b>%1$d<\/b> of <b>%2$d<\/b>": [
-                "Entwertungen: <b>%1$d<\/b> von <b>%2$d<\/b>"
+            "Redeem usage: <b>%1$d</b> of <b>%2$d</b>": [
+                "Entwertungen: <b>%1$d</b> von <b>%2$d</b>"
             ],
             "start redeem ticket...loading...": [
                 "Entwerte Ticket ...lade..."
             ],
             "Start cam to scan next ticket immediately": [
-                "Starte Kamera, um das n\u00e4chste Ticket sofort zu scannen"
+                "Starte Kamera, um das nächste Ticket sofort zu scannen"
             ],
             "Scan and Redeem immediately": [
                 "Scannen und sofort entwerten"
@@ -167,7 +167,7 @@
                 "Scan-Fehler"
             ],
             "Scan next Ticket": [
-                "N\u00e4chstes Ticket scannen"
+                "Nächstes Ticket scannen"
             ],
             "Successfully redeemed": [
                 "Erfolgreich entwertet"
@@ -185,7 +185,7 @@
                 "Ticket entwertet"
             ],
             "TICKET NOT REDEEMED - see reason below": [
-                "TICKET NICHT ENTWERTET - Gr\u00fcnde daf\u00fcr stehen nachfolgend"
+                "TICKET NICHT ENTWERTET - Gründe dafür stehen nachfolgend"
             ],
             "TICKET OK - Redeemed": [
                 "TICKET OK - Entwertet"
@@ -203,10 +203,13 @@
                 "Ticket NICHT entwertet"
             ],
             "Use old ticket scanner library - compatibility mode": [
-                "Alte Ticket-Scanner-Variante verwenden - Kompatibilit\u00e4tsmodus"
+                "Alte Ticket-Scanner-Variante verwenden - Kompatibilitätsmodus"
             ],
             "QR code content unknown. Can not extract data correctly. Please try a QR code of a ticket.": [
                 "QR-Code-Inhalt unbekannt. Kann die Daten nicht korrekt extrahieren. Bitte versuche einen QR-Code eines Tickets."
+            ],
+            "Last scan: %s": [
+                "Letzter Scan: %s"
             ]
         }
     }

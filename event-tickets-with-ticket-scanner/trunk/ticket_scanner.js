@@ -53,6 +53,8 @@ jQuery(document).ready(()=>{
         redeem_auto: false,
         distract_free: false,
         distract_free_show_short_desc: false,
+        speak: false,
+        vibrate: false,
         auth:"",
         ticketScannerDontRememberCamChoice:toBool(myAjax.ticketScannerDontRememberCamChoice),
         ticketScannerStartCamWithoutButtonClicked:false,
@@ -104,6 +106,22 @@ jQuery(document).ready(()=>{
         }
         _storeValue("ticket_scanner_operating_option.distract_free", ticket_scanner_operating_option.distract_free ? 1 : 0);
     }
+    function setSpeakCheckbox(value) {
+        if (typeof value != "undefined") {
+            ticket_scanner_operating_option.speak = value;
+        } else {
+            ticket_scanner_operating_option.speak = !ticket_scanner_operating_option.speak;
+        }
+        _storeValue("ticket_scanner_operating_option.speak", ticket_scanner_operating_option.speak ? 1 : 0);
+    }
+    function setVibrate(value) {
+        if (typeof value != "undefined") {
+            ticket_scanner_operating_option.vibrate = value;
+        } else {
+            ticket_scanner_operating_option.vibrate = !ticket_scanner_operating_option.vibrate;
+        }
+        _storeValue("ticket_scanner_operating_option.vibrate", ticket_scanner_operating_option.vibrate ? 1 : 0);
+    }
     function setDistractFreeShowShortDesc(value) {
         if (typeof value != "undefined") {
             ticket_scanner_operating_option.distract_free_show_short_desc = value;
@@ -145,6 +163,7 @@ jQuery(document).ready(()=>{
         if (loadingticket) return;
         loadingticket = true;
         system.last_scanned_ticket = {code: decodedText, timestamp: time()};
+        updateLastScanTime();
 
         if (qrScanner != null) {
             //qrScanner.stop(); // faster if not executed
@@ -363,6 +382,20 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function showScanOptions() {
         let div = $('<div>');
         if (!ticket_scanner_operating_option.ticketScannerDontShowOptionControls) {
+            let chkbox_speak = $('<input type="checkbox">').on("click", e=> {
+                setSpeakCheckbox();
+            }).appendTo(div);
+            if (ticket_scanner_operating_option.speak) chkbox_speak.prop("checked", true);
+            div.append(' '+__("Speak out loud redeem operation (BETA)", 'event-tickets-with-ticket-scanner'));
+            div.append("<br>");
+
+            let chkbox_vibrate = $('<input type="checkbox">').on("click", e=> {
+                setVibrate();
+            }).appendTo(div);
+            if (ticket_scanner_operating_option.vibrate) chkbox_vibrate.prop("checked", true);
+            div.append(' '+__("Vibrate on scan result", 'event-tickets-with-ticket-scanner'));
+            div.append("<br>");
+
             let chkbox_redeem_imediately = $('<input type="checkbox">').on("click", e=>{
                 setRedeemImmediately();
             }).appendTo(div);
@@ -394,7 +427,6 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             div.append(' '+__("Display short description if ticket information is hidden", 'event-tickets-with-ticket-scanner'));
             div.append("<br>");
 
-
             let chkbox_ticketScannerStartCamWithoutButtonClicked = $('<input type="checkbox">').on("click", e=>{
                 setStartCamWithoutButtonClicked(!ticket_scanner_operating_option.ticketScannerStartCamWithoutButtonClicked);
             }).appendTo(div);
@@ -413,9 +445,38 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         $('<div style="margin-top:40px;">').append(system.INPUTFIELD).appendTo(div);
         if (typeof ticket_scanner_operating_option.auth == "object") div.append(system.AUTHTOKENREMOVEBUTTON);
         div.append(system.ADDITIONBUTTONS);
+        addFullscreenButton(div);
         system.TIMEAREA = $('<div>');
         div.append(system.TIMEAREA);
         $('#reader_options').html(div);
+    }
+
+    function addFullscreenButton(container) {
+        var el = document.documentElement;
+        if (!el.requestFullscreen && !el.webkitRequestFullscreen) return;
+        var btn = $('<button class="button-ticket-options">').html(__("Fullscreen", 'event-tickets-with-ticket-scanner'));
+        btn.on("click", function() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (el.requestFullscreen) el.requestFullscreen();
+                else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            }
+        });
+        var onChange = function() {
+            var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            btn.html(isFs ? __("Exit Fullscreen", 'event-tickets-with-ticket-scanner') : __("Fullscreen", 'event-tickets-with-ticket-scanner'));
+        };
+        document.addEventListener('fullscreenchange', onChange);
+        document.addEventListener('webkitfullscreenchange', onChange);
+        container.append(btn);
+    }
+
+    function vibrateOnResult(success) {
+        if (navigator.vibrate && ticket_scanner_operating_option.vibrate) {
+            navigator.vibrate(success ? [200] : [100, 50, 100, 50, 100]);
+        }
     }
 
     function addMetaTag(name, content) {
@@ -487,6 +548,12 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                     xhr.setRequestHeader('X-WP-Nonce', system.nonce);
                 },
             });
+        }
+
+        // Pass through debug parameter if set in URL
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('VollstartValidatorDebug')) {
+            _data['VollstartValidatorDebug'] = urlParams.get('VollstartValidatorDebug') || '1';
         }
 
         let url = myAjax.url;
@@ -581,6 +648,27 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     }
     function _getSpinnerHTML() {
         return '<span class="lds-dual-ring"></span>';
+    }
+    function _getSeatInfoHtml(obj) {
+        if (!obj.seat_label || obj.seat_label == "") {
+            return '';
+        }
+        let seatText = '';
+        if (obj.seat_label_text && obj.seat_label_text != '') {
+            seatText = obj.seat_label_text + ": ";
+        }
+        seatText += "<b>" + obj.seat_label;
+        if (obj.seat_category && obj.seat_category != "") {
+            seatText += " (" + obj.seat_category + ")";
+        }
+        seatText += "</b>";
+        if (obj.seating_plan_name && obj.seating_plan_name != "") {
+            seatText += " - " + obj.seating_plan_name;
+        }
+        if (obj.seat_desc && obj.seat_desc != "") {
+            seatText += "<br><small>" + obj.seat_desc + "</small>";
+        }
+        return seatText;
     }
     function makeDateFromString(timestring, timezone_id) {
         let d = new Date(timestring);
@@ -696,6 +784,18 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         }
         return parawerte;
     }
+    function speakOutLoud(v, display) {
+		if ('speechSynthesis' in window) {
+			var t = typeof v === 'object' ? 'Value is an object.' : v;
+			if (t.trim() == "") t = 'Value is empty';
+			var msg = new SpeechSynthesisUtterance(t);
+			msg.lang = "en-US";
+			window.speechSynthesis.speak(msg);
+			if (display) console.log("Speak:", v);
+		} else {
+			console.log(v);
+		}
+	}
     function clearOrderInfos() {
         $('#order_info').html("");
     }
@@ -734,6 +834,11 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             alert(__("no code found", 'event-tickets-with-ticket-scanner'));
             showScanNextTicketButton();
             return;
+        }
+
+        // check if the code is an order, then transform it to ordertickets
+        if (code.startsWith("order-")) {
+            code = "ordertickets-" + code.substring(6);
         }
 
         let redeem = ticket_scanner_operating_option.redeem_auto;
@@ -825,6 +930,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 if (data._ret.max_redeem_amount > 1 && data.metaObj.wc_ticket.stats_redeemed.length < data._ret.max_redeem_amount) {
                     color = "green";
                 }
+                if (data._ret.max_redeem_per_day > 0 && data._ret.redeems_today >= data._ret.max_redeem_per_day) {
+                    color = "red";
+                }
                 //if (system.last_scanned_ticket.auto_redeem == false) {
                 if (system.redeemed_successfully) {
                     $('<h4 style="color:'+color+' !important;">').html(data._ret.msg_redeemed).appendTo(div);
@@ -859,7 +967,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 if (typeof data._ret.ticket_info != "undefined" && data._ret.ticket_info != "") {
                     //div.append('<div>'+data._ret.ticket_info+'</div>');
                 }
-                console.log(data._ret);
+                //console.log(data._ret);
             }
             if (is_expired == false) {
                 let _isRedeemTooLate = isRedeemTooLate(data);
@@ -890,6 +998,11 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         } else {
             $('<div>').html(__('Ticket NOT paid', 'event-tickets-with-ticket-scanner')).css("color", "red").appendTo(div);
         }
+        // Seat information
+        let seatHtml = _getSeatInfoHtml(data._ret);
+        if (seatHtml != '') {
+            $('<div>').html(seatHtml).appendTo(div);
+        }
         if (data.metaObj.wc_ticket.redeemed_date != "") {
             $('<div>').html(__('Ticket is already redeemed', 'event-tickets-with-ticket-scanner')).appendTo(div);
         } else {
@@ -901,6 +1014,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         $('<div>').html(sprintf(/* translators: %s: max redeem amount */__('Max Redeem Amount for this ticket: <b>%s</b>', 'event-tickets-with-ticket-scanner'), data._ret.max_redeem_amount)).appendTo(div);
         if(data._ret.max_redeem_amount > 1) {
             $('<div>').html(sprintf(/* translators: 1: redeemd tickets 2: max redeem */__('Redeem usage: <b>%1$d</b> of <b>%2$d</b>', 'event-tickets-with-ticket-scanner'), data.metaObj.wc_ticket.stats_redeemed.length, data._ret.max_redeem_amount)).appendTo(div);
+        }
+        if (data._ret.max_redeem_per_day > 0) {
+            $('<div>').html(sprintf(/* translators: 1: redeems used today 2: max per day */__('Redeems today: <b>%1$d</b> of <b>%2$d</b>', 'event-tickets-with-ticket-scanner'), data._ret.redeems_today, data._ret.max_redeem_per_day)).appendTo(div);
         }
 
         let div2 = $('<div style="width:50%;display:inline-block;">');
@@ -951,6 +1067,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function displayRedeemedInfo(code, data) {
         system.status = "redeemed";
         system.redeemed_successfully = data.redeem_successfully;
+        vibrateOnResult(data.redeem_successfully);
         displayTicketRedeemedInfo(data);
         if(ticket_scanner_operating_option.redeem_auto) {
             showScanNextTicketButton();
@@ -961,17 +1078,19 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         system.INPUTFIELD.select();
     }
     function displayTicketRedeemedInfo(data) {
-        showScanNextTicketButton();
+        let t = '';
         // zeige retrieved info an
         let content = $('<div>').html('<div style="display:flex;text-align:center;flex-wrap: nowrap;flex-direction: row;justify-content: center;flex-basis: auto;">'+system.code+'</div>');
         if (system.redeemed_successfully) {
             content.append('<h3 style="color:green !important;text-align:center;">'+__('Redeemed', 'event-tickets-with-ticket-scanner')+'</h3>');
             //content.append('<p style="text-align:center;color:green"><img src="'+system.img_pfad+'button_ok.png"><br><b>'+__('Successfully redeemed', 'event-tickets-with-ticket-scanner')+'</b></p>');
             content.append('<p style="text-align:center;color:green"><img src="'+system.img_pfad+'button_ok.png"></p>');
+            t = 'Redeemed';
         } else {
             content.append('<h3 style="color:red !important;text-align:center;">'+__('NOT REDEEMED - see reason below', 'event-tickets-with-ticket-scanner')+'</h3>');
             //content.append('<p style="text-align:center;color:red;"><img src="'+system.img_pfad+'button_cancel.png"><br><b>'+__('Failed to redeem', 'event-tickets-with-ticket-scanner')+'</b></p>');
             content.append('<p style="text-align:center;color:red;"><img src="'+system.img_pfad+'button_cancel.png"></p>');
+            t = 'Not redeemed';
         }
         if (typeof system.last_scanned_ticket.data != null && system.last_scanned_ticket.data._ret && system.last_scanned_ticket.data._ret.ticket_title && system.last_scanned_ticket.data._ret.ticket_title != "") {
             content.append('<h4 style="text-align:center;">'+system.last_scanned_ticket.data._ret.ticket_title+'</h4>');
@@ -986,9 +1105,12 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         if (typeof system.last_scanned_ticket.data != null && system.last_scanned_ticket.data.metaObj && system.last_scanned_ticket.data.metaObj.wc_ticket && system.last_scanned_ticket.data.metaObj.wc_ticket.redeemed_date && system.last_scanned_ticket.data.metaObj.wc_ticket.redeemed_date != "") {
             content.append('<div style="text-align:center;">'+system.last_scanned_ticket.data._ret.redeemed_date_label+' '+system.last_scanned_ticket.data.metaObj.wc_ticket.redeemed_date+'</div>');
         }
+        speakText(t, 'en-EN');
+        showScanNextTicketButton();
         updateTicketScannerInfoArea(content);
     }
     function displayRedeemedOrderInfo(code, data) {
+        vibrateOnResult(data.errors.length === 0);
         let content = $('<div>');
         content.html('<center>'+code+'</center>');
         if (data.errors.length > 0) {
@@ -1064,7 +1186,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         div.append("<b>"+_x("Includes", 'label', 'event-tickets-with-ticket-scanner')+": </b>"+sprintf(__('%s Products, %s Tickets', 'event-tickets-with-ticket-scanner'), data.order_infos.products.length, data.ticket_infos.length)+'<br>');
         div.append('<b>'+_x("Order ID", 'label', 'event-tickets-with-ticket-scanner')+': </b>#'+data.order_infos.id+'<br>');
         div.append('<b>'+_x("Created", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_created+'<br>');
-        div.append('<b>'+_x("Created", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_completed+'<br>');
+        div.append('<b>'+_x("Completed", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_completed+'<br>');
         div.append('<b>'+_x("Paid", 'label', 'event-tickets-with-ticket-scanner')+': </b>'+data.order_infos.date_paid+'<br>');
         div.append($('<button class="button-ticket-options button-primary">').html(_x("Redeem Complete Order", 'label', 'event-tickets-with-ticket-scanner')).on("click", e=>{
             redeemTicket(data.order_infos.code);
@@ -1086,6 +1208,11 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                         extra_content += item.name_per_ticket+" "+item.value_per_ticket;
                     } else {
                         extra_content += "No name or value on ticket set";
+                    }
+                    // Seat information
+                    let itemSeatHtml = _getSeatInfoHtml(item);
+                    if (itemSeatHtml != '') {
+                        extra_content += "<br>" + itemSeatHtml;
                     }
                     if (item.location) {
                         extra_content += "<br>"+item.location;
@@ -1136,6 +1263,11 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         $('<p>').html(ret.ticket_date_as_string).appendTo(div);
         if (ret.ticket_location != "") {
             $('<p>').html(ret.ticket_location_label+' '+ret.ticket_location).appendTo(div);
+        }
+        // Seat information - display prominently after location
+        let seatHtml = _getSeatInfoHtml(ret);
+        if (seatHtml != '') {
+            $('<p>').html(seatHtml).appendTo(div);
         }
         if (ret.short_desc != "") {
             div.append(ret.short_desc).append('<br>');
@@ -1205,6 +1337,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             if (data._ret.max_redeem_amount > 1 && data.metaObj.wc_ticket.stats_redeemed.length < data._ret.max_redeem_amount) {
                 allow_redeem = true;
             }
+            if (data._ret.max_redeem_per_day > 0 && data._ret.redeems_today >= data._ret.max_redeem_per_day) {
+                allow_redeem = false;
+            }
             if (allow_redeem) {
                 allow_redeem = canTicketBeRedeemedNow(data);
             }
@@ -1233,6 +1368,20 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 return false;
             });
         }
+        // Venue Image button - show if venue image exists (for all plan types)
+        if (data._ret.seating_plan_show_venue_button && data._ret.seat_id > 0) {
+            $('<button class="button-ticket-options btn-venue-image">').html(_x('Venue Image', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div).on('click', e=>{
+                showVenueImageModal(data);
+                return false;
+            });
+        }
+        // Visual Seating Plan button - show only for visual plans (lazy loaded)
+        if (data._ret.seating_plan_show_visual_button && data._ret.seat_id > 0) {
+            $('<button class="button-ticket-options btn-seating-plan">').html(_x('Seating Plan', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div).on('click', e=>{
+                loadAndShowSeatingPlan(data._ret.seating_plan_id, data._ret.seat_id, data._ret);
+                return false;
+            });
+        }
 
         if (canTicketBeRedeemed(data)) {
             btn_redeem.prop("disabled", false).css('background-color','green');
@@ -1241,6 +1390,281 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         div.append(displayRedeemedTicketsInfo(data));
         div.append(displayTimezoneInformation(data));
         $('#ticket_info_btns').html(div);
+    }
+    // Helper: escape HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Build SVG seating map (same approach as seating_frontend.js)
+    function buildSeatingPlanSvg(planData, currentSeatId) {
+        let meta = planData.meta || {};
+        let width = meta.canvas_width || 800;
+        let height = meta.canvas_height || 600;
+        let bgColor = meta.background_color || '#ffffff';
+        let bgImage = meta.background_image || planData.planImage || '';
+
+        let svg = '<svg class="saso-seat-map-readonly" viewBox="0 0 ' + width + ' ' + height + '" style="background-color: ' + bgColor + ';">';
+
+        // Background image
+        if (bgImage) {
+            svg += '<image href="' + escapeHtml(bgImage) + '" x="0" y="0" width="' + width + '" height="' + height + '" preserveAspectRatio="xMidYMid meet" />';
+        }
+
+        // Decorations layer
+        (meta.decorations || []).forEach(function(el) {
+            svg += buildSvgElement(el);
+        });
+
+        // Lines layer
+        (meta.lines || []).forEach(function(el) {
+            svg += buildSvgElement(el);
+        });
+
+        // Labels layer
+        (meta.labels || []).forEach(function(el) {
+            svg += buildSvgElement(el);
+        });
+
+        // Seats layer
+        (planData.seats || []).forEach(function(seat) {
+            svg += buildSeatSvgElement(seat, currentSeatId);
+        });
+
+        svg += '</svg>';
+        return svg;
+    }
+
+    // Build SVG element (decoration, line, label)
+    function buildSvgElement(el) {
+        let type = el.type || 'rect';
+        let x = parseFloat(el.x) || 0;
+        let y = parseFloat(el.y) || 0;
+        let fill = el.fill || 'transparent';
+        let stroke = el.stroke || 'none';
+        let strokeWidth = el.strokeWidth || 1;
+        let fillOpacity = el.fillOpacity !== undefined ? (parseFloat(el.fillOpacity) / 100) : 1;
+        let strokeOpacity = el.strokeOpacity !== undefined ? (parseFloat(el.strokeOpacity) / 100) : 0;
+
+        let svgEl = '';
+        switch (type) {
+            case 'rect':
+                let rw = parseFloat(el.width) || 50;
+                let rh = parseFloat(el.height) || 50;
+                let rx = el.rx || 0;
+                svgEl = '<rect x="' + x + '" y="' + y + '" width="' + rw + '" height="' + rh + '" rx="' + rx + '" fill="' + fill + '" fill-opacity="' + fillOpacity + '" stroke="' + stroke + '" stroke-opacity="' + strokeOpacity + '" stroke-width="' + (strokeOpacity > 0 ? strokeWidth : 0) + '" />';
+                break;
+            case 'circle':
+                let r = parseFloat(el.r) || 25;
+                let cx = x + r;
+                let cy = y + r;
+                svgEl = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + fill + '" fill-opacity="' + fillOpacity + '" stroke="' + stroke + '" stroke-opacity="' + strokeOpacity + '" stroke-width="' + (strokeOpacity > 0 ? strokeWidth : 0) + '" />';
+                break;
+            case 'line':
+                let x1 = parseFloat(el.x1) || 0;
+                let y1 = parseFloat(el.y1) || 0;
+                let x2 = parseFloat(el.x2) || 100;
+                let y2 = parseFloat(el.y2) || 100;
+                let lineOpacity = el.strokeOpacity !== undefined ? (parseFloat(el.strokeOpacity) / 100) : 1;
+                svgEl = '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + stroke + '" stroke-opacity="' + lineOpacity + '" stroke-width="' + strokeWidth + '" />';
+                break;
+            case 'text':
+                let fontSize = el.fontSize || 14;
+                svgEl = '<text x="' + x + '" y="' + y + '" fill="' + fill + '" fill-opacity="' + fillOpacity + '" font-size="' + fontSize + '" font-family="sans-serif">' + escapeHtml(el.text || '') + '</text>';
+                break;
+            case 'image':
+                let iw = el.width || 100;
+                let ih = el.height || 100;
+                svgEl = '<image href="' + escapeHtml(el.href || '') + '" x="' + x + '" y="' + y + '" width="' + iw + '" height="' + ih + '" opacity="' + fillOpacity + '" />';
+                break;
+        }
+        return svgEl;
+    }
+
+    // Build seat SVG element
+    function buildSeatSvgElement(seat, currentSeatId) {
+        let meta = seat.meta || {};
+        let posX = parseFloat(meta.pos_x) || parseFloat(meta.x) || 0;
+        let posY = parseFloat(meta.pos_y) || parseFloat(meta.y) || 0;
+        let shapeConfig = meta.shape_config || {width: 30, height: 30};
+        let shapeType = meta.shape_type || meta.shape || 'rect';
+        let seatWidth = parseFloat(shapeConfig.width) || parseFloat(meta.width) || 30;
+        let seatHeight = parseFloat(shapeConfig.height) || parseFloat(meta.height) || 30;
+        let seatLabel = meta.seat_label || seat.seat_identifier || '';
+        let seatColor = meta.color || '#4CAF50';
+
+        let isCurrent = seat.is_current || (String(seat.id) === String(currentSeatId));
+        let fillColor = isCurrent ? '#4CAF50' : (seatColor || '#cccccc');
+        let opacity = isCurrent ? '1' : '0.4';
+        let strokeColor = isCurrent ? '#ff0000' : 'transparent';
+        let strokeWidth = isCurrent ? '4' : '0';
+
+        let svgEl = '';
+        let textX, textY;
+
+        if (shapeType === 'circle') {
+            let r = seatWidth / 2;
+            let cx = posX + r;
+            let cy = posY + r;
+            textX = cx;
+            textY = cy;
+            svgEl = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + fillColor + '" opacity="' + opacity + '" stroke="' + strokeColor + '" stroke-width="' + strokeWidth + '"' + (isCurrent ? ' class="current-seat"' : '') + ' />';
+        } else {
+            textX = posX + seatWidth / 2;
+            textY = posY + seatHeight / 2;
+            svgEl = '<rect x="' + posX + '" y="' + posY + '" width="' + seatWidth + '" height="' + seatHeight + '" rx="3" fill="' + fillColor + '" opacity="' + opacity + '" stroke="' + strokeColor + '" stroke-width="' + strokeWidth + '"' + (isCurrent ? ' class="current-seat"' : '') + ' />';
+        }
+
+        // Seat label
+        let labelSize = Math.min(seatWidth, seatHeight) * 0.35;
+        svgEl += '<text x="' + textX + '" y="' + textY + '" text-anchor="middle" dominant-baseline="middle" fill="' + (isCurrent ? '#fff' : '#333') + '" font-size="' + labelSize + '" font-weight="bold" pointer-events="none">' + escapeHtml(seatLabel) + '</text>';
+
+        return svgEl;
+    }
+
+    function showVenueImageModal(data) {
+        let ret = data._ret;
+        // Create modal overlay
+        let overlay = $('<div class="seating-plan-modal-overlay">').on('click', function(e) {
+            if (e.target === this) {
+                $(this).remove();
+            }
+        });
+        let modal = $('<div class="seating-plan-modal">');
+
+        // Header with close button
+        let header = $('<div class="seating-plan-modal-header">');
+        $('<h3>').text(ret.seating_plan_name || _x('Venue', 'label', 'event-tickets-with-ticket-scanner')).appendTo(header);
+        $('<button class="seating-plan-modal-close">&times;</button>').on('click', function() {
+            overlay.remove();
+        }).appendTo(header);
+        modal.append(header);
+
+        // Content area
+        let content = $('<div class="seating-plan-modal-content">');
+
+        // Seat info banner
+        let seatBanner = $('<div class="seating-plan-seat-banner">');
+        seatBanner.html('<strong>' + (ret.seat_label_text || _x('Seat', 'label', 'event-tickets-with-ticket-scanner')) + ':</strong> ' +
+            ret.seat_label + (ret.seat_category ? ' (' + ret.seat_category + ')' : ''));
+        content.append(seatBanner);
+
+        // Plan description if available
+        if (ret.seating_plan_description) {
+            let descDiv = $('<div class="seating-plan-description">').text(ret.seating_plan_description);
+            content.append(descDiv);
+        }
+
+        // Venue image
+        let imgContainer = $('<div class="seating-plan-image-container">');
+        let img = $('<img>').attr('src', ret.seating_plan_image_url).attr('alt', ret.seating_plan_name || 'Venue');
+        imgContainer.append(img);
+        content.append(imgContainer);
+
+        modal.append(content);
+
+        // Footer with close button
+        let footer = $('<div class="seating-plan-modal-footer">');
+        $('<button class="button-ticket-options">').text(_x('Close', 'label', 'event-tickets-with-ticket-scanner')).on('click', function() {
+            overlay.remove();
+        }).appendTo(footer);
+        modal.append(footer);
+
+        overlay.append(modal);
+        $('body').append(overlay);
+    }
+
+    // Load seating plan data via REST endpoint and show modal (lazy loading)
+    function loadAndShowSeatingPlan(planId, seatId, ticketRet) {
+        // Show loading overlay
+        let loadingOverlay = $('<div class="seating-plan-modal-overlay">');
+        let loadingModal = $('<div class="seating-plan-modal" style="text-align:center;padding:40px;">');
+        loadingModal.html('<p>' + __('Loading seating plan...', 'event-tickets-with-ticket-scanner') + '</p>');
+        loadingOverlay.append(loadingModal);
+        $('body').append(loadingOverlay);
+
+        // Fetch seating plan data via REST endpoint
+        _makeGet('seating_plan', {plan_id: planId, seat_id: seatId}, function(data) {
+            loadingOverlay.remove();
+            if (data) {
+                showSeatingPlanModal(data, ticketRet);
+            } else {
+                alert(_x('Failed to load seating plan', 'label', 'event-tickets-with-ticket-scanner'));
+            }
+        }, function(response) {
+            loadingOverlay.remove();
+            alert(_x('Error loading seating plan', 'label', 'event-tickets-with-ticket-scanner'));
+        });
+    }
+
+    function showSeatingPlanModal(planData, ticketRet) {
+        if (!planData) {
+            alert(_x('Seating plan data not available', 'label', 'event-tickets-with-ticket-scanner'));
+            return;
+        }
+
+        // Create modal overlay
+        let overlay = $('<div class="seating-plan-modal-overlay">').on('click', function(e) {
+            if (e.target === this) {
+                $(this).remove();
+            }
+        });
+        let modal = $('<div class="seating-plan-modal seating-plan-modal-large">');
+
+        // Header with close button
+        let header = $('<div class="seating-plan-modal-header">');
+        $('<h3>').text(planData.planName || _x('Seating Plan', 'label', 'event-tickets-with-ticket-scanner')).appendTo(header);
+        $('<button class="seating-plan-modal-close">&times;</button>').on('click', function() {
+            overlay.remove();
+        }).appendTo(header);
+        modal.append(header);
+
+        // Content area with seating plan
+        let content = $('<div class="seating-plan-modal-content">');
+
+        // Seat info banner
+        let seatBanner = $('<div class="seating-plan-seat-banner">');
+        seatBanner.html('<strong>' + (ticketRet.seat_label_text || _x('Seat', 'label', 'event-tickets-with-ticket-scanner')) + ':</strong> ' +
+            ticketRet.seat_label + (ticketRet.seat_category ? ' (' + ticketRet.seat_category + ')' : ''));
+        content.append(seatBanner);
+
+        // Plan description if available
+        if (ticketRet.seating_plan_description) {
+            let descDiv = $('<div class="seating-plan-description">').text(ticketRet.seating_plan_description);
+            content.append(descDiv);
+        }
+
+        // Build SVG seating plan using the same approach as seating_frontend.js
+        let canvasContainer = $('<div class="seating-plan-canvas-container">');
+        if (planData.seats && planData.seats.length > 0) {
+            // Build full SVG with decorations, lines, labels, and seats
+            let svgHtml = buildSeatingPlanSvg(planData, planData.currentSeatId);
+            canvasContainer.html(svgHtml);
+        } else if (planData.planImage) {
+            // Fallback: show venue image only
+            let imgContainer = $('<div class="seating-plan-image-container">');
+            let img = $('<img>').attr('src', planData.planImage).attr('alt', planData.planName || 'Venue');
+            imgContainer.append(img);
+            canvasContainer.append(imgContainer);
+        } else {
+            // No visual data available
+            canvasContainer.html('<p style="text-align:center;padding:40px;">' +
+                _x('No seating plan visualization available.', 'label', 'event-tickets-with-ticket-scanner') + '</p>');
+        }
+
+        content.append(canvasContainer);
+        modal.append(content);
+
+        // Footer with close button
+        let footer = $('<div class="seating-plan-modal-footer">');
+        $('<button class="button-ticket-options">').text(_x('Close', 'label', 'event-tickets-with-ticket-scanner')).on('click', function() {
+            overlay.remove();
+        }).appendTo(footer);
+        modal.append(footer);
+
+        overlay.append(modal);
+        $('body').append(overlay);
     }
     function displayRedeemedTicketsInfo(data) {
         let div = $('<div>');
@@ -1275,6 +1699,18 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 div.append("Local: "+date+"<br>");
                 system.TIMEAREA.html(div);
             }
+        }
+    }
+    function updateLastScanTime() {
+        let now = new Date();
+        let timeStr = now.toLocaleTimeString();
+        let el = $('#last_scan_time');
+        if (el.length === 0) {
+            system.TIMEAREA.prepend($('<div id="last_scan_time" style="font-size:0.85em;color:#666;padding:2px 0;">').html(
+                sprintf(/* translators: %s: time of last scan */__('Last scan: %s', 'event-tickets-with-ticket-scanner'), timeStr)
+            ));
+        } else {
+            el.html(sprintf(/* translators: %s: time of last scan */__('Last scan: %s', 'event-tickets-with-ticket-scanner'), timeStr));
         }
     }
     function displayTimezoneInformation(data) {
@@ -1373,8 +1809,33 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         document.getElementsByClassName('ticket_content')[0].style.borderRadius="12px";
         let content = '';
         content += 'button.button-ticket-options {width:90%;margin-left:auto;margin-right:auto;margin-bottom:15px;display:block;border-radius:12px;padding:10px 15px;text-align:center;}';
-        content += 'button.button-primary {background-color:#008CBA;color:white;border-color:#008CBA;}';
+        var tc = myAjax.ticketScannerThemeColor || '#008CBA';
+        content += 'button.button-primary {background-color:'+tc+';color:white;border-color:'+tc+';}';
         content += '@media screen and (min-width: 720px) { button.button-ticket-options{width:50%;} }';
+        // Seating Plan Modal Styles
+        content += '.seating-plan-modal-overlay {position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:10px;box-sizing:border-box;}';
+        content += '.seating-plan-modal {background:#fff;border-radius:12px;max-width:95vw;max-height:95vh;width:800px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.3);}';
+        content += '.seating-plan-modal-large {width:90vw;max-width:1200px;}';
+        content += '.seating-plan-modal-header {display:flex;justify-content:space-between;align-items:center;padding:15px 20px;border-bottom:1px solid #eee;background:#f5f5f5;}';
+        content += '.seating-plan-modal-header h3 {margin:0;font-size:1.2em;color:#333;}';
+        content += '.seating-plan-modal-close {background:none;border:none;font-size:28px;cursor:pointer;color:#666;padding:0 5px;line-height:1;}';
+        content += '.seating-plan-modal-close:hover {color:#000;}';
+        content += '.seating-plan-modal-content {flex:1;overflow:auto;padding:15px;}';
+        content += '.seating-plan-seat-banner {background:#4CAF50;color:#fff;padding:12px 15px;border-radius:8px;margin-bottom:15px;text-align:center;font-size:1.1em;}';
+        content += '.seating-plan-canvas-container {position:relative;background:#f9f9f9;border-radius:8px;overflow:hidden;min-height:200px;}';
+        content += '.saso-seat-map-readonly {width:100%;height:auto;display:block;}';
+        content += '.saso-seat-map-readonly .current-seat {animation:pulse-seat 1.5s ease-in-out infinite;}';
+        content += '@keyframes pulse-seat {0%,100%{stroke-width:4px;} 50%{stroke-width:8px;}}';
+        content += '.seating-plan-image-container {position:relative;width:100%;}';
+        content += '.seating-plan-image-container img {width:100%;height:auto;display:block;}';
+        content += '.seating-plan-seat-marker {position:absolute;transform:translate(-50%,-50%);width:40px;height:40px;background:#4CAF50;border:3px solid #ff0000;border-radius:50%;display:flex;align-items:center;justify-content:center;animation:pulse-marker 1.5s ease-in-out infinite;box-shadow:0 2px 10px rgba(0,0,0,0.3);}';
+        content += '.seating-plan-seat-marker span {color:#fff;font-weight:bold;font-size:10px;text-align:center;}';
+        content += '@keyframes pulse-marker {0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.2);}}';
+        content += '.seating-plan-modal-footer {padding:15px 20px;border-top:1px solid #eee;text-align:center;}';
+        content += '.seating-plan-modal-footer button {width:auto;display:inline-block;padding:10px 30px;}';
+        content += '.btn-seating-plan {background:#2196F3 !important;color:#fff !important;}';
+        content += '.btn-venue-image {background:#FF9800 !important;color:#fff !important;}';
+        content += '.seating-plan-description {background:#f0f0f0;padding:10px 15px;border-radius:6px;margin-bottom:15px;color:#555;font-size:0.95em;}';
         addStyleCode(content);
     }
     function refreshNoncePeriodically() {
@@ -1392,6 +1853,167 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             }
         }, 60000);
     }
+    	
+    function speak(text) {
+		if (TTS != null) {
+			TTS.speak(text);
+		}
+	}
+	/**
+	 * tts.js — Robust Web TTS for Ticket Scanner
+	 * - No UI. No static strings.
+	 * - Optional language override per call; null/undefined → browser language with sensible fallbacks.
+	 * - Safe across Chrome/Edge/Safari/Firefox (Web Speech API).
+	 * - Handles multiple calls, cancels overlaps, async voice loading, and user-activation policy.
+	 */
+	function initTTS() {
+		const RESULT = Object.freeze({
+			OK: "ok",
+			UNSUPPORTED: "unsupported",
+			NEEDS_ACTIVATION: "needs_activation",
+			BUSY: "busy",
+			ERROR: "error",
+		});
+
+		let voices = [];
+		let voicesReady = false;
+		let speaking = false;
+		let activated = false;
+
+		// ---------- feature & policy helpers ----------
+		const hasTTS = () =>
+			typeof window !== "undefined" &&
+			"speechSynthesis" in window &&
+			"SpeechSynthesisUtterance" in window;
+
+		const isUserActivated = () => {
+			const ua = navigator.userActivation;
+			// Some browsers expose hasBeenActive, others just isActive; either is fine to proceed after a user gesture.
+			return !!(ua && (ua.isActive || ua.hasBeenActive));
+		};
+
+		const pageOK = () =>
+			(typeof document === "undefined" || document.visibilityState === "visible") &&
+			(typeof document === "undefined" || !document.hasFocus || document.hasFocus());
+
+		// ---------- language & voices ----------
+		function detectLang() {
+			const prefs = Array.isArray(navigator.languages) && navigator.languages.length
+			? navigator.languages
+			: [navigator.language || "en-US"];
+
+			const normalized = prefs
+			.filter(Boolean)
+			.map(l => l.replace("_", "-"))
+			.map(l => (l.length === 2
+				? (l === "de" ? "de-DE" : l === "en" ? "en-US" : l)
+				: l));
+
+			const fallbacks = ["en-US", "en-GB", "de-DE", "fr-FR", "es-ES", "it-IT"];
+			return [...normalized, ...fallbacks].find(Boolean);
+		}
+
+		function loadVoices() {
+			try {
+			voices = window.speechSynthesis.getVoices() || [];
+			if (!voices.length) {
+				window.speechSynthesis.onvoiceschanged = () => {
+				voices = window.speechSynthesis.getVoices() || [];
+				voicesReady = true;
+				};
+			} else {
+				voicesReady = true;
+			}
+			} catch { /* noop */ }
+		}
+
+		function pickVoice(langCode) {
+			if (!voices || !voices.length) return null;
+			// exact match > language prefix match
+			return (
+			voices.find(v => v.lang === langCode) ||
+			voices.find(v => v.lang && v.lang.toLowerCase().startsWith((langCode || "").toLowerCase().slice(0, 2))) ||
+			null
+			);
+		}
+
+		// ---------- activation ----------
+		/**
+		 * Prime TTS after a user gesture (click/tap). Silent, fast, idempotent.
+		 * Call this once from your own UI handler (e.g., "Start scanning").
+		 */
+		function prime(lang) {
+			if (!hasTTS()) return RESULT.UNSUPPORTED;
+			loadVoices();
+			const chosen = lang ?? detectLang();
+			try {
+			const u = new SpeechSynthesisUtterance(".");
+			u.lang = chosen;
+			u.volume = 0; // silent
+			u.rate = 1; u.pitch = 1;
+			const v = pickVoice(chosen);
+			if (v) u.voice = v;
+			window.speechSynthesis.cancel();
+			window.speechSynthesis.speak(u);
+			activated = true;
+			return RESULT.OK;
+			} catch {
+			return RESULT.ERROR;
+			}
+		}
+
+		// ---------- speak ----------
+		/**
+		 * Speak a text. Returns a Promise<RESULT>.
+		 * @param {string} text
+		 * @param {{ lang?: string|null, rate?: number, pitch?: number }} [opts]
+		 */
+		function speak(text, opts = {}) {
+			return new Promise((resolve) => {
+			if (!text || typeof text !== "string") return resolve(RESULT.ERROR);
+			if (!hasTTS()) return resolve(RESULT.UNSUPPORTED);
+			if (!pageOK()) return resolve(RESULT.NEEDS_ACTIVATION);
+
+			// If site hasn’t called prime() under a user gesture, some browsers will block.
+			// We surface that cleanly so the host app can call TTS.prime() from a click/tap.
+			if (!activated && !isUserActivated()) return resolve(RESULT.NEEDS_ACTIVATION);
+
+			try {
+				if (speaking) {
+				// cancel current queue/utterance to avoid overlaps
+				window.speechSynthesis.cancel();
+				speaking = false;
+				}
+
+				if (!voicesReady) loadVoices();
+
+				const lang = (opts.lang === null || typeof opts.lang === "undefined")
+				? detectLang()
+				: (opts.lang || detectLang());
+
+				const u = new SpeechSynthesisUtterance(text);
+				u.lang  = lang;
+				u.rate  = (typeof opts.rate === "number" && opts.rate > 0) ? opts.rate : 1;
+				u.pitch = (typeof opts.pitch === "number" && opts.pitch > 0) ? opts.pitch : 1;
+
+				const v = pickVoice(lang);
+				if (v) u.voice = v;
+
+				u.onstart = () => { speaking = true; };
+				u.onend   = () => { speaking = false; resolve(RESULT.OK); };
+				u.onerror = () => { speaking = false; resolve(RESULT.ERROR); };
+
+				window.speechSynthesis.cancel(); // clear queue
+				window.speechSynthesis.speak(u);
+			} catch {
+				resolve(RESULT.ERROR);
+			}
+			});
+		}
+
+		return { prime, speak, RESULT };
+	}
+
     function starten() {
         $ = jQuery;
         initStyle();
@@ -1406,6 +2028,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 setRedeemImmediately(toBool(myAjax.ticketScannerScanAndRedeemImmediately));
                 setDistractFree(toBool(myAjax.ticketScannerHideTicketInformation));
                 setStartCamWithoutButtonClicked(toBool(myAjax.ticketScannerStartCamWithoutButtonClicked));
+                setVibrate(toBool(myAjax.ticketScannerVibrate));
             } else {
                 if (system.PARA.redeemauto || _loadValue("ticket_scanner_operating_option.redeem_auto") == "1" || setRedeemImmediately(toBool(myAjax.ticketScannerScanAndRedeemImmediately))) {
                     setRedeemImmediately(true);
@@ -1419,6 +2042,12 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 if (system.PARA.startcam || _loadValue("ticket_scanner_operating_option.ticketScannerStartCamWithoutButtonClicked") == "1" || toBool(myAjax.ticketScannerStartCamWithoutButtonClicked)) {
                     setStartCamWithoutButtonClicked(true);
                 }
+                if (system.PARA.speak || _loadValue("ticket_scanner_operating_option.speak") == "1" || toBool(myAjax.ticketScannerSpeakText)) {
+                    setSpeakCheckbox(true);
+                }
+                if (_loadValue("ticket_scanner_operating_option.vibrate") == "1" || toBool(myAjax.ticketScannerVibrate)) {
+                    setVibrate(true);
+                }
             }
 
             initAuthToken();
@@ -1427,6 +2056,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             addRemoveAuthTokenButton();
             showScanOptions();
             refreshNoncePeriodically();
+
             if (system.PARA.code) {
                 system.code = system.PARA.code;
                 if (system.code != "") {
@@ -1438,8 +2068,56 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 startScanner();
                 //showScanNextTicketButton();
             }
+
+            registerServiceWorker();
         });
+
     }
+
+    function speakText(text, lang) {
+        //console.log(text);
+        if (ticket_scanner_operating_option.speak) {
+            try {
+                if (!('speechSynthesis' in window)) return; // kein TTS support
+
+                // Browser-Sprache als Fallback
+                const language = lang || navigator.language || "en-US";
+
+                // Cancel laufende Ausgabe
+                window.speechSynthesis.cancel();
+
+                // Neues Utterance erzeugen
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = language;
+                utter.rate = 1;
+                utter.pitch = 1;
+
+                // Fehlerbehandlung
+                utter.onerror = (e) => console.warn("TTS error:", e);
+
+                // Aussprechen
+                window.speechSynthesis.speak(utter);
+            } catch (e) {
+                console.error("TTS failed:", e);
+            }
+        }
+    }
+
+    function registerServiceWorker() {
+        if ('serviceWorker' in navigator && myAjax._pwaSWUrl) {
+            var scannerScope = window.location.pathname;
+            if (scannerScope.charAt(scannerScope.length - 1) !== '/') scannerScope += '/';
+
+            navigator.serviceWorker.register(myAjax._pwaSWUrl, { scope: scannerScope })
+                .then(function(registration) {
+                    setInterval(function() { registration.update(); }, 3600000);
+                })
+                .catch(function() {
+                    // Not critical - scanner works without SW
+                });
+        }
+    }
+
     var $;
     //window.onload = starten;
     starten();

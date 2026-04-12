@@ -1,0 +1,798 @@
+/**
+ * Seating Admin Styles
+ *
+ * Styles for seating plan admin UI.
+ *
+ * @package Event_Tickets_With_Ticket_Scanner
+ * @since 2.8.0
+ */
+
+/* Container */
+.saso-seating-admin-wrap {
+	width: 100%;
+	margin: 20px 0;
+}
+
+/* When designer is open, use full width */
+.saso-seating-admin-wrap.designer-mode {
+	max-width: none;
+	width: 100%;
+}
+
+/* Header */
+.saso-seating-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #c3c4c7;
+}
+
+.saso-seating-header h2 {
+	margin: 0;
+	padding: 0;
+}
+
+.saso-seating-limits {
+	background: #f0f6fc;
+	padding: 8px 15px;
+	border-radius: 4px;
+	font-size: 13px;
+	color: #1d2327;
+}
+
+.saso-seating-limits .button {
+	margin-left: 10px;
+}
+
+/* Toolbar */
+.saso-seating-toolbar {
+	margin-bottom: 15px;
+}
+
+/* Loading */
+.saso-loading {
+	padding: 40px;
+	text-align: center;
+	color: #646970;
+	font-style: italic;
+}
+
+/* No data message */
+.saso-no-data {
+	padding: 40px;
+	text-align: center;
+	color: #646970;
+	background: #f6f7f7;
+	border-radius: 4px;
+}
+
+/* Plans Table */
+.saso-plans-table {
+	margin-top: 10px;
+}
+
+.saso-plans-table th.column-actions,
+.saso-plans-table td.column-actions {
+	width: 150px;
+}
+
+.saso-plans-table .column-seats {
+	width: 80px;
+	text-align: center;
+}
+
+.saso-plans-table .column-status {
+	width: 100px;
+}
+
+.saso-plans-table .column-layout {
+	width: 180px;
+}
+
+/* Seats Section */
+.saso-seating-seats-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.saso-seating-seats-header h3 {
+	margin: 0;
+}
+
+/* Layout Explanation Box */
+.saso-layout-explanation {
+	margin-bottom: 20px;
+}
+
+.saso-layout-box {
+	display: flex;
+	gap: 15px;
+	align-items: flex-start;
+	padding: 15px 20px;
+	background: #f0f6fc;
+	border-left: 4px solid #2271b1;
+	border-radius: 4px;
+}
+
+.saso-layout-box .dashicons {
+	font-size: 24px;
+	width: 24px;
+	height: 24px;
+	color: #2271b1;
+	flex-shrink: 0;
+	margin-top: 2px;
+}
+
+.saso-layout-text {
+	flex: 1;
+}
+
+.saso-layout-text strong {
+	display: block;
+	margin-bottom: 5px;
+	color: #1d2327;
+}
+
+.saso-layout-text p {
+	margin: 0;
+	color: #50575e;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.saso-seating-seats-toolbar {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	margin-bottom: 15px;
+}
+
+.saso-seats-count {
+	margin-left: auto;
+	color: #646970;
+	font-size: 13px;
+}
+
+.saso-toggle-plan-image .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	vertical-align: text-bottom;
+	margin-right: 3px;
+}
+
+/* Seats Table */
+#saso-seats-table .column-order {
+	width: 60px;
+	text-align: center;
+}
+
+#saso-seats-table .column-identifier {
+	width: 150px;
+}
+
+#saso-seats-table .column-identifier code {
+	background: #f0f0f1;
+	padding: 2px 6px;
+	border-radius: 3px;
+}
+
+#saso-seats-table .column-actions {
+	width: 100px;
+}
+
+#saso-seats-table .column-status {
+	width: 80px;
+}
+
+/* Status Labels */
+.saso-status-active {
+	color: #00a32a;
+	font-weight: 500;
+}
+
+.saso-status-inactive {
+	color: #d63638;
+	font-weight: 500;
+}
+
+/* Buttons in tables */
+.saso-plans-table .button .dashicons,
+#saso-seats-table .button .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	vertical-align: text-bottom;
+}
+
+/* Modal */
+.saso-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 100100;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.saso-modal-content {
+	background: #fff;
+	border-radius: 4px;
+	box-shadow: 0 3px 30px rgba(0, 0, 0, 0.3);
+	width: 100%;
+	max-width: 500px;
+	max-height: 90vh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.saso-modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 15px 20px;
+	border-bottom: 1px solid #dcdcde;
+	background: #f6f7f7;
+}
+
+.saso-modal-header h3 {
+	margin: 0;
+	font-size: 16px;
+}
+
+.saso-modal-close {
+	background: none;
+	border: none;
+	font-size: 24px;
+	cursor: pointer;
+	padding: 0;
+	line-height: 1;
+	color: #646970;
+}
+
+.saso-modal-close:hover {
+	color: #1d2327;
+}
+
+.saso-modal-body {
+	padding: 20px;
+	overflow-y: auto;
+}
+
+.saso-modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	padding: 15px 20px;
+	border-top: 1px solid #dcdcde;
+	background: #f6f7f7;
+}
+
+/* Form Groups */
+.saso-form-group {
+	margin-bottom: 15px;
+}
+
+.saso-form-group:last-child {
+	margin-bottom: 0;
+}
+
+.saso-form-group label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: 500;
+}
+
+.saso-form-group .required {
+	color: #d63638;
+}
+
+.saso-form-group .description {
+	margin-top: 5px;
+	color: #646970;
+	font-size: 12px;
+}
+
+.saso-form-group input[type="text"],
+.saso-form-group input[type="number"],
+.saso-form-group textarea,
+.saso-form-group select {
+	width: 100%;
+}
+
+.saso-form-group input[type="checkbox"] {
+	margin-right: 5px;
+}
+
+.saso-form-row {
+	display: flex;
+	gap: 20px;
+}
+
+.saso-form-row .saso-form-group {
+	flex: 1;
+}
+
+/* Image Upload */
+.saso-image-preview {
+	margin: 10px 0;
+	max-width: 300px;
+}
+
+.saso-image-preview img {
+	max-width: 100%;
+	height: auto;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.saso-image-buttons {
+	display: flex;
+	gap: 10px;
+}
+
+/* Plan Image Section (under seats table) */
+.saso-plan-image-section {
+	margin-top: 30px;
+	padding-top: 20px;
+	border-top: 1px solid #c3c4c7;
+}
+
+.saso-plan-image-section h4 {
+	margin: 0 0 15px 0;
+	color: #1d2327;
+}
+
+.saso-plan-image-container {
+	max-width: 100%;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 10px;
+}
+
+.saso-plan-image-container img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* Bulk seat modal - Wide variant */
+.saso-modal-wide {
+	max-width: 700px !important;
+}
+
+/* Quick-Fill Row */
+.saso-quickfill-row {
+	margin-bottom: 20px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.saso-quickfill-inputs {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.saso-quickfill-inputs input {
+	flex: 1;
+	min-width: 100px;
+}
+
+.saso-quickfill-inputs input:first-child {
+	flex: 1.2;
+}
+
+.saso-quickfill-inputs .button {
+	flex-shrink: 0;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 0 12px;
+	line-height: 28px;
+}
+
+.saso-quickfill-row .description {
+	margin-top: 8px;
+	color: #646970;
+	font-size: 12px;
+}
+
+/* Pending Seats Table */
+.saso-pending-seats-wrap {
+	max-height: 300px;
+	overflow-y: auto;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.saso-pending-seats-table {
+	margin: 0;
+	border: none;
+}
+
+.saso-pending-seats-table thead th {
+	position: sticky;
+	top: 0;
+	background: #f6f7f7;
+	z-index: 1;
+}
+
+.saso-pending-seats-table .saso-no-pending-seats td {
+	text-align: center;
+	color: #646970;
+	font-style: italic;
+	padding: 30px;
+}
+
+.saso-remove-pending-seat {
+	color: #d63638;
+	font-size: 18px;
+	font-weight: bold;
+	cursor: pointer;
+	padding: 2px 8px;
+	text-decoration: none;
+}
+
+.saso-remove-pending-seat:hover {
+	color: #a00;
+	background: #fee;
+	border-radius: 3px;
+}
+
+.saso-pending-seats-count {
+	padding: 10px 15px;
+	background: #f0f6fc;
+	border-top: 1px solid #c3c4c7;
+	font-size: 13px;
+}
+
+/* Clear button styling */
+.saso-clear-pending-seats {
+	color: #d63638;
+	border-color: #d63638;
+}
+
+.saso-clear-pending-seats:hover {
+	background: #d63638;
+	color: #fff;
+	border-color: #d63638;
+}
+
+/* Notices */
+.saso-notice {
+	padding: 12px 20px;
+	margin-bottom: 15px;
+	border-left: 4px solid;
+	background: #fff;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.saso-notice-success {
+	border-left-color: #00a32a;
+	background: #f0fff5;
+}
+
+.saso-notice-error {
+	border-left-color: #d63638;
+	background: #fff5f5;
+}
+
+.saso-notice-warning {
+	border-left-color: #dba617;
+	background: #fffbf0;
+}
+
+.saso-notice-info {
+	border-left-color: #2271b1;
+	background: #f0f6fc;
+}
+
+.saso-notice-info .dashicons {
+	color: #2271b1;
+	vertical-align: text-bottom;
+	margin-right: 5px;
+}
+
+/* Visual Mode Note */
+.saso-visual-mode-note {
+	margin-bottom: 15px;
+}
+
+/* =========================================================================
+   Visual Designer Settings
+   ========================================================================= */
+
+/* Visual Settings Section (collapsible) */
+.saso-visual-settings {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 1px solid #dcdcde;
+}
+
+.saso-visual-settings h4 {
+	margin: 0 0 15px 0;
+	color: #1d2327;
+	font-size: 14px;
+}
+
+/* Color Picker Row */
+.saso-color-row {
+	display: flex;
+	gap: 15px;
+	flex-wrap: wrap;
+}
+
+.saso-color-row .saso-form-group {
+	flex: 0 0 auto;
+	min-width: 100px;
+}
+
+.saso-color-picker {
+	width: 60px !important;
+	height: 32px;
+	padding: 2px;
+	cursor: pointer;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
+}
+
+.saso-color-picker:focus {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+	outline: none;
+}
+
+/* Canvas Size Inputs */
+.saso-visual-settings input[type="number"].small-text {
+	width: 80px !important;
+}
+
+/* Unpublished Changes Banner */
+.saso-unpublished-banner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 20px;
+	margin-bottom: 15px;
+	background: #fcf9e8;
+	border-left: 4px solid #dba617;
+	border-radius: 0 4px 4px 0;
+}
+
+.saso-unpublished-banner .banner-text {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.saso-unpublished-banner .dashicons {
+	color: #dba617;
+}
+
+.saso-unpublished-banner .publish-info {
+	color: #646970;
+	font-size: 12px;
+}
+
+/* Active Sales Warning */
+.saso-active-sales-warning {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 15px 20px;
+	margin-bottom: 20px;
+	background: #fff8e5;
+	border: 1px solid #dba617;
+	border-radius: 4px;
+}
+
+.saso-active-sales-warning .dashicons {
+	color: #dba617;
+	font-size: 24px;
+	width: 24px;
+	height: 24px;
+	flex-shrink: 0;
+}
+
+.saso-active-sales-warning .warning-content {
+	flex: 1;
+}
+
+.saso-active-sales-warning .warning-title {
+	font-weight: 600;
+	color: #1d2327;
+	margin-bottom: 5px;
+}
+
+.saso-active-sales-warning .warning-details {
+	color: #50575e;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.saso-active-sales-warning .product-list {
+	margin-top: 8px;
+	padding-left: 20px;
+}
+
+.saso-active-sales-warning .product-list li {
+	margin-bottom: 4px;
+}
+
+/* Publish Conflicts Modal */
+.saso-conflicts-list {
+	margin: 15px 0;
+	padding: 15px;
+	background: #fff5f5;
+	border: 1px solid #d63638;
+	border-radius: 4px;
+}
+
+.saso-conflicts-list ul {
+	margin: 0;
+	padding-left: 20px;
+}
+
+.saso-conflicts-list li {
+	margin-bottom: 5px;
+	color: #50575e;
+}
+
+.saso-conflicts-list li strong {
+	color: #1d2327;
+}
+
+/* Audit Trail Info */
+.saso-audit-info {
+	margin-top: 20px;
+	padding: 15px;
+	background: #f6f7f7;
+	border-radius: 4px;
+	font-size: 12px;
+	color: #646970;
+}
+
+.saso-audit-info p {
+	margin: 0 0 5px 0;
+}
+
+.saso-audit-info p:last-child {
+	margin-bottom: 0;
+}
+
+.saso-audit-info strong {
+	color: #1d2327;
+}
+
+/* Draft/Publish Action Buttons */
+.saso-designer-actions {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.saso-designer-actions .button-primary {
+	background: #00a32a;
+	border-color: #00a32a;
+}
+
+.saso-designer-actions .button-primary:hover {
+	background: #008a20;
+	border-color: #008a20;
+}
+
+.saso-designer-actions .button-link-delete {
+	color: #d63638;
+}
+
+.saso-designer-actions .button-link-delete:hover {
+	color: #a00;
+}
+
+/* =========================================================================
+   Batch Operations Toolbar
+   ========================================================================= */
+
+.saso-batch-toolbar {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	padding: 10px 15px;
+	margin-bottom: 15px;
+	background: #f0f6fc;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.saso-batch-selection {
+	font-weight: 500;
+	color: #1d2327;
+}
+
+.saso-selected-count {
+	font-weight: 600;
+	color: #2271b1;
+}
+
+.saso-batch-action {
+	min-width: 150px;
+}
+
+.saso-batch-progress {
+	display: flex;
+	align-items: center;
+	margin-left: 10px;
+}
+
+.saso-batch-progress .spinner {
+	float: none;
+	margin: 0 5px 0 0;
+}
+
+.saso-batch-progress-text {
+	font-weight: 500;
+	color: #2271b1;
+}
+
+/* Checkbox column in DataTable */
+.saso-batch-checkbox-col {
+	width: 30px !important;
+	text-align: center;
+}
+
+.saso-seat-checkbox,
+.saso-seat-select-all {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+	.saso-seating-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+	}
+
+	.saso-seating-limits {
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.saso-form-row {
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.saso-modal-content {
+		margin: 10px;
+		max-height: calc(100vh - 20px);
+	}
+
+	.saso-color-row {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.saso-unpublished-banner {
+		flex-direction: column;
+		gap: 10px;
+		align-items: flex-start;
+	}
+
+	.saso-batch-toolbar {
+		flex-wrap: wrap;
+	}
+}

@@ -1,11 +1,11 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventticketsDB extends sasoEventtickets_DB {
-	public $dbversion = '1.7';
+	public $dbversion = '1.13';
 	public function __construct($MAIN) {
 		$this->MAIN = $MAIN;
 		parent::$dbprefix = "saso_eventtickets_";
-		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs'];
+		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks', 'options', 'options_history'];
 		$this->init();
 	}
 
@@ -96,9 +96,113 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				caller_name varchar(250) NOT NULL DEFAULT '',
 				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
 			"additional"=>[
-				"CREATE INDEX idx1 ON ".$this->getTabelle('ips')." (time)",
-				"CREATE INDEX idx2 ON ".$this->getTabelle('ips')." (caller_name)"
+				"CREATE INDEX idx1 ON ".$this->getTabelle('errorlogs')." (time)",
+				"CREATE INDEX idx2 ON ".$this->getTabelle('errorlogs')." (caller_name)"
 			]
+		];
+		// Seating Plans - v1.8, extended v1.9 for Visual Designer
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('seatingplans')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(255) NOT NULL DEFAULT '',
+				name varchar(255) NOT NULL DEFAULT '',
+				aktiv int(1) unsigned NOT NULL DEFAULT 0,
+				meta longtext NOT NULL DEFAULT '',
+				layout_type varchar(20) NOT NULL DEFAULT 'simple',
+				meta_draft longtext NOT NULL DEFAULT '',
+				meta_published longtext NOT NULL DEFAULT '',
+				published_at datetime DEFAULT NULL,
+				published_by int(32) unsigned DEFAULT NULL,
+				created_by int(32) unsigned DEFAULT NULL,
+				updated_by int(32) unsigned DEFAULT NULL,
+				created_at datetime DEFAULT NULL,
+				updated_at datetime DEFAULT NULL,
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[
+				"CREATE UNIQUE INDEX idx1 ON ".$this->getTabelle('seatingplans')." (name)"
+			]
+		];
+		// Seats - v1.8, extended v1.9 for Visual Designer
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('seats')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(255) NOT NULL DEFAULT '',
+				seatingplan_id int(32) unsigned NOT NULL DEFAULT 0,
+				seat_identifier varchar(100) NOT NULL DEFAULT '',
+				aktiv int(1) unsigned NOT NULL DEFAULT 1,
+				sort_order int(32) unsigned NOT NULL DEFAULT 0,
+				meta longtext NOT NULL DEFAULT '',
+				is_deleted tinyint(1) unsigned NOT NULL DEFAULT 0,
+				deleted_at datetime DEFAULT NULL,
+				deleted_by int(32) unsigned DEFAULT NULL,
+				created_by int(32) unsigned DEFAULT NULL,
+				updated_by int(32) unsigned DEFAULT NULL,
+				created_at datetime DEFAULT NULL,
+				updated_at datetime DEFAULT NULL,
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[
+				"CREATE INDEX idx1 ON ".$this->getTabelle('seats')." (seatingplan_id, aktiv, sort_order)",
+				"CREATE UNIQUE INDEX idx2 ON ".$this->getTabelle('seats')." (seatingplan_id, seat_identifier)",
+				"CREATE INDEX idx3 ON ".$this->getTabelle('seats')." (seatingplan_id, is_deleted)"
+			]
+		];
+		// Seat Blocks (Semaphore) - v1.8
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('seat_blocks')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(255) NOT NULL DEFAULT '',
+				seat_id int(32) unsigned NOT NULL DEFAULT 0,
+				seatingplan_id int(32) unsigned NOT NULL DEFAULT 0,
+				product_id int(32) unsigned NOT NULL DEFAULT 0,
+				event_date date DEFAULT NULL,
+				session_id varchar(100) NOT NULL DEFAULT '',
+				order_id int(32) unsigned DEFAULT NULL,
+				code_id int(32) unsigned DEFAULT NULL,
+				expires_at datetime DEFAULT NULL,
+				last_seen datetime DEFAULT NULL,
+				status varchar(20) NOT NULL DEFAULT 'blocked',
+				meta longtext NOT NULL DEFAULT '',
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[
+				"CREATE INDEX idx1 ON ".$this->getTabelle('seat_blocks')." (seatingplan_id, event_date, status)",
+				"CREATE INDEX idx2 ON ".$this->getTabelle('seat_blocks')." (seat_id, product_id, event_date, status)",
+				"CREATE INDEX idx3 ON ".$this->getTabelle('seat_blocks')." (status, expires_at)",
+				"CREATE INDEX idx4 ON ".$this->getTabelle('seat_blocks')." (session_id)",
+				"CREATE INDEX idx5 ON ".$this->getTabelle('seat_blocks')." (order_id)",
+				"CREATE INDEX idx6 ON ".$this->getTabelle('seat_blocks')." (code_id)"
+			]
+		];
+		// Options table - v1.11: replaces individual wp_options rows with single table
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('options')." (
+				option_key varchar(191) NOT NULL DEFAULT '',
+				option_value longtext NOT NULL DEFAULT '',
+				updated_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				updated_by int(32) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY (option_key)) ".$this->getCharsetCollate().";",
+			"additional"=>[]
+		];
+		// Options history table - v1.12: tracks changes to plugin options
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('options_history')." (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				option_key varchar(191) NOT NULL DEFAULT '',
+				old_value text NOT NULL,
+				new_value text NOT NULL,
+				changed_by int(32) unsigned NOT NULL DEFAULT 0,
+				changed_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				PRIMARY KEY (id),
+				KEY option_key_changed_at (option_key, changed_at),
+				KEY changed_at (changed_at)) ".$this->getCharsetCollate().";",
+			"additional"=>[]
 		];
 		$tabellen = apply_filters( $this->MAIN->_add_filter_prefix.'db_system_installiereTabellen', $tabellen );
 		do_action( $this->MAIN->_do_action_prefix.'db_system_installiereTabellen', $tabellen );
@@ -130,10 +234,6 @@ class sasoEventtickets_DB {
 
 	public function getTabelle($tabelle) {
 		return $this->tabellen[$tabelle];
-	}
-
-	private function getAdminSettings() {
-		return $this->MAIN->getAdmin();
 	}
 
 	public function getTables() {
@@ -287,14 +387,23 @@ class sasoEventtickets_DB {
 				}
 			}
 
-			update_option( self::$dbprefix."db_version", $this->dbversion );
+			// Run upgrade jobs BEFORE saving the new db_version.
+			// This ensures that if any job (e.g. options migration) crashes,
+			// the next request re-runs the entire upgrade — all jobs are idempotent.
+			// Note: premium/hook calls inside performJobsAfterDBUpgraded are wrapped
+			// in try/catch to prevent an infinite crash loop if they throw.
 			if ($this->callerValue == "basic") {
-				$this->getAdminSettings()->performJobsAfterDBUpgraded($this->dbversion, $installed_ver);
+				$this->MAIN->getAdmin()->performJobsAfterDBUpgraded($this->dbversion, $installed_ver);
 			} else { // wenn für die prem DB dann direkt aufruf
-				if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'performJobsAfterPremDBUpgraded')) {
-					$this->MAIN->getPremiumFunctions()->performJobsAfterPremDBUpgraded($this->dbversion, $installed_ver);
+				try {
+					if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'performJobsAfterPremDBUpgraded')) {
+						$this->MAIN->getPremiumFunctions()->performJobsAfterPremDBUpgraded($this->dbversion, $installed_ver);
+					}
+				} catch (\Throwable $e) {
+					$this->MAIN->getAdmin()->logErrorToDB($e, null, 'Premium DB upgrade job failed: ' . $e->getMessage());
 				}
 			}
+			update_option( self::$dbprefix."db_version", $this->dbversion );
 		}
 	}
 	public static function plugin_deactivated() {
@@ -310,6 +419,28 @@ class sasoEventtickets_DB {
 		}
 		*/
 	}
+	/**
+	 * Log an error message to the errorlogs table.
+	 *
+	 * Convenience method used by seating subsystem and other components
+	 * that need simple string-based error logging without an Exception object.
+	 *
+	 * @param string $message Error message
+	 * @param string $callerName Optional caller identification
+	 */
+	public function logError(string $message, string $callerName = ''): void {
+		try {
+			$this->insert('errorlogs', [
+				'time' => wp_date('Y-m-d H:i:s'),
+				'exception_msg' => mb_substr($message, 0, 250),
+				'msg' => $message,
+				'caller_name' => mb_substr($callerName, 0, 250),
+			]);
+		} catch (\Exception $e) {
+			// Silently fail — logging should never break the application
+		}
+	}
+
 	protected function _system_installiereTabellen()
 	{
 		throw new Exception("overwrite this function");

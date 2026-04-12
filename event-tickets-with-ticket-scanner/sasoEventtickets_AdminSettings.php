@@ -2732,19 +2732,9 @@ class sasoEventtickets_AdminSettings {
 		}
 
 		if (version_compare( $dbversion, '1.0', '>' ) && version_compare( $dbversion, '2.0', '<' )) {
-			$sql = "select id, meta from ".$this->MAIN->getDB()->getTabelle("codes")." where redeemed = 0 and meta != ''";
-			$d = $this->MAIN->getDB()->_db_datenholen($sql);
-			foreach($d as $codeObj) {
-				try {
-					$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
-					if (!empty($metaObj['wc_ticket']['redeemed_date'])) {
-						// update code
-						$this->MAIN->getDB()->update("codes", ["redeemed"=>1], ['id'=>$codeObj['id']]);
-					}
-				} catch (Exception $e) {
-					//var_dump($e->getMessage());
-				}
-			}
+			global $wpdb;
+			$table = $this->MAIN->getDB()->getTabelle("codes");
+			$wpdb->query("UPDATE {$table} SET redeemed = 1 WHERE redeemed = 0 AND meta LIKE '%\"redeemed_date\":\"%' AND meta NOT LIKE '%\"redeemed_date\":\"\"%'");
 		}
 
 		// v1.10: Add last_seen column to seat_blocks for heartbeat tracking

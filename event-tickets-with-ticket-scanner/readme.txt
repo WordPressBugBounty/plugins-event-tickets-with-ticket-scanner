@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -73,6 +73,18 @@ No extra app needed. The scanner runs in any mobile browser — or install it as
 * Protection against fake tickets, double redemption, and brute-force attempts
 * Supports hardware barcode scanners for high-traffic entrances
 * Customizable theme color to match your brand
+
+= 📲 Vollstart Wallet — All Tickets in One App =
+
+Your customers can collect tickets from multiple shops in one free app:
+
+* **Vollstart Wallet** at [wallet.vollstart.com](https://wallet.vollstart.com) — a Progressive Web App that works on iOS, Android, and desktop
+* Tickets are added with one click from the ticket page or order email
+* QR code always available — even offline
+* **Privacy first** — ticket data flows directly from your shop to the customer's browser. Vollstart never receives or stores any data
+* [Learn more about security & privacy](https://vollstart.com/vollstart-wallet/)
+
+Enable it in Settings → Digital Wallets. Free for all users.
 
 = Powerful Ticket Types =
 
@@ -215,6 +227,18 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.0.2 - 2026-04-12 =
+* Fix: Old premium (< 1.5.0) compatibility — ReflectionClass-based method check BEFORE instantiation prevents "ghost hook" crashes. The old premium constructor registers 25+ WordPress hooks on $this; if the class was instantiated and then discarded, WordPress kept the callbacks alive in memory and fired them later, crashing the site on methods removed in the WC manager refactor. Now the compatibility check happens without ever running the constructor.
+* Fix: DB migration for redeemed codes no longer loads all rows into PHP memory — replaced SELECT+loop with a single SQL UPDATE, preventing memory exhaustion on large databases (1M+ tickets)
+* New: Vollstart Wallet integration — customers can add tickets to the Vollstart Wallet app (wallet.vollstart.com) to collect tickets from multiple shops in one place. Enable in plugin settings under "Digital Wallets". Adds "Add to Vollstart Wallet" button on ticket detail page and in order emails. Includes REST API endpoint for the wallet app.
+* New: Wallet option in Setup Wizard — all 4 presets (Event, Day Pass, Membership, Voucher) now include the Vollstart Wallet toggle
+* New: Context suggestion for existing installations — prompts to enable Vollstart Wallet when tickets exist
+* New: REST API warning in wallet option when WordPress REST API is disabled
+* New: Version notice system — shows "What's New" messages after plugin updates, dismissible per version
+* New: Wallet test link in admin ticket detail view — quickly import a ticket to Vollstart Wallet for testing
+* Fix: Hard-throttled periodic license check via site transient — prevents runaway license requests when admin pages are hit rapidly by bots, monitoring tools, or other plugins
+* Improvement: Updated all translations — 11 new wallet strings added to all 11 languages
 
 = 3.0.1 - 2026-04-07 =
 * Improvement: Updated all translations — regenerated POT from source, added 188 new strings, all 11 languages at 100% (de, es, fr, hu, it, ja, nl, pt_BR, pt_PT, zh_CN)

@@ -1,1 +1,1368 @@
-{"translation-revision-date":"2023-02-09 14:09+01:00","generator":"WP-CLI\/2.7.1","source":"backend.js","domain":"event-tickets-with-ticket-scanner","locale_data":{"event-tickets-with-ticket-scanner":{"":{"domain":"event-tickets-with-ticket-scanner","lang":"de","plural-forms":"nplurals=2; plural=(n != 1);"},"You are using the premium version. Many thanks, please enter your serial key within the options":["Du nutzt die Premium Version. Vielen Dank, bitte gib deine Seriennummer in den Optionen ein."],"label\u0004Back":["Zur\u00fcck"],"Please copy the following information, so that we can support you better and faster. Remove any critical information if needed.":["Bitte kopiere die folgenden Informationen, damit wir dich besser und schneller unterst\u00fctzen k\u00f6nnen. Entferne kritische Information, wenn n\u00f6tig."],"label\u0004Repair tables":["Tabellen reparieren"],"Repair database tables?":["Datenbank Tabellen reparieren?"],"Do you realy want to try to repair your database table definitions for the plugin? It should be safe, but only needed in very rare cases. You might see errors messages during the page reload - that is normal. Why not asking support, if you should do it? ;)":["Willst du wirklich versuchen die Datenbank Tabellenstruktur f\u00fcr dieses Plugin zu reparieren? Es sollte sicher sein, aber nur in sehr wenigen F\u00e4llen n\u00f6tig sein. Vielleicht wirst du ein paar Fahler angezeigt bekommen- das ist normal. Warum nicht lieber erst den Support fragen, ob du es machen solltest? ;)"],"title\u0004Repaired":["Repariert"],"label\u0004Ok":["Ok"],"label\u0004Close":["Schliessen"],"title\u0004Replacement Tags":["Platzhalter"],"You can use these replacement tags in your text messages and URLs for the meta ticket values":["Du kannst diese Platzhalter in deinen Textnachrichten und URLs f\u00fcr die Werte aus den Ticket Metainformationen nutzen"],"title\u0004Options":["Optionen"],"label\u0004Remove image":["Bild entfernen"],"title\u0004Remove image":["Bild entfernen"],"Do you really want to remove the image information from this option?":["Willst du wirklich die Bildinformationen f\u00fcr diese Option entfernen?"],"title\u0004Title":["Titel"],"title\u0004Select Media":["Media-Datei ausw\u00e4hlen"],"label\u0004Support Info":["Support Informationen"],"label\u0004Ticket Scanner":["Ticket-Scanner"],"label\u0004Options":["Optionen"],"label\u0004Enter a prefix (optional)":["Prefix eingeben (optional)"],"You can use date placeholder to have the prefix filled with the date of the confirmed purchase.":["Du kannst Platzhalter f\u00fcr das Datum nutzen, den Prefix mit dem Datum f\u00fcr den best\u00e4tigten Kauf zu setzen."],"You can use: {Y} = year, {m} = month, {d} = day, {H} = hour, {i} = minutes, {s} = seconds, {TIMESTAMP} = unix timestamp.":["Du kannst folgendes nutzen: {Y} = Jahr, {m} = Monat, {d} = Tag, {H} = Stunde, {i} = Minute, {s} = Sekunde, {TIMESTAMP} = Unix Zeitstempel."],"label\u0004Choose type of ticket numbers":["W\u00e4hle Typ der Ticketnummern"],"option value\u0004Serials":["Seriennummer"],"option value\u0004Numbers":["Nummern"],"title\u0004Serials options":["Seriennummern Einstellungen"],"label\u0004Amount of letter needed":["Anzahl ben\u00f6tigter Stellen"],"label\u0004Letter exclusion":["Ausschlu\u00df von Zeichen"],"option value\u0004None":["Keine"],"label\u0004Letter style":["Darstellung Stil"],"option value\u0004Uppercase":["Gro\u00dfbuchstaben"],"option value\u0004Lowercase":["Kleinbuchstaben"],"option value\u0004Both":["Beides"],"label\u0004Numbers needed?":["Nummern ben\u00f6tigt?"],"label\u0004No":["Nein"],"label\u0004Yes":["Ja"],"option value\u0004Only numbers":["Nur Nummern"],"label\u0004Delimiter?":["Trennzeichen"],"option value\u0004Space":["Leerzeichen"],"label\u0004After how many letters?":["Wie viele Zeichen?"],"title\u0004Numbers options":["Nummernoptionen"],"label\u0004Start number":["Startnummer"],"label\u0004Offset for each number":["Offset f\u00fcr jede Nummer"],"Amount of letters has to be higher":["Anzahl der Buchstaben m\u00fcssen h\u00f6her sein"],"Your start number is not correct. It has to be an integer bigger than 0":["Deine Startnummer ist nicht korrekt. Es muss eine Ganzzahl gr\u00f6sser 0 sein"],"label\u0004PREMIUM active":["PREMIUM aktiv"],"label\u0004FREE version":["FREE Version"],"title\u0004Lists of tickets":["Liste der Tickets"],"Organize your tickets in lists. You can assign tickets to a list.":["Organisiere deine Ticket in Listen. Du kannst Ticket einer Liste zuweisen."],"title\u0004Enter an amount of how many ticket numbers you need":["Gib ein, wie viele Tickets du ben\u00f6tigst"],"title\u00041. Ticket number generator (optional step)":["1. Ticketnummer generieren (optionaler Schritt)"],"You can generate ticket numbers.":["Du kannst Ticketnummern generieren."],"Up 100.000 tickets generation per run. The limit is to prevent performance issues.":["Bis zu 100.000 Tickets pro Ausf\u00fchrung. Dieses Limit soll verhindern, dass wir in einen Timeout geraten."],"You can repeat the \"store tickets\" operations as often as needed.":["Du kannst das \"Tickets speichern \" so oft ausf\u00fchren, wie n\u00f6tig"],"label\u0004Enter amount of needed ticket numbers":["Gib die Anzahl der ben\u00f6tigten Ticketnummern ein"],"%1$d max. %2$s up to 100.000 for each run":["%1$d max. %2$s bis zu 100.000 bei jedem Durchgang"],"label\u0004Clear the ticket numbers list textarea field below to add fill in the new generated ticket numbers":["Leere das Feld mit den generierten Ticketnummern unten und setze die neuen Ticketnummern ein"],"label\u0004Generate Code Verification Value (CVV) for each ticket number":["Generiere den Code-Verifizierungswert (CVV) f\u00fcr jede Ticketnummer"],"label\u0004Generate ticket numbers":["Generiere die Ticketnummern"],"Created %1$d tickets. In %2$s seconds, with %3$d runs to find unique ticket numbers.":["%1$d erstellte Ticketnummern. In %2$s Sekunden und mit %3$d Durchg\u00e4ngen, um eindeutige Ticketnummern zu finden."],"contains %d tickets":["enth\u00e4lt %d Ticketnummern"],"One number per line and\/or comma-separated (,). <br>If you want to add the CVV number then separate your ticket number with (;) and append your CVV number.<br>While storing the numbers to the server, it will check if the ticket number is unique and mark the ones, that are not.":["Eine Ticketnummer pro Zeile und\/oder kommagetrennt (,).<br>Wenn die CVV Nummer mitangeben m\u00f6chtest, dann trenne die CVV von der Ticketnummer mit einem Semikolon (;).<br>W\u00e4hrend die Ticketnummern auf dem Server gespeichert werden, pr\u00fcft der Server ob die Ticketnummer schon existiert und markiert schon vorhandene Ticketnummern."],"title\u00042. Ticket numbers to store on the server":["2. Speicher Ticketnummern auf deinem Server"],"You can store up to %1$d. %2$s unlimited":["Du kannst bis zu %1$d Ticketnummern speichern. %2$s unlimitiert."],"label\u0004Store ticket numbers":["Speicher die Ticketnummern"],"Each entry will turn green (successfull stored) or red (NOT OK - duplicat entry on the server).<br>Scroll down and wait for all to finish.<br>In the textarea below you will find all the successful stored tickets.":["Jeder Eintrag wird gr\u00fcn (erfolgreich gespeichert) oder rot (NICHT OK - Duplikat auf dem Server entdeckt) eingef\u00e4rbt.<br>Scroll nach unten und warte bis alle Ticketnummern vom Server \u00fcberpr\u00fcft und gespeichert wurden.<br>Im Textfeld findest du jede erfolgreich gespeicherte Ticketnummer."],"title\u0004Successfull stored ticket numbers":["Erfolgreich gespeicherte Ticketnummern"],"title\u0004Importing":["Importiere"],"Import process finished":["Importvorgang beendet"],"title\u0004Your Limit of %d tickets is reached. Use the premium version to have unlimited tickets":["Dein Limit von %d Ticketnummern ist erreicht. Nutze die Premiumversion, um unlimitierte Ticketnummern zu erstellen"],"title\u0004Amount":["Anzahl"],"label\u0004Not Ok":["Nicht Ok"],"title\u0004Export tickets":["Tickets Exportieren"],"label\u0004Export":["Exportieren"],"label\u0004Cancel":["Abbrechen"],"label\u0004Choose your export settings":["Bestimme deine Exporteinstellungen"],"label\u0004Choose the delimiter for the column values":["W\u00e4hle das Trennzeichen f\u00fcr die Spalten"],"option value\u0004Comma":["Komma"],"option value\u0004Semicolon":["Semikolon"],"option value\u0004Pipe":["Senkrechter Strich"],"label\u0004Choose a file suffix":["W\u00e4hle eine Dateieindung"],"option value\u0004All":["Alles"],"label\u0004Limit export to ticket list":["Schr\u00e4nke den Export auf eine Ticket-Liste ein"],"label\u0004Choose a sorting field":["W\u00e4hle das Spalte f\u00fcr die Sortierung aus"],"option value\u0004Creation date":["Erstelldatum"],"Ticket display number":["Formatierte Ticketnummer"],"option value\u0004List name":["Listenname"],"label\u0004Choose a sorting direction":["W\u00e4hle die Sortierrichtung"],"option value\u0004Ascending":["Aufsteigend"],"option value\u0004Descending":["Absteigened"],"You have %d tickets stored.":["Du hast %d Ticketnummern gespeichert."],"Some systems are slow and the connection timeout interupts the export, if you have too many tickets. In that case, you can export your tickets in several steps. e.g. 0 and 20000 amount and then 20001 and 20000 amount.":["Einige Systeme sind langsam und die Verbindung bricht wegen einem Timeout ab, wenn du zuviele Tickets exportieren willst. In diesem Fall, exportieren deine Tickets in mehreren Durchg\u00e4ngen. Zum Beispiel 0 bis 20000 und dann von 20001, erneut 20000 Tickets."],"Enter your row start (0 = from the first)":["Gebe den Start an (0 = ab dem ersten Eintrag)"],"label\u0004Set a range":["Bestimme einen Bereich"],"title\u0004Edit List":["Liste bearbeiten"],"title\u0004Add List":["Liste hinzuf\u00fcgen"],"label\u0004Name":["Name"],"label\u0004Description":["Beschreibung"],"Overrule %s per Ticket list":["\u00dcberschreibe %s mit dieser Ticketliste"],"label\u0004Overrule the ticket format settings":["\u00dcberschreibe die Einstellungen f\u00fcr das Format von  Ticketnummern"],"Will be overriden if you set the ticket number format settings on the product!":["Wird \u00fcberschrieben, wenn das du das Format f\u00fcr die Ticketnummer am Produkt eingestellt hast!"],"label\u0004Note":["Hinweis"],"title\u0004Edit Ticket":["Ticket bearbeiten"],"title\u0004Add Ticket":["Ticket hinzuf\u00fcgen"],"label\u0004List":["Liste"],"label\u0004CVV - use 4 digits for best results":["CVV - nutze 4 Ziffern f\u00fcr die besten Ergebnisse"],"If CVV is set, then your user will be asked to enter also the CVV to check the ticket number.":["Wenn CVV gesetzt wurde, dann wird dein Benutzer nach der CVV gefragt zus\u00e4tzlich zur Ticketnummer."],"label\u0004is inactiv":["ist inaktiv"],"label\u0004is stolen":["ist gestohlen"],"Use the add option":["Nutze die Hinzuf\u00fcgen Option"],"label\u0004Created":["Erstellt am"],"label\u0004Tickets":["Tickets"],"label\u0004Edit":["Bearbeiten"],"label\u0004Delete":["L\u00f6schen"],"title\u0004Do you want to delete?":["Willst du es wirklich l\u00f6schen?"],"Are you sure, you want to delete this list?":["Bist du dir sicher, dass du diese Liste l\u00f6schen m\u00f6chtest?"],"No ticket will be deleted. Just the list.":["Kein Ticket wird gel\u00f6scht. Nur die Liste."],"Empty table":["Tabelle leeren"],"Do you want to empty the \"%s\" table? All data will be lost. No ticket will be deleted. Just the list.":["Willst du die Tabelle \"%s\" leeren? Alle Eintr\u00e4ge werden in der Datenbank gel\u00f6scht. Keine Tickets werden gel\u00f6scht, nur die Listen."],"title\u0004List of tickets":["Liste der Tickets"],"label\u0004Add":["Hinzuf\u00fcgen"],"Max. %1$d list. Unlimited with %2$s":["Maximal %1$d Listen m\u00f6glich. Unlimitiert mit %2$s"],"label\u0004Customer":["Kunde"],"label\u0004Redeem Amount":["Entwertungen"],"label\u0004Ticket":["Ticket"],"label\u0004Redeemed":["Entwertet"],"label\u0004OrderId":["Bestellnummer"],"label\u0004Status":["Status"],"You reached maximum amount of tickets. You need to delete tickets before you can add more new tickets or buy the premium version to have unlimited tickets.":["Du hast das Maximum an Tickets erreicht. Du musst Tickets l\u00f6schen, um weitere Tickets anzulegen oder die Premiumversion erwerben, um unlimitiert Tickets anzulegen."],"Do you want to empty the \"%s\" table? All data will be lost.":["Willst du die Tabelle \"%s\" leeren? Deine Tickets werden aus der Datenbank gel\u00f6scht."],"option value\u0004Bulk Action":["Mehrfachaktion"],"Max. %1$d tickets. Unlimited with %2$s":["Maximal %1$d Tickets. Unlimitert mit %2$s"],"Redeemed tickets: %1$d (filtered) of %2$d (total redeemed tickets)":["Entwertete Tickets: %1$d (gefiltert) von %2$d"],"Are you sure, you want to delete this ticket?":["Bist du sicher, dass du dieses Ticket l\u00f6schen m\u00f6chtest?"],"label\u0004Display QR with ticket number":["QR-Code mit Ticketnummer anzeigen"],"label\u0004This QR image contains":["Dieses QR-Bild enth\u00e4lt"],"title\u0004QR with ticket number":["QR-Code enth\u00e4lt die Ticketnummer"],"label\u0004Display QR with URL":["Zeige QR-Code mit URL an"],"label\u0004QR with URL and code":["QR-Code mit URL und Code"],"label\u0004Code Verification Value (CVV)":["Code-Verifizierungswert (CVV)"],"title\u0004WooCommerce Order":["WooCommerce Bestellung"],"WooCommerce not found":["WooCommerce nicht gefunden"],"label\u0004Show in WooCommerce Orders":["In WooCommerce anzeigen"],"label\u0004Order from":["Bestellung vom"],"label\u0004Product Id":["Produkt-Id"],"label\u0004Show Product":["Produkt zeigen"],"label\u0004Delete WooCommerce order info for this ticket":["L\u00f6sche WooCommerce Bestellinformationen f\u00fcr diese Ticket"],"label\u0004Remove order":["Bestellung entfernen"],"Do you really want to remove your order information of this ticket \"%s\"? This will also remove the ticket number from the order! For the PREMIUM PLUGIN: It will only remove it from the position of the order. If you have in one order more than one item with ticket number, then it will only remove the ticket number(s) from this item on the order. For the BASIC PLUGIN, it will remove all tickets from all items on this order. Click OK to proceed the removal.":["Willst du wirklich die Bestellinformationen f\u00fcr dieses Ticket \"%s\" entfernen? Damit entfernst du auch die Ticketnummern von der Bestellung! F\u00fcr das Premium Plugin: Es wird nur von der Position in der Bestellung entfernt. Wenn das Ticket mehrmals in der Bestellung erworben wurde, dann werden die Ticketnummern von der Position entfernt. F\u00fcr das BASIC Plugin: Es entfernt alle Ticketnummern von allen Positionen in der Bestellung. Klick auf OK um mit dem Entfernung weiter zu machen."],"WooCommerce Purchase Restriction":["WooCommerce Bestell-Freigabecode"],"label\u0004Used for Order ID":["Genutzt f\u00fcr die Bestellungsnummer"],"label\u0004Open WooCommerce Order":["\u00d6ffne die Bestellung"],"title\u0004Remove purchase ticket information":["Entferne Ticketinformationen von der Bestellung"],"Do you really want to remove the purchase ticket information from the order of this ticket \"%s\"? This will remove the also the ticket(s) from the order items! This ticket can then be reused for purchases. Click OK to proceed the removal.":["Willst du wirklich die Ticketinformationen von der Bestellung f\u00fcr die Ticketnummer \"%s\" entfernen? Das entfernt die Ticketnummern auch von der Position in der Bestellung! Die Ticketnummer kann dann wieder verwendet werden, sofern diese Option aktiviert wurde. Klicke auf Ok, um weiter zu machen."],"title\u0004Registered user":["Registrierter Benutzer"],"title\u0004IP list checked for this ticket":["IPs die einen Check f\u00fcr dieses Ticket gemacht haben"],"title\u0004Error":["Fehler"],"is active":["ist aktiv"],"Woocommerce ticket sale":["WooCommerce Ticketverkauf"],"title\u0004Event Tickets":["Event-Tickets"],"Ticket number":["Ticketnummer"]}}}
+{
+  "translation-revision-date": "2026-03-18 12:00+00:00",
+  "generator": "Claude Code",
+  "source": "backend.js",
+  "domain": "event-tickets-with-ticket-scanner",
+  "locale_data": {
+    "event-tickets-with-ticket-scanner": {
+      "": {
+        "domain": "event-tickets-with-ticket-scanner",
+        "lang": "de",
+        "plural-forms": "nplurals=2; plural=(n != 1);"
+      },
+      "%1$d max. %2$s up to 100.000 for each run": [
+        "%1$d max. %2$s bis zu 100.000 bei jedem Durchgang"
+      ],
+      "%d tickets have been deleted.": [
+        "%d Tickets wurden gelöscht."
+      ],
+      "A new premium version is available!": [
+        "Eine neue Premium-Version ist verfügbar!"
+      ],
+      "Active": [
+        "Aktiv"
+      ],
+      "Add new template": [
+        "Neue Vorlage hinzufügen"
+      ],
+      "Allow redemption after closing time?": [
+        "Einlösung nach Veranstaltungsende erlauben?"
+      ],
+      "Amount of letters has to be higher": [
+        "Anzahl der Buchstaben müssen höher sein"
+      ],
+      "Apply & Finish": [
+        "Anwenden & Fertigstellen"
+      ],
+      "Applying settings...": [
+        "Einstellungen werden angewendet..."
+      ],
+      "Are you sure you want to delete ALL tickets from the list \"%s\"?": [
+        "Sind Sie sicher, dass Sie ALLE Tickets aus der Liste \"%s\" löschen möchten?"
+      ],
+      "Are you sure, you want to delete this auth token?": [
+        "Sind Sie sicher, dass Sie dieses Auth-Token löschen möchten?"
+      ],
+      "Are you sure, you want to delete this list?": [
+        "Bist du dir sicher, dass du diese Liste löschen möchtest?"
+      ],
+      "Are you sure, you want to delete this ticket?": [
+        "Bist du sicher, dass du dieses Ticket löschen möchtest?"
+      ],
+      "Are you sure? You will not be able to restore the data, except you have a backup of your database. All data will be lost.": [
+        "Sind Sie sicher? Sie können die Daten nicht wiederherstellen, es sei denn, Sie haben ein Backup Ihrer Datenbank. Alle Daten gehen verloren."
+      ],
+      "Are you sure? You will not be able to restore the data, except you have a backup of your database. All data will be lost. No ticket will be deleted. Just the lists.": [
+        "Sind Sie sicher? Sie können die Daten nicht wiederherstellen, es sei denn, Sie haben ein Backup Ihrer Datenbank. Alle Daten gehen verloren. Kein Ticket wird gelöscht. Nur die Listen."
+      ],
+      "Assign list to a WooCommerce product": [
+        "Liste einem WooCommerce-Produkt zuweisen"
+      ],
+      "Attach PDF ticket to the order email?": [
+        "PDF-Ticket an die Bestellbestätigungs-E-Mail anhängen?"
+      ],
+      "Attach all tickets as one PDF to the order email?": [
+        "Alle Tickets als ein PDF an die Bestellbestätigungs-E-Mail anhängen?"
+      ],
+      "Auto-complete orders when all items are tickets? Tickets are generated immediately.": [
+        "Bestellungen automatisch abschließen, wenn alle Artikel Tickets sind? Tickets werden sofort generiert."
+      ],
+      "Auto-redeem when scanned?": [
+        "Automatisch beim Scannen einlösen?"
+      ],
+      "Auto-redeem when scanned? Disable to verify identity first.": [
+        "Automatisch beim Scannen einlösen? Deaktivieren, um zuerst die Identität zu prüfen."
+      ],
+      "Back": [
+        "Zurück"
+      ],
+      "Badge printing": [
+        "Badge-Druck"
+      ],
+      "Be careful - this uses a lot of resources. The images will be created and then zipped into a file, together with the csv file": [
+        "Vorsicht – dies benötigt viele Ressourcen. Die Bilder werden erstellt und dann zusammen mit der CSV-Datei in eine Datei gezippt."
+      ],
+      "Cannot delete list": [
+        "Liste kann nicht gelöscht werden"
+      ],
+      "Check License": [
+        "Lizenz prüfen"
+      ],
+      "Check License Now": [
+        "Lizenz jetzt prüfen"
+      ],
+      "Check failed": [
+        "Prüfung fehlgeschlagen"
+      ],
+      "Check if list is used by products": [
+        "Prüfen, ob die Liste von Produkten verwendet wird"
+      ],
+      "Checking license...": [
+        "Lizenz wird geprüft..."
+      ],
+      "Checking...": [
+        "Wird geprüft..."
+      ],
+      "Click the button below to update your premium plugin now.": [
+        "Klicken Sie auf die Schaltfläche unten, um Ihr Premium-Plugin jetzt zu aktualisieren."
+      ],
+      "Close": [
+        "Schließen"
+      ],
+      "Concerts, shows, festivals": [
+        "Konzerte, Shows, Festivals"
+      ],
+      "Consecutive failures": [
+        "Aufeinanderfolgende Fehlschläge"
+      ],
+      "Copy to clipboard": [
+        "In die Zwischenablage kopieren"
+      ],
+      "Create a ticket list": [
+        "Eine Ticketliste erstellen"
+      ],
+      "Created %1$d tickets. In %2$s seconds, with %3$d runs to find unique ticket numbers.": [
+        "%1$d erstellte Ticketnummern. In %2$s Sekunden und mit %3$d Durchgängen, um eindeutige Ticketnummern zu finden."
+      ],
+      "Day passes": [
+        "Tageskarten"
+      ],
+      "Deleting...": [
+        "Wird gelöscht..."
+      ],
+      "Do you also want to attach the ICS calendar file to the purchase emails?": [
+        "Möchten Sie auch die ICS-Kalenderdatei an die Bestellbestätigungs-E-Mails anhängen?"
+      ],
+      "Do you also want to display the confirmed scan count on the ticket scanner?": [
+        "Möchten Sie auch die bestätigte Scan-Anzahl im Ticketscanner anzeigen?"
+      ],
+      "Do you also want to display the customer note on the ticket PDF?": [
+        "Möchten Sie auch die Kundennotiz auf dem Ticket-PDF anzeigen?"
+      ],
+      "Do you also want to enable automatic ticket redemption on scan?": [
+        "Möchten Sie auch die automatische Ticketeinlösung beim Scannen aktivieren?"
+      ],
+      "Do you also want to enable haptic feedback (vibration) when a ticket is scanned?": [
+        "Möchten Sie auch haptisches Feedback (Vibration) beim Scannen eines Tickets aktivieren?"
+      ],
+      "Do you also want to include a \"Download all tickets as one PDF\" link in the email?": [
+        "Möchten Sie auch einen Link \"Alle Tickets als ein PDF herunterladen\" in die E-Mail einfügen?"
+      ],
+      "Do you also want to include the badge download link in the purchase emails?": [
+        "Möchten Sie auch den Badge-Download-Link in die Bestellbestätigungs-E-Mails einfügen?"
+      ],
+      "Do you also want to redirect the customer after they redeem their ticket?": [
+        "Möchten Sie den Kunden auch weiterleiten, nachdem er sein Ticket eingelöst hat?"
+      ],
+      "Do you also want to show the event date on the product detail page?": [
+        "Möchten Sie auch das Veranstaltungsdatum auf der Produktdetailseite anzeigen?"
+      ],
+      "Do you really want to remove the file information from this option?": [
+        "Möchten Sie wirklich die Dateiinformation aus dieser Option entfernen?"
+      ],
+      "Do you really want to remove the purchase ticket information from the order of this ticket \"%s\"? This will remove the also the ticket(s) from the order items! This ticket can then be reused for purchases. Click OK to proceed the removal.": [
+        "Willst du wirklich die Ticketinformationen von der Bestellung für die Ticketnummer \"%s\" entfernen? Das entfernt die Ticketnummern auch von der Position in der Bestellung! Die Ticketnummer kann dann wieder verwendet werden, sofern diese Option aktiviert wurde. Klicke auf Ok, um weiter zu machen."
+      ],
+      "Do you really want to remove your order information of this ticket \"%s\"? This will also remove the ticket number from the order! For the PREMIUM PLUGIN: It will only remove it from the position of the order. If you have in one order more than one item with ticket number, then it will only remove the ticket number(s) from this item on the order. For the BASIC PLUGIN, it will remove all tickets from all items on this order. Click OK to proceed the removal.": [
+        "Willst du wirklich die Bestellinformationen für dieses Ticket \"%s\" entfernen? Damit entfernst du auch die Ticketnummern von der Bestellung! Für das Premium Plugin: Es wird nur von der Position in der Bestellung entfernt. Wenn das Ticket mehrmals in der Bestellung erworben wurde, dann werden die Ticketnummern von der Position entfernt. Für das BASIC Plugin: Es entfernt alle Ticketnummern von allen Positionen in der Bestellung. Klick auf OK um mit dem Entfernung weiter zu machen."
+      ],
+      "Do you really want to reset all the option?": [
+        "Möchten Sie wirklich alle Optionen zurücksetzen?"
+      ],
+      "Do you really want to try to repair your database table definitions for the plugin? It should be safe, but only needed in very rare cases. You might see errors messages during the page reload - that is normal. Why not asking support, if you should do it? ;)": [
+        "Willst du wirklich versuchen die Datenbank Tabellenstruktur für dieses Plugin zu reparieren? Es sollte sicher sein, aber nur in sehr wenigen Fällen nötig sein. Vielleicht wirst du ein paar Fehler angezeigt bekommen – das ist normal. Warum nicht lieber erst den Support fragen, ob du es machen solltest? ;)"
+      ],
+      "Do you want to close the editor? All unsaved changes will be lost.": [
+        "Möchten Sie den Editor schließen? Alle ungespeicherten Änderungen gehen verloren."
+      ],
+      "Do you want to empty the \"%s\" table? All data will be lost.": [
+        "Willst du die Tabelle \"%s\" leeren? Deine Tickets werden aus der Datenbank gelöscht."
+      ],
+      "Do you want to empty the \"%s\" table? All data will be lost. No ticket will be deleted. Just the lists.": [
+        "Möchten Sie die Tabelle \"%s\" leeren? Alle Daten gehen verloren. Kein Ticket wird gelöscht. Nur die Listen."
+      ],
+      "Do you want to enable IP blocking to protect against brute-force ticket validation attempts?": [
+        "Möchten Sie die IP-Sperrung aktivieren, um gegen Brute-Force-Ticketvalidierungsversuche zu schützen?"
+      ],
+      "Do you want to enable IP tracking for ticket validation requests?": [
+        "Möchten Sie die IP-Verfolgung für Ticketvalidierungsanfragen aktivieren?"
+      ],
+      "Do you want to replace the live template code with the template code from the test?": [
+        "Möchten Sie den Live-Vorlagencode durch den Vorlagencode aus dem Test ersetzen?"
+      ],
+      "Do you want to replace the test ticket template code with this template?": [
+        "Möchten Sie den Test-Ticket-Vorlagencode durch diese Vorlage ersetzen?"
+      ],
+      "Do you want to show the \"View all tickets\" link in the email instead?": [
+        "Möchten Sie stattdessen den Link \"Alle Tickets anzeigen\" in der E-Mail anzeigen?"
+      ],
+      "Don't ask again": [
+        "Nicht erneut fragen"
+      ],
+      "Each entry will turn green (successful stored) or red (NOT OK - duplicate entry on the server).<br>Scroll down and wait for all to finish.<br>In the textarea below you will find all the successful stored tickets.": [
+        "Jeder Eintrag wird grün (erfolgreich gespeichert) oder rot (NICHT OK - Duplikat auf dem Server entdeckt) eingefärbt.<br>Scroll nach unten und warte bis alle Ticketnummern vom Server überprüft und gespeichert wurden.<br>Im Textfeld findest du jede erfolgreich gespeicherte Ticketnummer."
+      ],
+      "Empty table": [
+        "Tabelle leeren"
+      ],
+      "Empty table - last chance": [
+        "Tabelle leeren – letzte Chance"
+      ],
+      "Enable PDF ticket attachment in emails? Customers receive their tickets as PDF directly in the order confirmation email.": [
+        "PDF-Ticketanhang in E-Mails aktivieren? Kunden erhalten ihre Tickets als PDF direkt in der Bestellbestätigungs-E-Mail."
+      ],
+      "Enable Recommended Settings": [
+        "Empfohlene Einstellungen aktivieren"
+      ],
+      "Enable tickets on a WooCommerce product": [
+        "Tickets für ein WooCommerce-Produkt aktivieren"
+      ],
+      "Enter your row start (0 = from the first)": [
+        "Gebe den Start an (0 = ab dem ersten Eintrag)"
+      ],
+      "Error": [
+        "Fehler"
+      ],
+      "Error applying settings. Please try again.": [
+        "Fehler beim Anwenden der Einstellungen. Bitte versuchen Sie es erneut."
+      ],
+      "Event tickets": [
+        "Eventtickets"
+      ],
+      "Expiration date": [
+        "Ablaufdatum"
+      ],
+      "Expired": [
+        "Abgelaufen"
+      ],
+      "Get instant answers from our AI": [
+        "Sofortige Antworten von unserer KI erhalten"
+      ],
+      "Gift cards, promo codes": [
+        "Geschenkkarten, Aktionscodes"
+      ],
+      "If CVV is set, then your user will be asked to enter also the CVV to check the ticket number.": [
+        "Wenn CVV gesetzt wurde, dann wird dein Benutzer nach der CVV gefragt zusätzlich zur Ticketnummer."
+      ],
+      "If you need help, please contact us via email. The information is in \"Support Info\" area - button above.": [
+        "Wenn Sie Hilfe benötigen, kontaktieren Sie uns bitte per E-Mail. Die Informationen befinden sich im Bereich \"Support-Info\" – Schaltfläche oben."
+      ],
+      "Import %d options? This will overwrite current settings.": [
+        "%d Optionen importieren? Dies überschreibt die aktuellen Einstellungen."
+      ],
+      "Import process finished": [
+        "Importvorgang beendet"
+      ],
+      "In order to make the ticket detail view and the ticket scanner work, you need to set a permalink structure within the settings.<br>Please go to the settings->permalinks and choose a permalink structure, that is not 'plain'.": [
+        "Damit die Ticketdetailansicht und der Ticketscanner funktionieren, müssen Sie eine Permalink-Struktur in den Einstellungen festlegen.<br>Bitte gehen Sie zu Einstellungen->Permalinks und wählen Sie eine Permalink-Struktur, die nicht 'Einfach' ist."
+      ],
+      "Inactive": [
+        "Inaktiv"
+      ],
+      "Invalid JSON file.": [
+        "Ungültige JSON-Datei."
+      ],
+      "Invalid options file: missing options data.": [
+        "Ungültige Optionsdatei: fehlende Optionsdaten."
+      ],
+      "Last successful check": [
+        "Letzte erfolgreiche Prüfung"
+      ],
+      "Later": [
+        "Später"
+      ],
+      "Learn more": [
+        "Mehr erfahren"
+      ],
+      "Let's configure your ticketing system.": [
+        "Lassen Sie uns Ihr Ticketsystem konfigurieren."
+      ],
+      "License Status": [
+        "Lizenzstatus"
+      ],
+      "Load template": [
+        "Vorlage laden"
+      ],
+      "Lock ticket redemption until event starts?": [
+        "Ticketeinlösung bis zum Veranstaltungsbeginn sperren?"
+      ],
+      "Max attachments: 21": [
+        "Maximale Anhänge: 21"
+      ],
+      "Max. %1$d list. Unlimited with %2$s": [
+        "Maximal %1$d Listen möglich. Unlimitiert mit %2$s"
+      ],
+      "Max. %1$d tickets. Unlimited with %2$s": [
+        "Maximal %1$d Tickets. Unlimitert mit %2$s"
+      ],
+      "Memberships / Season passes": [
+        "Mitgliedschaften / Saisonkarten"
+      ],
+      "Merge into one PDF: enabled": [
+        "Zu einem PDF zusammenführen: aktiviert"
+      ],
+      "New Premium Features Available": [
+        "Neue Premium-Funktionen verfügbar"
+      ],
+      "Next": [
+        "Weiter"
+      ],
+      "No thanks": [
+        "Nein danke"
+      ],
+      "No ticket will be deleted. Just the list.": [
+        "Kein Ticket wird gelöscht. Nur die Liste."
+      ],
+      "Not checked yet": [
+        "Noch nicht geprüft"
+      ],
+      "One number per line and/or comma-separated (,). <br>If you want to add the CVV number then separate your ticket number with (;) and append your CVV number.<br>While storing the numbers to the server, it will check if the ticket number is unique and mark the ones, that are not.": [
+        "Eine Ticketnummer pro Zeile und/oder kommagetrennt (,).<br>Wenn die CVV Nummer mitangeben möchtest, dann trenne die CVV von der Ticketnummer mit einem Semikolon (;).<br>Während die Ticketnummern auf dem Server gespeichert werden, prüft der Server ob die Ticketnummer schon existiert und markiert schon vorhandene Ticketnummern."
+      ],
+      "Open Options": [
+        "Optionen öffnen"
+      ],
+      "Open a product, go to the Event Ticket tab, and enable ticketing.": [
+        "Öffnen Sie ein Produkt, gehen Sie zum Event Ticket-Tab und aktivieren Sie das Ticketing."
+      ],
+      "Organize your tickets in lists for different events or purposes.": [
+        "Organisieren Sie Ihre Tickets in Listen für verschiedene Veranstaltungen oder Zwecke."
+      ],
+      "Organize your tickets in lists. You can assign tickets to a list.": [
+        "Organisiere deine Ticket in Listen. Du kannst Ticket einer Liste zuweisen."
+      ],
+      "Overrule %s per Ticket list": [
+        "Überschreibe %s mit dieser Ticketliste"
+      ],
+      "PDF attachment in emails: enabled": [
+        "PDF-Anhang in E-Mails: aktiviert"
+      ],
+      "PDF ticket attachment in emails": [
+        "PDF-Ticketanhang in E-Mails"
+      ],
+      "Place a test order": [
+        "Eine Testbestellung aufgeben"
+      ],
+      "Place an order and complete it to generate tickets.": [
+        "Geben Sie eine Bestellung auf und schließen Sie sie ab, um Tickets zu generieren."
+      ],
+      "Please add a name for the template.": [
+        "Bitte geben Sie einen Namen für die Vorlage ein."
+      ],
+      "Please copy the following information, so that we can support you better and faster. Remove any critical information if needed.": [
+        "Bitte kopiere die folgenden Informationen, damit wir dich besser und schneller unterstützen können. Entferne kritische Information, wenn nötig."
+      ],
+      "Please enter your Premium license key in the settings to activate your subscription.": [
+        "Bitte geben Sie Ihren Premium-Lizenzschlüssel in den Einstellungen ein, um Ihr Abonnement zu aktivieren."
+      ],
+      "Please reassign these products first, or uncheck the product check option.": [
+        "Bitte weisen Sie diese Produkte zuerst neu zu oder deaktivieren Sie die Produktprüfungsoption."
+      ],
+      "Please select at least one ticket first.": [
+        "Bitte wähle zuerst mindestens ein Ticket aus."
+      ],
+      "Premium": [
+        "Premium"
+      ],
+      "Premium Activated!": [
+        "Premium aktiviert!"
+      ],
+      "Premium Features": [
+        "Premium-Funktionen"
+      ],
+      "Premium Plugin Update": [
+        "Premium-Plugin-Update"
+      ],
+      "Premium settings applied!": [
+        "Premium-Einstellungen angewendet!"
+      ],
+      "Premium version %s is available with new features:": [
+        "Premium-Version %s ist mit neuen Funktionen verfügbar:"
+      ],
+      "Preview Test Template Code as PDF": [
+        "Test-Vorlagencode als PDF-Vorschau anzeigen"
+      ],
+      "Process a test order": [
+        "Eine Testbestellung durchführen"
+      ],
+      "Public Ticket Number": [
+        "Öffentliche Ticketnummer"
+      ],
+      "Recommended:": [
+        "Empfohlen:"
+      ],
+      "Recurring access": [
+        "Wiederkehrender Zugang"
+      ],
+      "Redeemed tickets: %1$d (filtered) of %2$d (total redeemed tickets)": [
+        "Entwertete Tickets: %1$d (gefiltert) von %2$d"
+      ],
+      "Refresh table": [
+        "Tabelle aktualisieren"
+      ],
+      "Related Subscriptions": [
+        "Zugehörige Abonnements"
+      ],
+      "Remove purchase ticket information": [
+        "Kaufticket-Informationen entfernen"
+      ],
+      "Repair database tables?": [
+        "Datenbank Tabellen reparieren?"
+      ],
+      "Revert option \"%s\" to its previous value?": [
+        "Option \"%s\" auf den vorherigen Wert zurücksetzen?"
+      ],
+      "Scan a ticket at the entrance": [
+        "Ein Ticket am Eingang scannen"
+      ],
+      "Seat": [
+        "Sitzplatz"
+      ],
+      "Seating plans": [
+        "Sitzpläne"
+      ],
+      "See latest updates": [
+        "Neueste Updates ansehen"
+      ],
+      "Server flagged as not valid": [
+        "Server als ungültig markiert"
+      ],
+      "Setup Wizard": [
+        "Einrichtungsassistent"
+      ],
+      "Show \"Open Tickets\" link in email? All QR codes on one page — ideal for families.": [
+        "\"Tickets öffnen\"-Link in der E-Mail anzeigen? Alle QR-Codes auf einer Seite – ideal für Familien."
+      ],
+      "Show \"Open Tickets\" link in email? All QR codes on one page — ideal for groups.": [
+        "\"Tickets öffnen\"-Link in der E-Mail anzeigen? Alle QR-Codes auf einer Seite – ideal für Gruppen."
+      ],
+      "Show all options": [
+        "Alle Optionen anzeigen"
+      ],
+      "Show redemption counter to customer? E.g. \"15 of 30 visits used\"": [
+        "Einlösezähler dem Kunden anzeigen? Z. B. \"15 von 30 Besuchen genutzt\""
+      ],
+      "Show self-redeem button on ticket page? For self-service access.": [
+        "Selbst-Einlösen-Schaltfläche auf der Ticketseite anzeigen? Für Self-Service-Zugang."
+      ],
+      "Show self-redeem button? Customer redeems the voucher themselves.": [
+        "Selbst-Einlösen-Schaltfläche anzeigen? Der Kunde löst den Gutschein selbst ein."
+      ],
+      "Skip, I'll configure manually": [
+        "Überspringen, ich konfiguriere manuell"
+      ],
+      "Some systems are slow and the connection timeout interrupts the export, if you have too many tickets. In that case, you can export your tickets in several steps. e.g. 0 and 20000 amount and then 20001 and 20000 amount.": [
+        "Einige Systeme sind langsam und die Verbindung bricht wegen einem Timeout ab, wenn du zuviele Tickets exportieren willst. In diesem Fall, exportieren deine Tickets in mehreren Durchgängen. Zum Beispiel 0 bis 20000 und dann von 20001, erneut 20000 Tickets."
+      ],
+      "Start Setup": [
+        "Einrichtung starten"
+      ],
+      "Status": [
+        "Status"
+      ],
+      "Subscription type": [
+        "Abonnementtyp"
+      ],
+      "Support Context Information": [
+        "Support-Kontextinformationen"
+      ],
+      "The user scan the QR code for the auth token with the ticket scanner. Just like a normal ticket. The system will store the auth token to the browser.": [
+        "Der Benutzer scannt den QR-Code für das Auth-Token mit dem Ticketscanner. Genau wie ein normales Ticket. Das System speichert das Auth-Token im Browser."
+      ],
+      "The user with this auth token will not be able to use the server anymore. The user will need to add a new auth token from you.<p>The effect will be immediately.</p>": [
+        "Der Benutzer mit diesem Auth-Token kann den Server nicht mehr verwenden. Der Benutzer benötigt ein neues Auth-Token von Ihnen.<p>Die Änderung wird sofort wirksam.</p>"
+      ],
+      "Theme park, zoo, spa": [
+        "Freizeitpark, Zoo, Spa"
+      ],
+      "This action cannot be undone!": [
+        "Diese Aktion kann nicht rückgängig gemacht werden!"
+      ],
+      "This list is still assigned to products:": [
+        "Diese Liste ist noch Produkten zugewiesen:"
+      ],
+      "This takes less than 2 minutes.": [
+        "Das dauert weniger als 2 Minuten."
+      ],
+      "Ticket Designer (custom PDF templates)": [
+        "Ticket-Designer (benutzerdefinierte PDF-Vorlagen)"
+      ],
+      "Ticket display number": [
+        "Formatierte Ticketnummer"
+      ],
+      "Ticket number": [
+        "Ticketnummer"
+      ],
+      "Tip: PDF attachment to email": [
+        "Tipp: PDF-Anhang in E-Mail"
+      ],
+      "To confirm deletion, type DELETE in the field below:": [
+        "Um die Löschung zu bestätigen, geben Sie DELETE in das Feld unten ein:"
+      ],
+      "Up 100.000 tickets generation per run. The limit is to prevent performance issues.": [
+        "Bis zu 100.000 Tickets pro Ausführung. Dieses Limit soll verhindern, dass wir in einen Timeout geraten."
+      ],
+      "Update Now": [
+        "Jetzt aktualisieren"
+      ],
+      "Use the add option": [
+        "Nutze die Hinzufügen Option"
+      ],
+      "Use the browser-based QR scanner to redeem tickets.": [
+        "Verwenden Sie den browserbasierten QR-Scanner, um Tickets einzulösen."
+      ],
+      "Version %s is ready to install.": [
+        "Version %s ist zur Installation bereit."
+      ],
+      "Visit the full plugin docs": [
+        "Zur vollständigen Plugin-Dokumentation"
+      ],
+      "Vouchers / Simple codes": [
+        "Gutscheine / Einfache Codes"
+      ],
+      "Warning": [
+        "Warnung"
+      ],
+      "Welcome to Event Tickets!": [
+        "Willkommen bei Event Tickets!"
+      ],
+      "Will be overridden if you set the ticket number format settings on the product!": [
+        "Wird überschrieben, wenn das du das Format für die Ticketnummer am Produkt eingestellt hast!"
+      ],
+      "With the Premium version you can attach PDF tickets directly to the order email — as individual files or merged into one PDF.": [
+        "Mit der Premium-Version können Sie PDF-Tickets direkt an die Bestellbestätigungs-E-Mail anhängen – als einzelne Dateien oder zu einem PDF zusammengeführt."
+      ],
+      "WooCommerce Purchase Restriction": [
+        "WooCommerce Bestell-Freigabecode"
+      ],
+      "WooCommerce not found": [
+        "WooCommerce nicht gefunden"
+      ],
+      "WooCommerce ticket sale": [
+        "WooCommerce-Ticketverkauf"
+      ],
+      "Yes": [
+        "Ja"
+      ],
+      "Yes, enable": [
+        "Ja, aktivieren"
+      ],
+      "You allow tickets to be redeemed after the event end date.": [
+        "Sie erlauben das Einlösen von Tickets nach dem Veranstaltungsenddatum."
+      ],
+      "You can add auth tokens, that can be used to access your ticket scanner. Create an auth token and pass the QR code to the user or let the user scan it from your admin area. The used auth token will bypass any access restriction settings for the ticket scanner that are set in the options.": [
+        "Sie können Auth-Token hinzufügen, die für den Zugriff auf Ihren Ticketscanner verwendet werden können. Erstellen Sie ein Auth-Token und übergeben Sie den QR-Code an den Benutzer oder lassen Sie den Benutzer ihn aus Ihrem Administrationsbereich scannen. Das verwendete Auth-Token umgeht alle Zugriffsbeschränkungseinstellungen für den Ticketscanner, die in den Optionen festgelegt sind."
+      ],
+      "You can add comma separated \",\" product ids. This will limit the user to redeem tickets only of products listed here. If left empty, all are allowed.": [
+        "Sie können kommagetrennte \",\" Produkt-IDs hinzufügen. Dies beschränkt den Benutzer darauf, nur Tickets der hier aufgelisteten Produkte einzulösen. Wenn leer gelassen, sind alle erlaubt."
+      ],
+      "You can change these anytime in Options.": [
+        "Sie können diese jederzeit in den Optionen ändern."
+      ],
+      "You can generate ticket numbers.": [
+        "Du kannst Ticketnummern generieren."
+      ],
+      "You can repeat the \"store tickets\" operations as often as needed.": [
+        "Du kannst das \"Tickets speichern \" so oft ausführen, wie nötig"
+      ],
+      "You can store up to %1$d. %2$s unlimited": [
+        "Du kannst bis zu %1$d Ticketnummern speichern. %2$s unlimitiert."
+      ],
+      "You can use date placeholder to have the prefix filled with the date of the confirmed purchase.": [
+        "Du kannst Platzhalter für das Datum nutzen, den Prefix mit dem Datum für den bestätigten Kauf zu setzen."
+      ],
+      "You can use these replacement tags in your text messages and URLs for the meta ticket values": [
+        "Du kannst diese Platzhalter in deinen Textnachrichten und URLs für die Werte aus den Ticket Metainformationen nutzen"
+      ],
+      "You can use: {Y} = year, {m} = month, {d} = day, {H} = hour, {i} = minutes, {s} = seconds, {TIMESTAMP} = unix timestamp.": [
+        "Du kannst folgendes nutzen: {Y} = Jahr, {m} = Monat, {d} = Tag, {H} = Stunde, {i} = Minute, {s} = Sekunde, {TIMESTAMP} = Unix Zeitstempel."
+      ],
+      "You have %d tickets stored.": [
+        "Du hast %d Ticketnummern gespeichert."
+      ],
+      "You have PDF ticket attachment enabled for emails.": [
+        "Sie haben den PDF-Ticketanhang für E-Mails aktiviert."
+      ],
+      "You have auto-start camera enabled for the ticket scanner.": [
+        "Sie haben den automatischen Kamerastart für den Ticketscanner aktiviert."
+      ],
+      "You have automatic scan-and-redeem enabled.": [
+        "Sie haben das automatische Scannen und Einlösen aktiviert."
+      ],
+      "You have hidden the PDF download button on purchase emails.": [
+        "Sie haben die PDF-Download-Schaltfläche in den Bestellbestätigungs-E-Mails ausgeblendet."
+      ],
+      "You have no tickets yet.": [
+        "Sie haben noch keine Tickets."
+      ],
+      "You have the premium plugin active.": [
+        "Sie haben das Premium-Plugin aktiv."
+      ],
+      "You must type DELETE to confirm.": [
+        "Sie müssen DELETE eingeben, um zu bestätigen."
+      ],
+      "You need to create a ticket list first before you can add tickets.": [
+        "Sie müssen zuerst eine Ticketliste erstellen, bevor Sie Tickets hinzufügen können."
+      ],
+      "You now have access to these features:": [
+        "Sie haben jetzt Zugriff auf diese Funktionen:"
+      ],
+      "You reached maximum amount of tickets. You need to delete tickets before you can add more new tickets or buy the premium version to have unlimited tickets.": [
+        "Du hast das Maximum an Tickets erreicht. Du musst Tickets löschen, um weitere Tickets anzulegen oder die Premiumversion erwerben, um unlimitiert Tickets anzulegen."
+      ],
+      "You show input fields on the checkout page.": [
+        "Sie zeigen Eingabefelder auf der Kassenseite an."
+      ],
+      "You show the badge download button on the ticket detail page.": [
+        "Sie zeigen die Badge-Download-Schaltfläche auf der Ticketdetailseite an."
+      ],
+      "You show the event date on the purchase order email.": [
+        "Sie zeigen das Veranstaltungsdatum in der Bestellbestätigungs-E-Mail an."
+      ],
+      "You show the self-redeem button on the ticket detail page.": [
+        "Sie zeigen die Selbst-Einlösen-Schaltfläche auf der Ticketdetailseite an."
+      ],
+      "You're all set!": [
+        "Alles ist eingerichtet!"
+      ],
+      "Your settings have been configured for %s.": [
+        "Ihre Einstellungen wurden für %s konfiguriert."
+      ],
+      "Your start number is not correct. It has to be an integer bigger than 0": [
+        "Deine Startnummer ist nicht korrekt. Es muss eine Ganzzahl grösser 0 sein"
+      ],
+      "active": [
+        "Aktiv"
+      ],
+      "button\u0004Delete": [
+        "Löschen"
+      ],
+      "button\u0004Duplicate": [
+        "Duplizieren"
+      ],
+      "button\u0004Edit": [
+        "Bearbeiten"
+      ],
+      "button\u0004Export CSV": [
+        "CSV exportieren"
+      ],
+      "button\u0004Load": [
+        "Laden"
+      ],
+      "button\u0004Skip": [
+        "Überspringen"
+      ],
+      "cal\u0004Apr": [
+        "Apr"
+      ],
+      "cal\u0004Aug": [
+        "Aug"
+      ],
+      "cal\u0004Dec": [
+        "Dez"
+      ],
+      "cal\u0004Feb": [
+        "Feb"
+      ],
+      "cal\u0004Fri": [
+        "Fr"
+      ],
+      "cal\u0004Jan": [
+        "Jan"
+      ],
+      "cal\u0004Jul": [
+        "Jul"
+      ],
+      "cal\u0004Jun": [
+        "Jun"
+      ],
+      "cal\u0004Mar": [
+        "Mär"
+      ],
+      "cal\u0004May": [
+        "Mai"
+      ],
+      "cal\u0004Mon": [
+        "Mo"
+      ],
+      "cal\u0004Nov": [
+        "Nov"
+      ],
+      "cal\u0004Oct": [
+        "Okt"
+      ],
+      "cal\u0004Sat": [
+        "Sa"
+      ],
+      "cal\u0004Sep": [
+        "Sep"
+      ],
+      "cal\u0004Sun": [
+        "So"
+      ],
+      "cal\u0004Thu": [
+        "Do"
+      ],
+      "cal\u0004Tue": [
+        "Di"
+      ],
+      "cal\u0004Wed": [
+        "Mi"
+      ],
+      "column\u0004Date": [
+        "Datum"
+      ],
+      "column\u0004Event / List": [
+        "Veranstaltung / Liste"
+      ],
+      "column\u0004No Show": [
+        "Nicht erschienen"
+      ],
+      "column\u0004Order": [
+        "Bestellung"
+      ],
+      "column\u0004Product": [
+        "Produkt"
+      ],
+      "column\u0004Redeemed": [
+        "Eingelöst"
+      ],
+      "column\u0004Redeemed At": [
+        "Eingelöst am"
+      ],
+      "column\u0004Ticket": [
+        "Ticket"
+      ],
+      "column\u0004Total in List": [
+        "Gesamt in Liste"
+      ],
+      "contains %d tickets": [
+        "enthält %d Ticketnummern"
+      ],
+      "failures": [
+        "Fehlschläge"
+      ],
+      "heading\u0004Webhook": [
+        "Webhook"
+      ],
+      "is active": [
+        "ist aktiv"
+      ],
+      "label\u0004Add": [
+        "Hinzufügen"
+      ],
+      "label\u0004Add QR code images": [
+        "QR-Code-Bilder hinzufügen"
+      ],
+      "label\u0004After how many letters?": [
+        "Wie viele Zeichen?"
+      ],
+      "label\u0004Amount of letter needed": [
+        "Anzahl benötigter Stellen"
+      ],
+      "label\u0004Area": [
+        "Bereich"
+      ],
+      "label\u0004Assign selected tickets to this ticket list": [
+        "Ausgewählte Tickets dieser Ticketliste zuweisen"
+      ],
+      "label\u0004Assign to this ticket list": [
+        "Dieser Ticketliste zuweisen"
+      ],
+      "label\u0004Attendance": [
+        "Anwesenheit"
+      ],
+      "label\u0004Auth Token": [
+        "Auth-Token"
+      ],
+      "label\u0004Back": [
+        "Zurück"
+      ],
+      "label\u0004Billing Email": [
+        "Rechnungs-E-Mail"
+      ],
+      "label\u0004Bound to product(s)": [
+        "An Produkt(e) gebunden"
+      ],
+      "label\u0004CVV - use 4 digits for best results": [
+        "CVV - nutze 4 Ziffern für die besten Ergebnisse"
+      ],
+      "label\u0004Can be used with the ticket scanner": [
+        "Kann mit dem Ticketscanner verwendet werden"
+      ],
+      "label\u0004Cancel": [
+        "Abbrechen"
+      ],
+      "label\u0004Change History": [
+        "Änderungsverlauf"
+      ],
+      "label\u0004Changed": [
+        "Geändert"
+      ],
+      "label\u0004Changed By": [
+        "Geändert von"
+      ],
+      "label\u0004Choose a file suffix": [
+        "Wähle eine Dateieindung"
+      ],
+      "label\u0004Choose a sorting direction": [
+        "Wähle die Sortierrichtung"
+      ],
+      "label\u0004Choose a sorting field": [
+        "Wähle das Spalte für die Sortierung aus"
+      ],
+      "label\u0004Choose the delimiter for the column values": [
+        "Wähle das Trennzeichen für die Spalten"
+      ],
+      "label\u0004Choose type of ticket numbers": [
+        "Wähle Typ der Ticketnummern"
+      ],
+      "label\u0004Clear the ticket numbers list textarea field below to add fill in the new generated ticket numbers": [
+        "Leere das Feld mit den generierten Ticketnummern unten und setze die neuen Ticketnummern ein"
+      ],
+      "label\u0004Close": [
+        "Schliessen"
+      ],
+      "label\u0004Code Verification Value (CVV)": [
+        "Code-Verifizierungswert (CVV)"
+      ],
+      "label\u0004Company": [
+        "Firma"
+      ],
+      "label\u0004Confirmed Count": [
+        "Bestätigte Anzahl"
+      ],
+      "label\u0004Created": [
+        "Erstellt am"
+      ],
+      "label\u0004Customer": [
+        "Kunde"
+      ],
+      "label\u0004Date": [
+        "Datum"
+      ],
+      "label\u0004Delete": [
+        "Löschen"
+      ],
+      "label\u0004Delete All Tickets": [
+        "Alle Tickets löschen"
+      ],
+      "label\u0004Delete WooCommerce order info for this ticket": [
+        "Lösche WooCommerce Bestellinformationen für diese Ticket"
+      ],
+      "label\u0004Delimiter?": [
+        "Trennzeichen"
+      ],
+      "label\u0004Description": [
+        "Beschreibung"
+      ],
+      "label\u0004Display QR with PUBLIC ticket number": [
+        "QR mit ÖFFENTLICHER Ticketnummer anzeigen"
+      ],
+      "label\u0004Display QR with URL": [
+        "Zeige QR-Code mit URL an"
+      ],
+      "label\u0004Display QR with ticket number": [
+        "QR-Code mit Ticketnummer anzeigen"
+      ],
+      "label\u0004Display QR with your own QR content": [
+        "QR mit eigenem QR-Inhalt anzeigen"
+      ],
+      "label\u0004Don't show this again": [
+        "Nicht mehr anzeigen"
+      ],
+      "label\u0004Edit": [
+        "Bearbeiten"
+      ],
+      "label\u0004Enter a prefix (optional)": [
+        "Prefix eingeben (optional)"
+      ],
+      "label\u0004Enter amount of needed ticket numbers": [
+        "Gib die Anzahl der benötigten Ticketnummern ein"
+      ],
+      "label\u0004Enter amount of tickets": [
+        "Anzahl der Tickets eingeben"
+      ],
+      "label\u0004Error loading data.": [
+        "Fehler beim Laden der Daten."
+      ],
+      "label\u0004Error loading details.": [
+        "Fehler beim Laden der Details."
+      ],
+      "label\u0004Exception": [
+        "Ausnahme"
+      ],
+      "label\u0004Export": [
+        "Exportieren"
+      ],
+      "label\u0004Export Options": [
+        "Optionen exportieren"
+      ],
+      "label\u0004Export tickets": [
+        "Tickets exportieren"
+      ],
+      "label\u0004FAQ": [
+        "FAQ"
+      ],
+      "label\u0004From": [
+        "Von"
+      ],
+      "label\u0004Function": [
+        "Funktion"
+      ],
+      "label\u0004Generate Code Verification Value (CVV) for each ticket number": [
+        "Generiere den Code-Verifizierungswert (CVV) für jede Ticketnummer"
+      ],
+      "label\u0004Generate ticket numbers": [
+        "Generiere die Ticketnummern"
+      ],
+      "label\u0004Go to products": [
+        "Zu den Produkten"
+      ],
+      "label\u0004Import Options": [
+        "Optionen importieren"
+      ],
+      "label\u0004Letter exclusion": [
+        "Ausschluß von Zeichen"
+      ],
+      "label\u0004Letter style": [
+        "Darstellung Stil"
+      ],
+      "label\u0004Limit export to ticket list": [
+        "Schränke den Export auf eine Ticket-Liste ein"
+      ],
+      "label\u0004List": [
+        "Liste"
+      ],
+      "label\u0004Name": [
+        "Name"
+      ],
+      "label\u0004New Value": [
+        "Neuer Wert"
+      ],
+      "label\u0004No": [
+        "Nein"
+      ],
+      "label\u0004No Show": [
+        "Nicht erschienen"
+      ],
+      "label\u0004No individual ticket data available.": [
+        "Keine individuellen Ticketdaten verfügbar."
+      ],
+      "label\u0004Not Ok": [
+        "Nicht Ok"
+      ],
+      "label\u0004Note": [
+        "Hinweis"
+      ],
+      "label\u0004Numbers needed?": [
+        "Nummern benötigt?"
+      ],
+      "label\u0004Offset for each number": [
+        "Offset für jede Nummer"
+      ],
+      "label\u0004Ok": [
+        "Ok"
+      ],
+      "label\u0004Old Value": [
+        "Alter Wert"
+      ],
+      "label\u0004Open Scanner": [
+        "Scanner öffnen"
+      ],
+      "label\u0004Open WooCommerce Order": [
+        "Öffne die Bestellung"
+      ],
+      "label\u0004Option": [
+        "Option"
+      ],
+      "label\u0004Options": [
+        "Optionen"
+      ],
+      "label\u0004Order Status": [
+        "Bestellstatus"
+      ],
+      "label\u0004Order from": [
+        "Bestellung vom"
+      ],
+      "label\u0004OrderId": [
+        "Bestellnummer"
+      ],
+      "label\u0004Overrule the ticket format settings": [
+        "Überschreibe die Einstellungen für das Format von  Ticketnummern"
+      ],
+      "label\u0004Premium Wizard": [
+        "Premium-Assistent"
+      ],
+      "label\u0004Product": [
+        "Produkt"
+      ],
+      "label\u0004Product Id": [
+        "Produkt-Id"
+      ],
+      "label\u0004Redeem Amount": [
+        "Entwertungen"
+      ],
+      "label\u0004Redeemed": [
+        "Entwertet"
+      ],
+      "label\u0004Remove file": [
+        "Datei entfernen"
+      ],
+      "label\u0004Repair tables": [
+        "Tabellen reparieren"
+      ],
+      "label\u0004Reset All Options": [
+        "Alle Optionen zurücksetzen"
+      ],
+      "label\u0004Revert": [
+        "Zurücksetzen"
+      ],
+      "label\u0004Set a range": [
+        "Bestimme einen Bereich"
+      ],
+      "label\u0004Show Product": [
+        "Produkt zeigen"
+      ],
+      "label\u0004Show Subscription": [
+        "Abonnement anzeigen"
+      ],
+      "label\u0004Show in WooCommerce Orders": [
+        "In WooCommerce anzeigen"
+      ],
+      "label\u0004Start Wizard": [
+        "Assistenten starten"
+      ],
+      "label\u0004Start number": [
+        "Startnummer"
+      ],
+      "label\u0004Status": [
+        "Status"
+      ],
+      "label\u0004Store ticket numbers": [
+        "Speicher die Ticketnummern"
+      ],
+      "label\u0004Subscription Id": [
+        "Abonnement-ID"
+      ],
+      "label\u0004Support Info": [
+        "Support Informationen"
+      ],
+      "label\u0004The webhook need to be activated first in the options to be executed, even if the URL is set here.": [
+        "Der Webhook muss zuerst in den Optionen aktiviert werden, um ausgeführt zu werden, auch wenn die URL hier gesetzt ist."
+      ],
+      "label\u0004This QR image contains": [
+        "Dieses QR-Bild enthält"
+      ],
+      "label\u0004Ticket": [
+        "Ticket"
+      ],
+      "label\u0004Ticket Scanner": [
+        "Ticket-Scanner"
+      ],
+      "label\u0004Tickets": [
+        "Tickets"
+      ],
+      "label\u0004To": [
+        "Bis"
+      ],
+      "label\u0004Total": [
+        "Gesamt"
+      ],
+      "label\u0004Total Tickets": [
+        "Gesamte Tickets"
+      ],
+      "label\u0004URL to your service if the WooCommerce ticket is sold": [
+        "URL zu Ihrem Service, wenn das WooCommerce-Ticket verkauft wird"
+      ],
+      "label\u0004Upgrade": [
+        "Upgrade"
+      ],
+      "label\u0004Used for Order ID": [
+        "Genutzt für die Bestellungsnummer"
+      ],
+      "label\u0004Variation": [
+        "Variante"
+      ],
+      "label\u0004Version": [
+        "Version"
+      ],
+      "label\u0004View": [
+        "Ansehen"
+      ],
+      "label\u0004View lists": [
+        "Listen anzeigen"
+      ],
+      "label\u0004Yes": [
+        "Ja"
+      ],
+      "label\u0004all products allowed to be redeemed": [
+        "Alle Produkte dürfen eingelöst werden"
+      ],
+      "label\u0004is active": [
+        "ist aktiv"
+      ],
+      "label\u0004is inactiv": [
+        "ist inaktiv"
+      ],
+      "label\u0004is stolen": [
+        "ist gestohlen"
+      ],
+      "label\u0004stolen": [
+        "Gestohlen"
+      ],
+      "no ticket for preview available": [
+        "Kein Ticket für Vorschau verfügbar"
+      ],
+      "option\u0004Delete Redeem Information": [
+        "Einlöseinformationen löschen"
+      ],
+      "option\u0004Generate badge ticket": [
+        "Badge-Ticket generieren"
+      ],
+      "option\u0004Generate ticket PDF": [
+        "Ticket-PDF generieren"
+      ],
+      "option\u0004Move to ticket list": [
+        "In Ticketliste verschieben"
+      ],
+      "option\u0004Remove marked as used": [
+        "Als verwendet Markierung entfernen"
+      ],
+      "option value\u0004All": [
+        "Alles"
+      ],
+      "option value\u0004Ascending": [
+        "Aufsteigend"
+      ],
+      "option value\u0004Both": [
+        "Beides"
+      ],
+      "option value\u0004Bulk Action": [
+        "Mehrfachaktion"
+      ],
+      "option value\u0004Comma": [
+        "Komma"
+      ],
+      "option value\u0004Creation date": [
+        "Erstelldatum"
+      ],
+      "option value\u0004Default search filter": [
+        "Standard-Suchfilter"
+      ],
+      "option value\u0004Descending": [
+        "Absteigened"
+      ],
+      "option value\u0004Filter for chosen date (enter YYYY-MM-DD)": [
+        "Nach gewähltem Datum filtern (JJJJ-MM-TT eingeben)"
+      ],
+      "option value\u0004Filter for customer name in billing first and last name": [
+        "Nach Kundenname in Rechnungs-Vor- und Nachname filtern"
+      ],
+      "option value\u0004Filter for cvv value": [
+        "Nach CVV-Wert filtern"
+      ],
+      "option value\u0004Filter for list id": [
+        "Nach Listen-ID filtern"
+      ],
+      "option value\u0004Filter for order id": [
+        "Nach Bestell-ID filtern"
+      ],
+      "option value\u0004Filter for product id": [
+        "Nach Produkt-ID filtern"
+      ],
+      "option value\u0004Filter for redeemed status (0:not redeemed yet, 1:redeemed)": [
+        "Nach Einlösestatus filtern (0:noch nicht eingelöst, 1:eingelöst)"
+      ],
+      "option value\u0004Filter for registered user id": [
+        "Nach registrierter Benutzer-ID filtern"
+      ],
+      "option value\u0004Filter for status (1:active, 0:inactive, 2:stolen)": [
+        "Nach Status filtern (1:aktiv, 0:inaktiv, 2:gestohlen)"
+      ],
+      "option value\u0004List name": [
+        "Listenname"
+      ],
+      "option value\u0004Lowercase": [
+        "Kleinbuchstaben"
+      ],
+      "option value\u0004None": [
+        "Keine"
+      ],
+      "option value\u0004Numbers": [
+        "Nummern"
+      ],
+      "option value\u0004Only numbers": [
+        "Nur Nummern"
+      ],
+      "option value\u0004Pipe": [
+        "Senkrechter Strich"
+      ],
+      "option value\u0004Semicolon": [
+        "Semikolon"
+      ],
+      "option value\u0004Serials": [
+        "Seriennummer"
+      ],
+      "option value\u0004Space": [
+        "Leerzeichen"
+      ],
+      "option value\u0004Uppercase": [
+        "Großbuchstaben"
+      ],
+      "option value\u0004is activ": [
+        "ist aktiv"
+      ],
+      "option value\u0004is inactiv": [
+        "ist inaktiv"
+      ],
+      "saving...": [
+        "Wird gespeichert..."
+      ],
+      "ticket cannot be used. Public Ticket Id missing.": [
+        "Ticket kann nicht verwendet werden. Öffentliche Ticket-ID fehlt."
+      ],
+      "title\u00041. Ticket number generator (optional step)": [
+        "1. Ticketnummer generieren (optionaler Schritt)"
+      ],
+      "title\u00042. Ticket numbers to store on the server": [
+        "2. Speicher Ticketnummern auf deinem Server"
+      ],
+      "title\u0004Add Auth Token": [
+        "Auth-Token hinzufügen"
+      ],
+      "title\u0004Add List": [
+        "Liste hinzufügen"
+      ],
+      "title\u0004Add Ticket": [
+        "Ticket hinzufügen"
+      ],
+      "title\u0004Amount": [
+        "Anzahl"
+      ],
+      "title\u0004Bulk Action": [
+        "Massenaktion"
+      ],
+      "title\u0004Choose your export settings": [
+        "Wählen Sie Ihre Exporteinstellungen"
+      ],
+      "title\u0004Copy Template Code To Live Code": [
+        "Vorlagencode in Live-Code kopieren"
+      ],
+      "title\u0004Daily Redemption Summary": [
+        "Tägliche Einlöse-Zusammenfassung"
+      ],
+      "title\u0004Delete all tickets?": [
+        "Alle Tickets löschen?"
+      ],
+      "title\u0004Do you want to delete?": [
+        "Willst du es wirklich löschen?"
+      ],
+      "title\u0004Edit Auth Token": [
+        "Auth-Token bearbeiten"
+      ],
+      "title\u0004Edit List": [
+        "Liste bearbeiten"
+      ],
+      "title\u0004Edit Ticket": [
+        "Ticket bearbeiten"
+      ],
+      "title\u0004Enter an amount of how many ticket numbers you need": [
+        "Gib ein, wie viele Tickets du benötigst"
+      ],
+      "title\u0004Error": [
+        "Fehler"
+      ],
+      "title\u0004Error Logs": [
+        "Fehlerprotokolle"
+      ],
+      "title\u0004Event Tickets": [
+        "Event-Tickets"
+      ],
+      "title\u0004Export tickets": [
+        "Tickets Exportieren"
+      ],
+      "title\u0004Final confirmation": [
+        "Letzte Bestätigung"
+      ],
+      "title\u0004Getting Started": [
+        "Erste Schritte"
+      ],
+      "title\u0004IP list checked for this ticket": [
+        "IPs die einen Check für dieses Ticket gemacht haben"
+      ],
+      "title\u0004Import Options": [
+        "Optionen importieren"
+      ],
+      "title\u0004Importing": [
+        "Importiere"
+      ],
+      "title\u0004List of tickets": [
+        "Liste der Tickets"
+      ],
+      "title\u0004Load Template Ticket Code": [
+        "Vorlagen-Ticketcode laden"
+      ],
+      "title\u0004Numbers options": [
+        "Nummernoptionen"
+      ],
+      "title\u0004Options": [
+        "Optionen"
+      ],
+      "title\u0004QR with URL and code": [
+        "QR mit URL und Code"
+      ],
+      "title\u0004QR with ticket number": [
+        "QR-Code enthält die Ticketnummer"
+      ],
+      "title\u0004Registered user": [
+        "Registrierter Benutzer"
+      ],
+      "title\u0004Remove file": [
+        "Datei entfernen"
+      ],
+      "title\u0004Remove order": [
+        "Bestellung entfernen"
+      ],
+      "title\u0004Repaired": [
+        "Repariert"
+      ],
+      "title\u0004Replace Live Template Code": [
+        "Live-Vorlagencode ersetzen"
+      ],
+      "title\u0004Replacement Tags": [
+        "Platzhalter"
+      ],
+      "title\u0004Reset All Options": [
+        "Alle Optionen zurücksetzen"
+      ],
+      "title\u0004Revert Option": [
+        "Option zurücksetzen"
+      ],
+      "title\u0004Save Template Code": [
+        "Vorlagencode speichern"
+      ],
+      "title\u0004Select Media": [
+        "Media-Datei auswählen"
+      ],
+      "title\u0004Serials options": [
+        "Seriennummern Einstellungen"
+      ],
+      "title\u0004Successful stored ticket numbers": [
+        "Erfolgreich gespeicherte Ticketnummern"
+      ],
+      "title\u0004Ticket Default Template": [
+        "Ticket-Standardvorlage"
+      ],
+      "title\u0004Title": [
+        "Titel"
+      ],
+      "title\u0004WooCommerce Order": [
+        "WooCommerce Bestellung"
+      ],
+      "title\u0004Your Limit of %d tickets is reached. Use the premium version to have unlimited tickets": [
+        "Dein Limit von %d Ticketnummern ist erreicht. Nutze die Premiumversion, um unlimitierte Ticketnummern zu erstellen"
+      ]
+    }
+  }
+}

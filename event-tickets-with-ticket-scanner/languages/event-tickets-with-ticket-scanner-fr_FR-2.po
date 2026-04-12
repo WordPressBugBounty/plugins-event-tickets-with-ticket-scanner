@@ -8224,6 +8224,79 @@ msgstr ""
 "Il a fallu %2$d tentatives pour générer un code. Envisagez d'augmenter la "
 "longueur du code. %3$sModifier la liste%4$s | %5$sIgnorer%4$s"
 
+#: sasoEventtickets_Options.php:288
+msgid "Digital Wallets"
+msgstr "Portefeuilles numériques"
+
+#: sasoEventtickets_Options.php:288
+msgid "Allow your customers to add tickets to digital wallets."
+msgstr "Permettez à vos clients d'ajouter des billets à des portefeuilles numériques."
+
+#: sasoEventtickets_Options.php:296
+msgid "Enable Vollstart Wallet"
+msgstr "Activer Vollstart Wallet"
+
+#: sasoEventtickets_Options.php:292
+msgid ""
+"If active, customers can add their tickets to the Vollstart Wallet app "
+"(wallet.vollstart.com). A button will appear on the ticket detail page and "
+"in order emails. The wallet app allows customers to collect tickets from "
+"multiple shops in one place. <b>Your data stays private</b> — ticket data "
+"flows directly from your shop to the customer's browser. Vollstart never "
+"receives or stores any ticket data."
+msgstr ""
+"Si activé, les clients peuvent ajouter leurs billets à l'application "
+"Vollstart Wallet (wallet.vollstart.com). Un bouton apparaîtra sur la page "
+"de détail du billet et dans les e-mails de commande. L'application wallet "
+"permet aux clients de rassembler des billets de différentes boutiques en un "
+"seul endroit. <b>Vos données restent privées</b> — les données des billets "
+"transitent directement de votre boutique au navigateur du client. Vollstart "
+"ne reçoit ni ne stocke jamais de données de billets."
+
+#: sasoEventtickets_Options.php:292
+msgid "Learn more about security & privacy"
+msgstr "En savoir plus sur la sécurité et la confidentialité"
+
+#: index.php:634
+#: index.php:671
+#: index.php:676
+msgid "Add to Vollstart Wallet"
+msgstr "Ajouter au Vollstart Wallet"
+
+#: index.php:678
+msgid "Add to Wallet"
+msgstr "Ajouter au Wallet"
+
+#: sasoEventtickets_Options.php:294
+msgid ""
+"Warning: The WordPress REST API appears to be disabled. The Vollstart Wallet "
+"requires the REST API to function."
+msgstr ""
+"Avertissement : L'API REST de WordPress semble être désactivée. Vollstart "
+"Wallet nécessite l'API REST pour fonctionner."
+
+#: backend.js:2986
+msgid ""
+"Your customers can collect their tickets in the free Vollstart Wallet app."
+msgstr ""
+"Vos clients peuvent rassembler leurs billets dans l'application gratuite Vollstart Wallet."
+
+#: backend.js:2987
+msgid ""
+"Do you want to enable the \"Add to Vollstart Wallet\" button on ticket pages "
+"and in emails?"
+msgstr ""
+"Souhaitez-vous activer le bouton \"Ajouter au Vollstart Wallet\" sur les "
+"pages de billets et dans les e-mails ?"
+
+#: backend.js:3213
+msgid ""
+"Enable Vollstart Wallet? Customers can collect tickets in the free wallet "
+"app."
+msgstr ""
+"Activer Vollstart Wallet ? Les clients peuvent rassembler leurs billets dans "
+"l'application gratuite de wallet."
+
 #~ msgid ""
 #~ "Please enter your Premium license key in the settings to activate your "
 #~ "subscription."
@@ -8391,3 +8464,11 @@ msgstr ""
 #~ "billet. La Premium vous permet également d'activer l'enregistrement des "
 #~ "utilisateurs et plus encore. Cela permet à votre utilisateur de "
 #~ "s'inscrire à un ticket."
+
+#: backend.js:5217
+msgid "Wallet Test"
+msgstr "Test Wallet"
+
+#: backend.js:5217
+msgid "Import ticket to Vollstart Wallet for testing"
+msgstr "Importer le ticket dans Vollstart Wallet pour test"
