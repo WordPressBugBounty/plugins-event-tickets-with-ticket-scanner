@@ -154,5 +154,21 @@ if (!class_exists('sasoEventtickets_WC_Base')) {
 			return null;
 		}
 
+		/**
+		 * Remove a value from WooCommerce session
+		 *
+		 * @param string $name Session key name (without prefix)
+		 * @return bool True on success, false if session not available
+		 */
+		protected function session_unset_value(string $name): bool {
+			$prefix = $this->MAIN->_prefix_session;
+			$key = $prefix . $name;
+			if (WC() !== null && WC()->session !== null) {
+				WC()->session->__unset($key);
+				return true;
+			}
+			return false;
+		}
+
 	}
 }

@@ -642,7 +642,8 @@ final class sasoEventtickets_Ticket {
 			$codes = explode(",", $order_item->get_meta('_saso_eventtickets_product_code', true));
 			$ticket_pos = $this->ermittelCodePosition($codeObj['code_display'], $codes);
 		}
-		$label = esc_attr($this->getLabelNamePerTicket($product_parent_original->get_id()));
+		$_vid = $is_variation ? $product_original->get_id() : 0;
+		$label = esc_attr($this->getLabelNamePerTicket($product_parent_original->get_id(), $_vid));
 		$ret['name_per_ticket_label'] = str_replace("{count}", $ticket_pos, $label);
 
 		$ticket_pos = "";
@@ -651,7 +652,7 @@ final class sasoEventtickets_Ticket {
 			$codes = explode(",", $order_item->get_meta('_saso_eventtickets_product_code', true));
 			$ticket_pos = $this->ermittelCodePosition($codeObj['code_display'], $codes);
 		}
-		$label = esc_attr($this->getLabelValuePerTicket($product_parent_original->get_id()));
+		$label = esc_attr($this->getLabelValuePerTicket($product_parent_original->get_id(), $_vid));
 		$ret['value_per_ticket_label'] = str_replace("{count}", $ticket_pos, $label);
 
 		$ticket_pos = "";
@@ -1081,14 +1082,42 @@ final class sasoEventtickets_Ticket {
 		return $ret;
 	}
 
-	public function getLabelNamePerTicket($product_id) {
+	/**
+	 * Get post meta with variation-to-parent fallback.
+	 * If variation has the meta key set, use it. Otherwise fall back to parent product.
+	 *
+	 * @param int $product_id Parent product ID
+	 * @param int $variation_id Variation ID (0 for simple products)
+	 * @param string $meta_key Meta key to look up
+	 * @param bool $single Return single value
+	 * @return mixed
+	 */
+	public function getMetaWithVariationFallback(int $product_id, int $variation_id, string $meta_key, bool $single = true) {
+		if ($variation_id > 0) {
+			$val = get_post_meta($variation_id, $meta_key, $single);
+			if (!empty($val)) {
+				return $val;
+			}
+		}
+		return get_post_meta($product_id, $meta_key, $single);
+	}
+
+	public function getLabelNamePerTicket($product_id, int $variation_id = 0) {
 		$product_id_orig = $this->getWPMLProductId($product_id);
+		if ($variation_id > 0) {
+			$t = trim(get_post_meta($variation_id, "saso_eventtickets_request_name_per_ticket_label", true));
+			if (!empty($t)) return $t;
+		}
 		$t = trim(get_post_meta($product_id_orig, "saso_eventtickets_request_name_per_ticket_label", true));
         if (empty($t)) $t = "Name for the ticket #{count}:";
 		return $t;
 	}
-	public function getLabelValuePerTicket($product_id) {
+	public function getLabelValuePerTicket($product_id, int $variation_id = 0) {
 		$product_id_orig = $this->getWPMLProductId($product_id);
+		if ($variation_id > 0) {
+			$t = trim(get_post_meta($variation_id, "saso_eventtickets_request_value_per_ticket_label", true));
+			if (!empty($t)) return $t;
+		}
 		$t = trim(get_post_meta($product_id_orig, "saso_eventtickets_request_value_per_ticket_label", true));
         if (empty($t)) $t = "Please choose a value #{count}:";
 		return $t;
@@ -2198,7 +2227,8 @@ final class sasoEventtickets_Ticket {
 							$codes = explode(",", $order_item->get_meta('_saso_eventtickets_product_code', true));
 							$ticket_pos = $this->ermittelCodePosition($codeObj['code_display'], $codes);
 						}
-						$label = esc_attr($this->getLabelNamePerTicket($product_parent_original->get_id()));
+						$_vid2 = $is_variation ? $product_original->get_id() : 0;
+						$label = esc_attr($this->getLabelNamePerTicket($product_parent_original->get_id(), $_vid2));
 						$ticketObj['name_per_ticket'] = str_replace("{count}", $ticket_pos, $label)." ".esc_attr($metaObj['wc_ticket']['name_per_ticket']);
 					}
 					$ticketObj['value_per_ticket'] = "";
@@ -2209,7 +2239,8 @@ final class sasoEventtickets_Ticket {
 							$codes = explode(",", $order_item->get_meta('_saso_eventtickets_product_code', true));
 							$ticket_pos = $this->ermittelCodePosition($codeObj['code_display'], $codes);
 						}
-						$label = esc_attr($this->getLabelValuePerTicket($product_parent_original->get_id()));
+						$_vid2 = $is_variation ? $product_original->get_id() : 0;
+						$label = esc_attr($this->getLabelValuePerTicket($product_parent_original->get_id(), $_vid2));
 						$ticketObj['value_per_ticket'] = str_replace("{count}", $ticket_pos, $label)." ".esc_attr($metaObj['wc_ticket']['value_per_ticket']);
 					}
 

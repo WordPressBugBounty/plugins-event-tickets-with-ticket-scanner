@@ -36,8 +36,8 @@ class sasoEventtickets_AdminSettings {
 			'removeWoocommerceOrderInfoFromCode', 'removeWoocommerceRstrPurchaseInfoFromCode',
 			'removeUserRegistrationFromCode', 'removeUsedInformationFromCode',
 			'removeUsedInformationFromCodeBulk', 'editTicketMetaEntry',
-			'getRedemptionSummary', 'getRedemptionDetails', 'downloadRedemptionSummary',
-			'checkLicenseServer',
+			'getAllDaychooserCalendarData', 'getProductCalendarDetails', 'getRedemptionSummary', 'getRedemptionDetails', 'downloadRedemptionSummary',
+			'downloadSoldTicketsCSV', 'downloadErrorLogsCSV', 'checkLicenseServer',
 		];
 		if (in_array(trim($a), $sensitive_actions) && !current_user_can('manage_options')) {
 			if (!$this->MAIN->isUserAllowedToAccessAdminArea()) {
@@ -243,6 +243,12 @@ class sasoEventtickets_AdminSettings {
 				case "ping":
 					$ret = $this->ping($data);
 					break;
+				case "getAllDaychooserCalendarData":
+					$ret = $this->MAIN->getWC()->getProductManager()->getAllDaychooserCalendarData($data);
+					break;
+				case "getProductCalendarDetails":
+					$ret = $this->MAIN->getWC()->getProductManager()->getProductCalendarDetails($data);
+					break;
 				case "getRedemptionSummary":
 					$ret = $this->getRedemptionSummary($data);
 					break;
@@ -251,6 +257,12 @@ class sasoEventtickets_AdminSettings {
 					break;
 				case "downloadRedemptionSummary":
 					$this->downloadRedemptionSummary($data);
+					break;
+				case "downloadSoldTicketsCSV":
+					$this->downloadSoldTicketsCSV($data);
+					break;
+				case "downloadErrorLogsCSV":
+					$this->downloadErrorLogsCSV();
 					break;
 				case "checkLicenseServer":
 					$ret = $this->checkLicenseServer($data);
@@ -534,6 +546,52 @@ class sasoEventtickets_AdminSettings {
 		}
 
 		$filename = 'redemption-summary-' . $result['summary']['date_from'] . '-to-' . $result['summary']['date_to'] . '.csv';
+		SASO_EVENTTICKETS::_basics_sendeDateiCSVvonDBdaten($csvRows, $filename, ',');
+		exit;
+	}
+
+	/**
+	 * Download the sold tickets calendar data as CSV.
+	 */
+	private function downloadSoldTicketsCSV(array $data): void {
+		$result = $this->MAIN->getWC()->getProductManager()->getAllDaychooserCalendarData($data);
+
+		$csvRows = [];
+		if (!empty($result['dates'])) {
+			foreach ($result['dates'] as $date => $entries) {
+				foreach ($entries as $entry) {
+					$csvRows[] = [
+						'Date'         => $date,
+						'Product'      => $entry['product_name'],
+						'Product ID'   => $entry['product_id'],
+						'Ticket Count' => $entry['count'],
+					];
+				}
+			}
+		}
+
+		$dateFrom = $result['date_from'] ?? ($data['date_from'] ?? wp_date('Y-m-d'));
+		$dateTo = $result['date_to'] ?? ($data['date_to'] ?? wp_date('Y-m-d'));
+		$filename = 'sold-tickets-' . $dateFrom . '-to-' . $dateTo . '.csv';
+		SASO_EVENTTICKETS::_basics_sendeDateiCSVvonDBdaten($csvRows, $filename, ',');
+		exit;
+	}
+
+	private function downloadErrorLogsCSV(): void {
+		$sql = "SELECT time, exception_msg, caller_name, msg FROM " . $this->MAIN->getDB()->getTabelle("errorlogs") . " ORDER BY time DESC";
+		$rows = $this->MAIN->getDB()->_db_datenholen($sql);
+
+		$csvRows = [];
+		foreach ($rows as $row) {
+			$csvRows[] = [
+				'Time'      => $row['time'] ?? '',
+				'Exception' => $row['exception_msg'] ?? '',
+				'Caller'    => $row['caller_name'] ?? '',
+				'Message'   => $row['msg'] ?? '',
+			];
+		}
+
+		$filename = 'error-logs_' . wp_date('Y-m-d') . '.csv';
 		SASO_EVENTTICKETS::_basics_sendeDateiCSVvonDBdaten($csvRows, $filename, ',');
 		exit;
 	}

@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,24 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.0.3 - 2026-04-20 =
+* New: Auto-upgrade premium plugin after valid license key is saved — no more manual "Update" click needed. Customers who install the starter plugin and enter their license now get the real premium installed automatically in the background.
+* Fix: PHP 8.2+ fatal error "Call to undefined function trigger_deprecation()" — Twig Composer autoloader conflict when another plugin bundles Twig. Added polyfill before autoload.
+* Fix: PHP warning "Undefined array key REQUEST_METHOD" when plugin runs in CLI or WP-Cron context
+* Fix: Day chooser label not visible on product and shop pages — empty string prevented DB lookup and rendering
+* Fix: Day chooser showed wrong date in cart after re-adding same product — stale session data was not cleaned up on cart item removal. Added session_unset_value() cleanup.
+* Fix: Day chooser dates grew unbounded on WC cart merge — old dates were appended instead of correctly filling only new ticket positions
+* Fix: Day chooser on shop/archive page now works with WooCommerce Blocks — click interceptor appends date as GET parameter since WC Blocks no longer fires jQuery adding_to_cart event
+* Fix: Day chooser input now blocks keyboard typing and paste via JS — users must pick from datepicker. Server-side validation also checks excluded weekdays and specific dates (Premium).
+* Improvement: Datepicker wrapper has CSS class `saso-eventtickets-datepicker` and `data-product-id` for custom styling
+* New: Variable fields (name input + value dropdown) now configurable per WooCommerce variation — override enable, label, mandatory, and dropdown values per variation with automatic fallback to parent product settings
+* New: Attendance tab — "Sold Tickets" calendar view showing booked dates across all date picker products with product filter, month navigation, drill-down to individual tickets, CSV export, and auto-refresh (10s/30s/1min/5min) for live dashboard use
+* New: Error logs CSV export in Support Info
+* Improvement: Support Info layout — two-column grid for cards, URLs and Libraries side by side
+* Improvement: Sold Tickets Calendar button visible on all ticket products (disabled with hint for non-datepicker products)
+* Improvement: Print List table column widths fixed (# 1cm, Order/Status 2cm)
+* New: "More Plugins by Vollstart" submenu page — discover other free plugins from the same team
 
 = 3.0.2 - 2026-04-12 =
 * Fix: Old premium (< 1.5.0) compatibility — ReflectionClass-based method check BEFORE instantiation prevents "ghost hook" crashes. The old premium constructor registers 25+ WordPress hooks on $this; if the class was instantiated and then discarded, WordPress kept the callbacks alive in memory and fired them later, crashing the site on methods removed in the WC manager refactor. Now the compatibility check happens without ever running the constructor.

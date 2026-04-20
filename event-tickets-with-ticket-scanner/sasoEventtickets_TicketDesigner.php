@@ -14,6 +14,14 @@ class sasoEventtickets_TicketDesigner {
         if ($inst === null) {
             $inst = new self($main, $html);
             if (function_exists("twig_cycle") == false) {
+                // Polyfill: other plugins bundling Twig may mark the deprecation-contracts
+                // file as loaded in $GLOBALS['__composer_autoload_files'] without defining
+                // the function — e.g. older Twig versions or namespace conflicts on PHP 8.2+.
+                if (!function_exists('trigger_deprecation')) {
+                    function trigger_deprecation(string $package, string $version, string $message, mixed ...$args): void {
+                        @trigger_error(($package || $version ? "Since $package $version: " : '') . ($args ? vsprintf($message, $args) : $message), \E_USER_DEPRECATED);
+                    }
+                }
                 require_once __DIR__.'/vendors/twig/autoload.php';
             }
         }

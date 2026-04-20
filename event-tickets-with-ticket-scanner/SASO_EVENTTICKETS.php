@@ -45,7 +45,7 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 		public static function getRequest() {
 			if (self::$REQUEST_DATA == null) {
 				$ret = null;
-				switch ($_SERVER['REQUEST_METHOD']) {
+				switch ($_SERVER['REQUEST_METHOD'] ?? 'GET') {
 					case 'POST':
 						$ret = $_POST;
 						if (empty($ret)) {

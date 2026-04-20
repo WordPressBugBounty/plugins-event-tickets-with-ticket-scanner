@@ -2059,6 +2059,16 @@ msgctxt "button"
 msgid "Export CSV"
 msgstr "CSV exportálás"
 
+#: backend.js:2245
+msgctxt "label"
+msgid "Export from"
+msgstr "Exportálás ettől"
+
+#: backend.js:2247
+msgctxt "label"
+msgid "Export to"
+msgstr "Exportálás eddig"
+
 #: backend.js:1623
 msgctxt "label"
 msgid "Export Options"

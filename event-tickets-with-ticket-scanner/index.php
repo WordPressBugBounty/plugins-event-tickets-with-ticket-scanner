@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.0.2
+ * Version: 3.0.3
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.2');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.3');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -247,6 +247,57 @@ class sasoEventtickets {
 
 	public function isStarterOrStopDetected(): bool {
 		return $this->_starterOrStopDetected;
+	}
+
+	/**
+	 * After a valid license key is saved, automatically upgrade the premium
+	 * plugin from starter/stop to the real premium version.
+	 *
+	 * Customers install the starter, enter their license, but don't manually
+	 * click "Update" — they see expiration warnings and contact support.
+	 * This triggers the upgrade in the background.
+	 *
+	 * Runs synchronously (takes ~5-10s) — acceptable since user just clicked Save.
+	 * Errors are logged but not surfaced to the user.
+	 */
+	public function autoUpgradePremiumAfterLicenseSave(): void {
+		try {
+			$premFolder = trim($this->getPremiumPluginFolder(), '/');
+			if (empty($premFolder)) return;
+
+			// Find the premium plugin file in active_plugins
+			$pluginFile = null;
+			foreach (get_option('active_plugins', []) as $p) {
+				if (strpos($p, $premFolder . '/') === 0) {
+					$pluginFile = $p;
+					break;
+				}
+			}
+			if (empty($pluginFile)) return;
+
+			// Force WP to re-check for plugin updates (clears PUC cache)
+			delete_site_transient('update_plugins');
+			delete_site_transient('puc_request_info_saso-event-tickets-with-ticket-scanner-premium');
+			wp_update_plugins();
+
+			// Check if an update is available
+			$updates = get_site_transient('update_plugins');
+			if (empty($updates->response[$pluginFile])) {
+				return; // Already on latest — nothing to do
+			}
+
+			// Silently upgrade
+			if (!class_exists('Plugin_Upgrader')) {
+				require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+			}
+			if (!class_exists('Automatic_Upgrader_Skin')) {
+				require_once ABSPATH . 'wp-admin/includes/class-automatic-upgrader-skin.php';
+			}
+			$upgrader = new Plugin_Upgrader(new \Automatic_Upgrader_Skin());
+			$upgrader->upgrade($pluginFile);
+		} catch (\Throwable $e) {
+			error_log('Event Tickets: auto-upgrade after license save failed: ' . $e->getMessage());
+		}
 	}
 
 	public function getPremiumFunctions() {
@@ -2304,4 +2355,10 @@ class sasoEventtickets {
 	}
 }
 $sasoEventtickets = sasoEventtickets::Instance();
+
+// Cross-Promotion: andere Vollstart Plugins empfehlen
+if (is_admin() && file_exists(__DIR__ . '/vollstart-cross-promo.php')) {
+    require_once __DIR__ . '/vollstart-cross-promo.php';
+    vollstart_cross_promo_init('event-tickets-with-ticket-scanner');
+}
 ?>

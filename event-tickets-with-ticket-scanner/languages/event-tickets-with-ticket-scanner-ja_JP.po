@@ -2010,6 +2010,16 @@ msgctxt "button"
 msgid "Export CSV"
 msgstr "CSVエクスポート"
 
+#: backend.js:2245
+msgctxt "label"
+msgid "Export from"
+msgstr "エクスポート開始日"
+
+#: backend.js:2247
+msgctxt "label"
+msgid "Export to"
+msgstr "エクスポート終了日"
+
 #: backend.js:1623
 msgctxt "label"
 msgid "Export Options"

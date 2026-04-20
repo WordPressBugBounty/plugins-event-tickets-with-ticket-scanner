@@ -1180,9 +1180,18 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			// ── Useful Videos ──
 			DIV.append(getUseFulVideosHTML);
 
-			// ── License & Connectivity Card ──
+			// ── Two-column layout: left = System Info, right = License + Date + Stats ──
+			let row1 = $('<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">').appendTo(DIV);
+			let row1Right = $('<div style="display:flex;flex-direction:column;gap:16px;">').appendTo(row1);
+
+			// ── System Info Card (left) ──
+			let sysCard = $('<div class="et-card">').appendTo(row1);
+			sysCard.append('<div class="et-card-header"><span class="dashicons dashicons-info-outline" style="color:var(--et-primary);margin-right:6px;"></span>'+__('Support Context Information', 'event-tickets-with-ticket-scanner')+'</div>');
+			sysCard.append('<p style="color:var(--et-text-secondary);font-size:13px;margin-bottom:12px;">'+__('Please copy the following information, so that we can support you better and faster. Remove any critical information if needed.', 'event-tickets-with-ticket-scanner')+'</p>');
+
+			// ── License & Connectivity Card (right) ──
 			if (versions.premium != "" || isPremium() || _getOptions_Versions_getByKey('isOldPremiumDetected')) {
-				let licenseCard = $('<div class="et-card">').appendTo(DIV);
+				let licenseCard = $('<div class="et-card">').appendTo(row1Right);
 				licenseCard.append('<div class="et-card-header"><span class="dashicons dashicons-admin-network" style="color:var(--et-primary);margin-right:6px;"></span>'+__('License Status', 'event-tickets-with-ticket-scanner')+'</div>');
 				let licenseStatusDiv = $('<div>').appendTo(licenseCard);
 				_renderLicenseStatus(licenseStatusDiv, reply.infos.premium_expiration);
@@ -1218,7 +1227,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				});
 			} else {
 				// No premium — just connectivity check
-				let connCard = $('<div class="et-card">').appendTo(DIV);
+				let connCard = $('<div class="et-card">').appendTo(row1Right);
 				connCard.append('<div class="et-card-header"><span class="dashicons dashicons-admin-network" style="color:var(--et-primary);margin-right:6px;"></span>License Server Connectivity</div>');
 				connCard.append('<p style="color:var(--et-text-secondary);font-size:13px;margin-bottom:12px;">Check if the license/update server is reachable.</p>');
 				let connBtnRow = $('<div style="display:flex;gap:8px;align-items:center;">').appendTo(connCard);
@@ -1242,12 +1251,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				});
 			}
 
-			// ── System Info Card ──
-			let sysCard = $('<div class="et-card">').appendTo(DIV);
-			sysCard.append('<div class="et-card-header"><span class="dashicons dashicons-info-outline" style="color:var(--et-primary);margin-right:6px;"></span>'+__('Support Context Information', 'event-tickets-with-ticket-scanner')+'</div>');
-			sysCard.append('<p style="color:var(--et-text-secondary);font-size:13px;margin-bottom:12px;">'+__('Please copy the following information, so that we can support you better and faster. Remove any critical information if needed.', 'event-tickets-with-ticket-scanner')+'</p>');
-
-			// System info table
+			// System info table (appended to sysCard defined above)
 			let sysRows = '';
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">WordPress</span><span class="et-kv-value">'+versions.wp+'</span></div>';
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">Requires WP</span><span class="et-kv-value">'+versions.requires_wp+'</span></div>';
@@ -1336,7 +1340,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let supportTextarea = $('<textarea readonly class="et-support-textarea">').val(supportText).appendTo(copyArea);
 
 			// ── Date & Timezone Card ──
-			let dateCard = $('<div class="et-card">').appendTo(DIV);
+			let dateCard = $('<div class="et-card">').appendTo(row1Right);
 			dateCard.append('<div class="et-card-header"><span class="dashicons dashicons-clock" style="color:var(--et-primary);margin-right:6px;"></span>Date &amp; Timezone</div>');
 			let dateRows = '';
 			dateRows += '<div class="et-kv-row"><span class="et-kv-label">Default Timezone</span><span class="et-kv-value">'+versions.date_default_timezone+'</span></div>';
@@ -1347,12 +1351,15 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			dateCard.append('<div class="et-kv-table">'+dateRows+'</div>');
 
 			// ── Stats Card ──
-			let statsCard = $('<div class="et-card">').appendTo(DIV);
+			let statsCard = $('<div class="et-card">').appendTo(row1Right);
 			statsCard.append('<div class="et-card-header"><span class="dashicons dashicons-chart-bar" style="color:var(--et-primary);margin-right:6px;"></span>Stats</div>');
 			statsCard.append(div_stats);
 
+			// ── Two-column row: URLs + Libraries ──
+			let row3 = $('<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">').appendTo(DIV);
+
 			// ── URLs Card ──
-			let urlsCard = $('<div class="et-card">').appendTo(DIV);
+			let urlsCard = $('<div class="et-card">').appendTo(row3);
 			urlsCard.append('<div class="et-card-header"><span class="dashicons dashicons-admin-links" style="color:var(--et-primary);margin-right:6px;"></span>URLs</div>');
 			let urlRows = '';
 			urlRows += '<div class="et-kv-row"><span class="et-kv-label">Multisite</span><span class="et-kv-value">'+reply.infos.site.is_multisite+'</span></div>';
@@ -1380,6 +1387,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				.append($('<button>').html(__('Refresh table', 'event-tickets-with-ticket-scanner')).addClass("button-secondary").on("click", ()=>{
 					tabelle_errorlogs_datatable.ajax.reload();
 				}))
+				.append($('<button>').html('<span class="dashicons dashicons-download" style="vertical-align:middle;margin-right:2px;font-size:16px;"></span>'+__('Export CSV', 'event-tickets-with-ticket-scanner')).addClass("button-secondary").on("click", ()=>{
+					window.open(_requestURL('downloadErrorLogsCSV'), '_blank');
+				}))
 				.append($('<button>').html(__('Empty table', 'event-tickets-with-ticket-scanner')).addClass("sngmbh_btn-delete").on("click", ()=>{
 					LAYOUT.renderYesNo(__('Empty table', 'event-tickets-with-ticket-scanner'), sprintf(/* translators: %s: name of ticket table */__('Do you want to empty the "%s" table? All data will be lost.', 'event-tickets-with-ticket-scanner'), _x("Error Logs", 'title', 'event-tickets-with-ticket-scanner')), ()=>{
 						LAYOUT.renderYesNo(__('Empty table - last chance', 'event-tickets-with-ticket-scanner'), sprintf(/* translators: %s: name of ticket table */__('Are you sure? You will not be able to restore the data, except you have a backup of your database. All data will be lost.', 'event-tickets-with-ticket-scanner'), _x("Error Logs", 'title', 'event-tickets-with-ticket-scanner')), ()=>{
@@ -1394,7 +1404,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let div_tabelle = $('<div>').appendTo(errorCard);
 
 			// ── Libraries Card ──
-			let libCard = $('<div class="et-card">').appendTo(DIV);
+			let libCard = $('<div class="et-card">').appendTo(row3);
 			let label_version = _x('Version', 'label', 'event-tickets-with-ticket-scanner');
 			libCard.append('<div class="et-card-header"><span class="dashicons dashicons-admin-plugins" style="color:var(--et-primary);margin-right:6px;"></span>Used Libraries</div>');
 			libCard.append('<ul class="et-lib-list">'
@@ -2179,18 +2189,313 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		});
 	}
 
-	// ── Daily Redemption Summary / Attendance (#236) ──
+	// ── Attendance Area with Tabs (#236) ──
 
 	function _displayAttendanceArea() {
 		STATE = 'attendance';
-		DIV.html(_getSpinnerHTML());
-
 		DIV.html(getBackButtonDiv());
-		DIV.append('<h3>' + _x('Daily Redemption Summary', 'title', 'event-tickets-with-ticket-scanner') + '</h3>');
+
+		// Tab bar
+		let tabBar = $('<div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid #e5e7eb;">').appendTo(DIV);
+		let tabSold = $('<button class="button" style="border:none;border-bottom:2px solid var(--et-primary);margin-bottom:-2px;border-radius:0;font-weight:600;">').html(_x('Sold Tickets', 'tab', 'event-tickets-with-ticket-scanner')).appendTo(tabBar);
+		let tabRedemption = $('<button class="button" style="border:none;border-bottom:2px solid transparent;margin-bottom:-2px;border-radius:0;color:#666;">').html(_x('Daily Redemption Summary', 'tab', 'event-tickets-with-ticket-scanner')).appendTo(tabBar);
+
+		let tabContentSold = $('<div>').appendTo(DIV);
+		let tabContentRedemption = $('<div style="display:none;">').appendTo(DIV);
+
+		function switchTab(active) {
+			if (active === 'sold') {
+				tabSold.css({'border-bottom-color':'var(--et-primary)','color':'','font-weight':'600'});
+				tabRedemption.css({'border-bottom-color':'transparent','color':'#666','font-weight':''});
+				tabContentSold.show();
+				tabContentRedemption.hide();
+			} else {
+				tabRedemption.css({'border-bottom-color':'var(--et-primary)','color':'','font-weight':'600'});
+				tabSold.css({'border-bottom-color':'transparent','color':'#666','font-weight':''});
+				tabContentRedemption.show();
+				tabContentSold.hide();
+			}
+		}
+		tabSold.on('click', () => switchTab('sold'));
+		tabRedemption.on('click', () => switchTab('redemption'));
+
+		// ── Tab 1: Sold Tickets Calendar ──
+		_buildSoldTicketsTab(tabContentSold);
+
+		// ── Tab 2: Daily Redemption Summary ──
+		_buildRedemptionTab(tabContentRedemption);
+	}
+
+	function _buildSoldTicketsTab(container) {
+		container.empty();
+
+		let now = new Date();
+		let calMonth = now.getMonth(); // 0-based
+		let calYear = now.getFullYear();
+
+		// ── Filter box ──
+		let filterCard = $('<div class="et-card" style="padding:12px 16px;margin-bottom:16px;">').appendTo(container);
+		let productRow = $('<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">').appendTo(filterCard);
+		productRow.append('<strong style="margin-right:4px;">' + __('Products:', 'event-tickets-with-ticket-scanner') + '</strong>');
+		let productCheckboxes = $('<span style="display:inline-flex;gap:12px;flex-wrap:wrap;">').appendTo(productRow);
+
+		// Export row
+		let today = now.toISOString().split('T')[0];
+		let exportRow = $('<div style="display:flex;gap:15px;align-items:flex-end;flex-wrap:wrap;">').appendTo(filterCard);
+		let div_from = _createDivInput(_x('Export from', 'label', 'event-tickets-with-ticket-scanner')).appendTo(exportRow);
+		let input_from = $('<input type="date"/>').val(today).css('padding','4px 8px').appendTo(div_from);
+		let div_to = _createDivInput(_x('Export to', 'label', 'event-tickets-with-ticket-scanner')).appendTo(exportRow);
+		let input_to = $('<input type="date"/>').val(today).css('padding','4px 8px').appendTo(div_to);
+		$('<button/>').addClass("button-secondary").css({'margin-bottom':'15px'}).html('<span class="dashicons dashicons-download" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Export CSV', 'button', 'event-tickets-with-ticket-scanner')).on('click', function() {
+			let df = input_from.val(), dt = input_to.val();
+			if (!df || !dt) return;
+			window.open(_requestURL('downloadSoldTicketsCSV', {date_from: df, date_to: dt, exclude_products: getExcluded().join(',')}), '_blank');
+		}).appendTo(exportRow);
+
+		// ── Calendar box ──
+		let calCard = $('<div class="et-card" style="padding:16px;">').appendTo(container);
+
+		// Nav: « month year » [Refresh]
+		let navRow = $('<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">').appendTo(calCard);
+		let navLeft = $('<div style="display:flex;align-items:center;gap:8px;">').appendTo(navRow);
+		let btnPrev = $('<button type="button" class="button button-small">&laquo;</button>').appendTo(navLeft);
+		let monthLabel = $('<strong style="min-width:140px;text-align:center;">').appendTo(navLeft);
+		let btnNext = $('<button type="button" class="button button-small">&raquo;</button>').appendTo(navLeft);
+		let btnRefresh = $('<button type="button" class="button button-secondary"><span class="dashicons dashicons-update" style="vertical-align:middle;"></span></button>').appendTo(navRow);
+
+		// Auto-refresh
+		let autoRefreshDiv = $('<div style="display:flex;align-items:center;gap:6px;">').appendTo(navRow);
+		autoRefreshDiv.append('<span style="font-size:12px;color:#666;">' + __('Auto-refresh:', 'event-tickets-with-ticket-scanner') + '</span>');
+		let autoRefreshSelect = $('<select style="padding:2px 20px 2px 4px;font-size:12px;">').appendTo(autoRefreshDiv);
+		autoRefreshSelect.append('<option value="0">' + __('Off', 'event-tickets-with-ticket-scanner') + '</option>');
+		autoRefreshSelect.append('<option value="10">10s</option>');
+		autoRefreshSelect.append('<option value="30">30s</option>');
+		autoRefreshSelect.append('<option value="60">1 min</option>');
+		autoRefreshSelect.append('<option value="300">5 min</option>');
+		let autoRefreshTimer = null;
+		let autoRefreshCountdown = $('<span style="font-size:11px;color:#999;min-width:30px;">').appendTo(autoRefreshDiv);
+
+		function startAutoRefresh() {
+			stopAutoRefresh();
+			let interval = parseInt(autoRefreshSelect.val());
+			if (interval <= 0) { autoRefreshCountdown.text(''); return; }
+			let remaining = interval;
+			autoRefreshCountdown.text(remaining + 's');
+			autoRefreshTimer = setInterval(function() {
+				remaining--;
+				if (remaining <= 0) {
+					loadCalendar();
+					remaining = interval;
+				}
+				autoRefreshCountdown.text(remaining + 's');
+			}, 1000);
+		}
+		function stopAutoRefresh() {
+			if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+			autoRefreshCountdown.text('');
+		}
+		autoRefreshSelect.on('change', startAutoRefresh);
+
+		let calRow = $('<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">').appendTo(calCard);
+		let calendarDiv = $('<div>').appendTo(calRow);
+		let detailDiv = $('<div>').appendTo(calRow);
+
+		function getExcluded() {
+			let excluded = [];
+			productCheckboxes.find('input:not(:checked)').each(function() { excluded.push($(this).val()); });
+			return excluded;
+		}
+
+		function loadCalendar() {
+			let monthNames = [
+				__('January'), __('February'), __('March'), __('April'),
+				__('May'), __('June'), __('July'), __('August'),
+				__('September'), __('October'), __('November'), __('December')
+			];
+			monthLabel.text(monthNames[calMonth] + ' ' + calYear);
+			calendarDiv.html(_getSpinnerHTML());
+			detailDiv.html('');
+
+			let first = calYear + '-' + String(calMonth + 1).padStart(2, '0') + '-01';
+			let last = calYear + '-' + String(calMonth + 1).padStart(2, '0') + '-' + String(new Date(calYear, calMonth + 1, 0).getDate()).padStart(2, '0');
+
+			_makeGet('getAllDaychooserCalendarData', {
+				date_from: first,
+				date_to: last,
+				exclude_products: getExcluded().join(',')
+			}, function(data) {
+				renderCalendarGrid(calendarDiv, detailDiv, data);
+			}, function() {
+				calendarDiv.html('<p style="color:red;">' + __('Error loading data.', 'event-tickets-with-ticket-scanner') + '</p>');
+			});
+		}
+
+		btnPrev.on('click', function() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } loadCalendar(); });
+		btnNext.on('click', function() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } loadCalendar(); });
+		btnRefresh.on('click', loadCalendar);
+
+		// Load product list, then load calendar
+		_makeGet('getAllDaychooserCalendarData', {date_from: '2099-01-01', date_to: '2099-01-01'}, function(data) {
+			if (data.products) {
+				data.products.forEach(function(p) {
+					let lbl = $('<label style="font-size:13px;cursor:pointer;">');
+					let cb = $('<input type="checkbox" value="' + p.id + '" checked>');
+					lbl.append(cb).append(' ' + p.name);
+					productCheckboxes.append(lbl);
+				});
+			}
+			loadCalendar();
+		});
+	}
+
+	function renderCalendarGrid(calendarDiv, detailDiv, data) {
+		let allDates = data.dates || {};
+		let dateFrom = data.date_from;
+		let dateTo = data.date_to;
+
+		let startD = new Date(dateFrom + 'T00:00:00');
+		let endD = new Date(dateTo + 'T00:00:00');
+		let currentMonth = {year: startD.getFullYear(), month: startD.getMonth()};
+		let endMonth = {year: endD.getFullYear(), month: endD.getMonth()};
+
+		let monthNames = [
+			__('January', 'event-tickets-with-ticket-scanner'), __('February', 'event-tickets-with-ticket-scanner'),
+			__('March', 'event-tickets-with-ticket-scanner'), __('April', 'event-tickets-with-ticket-scanner'),
+			__('May', 'event-tickets-with-ticket-scanner'), __('June', 'event-tickets-with-ticket-scanner'),
+			__('July', 'event-tickets-with-ticket-scanner'), __('August', 'event-tickets-with-ticket-scanner'),
+			__('September', 'event-tickets-with-ticket-scanner'), __('October', 'event-tickets-with-ticket-scanner'),
+			__('November', 'event-tickets-with-ticket-scanner'), __('December', 'event-tickets-with-ticket-scanner')
+		];
+		let dayHeaders = [
+			__('Mon', 'event-tickets-with-ticket-scanner'), __('Tue', 'event-tickets-with-ticket-scanner'),
+			__('Wed', 'event-tickets-with-ticket-scanner'), __('Thu', 'event-tickets-with-ticket-scanner'),
+			__('Fri', 'event-tickets-with-ticket-scanner'), __('Sat', 'event-tickets-with-ticket-scanner'),
+			__('Sun', 'event-tickets-with-ticket-scanner')
+		];
+
+		let $wrapper = $('<div>');
+		let grandTotal = 0;
+
+		// Render each month in the range
+		while (currentMonth.year < endMonth.year || (currentMonth.year === endMonth.year && currentMonth.month <= endMonth.month)) {
+			let year = currentMonth.year;
+			let month = currentMonth.month;
+
+			let $monthBlock = $('<div style="margin-bottom:24px;">');
+			$monthBlock.append('<h4 style="margin:0 0 8px;">' + monthNames[month] + ' ' + year + '</h4>');
+
+			let $table = $('<table class="widefat" style="table-layout:fixed;text-align:center;">');
+			let $thead = $('<thead><tr></tr></thead>');
+			for (let i = 0; i < 7; i++) {
+				$thead.find('tr').append('<th style="text-align:center;padding:4px;">' + dayHeaders[i] + '</th>');
+			}
+			$table.append($thead);
+
+			let $tbody = $('<tbody>');
+			let firstDay = new Date(year, month, 1).getDay();
+			let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+			let daysInMonth = new Date(year, month + 1, 0).getDate();
+			let day = 1;
+
+			for (let row = 0; row < 6 && day <= daysInMonth; row++) {
+				let $tr = $('<tr>');
+				for (let col = 0; col < 7; col++) {
+					if ((row === 0 && col < startOffset) || day > daysInMonth) {
+						$tr.append('<td style="padding:4px;"></td>');
+					} else {
+						let dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+						let dayData = allDates[dateStr] || [];
+						let dayTotal = 0;
+						dayData.forEach(function(d) { dayTotal += d.count; });
+						grandTotal += dayTotal;
+
+						let $td = $('<td style="padding:4px;position:relative;vertical-align:top;height:45px;">');
+						$td.append('<div style="font-size:11px;color:#666;">' + day + '</div>');
+						if (dayTotal > 0) {
+							let $badge = $('<div style="font-weight:bold;color:#0073aa;cursor:pointer;">' + dayTotal + '</div>');
+							$badge.data('cal-date', dateStr);
+							$badge.data('cal-products', dayData);
+							$badge.on('click', function(e) {
+								e.preventDefault();
+								let ds = $(this).data('cal-date');
+								let dd = $(this).data('cal-products');
+
+								detailDiv.html('<h4 style="margin:0 0 8px;">' + sprintf(__('Tickets for %s', 'event-tickets-with-ticket-scanner'), ds) + '</h4>' + _getSpinnerHTML());
+
+								// Load details for each product
+								let promises = dd.map(function(p) {
+									return new Promise(function(resolve) {
+										_makeGet('getProductCalendarDetails', {product_id: p.product_id, date: ds}, function(tickets) {
+											resolve({product: p, tickets: tickets || []});
+										}, function() {
+											resolve({product: p, tickets: []});
+										});
+									});
+								});
+
+								Promise.all(promises).then(function(results) {
+									let $detail = $('<div>');
+									$detail.append('<h4 style="margin:0 0 8px;">' + sprintf(__('Tickets for %s', 'event-tickets-with-ticket-scanner'), ds) + '</h4>');
+
+									results.forEach(function(r) {
+										$detail.append('<strong>' + r.product.product_name + ' (' + r.product.count + ')</strong>');
+										if (r.tickets.length === 0) {
+											$detail.append('<p><em>' + __('No details available.', 'event-tickets-with-ticket-scanner') + '</em></p>');
+											return;
+										}
+										let $table = $('<table class="widefat striped" style="margin:4px 0 16px;">');
+										$table.append('<thead><tr>'
+											+ '<th>' + __('Ticket', 'event-tickets-with-ticket-scanner') + '</th>'
+											+ '<th>' + __('Order', 'event-tickets-with-ticket-scanner') + '</th>'
+											+ '<th>' + __('Status', 'event-tickets-with-ticket-scanner') + '</th>'
+											+ '</tr></thead>');
+										let $tbody = $('<tbody>');
+										r.tickets.forEach(function(t) {
+											let ticketHtml = t.code_display;
+											let orderHtml = t.order_id > 0
+												? '<a href="post.php?post=' + t.order_id + '&action=edit" target="_blank">#' + t.order_id + '</a>'
+												: '-';
+											let statusText = t.redeemed ? __('Redeemed', 'event-tickets-with-ticket-scanner') : __('Active', 'event-tickets-with-ticket-scanner');
+											let statusColor = t.redeemed ? '#d63638' : '#00a32a';
+											$tbody.append('<tr><td>' + ticketHtml + '</td><td>' + orderHtml + '</td><td style="color:' + statusColor + ';">' + statusText + '</td></tr>');
+										});
+										$table.append($tbody);
+										$detail.append($table);
+									});
+									detailDiv.empty().append($detail);
+								});
+							});
+							$td.append($badge);
+							$td.css('background', '#f0f7ff');
+						}
+						$tr.append($td);
+						day++;
+					}
+				}
+				$tbody.append($tr);
+			}
+			$table.append($tbody);
+			$monthBlock.append($table);
+			$wrapper.append($monthBlock);
+
+			// Next month
+			currentMonth.month++;
+			if (currentMonth.month > 11) { currentMonth.month = 0; currentMonth.year++; }
+		}
+
+		let totalText = grandTotal > 0
+			? sprintf(__('Total sold: %d tickets', 'event-tickets-with-ticket-scanner'), grandTotal)
+			: __('No tickets found for this month.', 'event-tickets-with-ticket-scanner');
+		$wrapper.append('<div style="margin-top:8px;font-size:12px;color:#666;">' + totalText + '</div>');
+
+		calendarDiv.empty().append($wrapper);
+	}
+
+	function _buildRedemptionTab(container) {
 
 		// Date range filter + Export button
 		let today = new Date().toISOString().split('T')[0];
-		let div_filters = $('<div class="et-card"/>').css({'display':'flex','gap':'15px','align-items':'flex-end','flex-wrap':'wrap'}).appendTo(DIV);
+		let div_filters = $('<div class="et-card"/>').css({'display':'flex','gap':'15px','align-items':'flex-end','flex-wrap':'wrap'}).appendTo(container);
 
 		let div_from = _createDivInput(_x('From', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
 		let input_from = $('<input type="date"/>').val(today).css('padding','4px 8px').appendTo(div_from);
@@ -2208,14 +2513,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		});
 
 		// Summary cards
-		let div_summary = $('<div/>').css({'display':'flex','gap':'20px','margin-bottom':'15px'}).appendTo(DIV);
+		let div_summary = $('<div/>').css({'display':'flex','gap':'20px','margin-bottom':'15px'}).appendTo(container);
 		let cardStyle = {'padding':'15px','background':'white','border-radius':'5px','flex':'1','text-align':'center','border':'1px solid #c3c4c7'};
 		let card_redeemed = $('<div/>').css(cardStyle).appendTo(div_summary);
 		let card_total = $('<div/>').css(cardStyle).appendTo(div_summary);
 		let card_noshow = $('<div/>').css(cardStyle).appendTo(div_summary);
 
 		// Table area
-		let div_table = $('<div/>').css({'background':'white','padding':'15px','border-radius':'5px','border':'1px solid #c3c4c7'}).appendTo(DIV);
+		let div_table = $('<div/>').css({'background':'white','padding':'15px','border-radius':'5px','border':'1px solid #c3c4c7'}).appendTo(container);
 
 		let tabelle_attendance_datatable = null;
 

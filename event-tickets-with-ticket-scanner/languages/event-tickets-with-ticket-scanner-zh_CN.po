@@ -1937,6 +1937,16 @@ msgctxt "button"
 msgid "Export CSV"
 msgstr "导出 CSV"
 
+#: backend.js:2245
+msgctxt "label"
+msgid "Export from"
+msgstr "导出开始日期"
+
+#: backend.js:2247
+msgctxt "label"
+msgid "Export to"
+msgstr "导出结束日期"
+
 #: backend.js:1623
 msgctxt "label"
 msgid "Export Options"

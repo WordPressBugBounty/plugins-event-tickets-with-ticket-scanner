@@ -162,6 +162,9 @@ class sasoEventtickets_WC {
 				case "getProductCalendarData":
 					$ret = $this->getProductManager()->getProductCalendarData($data);
 					break;
+				case "getAllDaychooserCalendarData":
+					$ret = $this->getProductManager()->getAllDaychooserCalendarData($data);
+					break;
 				case "getProductCalendarDetails":
 					$ret = $this->getProductManager()->getProductCalendarDetails($data);
 					break;

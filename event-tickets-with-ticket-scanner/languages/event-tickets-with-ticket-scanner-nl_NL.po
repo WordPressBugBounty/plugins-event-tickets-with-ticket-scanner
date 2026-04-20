@@ -2047,6 +2047,16 @@ msgctxt "button"
 msgid "Export CSV"
 msgstr "CSV exporteren"
 
+#: backend.js:2245
+msgctxt "label"
+msgid "Export from"
+msgstr "Exporteren van"
+
+#: backend.js:2247
+msgctxt "label"
+msgid "Export to"
+msgstr "Exporteren tot"
+
 #: backend.js:1623
 msgctxt "label"
 msgid "Export Options"

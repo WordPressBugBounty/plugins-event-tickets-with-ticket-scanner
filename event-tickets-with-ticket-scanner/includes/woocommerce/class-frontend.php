@@ -573,6 +573,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 					"data-only-one-datepicker" => $display_only_one_datepicker ? "1" : "0",
 					'style' => 'width:auto;',
 					'required' => 'required',
+					'readonly' => 'readonly',
 					'onClick' => 'window.SasoEventticketsValidator_WC_frontend._addHandlerToTheCodeFields();',
 				],
 				'id' => 'saso_eventtickets_request_daychooser[' . $cart_item_key . '][' . $a . ']',
@@ -633,7 +634,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				$params['class'][] = 'saso-datepicker-disabled';
 			}
 
-			echo '<div id="datepicker-wrapper_' . $cart_item_key . '_' . $a . '" class="' . ($disabled ? 'saso-datepicker-locked' : '') . '">';
+			echo '<div id="datepicker-wrapper_' . $cart_item_key . '_' . $a . '" class="saso-eventtickets-datepicker' . ($disabled ? ' saso-datepicker-locked' : '') . '" data-product-id="' . $product_id . '">';
 			woocommerce_form_field('saso_eventtickets_request_daychooser[' . $cart_item_key . '][]', $params, $value);
 
 			// Show reason for disabled state
@@ -819,13 +820,16 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			}
 
 			// Handle name per ticket input
-			$saso_eventtickets_request_name_per_ticket = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_name_per_ticket", true) == "yes";
+			$_vid = isset($cart_item['variation_id']) ? intval($cart_item['variation_id']) : 0;
+			$_pid = intval($cart_item['product_id']);
+			$_th = $this->MAIN->getTicketHandler();
+			$saso_eventtickets_request_name_per_ticket = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_name_per_ticket") == "yes";
 			if ($saso_eventtickets_request_name_per_ticket) {
 				$anzahl = intval($cart_item["quantity"]);
 				if ($anzahl > 0) {
 					$valueArray = WC()->session->get("saso_eventtickets_request_name_per_ticket");
 
-					$label = esc_attr($this->MAIN->getTicketHandler()->getLabelNamePerTicket($cart_item['product_id']));
+					$label = esc_attr($_th->getLabelNamePerTicket($_pid, $_vid));
 					for ($a = 0; $a < $anzahl; $a++) {
 						$value = "";
 						if ($valueArray != null && isset($valueArray[$cart_item_key]) && isset($valueArray[$cart_item_key][$a])) {
@@ -852,17 +856,17 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			}
 
 			// Handle value per ticket dropdown
-			$saso_eventtickets_request_value_per_ticket = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_value_per_ticket", true) == "yes";
+			$saso_eventtickets_request_value_per_ticket = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_value_per_ticket") == "yes";
 			if ($saso_eventtickets_request_value_per_ticket) {
 				$anzahl = intval($cart_item["quantity"]);
 				if ($anzahl > 0) {
 					$valueArray = WC()->session->get("saso_eventtickets_request_value_per_ticket");
 
-					$dropdown_values = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_value_per_ticket_values", true);
-					$dropdown_def = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_value_per_ticket_def", true);
+					$dropdown_values = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_value_per_ticket_values");
+					$dropdown_def = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_value_per_ticket_def");
 					if (!empty($dropdown_values)) {
-						$is_mandatory = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_value_per_ticket_mandatory", true) == "yes";
-						$label_option = esc_attr($this->MAIN->getTicketHandler()->getLabelValuePerTicket($cart_item['product_id']));
+						$is_mandatory = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_value_per_ticket_mandatory") == "yes";
+						$label_option = esc_attr($_th->getLabelValuePerTicket($_pid, $_vid));
 						for ($a = 0; $a < $anzahl; $a++) {
 							$value = "";
 							if ($valueArray != null && isset($valueArray[$cart_item_key]) && isset($valueArray[$cart_item_key][$a])) {
@@ -1018,14 +1022,17 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 */
 		private function validateNamePerTicket(array $cart_items): void {
 			$valueArray = WC()->session->get("saso_eventtickets_request_name_per_ticket");
+			$_th = $this->MAIN->getTicketHandler();
 
 			foreach ($cart_items as $item_id => $cart_item) {
-				$request_name = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_name_per_ticket", true) == "yes";
+				$_vid = isset($cart_item['variation_id']) ? intval($cart_item['variation_id']) : 0;
+				$_pid = intval($cart_item['product_id']);
+				$request_name = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_name_per_ticket") == "yes";
 				if (!$request_name) {
 					continue;
 				}
 
-				$mandatory = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_name_per_ticket_mandatory", true) == "yes";
+				$mandatory = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_name_per_ticket_mandatory") == "yes";
 				if (!$mandatory) {
 					continue;
 				}
@@ -1062,14 +1069,17 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 */
 		private function validateValuePerTicket(array $cart_items): void {
 			$valueArray = WC()->session->get("saso_eventtickets_request_value_per_ticket");
+			$_th = $this->MAIN->getTicketHandler();
 
 			foreach ($cart_items as $item_id => $cart_item) {
-				$request_value = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_value_per_ticket", true) == "yes";
+				$_vid = isset($cart_item['variation_id']) ? intval($cart_item['variation_id']) : 0;
+				$_pid = intval($cart_item['product_id']);
+				$request_value = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_value_per_ticket") == "yes";
 				if (!$request_value) {
 					continue;
 				}
 
-				$mandatory = get_post_meta($cart_item['product_id'], "saso_eventtickets_request_value_per_ticket_mandatory", true) == "yes";
+				$mandatory = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_value_per_ticket_mandatory") == "yes";
 				if (!$mandatory) {
 					continue;
 				}
@@ -1172,6 +1182,26 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 					if (!empty($ticket_end_date) && strtotime($value) > strtotime($ticket_end_date)) {
 						$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a, true);
 						continue;
+					}
+
+					// Validate excluded weekdays (0=Sun, 1=Mon, ..., 6=Sat)
+					$exclude_wdays = $dates['daychooser_exclude_wdays'] ?? [];
+					if (!empty($exclude_wdays) && is_array($exclude_wdays)) {
+						$dayOfWeek = (int) date('w', strtotime($value));
+						if (in_array($dayOfWeek, array_map('intval', $exclude_wdays), true)) {
+							$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a);
+							continue;
+						}
+					}
+
+					// Validate excluded specific dates (Premium feature)
+					if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getDayChooserExclusionDates')) {
+						$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($cart_item['product_id']);
+						$exclusionDates = $this->MAIN->getPremiumFunctions()->getDayChooserExclusionDates($product_id_orig);
+						if (!empty($exclusionDates) && in_array($value, $exclusionDates, true)) {
+							$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a);
+							continue;
+						}
 					}
 				}
 			}
@@ -1366,7 +1396,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				// Nonce per page (once is enough)
 				wp_nonce_field('wcadr_add_to_cart', self::NONCE_KEY);
 
-				$this->addDatepickerHTML($name, 0, $product_id, "", "", null, null, $name, ["data-is-shop-page" => "1"]);
+				$this->addDatepickerHTML($name, 0, $product_id, "", null, null, null, $name, ["data-is-shop-page" => "1"]);
 
 				// Load JS and initialize handler
 				$label = $this->getWarningDatePickerLabel($product->get_name(), 0, 1);
@@ -1434,7 +1464,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				// Nonce per page (once is enough)
 				wp_nonce_field('wcadr_add_to_cart', self::NONCE_KEY);
 
-				$this->addDatepickerHTML($name, 0, $product_id, "", "", null, null, $name, ["data-is-shop-page" => "1"]);
+				$this->addDatepickerHTML($name, 0, $product_id, "", null, null, null, $name, ["data-is-shop-page" => "1"]);
 
 				// Load JS and initialize handler
 				$label = $this->getWarningDatePickerLabel($product->get_name(), 0, 1);
@@ -1717,6 +1747,8 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 
 				if (!empty($date)) {
 					$key = self::SESSION_KEY_DAYCHOOSER;
+					$totalQty = intval($line['quantity']);
+					$addedQty = $quantity;
 
 					// Get fallback value in case cart item is adjusted by other plugins
 					$valueArray = $this->session_get_value($key . '_' . $cart_item_key);
@@ -1727,14 +1759,17 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 						$line[$key] = [];
 					}
 
-					for ($i = 0; $i < $quantity; $i++) {
+					// Trim to pre-merge quantity (totalQty - addedQty), then append new dates
+					$oldQty = max(0, $totalQty - $addedQty);
+					$line[$key] = array_slice($line[$key], 0, $oldQty);
+					for ($i = 0; $i < $addedQty; $i++) {
 						$line[$key][] = $date;
 					}
 
 					$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
 					$display_only_one_datepicker = get_post_meta($product_id_orig, 'saso_eventtickets_only_one_day_for_all_tickets', true) == "yes";
 					if ($display_only_one_datepicker) {
-						$line[$key] = array_fill(0, $quantity, $date);
+						$line[$key] = array_fill(0, $totalQty, $date);
 					}
 
 					$this->session_set_value($key . '_' . $cart_item_key, $line[$key]);
@@ -1800,6 +1835,9 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 					WC()->session->__unset($k);
 				}
 			}
+
+			// Clean up daychooser session data
+			$this->session_unset_value(self::SESSION_KEY_DAYCHOOSER . '_' . $cart_item_key);
 
 			// Release seat blocks if any
 			if ($cart && isset($cart->removed_cart_contents[$cart_item_key])) {

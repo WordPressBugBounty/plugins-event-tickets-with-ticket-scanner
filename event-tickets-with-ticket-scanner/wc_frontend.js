@@ -98,17 +98,41 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			});
 		}
 
-		// shop page
-		$(document.body).on('click', '.add_to_cart_button', function(e){
+		// shop/archive page: intercept ANY add-to-cart link with data-product_id
+		// Works with both WC Classic (ajax_add_to_cart) and WC Blocks (plain <a> link)
+		$(document.body).on('click', 'a[data-product_id]', function(e){
 			var btn = $(this);
-			if (!btn.hasClass('ajax_add_to_cart')) return; // nur AJAX-Buttons
+			var pid = getPidFromAddToCartButton(btn);
+			if (!pid) return;
 
-			if (!checkDate(btn)) {
+			var $input = findDateForPid(pid, btn);
+			if (!$input || !$input.length) return; // not a daychooser product — let WC handle normally
+
+			var val = ($input.val() || '').trim();
+			if (!val) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				alert(phpObject.daychooser_warning ? phpObject.daychooser_warning : __('Please choose a valid date.', 'event-tickets-with-ticket-scanner'));
 				return false;
 			}
+
+			// For AJAX buttons (classic WC): let the adding_to_cart handler below add data
+			if (btn.hasClass('ajax_add_to_cart')) return;
+
+			// For non-AJAX buttons (WC Blocks / plain links): append date to URL
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			var url = btn.attr('href');
+			if (!url) return;
+			url += (url.indexOf('?') > -1 ? '&' : '?');
+			url += encodeURIComponent(phpObject.fieldKey) + '=' + encodeURIComponent(val);
+			url += '&' + encodeURIComponent(phpObject.fieldDayChooserIndicator) + '=1';
+			var nonce = document.querySelector('input[name="'+phpObject.nonceKey+'"]');
+			if (nonce) url += '&' + encodeURIComponent(phpObject.nonceKey) + '=' + encodeURIComponent(nonce.value);
+			window.location.href = url;
 		});
 
-		// shop page with AJAX add to cart
+		// shop page with AJAX add to cart (classic WC)
 		$(document.body).on('adding_to_cart', function(e, $button, data){
 			var pid = getPidFromAddToCartButton($button);
 			if (!pid) return;
@@ -268,6 +292,8 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			.removeAttr('disabled');
 
 		$('body').find('input[data-input-type="daychooser"][data-plugin="event"]')
+			.on('keydown', function(e) { e.preventDefault(); })
+			.on('paste', function(e) { e.preventDefault(); })
 			.each((idx, input) => {
 				let elem_intern = $(input);
 				let dateFormat = elem_intern.attr('placeholder');

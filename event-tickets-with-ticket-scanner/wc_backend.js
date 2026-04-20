@@ -378,12 +378,12 @@ function SasoEventticketsValidator_WC_backend($, phpObject) {
 						continue;
 					}
 
-					let $table = $('<table style="width:100%;border-collapse:collapse;margin-bottom:1em;">');
+					let $table = $('<table style="width:100%;border-collapse:collapse;margin-bottom:1em;table-layout:fixed;">');
 					$table.append('<thead><tr style="background:#f0f0f0;">'
-						+ '<th style="text-align:left;padding:4px 8px;border:1px solid #ddd;">#</th>'
+						+ '<th style="text-align:left;padding:4px 8px;border:1px solid #ddd;width:1cm;">#</th>'
 						+ '<th style="text-align:left;padding:4px 8px;border:1px solid #ddd;">' + __('Ticket', 'event-tickets-with-ticket-scanner') + '</th>'
-						+ '<th style="text-align:left;padding:4px 8px;border:1px solid #ddd;">' + __('Order', 'event-tickets-with-ticket-scanner') + '</th>'
-						+ '<th style="text-align:left;padding:4px 8px;border:1px solid #ddd;">' + __('Status', 'event-tickets-with-ticket-scanner') + '</th>'
+						+ '<th style="text-align:left;padding:4px 8px;border:1px solid #ddd;width:2cm;">' + __('Order', 'event-tickets-with-ticket-scanner') + '</th>'
+						+ '<th style="text-align:left;padding:4px 8px;border:1px solid #ddd;width:2cm;">' + __('Status', 'event-tickets-with-ticket-scanner') + '</th>'
 						+ '</tr></thead>');
 					let $tbody = $('<tbody>');
 					for (let j = 0; j < g.tickets.length; j++) {
