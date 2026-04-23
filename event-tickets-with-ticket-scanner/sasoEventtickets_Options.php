@@ -967,6 +967,13 @@ class sasoEventtickets_Options {
 				$this->MAIN->autoUpgradePremiumAfterLicenseSave();
 			}
 		}
+		// Suppress all license-related admin banners for 60s while the license
+		// check/upgrade runs. Prevents the scary red "expired"/"Starter plugin"
+		// banners from re-appearing on the next page render before the license
+		// server has confirmed the new serial.
+		if ($data['key'] === 'serial' && !empty(trim((string) $data['value']))) {
+			set_transient('saso_license_just_saved', 1, 60);
+		}
 		do_action( $this->MAIN->_do_action_prefix.'changeOption', $data);
 	}
 	public function getOptionValue($name, $def="") {

@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.0.3
+ * Version: 3.0.4
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.3');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.4');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -89,7 +89,7 @@ class sasoEventtickets {
 		}
 		add_action( 'sasoEventtickets_cronjob_daily', [$this, 'relay_sasoEventtickets_cronjob_daily'], 10, 0 ); // set in tickets.php
 		add_action( 'plugins_loaded', [$this, 'WooCommercePluginLoaded'], 20, 0 );
-  		if (basename($_SERVER['SCRIPT_NAME']) == "admin-ajax.php") {
+  		if (basename($_SERVER['SCRIPT_NAME'] ?? '') == "admin-ajax.php") {
 			add_action('wp_ajax_nopriv_'.$this->_prefix.'_executeFrontend', [$this,'executeFrontend_a'], 10, 0); // nicht angemeldete user, sollen eine antwort erhalten
 			add_action('wp_ajax_'.$this->_prefix.'_executeFrontend', [$this,'executeFrontend_a'], 10, 0); // falls eingeloggt ist
 			add_action('wp_ajax_'.$this->_prefix.'_executeWCBackend', [$this,'executeWCBackend'], 10, 0); // falls eingeloggt ist
@@ -575,7 +575,7 @@ class sasoEventtickets {
 		add_action( 'admin_notices', [$this, 'showOptionsMigrationNotice'] );
 		add_action( 'wp_ajax_saso_et_dismiss_fomo', [$this, 'ajaxDismissFomo'] );
 
-		if (basename($_SERVER['SCRIPT_NAME']) == "admin-ajax.php") {
+		if (basename($_SERVER['SCRIPT_NAME'] ?? '') == "admin-ajax.php") {
 			add_action('wp_ajax_'.$this->_prefix.'_executeAdminSettings', [$this,'executeAdminSettings_a'], 10, 0);
 			add_action('wp_ajax_'.$this->_prefix.'_executeSeatingAdmin', [$this,'executeSeatingAdmin_a'], 10, 0);
 		}
@@ -1928,6 +1928,19 @@ class sasoEventtickets {
 			return;
 		}
 
+		// Don't show "expired" warning when no serial is configured yet —
+		// customer is still setting up, not really expired.
+		$serial = trim((string) get_option('saso-event-tickets-premium_serial', ''));
+		if ($serial === '') {
+			return;
+		}
+
+		// Don't show during license-save grace period (suppresses flash of stale banner
+		// after the user just entered a new license key)
+		if (get_transient('saso_license_just_saved')) {
+			return;
+		}
+
 		$info = $this->getTicketHandler()->get_expiration();
 
 		// No expiration date or lifetime license - no warning needed
@@ -1946,7 +1959,7 @@ class sasoEventtickets {
 		// Warning 14 days before expiration
 		if ($days_left <= 14 && $days_left > 0) {
 			$date = date_i18n(get_option('date_format'), $info['timestamp']);
-			echo '<div class="notice notice-warning is-dismissible"><p>';
+			echo '<div class="notice notice-warning is-dismissible saso-license-banner"><p>';
 			printf(
 				/* translators: %1$s: expiration date, %2$s: renewal URL */
 				esc_html__('Your Event-Tickets Premium subscription expires on %1$s. %2$sRenew now%3$s to keep all features.', 'event-tickets-with-ticket-scanner'),
@@ -1962,7 +1975,7 @@ class sasoEventtickets {
 			$grace_days = isset($info['grace_period_days']) ? intval($info['grace_period_days']) : 7;
 			$grace_left = $grace_days + $days_left; // days_left is negative
 
-			echo '<div class="notice notice-error"><p>';
+			echo '<div class="notice notice-error saso-license-banner"><p>';
 			if ($grace_left > 0) {
 				printf(
 					/* translators: %1$d: days remaining in grace period, %2$s: renewal URL */
@@ -2003,6 +2016,7 @@ class sasoEventtickets {
 		if (!$expired_ts || $expired_ts > time()) return;
 
 		if (get_transient('saso_et_fomo_dismissed')) return;
+		if (get_transient('saso_license_just_saved')) return;
 
 		$json_path = plugin_dir_path(__FILE__) . 'changelog-features.json';
 		if (!file_exists($json_path)) return;
@@ -2027,7 +2041,7 @@ class sasoEventtickets {
 		$renewal_url = 'https://vollstart.com/event-tickets-with-ticket-scanner/';
 		$nonce = wp_create_nonce('saso_et_dismiss_fomo');
 
-		echo '<div class="notice notice-info is-dismissible" id="saso-et-fomo-banner" style="border-left-color:#9333ea;">';
+		echo '<div class="notice notice-info is-dismissible saso-license-banner" id="saso-et-fomo-banner" style="border-left-color:#9333ea;">';
 		echo '<p><strong>';
 		printf(
 			/* translators: %d: number of missed features */
@@ -2079,6 +2093,12 @@ class sasoEventtickets {
 			return;
 		}
 
+		// Don't show during license-save grace period (upgrade is happening in background,
+		// no point scaring the user while we're actively replacing the plugin for them)
+		if (get_transient('saso_license_just_saved')) {
+			return;
+		}
+
 		$old_version = defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')
 			? SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION
 			: __('unknown', 'event-tickets-with-ticket-scanner');
@@ -2087,7 +2107,7 @@ class sasoEventtickets {
 		$support_url = 'https://vollstart.com/support/';
 		$premium_url = 'https://vollstart.com/downloads/event-tickets-with-ticket-scanner/';
 
-		echo '<div class="notice notice-error" style="border-left-color:#dc3232;padding:15px 20px;">';
+		echo '<div class="notice notice-error saso-license-banner" style="border-left-color:#dc3232;padding:15px 20px;">';
 		echo '<p style="font-size:15px;font-weight:bold;margin:0 0 10px 0;color:#dc2626;">';
 		echo '&#9888; ';
 

@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,12 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.0.4 - 2026-04-23 =
+* Fix: License activation flow — after entering a license key, the "Starter plugin installed" and "subscription expired" banners now disappear immediately (via JS fade + 60s server-side suppression) instead of staying visible until the next page load. Page now always reloads after a serial is saved to reflect the new plugin state.
+* Fix: "Subscription expired" banner no longer shown when no license key is configured (was confusing new customers who had just installed the starter plugin).
+* Fix: PHP warning "Undefined array key SCRIPT_NAME" when plugin runs in CLI or WP-Cron context — index.php:92 and :578 now use null-safe access. Same class of bug as the REQUEST_METHOD fix in 3.0.3 but for SCRIPT_NAME.
+* Fix: Hardened `SASO_EVENTTICKETS::issetRPara()` against missing REQUEST_METHOD in CLI/cron context.
 
 = 3.0.3 - 2026-04-20 =
 * New: Auto-upgrade premium plugin after valid license key is saved — no more manual "Update" click needed. Customers who install the starter plugin and enter their license now get the real premium installed automatically in the background.

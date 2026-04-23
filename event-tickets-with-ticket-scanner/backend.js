@@ -173,6 +173,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				$("#wcTicketDesignerTemplateTest_button_PDF").prop("disabled", false).text(__('Preview Test Template Code as PDF', 'event-tickets-with-ticket-scanner'));
 			}
 			if (key == "serial") {
+				// Hide license-related admin banners immediately — server has suppressed
+				// them for 60s via transient, but JS fadeOut gives instant visual feedback
+				// without waiting for page reload.
+				let $serialValue = typeof value === 'string' ? value.trim() : '';
+				if ($serialValue !== '') {
+					$('.saso-license-banner').fadeOut(400);
+				}
+
 				// Immediately recheck license after serial change
 				let $statusEl = $('[data-key="serial"]').parent().find('.saso-license-inline-status');
 				if ($statusEl.length === 0) {
@@ -186,12 +194,20 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						let label = result.active ? __('Active', 'event-tickets-with-ticket-scanner') : __('Inactive', 'event-tickets-with-ticket-scanner');
 						if (result.subscription_type === 'lifetime') label += ' (Lifetime)';
 						$statusEl.html('<span style="color:'+color+';font-weight:bold;">'+label+'</span>');
-						if (result.active) {
-							setTimeout(function() { location.reload(); }, 1500);
-						}
+					}
+					// ALWAYS reload after a serial save — the backend may have swapped
+					// Starter → Premium during save, and the page state needs to refresh
+					// to reflect the new plugin. Reloading regardless of active/inactive
+					// ensures users never get stuck with a stale banner.
+					if ($serialValue !== '') {
+						setTimeout(function() { location.reload(); }, 2000);
 					}
 				}, function() {
 					$statusEl.html('<span style="color:red;">'+__('Check failed', 'event-tickets-with-ticket-scanner')+'</span>');
+					// Reload anyway — save succeeded, recheck just failed (network/server)
+					if ($serialValue !== '') {
+						setTimeout(function() { location.reload(); }, 3000);
+					}
 				});
 				if (_getOptions_Versions_getByKey('isOldPremiumDetected')) {
 					__checkPremiumUpdateAfterSerial(value);
