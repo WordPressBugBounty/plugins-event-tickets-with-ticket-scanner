@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.0.4
+ * Version: 3.0.5
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.4');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.5');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -294,7 +294,21 @@ class sasoEventtickets {
 				require_once ABSPATH . 'wp-admin/includes/class-automatic-upgrader-skin.php';
 			}
 			$upgrader = new Plugin_Upgrader(new \Automatic_Upgrader_Skin());
-			$upgrader->upgrade($pluginFile);
+			$result = $upgrader->upgrade($pluginFile);
+
+			// Post-upgrade cleanup: the update_plugins transient still contains the
+			// "update available" entry until the next WP-Cron run (12h). This makes
+			// the red "update" badge stick around even though the plugin is already
+			// on the latest version. Clear + re-check now so the badge disappears
+			// immediately on the next page load.
+			if ($result === true) {
+				delete_site_transient('update_plugins');
+				delete_site_transient('puc_request_info_saso-event-tickets-with-ticket-scanner-premium');
+				// Clear PUC's own state store so it can't re-inject the stale
+				// "update available" entry on next request (belt + suspenders).
+				delete_site_option('external_updates-saso-event-tickets-with-ticket-scanner-premium');
+				wp_update_plugins();
+			}
 		} catch (\Throwable $e) {
 			error_log('Event Tickets: auto-upgrade after license save failed: ' . $e->getMessage());
 		}

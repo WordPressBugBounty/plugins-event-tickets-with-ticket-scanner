@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.0.4
+Stable tag: 3.0.5
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,10 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.0.5 - 2026-04-24 =
+* Fix: "Update available" badge stayed visible after auto-upgrade of the premium plugin — the `update_plugins` site transient was only cleared BEFORE the upgrade, not after. WordPress then kept the stale "update available" entry until the next WP-Cron (12h later). The transient is now cleared + re-checked after the upgrade completes, so the red badge disappears on the next page load.
+* Improvement: License activation modal now locks the UI while the license check runs — "Activate" button and input field are disabled, a clear spinner with "Validating license — please wait…" replaces the small status text. Prevents multiple clicks and confusion during the 2–5s background check.
 
 = 3.0.4 - 2026-04-23 =
 * Fix: License activation flow — after entering a license key, the "Starter plugin installed" and "subscription expired" banners now disappear immediately (via JS fade + 60s server-side suppression) instead of staying visible until the next page load. Page now always reloads after a serial is saved to reflect the new plugin state.

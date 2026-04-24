@@ -284,19 +284,34 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 								text: __('Activate', 'event-tickets-with-ticket-scanner'),
 								class: "button-primary",
 								click: function() {
+									let $dlg = $(this);
 									let key = serialInput.val().trim();
 									if (key === '') {
 										statusDiv.html('<span style="color:red;">'+__('Please enter a license key.', 'event-tickets-with-ticket-scanner')+'</span>').show();
 										return;
 									}
-									statusDiv.html(_getSpinnerHTML()).show();
-									serialInput.prop('disabled', true);
+									// Lock UI — big spinner, disable everything so user waits
+									$dlg.parent().find('.ui-dialog-buttonpane button').prop('disabled', true).css({opacity: 0.5, cursor: 'not-allowed'});
+									$dlg.parent().find('.ui-dialog-buttonpane button.button-primary').text(__('Checking...', 'event-tickets-with-ticket-scanner'));
+									serialInput.prop('disabled', true).css('opacity', 0.5);
+									statusDiv.html(
+										'<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">'
+										+ '<span class="spinner is-active" style="float:none;margin:0;visibility:visible"></span>'
+										+ '<span style="color:#334155;font-weight:500">'+__('Validating license — please wait…', 'event-tickets-with-ticket-scanner')+'</span>'
+										+ '</div>'
+									).show();
 									_makePost('changeOption', {key:'serial', value:key}, function() {
-										statusDiv.html('<span style="color:green;">'+__('License key saved. Checking license...', 'event-tickets-with-ticket-scanner')+'</span>');
+										statusDiv.html(
+											'<div style="padding:14px;background:#ecfdf5;border-radius:8px;border:1px solid #a7f3d0;color:#065f46;font-weight:600;text-align:center">'
+											+ '&#10003; '+__('License key saved. Reloading…', 'event-tickets-with-ticket-scanner')
+											+ '</div>'
+										);
 										setTimeout(function(){ location.reload(); }, 1500);
 									}, function(err) {
+										$dlg.parent().find('.ui-dialog-buttonpane button').prop('disabled', false).css({opacity: 1, cursor: 'pointer'});
+										$dlg.parent().find('.ui-dialog-buttonpane button.button-primary').text(__('Activate', 'event-tickets-with-ticket-scanner'));
+										serialInput.prop('disabled', false).css('opacity', 1);
 										statusDiv.html('<span style="color:red;">'+__('Error:', 'event-tickets-with-ticket-scanner')+' '+(err && err.data ? err.data : 'unknown')+'</span>').show();
-										serialInput.prop('disabled', false);
 									});
 								}
 							},
