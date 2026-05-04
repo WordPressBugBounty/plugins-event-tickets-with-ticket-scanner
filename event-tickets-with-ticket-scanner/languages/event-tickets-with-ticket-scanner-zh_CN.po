@@ -474,7 +474,7 @@ msgstr "将 PDF 门票附加到订单邮件？"
 msgid "Attach QR PDF to purchase email as one PDF instead of single PDFs"
 msgstr "将 QR PDF 作为一个 PDF 而非单独的 PDF 附加到购买邮件"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
 msgid "Attach QR image of the order to the purchase email"
 msgstr "将订单的二维码图片附加到购买邮件"
 
@@ -765,7 +765,7 @@ msgctxt "label"
 msgid "Choose a sorting field"
 msgstr "选择排序字段"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1707
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1707
 msgid "Choose a ticket template to overwrite the default template"
 msgstr "选择票券模板以覆盖默认模板"
 
@@ -812,7 +812,7 @@ msgid ""
 "download the PDF ticket"
 msgstr "客户查看票券详情和/或下载 PDF 票券时选择新的订单状态"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:557
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:557
 msgid "Choose the order status for ticket assignment"
 msgstr "选择用于票券分配的订单状态"
 
@@ -1379,7 +1379,7 @@ msgid ""
 "from a specific order."
 msgstr "显示分配给当前登录用户（默认）的门票或特定订单的门票。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
 msgid "Do not allow the redeem operation after the event started"
 msgstr "活动开始后不允许兑换操作"
 
@@ -1742,7 +1742,7 @@ msgid ""
 "line, then the key will be also the value."
 msgstr "每行输入一个键值对，如 key|value1。如果每行仅给出键，则键也将是值。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
 msgid ""
 "Enter your Premium license key to activate features. If you do not have one, "
 "please contact support@vollstart.com."
@@ -1893,7 +1893,7 @@ msgctxt "label"
 msgid "Exception"
 msgstr "异常"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1742
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1742
 msgid "Excluded days for the date picker"
 msgstr "日期选择器中排除的日期"
 
@@ -2412,7 +2412,7 @@ msgstr ""
 "如果启用且订单的所有项目都是门票，则当订单状态为\"处理中\"且订单中所有购买的"
 "项目都是门票时，订单状态将设置为已完成。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
 msgid ""
 "If active and the event start date is set, then the system will not allow to "
 "redeem the ticket anymore."
@@ -2988,7 +2988,7 @@ msgid ""
 "during a purchase of this product."
 msgstr "启用后，购买此产品时将使用以下格式生成门票编号。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
 msgid ""
 "If active, then the order view QR code image will be attached to the "
 "purchase email."
@@ -3282,7 +3282,7 @@ msgstr ""
 msgid "If you need special characters you might change the font."
 msgstr "如果您需要特殊字符，可以更改字体。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1743
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1743
 msgid ""
 "If you use the date chooser option, then you can exclude specific dates like "
 "holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
@@ -3395,7 +3395,7 @@ msgstr ""
 "选项被激活，则订单将设置为您的新订单，只是因为您的客户在下载 PDF 票券！对于几"
 "乎所有使用案例，此选项没有意义-它只是对于一些特殊使用案例需要。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:558
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:558
 msgid ""
 "In doubt, do not play with it. :) The ticket will be added to the order "
 "items, if the choosen order status is applied to the order. If none is "
@@ -3991,7 +3991,7 @@ msgstr "不了，谢谢"
 msgid "No ticket code provided. Use ?ticket=YOUR-CODE in the URL."
 msgstr "未提供票号。请在 URL 中使用 ?ticket=YOUR-CODE。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_TemplateTickets.php:69
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_TemplateTickets.php:69
 msgid "No ticket template set"
 msgstr "未设置票券模板"
 
@@ -4511,7 +4511,7 @@ msgid "Premium Homepage"
 msgstr "高级版主页"
 
 #: sasoEventtickets_Options.php:766 backend.js:261
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
 msgid "Premium License Key"
 msgstr "高级版许可证密钥"
 
@@ -4722,7 +4722,7 @@ msgstr "兑换时间"
 msgid "Redeemed tickets: %1$d (filtered) of %2$d (total redeemed tickets)"
 msgstr "已核销门票：%1$d（已筛选）/ %2$d（总核销数）"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:158
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:158
 msgid ""
 "Redeeming all tickets, because the order status changed and option "
 "wcTicketOrderStatusToRedeemAllTickets is set to '"
@@ -6015,7 +6015,7 @@ msgctxt "label"
 msgid "Ticket"
 msgstr "门票"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:177
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:177
 #, php-format
 msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
 msgstr "票券 \"%1$s\" 无法兑换。\"%2$s\""
@@ -6078,7 +6078,7 @@ msgctxt "label"
 msgid "Ticket Scanner"
 msgstr "票务扫描器"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1706
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1706
 msgid "Ticket Template"
 msgstr "票券模板"
 

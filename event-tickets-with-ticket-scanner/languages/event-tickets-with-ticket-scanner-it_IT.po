@@ -503,7 +503,7 @@ msgstr ""
 "Allegare il PDF QR all'email di acquisto come un unico PDF invece di PDF "
 "singoli"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
 msgid "Attach QR image of the order to the purchase email"
 msgstr "Allega l'immagine QR dell'ordine all'e-mail di acquisto"
 
@@ -816,7 +816,7 @@ msgctxt "label"
 msgid "Choose a sorting field"
 msgstr "Scegli il campo di ordinamento"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1707
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1707
 msgid "Choose a ticket template to overwrite the default template"
 msgstr ""
 "Scegli un modello di biglietto per sovrascrivere il modello "
@@ -869,7 +869,7 @@ msgstr ""
 "Scegliere il nuovo stato dell'ordine se il cliente visualizza i dettagli del "
 "biglietto e/o scarica il biglietto PDF"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:557
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:557
 msgid "Choose the order status for ticket assignment"
 msgstr "Scegli lo stato dell'ordine per l'assegnazione dei biglietti"
 
@@ -1481,7 +1481,7 @@ msgstr ""
 "Mostra i biglietti assegnati all'utente attualmente connesso (predefinito) o "
 "i biglietti di un ordine specifico."
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
 msgid "Do not allow the redeem operation after the event started"
 msgstr "Non consentire il riscatto dopo l'inizio dell'evento"
 
@@ -1883,7 +1883,7 @@ msgstr ""
 "Inserire una coppia chiave-valore per riga come chiave|valore1. Se viene "
 "fornita solo la chiave per riga, la chiave sarà anche il valore."
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
 msgid ""
 "Enter your Premium license key to activate features. If you do not have one, "
 "please contact support@vollstart.com."
@@ -2047,7 +2047,7 @@ msgctxt "label"
 msgid "Exception"
 msgstr "Eccezione"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1742
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1742
 msgid "Excluded days for the date picker"
 msgstr "Giorni esclusi per il selettore di date"
 
@@ -2605,7 +2605,7 @@ msgstr ""
 "dell'ordine verrà impostato su completato se lo stato dell'ordine è 'in "
 "elaborazione' e tutti gli articoli acquistati nell'ordine sono biglietti."
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
 msgid ""
 "If active and the event start date is set, then the system will not allow to "
 "redeem the ticket anymore."
@@ -3300,7 +3300,7 @@ msgstr ""
 "Se attivo, il formato seguente verrà utilizzato per generare numeri "
 "biglietto durante l'acquisto di questo prodotto."
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
 msgid ""
 "If active, then the order view QR code image will be attached to the "
 "purchase email."
@@ -3646,7 +3646,7 @@ msgstr ""
 "Se sono necessari caratteri speciali, potrebbe essere necessario cambiare il "
 "carattere."
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1743
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1743
 msgid ""
 "If you use the date chooser option, then you can exclude specific dates like "
 "holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
@@ -3777,7 +3777,7 @@ msgstr ""
 "biglietto PDF! Per quasi tutti i casi d'uso questa opzione non ha senso - è "
 "necessaria solo per pochi casi d'uso speciali."
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:558
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:558
 msgid ""
 "In doubt, do not play with it. :) The ticket will be added to the order "
 "items, if the choosen order status is applied to the order. If none is "
@@ -4398,7 +4398,7 @@ msgid "No ticket code provided. Use ?ticket=YOUR-CODE in the URL."
 msgstr ""
 "Nessun codice biglietto fornito. Utilizzare ?ticket=IL-CODICE nell'URL."
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_TemplateTickets.php:69
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_TemplateTickets.php:69
 msgid "No ticket template set"
 msgstr "Nessun modello di biglietto impostato"
 
@@ -4951,7 +4951,7 @@ msgid "Premium Homepage"
 msgstr "Homepage Premium"
 
 #: sasoEventtickets_Options.php:766 backend.js:261
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
 msgid "Premium License Key"
 msgstr "Chiave di licenza Premium"
 
@@ -5169,7 +5169,7 @@ msgstr "Riscattato il"
 msgid "Redeemed tickets: %1$d (filtered) of %2$d (total redeemed tickets)"
 msgstr "Biglietti convalidati: %1$d (filtrati) di %2$d (totale)"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:158
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:158
 msgid ""
 "Redeeming all tickets, because the order status changed and option "
 "wcTicketOrderStatusToRedeemAllTickets is set to '"
@@ -6572,7 +6572,7 @@ msgctxt "label"
 msgid "Ticket"
 msgstr "Biglietto"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:177
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:177
 #, php-format
 msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
 msgstr "Il biglietto \"%1$s\" non può essere riscattato. \"%2$s\""
@@ -6635,7 +6635,7 @@ msgctxt "label"
 msgid "Ticket Scanner"
 msgstr "Scanner biglietti"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1706
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1706
 msgid "Ticket Template"
 msgstr "Modello di biglietto"
 

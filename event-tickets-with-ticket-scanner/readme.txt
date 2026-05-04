@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,11 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.0.6 - 2026-05-04 =
+* New: "First Activated" date in Support Info — shows when the plugin was first activated, included in the copyable support text. Marked as "(estimate)" for installs predating this version.
+* Internal: First-activation timestamp is sent to the license server with the next license check (Premium plugin) for free-to-paid analytics.
+* Improvement: Day chooser auto-jumps to the first month with available dates. If the current month has no free slots (all days excluded by weekday rules, blackout dates, or min-date), the picker now opens directly on the next month that has at least one selectable day — customers no longer see a frustrating all-grey calendar. Scans up to 24 months forward.
 
 = 3.0.5 - 2026-04-24 =
 * Fix: "Update available" badge stayed visible after auto-upgrade of the premium plugin — the `update_plugins` site transient was only cleared BEFORE the upgrade, not after. WordPress then kept the stale "update available" entry until the next WP-Cron (12h later). The transient is now cleared + re-checked after the upgrade completes, so the red badge disappears on the next page load.

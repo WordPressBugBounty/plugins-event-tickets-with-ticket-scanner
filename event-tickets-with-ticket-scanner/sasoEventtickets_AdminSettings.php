@@ -699,6 +699,7 @@ class sasoEventtickets_AdminSettings {
 				'premium'=>$pversions['premium'] != "" ? $pversions['premium'] : '',
 				'is_debug'=>isset($pversions['debug']) ? 1 : 0,
 				'premium_serial'=>$this->getOptionValue("serial", "-"),
+				'first_activated_at'=>(string) get_option('saso_eventtickets_first_activated_at', ''),
 				'is_wc_available'=>class_exists( 'WooCommerce' ) ? 1 : 0,
 				'IS_PRETTY_PERMALINK_ACTIVATED' => get_option('permalink_structure') ? true :false,
 				'plugin_version' => defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION') ? SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION : SASO_EVENTTICKETS_PLUGIN_VERSION,

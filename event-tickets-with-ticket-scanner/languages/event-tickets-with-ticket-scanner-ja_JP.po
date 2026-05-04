@@ -487,7 +487,7 @@ msgstr "PDFチケットを注文メールに添付しますか？"
 msgid "Attach QR PDF to purchase email as one PDF instead of single PDFs"
 msgstr "購入メールにQR PDFを個別のPDFではなく1つのPDFとして添付する"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
 msgid "Attach QR image of the order to the purchase email"
 msgstr "注文のQR画像を購入メールに添付する"
 
@@ -788,7 +788,7 @@ msgctxt "label"
 msgid "Choose a sorting field"
 msgstr "並べ替えフィールドを選択"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1707
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1707
 msgid "Choose a ticket template to overwrite the default template"
 msgstr "デフォルトテンプレートを上書きするチケットテンプレートを選択"
 
@@ -837,7 +837,7 @@ msgstr ""
 "お客様がチケット詳細を表示した場合やPDFチケットをダウンロードした場合の新しい"
 "注文ステータスを選択"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:557
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:557
 msgid "Choose the order status for ticket assignment"
 msgstr "チケット割り当てのための注文ステータスを選択"
 
@@ -1428,7 +1428,7 @@ msgstr ""
 "現在ログインしているユーザー（デフォルト）または特定の注文のチケットを表示し"
 "ます。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
 msgid "Do not allow the redeem operation after the event started"
 msgstr "イベント開始後のチケット引き換えを禁止する"
 
@@ -1805,7 +1805,7 @@ msgstr ""
 "1行につきキーと値のペアをkey|value1のように入力してください。キーのみを入力し"
 "た場合、キーが値としても使用されます。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
 msgid ""
 "Enter your Premium license key to activate features. If you do not have one, "
 "please contact support@vollstart.com."
@@ -1966,7 +1966,7 @@ msgctxt "label"
 msgid "Exception"
 msgstr "例外"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1742
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1742
 msgid "Excluded days for the date picker"
 msgstr "日付選択で除外する日"
 
@@ -2501,7 +2501,7 @@ msgstr ""
 "有効にすると、注文のすべてのアイテムがチケットで、注文ステータスが「処理中」"
 "の場合、注文ステータスが自動的に完了に設定されます。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
 msgid ""
 "If active and the event start date is set, then the system will not allow to "
 "redeem the ticket anymore."
@@ -3142,7 +3142,7 @@ msgstr ""
 "有効にすると、この商品の購入時に以下のフォーマットを使用してチケット番号が生"
 "成されます。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
 msgid ""
 "If active, then the order view QR code image will be attached to the "
 "purchase email."
@@ -3461,7 +3461,7 @@ msgstr ""
 msgid "If you need special characters you might change the font."
 msgstr "特殊文字が必要な場合はフォントを変更してください。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1743
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1743
 msgid ""
 "If you use the date chooser option, then you can exclude specific dates like "
 "holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
@@ -3584,7 +3584,7 @@ msgstr ""
 "どのユースケースでは、このオプションは意味がありません - 少数の特別なユース"
 "ケースでのみ必要です。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:558
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:558
 msgid ""
 "In doubt, do not play with it. :) The ticket will be added to the order "
 "items, if the choosen order status is applied to the order. If none is "
@@ -4194,7 +4194,7 @@ msgstr ""
 "チケットコードが提供されていません。URLに?ticket=YOUR-CODEを使用してくださ"
 "い。"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_TemplateTickets.php:69
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_TemplateTickets.php:69
 msgid "No ticket template set"
 msgstr "チケットテンプレートが設定されていません"
 
@@ -4732,7 +4732,7 @@ msgid "Premium Homepage"
 msgstr "プレミアム ホームページ"
 
 #: sasoEventtickets_Options.php:766 backend.js:261
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
 msgid "Premium License Key"
 msgstr "プレミアムライセンスキー"
 
@@ -4945,7 +4945,7 @@ msgstr "引き換え日時"
 msgid "Redeemed tickets: %1$d (filtered) of %2$d (total redeemed tickets)"
 msgstr "使用済みチケット：%1$d（フィルター済み）／%2$d（合計）"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:158
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:158
 msgid ""
 "Redeeming all tickets, because the order status changed and option "
 "wcTicketOrderStatusToRedeemAllTickets is set to '"
@@ -6288,7 +6288,7 @@ msgctxt "label"
 msgid "Ticket"
 msgstr "チケット"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:177
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:177
 #, php-format
 msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
 msgstr "チケット \"%1$s\" を引き換えできませんでした。\"%2$s\""
@@ -6351,7 +6351,7 @@ msgctxt "label"
 msgid "Ticket Scanner"
 msgstr "チケットスキャナー"
 
-#: /var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1706
+#: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1706
 msgid "Ticket Template"
 msgstr "チケットテンプレート"
 

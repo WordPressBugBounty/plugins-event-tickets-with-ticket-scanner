@@ -35,6 +35,19 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		return new Date().getTime();
 	}
 
+	// Format activation timestamp ("YYYY-MM-DD HH:MM:SS" or with trailing "~" for estimate)
+	// to a localized date. The "~" suffix marks values derived from filesystem mtime
+	// rather than a real activation event — they're shown with "(estimate)" hint.
+	function _formatActivationDate(s) {
+		if (!s) return '';
+		var isEstimate = s.slice(-1) === '~';
+		if (isEstimate) s = s.slice(0, -1);
+		var d = new Date(s.replace(' ', 'T') + 'Z');
+		if (isNaN(d.getTime())) return s + (isEstimate ? ' (estimate)' : '');
+		var dateStr = d.toLocaleDateString();
+		return dateStr + (isEstimate ? ' (estimate)' : '');
+	}
+
 	function destroy_tags(t) {
 		if (t != null) {
 			t = t.replace("<", "").replace(">","");
@@ -1292,6 +1305,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">MySQL/MariaDB</span><span class="et-kv-value">'+versions.mysql+'</span></div>';
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">Basic Plugin</span><span class="et-kv-value">'+versions.basic+'</span></div>';
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">Basic DB</span><span class="et-kv-value">'+versions.db+'</span></div>';
+			if (versions.first_activated_at) {
+				sysRows += '<div class="et-kv-row"><span class="et-kv-label">First Activated</span><span class="et-kv-value">'+_formatActivationDate(versions.first_activated_at)+'</span></div>';
+			}
 			if (versions.premium != "") {
 				sysRows += '<div class="et-kv-row"><span class="et-kv-label">Premium License Key</span><span class="et-kv-value" style="font-family:monospace;font-size:12px;">'+versions.premium_serial+'</span></div>';
 				sysRows += '<div class="et-kv-row"><span class="et-kv-label">Premium Plugin</span><span class="et-kv-value">'+versions.premium+'</span></div>';
@@ -1313,6 +1329,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				lines.push('Product: Event Tickets with WooCommerce');
 				lines.push('Basic Plugin Version: '+versions.basic);
 				lines.push('Basic DB Version: '+versions.db);
+				if (versions.first_activated_at) {
+					lines.push('First Activated: '+_formatActivationDate(versions.first_activated_at));
+				}
 				if (versions.premium != "") {
 					lines.push('Premium License Key: '+versions.premium_serial);
 					lines.push('Premium Plugin Version: '+versions.premium);

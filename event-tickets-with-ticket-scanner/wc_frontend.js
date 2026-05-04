@@ -291,6 +291,63 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			})
 			.removeAttr('disabled');
 
+		// Resolve a min/max value (number-of-days, YYYY-MM-DD, or empty) → JS Date or null.
+		function _sasoResolveLimitDate(opt) {
+			if (opt == null || opt === '') return null;
+			if (typeof opt === 'number' && !isNaN(opt)) {
+				let d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + opt);
+				return d;
+			}
+			let s = String(opt).trim();
+			let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+			if (m) return new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+			let n = parseInt(s, 10);
+			if (!isNaN(n)) {
+				let d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + n);
+				return d;
+			}
+			return null;
+		}
+
+		// Selectability rules — kept in sync with beforeShowDay below intentionally.
+		function _sasoIsDateSelectable(date, attrs) {
+			if (attrs.excludeWdays) {
+				let excludedDays = attrs.excludeWdays.split(',');
+				if (excludedDays.indexOf(date.getDay().toString()) !== -1) return false;
+			}
+			let today = new Date(); today.setHours(0, 0, 0, 0);
+			let chk = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+			if (chk < today) return false;
+			if (attrs.excludeDates) {
+				let excludedDates = attrs.excludeDates.split(',');
+				let m = date.getMonth() + 1;
+				let d = date.getDate();
+				let dateStr = date.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (d < 10 ? '0' : '') + d;
+				if (excludedDates.indexOf(dateStr) !== -1) return false;
+			}
+			return true;
+		}
+
+		// Scan up to 24 months forward from `from` for the first selectable day.
+		// Used as datepicker.defaultDate so the picker opens on the first month
+		// that actually has free slots — instead of an all-grey current month.
+		function _sasoFindFirstSelectableDate(attrs, from, until) {
+			let cap = 24;
+			let start = from ? new Date(from.getFullYear(), from.getMonth(), from.getDate())
+				: (function () { let t = new Date(); t.setHours(0, 0, 0, 0); return t; })();
+			let scanFrom = new Date(start);
+			for (let i = 0; i < cap; i++) {
+				let monthEnd = new Date(scanFrom.getFullYear(), scanFrom.getMonth() + 1, 0);
+				let lastDay = (until && monthEnd > until) ? until : monthEnd;
+				for (let d = new Date(scanFrom); d <= lastDay; d.setDate(d.getDate() + 1)) {
+					if (_sasoIsDateSelectable(d, attrs)) return new Date(d);
+				}
+				scanFrom = new Date(scanFrom.getFullYear(), scanFrom.getMonth() + 1, 1);
+				if (until && scanFrom > until) return null;
+			}
+			return null;
+		}
+
 		$('body').find('input[data-input-type="daychooser"][data-plugin="event"]')
 			.on('keydown', function(e) { e.preventDefault(); })
 			.on('paste', function(e) { e.preventDefault(); })
@@ -323,6 +380,14 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				//let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() + data_offset_start);
 				//let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + data_offset_end);
 
+				let _saso_attrs = {
+					excludeWdays: elem_intern.attr('data-exclude-wdays') || '',
+					excludeDates: elem_intern.attr('data-exclude-dates') || ''
+				};
+				let _saso_minAbs = _sasoResolveLimitDate(data_offset_start);
+				let _saso_maxAbs = _sasoResolveLimitDate(data_offset_end);
+				let _saso_default = _sasoFindFirstSelectableDate(_saso_attrs, _saso_minAbs, _saso_maxAbs);
+
 				elem_intern.datepicker({
 					dateFormat: 'yy-mm-dd',
 					//dateFormat: dateFormat,
@@ -331,6 +396,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 					hideIfNoPrevNext : true,
 					minDate: data_offset_start,
 					maxDate: data_offset_end,
+					defaultDate: _saso_default,
 					beforeShow: function(input, options) {
 						this._sasoevent_input_field = $(input);
 					},
