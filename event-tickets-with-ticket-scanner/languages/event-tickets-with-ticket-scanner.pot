@@ -7229,9 +7229,7 @@ msgstr ""
 msgid "Learn more about security & privacy"
 msgstr ""
 
-#: index.php:634
-#: index.php:671
-#: index.php:676
+#: index.php:634 index.php:671 index.php:676
 msgid "Add to Vollstart Wallet"
 msgstr ""
 
@@ -7268,4 +7266,31 @@ msgstr ""
 
 #: backend.js:5217
 msgid "Import ticket to Vollstart Wallet for testing"
+msgstr ""
+
+msgid "Custom File Upload"
+msgstr ""
+
+msgid "Exclude this product from eventado.com"
+msgstr ""
+
+msgid "For adults only (18+)"
+msgstr ""
+
+msgid ""
+"Mark this event as 18+ on eventado.com. The public listing will show an age-"
+"restriction badge and a content notice."
+msgstr ""
+
+msgid ""
+"Public calendar publishing was disabled — the eventado.com server rejected "
+"this site (license or domain mismatch). Please contact support@vollstart.com."
+msgstr ""
+
+msgid ""
+"These options affect how this single product is treated by the global "
+"eventado.com sync."
+msgstr ""
+
+msgid "Upload a custom file for this product."
 msgstr ""

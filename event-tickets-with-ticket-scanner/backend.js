@@ -277,7 +277,18 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		let _hasPremiumVersion = _getOptions_Versions_getByKey('premium') != '';
 		if (_hasPremiumVersion) {
 			let serial = _getOptions_getValByKey('serial');
-			if (serial == '') {
+			// 24h dismiss: clicking "Later" stores a localStorage timestamp
+			// so the modal stays quiet for a day instead of nagging on every
+			// admin page load. Customer can still enter the key on the
+			// Options page anytime — the field is rendered there.
+			let licenseDismissedUntil = 0;
+			try {
+				licenseDismissedUntil = parseInt(localStorage.getItem('saso_et_license_modal_dismissed_until') || '0', 10) || 0;
+			} catch (e) { /* private mode, no localStorage — fall through */ }
+			let dismissNow = Date.now();
+			if (serial == '' && licenseDismissedUntil > dismissNow) {
+				// quiet — fall through
+			} else if (serial == '') {
 				if (STATE != "options") {
 					let dlgContent = $('<div/>');
 					dlgContent.append('<p>'+__('Thank you for using the Premium version!', 'event-tickets-with-ticket-scanner')+'</p>');
@@ -331,7 +342,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							{
 								text: __('Later', 'event-tickets-with-ticket-scanner'),
 								class: "button-secondary",
-								click: function() { $(this).dialog("close"); }
+								click: function() {
+									try {
+										localStorage.setItem('saso_et_license_modal_dismissed_until', String(Date.now() + 24*60*60*1000));
+									} catch (e) { /* ignore */ }
+									$(this).dialog("close");
+								}
 							}
 						]
 					});
@@ -3283,6 +3299,19 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				targetKey: 'walletVollstartEnable',
 				targetVal: 1,
 				premium: false
+			},
+			// ── Eventado public calendar (Premium) ──
+			{
+				id: 'eventado_publish_enable',
+				trigger: function() {
+					return isPremium()
+						&& OPTIONS.mapKeys
+						&& OPTIONS.mapKeys.eventCalendarPublishEnable
+						&& !_getOptions_isActivatedByKey('eventCalendarPublishEnable');
+				},
+				targetKey: 'eventCalendarPublishEnable',
+				targetVal: 1,
+				premium: true
 			}
 		];
 	}
@@ -3340,6 +3369,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			'wallet_vollstart_enable': {
 				context: __('Your customers can collect their tickets in the free Vollstart Wallet app.', 'event-tickets-with-ticket-scanner'),
 				question: __('Do you want to enable the "Add to Vollstart Wallet" button on ticket pages and in emails?', 'event-tickets-with-ticket-scanner')
+			},
+			'eventado_publish_enable': {
+				context: __('Eventado.com is a free public event calendar — Premium customers can list their ticket events automatically.', 'event-tickets-with-ticket-scanner'),
+				question: __('Do you want to publish your ticket events to Eventado.com for more reach and SEO?', 'event-tickets-with-ticket-scanner')
 			}
 		};
 		return messages[id] || {context: '', question: ''};
@@ -5552,6 +5585,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						div.append($("<div>").html("<b>IP while redeemed:</b> ").append($('<span>').text(metaObj.wc_ticket.ip)));
 						if (metaObj.wc_ticket.redeemed_by_admin > 0) {
 							div.append($("<div>").html("<b>Redeemed by admin user:</b> ").append($('<span>').text(metaObj.wc_ticket._redeemed_by_admin_username+' ('+metaObj.wc_ticket.redeemed_by_admin+')')));
+						}
+						if (metaObj.wc_ticket.redeemed_via_authtoken_id > 0) {
+							var tokName = metaObj.wc_ticket._redeemed_via_authtoken_name || '';
+							div.append($("<div>").html("<b>"+__('Redeemed via authtoken:', 'event-tickets-with-ticket-scanner')+"</b> ").append($('<span>').text(tokName+' (#'+metaObj.wc_ticket.redeemed_via_authtoken_id+')')));
 						}
 					}
 					if (metaObj.wc_ticket.is_ticket == 1) {

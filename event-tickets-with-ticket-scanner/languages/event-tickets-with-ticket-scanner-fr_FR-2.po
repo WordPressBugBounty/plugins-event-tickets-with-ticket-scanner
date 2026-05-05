@@ -1652,11 +1652,11 @@ msgid ""
 "errors messages during the page reload - that is normal. Why not asking "
 "support, if you should do it? ;)"
 msgstr ""
-"Voulez-vous vraiment essayer de réparer les définitions des tables de "
-"la base de données du plugin ? Cela devrait être sûr, mais n'est "
-"nécessaire que dans de très rares cas. Vous pourriez voir des messages "
-"d'erreur pendant le rechargement de la page - c'est normal. Pourquoi "
-"ne pas demander au support si vous devriez le faire ? ;)"
+"Voulez-vous vraiment essayer de réparer les définitions des tables de la "
+"base de données du plugin ? Cela devrait être sûr, mais n'est nécessaire que "
+"dans de très rares cas. Vous pourriez voir des messages d'erreur pendant le "
+"rechargement de la page - c'est normal. Pourquoi ne pas demander au support "
+"si vous devriez le faire ? ;)"
 
 #: backend.js:875 backend.js:4237 backend.js:4579
 msgctxt "title"
@@ -1782,9 +1782,9 @@ msgid ""
 "textarea below you will find all the successful stored tickets."
 msgstr ""
 "Chaque entrée deviendra verte (stockée avec succès) ou rouge (NON OK - "
-"entrée en double sur le serveur).<br>Faites défiler vers le bas et "
-"attendez que tout soit terminé.<br>Dans la zone de texte ci-dessous, "
-"vous trouverez tous les tickets stockés avec succès."
+"entrée en double sur le serveur).<br>Faites défiler vers le bas et attendez "
+"que tout soit terminé.<br>Dans la zone de texte ci-dessous, vous trouverez "
+"tous les tickets stockés avec succès."
 
 #: js/seating_admin.js:183 js/seating_admin.js:814
 msgid "Edit"
@@ -1903,8 +1903,8 @@ msgid ""
 "Enter your Premium license key to activate features. If you do not have one, "
 "please contact support@vollstart.com."
 msgstr ""
-"Entrez votre clé de licence Premium pour activer les fonctionnalités. "
-"Si vous n'en avez pas, veuillez contacter support@vollstart.com."
+"Entrez votre clé de licence Premium pour activer les fonctionnalités. Si "
+"vous n'en avez pas, veuillez contacter support@vollstart.com."
 
 #: sasoEventtickets_Options.php:758
 msgid ""
@@ -2703,8 +2703,8 @@ msgid ""
 "users to scan QR codes with their device camera. Requires HTTPS."
 msgstr ""
 "Si actif, une icône de caméra sera affichée à côté du champ de saisie, "
-"permettant aux utilisateurs de scanner les codes QR avec la caméra de "
-"leur appareil. Nécessite HTTPS."
+"permettant aux utilisateurs de scanner les codes QR avec la caméra de leur "
+"appareil. Nécessite HTTPS."
 
 #: sasoEventtickets_Options.php:300
 msgid ""
@@ -3326,8 +3326,8 @@ msgid ""
 "If active, then the order view QR code image will be attached to the "
 "purchase email."
 msgstr ""
-"Si actif, l'image du code QR de la vue de commande sera jointe à "
-"l'e-mail d'achat."
+"Si actif, l'image du code QR de la vue de commande sera jointe à l'e-mail "
+"d'achat."
 
 #: sasoEventtickets_Options.php:308
 msgid ""
@@ -3679,9 +3679,9 @@ msgid ""
 "holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
 "2025-12-22"
 msgstr ""
-"Si vous utilisez l'option de sélection de date, vous pouvez exclure "
-"des dates spécifiques comme les jours fériés. Entrez chaque date sur "
-"une nouvelle ligne au format AAAA-MM-JJ. ex. 2025-12-22"
+"Si vous utilisez l'option de sélection de date, vous pouvez exclure des "
+"dates spécifiques comme les jours fériés. Entrez chaque date sur une "
+"nouvelle ligne au format AAAA-MM-JJ. ex. 2025-12-22"
 
 #: sasoEventtickets_Options.php:282
 msgid ""
@@ -3815,16 +3815,14 @@ msgid ""
 "href='https://woocommerce.com/document/managing-orders/order-statuses/' "
 "target='_blank'>Learn more about the woocommerce order statuses here.</a>"
 msgstr ""
-"En cas de doute, ne touchez pas à ce réglage. :) Le ticket sera ajouté "
-"aux articles de la commande si le statut de commande choisi est "
-"appliqué à la commande. Si aucun n'est sélectionné, vous devez "
-"attribuer manuellement les tickets en cliquant sur le bouton "
-"correspondant dans les détails de la commande. Le bouton ne sera "
-"exécuté que si le statut de la commande est payé (en cours de "
-"traitement ou terminé). <a "
-"href='https://woocommerce.com/document/managing-orders/order-statuses/"
-"' target='_blank'>En savoir plus sur les statuts de commande "
-"WooCommerce ici.</a>"
+"En cas de doute, ne touchez pas à ce réglage. :) Le ticket sera ajouté aux "
+"articles de la commande si le statut de commande choisi est appliqué à la "
+"commande. Si aucun n'est sélectionné, vous devez attribuer manuellement les "
+"tickets en cliquant sur le bouton correspondant dans les détails de la "
+"commande. Le bouton ne sera exécuté que si le statut de la commande est payé "
+"(en cours de traitement ou terminé). <a href='https://woocommerce.com/"
+"document/managing-orders/order-statuses/' target='_blank'>En savoir plus sur "
+"les statuts de commande WooCommerce ici.</a>"
 
 #: backend.js:221
 msgid ""
@@ -4894,8 +4892,8 @@ msgstr "Veuillez saisir votre CVV pour ce billet"
 #: backend.js:255
 msgid "Please enter your license key to activate updates and premium features."
 msgstr ""
-"Veuillez entrer votre clé de licence pour activer les mises à jour et "
-"les fonctionnalités premium."
+"Veuillez entrer votre clé de licence pour activer les mises à jour et les "
+"fonctionnalités premium."
 
 #: sasoEventtickets_Options.php:738
 msgid ""
@@ -5203,9 +5201,8 @@ msgid ""
 "Redeeming all tickets, because the order status changed and option "
 "wcTicketOrderStatusToRedeemAllTickets is set to '"
 msgstr ""
-"Utilisation de tous les tickets, car le statut de la commande a "
-"changé et l'option wcTicketOrderStatusToRedeemAllTickets est définie "
-"sur '"
+"Utilisation de tous les tickets, car le statut de la commande a changé et "
+"l'option wcTicketOrderStatusToRedeemAllTickets est définie sur '"
 
 #: ticket_scanner.js:1019
 #, javascript-format
@@ -5970,8 +5967,8 @@ msgid ""
 msgstr ""
 "Certains systèmes sont lents et le délai de connexion interrompt "
 "l'exportation si vous avez trop de tickets. Dans ce cas, vous pouvez "
-"exporter vos tickets en plusieurs étapes. ex. 0 et 20000 quantité puis "
-"20001 et 20000 quantité."
+"exporter vos tickets en plusieurs étapes. ex. 0 et 20000 quantité puis 20001 "
+"et 20000 quantité."
 
 #: includes/seating/class-seating-plan.php:982
 msgid "Source seating plan not found."
@@ -7554,22 +7551,21 @@ msgid ""
 "it from your admin area. The used auth token will bypass any access "
 "restriction settings for the ticket scanner that are set in the options."
 msgstr ""
-"Vous pouvez ajouter des jetons d'authentification qui peuvent être "
-"utilisés pour accéder à votre scanner de tickets. Créez un jeton "
-"d'authentification et transmettez le code QR à l'utilisateur ou "
-"laissez l'utilisateur le scanner depuis votre zone d'administration. "
-"Le jeton d'authentification utilisé contournera toutes les "
-"restrictions d'accès pour le scanner de tickets définies dans les "
-"options."
+"Vous pouvez ajouter des jetons d'authentification qui peuvent être utilisés "
+"pour accéder à votre scanner de tickets. Créez un jeton d'authentification "
+"et transmettez le code QR à l'utilisateur ou laissez l'utilisateur le "
+"scanner depuis votre zone d'administration. Le jeton d'authentification "
+"utilisé contournera toutes les restrictions d'accès pour le scanner de "
+"tickets définies dans les options."
 
 #: backend.js:757
 msgid ""
 "You can add comma separated \",\" product ids. This will limit the user to "
 "redeem tickets only of products listed here. If left empty, all are allowed."
 msgstr ""
-"Vous pouvez ajouter des identifiants de produits séparés par des "
-"virgules \",\". Cela limitera l'utilisateur à n'utiliser que les "
-"tickets des produits listés ici. Si laissé vide, tous sont autorisés."
+"Vous pouvez ajouter des identifiants de produits séparés par des virgules \","
+"\". Cela limitera l'utilisateur à n'utiliser que les tickets des produits "
+"listés ici. Si laissé vide, tous sont autorisés."
 
 #: sasoEventtickets_Options.php:289
 msgid ""
@@ -8240,7 +8236,8 @@ msgstr "Portefeuilles numériques"
 
 #: sasoEventtickets_Options.php:288
 msgid "Allow your customers to add tickets to digital wallets."
-msgstr "Permettez à vos clients d'ajouter des billets à des portefeuilles numériques."
+msgstr ""
+"Permettez à vos clients d'ajouter des billets à des portefeuilles numériques."
 
 #: sasoEventtickets_Options.php:296
 msgid "Enable Vollstart Wallet"
@@ -8256,8 +8253,8 @@ msgid ""
 "receives or stores any ticket data."
 msgstr ""
 "Si activé, les clients peuvent ajouter leurs billets à l'application "
-"Vollstart Wallet (wallet.vollstart.com). Un bouton apparaîtra sur la page "
-"de détail du billet et dans les e-mails de commande. L'application wallet "
+"Vollstart Wallet (wallet.vollstart.com). Un bouton apparaîtra sur la page de "
+"détail du billet et dans les e-mails de commande. L'application wallet "
 "permet aux clients de rassembler des billets de différentes boutiques en un "
 "seul endroit. <b>Vos données restent privées</b> — les données des billets "
 "transitent directement de votre boutique au navigateur du client. Vollstart "
@@ -8267,9 +8264,7 @@ msgstr ""
 msgid "Learn more about security & privacy"
 msgstr "En savoir plus sur la sécurité et la confidentialité"
 
-#: index.php:634
-#: index.php:671
-#: index.php:676
+#: index.php:634 index.php:671 index.php:676
 msgid "Add to Vollstart Wallet"
 msgstr "Ajouter au Vollstart Wallet"
 
@@ -8289,7 +8284,8 @@ msgstr ""
 msgid ""
 "Your customers can collect their tickets in the free Vollstart Wallet app."
 msgstr ""
-"Vos clients peuvent rassembler leurs billets dans l'application gratuite Vollstart Wallet."
+"Vos clients peuvent rassembler leurs billets dans l'application gratuite "
+"Vollstart Wallet."
 
 #: backend.js:2987
 msgid ""
@@ -8306,6 +8302,55 @@ msgid ""
 msgstr ""
 "Activer Vollstart Wallet ? Les clients peuvent rassembler leurs billets dans "
 "l'application gratuite de wallet."
+
+#: backend.js:5217
+msgid "Wallet Test"
+msgstr "Test Wallet"
+
+#: backend.js:5217
+msgid "Import ticket to Vollstart Wallet for testing"
+msgstr "Importer le ticket dans Vollstart Wallet pour test"
+
+msgid "Custom File Upload"
+msgstr "Téléversement de fichier personnalisé"
+
+msgid "Exclude this product from eventado.com"
+msgstr "Exclure ce produit de eventado.com"
+
+msgid "For adults only (18+)"
+msgstr "Réservé aux adultes (18+)"
+
+msgid ""
+"Mark this event as 18+ on eventado.com. The public listing will show an age-"
+"restriction badge and a content notice."
+msgstr ""
+"Marquer cet événement comme 18+ sur eventado.com. L'annonce publique "
+"affichera un badge de restriction d'âge et un avis de contenu."
+
+msgid ""
+"Public calendar publishing was disabled — the eventado.com server rejected "
+"this site (license or domain mismatch). Please contact support@vollstart.com."
+msgstr ""
+"La publication sur le calendrier public a été désactivée — le serveur "
+"eventado.com a rejeté ce site (licence ou domaine non valide). Veuillez "
+"contacter support@vollstart.com."
+
+msgid ""
+"These options affect how this single product is treated by the global "
+"eventado.com sync."
+msgstr ""
+"Ces options affectent la manière dont ce produit individuel est traité par "
+"la synchronisation globale eventado.com."
+
+msgid "Upload a custom file for this product."
+msgstr "Téléversez un fichier personnalisé pour ce produit."
+
+msgid "Your premium license has expired. Updates are no longer available."
+msgstr ""
+"Votre licence Premium a expiré. Les mises à jour ne sont plus disponibles."
+
+msgid "Your premium license will expire in %1$d days (on %2$s)."
+msgstr "Votre licence Premium expirera dans %1$d jours (le %2$s)."
 
 #~ msgid ""
 #~ "Please enter your Premium license key in the settings to activate your "
@@ -8474,11 +8519,3 @@ msgstr ""
 #~ "billet. La Premium vous permet également d'activer l'enregistrement des "
 #~ "utilisateurs et plus encore. Cela permet à votre utilisateur de "
 #~ "s'inscrire à un ticket."
-
-#: backend.js:5217
-msgid "Wallet Test"
-msgstr "Test Wallet"
-
-#: backend.js:5217
-msgid "Import ticket to Vollstart Wallet for testing"
-msgstr "Importer le ticket dans Vollstart Wallet pour test"

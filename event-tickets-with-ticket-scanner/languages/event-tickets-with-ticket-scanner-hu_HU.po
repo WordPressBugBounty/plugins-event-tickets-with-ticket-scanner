@@ -1612,11 +1612,10 @@ msgid ""
 "errors messages during the page reload - that is normal. Why not asking "
 "support, if you should do it? ;)"
 msgstr ""
-"Tényleg meg akarod próbálni javítani a bővítmény "
-"adatbázistábla-definícióit? Biztonságosnak kell lennie, de csak nagyon "
-"ritka esetekben szükséges. Az oldal újratöltése közben hibaüzeneteket "
-"láthatsz - ez normális. Miért nem kérdezed meg a támogatást, hogy meg "
-"kell-e tenned? ;)"
+"Tényleg meg akarod próbálni javítani a bővítmény adatbázistábla-definícióit? "
+"Biztonságosnak kell lennie, de csak nagyon ritka esetekben szükséges. Az "
+"oldal újratöltése közben hibaüzeneteket láthatsz - ez normális. Miért nem "
+"kérdezed meg a támogatást, hogy meg kell-e tenned? ;)"
 
 #: backend.js:875 backend.js:4237 backend.js:4579
 msgctxt "title"
@@ -1738,10 +1737,10 @@ msgid ""
 "entry on the server).<br>Scroll down and wait for all to finish.<br>In the "
 "textarea below you will find all the successful stored tickets."
 msgstr ""
-"Minden bejegyzés zöldre (sikeresen mentve) vagy pirosra (NEM OK - "
-"duplikált bejegyzés a szerveren) vált.<br>Görgess le és várd meg, amíg "
-"az összes befejeződik.<br>Az alábbi szövegmezőben találod az összes "
-"sikeresen mentett jegyet."
+"Minden bejegyzés zöldre (sikeresen mentve) vagy pirosra (NEM OK - duplikált "
+"bejegyzés a szerveren) vált.<br>Görgess le és várd meg, amíg az összes "
+"befejeződik.<br>Az alábbi szövegmezőben találod az összes sikeresen mentett "
+"jegyet."
 
 #: js/seating_admin.js:183 js/seating_admin.js:814
 msgid "Edit"
@@ -2638,9 +2637,9 @@ msgid ""
 "If active, a camera icon will be displayed next to the input field, allowing "
 "users to scan QR codes with their device camera. Requires HTTPS."
 msgstr ""
-"Ha aktív, egy kamera ikon jelenik meg a beviteli mező mellett, "
-"lehetővé téve a felhasználók számára, hogy QR-kódokat szkennejenek az "
-"eszközük kamerájával. HTTPS szükséges."
+"Ha aktív, egy kamera ikon jelenik meg a beviteli mező mellett, lehetővé téve "
+"a felhasználók számára, hogy QR-kódokat szkennejenek az eszközük "
+"kamerájával. HTTPS szükséges."
 
 #: sasoEventtickets_Options.php:300
 msgid ""
@@ -3232,8 +3231,8 @@ msgid ""
 "If active, then the order view QR code image will be attached to the "
 "purchase email."
 msgstr ""
-"Ha aktív, a rendelés nézetének QR-kód képe csatolásra kerül a "
-"vásárlási e-mailhez."
+"Ha aktív, a rendelés nézetének QR-kód képe csatolásra kerül a vásárlási e-"
+"mailhez."
 
 #: sasoEventtickets_Options.php:308
 msgid ""
@@ -3571,9 +3570,9 @@ msgid ""
 "holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
 "2025-12-22"
 msgstr ""
-"Ha a dátumválasztó opciót használod, kizárhatsz bizonyos dátumokat, "
-"mint például ünnepnapokat. Minden dátumot új sorba írj ÉÉÉÉ-HH-NN "
-"formátumban. pl. 2025-12-22"
+"Ha a dátumválasztó opciót használod, kizárhatsz bizonyos dátumokat, mint "
+"például ünnepnapokat. Minden dátumot új sorba írj ÉÉÉÉ-HH-NN formátumban. "
+"pl. 2025-12-22"
 
 #: sasoEventtickets_Options.php:282
 msgid ""
@@ -3706,13 +3705,12 @@ msgid ""
 msgstr ""
 "Ha bizonytalan vagy, ne változtasd meg. :) A jegy hozzáadásra kerül a "
 "rendelési tételekhez, ha a kiválasztott rendelési állapot alkalmazásra "
-"kerül. Ha nincs kiválasztva, manuálisan kell hozzárendelned a jegyeket "
-"a rendelés részleteiben található megfelelő gombra kattintva. A gomb "
-"csak akkor hajtódik végre, ha a rendelés állapota fizetett "
-"(feldolgozás alatt vagy teljesített). <a "
-"href='https://woocommerce.com/document/managing-orders/order-statuses/"
-"' target='_blank'>Tudj meg többet a WooCommerce rendelési állapotokról "
-"itt.</a>"
+"kerül. Ha nincs kiválasztva, manuálisan kell hozzárendelned a jegyeket a "
+"rendelés részleteiben található megfelelő gombra kattintva. A gomb csak "
+"akkor hajtódik végre, ha a rendelés állapota fizetett (feldolgozás alatt "
+"vagy teljesített). <a href='https://woocommerce.com/document/managing-orders/"
+"order-statuses/' target='_blank'>Tudj meg többet a WooCommerce rendelési "
+"állapotokról itt.</a>"
 
 #: backend.js:221
 msgid ""
@@ -5828,8 +5826,8 @@ msgid ""
 msgstr ""
 "Egyes rendszerek lassúak és a kapcsolat időtúllépése megszakítja az "
 "exportálást, ha túl sok jegyed van. Ebben az esetben több lépésben "
-"exportálhatod a jegyeidet. pl. 0 és 20000 mennyiség, majd 20001 és "
-"20000 mennyiség."
+"exportálhatod a jegyeidet. pl. 0 és 20000 mennyiség, majd 20001 és 20000 "
+"mennyiség."
 
 #: includes/seating/class-seating-plan.php:982
 msgid "Source seating plan not found."
@@ -7220,8 +7218,7 @@ msgid ""
 "Will be overridden if you set the ticket number format settings on the "
 "product!"
 msgstr ""
-"Felülírásra kerül, ha a terméken beállítod a jegyszám formátum "
-"beállításokat!"
+"Felülírásra kerül, ha a terméken beállítod a jegyszám formátum beállításokat!"
 
 #: sasoEventtickets_Options.php:571
 msgid ""
@@ -7385,20 +7382,20 @@ msgid ""
 "restriction settings for the ticket scanner that are set in the options."
 msgstr ""
 "Hitelesítési tokeneket adhatsz hozzá, amelyekkel hozzáférhetsz a "
-"jegyszkennerhez. Hozz létre egy hitelesítési tokent és add át a "
-"QR-kódot a felhasználónak, vagy engedd, hogy a felhasználó az "
-"adminisztrációs területedről szkennelje be. A használt hitelesítési "
-"token megkerüli a jegyszkenner összes hozzáférési korlátozását, "
-"amelyek az opciókban vannak beállítva."
+"jegyszkennerhez. Hozz létre egy hitelesítési tokent és add át a QR-kódot a "
+"felhasználónak, vagy engedd, hogy a felhasználó az adminisztrációs "
+"területedről szkennelje be. A használt hitelesítési token megkerüli a "
+"jegyszkenner összes hozzáférési korlátozását, amelyek az opciókban vannak "
+"beállítva."
 
 #: backend.js:757
 msgid ""
 "You can add comma separated \",\" product ids. This will limit the user to "
 "redeem tickets only of products listed here. If left empty, all are allowed."
 msgstr ""
-"Vesszővel elválasztott \",\" termékazonosítókat adhatsz hozzá. Ez "
-"korlátozza a felhasználót, hogy csak az itt felsorolt termékek jegyeit "
-"válthassa be. Ha üresen hagyod, az összes engedélyezett."
+"Vesszővel elválasztott \",\" termékazonosítókat adhatsz hozzá. Ez korlátozza "
+"a felhasználót, hogy csak az itt felsorolt termékek jegyeit válthassa be. Ha "
+"üresen hagyod, az összes engedélyezett."
 
 #: sasoEventtickets_Options.php:289
 msgid ""
@@ -8049,7 +8046,8 @@ msgstr "Digitális tárcák"
 
 #: sasoEventtickets_Options.php:288
 msgid "Allow your customers to add tickets to digital wallets."
-msgstr "Tegye lehetővé ügyfelei számára, hogy jegyeiket digitális tárcákhoz adják."
+msgstr ""
+"Tegye lehetővé ügyfelei számára, hogy jegyeiket digitális tárcákhoz adják."
 
 #: sasoEventtickets_Options.php:296
 msgid "Enable Vollstart Wallet"
@@ -8064,21 +8062,19 @@ msgid ""
 "flows directly from your shop to the customer's browser. Vollstart never "
 "receives or stores any ticket data."
 msgstr ""
-"Ha aktív, az ügyfelek hozzáadhatják jegyeiket a Vollstart Wallet alkalmazáshoz "
-"(wallet.vollstart.com). Egy gomb jelenik meg a jegy részletező oldalán és a "
-"rendelési e-mailekben. A wallet alkalmazás lehetővé teszi az ügyfelek "
-"számára, hogy különböző boltokból származó jegyeiket egy helyen gyűjtsék "
-"össze. <b>Az adatai biztonságban maradnak</b> — a jegyadatok közvetlenül az "
-"Ön boltjából a vásárló böngészőjébe kerülnek. A Vollstart soha nem fogad "
-"és nem tárol jegyadatokat."
+"Ha aktív, az ügyfelek hozzáadhatják jegyeiket a Vollstart Wallet "
+"alkalmazáshoz (wallet.vollstart.com). Egy gomb jelenik meg a jegy részletező "
+"oldalán és a rendelési e-mailekben. A wallet alkalmazás lehetővé teszi az "
+"ügyfelek számára, hogy különböző boltokból származó jegyeiket egy helyen "
+"gyűjtsék össze. <b>Az adatai biztonságban maradnak</b> — a jegyadatok "
+"közvetlenül az Ön boltjából a vásárló böngészőjébe kerülnek. A Vollstart "
+"soha nem fogad és nem tárol jegyadatokat."
 
 #: sasoEventtickets_Options.php:292
 msgid "Learn more about security & privacy"
 msgstr "Tudjon meg többet a biztonságról és adatvédelemről"
 
-#: index.php:634
-#: index.php:671
-#: index.php:676
+#: index.php:634 index.php:671 index.php:676
 msgid "Add to Vollstart Wallet"
 msgstr "Hozzáadás a Vollstart Wallethez"
 
@@ -8098,7 +8094,8 @@ msgstr ""
 msgid ""
 "Your customers can collect their tickets in the free Vollstart Wallet app."
 msgstr ""
-"Ügyfelei összegyűjthetik jegyeiket az ingyenes Vollstart Wallet alkalmazásban."
+"Ügyfelei összegyűjthetik jegyeiket az ingyenes Vollstart Wallet "
+"alkalmazásban."
 
 #: backend.js:2987
 msgid ""
@@ -8115,6 +8112,54 @@ msgid ""
 msgstr ""
 "Vollstart Wallet engedélyezése? Az ügyfelek összegyűjthetik jegyeiket az "
 "ingyenes wallet alkalmazásban."
+
+#: backend.js:5217
+msgid "Wallet Test"
+msgstr "Wallet Teszt"
+
+#: backend.js:5217
+msgid "Import ticket to Vollstart Wallet for testing"
+msgstr "Jegy importálása a Vollstart Wallet-be teszteléshez"
+
+msgid "Custom File Upload"
+msgstr "Egyéni fájl feltöltése"
+
+msgid "Exclude this product from eventado.com"
+msgstr "Ennek a terméknek a kizárása az eventado.com-ról"
+
+msgid "For adults only (18+)"
+msgstr "Csak felnőtteknek (18+)"
+
+msgid ""
+"Mark this event as 18+ on eventado.com. The public listing will show an age-"
+"restriction badge and a content notice."
+msgstr ""
+"Jelöld 18+ jelzéssel ezt az eseményt az eventado.com-on. A nyilvános listán "
+"korhatáros jelvény és tartalmi figyelmeztetés jelenik meg."
+
+msgid ""
+"Public calendar publishing was disabled — the eventado.com server rejected "
+"this site (license or domain mismatch). Please contact support@vollstart.com."
+msgstr ""
+"A nyilvános naptár közzététele letiltva — az eventado.com szervere "
+"elutasította ezt az oldalt (licenc vagy domain hiba). Kérjük, írj a "
+"support@vollstart.com címre."
+
+msgid ""
+"These options affect how this single product is treated by the global "
+"eventado.com sync."
+msgstr ""
+"Ezek a beállítások befolyásolják, hogyan kezeli ezt az egyes terméket a "
+"globális eventado.com szinkronizálás."
+
+msgid "Upload a custom file for this product."
+msgstr "Tölts fel egyéni fájlt ehhez a termékhez."
+
+msgid "Your premium license has expired. Updates are no longer available."
+msgstr "A Premium licenced lejárt. A frissítések már nem érhetők el."
+
+msgid "Your premium license will expire in %1$d days (on %2$s)."
+msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 
 #~ msgid ""
 #~ "Please enter your Premium license key in the settings to activate your "
@@ -8419,11 +8464,3 @@ msgstr ""
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "Szabad jegyszámok elfogytak. Hozzáadva:"
-
-#: backend.js:5217
-msgid "Wallet Test"
-msgstr "Wallet Teszt"
-
-#: backend.js:5217
-msgid "Import ticket to Vollstart Wallet for testing"
-msgstr "Jegy importálása a Vollstart Wallet-be teszteléshez"

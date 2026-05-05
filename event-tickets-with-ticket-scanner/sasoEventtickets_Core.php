@@ -4,6 +4,7 @@ class sasoEventtickets_Core {
 	private $MAIN;
 
 	private $_CACHE_list = [];
+	private $_CACHE_authtokenNames = [];
 
 	public $ticket_url_path_part = "ticket";
 
@@ -139,6 +140,7 @@ class sasoEventtickets_Core {
 				'redeemed_date'=>'',
 				'redeemed_date_tz'=>'',
 				'redeemed_by_admin'=>0,
+				'redeemed_via_authtoken_id'=>0,
 				'set_by_admin'=>0,
 				'set_by_admin_date'=>'',
 				'set_by_admin_date_tz'=>'',
@@ -210,6 +212,22 @@ class sasoEventtickets_Core {
 			}
 		} else {
 			$metaObj['wc_ticket']['_redeemed_by_admin_username'] = "";
+		}
+		// Authtoken-Name live-Lookup mit Cache (mirrors getCustomerName pattern).
+		// We store only the ID in the JSON; the name is fetched on each render so a
+		// renamed token shows the current name everywhere — backend table, detail
+		// view and CSV export.
+		if (isset($metaObj['wc_ticket']['redeemed_via_authtoken_id']) && $metaObj['wc_ticket']['redeemed_via_authtoken_id'] > 0) {
+			$_t_id = (int) $metaObj['wc_ticket']['redeemed_via_authtoken_id'];
+			if (!isset($this->_CACHE_authtokenNames[$_t_id])) {
+				$tokenObj = $this->MAIN->getAuthtokenHandler()->getAuthtoken(['id' => $_t_id]);
+				$this->_CACHE_authtokenNames[$_t_id] = ($tokenObj && !empty($tokenObj['name']))
+					? $tokenObj['name']
+					: esc_html__("AUTHTOKEN DELETED", 'event-tickets-with-ticket-scanner');
+			}
+			$metaObj['wc_ticket']['_redeemed_via_authtoken_name'] = $this->_CACHE_authtokenNames[$_t_id];
+		} else {
+			$metaObj['wc_ticket']['_redeemed_via_authtoken_name'] = "";
 		}
 		if (isset($metaObj['wc_ticket']['set_by_admin']) && $metaObj['wc_ticket']['set_by_admin'] > 0) {
 			$u = get_userdata($metaObj['wc_ticket']['set_by_admin']);

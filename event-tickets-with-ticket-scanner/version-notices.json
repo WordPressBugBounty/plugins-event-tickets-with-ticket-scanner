@@ -1,6 +1,13 @@
 [
 	{
 		"type": "feature",
+		"title": "New: Eventado public calendar",
+		"message": "Premium customers can now publish their ticket events to eventado.com — a free public event calendar for more reach + SEO. Enable it in Settings → Public Event Calendar.",
+		"link": "https://eventado.com/add-event.html",
+		"linkText": "How it works"
+	},
+	{
+		"type": "feature",
 		"title": "New: Vollstart Wallet",
 		"message": "Your customers can now collect their tickets in the free Vollstart Wallet app. Enable it in Settings → Digital Wallets.",
 		"link": "https://vollstart.com/vollstart-wallet/",

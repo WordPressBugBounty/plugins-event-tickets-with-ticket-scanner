@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,14 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.0.7 - 2026-05-05 =
+* Fix: License-key modal no longer nags on every admin page load. Clicking "Later" now silences the prompt for 24 hours (per browser, via localStorage) instead of re-popping on the next click. Customers can still enter the key any time on the plugin's Options page — the field is rendered there.
+* New: Eventado public-calendar teaser added to the "What's New" version-notices system on the plugin's settings page (the same release-announcement surface that already carries the Wallet card). Active for all users until "Dismiss" is clicked; dismissing pins it to the current plugin version, so it re-appears on the next plugin update.
+* New: Authtoken audit on ticket redemption — when an external scanner team uses an authtoken (no WP login), the token's database id is now stored in the redeem record (`redeemed_via_authtoken_id`). Backend ticket detail view shows "Redeemed via authtoken: NAME (#ID)" alongside any WP-user redeem info; CSV export gains `meta_wc_ticket_redeemed_via_authtoken_id` + `_name` columns. The token name is resolved live with per-request caching, so a renamed token shows the current name everywhere — only the id is persisted.
+* i18n: 13 Premium-side strings now ship with translations in all 11 languages (de_DE, de_CH, en, es_ES, fr_FR, hu_HU, it_IT, ja_JP, nl_NL, pt_BR, pt_PT, zh_CN). Strings cover the new Eventado options (publish toggle, per-product exclude, 18+ flag, sync notice, license-expiry banner) and a few Premium options that previously only existed as English source strings.
+* i18n: Context-Wizard suggestion-card system gains a new card for the Eventado publishing option (Premium only). Replaces the temporary admin_notices banner from 1.6.8 — uses the existing dismiss-per-user flow, renders inline on the options page next to the Wallet suggestion.
+* i18n: Premium plugin now uses the basic plugin's textdomain consistently — strings that lived under `event-tickets-with-woocommmerce-premium` (license-expiry messages) are migrated to `event-tickets-with-ticket-scanner`, so a single .mo file per language covers both plugins.
 
 = 3.0.6 - 2026-05-04 =
 * New: "First Activated" date in Support Info — shows when the plugin was first activated, included in the copyable support text. Marked as "(estimate)" for installs predating this version.

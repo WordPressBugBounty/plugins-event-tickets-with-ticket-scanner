@@ -1619,11 +1619,10 @@ msgid ""
 "errors messages during the page reload - that is normal. Why not asking "
 "support, if you should do it? ;)"
 msgstr ""
-"Você realmente deseja tentar reparar as definições das tabelas do "
-"banco de dados do plugin? Deve ser seguro, mas só é necessário em "
-"casos muito raros. Você pode ver mensagens de erro durante o "
-"recarregamento da página - isso é normal. Por que não perguntar ao "
-"suporte se você deve fazer isso? ;)"
+"Você realmente deseja tentar reparar as definições das tabelas do banco de "
+"dados do plugin? Deve ser seguro, mas só é necessário em casos muito raros. "
+"Você pode ver mensagens de erro durante o recarregamento da página - isso é "
+"normal. Por que não perguntar ao suporte se você deve fazer isso? ;)"
 
 #: backend.js:875 backend.js:4237 backend.js:4579
 msgctxt "title"
@@ -1748,10 +1747,10 @@ msgid ""
 "entry on the server).<br>Scroll down and wait for all to finish.<br>In the "
 "textarea below you will find all the successful stored tickets."
 msgstr ""
-"Cada entrada ficará verde (armazenada com sucesso) ou vermelha (NÃO OK "
-"- entrada duplicada no servidor).<br>Role para baixo e aguarde até que "
-"todos terminem.<br>Na área de texto abaixo você encontrará todos os "
-"ingressos armazenados com sucesso."
+"Cada entrada ficará verde (armazenada com sucesso) ou vermelha (NÃO OK - "
+"entrada duplicada no servidor).<br>Role para baixo e aguarde até que todos "
+"terminem.<br>Na área de texto abaixo você encontrará todos os ingressos "
+"armazenados com sucesso."
 
 #: js/seating_admin.js:183 js/seating_admin.js:814
 msgid "Edit"
@@ -1869,8 +1868,8 @@ msgid ""
 "Enter your Premium license key to activate features. If you do not have one, "
 "please contact support@vollstart.com."
 msgstr ""
-"Insira sua chave de licença Premium para ativar os recursos. Se você "
-"não tiver uma, entre em contato com support@vollstart.com."
+"Insira sua chave de licença Premium para ativar os recursos. Se você não "
+"tiver uma, entre em contato com support@vollstart.com."
 
 #: sasoEventtickets_Options.php:758
 msgid ""
@@ -2658,8 +2657,8 @@ msgid ""
 "users to scan QR codes with their device camera. Requires HTTPS."
 msgstr ""
 "Se ativo, um ícone de câmera será exibido ao lado do campo de entrada, "
-"permitindo que os usuários escaneiem códigos QR com a câmera do "
-"dispositivo. Requer HTTPS."
+"permitindo que os usuários escaneiem códigos QR com a câmera do dispositivo. "
+"Requer HTTPS."
 
 #: sasoEventtickets_Options.php:300
 msgid ""
@@ -3266,8 +3265,8 @@ msgid ""
 "If active, then the order view QR code image will be attached to the "
 "purchase email."
 msgstr ""
-"Se ativo, a imagem do código QR da visualização do pedido será anexada "
-"ao e-mail de compra."
+"Se ativo, a imagem do código QR da visualização do pedido será anexada ao e-"
+"mail de compra."
 
 #: sasoEventtickets_Options.php:308
 msgid ""
@@ -3605,9 +3604,9 @@ msgid ""
 "holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
 "2025-12-22"
 msgstr ""
-"Se você usar a opção de seletor de datas, poderá excluir datas "
-"específicas como feriados. Insira cada data em uma nova linha no "
-"formato AAAA-MM-DD. ex. 2025-12-22"
+"Se você usar a opção de seletor de datas, poderá excluir datas específicas "
+"como feriados. Insira cada data em uma nova linha no formato AAAA-MM-DD. ex. "
+"2025-12-22"
 
 #: sasoEventtickets_Options.php:282
 msgid ""
@@ -3739,14 +3738,13 @@ msgid ""
 "href='https://woocommerce.com/document/managing-orders/order-statuses/' "
 "target='_blank'>Learn more about the woocommerce order statuses here.</a>"
 msgstr ""
-"Em caso de dúvida, não altere. :) O ingresso será adicionado aos itens "
-"do pedido se o status do pedido escolhido for aplicado ao pedido. Se "
-"nenhum for selecionado, você precisará atribuir os ingressos "
-"manualmente clicando no botão correspondente nos detalhes do pedido. O "
-"botão só será executado se o status do pedido for pago (processando ou "
-"concluído). <a href='https://woocommerce.com/document/managing-orders/"
-"order-statuses/' target='_blank'>Saiba mais sobre os status de pedido "
-"do WooCommerce aqui.</a>"
+"Em caso de dúvida, não altere. :) O ingresso será adicionado aos itens do "
+"pedido se o status do pedido escolhido for aplicado ao pedido. Se nenhum for "
+"selecionado, você precisará atribuir os ingressos manualmente clicando no "
+"botão correspondente nos detalhes do pedido. O botão só será executado se o "
+"status do pedido for pago (processando ou concluído). <a href='https://"
+"woocommerce.com/document/managing-orders/order-statuses/' "
+"target='_blank'>Saiba mais sobre os status de pedido do WooCommerce aqui.</a>"
 
 #: backend.js:221
 msgid ""
@@ -4802,8 +4800,8 @@ msgstr "Por favor, insira o CVV para este ingresso"
 #: backend.js:255
 msgid "Please enter your license key to activate updates and premium features."
 msgstr ""
-"Por favor, insira sua chave de licença para ativar atualizações e "
-"recursos premium."
+"Por favor, insira sua chave de licença para ativar atualizações e recursos "
+"premium."
 
 #: sasoEventtickets_Options.php:738
 msgid ""
@@ -5107,8 +5105,8 @@ msgid ""
 "Redeeming all tickets, because the order status changed and option "
 "wcTicketOrderStatusToRedeemAllTickets is set to '"
 msgstr ""
-"Resgatando todos os ingressos, porque o status do pedido mudou e a "
-"opção wcTicketOrderStatusToRedeemAllTickets está definida como '"
+"Resgatando todos os ingressos, porque o status do pedido mudou e a opção "
+"wcTicketOrderStatusToRedeemAllTickets está definida como '"
 
 #: ticket_scanner.js:1019
 #, javascript-format
@@ -5868,9 +5866,9 @@ msgid ""
 "several steps. e.g. 0 and 20000 amount and then 20001 and 20000 amount."
 msgstr ""
 "Alguns sistemas são lentos e o tempo limite da conexão interrompe a "
-"exportação se você tiver muitos ingressos. Nesse caso, você pode "
-"exportar seus ingressos em várias etapas. ex. 0 e 20000 quantidade e "
-"depois 20001 e 20000 quantidade."
+"exportação se você tiver muitos ingressos. Nesse caso, você pode exportar "
+"seus ingressos em várias etapas. ex. 0 e 20000 quantidade e depois 20001 e "
+"20000 quantidade."
 
 #: includes/seating/class-seating-plan.php:982
 msgid "Source seating plan not found."
@@ -7277,8 +7275,8 @@ msgid ""
 "Will be overridden if you set the ticket number format settings on the "
 "product!"
 msgstr ""
-"Será substituído se você definir as configurações de formato do número "
-"do ingresso no produto!"
+"Será substituído se você definir as configurações de formato do número do "
+"ingresso no produto!"
 
 #: sasoEventtickets_Options.php:571
 msgid ""
@@ -7444,21 +7442,20 @@ msgid ""
 "it from your admin area. The used auth token will bypass any access "
 "restriction settings for the ticket scanner that are set in the options."
 msgstr ""
-"Você pode adicionar tokens de autenticação que podem ser usados para "
-"acessar seu scanner de ingressos. Crie um token de autenticação e "
-"passe o código QR ao usuário ou deixe o usuário escaneá-lo na sua "
-"área administrativa. O token de autenticação utilizado ignorará "
-"quaisquer configurações de restrição de acesso para o scanner de "
-"ingressos definidas nas opções."
+"Você pode adicionar tokens de autenticação que podem ser usados para acessar "
+"seu scanner de ingressos. Crie um token de autenticação e passe o código QR "
+"ao usuário ou deixe o usuário escaneá-lo na sua área administrativa. O token "
+"de autenticação utilizado ignorará quaisquer configurações de restrição de "
+"acesso para o scanner de ingressos definidas nas opções."
 
 #: backend.js:757
 msgid ""
 "You can add comma separated \",\" product ids. This will limit the user to "
 "redeem tickets only of products listed here. If left empty, all are allowed."
 msgstr ""
-"Você pode adicionar IDs de produtos separados por vírgula \",\". "
-"Isso limitará o usuário a resgatar ingressos apenas dos produtos "
-"listados aqui. Se deixado vazio, todos são permitidos."
+"Você pode adicionar IDs de produtos separados por vírgula \",\". Isso "
+"limitará o usuário a resgatar ingressos apenas dos produtos listados aqui. "
+"Se deixado vazio, todos são permitidos."
 
 #: sasoEventtickets_Options.php:289
 msgid ""
@@ -8131,8 +8128,8 @@ msgid ""
 msgstr ""
 "Se ativo, os clientes podem adicionar seus ingressos ao aplicativo Vollstart "
 "Wallet (wallet.vollstart.com). Um botão aparecerá na página de detalhes do "
-"ingresso e nos e-mails de pedido. O aplicativo wallet permite que os clientes "
-"reúnam ingressos de diferentes lojas em um só lugar. <b>Seus dados "
+"ingresso e nos e-mails de pedido. O aplicativo wallet permite que os "
+"clientes reúnam ingressos de diferentes lojas em um só lugar. <b>Seus dados "
 "permanecem privados</b> — os dados dos ingressos fluem diretamente da sua "
 "loja para o navegador do cliente. A Vollstart nunca recebe ou armazena dados "
 "de ingressos."
@@ -8141,9 +8138,7 @@ msgstr ""
 msgid "Learn more about security & privacy"
 msgstr "Saiba mais sobre segurança e privacidade"
 
-#: index.php:634
-#: index.php:671
-#: index.php:676
+#: index.php:634 index.php:671 index.php:676
 msgid "Add to Vollstart Wallet"
 msgstr "Adicionar ao Vollstart Wallet"
 
@@ -8163,7 +8158,8 @@ msgstr ""
 msgid ""
 "Your customers can collect their tickets in the free Vollstart Wallet app."
 msgstr ""
-"Seus clientes podem reunir seus ingressos no aplicativo gratuito Vollstart Wallet."
+"Seus clientes podem reunir seus ingressos no aplicativo gratuito Vollstart "
+"Wallet."
 
 #: backend.js:2987
 msgid ""
@@ -8180,6 +8176,55 @@ msgid ""
 msgstr ""
 "Ativar Vollstart Wallet? Os clientes podem reunir ingressos no aplicativo "
 "gratuito de wallet."
+
+#: backend.js:5217
+msgid "Wallet Test"
+msgstr "Teste Wallet"
+
+#: backend.js:5217
+msgid "Import ticket to Vollstart Wallet for testing"
+msgstr "Importar bilhete para o Vollstart Wallet para teste"
+
+msgid "Custom File Upload"
+msgstr "Upload de arquivo personalizado"
+
+msgid "Exclude this product from eventado.com"
+msgstr "Excluir este produto do eventado.com"
+
+msgid "For adults only (18+)"
+msgstr "Apenas para adultos (18+)"
+
+msgid ""
+"Mark this event as 18+ on eventado.com. The public listing will show an age-"
+"restriction badge and a content notice."
+msgstr ""
+"Marque este evento como 18+ no eventado.com. A listagem pública mostrará um "
+"selo de restrição etária e um aviso de conteúdo."
+
+msgid ""
+"Public calendar publishing was disabled — the eventado.com server rejected "
+"this site (license or domain mismatch). Please contact support@vollstart.com."
+msgstr ""
+"A publicação no calendário público foi desativada — o servidor do eventado."
+"com rejeitou este site (licença ou domínio incorretos). Contate "
+"support@vollstart.com."
+
+msgid ""
+"These options affect how this single product is treated by the global "
+"eventado.com sync."
+msgstr ""
+"Estas opções afetam como este produto é tratado pela sincronização global do "
+"eventado.com."
+
+msgid "Upload a custom file for this product."
+msgstr "Envie um arquivo personalizado para este produto."
+
+msgid "Your premium license has expired. Updates are no longer available."
+msgstr ""
+"Sua licença Premium expirou. As atualizações não estão mais disponíveis."
+
+msgid "Your premium license will expire in %1$d days (on %2$s)."
+msgstr "Sua licença Premium expirará em %1$d dias (em %2$s)."
 
 #~ msgid ""
 #~ "Please enter your Premium license key in the settings to activate your "
@@ -8486,11 +8531,3 @@ msgstr ""
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "Números de ingresso gratuitos esgotados. Adicionado:"
-
-#: backend.js:5217
-msgid "Wallet Test"
-msgstr "Teste Wallet"
-
-#: backend.js:5217
-msgid "Import ticket to Vollstart Wallet for testing"
-msgstr "Importar bilhete para o Vollstart Wallet para teste"

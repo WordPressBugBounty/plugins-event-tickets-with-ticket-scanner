@@ -2241,6 +2241,7 @@ class sasoEventtickets_AdminSettings {
 		$metaObj['wc_ticket']['redeemed_date'] = "";
 		$metaObj['wc_ticket']['redeemed_date_tz'] = "";
 		$metaObj['wc_ticket']['redeemed_by_admin'] = 0;
+		$metaObj['wc_ticket']['redeemed_via_authtoken_id'] = 0;
 		$metaObj['wc_ticket']['set_by_admin'] = 0;
 		$metaObj['wc_ticket']['set_by_admin_date'] = "";
 		$metaObj['wc_ticket']['set_by_admin_date_tz'] = "";
@@ -2351,12 +2352,18 @@ class sasoEventtickets_AdminSettings {
 				// kann sein, dass der admin nicht eingeloggt ist (externer mitarbeiter)
 				$metaObj['wc_ticket']['redeemed_by_admin'] = get_current_user_id();
 			}
+			// Authtoken-Pfad: kein WP-User, dafür ID des Tokens als Audit-Spur.
+			// Name wird live im fillObject aufgelöst (cached), nicht persistiert.
+			if (!empty($data['authtoken_id'])) {
+				$metaObj['wc_ticket']['redeemed_via_authtoken_id'] = (int) $data['authtoken_id'];
+			}
 
 			$stat_redeem['redeemed_date'] = $metaObj['wc_ticket']['redeemed_date'];
 			$stat_redeem['redeemed_date_tz'] = wp_timezone_string();
 			$stat_redeem['ip'] = $metaObj['wc_ticket']['ip'];
 			$stat_redeem['userid'] = $metaObj['wc_ticket']['userid'];
 			$stat_redeem['redeemed_by_admin'] = $metaObj['wc_ticket']['redeemed_by_admin'];
+			$stat_redeem['redeemed_via_authtoken_id'] = (int) ($metaObj['wc_ticket']['redeemed_via_authtoken_id'] ?? 0);
 			$metaObj['wc_ticket']['stats_redeemed'][] = $stat_redeem;
 
 			// set the last usage
@@ -2677,7 +2684,7 @@ class sasoEventtickets_AdminSettings {
 			'meta_confirmedCount',
 			'meta_woocommerce', 'meta_woocommerce_order_id', 'meta_woocommerce_product_id', 'meta_woocommerce_creation_date', 'meta_woocommerce_creation_date_tz', 'meta_woocommerce_item_id', 'meta_woocommerce_user_id',
 			'meta_wc_rp', 'meta_wc_rp_order_id', 'meta_wc_rp_product_id', 'meta_wc_rp_creation_date', 'meta_wc_rp_creation_date_tz', 'meta_wc_rp_item_id',
-			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket', 'meta_wc_ticket_subs', 'meta_wc_ticket_seat_id', 'meta_wc_ticket_seat_identifier', 'meta_wc_ticket_seat_label', 'meta_wc_ticket_seat_category'
+			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_redeemed_via_authtoken_id', 'meta_wc_ticket_redeemed_via_authtoken_name', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket', 'meta_wc_ticket_subs', 'meta_wc_ticket_seat_id', 'meta_wc_ticket_seat_identifier', 'meta_wc_ticket_seat_label', 'meta_wc_ticket_seat_category'
 			];
 		if ($options != null && is_array($options)) {
 			if (isset($options["displayAdminAreaColumnBillingName"])) {
@@ -2751,6 +2758,10 @@ class sasoEventtickets_AdminSettings {
 				if (!empty($metaObj['wc_ticket']['redeemed_date'])) $row['meta_wc_ticket_redeemed_date'] = $metaObj['wc_ticket']['redeemed_date'];
 				if (!empty($metaObj['wc_ticket']['redeemed_date_tz'])) $row['meta_wc_ticket_redeemed_date_tz'] = $metaObj['wc_ticket']['redeemed_date_tz'];
 				if (!empty($metaObj['wc_ticket']['redeemed_by_admin'])) $row['meta_wc_ticket_redeemed_by_admin'] = $metaObj['wc_ticket']['redeemed_by_admin'];
+				if (!empty($metaObj['wc_ticket']['redeemed_via_authtoken_id'])) {
+					$row['meta_wc_ticket_redeemed_via_authtoken_id']   = $metaObj['wc_ticket']['redeemed_via_authtoken_id'];
+					$row['meta_wc_ticket_redeemed_via_authtoken_name'] = $metaObj['wc_ticket']['_redeemed_via_authtoken_name'] ?? '';
+				}
 				if (!empty($metaObj['wc_ticket']['set_by_admin'])) $row['meta_wc_ticket_redeemed_by_admin'] = $metaObj['wc_ticket']['set_by_admin'];
 				if (!empty($metaObj['wc_ticket']['set_by_admin_date'])) $row['meta_wc_ticket_set_by_admin_date'] = $metaObj['wc_ticket']['set_by_admin_date'];
 				if (!empty($metaObj['wc_ticket']['set_by_admin_date_tz'])) $row['meta_wc_ticket_set_by_admin_date_tz'] = $metaObj['wc_ticket']['set_by_admin_date_tz'];

@@ -12,6 +12,7 @@ final class sasoEventtickets_Ticket {
 
 	private $isScanner = null;
 	private $authtoken = null; // only set if the ticket scanner is sending the request with authtoken
+	private $authtoken_id = 0;  // resolved DB id of $authtoken — used as audit trail on redeem
 
 	private $redeem_successfully = false;
 	private $onlyLoggedInScannerAllowed = null;
@@ -355,6 +356,13 @@ final class sasoEventtickets_Ticket {
 			$authHandler = $this->MAIN->getAuthtokenHandler();
 			$this->authtoken = $web_request->get_param($authHandler::$authtoken_param);
 			$ret = $authHandler->checkAccessForAuthtoken($this->authtoken);
+			if ($ret) {
+				// Resolve token id once so the redeem record can reference it.
+				$tokenObj = $authHandler->getAuthtokenByCode($this->authtoken);
+				if ($tokenObj && !empty($tokenObj['id'])) {
+					$this->authtoken_id = (int) $tokenObj['id'];
+				}
+			}
 		} else {
 			// Path 2: Check if scanner is open to everyone (no login required)
 			$allowed_role = $this->MAIN->getOptions()->getOptionValue('wcTicketScannerAllowedRoles');
@@ -2644,6 +2652,9 @@ final class sasoEventtickets_Ticket {
 				'userid'=>$user_id,
 				'redeemed_by_admin'=>1
 			];
+			if ($this->authtoken_id > 0) {
+				$data['authtoken_id'] = $this->authtoken_id;
+			}
 			$this->MAIN->getAdmin()->executeJSON('redeemWoocommerceTicketForCode', $data, true);
 
 			$order = $this->setStatusAfterRedeemOperation($order);
