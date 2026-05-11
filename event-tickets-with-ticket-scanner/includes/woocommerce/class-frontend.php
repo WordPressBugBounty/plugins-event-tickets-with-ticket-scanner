@@ -659,13 +659,14 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @return void
 		 */
 		public function woocommerce_after_cart_item_name_handler(array $cart_item, string $cart_item_key): void {
-			// Show input for purchase restriction code
+			// Show input for purchase restriction code (separate feature — works on
+			// any product type, ticket or not).
 			$saso_eventtickets_list = get_post_meta($cart_item['product_id'], self::META_KEY_CODELIST_RESTRICTION, true);
 			if (!empty($saso_eventtickets_list)) {
 				$code = isset($cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM]) ? $cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM] : '';
 				$infoLabel = $this->MAIN->getOptions()->getOptionValue('wcRestrictCartInfo');
 				$fieldPlaceholder = $this->MAIN->getOptions()->getOptionValue('wcRestrictCartFieldPlaceholder');
-				$html = '<div><small>' . esc_attr($infoLabel) . '<br></small>
+				$html = '<p class="form-row form-row-wide"><label>%s</label>
 							<input
 								type="text"
 								maxlength="140"
@@ -675,14 +676,26 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 								data-plugin="event"
 								data-plg="' . esc_attr($this->MAIN->getPrefix()) . '"
 								value="%s"
-								class="input-text text" /></div>';
+								class="input-text" /></p>';
 				printf(
 					str_replace("\n", "", $html),
+					esc_html($infoLabel),
 					esc_attr($fieldPlaceholder),
 					esc_attr($this->js_inputType),
 					esc_attr($cart_item_key),
 					wc_clean($code)
 				);
+			}
+
+			// Top-level gate: everything below is ticket-specific UI (daychooser,
+			// seats, name-per-ticket, value-per-ticket). If the parent product is
+			// not (or no longer) a ticket — even if individual variation/product
+			// flags are still saved in postmeta from a previous configuration —
+			// none of it must render. The is_ticket flag on the parent product
+			// is the single source of truth.
+			$_pid_ticket = isset($cart_item['product_id']) ? intval($cart_item['product_id']) : 0;
+			if ($_pid_ticket < 1 || !$this->MAIN->getWC()->getProductManager()->isTicketByProductId($_pid_ticket)) {
+				return;
 			}
 
 			// Check if the product is a daychooser
@@ -835,7 +848,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 						if ($valueArray != null && isset($valueArray[$cart_item_key]) && isset($valueArray[$cart_item_key][$a])) {
 							$value = trim($valueArray[$cart_item_key][$a]);
 						}
-						$html = '<div class="saso_eventtickets_request_name_per_ticket_label"><small>' . str_replace("{count}", $a + 1, $label) . '<br></small>
+						$html = '<p class="form-row form-row-wide"><label>' . esc_html(str_replace("{count}", $a + 1, $label)) . '</label>
 								<input type="text" data-input-type="text"
 									name="saso_eventtickets_request_name_per_ticket[%s][]"
 									data-cart-item-id="%s"
@@ -843,7 +856,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 									data-plugin="event"
 									data-plg="' . esc_attr($this->MAIN->getPrefix()) . '"
 									value="%s"
-									class="input-text text" /></div>';
+									class="input-text" /></p>';
 						printf(
 							str_replace("\n", "", $html),
 							esc_attr($cart_item_key),
@@ -903,15 +916,14 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 								$html_options = '<option>' . esc_html($l) . '</option>' . $html_options;
 							}
 
-							$html = '<div class="saso_eventtickets_request_value_per_ticket_label"><small>' . $l . '<br></small>
+							$html = '<p class="form-row form-row-wide"><label>' . esc_html($l) . '</label>
 									<select
 										name="saso_eventtickets_request_value_per_ticket[%s][]"
 										data-input-type="value"
 										data-cart-item-id="%s"
 										data-cart-item-count="%s"
 										data-plugin="event"
-										data-plg="' . esc_attr($this->MAIN->getPrefix()) . '"
-										class="dropdown">' . $html_options . '</select></div>';
+										data-plg="' . esc_attr($this->MAIN->getPrefix()) . '">' . $html_options . '</select></p>';
 							printf(
 								str_replace("\n", "", $html),
 								esc_attr($cart_item_key),
@@ -1023,10 +1035,15 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		private function validateNamePerTicket(array $cart_items): void {
 			$valueArray = WC()->session->get("saso_eventtickets_request_name_per_ticket");
 			$_th = $this->MAIN->getTicketHandler();
+			$_pm = $this->MAIN->getWC()->getProductManager();
 
 			foreach ($cart_items as $item_id => $cart_item) {
 				$_vid = isset($cart_item['variation_id']) ? intval($cart_item['variation_id']) : 0;
 				$_pid = intval($cart_item['product_id']);
+				// Top-level gate: only validate when the parent is actually a ticket.
+				if ($_pid < 1 || !$_pm->isTicketByProductId($_pid)) {
+					continue;
+				}
 				$request_name = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_name_per_ticket") == "yes";
 				if (!$request_name) {
 					continue;
@@ -1070,10 +1087,15 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		private function validateValuePerTicket(array $cart_items): void {
 			$valueArray = WC()->session->get("saso_eventtickets_request_value_per_ticket");
 			$_th = $this->MAIN->getTicketHandler();
+			$_pm = $this->MAIN->getWC()->getProductManager();
 
 			foreach ($cart_items as $item_id => $cart_item) {
 				$_vid = isset($cart_item['variation_id']) ? intval($cart_item['variation_id']) : 0;
 				$_pid = intval($cart_item['product_id']);
+				// Top-level gate: only validate when the parent is actually a ticket.
+				if ($_pid < 1 || !$_pm->isTicketByProductId($_pid)) {
+					continue;
+				}
 				$request_value = $_th->getMetaWithVariationFallback($_pid, $_vid, "saso_eventtickets_request_value_per_ticket") == "yes";
 				if (!$request_value) {
 					continue;
@@ -1115,7 +1137,13 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @return void
 		 */
 		private function validateDayChooserDates(array $cart_items): void {
+			$_pm = $this->MAIN->getWC()->getProductManager();
 			foreach ($cart_items as $item_id => $cart_item) {
+				$_pid = isset($cart_item['product_id']) ? intval($cart_item['product_id']) : 0;
+				// Top-level gate: only validate when the parent is actually a ticket.
+				if ($_pid < 1 || !$_pm->isTicketByProductId($_pid)) {
+					continue;
+				}
 				$is_daychooser = get_post_meta($cart_item['product_id'], "saso_eventtickets_is_daychooser", true) == "yes";
 				if (!$is_daychooser) {
 					continue;
@@ -1729,10 +1757,15 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param array $cart_item_data Cart item data
 		 * @return void
 		 */
-		public function woocommerce_add_to_cart_handler($cart_item_key, $product_id, $quantity, $variation_id, array $variation, array $cart_item_data): void {
+		public function woocommerce_add_to_cart_handler($cart_item_key, $product_id, $quantity, $variation_id, $variation = [], $cart_item_data = []): void {
 		$product_id = intval($product_id);
 		$quantity = intval($quantity);
 		$variation_id = intval($variation_id);
+		// Some 3rd-party plugins (e.g. WooCommerce Wishlists) call WC_Cart::add_to_cart()
+		// with $variation as a string instead of an array, which would trip a strict
+		// array type-hint and abort the whole cart operation. Normalize defensively.
+		if (!is_array($variation)) $variation = [];
+		if (!is_array($cart_item_data)) $cart_item_data = [];
 			$cart = WC()->cart->cart_contents;
 
 			if (!isset($cart[$cart_item_key])) {

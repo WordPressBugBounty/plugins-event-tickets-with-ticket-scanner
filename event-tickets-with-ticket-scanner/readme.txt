@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.0.7
+Stable tag: 3.0.8
 Tested up to: 6.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,6 +227,13 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.0.8 - 2026-05-11 =
+* Fix: On variable products, the parent's "Request a value per ticket", "...mandatory" and the matching name-per-ticket checkboxes silently turned themselves back ON every time anything on the product was saved (e.g. flipping a variation's stock status). Root cause: each variation row submits an override `<select name="<key>[<i>]">` under the same root name as the parent's checkbox/input, so on a variable-product save `$_POST[<key>]` arrived as an array. The save handler treated "key is present in POST" as "checkbox is checked" and overwrote the parent meta with `yes` — which is also why the cart kept asking customers to fill in a value field even when, in the admin, the boxes looked unchecked. The handler now ignores array values for parent-level fields (`request_name/value_per_ticket(_mandatory|_label|_def)`, `ticket_start/end_date/time`, `ticket_amount_per_item`, and Premium's `expiration_days`). After updating, simply uncheck the affected boxes once and they will stay unchecked. No data migration is required.
+* Fix: Fatal TypeError when adding products to cart from a wishlist (or any 3rd-party plugin that calls `WC_Cart::add_to_cart()` without supplying `$variation` as an array). The internal handler used a strict `array` type-hint and aborted the whole cart operation — it now accepts any input and normalizes defensively. Affects sites running WooCommerce Wishlists.
+* Fix: Ticket configuration fields (date, dropdown, name-per-ticket, etc.) no longer appear on every variation of every variable product in the admin. They are now only rendered when the parent product is explicitly marked as a ticket — same UX rule that already applies to simple products. Catalogs with thousands of non-ticket variable products no longer have to opt out per variation.
+* Fix: Cart and checkout no longer render ticket-specific input fields (name-per-ticket, value-per-ticket, daychooser, seat info) for products whose parent is not (or no longer) a ticket. The `is_ticket` flag on the parent product is now the single source of truth — stale variation/product meta from a previous configuration is ignored. Validation at checkout follows the same rule and no longer blocks orders for non-ticket products with leftover meta. Purchase-restriction codes are unaffected and continue to work on any product type.
+* Fix: Cart and checkout input fields for the name-per-ticket, value-per-ticket and purchase-restriction features now use standard WooCommerce form-row markup (`<p class="form-row form-row-wide"><label>…</label><input class="input-text" />`) instead of a custom `<small>`-label wrapper. This lets the active theme's CSS apply normally so the fields look consistent with the rest of the cart/checkout form.
 
 = 3.0.7 - 2026-05-05 =
 * Fix: License-key modal no longer nags on every admin page load. Clicking "Later" now silences the prompt for 24 hours (per browser, via localStorage) instead of re-popping on the next click. Customers can still enter the key any time on the plugin's Options page — the field is rendered there.

@@ -559,7 +559,12 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				$seating->getMetaProductSeatingRequired()
 			];
 			foreach($keys_checkbox as $key) {
-				if( isset( $R[$key] ) ) {
+				// Variation rows render <select name="<key>[<i>]"> for some of these
+				// keys, so on a variable product save $_POST[<key>] arrives as an
+				// array even when the parent's own checkbox is unchecked. Treat
+				// any array value as "parent did not submit a checkbox value" so
+				// the parent meta is not silently flipped to "yes".
+				if( isset( $R[$key] ) && !is_array($R[$key]) ) {
 					update_post_meta( $id, $key, 'yes' );
 				} else {
 					delete_post_meta( $id, $key );
@@ -580,7 +585,10 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 			];
 
 			foreach($keys_inputfields as $key) {
-				if( isset($R[$key]) && !empty( $R[$key] ) ) {
+				// Same variation-collision guard as above — variation rows submit
+				// arrays under these names, sanitize_text_field() on an array
+				// would corrupt the parent value (or warn on PHP 8+).
+				if( isset($R[$key]) && !is_array($R[$key]) && !empty( $R[$key] ) ) {
 					update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
 				} else {
 					delete_post_meta( $id, $key );
@@ -607,7 +615,10 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'saso_eventtickets_daychooser_offset_end'
 			];
 			foreach($keys_number as $key) {
-				if( isset($R[$key]) && (!empty($R[$key]) || $R[$key] == "0") ) {
+				// Variation collision guard: saso_eventtickets_ticket_amount_per_item
+				// is also rendered per variation as "<key>[<i>]". intval() on an
+				// array returns 1, which would silently set the parent to 1.
+				if( isset($R[$key]) && !is_array($R[$key]) && (!empty($R[$key]) || $R[$key] == "0") ) {
 					$value = intval($R[$key]);
 					if ($value < 0) $value = 1;
 					update_post_meta( $id, $key, $value );
@@ -664,6 +675,11 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 		 */
 		public function woocommerce_product_after_variable_attributes($loop, array $variation_data, $variation): void {
 		$loop = intval($loop);
+			// Render ticket fields only when the parent variable product is a ticket.
+			$parent_id = isset($variation->post_parent) ? (int) $variation->post_parent : 0;
+			if ($parent_id < 1 || !$this->isTicketByProductId($parent_id)) {
+				return;
+			}
 			echo '<div class="form-row form-row-full form-field">';
 			woocommerce_wp_checkbox(
 				array(
