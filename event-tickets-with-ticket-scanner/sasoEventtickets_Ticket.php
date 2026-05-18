@@ -462,22 +462,154 @@ final class sasoEventtickets_Ticket {
 		return $ret;
 	}
 	function rest_retrieve_ticket($web_request) {
-		if (!SASO_EVENTTICKETS::issetRPara('code')) {
+		// Accept code from $_GET / $_POST (legacy AJAX path) OR from the
+		// WP_REST_Request object (REST API path / PHPUnit tests).
+		$code = '';
+		if (SASO_EVENTTICKETS::issetRPara('code')) {
+			$code = trim(SASO_EVENTTICKETS::getRequestPara('code'));
+		} elseif (is_object($web_request) && method_exists($web_request, 'get_param')) {
+			$paramCode = $web_request->get_param('code');
+			if ($paramCode !== null && $paramCode !== '') {
+				$code = trim((string) $paramCode);
+				// Propagate to $_GET so downstream helpers (getTicketURLComponents,
+				// issetRPara) can see the code without needing a browser request.
+				$_GET['code'] = $code;
+			}
+		}
+		if ($code === '') {
 			return wp_send_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
 		}
-		$code = trim(SASO_EVENTTICKETS::getRequestPara('code'));
-		if ($this->is_ticket_code_orderticket($code)) {
-			return $this->retrieve_order_ticket($code);
+		// Read CVV from REST request object (preferred) or superglobal fallback.
+		$cvv = '';
+		if (is_object($web_request) && method_exists($web_request, 'get_param')) {
+			$paramCvv = $web_request->get_param('cvv');
+			if ($paramCvv !== null) {
+				$cvv = trim((string) $paramCvv);
+			}
 		}
-		return $this->retrieve_ticket($code);
+		if ($cvv === '' && SASO_EVENTTICKETS::issetRPara('cvv')) {
+			$rawCvv = SASO_EVENTTICKETS::getRequestPara('cvv');
+			if (!is_array($rawCvv)) {
+				$cvv = trim((string) $rawCvv);
+			}
+		}
+		if ($this->is_ticket_code_orderticket($code)) {
+			// Order-ticket path: cvv may be a per-row map keyed by ticket code
+			// (cvv[ticketCode1]=val1&cvv[ticketCode2]=val2). Task 15.
+			$cvvMap = $this->readCVVMapFromRequest($web_request);
+			return $this->retrieve_order_ticket($code, $cvvMap);
+		}
+		return $this->retrieve_ticket($code, $cvv);
 	}
-	private function retrieve_order_ticket($code) {
+
+	/**
+	 * Read the per-row CVV map from a request. Order-ticket scans can supply
+	 * CVVs per ticket as cvv[ticketCode1]=val1&cvv[ticketCode2]=val2 or as a
+	 * JSON-encoded string. Returns an associative array keyed by ticket code.
+	 *
+	 * @param mixed $web_request WP_REST_Request or null
+	 * @return array<string,string> map of ticket-code => cvv (trimmed strings)
+	 */
+	private function readCVVMapFromRequest($web_request): array {
+		$cvvMap = [];
+		// Prefer REST request object — has its own param store independent of $_GET/$_POST.
+		if (is_object($web_request) && method_exists($web_request, 'get_param')) {
+			$paramCvv = $web_request->get_param('cvv');
+			if (is_array($paramCvv)) {
+				$cvvMap = $paramCvv;
+			} elseif ($paramCvv !== null && $paramCvv !== '') {
+				$decoded = json_decode((string) $paramCvv, true);
+				if (is_array($decoded)) {
+					$cvvMap = $decoded;
+				}
+			}
+		}
+		if (empty($cvvMap) && SASO_EVENTTICKETS::issetRPara('cvv')) {
+			$raw = SASO_EVENTTICKETS::getRequestPara('cvv');
+			if (is_array($raw)) {
+				$cvvMap = $raw;
+			} elseif (is_string($raw) && $raw !== '') {
+				$decoded = json_decode($raw, true);
+				if (is_array($decoded)) {
+					$cvvMap = $decoded;
+				}
+			}
+		}
+		$normalized = [];
+		foreach ($cvvMap as $k => $v) {
+			$normalized[(string) $k] = is_scalar($v) ? trim((string) $v) : '';
+		}
+		return $normalized;
+	}
+
+	/**
+	 * Strip ticket details from an order-ticket info row when its CVV gate fails.
+	 * Exposes only the fields the scanner JS needs before CVV is verified:
+	 * code, public_ticket_id, requires_cvv, attempts_remaining, locked,
+	 * product_id, product_parent_id. No name/seat/order details.
+	 *
+	 * product_id and product_parent_id are deliberately retained: ticket_scanner.js
+	 * (displayOrderTicketInfo, line ~1397) matches every ticket_infos row to its
+	 * product group using `item.product_id == product.product_id &&
+	 * item.product_parent_id == product.product_parent_id`. Without these two fields
+	 * CVV-required rows would not be rendered inside the correct product section.
+	 * Both values are product-public (visible in the shop URL / HTML) and carry no
+	 * personal or booking-sensitive information.
+	 *
+	 * @param array       $ticketObj  Original ticket info row (will be replaced).
+	 *                                Expected keys: code, code_display, code_public,
+	 *                                product_id, product_parent_id.
+	 * @param array|null  $cvvResult  Result of verifyCVV, or null if CVV missing.
+	 * @param array       $metaObj    metaObj of the code (for cvv_attempts fallback).
+	 * @return array Stripped row exposing only the fields listed above.
+	 */
+	private function stripDetailsForCVVLocked(array $ticketObj, ?array $cvvResult, array $metaObj): array {
+		$attemptsRemaining = 5;
+		$locked = false;
+		if (is_array($cvvResult)) {
+			$attemptsRemaining = (int) ($cvvResult['attempts_remaining'] ?? 0);
+			$locked = (bool) ($cvvResult['locked'] ?? false);
+		} else {
+			$attempts = $metaObj['cvv_attempts'] ?? ['count' => 0, 'locked' => false];
+			$attemptsRemaining = max(0, 5 - (int) ($attempts['count'] ?? 0));
+			$locked = (bool) ($attempts['locked'] ?? false);
+		}
+		return [
+			'requires_cvv'       => true,
+			'attempts_remaining' => $attemptsRemaining,
+			'locked'             => $locked,
+			'public_ticket_id'   => (string) ($ticketObj['code_public'] ?? ''),
+			'code_public'        => (string) ($ticketObj['code_public'] ?? ''),
+			'code'               => (string) ($ticketObj['code'] ?? ''),
+			'code_display'       => (string) ($ticketObj['code_display'] ?? ''),
+			// product_id / product_parent_id are product-public values needed by
+			// ticket_scanner.js to place this row in the correct product section.
+			'product_id'         => (int) ($ticketObj['product_id'] ?? 0),
+			'product_parent_id'  => (int) ($ticketObj['product_parent_id'] ?? 0),
+		];
+	}
+
+	private function retrieve_order_ticket($code, array $cvvMap = []) {
 		$parts = $this->getParts($code);
 		if (!isset($parts["order_id"]) || !isset($parts["code"])) throw new Exception("#299 - wrong order ticket id");
 		if (empty($parts["order_id"]) || empty($parts["code"])) throw new Exception("#297 - wrong order ticket id");
 
 		$infos = $this->getOrderTicketsInfos($parts['order_id'], $parts['code']);
 		if (!is_array($infos)) throw new Exception("#298 - wrong order ticket id");
+
+		// Task 15 — per-row CVV gate: each ticket row may have its own CVV requirement.
+		// Rows whose product requires CVV but for which no valid CVV was supplied get
+		// their details stripped (anti-info-leak). Other rows pass through untouched.
+		if (isset($infos['ticket_infos']) && is_array($infos['ticket_infos'])) {
+			$infos['ticket_infos'] = $this->applyCVVGateToTicketInfos($infos['ticket_infos'], $cvvMap);
+			$infos['cvv_required_for_any_row'] = false;
+			foreach ($infos['ticket_infos'] as $row) {
+				if (!empty($row['requires_cvv'])) {
+					$infos['cvv_required_for_any_row'] = true;
+					break;
+				}
+			}
+		}
 
 		// TODO:check auch ob sofort redeem gemacht werden soll
 			// redeem liefert für jedes ticket eine Meldung - muss dann aufgelistet werden im ticket scanner
@@ -486,25 +618,181 @@ final class sasoEventtickets_Ticket {
 
 		return $infos;
 	}
-	private function retrieve_ticket($code) {
+
+	/**
+	 * Apply per-row CVV gating to an order-ticket's ticket_infos array.
+	 * Each row is checked against isCVVRequiredForScanner; rows that require CVV
+	 * but have no/wrong CVV supplied are replaced with a stripped row that exposes
+	 * only minimal anti-info-leak fields. Locked rows return the locked stub.
+	 *
+	 * @param array $ticketInfos Original ticket_infos array from getOrderTicketsInfos
+	 * @param array<string,string> $cvvMap Map of raw ticket code => CVV input
+	 * @return array Updated ticket_infos with stripped rows for CVV-blocked tickets
+	 */
+	private function applyCVVGateToTicketInfos(array $ticketInfos, array $cvvMap): array {
+		foreach ($ticketInfos as $idx => $ticketObj) {
+			$rawCode = (string) ($ticketObj['code'] ?? '');
+			$displayCode = (string) ($ticketObj['code_display'] ?? '');
+			if ($rawCode === '') continue;
+
+			// Check locked state first via direct meta read — avoids needing to
+			// load codeObj for an already-locked ticket.
+			$lockedRow = $this->loadLockedMetaForCode($rawCode);
+			if ($lockedRow !== null) {
+				$ticketInfos[$idx] = [
+					'requires_cvv'       => true,
+					'attempts_remaining' => 0,
+					'locked'             => true,
+					'public_ticket_id'   => (string) ($ticketObj['code_public'] ?? ($lockedRow['public_ticket_id'] ?? '')),
+					'code_public'        => (string) ($ticketObj['code_public'] ?? ''),
+					'code'               => $rawCode,
+					'code_display'       => $displayCode,
+					'product_id'         => (int) ($ticketObj['product_id'] ?? 0),
+					'product_parent_id'  => (int) ($ticketObj['product_parent_id'] ?? 0),
+				];
+				continue;
+			}
+
+			try {
+				$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($rawCode);
+			} catch (Exception $e) {
+				continue;
+			}
+			$codeObj = $this->MAIN->getCore()->setMetaObj($codeObj);
+			$metaObj = $codeObj['metaObj'] ?? [];
+
+			if (!$this->MAIN->getCore()->isCVVRequiredForScanner($codeObj)) {
+				continue; // no CVV required — row passes through normally
+			}
+
+			// CVV map may be keyed by either raw or display code — accept both.
+			$cvvInput = '';
+			if (isset($cvvMap[$rawCode])) {
+				$cvvInput = (string) $cvvMap[$rawCode];
+			} elseif ($displayCode !== '' && isset($cvvMap[$displayCode])) {
+				$cvvInput = (string) $cvvMap[$displayCode];
+			}
+			if ($cvvInput === '') {
+				$ticketInfos[$idx] = $this->stripDetailsForCVVLocked($ticketObj, null, $metaObj);
+				continue;
+			}
+			$result = $this->MAIN->getCore()->verifyCVV($codeObj, $cvvInput);
+			if (!$result['ok']) {
+				$ticketInfos[$idx] = $this->stripDetailsForCVVLocked($ticketObj, $result, $metaObj);
+				continue;
+			}
+			// CVV verified — row passes through untouched
+		}
+		return $ticketInfos;
+	}
+
+	/**
+	 * Quick locked-state probe for a raw code. Mirrors the locked pre-check in
+	 * retrieve_ticket/redeem_ticket but operates on the raw code (no scanner-format
+	 * decoding needed because the order-ticket already has the raw code).
+	 *
+	 * @param string $rawCode Raw code value (column codes.code)
+	 * @return array{public_ticket_id:string}|null Returns minimal info if locked, null otherwise
+	 */
+	private function loadLockedMetaForCode(string $rawCode): ?array {
+		if ($rawCode === '') return null;
+		global $wpdb;
+		$codesTable = $this->MAIN->getDB()->getTabelle('codes');
+		$row = $wpdb->get_row(
+			$wpdb->prepare("SELECT meta FROM $codesTable WHERE code = %s LIMIT 1", $rawCode),
+			ARRAY_A
+		);
+		if ($row === null) return null;
+		$rowMeta = json_decode($row['meta'] ?? '', true);
+		if (!is_array($rowMeta) || empty($rowMeta['cvv_attempts']['locked'])) {
+			return null;
+		}
+		return [
+			'public_ticket_id' => (string) ($rowMeta['wc_ticket']['_public_ticket_id'] ?? ''),
+		];
+	}
+	private function retrieve_ticket($code, string $cvv = '') {
 		$ret = [];
 
-		// check if redeem immediately is requested
+		// CVV-locked pre-check: if this ticket was locked by 5 wrong CVV attempts,
+		// return the structured locked response directly. We skip the normal
+		// getCodeObj() call because it throws on aktiv=0, which a CVV-lock sets.
+		try {
+			$_preCheckRawCode = $this->getParts($code)['code'] ?? '';
+		} catch (Exception $_e) {
+			$_preCheckRawCode = '';
+		}
+		if (!empty($_preCheckRawCode)) {
+			global $wpdb;
+			$codesTable = $this->MAIN->getDB()->getTabelle('codes');
+			$row = $wpdb->get_row(
+				$wpdb->prepare("SELECT meta FROM $codesTable WHERE code = %s LIMIT 1", $_preCheckRawCode),
+				ARRAY_A
+			);
+			if ($row !== null) {
+				$rowMeta = json_decode($row['meta'] ?? '', true);
+				if (is_array($rowMeta) && !empty($rowMeta['cvv_attempts']['locked'])) {
+					return [
+						'requires_cvv'       => true,
+						'attempts_remaining' => 0,
+						'locked'             => true,
+						'public_ticket_id'   => (string) ($rowMeta['wc_ticket']['_public_ticket_id'] ?? ''),
+					];
+				}
+			}
+		}
+
+		// Resolve codeObj early so the CVV gate can read product meta BEFORE the
+		// redeem-immediately path — otherwise ?redeem=1 would bypass the CVV check.
+		$codeObj = $this->getCodeObj(true, $code);
+		$codeObj = apply_filters( $this->MAIN->_add_filter_prefix.'filter_updateExpirationInfo', $codeObj );
+		$metaObj = $codeObj['metaObj'];
+
+		// CVV gate: short-circuit with minimal info if the per-product option requires
+		// a CVV and the request did not provide a correct one. Anti-information-leak —
+		// only the public ticket id is exposed; no name/seat/order details until verified.
+		// IMPORTANT: this gate runs BEFORE the redeem-immediately block so that
+		// ?redeem=1 cannot bypass CVV verification on a CVV-protected ticket.
+		if ($this->MAIN->getCore()->isCVVRequiredForScanner($codeObj)) {
+			$publicId = (string) ($metaObj['wc_ticket']['_public_ticket_id'] ?? '');
+			if ($cvv === '') {
+				$attempts = $metaObj['cvv_attempts'] ?? ['count' => 0, 'locked' => false];
+				return [
+					'requires_cvv'       => true,
+					'attempts_remaining' => max(0, 5 - (int) ($attempts['count'] ?? 0)),
+					'locked'             => (bool) ($attempts['locked'] ?? false),
+					'public_ticket_id'   => $publicId,
+				];
+			}
+			$result = $this->MAIN->getCore()->verifyCVV($codeObj, $cvv);
+			if (!$result['ok']) {
+				return [
+					'requires_cvv'       => true,
+					'attempts_remaining' => $result['attempts_remaining'],
+					'locked'             => $result['locked'],
+					'public_ticket_id'   => $publicId,
+				];
+			}
+			// CVV verified — fall through to normal retrieve flow below
+		}
+
+		// check if redeem immediately is requested (runs AFTER CVV gate above)
 		if (isset($_GET['redeem']) && $_GET['redeem'] == "1") {
 			// redeem immediately
 			$_redeem_ret = [];
 			try {
-				$_redeem_ret = $this->redeem_ticket($code);
-				$this->setCodeObj(null); // reset object
+				$_redeem_ret = $this->redeem_ticket($code, null, $cvv);
+				$this->setCodeObj(null); // reset object so the refresh below re-reads from DB
 			} catch(Exception $e) {
 				$_redeem_ret = ["error"=>$e->getMessage()];
 			}
 			$ret["redeem_operation"] = $_redeem_ret;
+			// Re-fetch codeObj after redeem so the retrieve response reflects the updated
+			// redeemed/aktiv state from the database (setCodeObj(null) cleared the cache above).
+			$codeObj = $this->getCodeObj(true, $code);
+			$codeObj = apply_filters( $this->MAIN->_add_filter_prefix.'filter_updateExpirationInfo', $codeObj );
+			$metaObj = $codeObj['metaObj'];
 		}
-
-		$codeObj = $this->getCodeObj(true, $code);
-		$codeObj = apply_filters( $this->MAIN->_add_filter_prefix.'filter_updateExpirationInfo', $codeObj );
-		$metaObj = $codeObj['metaObj'];
 
 		$order = $this->getOrderById($codeObj["order_id"]);
 		$order_item = $this->getOrderItem($order, $metaObj);
@@ -801,13 +1089,48 @@ final class sasoEventtickets_Ticket {
 		];
 	}
 	function rest_redeem_ticket(WP_REST_Request $web_request) {
-		if (!SASO_EVENTTICKETS::issetRPara('code')) wp_send_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
+		// Accept code from WP_REST_Request object (REST API / PHPUnit) OR from
+		// $_GET/$_POST superglobals (legacy AJAX path). Mirror rest_retrieve_ticket.
+		$code = '';
+		if (is_object($web_request) && method_exists($web_request, 'get_param')) {
+			$paramCode = $web_request->get_param('code');
+			if ($paramCode !== null && $paramCode !== '') {
+				$code = trim((string) $paramCode);
+				$_GET['code'] = $code;
+			}
+		}
+		if ($code === '' && SASO_EVENTTICKETS::issetRPara('code')) {
+			$code = trim((string) SASO_EVENTTICKETS::getRequestPara('code'));
+		}
+		if ($code === '') {
+			wp_send_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
+		}
+
+		// Read CVV from REST request object (preferred) or superglobal fallback.
+		// For order-ticket scans the cvv param may be a per-row map (array) — keep it
+		// out of the scalar $cvv used by the single-ticket path.
+		$cvv = '';
+		if (is_object($web_request) && method_exists($web_request, 'get_param')) {
+			$paramCvv = $web_request->get_param('cvv');
+			if ($paramCvv !== null && !is_array($paramCvv)) {
+				$cvv = trim((string) $paramCvv);
+			}
+		}
+		if ($cvv === '' && SASO_EVENTTICKETS::issetRPara('cvv')) {
+			$rawCvv = SASO_EVENTTICKETS::getRequestPara('cvv');
+			if (!is_array($rawCvv)) {
+				$cvv = trim((string) $rawCvv);
+			}
+		}
+
 		$ret = null;
-		if ($this->is_ticket_code_orderticket(SASO_EVENTTICKETS::getRequestPara('code'))) {
-			$ret = $this->redeem_order_ticket(SASO_EVENTTICKETS::getRequestPara('code'));
+		if ($this->is_ticket_code_orderticket($code)) {
+			// Per-row CVV map (Task 15)
+			$cvvMap = $this->readCVVMapFromRequest($web_request);
+			$ret = $this->redeem_order_ticket($code, $cvvMap);
 		}
 		if ($ret == null) {
-			$ret = $this->redeem_ticket(SASO_EVENTTICKETS::getRequestPara('code'));
+			$ret = $this->redeem_ticket($code, null, $cvv);
 		}
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_rest_redeem_ticket', $ret, $web_request );
 		return $ret;
@@ -883,7 +1206,7 @@ final class sasoEventtickets_Ticket {
 		return $ret;
 	}
 
-	private function redeem_order_ticket($code) {
+	private function redeem_order_ticket($code, array $cvvMap = []) {
 		$parts = $this->getParts($code);
 		if (!isset($parts["order_id"]) || !isset($parts["code"])) throw new Exception("#296 - wrong order ticket id");
 		if (empty($parts["order_id"]) || empty($parts["code"])) throw new Exception("#295 - wrong order ticket id");
@@ -895,7 +1218,7 @@ final class sasoEventtickets_Ticket {
 		if (empty($idcode) || $idcode != $parts["code"]) return "Wrong ticket code for redeem order ticket";
 
 		$products = $this->MAIN->getWC()->getTicketsFromOrder($order);
-		$ret = ["is_order_ticket"=>true, "errors"=>[], "not_redeemed"=>[], "redeemed"=>[], "products"=>[]];
+		$ret = ["is_order_ticket"=>true, "errors"=>[], "not_redeemed"=>[], "redeemed"=>[], "cvv_required"=>[], "products"=>[]];
 		foreach($products as $obj) { // one ticket can have multiple
 			$codes = [];
 			if (!empty($obj['codes'])) {
@@ -910,6 +1233,64 @@ final class sasoEventtickets_Ticket {
 					$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 					$codeObj["metaObj"] = $metaObj;
 					$public_ticket_id = $metaObj["wc_ticket"]["_public_ticket_id"];
+					// $code is the display form (with dashes); $codeObj['code'] is the raw form
+					$rawCodeForGate = (string) ($codeObj['code'] ?? '');
+					$displayCodeForGate = (string) $code;
+
+					// Task 15 — per-row CVV gate. If this row's product requires CVV, verify
+					// the CVV from the per-row map BEFORE invoking redeem_ticket. Rows that
+					// fail the gate are NOT redeemed; they get a requires_cvv stub.
+					if ($this->MAIN->getCore()->isCVVRequiredForScanner($codeObj)) {
+						// Build a ticketObj-compatible shape so stripDetailsForCVVLocked
+						// can be used for all three stub cases below (locked, empty-CVV,
+						// wrong-CVV). product_id / product_parent_id come from woocommerce
+						// meta; these are the same product-public values carried by
+						// getOrderTicketsInfos rows, so retrieve and redeem shapes stay
+						// in lockstep when the helper changes.
+						$stubTicketObj = [
+							'code'             => $rawCodeForGate,
+							'code_display'     => $displayCodeForGate,
+							'code_public'      => (string) $public_ticket_id,
+							'product_id'       => (int) ($metaObj['woocommerce']['product_id'] ?? 0),
+							'product_parent_id'=> (int) ($metaObj['woocommerce']['product_parent_id'] ?? 0),
+						];
+
+						$lockedMeta = $rawCodeForGate !== '' ? $this->loadLockedMetaForCode($rawCodeForGate) : null;
+						if ($lockedMeta !== null) {
+							$ret["cvv_required"][] = $this->stripDetailsForCVVLocked(
+								$stubTicketObj,
+								['attempts_remaining' => 0, 'locked' => true],
+								$metaObj
+							);
+							continue;
+						}
+						// CVV map keyed by raw or display code — accept both.
+						$cvvInput = '';
+						if ($rawCodeForGate !== '' && isset($cvvMap[$rawCodeForGate])) {
+							$cvvInput = (string) $cvvMap[$rawCodeForGate];
+						} elseif (isset($cvvMap[$displayCodeForGate])) {
+							$cvvInput = (string) $cvvMap[$displayCodeForGate];
+						}
+						if ($cvvInput === '') {
+							$ret["cvv_required"][] = $this->stripDetailsForCVVLocked(
+								$stubTicketObj,
+								null,
+								$metaObj
+							);
+							continue;
+						}
+						$result = $this->MAIN->getCore()->verifyCVV($codeObj, $cvvInput);
+						if (!$result['ok']) {
+							$ret["cvv_required"][] = $this->stripDetailsForCVVLocked(
+								$stubTicketObj,
+								$result,
+								$metaObj
+							);
+							continue;
+						}
+						// CVV verified — fall through to redeem_ticket call
+					}
+
 					$r = $this->redeem_ticket("", $codeObj);
 					$r["code"] = $code;
 					if ($this->redeem_successfully) {
@@ -926,11 +1307,71 @@ final class sasoEventtickets_Ticket {
 		do_action( $this->MAIN->_do_action_prefix.'ticket_redeem_order_ticket', $code, $ret );
 		return $ret;
 	}
-	private function redeem_ticket($code, $codeObj=null) {
-		if ($codeObj == null) {
+	private function redeem_ticket($code, $codeObj=null, string $cvv = '') {
+		// CVV-locked pre-check: if this ticket was locked by 5 wrong CVV attempts,
+		// return the structured locked response directly. We skip the normal
+		// getCodeObj() call because it throws on aktiv=0, which a CVV-lock sets.
+		if ($codeObj === null && !empty($code)) {
+			try {
+				$_preCheckRawCode = $this->getParts($code)['code'] ?? '';
+			} catch (Exception $_e) {
+				$_preCheckRawCode = '';
+			}
+			if (!empty($_preCheckRawCode)) {
+				global $wpdb;
+				$codesTable = $this->MAIN->getDB()->getTabelle('codes');
+				$_preRow = $wpdb->get_row(
+					$wpdb->prepare("SELECT meta FROM $codesTable WHERE code = %s LIMIT 1", $_preCheckRawCode),
+					ARRAY_A
+				);
+				if ($_preRow !== null) {
+					$_preMeta = json_decode($_preRow['meta'] ?? '', true);
+					if (is_array($_preMeta) && !empty($_preMeta['cvv_attempts']['locked'])) {
+						return [
+							'requires_cvv'       => true,
+							'attempts_remaining' => 0,
+							'locked'             => true,
+							'public_ticket_id'   => (string) ($_preMeta['wc_ticket']['_public_ticket_id'] ?? ''),
+						];
+					}
+				}
+			}
+		}
+
+		if ($codeObj === null) {
 			$codeObj = $this->getCodeObj(true, $code);
 		}
 		$metaObj = $codeObj['metaObj'];
+
+		// CVV gate: short-circuit with minimal info if the per-product option requires
+		// a CVV and the request did not provide a correct one. Anti-information-leak —
+		// only the public ticket id is exposed; no name/seat/order details until verified.
+		// IMPORTANT: this gate runs BEFORE redeemTicket() so that the ticket cannot be
+		// redeemed without a valid CVV on CVV-protected products.
+		// Skip CVV gate for the order-ticket path (which passes $code='' + pre-resolved $codeObj).
+		// Per-row CVV handling in order-ticket scans is Task 15.
+		if (!empty($code) && $this->MAIN->getCore()->isCVVRequiredForScanner($codeObj)) {
+			$publicId = (string) ($metaObj['wc_ticket']['_public_ticket_id'] ?? '');
+			if ($cvv === '') {
+				$attempts = $metaObj['cvv_attempts'] ?? ['count' => 0, 'locked' => false];
+				return [
+					'requires_cvv'       => true,
+					'attempts_remaining' => max(0, 5 - (int) ($attempts['count'] ?? 0)),
+					'locked'             => (bool) ($attempts['locked'] ?? false),
+					'public_ticket_id'   => $publicId,
+				];
+			}
+			$result = $this->MAIN->getCore()->verifyCVV($codeObj, $cvv);
+			if (!$result['ok']) {
+				return [
+					'requires_cvv'       => true,
+					'attempts_remaining' => $result['attempts_remaining'],
+					'locked'             => $result['locked'],
+					'public_ticket_id'   => $publicId,
+				];
+			}
+			// CVV verified — fall through to actual redeem
+		}
 
 		$order = $this->getOrderById($codeObj["order_id"]);
 		$order_item = $this->getOrderItem($order, $metaObj);

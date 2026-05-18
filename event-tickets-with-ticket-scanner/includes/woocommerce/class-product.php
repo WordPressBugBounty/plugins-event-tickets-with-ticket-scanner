@@ -179,6 +179,15 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 			) );
 			echo '</div>';
 
+			echo '<div class="options_group">';
+			woocommerce_wp_checkbox([
+				'id'          => 'saso_eventtickets_require_cvv_at_scanner',
+				'value'       => get_post_meta(get_the_ID(), 'saso_eventtickets_require_cvv_at_scanner', true),
+				'label'       => __('Require CVV at the ticket scanner', 'event-tickets-with-ticket-scanner'),
+				'description' => __('If active, a CVV is auto-generated for every new ticket on this product, and the ticket scanner asks the customer to enter the CVV before redeem. The CVV is delivered via the order email and customer profile, never embedded in the QR code. Best for private/exclusive events where a lost ticket card alone must not grant entry.', 'event-tickets-with-ticket-scanner'),
+			]);
+			echo '</div>';
+
 			// Seating Plan Section
 			echo '<div class="options_group">';
 			$planManager = $this->MAIN->getSeating()->getPlanManager();
@@ -363,6 +372,15 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'custom_attributes'	=> ['step'=>'1', 'min'=>'0'],
 				'description' 		=> __('This will set how many days in the future do you allow your customer to choose a date. 0 unlimited into the future, 1 means until tomorrow on and so on. If a end date is set, then this option is ignored and the end date is used.', 'event-tickets-with-ticket-scanner'),
 				'desc_tip'    		=> true
+			]);
+			woocommerce_wp_text_input([
+				'id'				=> 'saso_eventtickets_daychooser_cutoff_time',
+				'value'       		=> get_post_meta( get_the_ID(), 'saso_eventtickets_daychooser_cutoff_time', true ),
+				'label'       		=> __('Same-day cutoff time', 'event-tickets-with-ticket-scanner'),
+				'type'				=> 'time',
+				'description' 		=> __('If the current time is past this value, today will no longer be selectable. Only applies when "Offset days for start date" is 0. Leave empty to disable.', 'event-tickets-with-ticket-scanner'),
+				'desc_tip'    		=> true,
+				'placeholder'		=> '19:00',
 			]);
 			woocommerce_wp_text_input([
 				'id'          => 'saso_eventtickets_request_daychooser_per_ticket_label',
@@ -556,7 +574,8 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'saso_eventtickets_request_value_per_ticket_mandatory',
 				'saso_eventtickets_ticket_is_RTL',
 				'saso_eventtickets_list_formatter',
-				$seating->getMetaProductSeatingRequired()
+				$seating->getMetaProductSeatingRequired(),
+				'saso_eventtickets_require_cvv_at_scanner',  // NEW
 			];
 			foreach($keys_checkbox as $key) {
 				// Variation rows render <select name="<key>[<i>]"> for some of these
@@ -581,7 +600,8 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'saso_eventtickets_request_value_per_ticket_label',
 				'saso_eventtickets_request_value_per_ticket_def',
 				'saso_eventtickets_list_formatter_values',
-				'saso_eventtickets_request_daychooser_per_ticket_label'
+				'saso_eventtickets_request_daychooser_per_ticket_label',
+				'saso_eventtickets_daychooser_cutoff_time'
 			];
 
 			foreach($keys_inputfields as $key) {

@@ -365,6 +365,16 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				} catch (error) {
 					//console.log(error);
 				}
+				// Same-day cutoff: only relevant when offset_start=0 (today is nominally selectable).
+				// If current time >= cutoff, shift minDate to tomorrow.
+				let _saso_cutoff = elem_intern.attr('data-cutoff-time');
+				if (_saso_cutoff && data_offset_start === 0) {
+					let _now = new Date();
+					let _cp = _saso_cutoff.split(':');
+					let _cutoff = new Date();
+					_cutoff.setHours(parseInt(_cp[0], 10), parseInt(_cp[1], 10), 0, 0);
+					if (_now >= _cutoff) data_offset_start = 1;
+				}
 				if (elem_intern.attr('min') && elem_intern.attr('min').length > 0) {
 					data_offset_start = elem_intern.attr('min');
 				}

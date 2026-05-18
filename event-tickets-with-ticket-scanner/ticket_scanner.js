@@ -5,7 +5,8 @@ jQuery(document).ready(()=>{
                 img_pfad:'',
                 last_scanned_ticket:{code:'', timestamp:0, auto_redeem:false, data:null},
                 last_nonce_check:0,
-                status:'ready' /* ready, retrieved, redeemed */
+                status:'ready', /* ready, retrieved, redeemed, awaiting_cvv, locked */
+                currentCVV:'' /* verified CVV for downstream redeem call */
             };
 	let myAjax;
     if (typeof IS_PRETTY_PERMALINK_ACTIVATED === "undefined") {
@@ -808,6 +809,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     }
     function retrieveTicket(code, redeemed, cbf) {
         clearAreas();
+        system.currentCVV = ''; // reset stale CVV from prior scan — Task 13 review fix
         window.scrollBy(0,0);
         let div = $('#ticket_info').html(_getSpinnerHTML());
         div.css("display", "block");
@@ -850,6 +852,21 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             if (ticket_scanner_operating_option.distract_free) {
                 div.css("display", "none");
             }
+
+            // CVV gate: short-circuit before normal retrieved flow
+            if (data && data.requires_cvv === true) {
+                system.code = code;
+                if (data.locked === true) {
+                    system.status = 'locked';
+                    showLockedScreen(data);
+                } else {
+                    system.status = 'awaiting_cvv';
+                    showCVVPrompt(data);
+                }
+                cbf && cbf();
+                return;
+            }
+
             system.status = "retrieved";
             system.data = data;
             system.last_scanned_ticket.data = data;
@@ -888,6 +905,170 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             cbf && cbf();
         });
     }
+    // ── CVV prompt / hand-over / hand-back / locked ──────────────────────────
+
+    /**
+     * Stage 1: hand-over screen — customer enters their security code.
+     * @param {Object} data  Payload from REST with requires_cvv:true
+     */
+    function showCVVPrompt(data) {
+        var maskByDefault = (typeof Ajax_sasoEventtickets !== 'undefined' && Ajax_sasoEventtickets._cvvMaskInput === true);
+        var oneStage      = (typeof Ajax_sasoEventtickets !== 'undefined' && Ajax_sasoEventtickets._cvvOneStage === true);
+        var attemptsLeft  = parseInt(data.attempts_remaining, 10);
+
+        clearAreas();
+        var $card = $('<div class="saso-cvv-prompt">');
+        $card.append('<h3>🔒 ' + __('Security code required', 'event-tickets-with-ticket-scanner') + '</h3>');
+        $card.append('<p>' + __('Please hand this device to the customer to enter the security code from their e-mail or profile.', 'event-tickets-with-ticket-scanner') + '</p>');
+
+        var inputType  = maskByDefault ? 'password' : 'text';
+        var $inputWrap = $('<div class="saso-cvv-input-wrap">');
+        var $input     = $('<input>', {
+            type:           inputType,
+            maxlength:      4,
+            'class':        'saso-cvv-input',
+            autocomplete:   'off',
+            autocapitalize: 'characters',
+            inputmode:      'text'
+        });
+        var $toggle = $('<button>', {'type': 'button', 'class': 'button saso-cvv-toggle'})
+            .text(__('Show', 'event-tickets-with-ticket-scanner'));
+        $toggle.on('click', function() {
+            var t = $input.attr('type');
+            $input.attr('type', t === 'password' ? 'text' : 'password');
+            $toggle.text(t === 'password' ? __('Hide', 'event-tickets-with-ticket-scanner') : __('Show', 'event-tickets-with-ticket-scanner'));
+        });
+        $inputWrap.append($input).append($toggle);
+        $card.append($inputWrap);
+
+        var $confirm = $('<button>', {'class': 'button button-primary saso-cvv-confirm'})
+            .text(__('Confirm code', 'event-tickets-with-ticket-scanner'));
+        $card.append($confirm);
+        $card.append('<p class="saso-cvv-attempts">' + __('Attempts remaining:', 'event-tickets-with-ticket-scanner') + ' <b>' + attemptsLeft + '</b></p>');
+
+        updateTicketScannerInfoArea($card);
+        $input.trigger('focus');
+
+        $confirm.on('click', function() {
+            var cvv = $input.val().trim();
+            if (!cvv) return;
+            submitCVV(cvv, data, oneStage);
+        });
+        $input.on('keypress', function(e) { if (e.which === 13) $confirm.trigger('click'); });
+    }
+
+    /**
+     * Re-calls retrieve_ticket with the CVV the customer typed.
+     * On success: either shows Stage 2 hand-back card (two-stage) or goes straight
+     * to the normal retrieved view (one-stage / one-stage option active).
+     */
+    function submitCVV(cvv, data, oneStage) {
+        updateTicketScannerInfoArea(_getSpinnerHTML());
+        _makeGet('retrieve_ticket', {'code': system.code, 'cvv': cvv}, function(resp) {
+            if (resp && resp.requires_cvv === true) {
+                if (resp.locked === true) {
+                    system.status = 'locked';
+                    showLockedScreen(resp);
+                    return;
+                }
+                // Wrong CVV — re-prompt with updated counter
+                system.status = 'awaiting_cvv';
+                showCVVPrompt(resp);
+                return;
+            }
+            // CVV verified — store it for the downstream redeem call
+            system.currentCVV = cvv;
+            if (oneStage) {
+                renderRetrievedView(resp);
+            } else {
+                showHandBack(resp);
+            }
+        }, function(errResp) {
+            // Network or server error — show message and allow retry
+            clearAreas();
+            updateTicketScannerInfoArea('<h1 style="color:red !important;">' + (errResp && errResp.data ? errResp.data : __('Error', 'event-tickets-with-ticket-scanner')) + '</h1>');
+            showScanNextTicketButton();
+        });
+    }
+
+    /**
+     * Stage 2: hand-back card shown after CVV is verified in two-stage mode.
+     * Staff takes back the device and taps "Continue" to see the normal ticket view.
+     */
+    function showHandBack(resp) {
+        clearAreas();
+        var $card = $('<div class="saso-cvv-handback">');
+        $card.append('<h3 style="color:green;">✔ ' + __('Code valid — please take back the device', 'event-tickets-with-ticket-scanner') + '</h3>');
+        var $cont = $('<button>', {'class': 'button button-primary'})
+            .text(__('Continue →', 'event-tickets-with-ticket-scanner'));
+        $cont.on('click', function() {
+            renderRetrievedView(resp);
+        });
+        $card.append($cont);
+        updateTicketScannerInfoArea($card);
+    }
+
+    /**
+     * Locked screen — shown when too many wrong CVV attempts have been made.
+     * Displays only the public_ticket_id (no name, seat, or order data) to
+     * prevent information leakage.  Visual styling uses .saso-cvv-locked
+     * (red border / warning background) so it is unmistakably distinct from
+     * normal ticket-info screens.  showScanNextTicketButton() provides the
+     * "Back to scanner" path.
+     */
+    function showLockedScreen(data) {
+        clearAreas();
+        var $card = $('<div class="saso-cvv-locked">');
+        $card.append('<h3 class="saso-cvv-locked__heading">🔒 ' + __('Ticket locked', 'event-tickets-with-ticket-scanner') + '</h3>');
+        $card.append('<p>' + __('Too many wrong security code attempts. Please ask the event admin to reset this ticket.', 'event-tickets-with-ticket-scanner') + '</p>');
+        if (data.public_ticket_id) {
+            $card.append('<p>' + __('Ticket:', 'event-tickets-with-ticket-scanner') + ' <code>' + data.public_ticket_id + '</code></p>');
+        }
+        updateTicketScannerInfoArea($card);
+        showScanNextTicketButton();
+    }
+
+    /**
+     * Transition into the normal "retrieved" view using a response payload that has
+     * already passed the CVV gate.  Mirrors the inline block inside retrieveTicket()
+     * so the two-stage and one-stage CVV flows end up in exactly the same state as a
+     * plain (non-CVV) retrieve.
+     */
+    function renderRetrievedView(data) {
+        system.status = 'retrieved';
+        system.data   = data;
+        system.last_scanned_ticket.data = data;
+
+        clearAreas();
+
+        if (typeof data.order_infos !== 'undefined' && data.order_infos.is_order_ticket) {
+            system.format_datetime = data.option_displayDateTimeFormat;
+            system.format_date     = data.option_displayDateFormat;
+            system.format_time     = data.option_displayTimeFormat;
+            displayOrderTicketInfo(data);
+            showScanNextTicketButton();
+        } else {
+            system.format_datetime = data._ret.option_displayDateTimeFormat;
+            system.format_date     = data._ret.option_displayDateFormat;
+            system.format_time     = data._ret.option_displayTimeFormat;
+            displayTicketInfo(data);
+            displayTicketRetrievedInfo(data);
+            displayTicketAdditionalInfos(data);
+            $("#reader_output").html('');
+            // Mirror the auto-redeem conditional from the inline retrieveTicket() block.
+            // In the CVV path the ticket has not been redeemed before (redeemed=false equivalent),
+            // so the only guard needed is redeem_auto + redeem_operation presence.
+            if (ticket_scanner_operating_option.redeem_auto
+                    && typeof data._ret.redeem_operation !== 'undefined') {
+                displayRedeemedInfo(system.code, data._ret.redeem_operation);
+            } else {
+                showScanNextTicketButton();
+            }
+        }
+    }
+
+    // ── /CVV prompt ──────────────────────────────────────────────────────────
+
     function isTicketExpired(ticketRetObject) {
         if (ticketRetObject.is_expired) return true;
         return false;
@@ -1130,7 +1311,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         system.redeemed_successfully = false;
         $("#reader_output").html(__("start redeem ticket...loading..."));
         updateTicketScannerInfoArea(_getSpinnerHTML());
-        _makeGet('redeem_ticket', {'code':code}, data=>{
+        _makeGet('redeem_ticket', {'code':code, 'cvv': system.currentCVV || ''}, data=>{
             system.data = data;
             $("#reader_output").html('');
 
@@ -1191,6 +1372,18 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         div.append($('<button class="button-ticket-options button-primary">').html(_x("Redeem Complete Order", 'label', 'event-tickets-with-ticket-scanner')).on("click", e=>{
             redeemTicket(data.order_infos.code);
         }));
+
+        // Task 15 — per-row CVV inputs. If any ticket row requires CVV, render a
+        // CVV input next to it and a single "Confirm codes" button below the list
+        // that re-calls retrieve_order_ticket with the per-row CVV map.
+        let anyCvvRequired = false;
+        for (let i = 0; i < data.ticket_infos.length; i++) {
+            if (data.ticket_infos[i] && data.ticket_infos[i].requires_cvv === true) {
+                anyCvvRequired = true;
+                break;
+            }
+        }
+
         let div_tickets = $('<div style="padding-top:15px;text-align:left;">');
         for (let pidx=0;pidx<data.order_infos.products.length;pidx++) {
             let product = data.order_infos.products[pidx];
@@ -1202,37 +1395,91 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             for (let idx=0;idx<data.ticket_infos.length;idx++) {
                 let item = data.ticket_infos[idx];
                 if (item.product_id == product.product_id && item.product_parent_id == product.product_parent_id) {
-                    let li = $('<li data-id="'+encodeURIComponent(item.code_display)+'" style="padding-bottom:10px;">');
-                    let extra_content = item.code_display+'<br>';
-                    if (item.name_per_ticket != "" || item.value_per_ticket != "") {
-                        extra_content += item.name_per_ticket+" "+item.value_per_ticket;
+                    let li = $('<li data-id="'+encodeURIComponent(item.code_display || item.code_public || '')+'" style="padding-bottom:10px;">');
+
+                    if (item.requires_cvv === true) {
+                        // Render minimal locked/CVV-required UI per row.
+                        let lockedRow = item.locked === true;
+                        let codeKey = item.code || item.code_display || item.code_public || '';
+                        let displayKey = item.code_display || item.code_public || '';
+                        let attemptsLeft = parseInt(item.attempts_remaining, 10);
+                        if (isNaN(attemptsLeft)) attemptsLeft = 5;
+
+                        let header = '<b>'+(displayKey || _x('Ticket', 'label', 'event-tickets-with-ticket-scanner'))+'</b><br>';
+                        if (lockedRow) {
+                            header += '<span style="color:red;">🔒 '+__('Ticket locked', 'event-tickets-with-ticket-scanner')+'</span>';
+                            li.append(header);
+                        } else {
+                            header += '<span style="color:#888;">🔒 '+__('Security code required', 'event-tickets-with-ticket-scanner')+'</span><br>';
+                            let $cvvInput = $('<input>', {
+                                type:           'text',
+                                maxlength:      4,
+                                'class':        'saso-cvv-input saso-cvv-row-input',
+                                autocomplete:   'off',
+                                autocapitalize: 'characters',
+                                inputmode:      'text',
+                                placeholder:    'CVV',
+                                'data-code':    codeKey
+                            }).css({'width': '80px', 'margin-right': '6px'});
+                            let $hint = $('<small>').css('color', '#888').text(
+                                ' '+__('Attempts remaining:', 'event-tickets-with-ticket-scanner')+' '+attemptsLeft
+                            );
+                            li.append(header).append($cvvInput).append($hint);
+                        }
                     } else {
-                        extra_content += "No name or value on ticket set";
+                        let extra_content = (item.code_display || '') + '<br>';
+                        if (item.name_per_ticket != "" || item.value_per_ticket != "") {
+                            extra_content += item.name_per_ticket+" "+item.value_per_ticket;
+                        } else {
+                            extra_content += "No name or value on ticket set";
+                        }
+                        // Seat information
+                        let itemSeatHtml = _getSeatInfoHtml(item);
+                        if (itemSeatHtml != '') {
+                            extra_content += "<br>" + itemSeatHtml;
+                        }
+                        if (item.location) {
+                            extra_content += "<br>"+item.location;
+                        }
+                        if (item.ticket_date) {
+                            extra_content += "<br>"+item.ticket_date;
+                        }
+                        li.append(extra_content+'<br>')
+                            .append($('<button style="color:white;border-color:#008CBA;background-color:#008CBA;">').html("Retrieve ticket").on("click", e=>{
+                                retrieveTicket(item.code_public, true); // do not redeem automatically
+                            }))
+                            .append($('<button style="color:white;border-color:red;background-color:red;">').html("Redeem ticket").on("click", e=>{
+                                redeemTicket(item.code_public);
+                            }));
                     }
-                    // Seat information
-                    let itemSeatHtml = _getSeatInfoHtml(item);
-                    if (itemSeatHtml != '') {
-                        extra_content += "<br>" + itemSeatHtml;
-                    }
-                    if (item.location) {
-                        extra_content += "<br>"+item.location;
-                    }
-                    if (item.ticket_date) {
-                        extra_content += "<br>"+item.ticket_date;
-                    }
-                    li.append(extra_content+'<br>')
-                        .append($('<button style="color:white;border-color:#008CBA;background-color:#008CBA;">').html("Retrieve ticket").on("click", e=>{
-                            retrieveTicket(item.code_public, true); // do not redeem automatically
-                        }))
-                        .append($('<button style="color:white;border-color:red;background-color:red;">').html("Redeem ticket").on("click", e=>{
-                            redeemTicket(item.code_public);
-                        }))
-                        .appendTo(ol);
+                    li.appendTo(ol);
                 }
             }
             ol.appendTo(div_tickets);
         }
         div_tickets.appendTo(div);
+
+        if (anyCvvRequired) {
+            let $confirmBtn = $('<button class="button-ticket-options button-primary">')
+                .html(_x("Confirm codes", 'label', 'event-tickets-with-ticket-scanner'))
+                .css({'margin-top': '10px'})
+                .on('click', function() {
+                    let cvvMap = {};
+                    $('.saso-cvv-row-input', div).each(function() {
+                        let $i = $(this);
+                        let v = ($i.val() || '').trim();
+                        let k = $i.attr('data-code') || '';
+                        if (k !== '' && v !== '') cvvMap[k] = v;
+                    });
+                    // Re-call retrieve_order_ticket with the per-row map.
+                    _makeGet('retrieve_ticket', {'code': data.order_infos.code, 'cvv': cvvMap}, function(resp) {
+                        if (resp && resp.order_infos && resp.order_infos.is_order_ticket) {
+                            displayOrderTicketInfo(resp);
+                        }
+                    });
+                });
+            div.append($confirmBtn);
+        }
 
         div_order_info_area = $('#order_info').html(div);
     }

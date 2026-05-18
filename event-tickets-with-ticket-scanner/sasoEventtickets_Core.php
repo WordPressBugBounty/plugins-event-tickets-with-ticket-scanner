@@ -156,6 +156,11 @@ class sasoEventtickets_Core {
 				'subs'=>$this->getDefaultMetaValueOfSubs(),
 				'_qr_content'=>''
 				] // ticket purchase ; stats_redeemed is only used if the ticket can be redeemed more than once
+			,'cvv_attempts'=>[
+				'count'   => 0,
+				'last_at' => '',
+				'locked'  => false,
+				] // rate-limiting state for CVV verification at the ticket scanner; locked=true after 5 wrong attempts
 			];
 
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getMetaObject')) {
@@ -348,6 +353,181 @@ class sasoEventtickets_Core {
 			$codeObj["metaObj"] = $metaObj;
 		}
 		return $codeObj;
+	}
+
+	/**
+	 * Generate a random 4-character CVV.
+	 * Uppercase alphanumeric, excludes ambiguous characters (O, 0, I, 1).
+	 *
+	 * @return string 4-char CVV
+	 */
+	public function generateCVV(): string {
+		$charset = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no O, 0, I, 1
+		$cvv = '';
+		$max = strlen($charset) - 1;
+		for ($i = 0; $i < 4; $i++) {
+			$cvv .= $charset[random_int(0, $max)];
+		}
+		return $cvv;
+	}
+
+	/**
+	 * Returns true if the product behind this code has the per-product
+	 * "Require CVV at scanner" option active. Honors variation fallback.
+	 *
+	 * @param array $codeObj Code with materialized metaObj
+	 * @return bool
+	 */
+	public function isCVVRequiredForScanner(array $codeObj): bool {
+		$metaObj = $codeObj['metaObj'] ?? null;
+		if (!is_array($metaObj)) return false;
+
+		// product_id is persisted by addWoocommerceInfoToCode at metaObj.woocommerce.product_id
+		// (NOT wc_ticket). Variation_id is not persisted in meta — pass 0 so
+		// getMetaWithVariationFallback reads parent-level meta only.
+		$product_id   = (int) ($metaObj['woocommerce']['product_id'] ?? 0);
+		$variation_id = 0;
+		if ($product_id < 1) return false;
+
+		$th = $this->MAIN->getTicketHandler();
+		$value = $th->getMetaWithVariationFallback($product_id, $variation_id, 'saso_eventtickets_require_cvv_at_scanner');
+		return $value === 'yes';
+	}
+
+	/**
+	 * Verify a CVV input against a code. Tracks attempts in meta and locks
+	 * the code (aktiv=0, cvv_attempts.locked=true) after 5 wrong attempts.
+	 *
+	 * @param array  $codeObj    Code with materialized metaObj
+	 * @param string $cvvInput   Input from scanner (case-insensitive match)
+	 * @return array ['ok'=>bool, 'attempts_remaining'=>int, 'locked'=>bool]
+	 */
+	public function verifyCVV(array $codeObj, string $cvvInput): array {
+		$codeId = (int) ($codeObj['id'] ?? 0);
+		$stored = (string) ($codeObj['cvv'] ?? '');
+		$metaObj = $codeObj['metaObj'] ?? [];
+
+		// No CVV configured on this code (e.g. legacy ticket created before the
+		// per-product option existed, or an admin cleared the CVV). Caller already
+		// verified isCVVRequiredForScanner is true for the product. Rather than
+		// silently locking out the customer by failing every comparison against
+		// an empty string, treat as "nothing to verify — pass through" so the
+		// legitimate customer can still redeem. The configuration inconsistency
+		// (option=yes but cvv='') is recoverable by the admin and must not be
+		// grounds for destroying a valid ticket.
+		if ($stored === '') {
+			return ['ok' => true, 'attempts_remaining' => 5, 'locked' => false];
+		}
+
+		$attempts = $metaObj['cvv_attempts'] ?? ['count' => 0, 'last_at' => '', 'locked' => false];
+		$count = (int) ($attempts['count'] ?? 0);
+		$locked = (bool) ($attempts['locked'] ?? false);
+
+		if ($locked) {
+			return ['ok' => false, 'attempts_remaining' => 0, 'locked' => true];
+		}
+
+		if (strtoupper($cvvInput) === strtoupper($stored)) {
+			return ['ok' => true, 'attempts_remaining' => max(0, 5 - $count), 'locked' => false];
+		}
+
+		// Wrong — increment, persist, possibly lock
+		$count++;
+		$attempts['count'] = $count;
+		$attempts['last_at'] = current_time('mysql');
+		$attempts['locked'] = ($count >= 5);
+
+		$metaObj['cvv_attempts'] = $attempts;
+		$this->persistCVVAttempts($codeId, $metaObj, $attempts['locked']);
+
+		return [
+			'ok' => false,
+			'attempts_remaining' => max(0, 5 - $count),
+			'locked' => $attempts['locked'],
+		];
+	}
+
+	/**
+	 * Reset the CVV attempt counter on a code. If the code was
+	 * specifically CVV-locked (cvv_attempts.locked=true), reactivate it.
+	 * Does NOT reactivate codes that were made inactive for other reasons.
+	 *
+	 * @param int $codeId Code id
+	 */
+	public function resetCVVAttempts(int $codeId): void {
+		if ($codeId < 1) return;
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('codes');
+		$row = $this->MAIN->getDB()->_db_datenholen($wpdb->prepare("SELECT meta, aktiv FROM $table WHERE id = %d", $codeId));
+		if (empty($row)) return;
+		$row = $row[0];
+
+		$metaObj = $this->encodeMetaValuesAndFillObject($row['meta'], $row);
+		$wasCVVLocked = !empty($metaObj['cvv_attempts']['locked']);
+
+		$metaObj['cvv_attempts'] = [
+			'count'   => 0,
+			'last_at' => '',
+			'locked'  => false,
+		];
+
+		$updates = ['meta' => $this->json_encode_with_error_handling($metaObj)];
+		$formats = ['%s'];
+		if ($wasCVVLocked && (int)$row['aktiv'] === 0) {
+			$updates['aktiv'] = 1;
+			$formats[] = '%d';
+		}
+		$wpdb->update($table, $updates, ['id' => $codeId], $formats, ['%d']);
+	}
+
+	/**
+	 * If the product has the "Require CVV at scanner" option active and the
+	 * given code does not yet have a CVV, generate one and persist to codes.cvv.
+	 *
+	 * Called from addCodeFromListForOrder during WC-order code creation.
+	 * Applies to both newly generated and reused codes — the reuse path
+	 * (wcassignmentReuseNotusedCodes option) hits the same call site.
+	 * Variation-aware via getMetaWithVariationFallback (variation_id=0 reads
+	 * parent-product meta).
+	 *
+	 * @param int $codeId    Code row id (just inserted/resolved)
+	 * @param int $productId Product id (parent product for variable products)
+	 */
+	public function maybeGenerateCVVForCode(int $codeId, int $productId): void {
+		if ($codeId < 1 || $productId < 1) return;
+
+		$requireCVV = $this->MAIN->getTicketHandler()->getMetaWithVariationFallback(
+			$productId, 0, 'saso_eventtickets_require_cvv_at_scanner'
+		) === 'yes';
+		if (!$requireCVV) return;
+
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('codes');
+		$existingCVV = $wpdb->get_var($wpdb->prepare("SELECT cvv FROM $table WHERE id = %d", $codeId));
+		if (!empty($existingCVV)) return;
+
+		$wpdb->update(
+			$table,
+			['cvv' => $this->generateCVV()],
+			['id' => $codeId],
+			['%s'],
+			['%d']
+		);
+	}
+
+	/**
+	 * Internal: persist cvv_attempts meta to DB, and set aktiv=0 if just locked.
+	 */
+	private function persistCVVAttempts(int $codeId, array $metaObj, bool $lockNow): void {
+		if ($codeId < 1) return;
+		global $wpdb;
+		$updates = ['meta' => $this->json_encode_with_error_handling($metaObj)];
+		$formats = ['%s'];
+		if ($lockNow) {
+			$updates['aktiv'] = 0;
+			$formats[] = '%d';
+		}
+		$wpdb->update($this->MAIN->getDB()->getTabelle('codes'), $updates, ['id' => $codeId], $formats, ['%d']);
 	}
 
 	public function getQRCodeContent($codeObj, $metaObj=null) {

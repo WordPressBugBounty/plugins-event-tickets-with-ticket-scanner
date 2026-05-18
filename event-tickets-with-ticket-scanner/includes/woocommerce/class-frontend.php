@@ -596,6 +596,10 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			$params['custom_attributes']['data-offset-start'] = $saso_eventtickets_daychooser_offset_start;
 			$params['custom_attributes']['data-offset-end'] = $saso_eventtickets_daychooser_offset_end;
 			$params['custom_attributes']['data-exclude-wdays'] = is_array($saso_eventtickets_daychooser_exclude_wdays) ? implode(",", $saso_eventtickets_daychooser_exclude_wdays) : $saso_eventtickets_daychooser_exclude_wdays;
+			$daychooser_cutoff_time = get_post_meta($product_id_orig, 'saso_eventtickets_daychooser_cutoff_time', true);
+			if (!empty($daychooser_cutoff_time) && $saso_eventtickets_daychooser_offset_start == 0) {
+				$params['custom_attributes']['data-cutoff-time'] = sanitize_text_field($daychooser_cutoff_time);
+			}
 
 			if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getDayChooserExclusionDates')) {
 				$exclusionDates = $this->MAIN->getPremiumFunctions()->getDayChooserExclusionDates($product_id_orig);
@@ -1217,6 +1221,16 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 					if (!empty($exclude_wdays) && is_array($exclude_wdays)) {
 						$dayOfWeek = (int) date('w', strtotime($value));
 						if (in_array($dayOfWeek, array_map('intval', $exclude_wdays), true)) {
+							$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a);
+							continue;
+						}
+					}
+
+					// Validate same-day cutoff time
+					$cutoff_time = get_post_meta($cart_item['product_id'], 'saso_eventtickets_daychooser_cutoff_time', true);
+					if (!empty($cutoff_time) && $offset_start == 0 && $value === date('Y-m-d')) {
+						$cutoff_ts = strtotime(date('Y-m-d') . ' ' . $cutoff_time);
+						if ($cutoff_ts !== false && time() >= $cutoff_ts) {
 							$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a);
 							continue;
 						}

@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.0.8
+ * Version: 3.0.9
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.8');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.9');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -1335,7 +1335,9 @@ class sasoEventtickets {
 			'ticketScannerDontShowBtnBadge' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDontShowBtnBadge'),
 			'ticketScannerDisplayTimes' => $this->getOptions()->isOptionCheckboxActive('ticketScannerDisplayTimes'),
 			'ticketScannerThemeColor' => $this->getOptions()->getOptionValue('ticketScannerThemeColor', '#2e74b5'),
-			'ticketScannerVibrate' => $this->getOptions()->isOptionCheckboxActive('ticketScannerVibrate')
+			'ticketScannerVibrate' => $this->getOptions()->isOptionCheckboxActive('ticketScannerVibrate'),
+			'_cvvMaskInput' => (bool) $this->getOptions()->isOptionCheckboxActive('wcTicketScannerCVVMaskInput'),
+			'_cvvOneStage'  => (bool) $this->getOptions()->isOptionCheckboxActive('wcTicketScannerCVVOneStageFlow'),
 		];
 		$vars = apply_filters( $this->_add_filter_prefix.'main_setTicketScannerJS', $vars );
         wp_localize_script(

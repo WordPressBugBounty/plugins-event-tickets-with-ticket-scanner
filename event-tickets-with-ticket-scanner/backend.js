@@ -5112,6 +5112,23 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 								// male die Inhalte
 								div.append('#'+d.id+'<br><b>'+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+':</b> '+DateFormatStringToDateTimeText(d.time)+' ('+d.time+')<br><b>'+__('Ticket number', 'event-tickets-with-ticket-scanner')+':</b> '+d.code+'<br><b>'+__('Ticket display number', 'event-tickets-with-ticket-scanner')+':</b> '+d.code_display+'<br><b>'+_x('Code Verification Value (CVV)', 'label', 'event-tickets-with-ticket-scanner')+':</b> '+(d.cvv == "" ? '-' : d.cvv)+'<br><b>'+__('is active', 'event-tickets-with-ticket-scanner')+':</b> '+(parseInt(d.aktiv,10) === 1?'True':'False'));
+								if (d.metaObj && d.metaObj.cvv_attempts && d.metaObj.cvv_attempts.count > 0) {
+									var $cvvInfo = $('<div style="margin-top:8px;padding:8px;background:#fff8e1;border-left:3px solid #ffc107;"></div>');
+									$cvvInfo.append('<b>' + __('CVV attempts:', 'event-tickets-with-ticket-scanner') + '</b> ' + d.metaObj.cvv_attempts.count + '<br>');
+									$cvvInfo.append('<b>' + __('Last attempt:', 'event-tickets-with-ticket-scanner') + '</b> ' + (d.metaObj.cvv_attempts.last_at || '-') + '<br>');
+									if (d.metaObj.cvv_attempts.locked) {
+										$cvvInfo.append('<b style="color:#d63638">' + __('LOCKED — too many wrong attempts', 'event-tickets-with-ticket-scanner') + '</b><br>');
+									}
+									var $resetBtn = $('<button type="button" class="button">' + __('Reset CVV attempts', 'event-tickets-with-ticket-scanner') + '</button>');
+									$resetBtn.on('click', function() {
+										if (!confirm(__('Reset CVV attempt counter and unlock this ticket?', 'event-tickets-with-ticket-scanner'))) return;
+										_makePost('resetCVVAttempts', {id: d.id}, function() {
+											__getData(null);
+										});
+									});
+									$cvvInfo.append($resetBtn);
+									div.append($cvvInfo);
+								}
 								div.append(_displayCodeDetails(d, metaObj, tabelle_codes_datatable));
 
 								div.append('<h3>'+_x('WooCommerce Order', 'title', 'event-tickets-with-ticket-scanner')+'</h3>');

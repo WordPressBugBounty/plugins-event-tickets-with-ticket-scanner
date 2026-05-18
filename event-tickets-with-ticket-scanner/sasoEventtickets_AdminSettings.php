@@ -28,7 +28,7 @@ class sasoEventtickets_AdminSettings {
 		$sensitive_actions = [
 			'changeOption', 'resetOptions', 'deleteOptions', 'exportOptions', 'importOptions', 'applyWizardPreset', 'applyPremiumDefaults', 'checkPremiumUpdate', 'recheckLicense', 'migrateOptionsToCustomTable', 'getOptionsHistory', 'revertOption', 'cleanupOptionsHistory', 'dismissSuggestion',
 			'emptyTableCodes', 'emptyTableLists', 'emptyTableErrorLogs',
-			'removeCode', 'removeCodes', 'removeAllCodesFromList',
+			'removeCode', 'removeCodes', 'removeAllCodesFromList', 'resetCVVAttempts',
 			'addAuthtoken', 'editAuthtoken', 'removeAuthtoken',
 			'repairTables', 'expose_desctables', 'testing',
 			'addList', 'editList', 'removeList',
@@ -99,6 +99,9 @@ class sasoEventtickets_AdminSettings {
 					break;
 				case "removeAllCodesFromList":
 					$ret = $this->removeAllCodesFromList($data);
+					break;
+				case "resetCVVAttempts":
+					$ret = $this->resetCVVAttempts_a($data);
 					break;
 				case "emptyTableLists":
 					$ret = $this->emptyTableLists($data);
@@ -1915,6 +1918,9 @@ class sasoEventtickets_AdminSettings {
 		//if (SASO_EVENTTICKETS::issetRPara('a') && SASO_EVENTTICKETS::getRequestPara('a') == 'testing') exit;
 
 		if ($id > 0) {
+			// Auto-generate CVV when the product has the "Require CVV at scanner"
+			// option on — extracted to Core for SRP and to be testable in isolation.
+			$this->MAIN->getCore()->maybeGenerateCVVForCode($id, $product_id);
 			$this->editCode($data); // order_id wird nicht beim anlegen gespeichert, deswegen hier nochmal ein update
 			$codeObj = $this->addWoocommerceInfoToCode([
 												'code'=>$data["code"],
@@ -2608,6 +2614,34 @@ class sasoEventtickets_AdminSettings {
 		return ['deleted' => $deleted, 'errors' => $errors];
 	}
 
+	/**
+	 * AJAX: Admin "Reset CVV attempts" action — unlocks a CVV-locked code
+	 * and zeros the attempt counter. Delegates to Core::resetCVVAttempts.
+	 *
+	 * @param array $data Request data with 'id' = code id
+	 * @return array
+	 * @throws Exception If id is missing or invalid
+	 */
+	private function resetCVVAttempts_a(array $data): array {
+		$codeId = isset($data['id']) ? intval($data['id']) : 0;
+		if ($codeId < 1) throw new Exception('#700 code id missing or invalid');
+
+		$this->MAIN->getCore()->resetCVVAttempts($codeId);
+
+		// Audit trail — info-level errorlog entry
+		try {
+			$this->logErrorToDB(
+				new Exception('Admin (user ' . get_current_user_id() . ') reset CVV attempts on code id ' . $codeId),
+				'resetCVVAttempts',
+				__FILE__ . ':' . __LINE__
+			);
+		} catch (Throwable $e) {
+			// Audit failure must not block the reset
+		}
+
+		return ['ok' => true];
+	}
+
 	private function emptyTableLists($data) {
 		$sql = "update ".$this->MAIN->getDB()->getTabelle("codes")." set list_id = 0";
 		$this->MAIN->getDB()->_db_query($sql);
@@ -2684,7 +2718,10 @@ class sasoEventtickets_AdminSettings {
 			'meta_confirmedCount',
 			'meta_woocommerce', 'meta_woocommerce_order_id', 'meta_woocommerce_product_id', 'meta_woocommerce_creation_date', 'meta_woocommerce_creation_date_tz', 'meta_woocommerce_item_id', 'meta_woocommerce_user_id',
 			'meta_wc_rp', 'meta_wc_rp_order_id', 'meta_wc_rp_product_id', 'meta_wc_rp_creation_date', 'meta_wc_rp_creation_date_tz', 'meta_wc_rp_item_id',
-			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_redeemed_via_authtoken_id', 'meta_wc_ticket_redeemed_via_authtoken_name', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket', 'meta_wc_ticket_subs', 'meta_wc_ticket_seat_id', 'meta_wc_ticket_seat_identifier', 'meta_wc_ticket_seat_label', 'meta_wc_ticket_seat_category'
+			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_redeemed_via_authtoken_id', 'meta_wc_ticket_redeemed_via_authtoken_name', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket', 'meta_wc_ticket_subs', 'meta_wc_ticket_seat_id', 'meta_wc_ticket_seat_identifier', 'meta_wc_ticket_seat_label', 'meta_wc_ticket_seat_category',
+			'meta_cvv_attempts_count',
+			'meta_cvv_attempts_last_at',
+			'meta_cvv_attempts_locked'
 			];
 		if ($options != null && is_array($options)) {
 			if (isset($options["displayAdminAreaColumnBillingName"])) {
@@ -2777,6 +2814,10 @@ class sasoEventtickets_AdminSettings {
 				if (!empty($metaObj['wc_ticket']['seat_identifier'])) $row['meta_wc_ticket_seat_identifier'] = $metaObj['wc_ticket']['seat_identifier'];
 				if (!empty($metaObj['wc_ticket']['seat_label'])) $row['meta_wc_ticket_seat_label'] = $metaObj['wc_ticket']['seat_label'];
 				if (!empty($metaObj['wc_ticket']['seat_category'])) $row['meta_wc_ticket_seat_category'] = $metaObj['wc_ticket']['seat_category'];
+
+				if (isset($metaObj['cvv_attempts']['count']))    $row['meta_cvv_attempts_count']   = $metaObj['cvv_attempts']['count'];
+				if (!empty($metaObj['cvv_attempts']['last_at'])) $row['meta_cvv_attempts_last_at'] = $metaObj['cvv_attempts']['last_at'];
+				if (isset($metaObj['cvv_attempts']['locked']))   $row['meta_cvv_attempts_locked']  = $metaObj['cvv_attempts']['locked'] ? '1' : '0';
 
 				if ($options != null && is_array($options)) {
 					if (isset($options["displayAdminAreaColumnBillingName"]) && $options["displayAdminAreaColumnBillingName"]) {
