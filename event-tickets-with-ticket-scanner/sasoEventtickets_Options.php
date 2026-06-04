@@ -381,7 +381,7 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketDontDisplayBlogName', 'label'=>__("Hide your wordpress name", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, it will not display the wordpress name.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/XG2NQaOZ9MQ'];
 		$options[] = ['key'=>'wcTicketDontDisplayBlogDesc', 'label'=>__("Hide your blog description", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, it will not display the wordpress description.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/qAjqxS0ju14'];
 		$options[] = ['key'=>'wcTicketDontDisplayBlogURL', 'label'=>__("Hide your wordpress URL", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, it will not display the wordpress URL.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/4-bT1REPGgY'];
-		$options[] = ['key'=>'wcTicketAdditionalTextBottom', 'label'=>__("You can display additional text on the PDF ticket", 'event-tickets-with-ticket-scanner'), 'desc'=>__('If you enter text here, then it will be added to the PDF ticket at the bottom part. You can add some corporate details if needed.', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>"", "additional"=>["rows"=>5], '_doc_video'=>'https://youtu.be/abpt3we8g-A'];
+		$options[] = ['key'=>'wcTicketAdditionalTextBottom', 'label'=>__("You can display additional text on the PDF ticket", 'event-tickets-with-ticket-scanner'), 'desc'=>__('If you enter text here, then it will be added to the PDF ticket at the bottom part. You can add some corporate details if needed.', 'event-tickets-with-ticket-scanner'), 'type'=>"vtext", 'def'=>"", "additional"=>["rows"=>5, "height"=>"180"], '_doc_video'=>'https://youtu.be/abpt3we8g-A'];
 		$options[] = ['key'=>'wcTicketTicketLogo', 'label'=>__("Display a small logo (max. 300x300px) at the bottom in the center", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If a media file is chosen, the logo will be placed on the ticket PDF.", 'event-tickets-with-ticket-scanner'), 'type'=>"media", 'def'=>""
 						, 'additional'=>[
 							'max'=>['width'=>200,'height'=>200],
@@ -602,7 +602,7 @@ class sasoEventtickets_Options {
 			]
 			, '_doc_video'=>'https://youtu.be/Lzz34dWWvWI'
 		];
-		$options[] = ['key'=>'wcTicketBadgeText', 'label'=>__("The HTML value for the PDF", 'event-tickets-with-ticket-scanner'), 'desc'=>__('If left empty, default will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>$badgeHTMLDefault, "additional"=>["rows"=>10], '_doc_video'=>'https://youtu.be/xmn1t8QPxwQ'];
+		$options[] = ['key'=>'wcTicketBadgeText', 'label'=>__("The HTML value for the PDF", 'event-tickets-with-ticket-scanner'), 'desc'=>__('If left empty, default will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>"vtext", 'def'=>$badgeHTMLDefault, "additional"=>["rows"=>10, "height"=>"260", "tags"=>$this->MAIN->getTicketBadgeHandler()->getReplacementTags()], '_doc_video'=>'https://youtu.be/xmn1t8QPxwQ'];
 		$options[] = ['key'=>'h15_desc', 'label'=>__("Possible Tags", 'event-tickets-with-ticket-scanner'), 'desc'=>$desc, 'type'=>"desc"];
 
 		$options[] = ['key'=>'h12d', 'label'=>__("Calendar file (ICS)", 'event-tickets-with-ticket-scanner'), 'desc'=>__("The ICS calendar file will cointain the event info and date (if added). This allows your customer to add the event easily from within the email to their calendar. Will work on most mail client.", 'event-tickets-with-ticket-scanner'), 'type'=>"heading"];
@@ -765,6 +765,52 @@ class sasoEventtickets_Options {
 		$this->_options[] = $this->getOptionsObject('qrAttachQRImageToEmail', __("Attach QR image to purchase email", 'event-tickets-with-ticket-scanner'), __("If active, then the QR as an image will be attached to the purchase email. The settings are taken from the ticket settings for purchase email.", 'event-tickets-with-ticket-scanner'), "checkbox", "", [], false, 'https://youtu.be/8RzYNBgOHxw');
 		$this->_options[] = $this->getOptionsObject('qrAttachQRPdfToEmail', __("Attach QR pdf to purchase email", 'event-tickets-with-ticket-scanner'), __("If active, then the QR as an pdf will be attached to the purchase email. The settings are taken from the ticket settings for purchase email.", 'event-tickets-with-ticket-scanner'), "checkbox", "", [], false, 'https://youtu.be/lIer7r3U5q0');
 		$this->_options[] = $this->getOptionsObject('qrAttachQRFilesToMailAsOnePDF', __("Attach QR PDF to purchase email as one PDF instead of single PDFs", 'event-tickets-with-ticket-scanner'), __("If active, the ticket QR code files are merged into one PDF and will be added as an attachment to the mails.", 'event-tickets-with-ticket-scanner'), "checkbox", "", [], false, 'https://youtu.be/8ZsXV95XGnw');
+
+		$this->_options[] = $this->getOptionsObject('hCongress', __("Congress-Modus", 'event-tickets-with-ticket-scanner'), "", "heading");
+		$this->_options[] = $this->getOptionsObject(
+			'congressModeActive',
+			__("Congress page active", 'event-tickets-with-ticket-scanner'),
+			__("Shows the congress information page publicly to ticket holders. The page is only displayed when the ticket's product has a congress assigned to it. The congress admin area (Congresses menu) is always available regardless of this setting.", 'event-tickets-with-ticket-scanner'),
+			"checkbox",
+			true
+		);
+		$this->_options[] = $this->getOptionsObject(
+			'congressAccessHoursBefore',
+			__("Congress access — hours before event start", 'event-tickets-with-ticket-scanner'),
+			__("How many hours before a congress' event start the page becomes accessible. Only applies when the congress has an event start time set. 0 = no early restriction (accessible immediately).", 'event-tickets-with-ticket-scanner'),
+			"number",
+			0,
+			['min'=>0]
+		);
+		$this->_options[] = $this->getOptionsObject(
+			'congressRetentionDaysAfter',
+			__("Congress access — days available after event end", 'event-tickets-with-ticket-scanner'),
+			__("How many days after a congress' event end the page stays available. Only applies when the congress has an event end time set. 0 = available forever (no automatic expiry).", 'event-tickets-with-ticket-scanner'),
+			"number",
+			0,
+			['min'=>0]
+		);
+		$this->_options[] = $this->getOptionsObject(
+			'congressEmailLinkActive',
+			__("Add congress link to the order email", 'event-tickets-with-ticket-scanner'),
+			__("If active, a link to the congress page is added to the WooCommerce order email for every ticket whose product has a congress assigned.", 'event-tickets-with-ticket-scanner'),
+			"checkbox",
+			""
+		);
+		$this->_options[] = $this->getOptionsObject(
+			'congressEmailLinkLabel',
+			__("Label for the congress link in the email", 'event-tickets-with-ticket-scanner'),
+			__("The clickable text for the congress link in the order email. If left empty, a default is used.", 'event-tickets-with-ticket-scanner'),
+			"text",
+			__("Open your congress page", 'event-tickets-with-ticket-scanner')
+		);
+		$this->_options[] = $this->getOptionsObject(
+			'congressShowWalletLink',
+			__("Show 'Add to Wallet' link on the congress page", 'event-tickets-with-ticket-scanner'),
+			__("If active, the congress page offers the ticket holder a link to add/open the ticket in the Vollstart Wallet app.", 'event-tickets-with-ticket-scanner'),
+			"checkbox",
+			""
+		);
 
 		// Premium-Options (inkl. License-Key-Eingabefeld) anzeigen wenn Premium-Plugin installiert ist,
 		// unabhängig vom Subscription-Validierungsstatus. Sonst kann der User seinen Key nicht eingeben.

@@ -785,7 +785,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let btn_new = $('<button/>').addClass("button-primary").html(_x('Add', 'label', 'event-tickets-with-ticket-scanner')).on("click", ()=>{
 				__showMaskAuthtoken(null);
 			});
-			$('<div/>').css('text-align', 'right').css('margin-bottom','10px').append(btn_new).appendTo(div2);
+			$('<div class="et-toolbar">').css('margin-bottom','10px').append(btn_new).appendTo(div2);
 			let div_tabelle = $('<div>');
 			loading.html("");
 			tplace.html("").append(div_tabelle).appendTo(div2);
@@ -920,7 +920,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							}},
 							{"data":null,"orderable":false,"defaultContent":'',"className":"buttons dt-right","width":100,
 								"render": ( data, type, row )=>{
-									return '<button class="button-secondary" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button>';
+									return '<div class="et-btn-group"><button class="et-btn-action" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button></div><div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button></div>';
 								}
 							}
 						]
@@ -1443,29 +1443,34 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Scanner Default</span><span class="et-kv-value" style="word-break:break-all;">'+reply.infos.ticket.ticket_scanner_path+'</span></div>';
 			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Detail Plugin Path</span><span class="et-kv-value" style="word-break:break-all;">'+reply.infos.ticket.ticket_detail_path+'</span></div>';
 			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Scanner Plugin Path</span><span class="et-kv-value" style="word-break:break-all;">'+reply.infos.ticket.ticket_detail_path+'scanner/</span></div>';
+			if (reply.infos.congress) {
+				ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Congress URL</span><span class="et-kv-value" style="word-break:break-all;">'+reply.infos.congress.url_pattern+(reply.infos.congress.active ? '' : ' <i>('+__('congress page disabled in options', 'event-tickets-with-ticket-scanner')+')</i>')+'</span></div>';
+			}
 			urlsCard.append('<div class="et-kv-table">'+ticketUrlRows+'</div>');
 
 			// ── Error Logs Card ──
 			let errorCard = $('<div class="et-card">').appendTo(DIV);
 			errorCard.append('<div class="et-card-header"><span class="dashicons dashicons-warning" style="color:var(--et-danger);margin-right:6px;"></span>Error Logs</div>');
 			let tabelle_errorlogs_datatable;
-			$('<div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:12px;">')
-				.append($('<button>').html(__('Refresh table', 'event-tickets-with-ticket-scanner')).addClass("button-secondary").on("click", ()=>{
-					tabelle_errorlogs_datatable.ajax.reload();
-				}))
-				.append($('<button>').html('<span class="dashicons dashicons-download" style="vertical-align:middle;margin-right:2px;font-size:16px;"></span>'+__('Export CSV', 'event-tickets-with-ticket-scanner')).addClass("button-secondary").on("click", ()=>{
-					window.open(_requestURL('downloadErrorLogsCSV'), '_blank');
-				}))
-				.append($('<button>').html(__('Empty table', 'event-tickets-with-ticket-scanner')).addClass("sngmbh_btn-delete").on("click", ()=>{
-					LAYOUT.renderYesNo(__('Empty table', 'event-tickets-with-ticket-scanner'), sprintf(/* translators: %s: name of ticket table */__('Do you want to empty the "%s" table? All data will be lost.', 'event-tickets-with-ticket-scanner'), _x("Error Logs", 'title', 'event-tickets-with-ticket-scanner')), ()=>{
-						LAYOUT.renderYesNo(__('Empty table - last chance', 'event-tickets-with-ticket-scanner'), sprintf(/* translators: %s: name of ticket table */__('Are you sure? You will not be able to restore the data, except you have a backup of your database. All data will be lost.', 'event-tickets-with-ticket-scanner'), _x("Error Logs", 'title', 'event-tickets-with-ticket-scanner')), ()=>{
-							_makeGet('emptyTableErrorLogs', null, ()=>{
-							tabelle_errorlogs_datatable.ajax.reload();
-							});
+			let _errToolbar = $('<div class="et-toolbar">').css('margin-bottom','12px');
+			let _errGrpUtil = $('<div class="et-btn-group">').appendTo(_errToolbar);
+			$('<button>').html(__('Refresh table', 'event-tickets-with-ticket-scanner')).addClass("button-secondary").on("click", ()=>{
+				tabelle_errorlogs_datatable.ajax.reload();
+			}).appendTo(_errGrpUtil);
+			$('<button>').html('<span class="dashicons dashicons-download" style="vertical-align:middle;margin-right:2px;font-size:16px;"></span>'+__('Export CSV', 'event-tickets-with-ticket-scanner')).addClass("button-secondary").on("click", ()=>{
+				window.open(_requestURL('downloadErrorLogsCSV'), '_blank');
+			}).appendTo(_errGrpUtil);
+			let _errGrpDanger = $('<div class="et-btn-group et-btn-group--danger">').appendTo(_errToolbar);
+			$('<button>').html(__('Empty table', 'event-tickets-with-ticket-scanner')).addClass("sngmbh_btn-delete").on("click", ()=>{
+				LAYOUT.renderYesNo(__('Empty table', 'event-tickets-with-ticket-scanner'), sprintf(/* translators: %s: name of ticket table */__('Do you want to empty the "%s" table? All data will be lost.', 'event-tickets-with-ticket-scanner'), _x("Error Logs", 'title', 'event-tickets-with-ticket-scanner')), ()=>{
+					LAYOUT.renderYesNo(__('Empty table - last chance', 'event-tickets-with-ticket-scanner'), sprintf(/* translators: %s: name of ticket table */__('Are you sure? You will not be able to restore the data, except you have a backup of your database. All data will be lost.', 'event-tickets-with-ticket-scanner'), _x("Error Logs", 'title', 'event-tickets-with-ticket-scanner')), ()=>{
+						_makeGet('emptyTableErrorLogs', null, ()=>{
+						tabelle_errorlogs_datatable.ajax.reload();
 						});
 					});
-				}))
-				.appendTo(errorCard);
+				});
+			}).appendTo(_errGrpDanger);
+			_errToolbar.appendTo(errorCard);
 
 			let div_tabelle = $('<div>').appendTo(errorCard);
 
@@ -1695,7 +1700,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			div_options.append('<p><span class="dashicons dashicons-external"></span><a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/" target="_blank">Click here, to visit the documentation.</a></p>');
 			div_options.append(getUseFulVideosHTML());
 
-			let exportImport_div = $('<div style="padding-top:10px;padding-bottom:10px;">').appendTo(div_options);
+			let exportImport_div = $('<div class="et-toolbar">').css({paddingTop:'10px',paddingBottom:'10px'}).appendTo(div_options);
+			let importFileInput = $('<input type="file" accept=".json" style="display:none;">');
+			exportImport_div.append(importFileInput);
+			let exportImport_grp = $('<div class="et-btn-group">').appendTo(exportImport_div);
 			$('<button class="button">').html(_x('Export Options', 'label', 'event-tickets-with-ticket-scanner'))
 				.on('click', ()=>{
 					_makePost('exportOptions', '', function(result) {
@@ -1713,21 +1721,19 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							URL.revokeObjectURL(url);
 						}
 					});
-				}).appendTo(exportImport_div);
-			let importFileInput = $('<input type="file" accept=".json" style="display:none;">');
-			exportImport_div.append(importFileInput);
-			$('<button class="button" style="margin-left:5px;">').html(_x('Import Options', 'label', 'event-tickets-with-ticket-scanner'))
+				}).appendTo(exportImport_grp);
+			$('<button class="button">').html(_x('Import Options', 'label', 'event-tickets-with-ticket-scanner'))
 				.on('click', ()=>{
 					importFileInput.val('');
 					importFileInput.trigger('click');
-				}).appendTo(exportImport_div);
-			$('<button class="button" style="margin-left:5px;">').html('<span class="dashicons dashicons-welcome-learn-more" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Start Wizard', 'label', 'event-tickets-with-ticket-scanner'))
+				}).appendTo(exportImport_grp);
+			$('<button class="button">').html('<span class="dashicons dashicons-welcome-learn-more" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Start Wizard', 'label', 'event-tickets-with-ticket-scanner'))
 				.on('click', ()=>{ __showSetupWizard(true); })
-				.appendTo(exportImport_div);
+				.appendTo(exportImport_grp);
 			if (isPremium()) {
-				$('<button class="button" style="margin-left:5px;">').html('<span class="dashicons dashicons-star-filled" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Premium Wizard', 'label', 'event-tickets-with-ticket-scanner'))
+				$('<button class="button">').html('<span class="dashicons dashicons-star-filled" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Premium Wizard', 'label', 'event-tickets-with-ticket-scanner'))
 					.on('click', ()=>{ __showPremiumWizard(true); })
-					.appendTo(exportImport_div);
+					.appendTo(exportImport_grp);
 			}
 			importFileInput.on('change', function() {
 				let file = this.files[0];
@@ -1878,10 +1884,21 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						case "textarea":
 							elem_input = $('<textarea>');
 							elem_input.attr("placeholder", v.default);
-							//elem_input.val(value);
 							elem_input.val(value);
 							if (typeof v.additional !== "undefined" && typeof v.additional.rows !== "undefined") {
 								elem_input.attr("rows", v.additional.rows);
+							}
+							break;
+						case "vtext":
+							elem_input = $('<textarea>');
+							elem_input.val(value);
+							elem_input.attr("id", "vtext_" + v.key);
+							elem_input.attr("data-vtext-key", v.key);
+							if (typeof v.additional !== "undefined" && typeof v.additional.rows !== "undefined") {
+								elem_input.attr("rows", v.additional.rows);
+							}
+							if (typeof v.additional !== "undefined" && typeof v.additional.tags !== "undefined") {
+								elem_input.data("vtextTags", v.additional.tags);
 							}
 							break;
 						case "checkbox":
@@ -1974,13 +1991,13 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							desc = desc.trim();
 							elem_div.append(desc !== "" ? '<br><i>'+desc+'</i>':'');
 						}
-						if (v.type != "number" && v.type != "color") {
+						if (v.type != "number" && v.type != "color" && v.type != "vtext") {
 							elem_input.css({"width":"90%"});
 						}
-						if (v.type != "dropdown" && v.type != "editor") {
+						if (v.type != "dropdown" && v.type != "editor" && v.type != "vtext") {
 							elem_input.attr("value",value);
 						}
-						if (v.type != "editor") {
+						if (v.type != "editor" && v.type != "vtext") {
 							elem_input.on("change", ()=>{
 								let value = elem_input.val();
 								_saveOptionValue(v.key, value, cbf, pcbf);
@@ -1992,7 +2009,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 					if (v.key == "serial") {
 						let serialStatusSpan = $('<span style="margin-left:10px;">');
-						let serialCheckBtn = $('<button class="button button-secondary" style="margin-left:5px;">').html(__('Check License', 'event-tickets-with-ticket-scanner'));
+						let serialCheckBtn = $('<button class="button button-secondary">').html(__('Check License', 'event-tickets-with-ticket-scanner'));
 						serialCheckBtn.on('click', function(e) {
 							e.preventDefault();
 							serialCheckBtn.prop('disabled', true).html(__('Checking...', 'event-tickets-with-ticket-scanner'));
@@ -2053,7 +2070,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							_saveOptionValue(v.key, value, cbf, pcbf);
 							editor[v.key+"_btn"].prop("disabled", true);
 						}).appendTo(btn_group);
-						$('<button class="button button-danger">').html(_x('Copy Template Code To Live Code', 'title', 'event-tickets-with-ticket-scanner')).on("click", evt=>{
+						$('<button class="sngmbh_btn-delete">').html(_x('Copy Template Code To Live Code', 'title', 'event-tickets-with-ticket-scanner')).on("click", evt=>{
 							LAYOUT.renderYesNo(_x('Replace Live Template Code', 'title', 'event-tickets-with-ticket-scanner'), __('Do you want to replace the live template code with the template code from the test?', 'event-tickets-with-ticket-scanner'), ()=>{
 								let value = editor[v.key+"_editor"].getValue().trim();
 								$('input[data-key="'+v.key.replace("Test", "")+'"').val(value).trigger("change");
@@ -2153,6 +2170,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						});
 					}
 				}
+				_initVtextEditors();
 			}, 250)
 
 			function __renderTabelleOptionsHistory(container) {
@@ -2160,10 +2178,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				let tabelle_history_datatable;
 				let table_id = myAjax.divPrefix+'_tabelle_options_history';
 
-				$('<div style="text-align:right;margin-bottom:10px;">')
-					.append($('<button>').html(__('Refresh table', 'event-tickets-with-ticket-scanner')).addClass("button-secondary").on("click", ()=>{
-						tabelle_history_datatable.ajax.reload();
-					}))
+				$('<div class="et-toolbar">').css('margin-bottom','10px')
+					.append($('<div class="et-btn-group">').append(
+						$('<button>').html(__('Refresh table', 'event-tickets-with-ticket-scanner')).addClass("button-secondary").on("click", ()=>{
+							tabelle_history_datatable.ajax.reload();
+						})
+					))
 					.appendTo(container);
 
 				let tabelle = $('<table/>').attr("id", table_id);
@@ -2206,7 +2226,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						}},
 						{"data": "changed_by_name", "orderable": true, "width": 120, "defaultContent": ""},
 						{"data": null, "orderable": false, "width": 80, "render": function(data, type, row) {
-							return '<button class="button button-small saso-revert-btn" data-history-id="'+row.id+'">'+_x('Revert', 'label', 'event-tickets-with-ticket-scanner')+'</button>';
+							return '<div class="et-btn-group"><button class="et-btn-action saso-revert-btn" data-history-id="'+row.id+'">'+_x('Revert', 'label', 'event-tickets-with-ticket-scanner')+'</button></div>';
 						}},
 					]
 				});
@@ -2253,6 +2273,35 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			}
 
 		});
+	}
+
+	// ── Congresses Area ──
+
+	function _displayCongressesArea() {
+		STATE = 'congresses';
+		DIV.html('');
+		DIV.append(getBackButtonDiv());
+		var $container = $('<div/>').attr('id', 'saso-et-congress-app').appendTo(DIV);
+
+		var _congressV = myAjax._congress_assets_v || myAjax._plugin_version;
+		if (!document.getElementById('saso-et-congress-css')) {
+			$('<link/>', {
+				id:   'saso-et-congress-css',
+				rel:  'stylesheet',
+				href: myAjax._plugin_home_url + '/css/congress-admin.css?v=' + _congressV
+			}).appendTo('head');
+		}
+
+		var cfg = { ajaxUrl: myAjax.url, nonce: myAjax.nonce, layout: LAYOUT };
+		if (window.sasoEtCongressAdmin) {
+			window.sasoEtCongressAdmin.init($container, cfg);
+		} else {
+			$.getScript(myAjax._plugin_home_url + '/js/congress-admin.js?v=' + _congressV, function () {
+				if (window.sasoEtCongressAdmin) {
+					window.sasoEtCongressAdmin.init($container, cfg);
+				}
+			});
+		}
 	}
 
 	// ── Attendance Area with Tabs (#236) ──
@@ -2569,9 +2618,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		let div_to = _createDivInput(_x('To', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
 		let input_to = $('<input type="date"/>').val(today).css('padding','4px 8px').appendTo(div_to);
 
-		let btn_load = $('<button/>').addClass("button-primary").css({'margin-bottom':'15px'}).html(_x('Load', 'button', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
+		let btn_load = $('<button/>').addClass("button-primary").html(_x('Load', 'button', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
 
-		let btn_export = $('<button/>').addClass("button-secondary").css({'margin-bottom':'15px','margin-left':'5px'}).html('<span class="dashicons dashicons-download" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Export CSV', 'button', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
+		let btn_export = $('<button/>').addClass("button-secondary").html('<span class="dashicons dashicons-download" style="vertical-align:middle;margin-right:2px;"></span>' + _x('Export CSV', 'button', 'event-tickets-with-ticket-scanner')).appendTo(div_filters);
 		btn_export.on("click", function() {
 			let df = input_from.val(), dt = input_to.val();
 			if (!df || !dt) return;
@@ -2751,6 +2800,62 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			image_btn_del.css("display", "none");
 		}
 	}
+	function _initVtextEditors() {
+		if (typeof wp === "undefined" || !wp.oldEditor) return;
+		$('textarea[data-vtext-key]').each(function(){
+			let $ta = $(this);
+			let editorId = $ta.attr("id");
+			let key = $ta.attr("data-vtext-key");
+			let tagGroups = $ta.data("vtextTags") || null;
+			if ($ta.data("vtext-init")) return; // already initialised
+			$ta.data("vtext-init", true);
+			// Drop any stale TinyMCE instance with the same id (options area re-render)
+			wp.oldEditor.remove(editorId);
+
+			let toolbar1 = 'formatselect,bold,italic,underline,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,unlink,forecolor,removeformat';
+			if (tagGroups && tagGroups.length) toolbar1 += ',etInsertTag';
+
+			wp.oldEditor.initialize(editorId, {
+				tinymce: {
+					toolbar1: toolbar1,
+					height: 200,
+					setup: function(ed){
+						let _save = ()=>{
+							let value = ed.getContent();
+							_saveOptionValue(key, value);
+						};
+						// Save on blur and after content settles (debounced)
+						ed.on('blur', _save);
+						let _t = null;
+						ed.on('change keyup', ()=>{
+							window.clearTimeout(_t);
+							_t = window.setTimeout(_save, 1200);
+						});
+						// Tag picker menubutton (grouped submenus)
+						if (tagGroups && tagGroups.length) {
+							let menuItems = tagGroups.map(g=>{
+								return {
+									text: g.group,
+									menu: g.tags.map(tag=>({
+										text: tag,
+										onclick: function(){ ed.insertContent(tag); }
+									}))
+								};
+							});
+							ed.addButton('etInsertTag', {
+								type: 'menubutton',
+								text: __('Insert Tag', 'event-tickets-with-ticket-scanner'),
+								icon: false,
+								menu: menuItems
+							});
+						}
+					}
+				},
+				quicktags: true,
+				mediaButtons: false
+			});
+		});
+	}
 	function _openMediaChooser(input_elem, multiple, imgContainer, typeFilter) {
 		var image_frame;
  		if(image_frame){
@@ -2869,6 +2974,14 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					_displayAttendanceArea();
 				}).appendTo(btn_grp);
 		}
+		$('<button/>')
+			.addClass("event-tickets-with-ticket-scanner-topmenu-item")
+			.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'congresses')
+			.html(_x('Congresses', 'label', 'event-tickets-with-ticket-scanner'))
+			.on("click", () => {
+				_displayCongressesArea();
+			}).appendTo(btn_grp);
+
 		$('<button/>')
 			.addClass("event-tickets-with-ticket-scanner-topmenu-item")
 			.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'options')
@@ -3497,7 +3610,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				'.et-vn-msg{font-size:13px;color:#50575e;line-height:1.5;}' +
 				'.et-vn-link{font-size:13px;margin-left:4px;}' +
 				'.et-vn-dismiss{margin-top:12px;text-align:right;}' +
-				'.et-vn-dismiss-btn{color:#646970!important;text-decoration:none!important;font-size:13px;cursor:pointer;background:none;border:none;}'
+				'.et-vn-dismiss-btn{display:inline-block;padding:5px 14px;border:1px solid #c3c4c7;border-radius:5px;background:#f6f7f7;color:#1d2327!important;text-decoration:none!important;font-size:13px;line-height:1.6;cursor:pointer;}' +
+				'.et-vn-dismiss-btn:hover{background:#fff;border-color:#8c8f94;}'
 			).appendTo('head');
 		}
 
@@ -4681,7 +4795,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							},
 		    				{"data":null,"orderable":false,"defaultContent":'',"className":"buttons dt-right dt-nowrap","width":180,
 		    					"render": function ( data, type, row ) {
-		    						return '<button class="button-secondary" data-type="showCodes">'+_x('Tickets', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="deleteAllTickets" style="color:#b32d2e;">'+_x('Delete All Tickets', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button>';
+		    						return '<div class="et-btn-group"><button class="et-btn-action" data-type="showCodes">'+_x('Tickets', 'label', 'event-tickets-with-ticket-scanner')+'</button><button class="et-btn-action" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button></div><div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger" data-type="deleteAllTickets">'+_x('Delete All Tickets', 'label', 'event-tickets-with-ticket-scanner')+'</button><button class="et-btn-action et-btn-action--danger" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button></div>';
 		                		}
 		                	}
 		    			]
@@ -4793,7 +4907,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				let btn_liste_new = $('<button/>').addClass("button-primary").html(_x('Add', 'label', 'event-tickets-with-ticket-scanner')).on("click", ()=>{
 					__showMaskList(null);
 				});
-				this.div_liste.html($('<div/>').css('text-align', 'right').css('margin-bottom','10px').append(btn_liste_empty).append(isPremium()?'':' '+sprintf(/* translators: 1: max possible lists amount 2: link to premium */__('Max. %1$d list. Unlimited with %2$s', 'event-tickets-with-ticket-scanner'), myAjax._max.lists, getLabelPremiumOnly())+' ').append(btn_liste_new));
+				let grp_liste_danger = $('<div class="et-btn-group et-btn-group--danger"/>').append(btn_liste_empty);
+				this.div_liste.html($('<div class="et-toolbar"/>').css('margin-bottom','10px').append(grp_liste_danger).append(isPremium()?'':$('<span class="et-toolbar-hint"/>').html(' '+sprintf(/* translators: 1: max possible lists amount 2: link to premium */__('Max. %1$d list. Unlimited with %2$s', 'event-tickets-with-ticket-scanner'), myAjax._max.lists, getLabelPremiumOnly())+' ')).append(btn_liste_new));
 				this.div_liste.append(tplace);
 
 				__renderTabelleListen();
@@ -4913,14 +5028,15 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					}
 					tabelle_codes_datatable.search(search);
 				});
+				let grp_codes_util = $('<div class="et-btn-group"/>').append(btn_codes_reload).append(btn_codes_export);
+				let grp_codes_danger = $('<div class="et-btn-group et-btn-group--danger"/>').append(btn_codes_empty);
 				this.div_codes
-					.html($('<div/>').css('text-align', 'right').css('margin-bottom','10px')
+					.html($('<div class="et-toolbar"/>').css('margin-bottom','10px')
 					.append(drop_codes_bulk)
 					.append(drop_search)
-					.append(btn_codes_export)
-					.append(btn_codes_empty)
-					.append(btn_codes_reload)
-					.append(isPremium()?'':' '+sprintf(/* translators: 1: max amount tickets 2: premium link */__('Max. %1$d tickets. Unlimited with %2$s', 'event-tickets-with-ticket-scanner'), myAjax._max.codes_total, getLabelPremiumOnly())+' ').append(btn_codes_new));
+					.append(grp_codes_util)
+					.append(grp_codes_danger)
+					.append(isPremium()?'':$('<span class="et-toolbar-hint"/>').html(' '+sprintf(/* translators: 1: max amount tickets 2: premium link */__('Max. %1$d tickets. Unlimited with %2$s', 'event-tickets-with-ticket-scanner'), myAjax._max.codes_total, getLabelPremiumOnly())+' ')).append(btn_codes_new));
 				this.div_codes.append(tabelle_codes);
 
 				let table_columns = [
@@ -4963,7 +5079,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					}},
 					{"data":null,"orderable":false,"defaultContent":'',"className":"buttons dt-right dt-nowrap","width":"120px",
 						"render": function ( data, type, row ) {
-							return '<button class="button-secondary" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button> <button class="button-secondary" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button>';
+							return '<div class="et-btn-group"><button class="et-btn-action" data-type="edit">'+_x('Edit', 'label', 'event-tickets-with-ticket-scanner')+'</button></div><div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger" data-type="delete">'+_x('Delete', 'label', 'event-tickets-with-ticket-scanner')+'</button></div>';
 						}
 					}
 				];
@@ -5622,6 +5738,11 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						$("<div>").html('<b>Ticket Scanner:</b> <a target="_blank" href="'+_getTicketScannerURL()+encodeURIComponent(metaObj.wc_ticket._public_ticket_id)+'">Open Ticket Scanner with ticket</a>').appendTo(div);
 						$("<div>").html('<b>Order Ticket Page:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_page_url+'">Open Order Ticket Page</a>').appendTo(div);
 						$("<div>").html('<b>Order PDF:</b> <a target="_blank" href="'+metaObj.wc_ticket._order_url+'">Open Order Ticket PDF</a>').appendTo(div);
+						// Congress page link — if this ticket's product has a congress assigned (above the wallet link)
+						if (myAjax._congressProducts && metaObj.woocommerce && myAjax._congressProducts[metaObj.woocommerce.product_id]) {
+							let _congUrl = myAjax._congressProducts[metaObj.woocommerce.product_id].replace('__TICKETID__', encodeURIComponent(metaObj.wc_ticket._public_ticket_id));
+							$("<div>").html('<b>'+_x('Congress', 'label', 'event-tickets-with-ticket-scanner')+':</b> ').append($('<a target="_blank">').attr('href', _congUrl).text(_x('Open congress page', 'label', 'event-tickets-with-ticket-scanner'))).appendTo(div);
+						}
 						if (_getOptions_isActivatedByKey('walletVollstartEnable') && metaObj.wc_ticket._wallet_url) {
 							$("<div>").html('<b>'+__('Wallet Test', 'event-tickets-with-ticket-scanner')+':</b> <a target="_blank" href="'+metaObj.wc_ticket._wallet_url+'">'+__('Import ticket to Vollstart Wallet for testing', 'event-tickets-with-ticket-scanner')+'</a>').appendTo(div);
 						}
@@ -6117,6 +6238,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					_displayFAQArea();
 				} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'attendance' && isPremium()) {
 					_displayAttendanceArea();
+				} else if(typeof PARAS.display !== "undefined" && PARAS.display == 'congress' && isPremium()) {	
+					_displayCongressesArea();
 				} else {
 					LAYOUT.renderAdminPageLayout();
 				}

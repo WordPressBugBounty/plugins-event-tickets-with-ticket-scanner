@@ -734,6 +734,10 @@ class sasoEventtickets_AdminSettings {
 					'home'=>home_url(),
 					'network_home'=>network_home_url(),
 					'site_url'=>site_url()
+				],
+				'congress'=>[
+					'url_pattern'=>$this->MAIN->getCongressRepository()->getUrl('{TICKET-ID}'),
+					'active'=>$this->MAIN->getOptions()->isOptionCheckboxActive('congressModeActive') ? 1 : 0
 				]
 			];
 			$infos["premium_expiration"] = $this->MAIN->getTicketHandler()->get_expiration();
@@ -2874,6 +2878,73 @@ class sasoEventtickets_AdminSettings {
 			}
 		}
 
+		// v1.15: Add created_at, updated_at, created_by_user_id, updated_by_user_id to congress_sections
+		if (version_compare($dbversion, '1.15', '>=') && version_compare($dbversion_pre, '1.15', '<')) {
+			global $wpdb;
+			$t = $this->MAIN->getDB()->getTabelle('congress_sections');
+			$cols = $wpdb->get_col("SHOW COLUMNS FROM {$t}");
+			if (!in_array('created_at', $cols))
+				$wpdb->query("ALTER TABLE {$t} ADD COLUMN created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP");
+			if (!in_array('updated_at', $cols))
+				$wpdb->query("ALTER TABLE {$t} ADD COLUMN updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP");
+			if (!in_array('created_by_user_id', $cols))
+				$wpdb->query("ALTER TABLE {$t} ADD COLUMN created_by_user_id int(11) unsigned NOT NULL DEFAULT 0");
+			if (!in_array('updated_by_user_id', $cols))
+				$wpdb->query("ALTER TABLE {$t} ADD COLUMN updated_by_user_id int(11) unsigned NOT NULL DEFAULT 0");
+		}
+
+		// v1.16: Add event_start_at, event_end_at to congresses (event-relative access window)
+		if (version_compare($dbversion, '1.16', '>=') && version_compare($dbversion_pre, '1.16', '<')) {
+			global $wpdb;
+			$t = $this->MAIN->getDB()->getTabelle('congresses');
+			$cols = $wpdb->get_col("SHOW COLUMNS FROM {$t}");
+			if (!in_array('event_start_at', $cols))
+				$wpdb->query("ALTER TABLE {$t} ADD COLUMN event_start_at datetime DEFAULT NULL");
+			if (!in_array('event_end_at', $cols))
+				$wpdb->query("ALTER TABLE {$t} ADD COLUMN event_end_at datetime DEFAULT NULL");
+		}
+
+		// v1.17: Pages layer. Add page_id to congress_sections, then create one start page
+		// per congress (title = congress title) and assign all existing sections to it.
+		if (version_compare($dbversion, '1.17', '>=') && version_compare($dbversion_pre, '1.17', '<')) {
+			global $wpdb;
+			$db        = $this->MAIN->getDB();
+			$t_pages   = $db->getTabelle('congress_pages');
+			$t_sec     = $db->getTabelle('congress_sections');
+			$t_con     = $db->getTabelle('congresses');
+
+			$sec_cols = $wpdb->get_col("SHOW COLUMNS FROM {$t_sec}");
+			if (!in_array('page_id', $sec_cols))
+				$wpdb->query("ALTER TABLE {$t_sec} ADD COLUMN page_id int(32) unsigned NOT NULL DEFAULT 0 AFTER congress_id");
+
+			// Backfill: one start page per congress that still has page-less sections.
+			$congress_ids = $wpdb->get_col("SELECT DISTINCT congress_id FROM {$t_sec} WHERE page_id = 0");
+			foreach ($congress_ids as $cid) {
+				$cid   = (int) $cid;
+				$title = $wpdb->get_var($wpdb->prepare("SELECT title FROM {$t_con} WHERE id = %d", $cid));
+				if ($title === null || $title === '') $title = 'Start';
+				$wpdb->insert($t_pages, [
+					'congress_id' => $cid,
+					'title'       => $title,
+					'sort_order'  => 0,
+				]);
+				$page_id = (int) $wpdb->insert_id;
+				if ($page_id > 0) {
+					$wpdb->query($wpdb->prepare("UPDATE {$t_sec} SET page_id = %d WHERE congress_id = %d AND page_id = 0", $page_id, $cid));
+				}
+			}
+		}
+
+		// v1.18: per-congress active/visible flag (master + window still apply on top).
+		if (version_compare($dbversion, '1.18', '>=') && version_compare($dbversion_pre, '1.18', '<')) {
+			global $wpdb;
+			$t    = $this->MAIN->getDB()->getTabelle('congresses');
+			$cols = $wpdb->get_col("SHOW COLUMNS FROM {$t}");
+			if (!in_array('is_active', $cols)) {
+				$wpdb->query("ALTER TABLE {$t} ADD COLUMN is_active tinyint(1) NOT NULL DEFAULT 1");
+			}
+		}
+
 		// Premium and hook calls wrapped in try/catch — an exception here must NOT
 		// prevent update_option(db_version) from being saved in installiereTabellen(),
 		// otherwise the upgrade re-runs on every request → infinite crash loop.
@@ -3553,5 +3624,6 @@ class sasoEventtickets_AdminSettings {
 		}
 		return ['dismissed' => $dismissed];
 	}
+
 }
 ?>

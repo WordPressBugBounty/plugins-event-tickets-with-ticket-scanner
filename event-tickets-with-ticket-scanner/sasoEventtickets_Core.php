@@ -1023,6 +1023,7 @@ class sasoEventtickets_Core {
 		$is_pdf_request = false;
 		$is_ics_request = false;
 		$is_badge_request = false;
+		$is_congress_request = false;
 		$foundcode = "";
 		foreach($teile as $teil) {
 			$teil = trim($teil);
@@ -1054,6 +1055,7 @@ class sasoEventtickets_Core {
 			$is_pdf_request = in_array("pdf", $t);
 			$is_ics_request = in_array("ics", $t);
 			$is_badge_request = in_array("badge", $t);
+			$is_congress_request = in_array("congress", $t);
 		} else {
 			if (empty($foundcode)) throw new Exception("#9301 ticket id not found from ticket url");
 			$parts = explode("-", $foundcode);
@@ -1067,10 +1069,12 @@ class sasoEventtickets_Core {
 			$is_pdf_request = in_array("pdf", $t) || SASO_EVENTTICKETS::issetRPara('pdf');
 			$is_ics_request = in_array("ics", $t) || SASO_EVENTTICKETS::issetRPara('ics');
 			$is_badge_request = in_array("badge", $t) || SASO_EVENTTICKETS::issetRPara('badge');
+			$is_congress_request = in_array("congress", $t) || SASO_EVENTTICKETS::issetRPara('congress');
 		}
 		if (count($parts) != 3) throw new Exception("#9302 ticket id not correct - cannot create ticket url components");
 		$parts[2] = str_replace("?pdf", "", $parts[2]);
 		$parts[2] = str_replace("?ics", "", $parts[2]);
+		$parts[2] = str_replace("?congress", "", $parts[2]);
 		$parts_assoc = [
 			"foundcode"=>$foundcode,
 			"idcode"=>$parts[0],
@@ -1079,7 +1083,8 @@ class sasoEventtickets_Core {
 			"_request"=>$request,
 			"_isPDFRequest"=>$is_pdf_request,
 			"_isICSRequest"=>$is_ics_request,
-			"_isBadgeRequest"=>$is_badge_request
+			"_isBadgeRequest"=>$is_badge_request,
+			"_isCongressRequest"=>$is_congress_request
 		];
 		$parts_assoc = apply_filters( $this->MAIN->_add_filter_prefix.'core_getTicketURLComponents', $parts_assoc, $url );
 		return $parts_assoc;

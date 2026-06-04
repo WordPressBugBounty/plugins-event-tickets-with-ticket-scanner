@@ -365,18 +365,24 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				} catch (error) {
 					//console.log(error);
 				}
-				// Same-day cutoff: only relevant when offset_start=0 (today is nominally selectable).
-				// If current time >= cutoff, shift minDate to tomorrow.
-				let _saso_cutoff = elem_intern.attr('data-cutoff-time');
-				if (_saso_cutoff && data_offset_start === 0) {
-					let _now = new Date();
-					let _cp = _saso_cutoff.split(':');
-					let _cutoff = new Date();
-					_cutoff.setHours(parseInt(_cp[0], 10), parseInt(_cp[1], 10), 0, 0);
-					if (_now >= _cutoff) data_offset_start = 1;
-				}
 				if (elem_intern.attr('min') && elem_intern.attr('min').length > 0) {
 					data_offset_start = elem_intern.attr('min');
+				}
+				// Same-day cutoff: runs after min-attribute override so absolute start dates
+				// (ticket_start_date) cannot silently undo the cutoff effect.
+				// If current time >= cutoff and the resolved minDate still includes today, shift to tomorrow.
+				let _saso_cutoff = elem_intern.attr('data-cutoff-time');
+				if (_saso_cutoff) {
+					let _cp = _saso_cutoff.split(':');
+					let _cutoffDate = new Date();
+					_cutoffDate.setHours(parseInt(_cp[0], 10), parseInt(_cp[1], 10), 0, 0);
+					if (new Date() >= _cutoffDate) {
+						let _todayMidnight = new Date(); _todayMidnight.setHours(0, 0, 0, 0);
+						let _resolvedMin = _sasoResolveLimitDate(data_offset_start);
+						if (_resolvedMin === null || _resolvedMin <= _todayMidnight) {
+							data_offset_start = 1;
+						}
+					}
 				}
 				try {
 					data_offset_end = parseInt(elem_intern.attr('data-offset-end'));

@@ -12,16 +12,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: WP-CLI 2.7.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: event-tickets-with-ticket-scanner\n"
+"X-Generator: WP-CLI 2.7.1\n"
 
 #: includes/woocommerce/class-frontend.php:1234
 #, php-format
 msgid ""
 "\"%1$s\" was removed from your cart because the seat reservation expired: "
 "%2$s"
-msgstr ""
-"\"%1$s\" eltávolítva a kosarából, mert az ülőhely-foglalás lejárt: %2$s"
+msgstr "\"%1$s\" eltávolítva a kosarából, mert az ülőhely-foglalás lejárt: %2$s"
 
 #: ticket_scanner.js:1054
 #, javascript-format
@@ -265,8 +265,8 @@ msgid ""
 "then the entrance is allowed from 00:00 till 23:59."
 msgstr ""
 "Aktiválja ezt, hogy az ügyfél kiválaszthassa a dátumot. Ha ez az opció "
-"aktív, a kezdő és záró dátumot használja határként, ha meg van adva. És csak "
-"a kezdő és záró időt használja. Ha a kezdő és záró idő nincs beállítva, "
+"aktív, a kezdő és záró dátumot használja határként, ha meg van adva. És csak"
+" a kezdő és záró időt használja. Ha a kezdő és záró idő nincs beállítva, "
 "akkor a belépés 00:00-tól 23:59-ig engedélyezett."
 
 #: includes/woocommerce/class-product.php:161
@@ -316,8 +316,8 @@ msgstr "Jegy hozzáadása"
 
 #: sasoEventtickets_Options.php:736
 msgid ""
-"Add to the ticket QR code the full URL to the ticket scanner with the public "
-"ticket id"
+"Add to the ticket QR code the full URL to the ticket scanner with the public"
+" ticket id"
 msgstr ""
 "A jegy QR-kódjába a teljes URL hozzáadása a jegyszkennerhez a nyilvános "
 "jegyazonosítóval"
@@ -671,7 +671,8 @@ msgstr "Hasznalhato a jegyszkennerrel"
 msgid "Can not find the product for this ticket."
 msgstr "Nem található a termék ehhez a jegyhez."
 
-#: js/seating_admin.js:1383 js/seating_admin.js:1422 js/seating_frontend.js:364
+#: js/seating_admin.js:1383 js/seating_admin.js:1422
+#: js/seating_frontend.js:364
 msgid "Cancel"
 msgstr "Mégse"
 
@@ -684,7 +685,8 @@ msgstr "Mégse"
 #, php-format
 msgid "Cannot add %d seats. Limit is %d seats per plan. Currently have %d."
 msgstr ""
-"Nem adható hozzá %d ülőhely. A korlát tervenként %d ülőhely. Jelenleg %d van."
+"Nem adható hozzá %d ülőhely. A korlát tervenként %d ülőhely. Jelenleg %d "
+"van."
 
 #: includes/woocommerce/class-frontend.php:2021
 #, php-format
@@ -710,16 +712,16 @@ msgstr ""
 
 #: includes/seating/class-seating-seat.php:632
 msgid ""
-"Cannot delete seat with confirmed bookings. Cancel orders first or use force "
-"delete."
+"Cannot delete seat with confirmed bookings. Cancel orders first or use force"
+" delete."
 msgstr ""
 "Nem törölhető megerősített foglalással rendelkező ülőhely. Először vonja "
 "vissza a rendeléseket, vagy használja a kényszerített törlést."
 
 #: ticket_scanner.js:225
 msgid ""
-"Cannot find the public ticket number in the QR code. Please try a QR code of "
-"a ticket."
+"Cannot find the public ticket number in the QR code. Please try a QR code of"
+" a ticket."
 msgstr ""
 "A nyilvanos jegyszam nem talalhato a QR-kodban. Kerjuk, probalkozzon egy "
 "jegy QR-kodjával."
@@ -793,8 +795,8 @@ msgstr "Válassz fájlkiterjesztést"
 
 #: includes/woocommerce/class-product.php:176
 msgid ""
-"Choose a list to activate auto-generating ticket numbers/codes for each sold "
-"item"
+"Choose a list to activate auto-generating ticket numbers/codes for each sold"
+" item"
 msgstr ""
 "Válassz egy listát a jegyszámok/kódok automatikus generálásának "
 "aktiválásához minden eladott tételnél"
@@ -979,7 +981,8 @@ msgid "Compatibility mode for ticket URL"
 msgstr "Kompatibilitási mód a jegy URL-hez"
 
 #: sasoEventtickets_Options.php:282
-msgid "Compatibility mode for ticket images using URL instead of file location"
+msgid ""
+"Compatibility mode for ticket images using URL instead of file location"
 msgstr ""
 "Kompatibilitási mód jegyképekhez URL használatával fájl elérési út helyett"
 
@@ -1115,8 +1118,8 @@ msgstr "Az ügyfél kiválaszthatja a napot"
 
 #: includes/seating/class-seating-admin.php:1031 js/seating_admin.js:35
 msgid ""
-"Customers will see a dropdown menu to select their seat. Available seats are "
-"shown in a list sorted by identifier. This is ideal for smaller venues or "
+"Customers will see a dropdown menu to select their seat. Available seats are"
+" shown in a list sorted by identifier. This is ideal for smaller venues or "
 "when visual seat selection is not needed."
 msgstr ""
 "Az ügyfelek egy legördülő menüt látnak az ülőhelyük kiválasztásához. Az "
@@ -1126,12 +1129,12 @@ msgstr ""
 
 #: includes/seating/class-seating-admin.php:1033 js/seating_admin.js:37
 msgid ""
-"Customers will see an interactive seat map where they can click on available "
-"seats. Occupied seats are shown in a different color. This provides a visual "
-"overview of the venue. (Premium feature)"
+"Customers will see an interactive seat map where they can click on available"
+" seats. Occupied seats are shown in a different color. This provides a "
+"visual overview of the venue. (Premium feature)"
 msgstr ""
-"Az ügyfelek egy interaktív ülésrend-térképet látnak, ahol rákattinthatnak az "
-"elérhető ülőhelyekre. A foglalt ülőhelyek más színben jelennek meg. Ez "
+"Az ügyfelek egy interaktív ülésrend-térképet látnak, ahol rákattinthatnak az"
+" elérhető ülőhelyekre. A foglalt ülőhelyek más színben jelennek meg. Ez "
 "vizuális áttekintést nyújt a helyszínről. (Prémium funkció)"
 
 #: backend.js:2189
@@ -1347,8 +1350,8 @@ msgstr ""
 msgid ""
 "Display all tickets in one PDF download button/link on the order detail view"
 msgstr ""
-"Az összes jegy egy PDF-ben letöltés gomb/hivatkozás megjelenítése a rendelés "
-"részletek nézetben"
+"Az összes jegy egy PDF-ben letöltés gomb/hivatkozás megjelenítése a rendelés"
+" részletek nézetben"
 
 #: sasoEventtickets_Options.php:637
 msgid "Display bought ticket numbers within the user profile"
@@ -1356,7 +1359,8 @@ msgstr "Vásárolt jegyszámok megjelenítése a felhasználói profilban"
 
 #: sasoEventtickets_Options.php:235
 msgid "Display confirmed status checks on the ticket scanner view"
-msgstr "Megerősített állapotellenőrzések megjelenítése a jegyszkenner nézetben"
+msgstr ""
+"Megerősített állapotellenőrzések megjelenítése a jegyszkenner nézetben"
 
 #: sasoEventtickets_Options.php:184
 msgid "Display options"
@@ -1453,8 +1457,8 @@ msgstr "Jegyszám megjelenítése a bejelentkezett felhasználónak"
 
 #: index.php:939
 msgid ""
-"Displays tickets assigned to the current logged-in user (default) or tickets "
-"from a specific order."
+"Displays tickets assigned to the current logged-in user (default) or tickets"
+" from a specific order."
 msgstr ""
 "Megjeleníti az aktuálisan bejelentkezett felhasználóhoz rendelt jegyeket "
 "(alapértelmezett) vagy egy adott rendelés jegyeit."
@@ -1478,7 +1482,8 @@ msgstr ""
 "Ne jelenjen meg a jegyszám CVV a PDF számlán a WooCommerce vásárlásnál."
 
 #: sasoEventtickets_Options.php:721
-msgid "Do not print the ticket number CVV on the confirmation to the customer."
+msgid ""
+"Do not print the ticket number CVV on the confirmation to the customer."
 msgstr ""
 "Ne nyomtassa ki a jegyszám CVV-t a vásárlónak küldött visszaigazolásra."
 
@@ -1547,8 +1552,8 @@ msgid ""
 "Do you also want to include a \"Download all tickets as one PDF\" link in "
 "the email?"
 msgstr ""
-"Szeretne egy \"Összes jegy letöltése egy PDF-ben\" linket is beilleszteni az "
-"e-mailbe?"
+"Szeretne egy \"Összes jegy letöltése egy PDF-ben\" linket is beilleszteni az"
+" e-mailbe?"
 
 #: backend.js:2936
 msgid ""
@@ -1568,7 +1573,8 @@ msgstr ""
 
 #: backend.js:1846
 msgid "Do you really want to remove the file information from this option?"
-msgstr "Valóban el szeretné távolítani a fájlinformációt ebből a beállításból?"
+msgstr ""
+"Valóban el szeretné távolítani a fájlinformációt ebből a beállításból?"
 
 #: backend.js:4692
 #, javascript-format
@@ -1578,9 +1584,9 @@ msgid ""
 "order items! This ticket can then be reused for purchases. Click OK to "
 "proceed the removal."
 msgstr ""
-"Biztosan el akarod távolítani a vásárlási jegyinformációkat erről a jegyről: "
-"\"%s\"? Ez eltávolítja a jegyszámokat a rendelési tételekből is! A jegyszám "
-"ezután újra felhasználható lesz, ha ez az opció aktiválva van. Kattints az "
+"Biztosan el akarod távolítani a vásárlási jegyinformációkat erről a jegyről:"
+" \"%s\"? Ez eltávolítja a jegyszámokat a rendelési tételekből is! A jegyszám"
+" ezután újra felhasználható lesz, ha ez az opció aktiválva van. Kattints az "
 "Ok gombra a folytatáshoz."
 
 #: backend.js:4673
@@ -1589,8 +1595,8 @@ msgid ""
 "Do you really want to remove your order information of this ticket \"%s\"? "
 "This will also remove the ticket number from the order! For the PREMIUM "
 "PLUGIN: It will only remove it from the position of the order. If you have "
-"in one order more than one item with ticket number, then it will only remove "
-"the ticket number(s) from this item on the order. For the BASIC PLUGIN, it "
+"in one order more than one item with ticket number, then it will only remove"
+" the ticket number(s) from this item on the order. For the BASIC PLUGIN, it "
 "will remove all tickets from all items on this order. Click OK to proceed "
 "the removal."
 msgstr ""
@@ -1608,12 +1614,12 @@ msgstr "Valóban vissza szeretné állítani az összes beállítást?"
 #: backend.js:1441
 msgid ""
 "Do you really want to try to repair your database table definitions for the "
-"plugin? It should be safe, but only needed in very rare cases. You might see "
-"errors messages during the page reload - that is normal. Why not asking "
+"plugin? It should be safe, but only needed in very rare cases. You might see"
+" errors messages during the page reload - that is normal. Why not asking "
 "support, if you should do it? ;)"
 msgstr ""
-"Tényleg meg akarod próbálni javítani a bővítmény adatbázistábla-definícióit? "
-"Biztonságosnak kell lennie, de csak nagyon ritka esetekben szükséges. Az "
+"Tényleg meg akarod próbálni javítani a bővítmény adatbázistábla-definícióit?"
+" Biztonságosnak kell lennie, de csak nagyon ritka esetekben szükséges. Az "
 "oldal újratöltése közben hibaüzeneteket láthatsz - ez normális. Miért nem "
 "kérdezed meg a támogatást, hogy meg kell-e tenned? ;)"
 
@@ -1632,11 +1638,11 @@ msgstr ""
 #: backend.js:4309
 #, javascript-format
 msgid ""
-"Do you want to empty the \"%s\" table? All data will be lost. No ticket will "
-"be deleted. Just the lists."
+"Do you want to empty the \"%s\" table? All data will be lost. No ticket will"
+" be deleted. Just the lists."
 msgstr ""
-"Szeretné kiüríteni a(z) \"%s\" táblát? Minden adat elvész. Egyetlen jegy sem "
-"lesz törölve. Csak a listák."
+"Szeretné kiüríteni a(z) \"%s\" táblát? Minden adat elvész. Egyetlen jegy sem"
+" lesz törölve. Csak a listák."
 
 #: backend.js:2968
 msgid ""
@@ -1672,8 +1678,8 @@ msgstr "Le szeretné cserélni a teszt jegysablon kódot erre a sablonra?"
 #: backend.js:2940
 msgid "Do you want to show the \"View all tickets\" link in the email instead?"
 msgstr ""
-"Szeretné helyette az \"Összes jegy megtekintése\" linket megjeleníteni az e-"
-"mailben?"
+"Szeretné helyette az \"Összes jegy megtekintése\" linket megjeleníteni az "
+"e-mailben?"
 
 #: backend.js:3050
 msgid "Don't ask again"
@@ -1850,13 +1856,13 @@ msgid ""
 "Enter per line a key value pair like key|value1. If only key is given per "
 "line, then the key will be also the value."
 msgstr ""
-"Soronként adjon meg egy kulcs-érték párt, például kulcs|érték1. Ha soronként "
-"csak kulcs van megadva, a kulcs lesz az érték is."
+"Soronként adjon meg egy kulcs-érték párt, például kulcs|érték1. Ha soronként"
+" csak kulcs van megadva, a kulcs lesz az érték is."
 
 #: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:641
 msgid ""
-"Enter your Premium license key to activate features. If you do not have one, "
-"please contact support@vollstart.com."
+"Enter your Premium license key to activate features. If you do not have one,"
+" please contact support@vollstart.com."
 msgstr ""
 "Add meg a Premium licenckulcsodat a funkciók aktiválásához. Ha nincs, "
 "kérjük, lépj kapcsolatba a support@vollstart.com címen."
@@ -1871,8 +1877,8 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:761
 msgid ""
-"Enter your Premium license key. After updating the Premium plugin to version "
-"1.6.0+, all premium features will be restored."
+"Enter your Premium license key. After updating the Premium plugin to version"
+" 1.6.0+, all premium features will be restored."
 msgstr ""
 "Adja meg Prémium licenckulcsát. A Premium bővítmény 1.6.0+ verzióra való "
 "frissítése után minden prémium funkció visszaáll."
@@ -1979,8 +1985,8 @@ msgstr ""
 #: index.php:1944
 #, php-format
 msgid ""
-"Event Tickets: Your Premium plugin (v%s) is outdated and not compatible with "
-"this version."
+"Event Tickets: Your Premium plugin (v%s) is outdated and not compatible with"
+" this version."
 msgstr ""
 "Eseményjegyek: Az Ön Prémium bővítménye (v%s) elavult és nem kompatibilis "
 "ezzel a verzióval."
@@ -2199,8 +2205,8 @@ msgid ""
 "value."
 msgstr ""
 "Sötét háttereknél hasznos lehet fehér szegélyt hozzáadni a QR-kódhoz. A "
-"méret lehetővé teszi a szegély hozzáadását. Ha szüksége van rá, a 4-es érték "
-"megfelelő."
+"méret lehetővé teszi a szegély hozzáadását. Ha szüksége van rá, a 4-es érték"
+" megfelelő."
 
 #: js/seating_admin.js:1264
 #, javascript-format
@@ -2285,7 +2291,8 @@ msgstr "Ajándékkártyák, promóciós kódok"
 
 #: index.php:1988 index.php:2019
 msgid "Go to Plugins > Add New > Upload Plugin"
-msgstr "Lépjen a Bővítmények > Új hozzáadása > Bővítmény feltöltése menüpontra"
+msgstr ""
+"Lépjen a Bővítmények > Új hozzáadása > Bővítmény feltöltése menüpontra"
 
 #: includes/woocommerce/class-product.php:220
 msgid "Go to Seating Plans"
@@ -2297,7 +2304,8 @@ msgid "Go to products"
 msgstr "Ugrás a termékekhez"
 
 #: sasoEventtickets_Options.php:304
-msgid "Heading for the Ticket Download section within the purchase order email"
+msgid ""
+"Heading for the Ticket Download section within the purchase order email"
 msgstr "A jegyletöltés szakasz címsora a vásárlási visszaigazoló e-mailben"
 
 #: sasoEventtickets_Options.php:453
@@ -2306,7 +2314,8 @@ msgstr "Heartbeat elavulási időtúllépés (másodperc)"
 
 #: includes/woocommerce/class-product.php:152
 #, php-format
-msgid "Here you can purchase the %1$spremium plugin%2$s for unlimited tickets."
+msgid ""
+"Here you can purchase the %1$spremium plugin%2$s for unlimited tickets."
 msgstr ""
 "Itt megvásárolhatod a %1$sPremium bővítményt%2$s korlátlan számú jegyhez."
 
@@ -2356,10 +2365,10 @@ msgid ""
 "person who is scanning cannot change the options. The presets are taking as "
 "default. If not active, the users choice on the ticket scanner will be used."
 msgstr ""
-"Rejtse el a jegyszkenner beállításait a szkenner nézetből. Így a szkennelést "
-"végző személy nem módosíthatja a beállításokat. Az előbeállítások lesznek az "
-"alapértelmezettek. Ha nem aktív, a felhasználó saját beállításai kerülnek "
-"alkalmazásra."
+"Rejtse el a jegyszkenner beállításait a szkenner nézetből. Így a szkennelést"
+" végző személy nem módosíthatja a beállításokat. Az előbeállítások lesznek "
+"az alapértelmezettek. Ha nem aktív, a felhasználó saját beállításai kerülnek"
+" alkalmazásra."
 
 #: sasoEventtickets_Options.php:344
 msgid "Hide the payment method on the ticket"
@@ -2477,7 +2486,8 @@ msgstr "Ha PDF fájl van kiválasztva, az hozzá lesz csatolva a jegy PDF-hez."
 
 #: sasoEventtickets_Options.php:620
 msgid "If a media file is choosen, the banner will be placed on the flyer."
-msgstr "Ha egy kép ki van választva, a banner elhelyezésre kerül a szórólapon."
+msgstr ""
+"Ha egy kép ki van választva, a banner elhelyezésre kerül a szórólapon."
 
 #: sasoEventtickets_Options.php:573 sasoEventtickets_Options.php:629
 msgid ""
@@ -2489,7 +2499,8 @@ msgid "If a media file is choosen, the logo will be placed on the flyer."
 msgstr "Ha egy kép ki van választva, a logó elhelyezésre kerül a szórólapon."
 
 #: sasoEventtickets_Options.php:367
-msgid "If a media file is chosen, the banner will be placed on the ticket PDF."
+msgid ""
+"If a media file is chosen, the banner will be placed on the ticket PDF."
 msgstr ""
 "Ha egy médiafájl ki van választva, a banner elhelyezésre kerül a PDF jegyen."
 
@@ -2535,34 +2546,34 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:587
 msgid ""
-"If active and a date is set on the product, then it will display the date of "
-"the event on the product detail page to the client."
+"If active and a date is set on the product, then it will display the date of"
+" the event on the product detail page to the client."
 msgstr ""
 "Ha aktív és dátum van beállítva a terméken, az esemény dátuma megjelenik a "
 "termék részletes oldalán az ügyfél számára."
 
 #: sasoEventtickets_Options.php:586
 msgid ""
-"If active and a date is set on the product, then it will display the date of "
-"the event on the purchase email to the client."
+"If active and a date is set on the product, then it will display the date of"
+" the event on the purchase email to the client."
 msgstr ""
 "Ha aktív és dátum van beállítva a terméken, az esemény dátuma megjelenik az "
 "ügyfélnek küldött vásárlási e-mailben."
 
 #: sasoEventtickets_Options.php:307
 msgid ""
-"If active and all items of the order are tickets, then it will set the order "
-"status to completed if the order status is 'processing' and all purchased "
+"If active and all items of the order are tickets, then it will set the order"
+" status to completed if the order status is 'processing' and all purchased "
 "items in the order are tickets."
 msgstr ""
 "Ha aktív és a rendelés összes tétele jegy, a rendelés állapota befejezettré "
-"változik, ha az állapot 'feldolgozás alatt' és a rendelés összes megvásárolt "
-"tétele jegy."
+"változik, ha az állapot 'feldolgozás alatt' és a rendelés összes megvásárolt"
+" tétele jegy."
 
 #: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:616
 msgid ""
-"If active and the event start date is set, then the system will not allow to "
-"redeem the ticket anymore."
+"If active and the event start date is set, then the system will not allow to"
+" redeem the ticket anymore."
 msgstr ""
 "Ha aktív és az esemény kezdő dátuma be van állítva, a rendszer nem "
 "engedélyezi többé a jegy beváltását."
@@ -2606,8 +2617,8 @@ msgstr ""
 #: sasoEventtickets_Options.php:588
 msgid "If active the event date is not shown on the ticket."
 msgstr ""
-"Ha aktív, az esemény dátuma nem jelenik meg a PDF jegyen és a jegy részletes "
-"nézetében sem."
+"Ha aktív, az esemény dátuma nem jelenik meg a PDF jegyen és a jegy részletes"
+" nézetében sem."
 
 #: sasoEventtickets_Options.php:589
 msgid "If active the seat information is not shown on the ticket."
@@ -2616,8 +2627,8 @@ msgstr "Ha aktív, a hely információk nem jelennek meg a jegyen."
 #: sasoEventtickets_Options.php:245
 msgid ""
 "If active, a button will be shown to display the seating plan with the "
-"scanned seat highlighted. Only visible if the ticket has a seat assigned and "
-"the plan is visual."
+"scanned seat highlighted. Only visible if the ticket has a seat assigned and"
+" the plan is visual."
 msgstr ""
 "Ha aktív, egy gomb jelenik meg az ülésrend megjelenítéséhez a szkennelt "
 "ülőhely kiemelésével. Csak akkor látható, ha a jegyhez ülőhely van rendelve "
@@ -2634,11 +2645,11 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:658
 msgid ""
-"If active, a camera icon will be displayed next to the input field, allowing "
-"users to scan QR codes with their device camera. Requires HTTPS."
+"If active, a camera icon will be displayed next to the input field, allowing"
+" users to scan QR codes with their device camera. Requires HTTPS."
 msgstr ""
-"Ha aktív, egy kamera ikon jelenik meg a beviteli mező mellett, lehetővé téve "
-"a felhasználók számára, hogy QR-kódokat szkennejenek az eszközük "
+"Ha aktív, egy kamera ikon jelenik meg a beviteli mező mellett, lehetővé téve"
+" a felhasználók számára, hogy QR-kódokat szkennejenek az eszközük "
 "kamerájával. HTTPS szükséges."
 
 #: sasoEventtickets_Options.php:300
@@ -2656,8 +2667,8 @@ msgid ""
 "page below the tickets will be placed. Only if the purchase has tickets."
 msgstr ""
 "Ha aktív, egy hivatkozás jelenik meg az összes jegy egy PDF-ként való "
-"letöltéséhez a rendelés részletei oldalon a jegyek alatt. Csak ha a vásárlás "
-"jegyeket tartalmaz."
+"letöltéséhez a rendelés részletei oldalon a jegyek alatt. Csak ha a vásárlás"
+" jegyeket tartalmaz."
 
 #: sasoEventtickets_Options.php:299
 msgid ""
@@ -2671,12 +2682,12 @@ msgstr ""
 #: sasoEventtickets_Options.php:298
 msgid ""
 "If active, a link to see all tickets QR codes within the checkout page will "
-"be placed. Only if the purchase has tickets. This speeds up the entrance for "
-"groups and family ticket purchase. It wil be above the order details table."
+"be placed. Only if the purchase has tickets. This speeds up the entrance for"
+" groups and family ticket purchase. It wil be above the order details table."
 msgstr ""
 "Ha aktív, egy hivatkozás jelenik meg az összes jegy QR kódjának "
-"megtekintéséhez a pénztár oldalon. Csak ha a vásárlás jegyeket tartalmaz. Ez "
-"felgyorsítja a beléptetést csoportos és családi jegyvásárlás esetén. A "
+"megtekintéséhez a pénztár oldalon. Csak ha a vásárlás jegyeket tartalmaz. Ez"
+" felgyorsítja a beléptetést csoportos és családi jegyvásárlás esetén. A "
 "rendelés részletei táblázat felett jelenik meg."
 
 #: sasoEventtickets_Options.php:297
@@ -2702,11 +2713,12 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:440
 msgid ""
-"If active, each seat selection creates a separate cart item (quantity 1). If "
-"inactive (default), seats are combined in one cart item like the date picker."
+"If active, each seat selection creates a separate cart item (quantity 1). If"
+" inactive (default), seats are combined in one cart item like the date "
+"picker."
 msgstr ""
-"Ha aktív, minden helykiválasztás külön kosárelemet hoz létre (mennyiség: 1). "
-"Ha inaktív (alapértelmezett), a helyek egy kosárelemben vannak összevonva, "
+"Ha aktív, minden helykiválasztás külön kosárelemet hoz létre (mennyiség: 1)."
+" Ha inaktív (alapértelmezett), a helyek egy kosárelemben vannak összevonva, "
 "mint a dátumválasztónál."
 
 #: sasoEventtickets_Options.php:234
@@ -2722,8 +2734,8 @@ msgstr ""
 #: sasoEventtickets_Options.php:696
 msgid ""
 "If active, each validation request from a user will trigger an URL from the "
-"server side to another URL. Be carefull. This could slow down the validation "
-"check. It depends how fast your service URLs are responding."
+"server side to another URL. Be carefull. This could slow down the validation"
+" check. It depends how fast your service URLs are responding."
 msgstr ""
 "Ha aktív, minden felhasználói érvényesítési kérés egy URL hívást indít a "
 "szerver oldaláról. Légy óvatos, ez lelassíthatja az érvényesítési "
@@ -2741,7 +2753,8 @@ msgstr ""
 msgid ""
 "If active, it will add the self-redeem button on the ticket detail view."
 msgstr ""
-"Ha aktív, az önkiszolgáló beváltás gomb megjelenik a jegy részletek nézetben."
+"Ha aktív, az önkiszolgáló beváltás gomb megjelenik a jegy részletek "
+"nézetben."
 
 #: sasoEventtickets_Options.php:341 sasoEventtickets_Options.php:342
 msgid "If active, it will be printed on the ticket detail view."
@@ -2761,18 +2774,18 @@ msgid ""
 "If active, it will not display the PDF download button on the ticket detail "
 "view. But the PDF can still be generated with the URL."
 msgstr ""
-"Ha aktív, a PDF letöltés gomb nem jelenik meg a jegy részletes nézetében. De "
-"a PDF továbbra is generálható az URL-lel."
+"Ha aktív, a PDF letöltés gomb nem jelenik meg a jegy részletes nézetében. De"
+" a PDF továbbra is generálható az URL-lel."
 
 #: sasoEventtickets_Options.php:302
 msgid ""
 "If active, it will not display the PDF download option for a single ticket "
-"on the purchase email to the client. But the PDF can still be generated with "
-"the URL."
+"on the purchase email to the client. But the PDF can still be generated with"
+" the URL."
 msgstr ""
 "Ha aktív, nem jelenik meg az egyedi jegy PDF letöltési lehetősége az "
-"ügyfélnek küldött vásárlási e-mailben. A PDF azonban továbbra is generálható "
-"az URL-lel."
+"ügyfélnek küldött vásárlási e-mailben. A PDF azonban továbbra is generálható"
+" az URL-lel."
 
 #: sasoEventtickets_Options.php:303
 msgid ""
@@ -2807,7 +2820,8 @@ msgstr "Ha aktív, a WordPress webhely neve nem jelenik meg a jegyen."
 msgid ""
 "If active, it will not print the customer information on the ticket detail "
 "view."
-msgstr "Ha aktív, az ügyféladatok nem jelennek meg a jegy részletes nézetében."
+msgstr ""
+"Ha aktív, az ügyféladatok nem jelennek meg a jegy részletes nézetében."
 
 #: sasoEventtickets_Options.php:344
 msgid ""
@@ -2817,8 +2831,8 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:347
 msgid ""
-"If active, it will print all the add on products of the order on the ticket. "
-"You can use the woocommerce (from another plugin) function "
+"If active, it will print all the add on products of the order on the ticket."
+" You can use the woocommerce (from another plugin) function "
 "'wc_product_addons_get_product_addons', if it exists, otherwise the default "
 "template will iterate over the meta property '_product_addons'."
 msgstr ""
@@ -2852,8 +2866,8 @@ msgstr "Ha aktív, a jegylista neve megjelenik a jegyen."
 #: sasoEventtickets_Options.php:353
 msgid ""
 "If active, it will print the registered user value on the ticket. The value "
-"and the label for it are only displayed, if the registered user value is not "
-"empty."
+"and the label for it are only displayed, if the registered user value is not"
+" empty."
 msgstr ""
 "Ha aktív, a regisztrált felhasználói érték megjelenik a jegyen. Az érték és "
 "a felirat csak akkor jelenik meg, ha a regisztrált felhasználói érték nem "
@@ -2861,12 +2875,12 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:426
 msgid ""
-"If active, once a seat is selected it cannot be deselected by clicking on it "
-"again. Only replacement by selecting another seat is possible. Useful when "
+"If active, once a seat is selected it cannot be deselected by clicking on it"
+" again. Only replacement by selecting another seat is possible. Useful when "
 "integrating with third-party systems that need time to sync."
 msgstr ""
-"Ha aktív, egy kiválasztott hely nem vonható vissza újbóli kattintással. Csak "
-"másik hely kiválasztásával cserélhető. Hasznos harmadik féltől származó "
+"Ha aktív, egy kiválasztott hely nem vonható vissza újbóli kattintással. Csak"
+" másik hely kiválasztásával cserélhető. Hasznos harmadik féltől származó "
 "rendszerekkel való integrációnál, amelyeknek szinkronizálási időre van "
 "szükségük."
 
@@ -2890,9 +2904,9 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:505
 msgid ""
-"If active, removes ALL margins, paddings and cell spacings from the PDF. Use "
-"this for edge-to-edge background images. Requires 'Do not use padding' to be "
-"active. Warning: This may affect existing ticket designs!"
+"If active, removes ALL margins, paddings and cell spacings from the PDF. Use"
+" this for edge-to-edge background images. Requires 'Do not use padding' to "
+"be active. Warning: This may affect existing ticket designs!"
 msgstr ""
 "Ha aktív, eltávolít MINDEN margót, kitöltést és cellatávolságot a PDF-ből. "
 "Használja szélestől szélesig háttérképekhez. A 'Ne használjon kitöltést' "
@@ -2914,19 +2928,20 @@ msgid ""
 "risk that a seat becomes unavailable."
 msgstr ""
 "Ha aktív, a helyek csak a kosárba helyezéskor kerülnek lefoglalásra (nem az "
-"ülésrendben történő kiválasztáskor). Ez csökkenti a felesleges foglalásokat, "
-"de növeli annak kockázatát, hogy egy hely elérhetetlenné válik."
+"ülésrendben történő kiválasztáskor). Ez csökkenti a felesleges foglalásokat,"
+" de növeli annak kockázatát, hogy egy hely elérhetetlenné válik."
 
 #: sasoEventtickets_Options.php:585
 msgid ""
-"If active, the ICS calendar file will be added as an attachment to the mails "
-"(order complete, customer note, customer invoice and processing order)"
+"If active, the ICS calendar file will be added as an attachment to the mails"
+" (order complete, customer note, customer invoice and processing order)"
 msgstr ""
 "Ha aktív, az ICS naptárfájl csatolmányként kerül az e-mailekhez (rendelés "
 "teljesítve, ügyfélmegjegyzés, ügyfélszámla és rendelés feldolgozás)"
 
 #: sasoEventtickets_Options.php:725
-msgid "If active, the a new ticket will generated using the following settings"
+msgid ""
+"If active, the a new ticket will generated using the following settings"
 msgstr "Ha aktív, minden új jegy a következő beállításokkal kerül generálásra"
 
 #: sasoEventtickets_Options.php:722
@@ -2951,8 +2966,8 @@ msgstr "Ha aktív, a hozzárendelt jegy nem jelenik meg a PDF-en"
 
 #: sasoEventtickets_Options.php:235
 msgid ""
-"If active, the confirmed validation checks are displayed whith the retrieved "
-"ticket on the ticket scanner."
+"If active, the confirmed validation checks are displayed whith the retrieved"
+" ticket on the ticket scanner."
 msgstr ""
 "Ha aktív, a megerősített érvényesítési ellenőrzések megjelennek a "
 "jegyszkennerben a beolvasott jegy mellett."
@@ -2974,8 +2989,8 @@ msgid ""
 "support vibration (most Android phones)."
 msgstr ""
 "Ha aktív, az eszköz rezegni fog a jegy beváltásakor. Rövid rezgés sikernél, "
-"hármas impulzus hibánál. Csak rezgést támogató eszközökön működik (a legtöbb "
-"Android telefon)."
+"hármas impulzus hibánál. Csak rezgést támogató eszközökön működik (a legtöbb"
+" Android telefon)."
 
 #: sasoEventtickets_Options.php:489
 msgid ""
@@ -2984,8 +2999,8 @@ msgstr "Ha aktív, a hely leírása megjelenik a kosárban és a pénztárnál."
 
 #: sasoEventtickets_Options.php:475
 msgid ""
-"If active, the seat description will be displayed in the ticket scanner when "
-"scanning a ticket."
+"If active, the seat description will be displayed in the ticket scanner when"
+" scanning a ticket."
 msgstr ""
 "Ha aktív, a hely leírása megjelenik a jegyszkennerben a jegy beolvasásakor."
 
@@ -2999,8 +3014,8 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:496
 msgid ""
-"If active, the seat description will be displayed when hovering or selecting "
-"a seat in the seating plan on the product page."
+"If active, the seat description will be displayed when hovering or selecting"
+" a seat in the seating plan on the product page."
 msgstr ""
 "Ha aktív, a hely leírása megjelenik, amikor a termékoldalon az ülésrendben "
 "egy helyre mutat vagy kiválaszt egy helyet."
@@ -3038,7 +3053,8 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:567
 msgid ""
-"If active, the ticket badge file will be added as an attachment to the mails."
+"If active, the ticket badge file will be added as an attachment to the "
+"mails."
 msgstr ""
 "Ha aktív, a jegykitűző fájl mellékletként lesz hozzáadva az e-mailekhez."
 
@@ -3111,7 +3127,8 @@ msgstr ""
 #: sasoEventtickets_Options.php:250
 msgid ""
 "If active, the ticket short description will be shown at the top after the "
-"ticket is retrieved. It is only executed if the ticket information is hidden."
+"ticket is retrieved. It is only executed if the ticket information is "
+"hidden."
 msgstr ""
 "Ha aktív, a jegy rövid leírása megjelenik felül a jegy lekérdezése után. "
 "Csak akkor hajtódik végre, ha a jegyinformációk rejtettek."
@@ -3120,13 +3137,13 @@ msgstr ""
 msgid ""
 "If active, the user will be redirected to the URL your provide below, even "
 "if the ticket is registered already and user checking is the same user that "
-"is registered to the ticket. It will not be executed, if the 'one time usage "
-"restriction is active'. The user needs to be logged in for the system to "
+"is registered to the ticket. It will not be executed, if the 'one time usage"
+" restriction is active'. The user needs to be logged in for the system to "
 "recognize the user."
 msgstr ""
-"Ha aktív, a felhasználó az alább megadott URL-re lesz átirányítva, még akkor "
-"is, ha a jegy már regisztrálva van és az ellenőrző felhasználó megegyezik a "
-"regisztrált felhasználóval. Nem hajtódik végre, ha az 'egyszeri használat "
+"Ha aktív, a felhasználó az alább megadott URL-re lesz átirányítva, még akkor"
+" is, ha a jegy már regisztrálva van és az ellenőrző felhasználó megegyezik a"
+" regisztrált felhasználóval. Nem hajtódik végre, ha az 'egyszeri használat "
 "korlátozás aktív'. A felhasználónak be kell jelentkeznie, hogy a rendszer "
 "felismerje."
 
@@ -3194,11 +3211,11 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:740
 msgid ""
-"If active, then the QR as an pdf will be attached to the purchase email. The "
-"settings are taken from the ticket settings for purchase email."
+"If active, then the QR as an pdf will be attached to the purchase email. The"
+" settings are taken from the ticket settings for purchase email."
 msgstr ""
-"Ha aktív, a QR PDF-ként lesz csatolva a vásárlási e-mailhez. A beállítások a "
-"vásárlási e-mail jegybeállításaiból származnak."
+"Ha aktív, a QR PDF-ként lesz csatolva a vásárlási e-mailhez. A beállítások a"
+" vásárlási e-mail jegybeállításaiból származnak."
 
 #: sasoEventtickets_Options.php:737
 msgid ""
@@ -3223,16 +3240,16 @@ msgid ""
 "If active, then the format below will be used to generate ticket numbers "
 "during a purchase of this product."
 msgstr ""
-"Ha aktív, az alábbi formátum kerül felhasználásra a jegyszámok generálásakor "
-"ezen termék vásárlása során."
+"Ha aktív, az alábbi formátum kerül felhasználásra a jegyszámok generálásakor"
+" ezen termék vásárlása során."
 
 #: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:614
 msgid ""
 "If active, then the order view QR code image will be attached to the "
 "purchase email."
 msgstr ""
-"Ha aktív, a rendelés nézetének QR-kód képe csatolásra kerül a vásárlási e-"
-"mailhez."
+"Ha aktív, a rendelés nézetének QR-kód képe csatolásra kerül a vásárlási "
+"e-mailhez."
 
 #: sasoEventtickets_Options.php:308
 msgid ""
@@ -3240,8 +3257,8 @@ msgid ""
 "products that are public. Checks if the event date is set and expireed, and "
 "then set it to 'hidden' if so. <b>Important: this is not working for day "
 "chooser tickets date, where your customer can select the event date! The "
-"system will use the end date, that is set on the end date value, to hide the "
-"product.</b>"
+"system will use the end date, that is set on the end date value, to hide the"
+" product.</b>"
 msgstr ""
 "Ha aktív, a bővítmény naponta egyszer, 0:05-kor megkeresi az összes "
 "nyilvános jegyterméket. Ellenőrzi, hogy az esemény dátuma be van-e állítva "
@@ -3261,8 +3278,8 @@ msgstr ""
 #: sasoEventtickets_Options.php:502
 msgid ""
 "If active, then the ticket template code will not be used. Best for "
-"beginners, who do not want to adjust the ticket template code. If the ticket "
-"template code is empty, then it will also use the default template code."
+"beginners, who do not want to adjust the ticket template code. If the ticket"
+" template code is empty, then it will also use the default template code."
 msgstr ""
 "Ha aktív, a jegysablon kódja nem lesz használva. A legjobb kezdőknek, akik "
 "nem szeretnék módosítani a jegysablon kódját. Ha a jegysablon kódja üres, "
@@ -3270,16 +3287,16 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:730
 msgid ""
-"If active, your prefix text will be rendered always. Even if the user is not "
-"logged in or do not have any tickets assigned to her yet."
+"If active, your prefix text will be rendered always. Even if the user is not"
+" logged in or do not have any tickets assigned to her yet."
 msgstr ""
-"Ha aktív, az előtag szöveg mindig megjelenik. Még akkor is, ha a felhasználó "
-"nincs bejelentkezve vagy még nincs hozzárendelt jegye."
+"Ha aktív, az előtag szöveg mindig megjelenik. Még akkor is, ha a felhasználó"
+" nincs bejelentkezve vagy még nincs hozzárendelt jegye."
 
 #: includes/woocommerce/class-product.php:247
 msgid ""
-"If enabled: Customer must select a seat before adding to cart (e.g., theater "
-"with numbered seats). If disabled: Seat selection is optional (e.g., "
+"If enabled: Customer must select a seat before adding to cart (e.g., theater"
+" with numbered seats). If disabled: Seat selection is optional (e.g., "
 "festival with VIP seats + standing area)."
 msgstr ""
 "Ha engedélyezve: Az ügyfélnek ülőhelyet kell választania a kosárba helyezés "
@@ -3300,8 +3317,8 @@ msgid ""
 "If left empty, default will be 'Download PDF Ticket' on the button and on "
 "the link within the purchase email."
 msgstr ""
-"Ha üresen hagyod, az alapértelmezett 'PDF jegy letöltése' lesz a gombon és a "
-"vásárlási e-mailben lévő hivatkozáson."
+"Ha üresen hagyod, az alapértelmezett 'PDF jegy letöltése' lesz a gombon és a"
+" vásárlási e-mailben lévő hivatkozáson."
 
 #: sasoEventtickets_Options.php:304
 msgid ""
@@ -3330,8 +3347,8 @@ msgid ""
 "If left empty, default will be 'Open Tickets' on the link within the "
 "purchase email."
 msgstr ""
-"Ha üresen hagyja, az alapértelmezett felirat a vásárlási e-mailben található "
-"hivatkozáson a 'Jegyek megnyitása' lesz."
+"Ha üresen hagyja, az alapértelmezett felirat a vásárlási e-mailben található"
+" hivatkozáson a 'Jegyek megnyitása' lesz."
 
 #: sasoEventtickets_Options.php:715
 msgid ""
@@ -3397,8 +3414,8 @@ msgid ""
 "If left empty, default will be 'You need to log in to use the ticket "
 "validator'"
 msgstr ""
-"Ha üresen hagyod, az alapértelmezett 'Be kell jelentkezned a jegyérvényesítő "
-"használatához' lesz"
+"Ha üresen hagyod, az alapértelmezett 'Be kell jelentkezned a jegyérvényesítő"
+" használatához' lesz"
 
 #: sasoEventtickets_Options.php:657
 msgid "If left empty, default will be 'white'"
@@ -3420,8 +3437,8 @@ msgstr ""
 msgid ""
 "If left empty, default will be <span style='color:#007bff;'>'#007bff'</span>"
 msgstr ""
-"Ha üresen hagyod, az alapértelmezett <span style='color:#007bff;'>'#007bff'</"
-"span> lesz"
+"Ha üresen hagyod, az alapértelmezett <span "
+"style='color:#007bff;'>'#007bff'</span> lesz"
 
 #: sasoEventtickets_Options.php:579
 msgid "If left empty, default will be used."
@@ -3430,28 +3447,28 @@ msgstr "Ha üresen hagyja, az alapértelmezett lesz használva."
 #: sasoEventtickets_Options.php:511
 msgid ""
 "If left empty, default will be used. Check out this additional information "
-"about how you could use it: <a href=\"https://vollstart.com/posts/events/"
-"documentation/option-wcticketdesignertemplate/\" target=\"_blank\">Option "
-"Documentation</a>"
+"about how you could use it: <a "
+"href=\"https://vollstart.com/posts/events/documentation/option-"
+"wcticketdesignertemplate/\" target=\"_blank\">Option Documentation</a>"
 msgstr ""
-"Ha üresen hagyja, az alapértelmezett lesz használva. Nézze meg ezt a további "
-"információt a használatáról: <a href=\"https://vollstart.com/posts/events/"
-"documentation/option-wcticketdesignertemplate/\" target=\"_blank\">Opció "
-"dokumentáció</a>"
+"Ha üresen hagyja, az alapértelmezett lesz használva. Nézze meg ezt a további"
+" információt a használatáról: <a "
+"href=\"https://vollstart.com/posts/events/documentation/option-"
+"wcticketdesignertemplate/\" target=\"_blank\">Opció dokumentáció</a>"
 
 #: sasoEventtickets_Options.php:280
 msgid ""
 "If left empty, default will be using the default ticket detail page from "
-"within the plugin folder. On some installations this leads to a 403 problem. "
-"If the the default ticket detail view of the plugin is not working try to "
-"set the ticket detail URL path. Make sure that the URL path does not exists, "
-"otherwise the page will be shown instead of the ticket. Example of a URL "
+"within the plugin folder. On some installations this leads to a 403 problem."
+" If the the default ticket detail view of the plugin is not working try to "
+"set the ticket detail URL path. Make sure that the URL path does not exists,"
+" otherwise the page will be shown instead of the ticket. Example of a URL "
 "path 'event-tickets/myticket' or 'event-tickets/ticket-details/'. Any "
 "leading and trailing slash '/' will be ignored."
 msgstr ""
 "Ha üresen hagyja, az alapértelmezés a bővítmény mappáján belüli "
-"alapértelmezett jegyrészlet oldalt használja. Egyes telepítéseknél ez 403-as "
-"hibát okozhat. Ha a bővítmény alapértelmezett jegyrészlet nézete nem "
+"alapértelmezett jegyrészlet oldalt használja. Egyes telepítéseknél ez 403-as"
+" hibát okozhat. Ha a bővítmény alapértelmezett jegyrészlet nézete nem "
 "működik, próbálja meg beállítani a jegyrészlet URL útvonalat. Győződjön meg "
 "róla, hogy az URL útvonal nem létezik, különben a jegy helyett az az oldal "
 "jelenik meg. Példa URL útvonalra: 'event-tickets/myticket' vagy 'event-"
@@ -3508,10 +3525,10 @@ msgstr ""
 
 #: includes/woocommerce/class-product.php:325
 msgid ""
-"If this option is active, then only one date is allowed per purchase of this "
-"product. If your customer buys 2 or more of this ticket, than only one date "
-"picker will be shown for all the tickets. The default is to display for each "
-"product in the cart one separated date picker."
+"If this option is active, then only one date is allowed per purchase of this"
+" product. If your customer buys 2 or more of this ticket, than only one date"
+" picker will be shown for all the tickets. The default is to display for "
+"each product in the cart one separated date picker."
 msgstr ""
 "Ha ez az opció aktív, akkor a termék vásárlásakor csak egy dátum "
 "választható. Ha az ügyfél 2 vagy több jegyet vásárol, akkor az összes "
@@ -3528,7 +3545,8 @@ msgstr ""
 "Ha a vásárló saját maga váltja be a jegyét, átirányíthatja egy másik "
 "oldalra. Ehhez a 'Ne jelenítse meg a beváltás gombot a jegy részletező "
 "nézetben az ügyfélnek' funkciónak NEM szabad bejelölve lennie.<br>Ha a "
-"felhasználói átirányítást is használja, ez az opció lesz először kiértékelve!"
+"felhasználói átirányítást is használja, ez az opció lesz először "
+"kiértékelve!"
 
 #: sasoEventtickets_Options.php:357
 msgid ""
@@ -3545,8 +3563,8 @@ msgid ""
 "to display the HTML code (helps for debug purpose)."
 msgstr ""
 "Ha problémákat tapasztalsz a generált PDF-fel, itt módosíthatod a "
-"beállításokat a nem garantáltan támogatott elemek eltávolításához, vagy akár "
-"a HTML kód szövegként való megjelenítéséhez (hibakereséshez hasznos)."
+"beállításokat a nem garantáltan támogatott elemek eltávolításához, vagy akár"
+" a HTML kód szövegként való megjelenítéséhez (hibakereséshez hasznos)."
 
 #: index.php:912
 msgid "If you like our plugin, then please give us a"
@@ -3566,8 +3584,8 @@ msgstr "Ha speciális karakterekre van szüksége, módosíthatja a betűtípust
 
 #: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:1743
 msgid ""
-"If you use the date chooser option, then you can exclude specific dates like "
-"holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
+"If you use the date chooser option, then you can exclude specific dates like"
+" holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
 "2025-12-22"
 msgstr ""
 "Ha a dátumválasztó opciót használod, kizárhatsz bizonyos dátumokat, mint "
@@ -3588,15 +3606,15 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:281
 msgid ""
-"If your theme is showing the 404 title or the ticket is not rendered at all, "
-"then you can try to use this compatibility mode. If active, then the URL /"
-"ticket/XYZ will be /ticket/?code=XYZ URL for the link to the ticket detail "
+"If your theme is showing the 404 title or the ticket is not rendered at all,"
+" then you can try to use this compatibility mode. If active, then the URL "
+"/ticket/XYZ will be /ticket/?code=XYZ URL for the link to the ticket detail "
 "and ticket PDF page. Some themes causing issues with the normal mode."
 msgstr ""
 "Ha a sablonod 404-es hibát jelenít meg vagy a jegy egyáltalán nem jelenik "
-"meg, próbáld meg aktiválni ezt a kompatibilitási módot. Ha aktív, a /ticket/"
-"XYZ URL /ticket/?code=XYZ formátumúra változik. Egyes sablonok problémákat "
-"okoznak a normál móddal."
+"meg, próbáld meg aktiválni ezt a kompatibilitási módot. Ha aktív, a "
+"/ticket/XYZ URL /ticket/?code=XYZ formátumúra változik. Egyes sablonok "
+"problémákat okoznak a normál móddal."
 
 #: js/seating_admin.js:968
 msgid "Ignored unknown columns:"
@@ -3648,15 +3666,15 @@ msgstr "Importálás"
 
 #: sasoEventtickets_Options.php:284
 msgid ""
-"In case your ticket scanner cannot call the Rest service, because your setup "
-"is using a different location for the wordpress system, then you can add "
+"In case your ticket scanner cannot call the Rest service, because your setup"
+" is using a different location for the wordpress system, then you can add "
 "here the URL to your system. If left empty, default will be using the "
-"default retrieved from your server. You can add only FQDN, like 'https://"
-"yourdomain'. This will be concatenated to the /wp-json/..."
+"default retrieved from your server. You can add only FQDN, like "
+"'https://yourdomain'. This will be concatenated to the /wp-json/..."
 msgstr ""
-"Ha a jegyszkenner nem tudja elérni a REST szolgáltatást, mert a rendszer más "
-"helyen található a WordPress-hez képest, itt megadhatja a rendszer URL-jét. "
-"Ha üresen hagyja, az alapértelmezés a szerverről lekérdezett értéket "
+"Ha a jegyszkenner nem tudja elérni a REST szolgáltatást, mert a rendszer más"
+" helyen található a WordPress-hez képest, itt megadhatja a rendszer URL-jét."
+" Ha üresen hagyja, az alapértelmezés a szerverről lekérdezett értéket "
 "használja. Csak FQDN-t adhat meg, például 'https://yourdomain'. Ez a /wp-"
 "json/... elé kerül."
 
@@ -3674,9 +3692,9 @@ msgstr ""
 #: sasoEventtickets_Options.php:267
 msgid ""
 "In doubt, do not play with it. :) If an order status is choosen and the "
-"ticket is viewed online or the PDF is downloaded, then the order status will "
-"be set to your choice. This includes the order detail view and the download "
-"of the order PDF ticket. If none is selected then nothing happens with the "
+"ticket is viewed online or the PDF is downloaded, then the order status will"
+" be set to your choice. This includes the order detail view and the download"
+" of the order PDF ticket. If none is selected then nothing happens with the "
 "order. <b>Warning: </b> If you change the order to eg. refunded and the "
 "option is activate, then the order will be set to your new order, just "
 "because your customer was downloading the PDF ticket! For almost all uses "
@@ -3687,10 +3705,10 @@ msgstr ""
 "és a jegyet online megtekintik vagy a PDF-et letöltik, a rendelés állapota "
 "az Ön választása szerint módosul. Ez magában foglalja a rendelés "
 "részleteinek megtekintését és a rendelési PDF jegy letöltését. Ha nincs "
-"kiválasztva semmi, a rendeléssel nem történik semmi. <b>Figyelmeztetés: </b> "
-"Ha a rendelést pl. visszatérítettre állítja és az opció aktív, a rendelés új "
-"állapotra kerül, pusztán azért, mert az ügyfél letöltötte a PDF jegyet! A "
-"legtöbb esetben ennek az opciónak nincs értelme — csak néhány speciális "
+"kiválasztva semmi, a rendeléssel nem történik semmi. <b>Figyelmeztetés: </b>"
+" Ha a rendelést pl. visszatérítettre állítja és az opció aktív, a rendelés "
+"új állapotra kerül, pusztán azért, mert az ügyfél letöltötte a PDF jegyet! A"
+" legtöbb esetben ennek az opciónak nincs értelme — csak néhány speciális "
 "esethez szükséges."
 
 #: event-tickets-with-ticket-scanner-premium/sasoEventtickets_PremiumFunctions.php:558
@@ -3708,9 +3726,9 @@ msgstr ""
 "kerül. Ha nincs kiválasztva, manuálisan kell hozzárendelned a jegyeket a "
 "rendelés részleteiben található megfelelő gombra kattintva. A gomb csak "
 "akkor hajtódik végre, ha a rendelés állapota fizetett (feldolgozás alatt "
-"vagy teljesített). <a href='https://woocommerce.com/document/managing-orders/"
-"order-statuses/' target='_blank'>Tudj meg többet a WooCommerce rendelési "
-"állapotokról itt.</a>"
+"vagy teljesített). <a href='https://woocommerce.com/document/managing-"
+"orders/order-statuses/' target='_blank'>Tudj meg többet a WooCommerce "
+"rendelési állapotokról itt.</a>"
 
 #: backend.js:221
 msgid ""
@@ -3719,9 +3737,9 @@ msgid ""
 "settings->permalinks and choose a permalink structure, that is not 'plain'."
 msgstr ""
 "A jegy részletes nézete és a jegyszkenner működéséhez be kell állítania egy "
-"permalink struktúrát a beállításokban.<br>Kérjük, lépjen a beállítások-"
-">közvetlen hivatkozások menüpontra, és válasszon egy olyan permalink "
-"struktúrát, amely nem 'egyszerű'."
+"permalink struktúrát a beállításokban.<br>Kérjük, lépjen a "
+"beállítások->közvetlen hivatkozások menüpontra, és válasszon egy olyan "
+"permalink struktúrát, amely nem 'egyszerű'."
 
 #: backend.js:186 backend.js:1111 backend.js:1928 js/seating_admin.js:166
 #: js/seating_admin.js:471 js/seating_admin.js:806
@@ -3931,7 +3949,8 @@ msgstr "Hibaüzenet felirata a kosárban nem kiválasztott dátum esetén"
 
 #: sasoEventtickets_Options.php:310
 msgid "Label for error message on cart for not choosen dropdown value"
-msgstr "Hibaüzenet felirata a kosárban nem kiválasztott legördülő érték esetén"
+msgstr ""
+"Hibaüzenet felirata a kosárban nem kiválasztott legördülő érték esetén"
 
 #: sasoEventtickets_Options.php:312
 msgid "Label for error message on cart for wrong date"
@@ -4038,8 +4057,8 @@ msgstr ""
 msgid ""
 "Limit reached (%d seats per plan). Upgrade to Premium for unlimited seats."
 msgstr ""
-"Korlát elérve (%d ülőhely tervenként). Frissítsen Premium verzióra korlátlan "
-"számú ülőhelyhez."
+"Korlát elérve (%d ülőhely tervenként). Frissítsen Premium verzióra korlátlan"
+" számú ülőhelyhez."
 
 #: includes/seating/class-seating-admin.php:1025 js/seating_admin.js:29
 msgid "Limit reached. Upgrade to Premium for unlimited access."
@@ -4301,7 +4320,8 @@ msgstr "Nem, köszönöm"
 #: index.php:1185
 msgid "No ticket code provided. Use ?ticket=YOUR-CODE in the URL."
 msgstr ""
-"Nincs jegykód megadva. Használja a ?ticket=AZ-ON-KODJA paramétert az URL-ben."
+"Nincs jegykód megadva. Használja a ?ticket=AZ-ON-KODJA paramétert az URL-"
+"ben."
 
 #: event-tickets-with-ticket-scanner-premium/sasoEventtickets_TemplateTickets.php:69
 msgid "No ticket template set"
@@ -4427,8 +4447,8 @@ msgid ""
 "start the ticket detail page to view this template code. The easiest way is "
 "to open the preview in another browser window. Everytime you did a change "
 "and clicked out of the textarea, you can reload your ticket preview browser "
-"window to see the changes in effect. If you leave it empty, then the default "
-"template will be used."
+"window to see the changes in effect. If you leave it empty, then the default"
+" template will be used."
 msgstr ""
 "Csak adminisztrátori szerepkör számára. Az adminisztrációs jegy részletező "
 "nézetben elindíthatja a jegy részletező oldalt a sablonkód megtekintéséhez. "
@@ -4516,8 +4536,8 @@ msgid ""
 "via \"View Seating Plan\" button. Useful when the seat map only shows a "
 "specific section."
 msgstr ""
-"Opcionalis: Toltsön fel egy fotot a teljes helyszinrol/teremrol. Az ugyfelek "
-"az \"Ulesrend megtekintese\" gombbal tekinthetik meg. Hasznos, ha az "
+"Opcionalis: Toltsön fel egy fotot a teljes helyszinrol/teremrol. Az ugyfelek"
+" az \"Ulesrend megtekintese\" gombbal tekinthetik meg. Hasznos, ha az "
 "ulesterkep csak egy adott szekciot mutat."
 
 #: backend.js:2504
@@ -4602,7 +4622,8 @@ msgstr ""
 #, php-format
 msgid "Order item deleted. Free ticket number: %s for next usage."
 msgstr ""
-"Rendelési tétel törölve. Jegyszám felszabadítva: %s a következő használathoz."
+"Rendelési tétel törölve. Jegyszám felszabadítva: %s a következő "
+"használathoz."
 
 #: sasoEventtickets_Ticket.php:503 sasoEventtickets_Ticket.php:928
 msgid "Order item not found"
@@ -4746,8 +4767,8 @@ msgstr "Kérjük, lépj kapcsolatba velünk a megoldásért."
 
 #: backend.js:1248
 msgid ""
-"Please copy the following information, so that we can support you better and "
-"faster. Remove any critical information if needed."
+"Please copy the following information, so that we can support you better and"
+" faster. Remove any critical information if needed."
 msgstr ""
 "Kérjük, másold ki az alábbi információkat, hogy jobban és gyorsabban "
 "segíthessünk. Szükség esetén távolítsd el a bizalmas adatokat."
@@ -4761,7 +4782,8 @@ msgid "Please enter your CVV for this ticket"
 msgstr "Kérjük, add meg a CVV-t ehhez a jegyhez"
 
 #: backend.js:255
-msgid "Please enter your license key to activate updates and premium features."
+msgid ""
+"Please enter your license key to activate updates and premium features."
 msgstr ""
 "Kérjük, add meg a licenckulcsodat a frissítések és prémium funkciók "
 "aktiválásához."
@@ -4773,19 +4795,20 @@ msgid ""
 "placeholder for your content:<ul><li><b>{CODE}</b>: Will be replaced with "
 "the number (without the delimiters)</li><li><b>{CODEDISPLAY}</b>: Will be "
 "replaced with the number (WITH the delimiters)</li><b>{LIST}</b>: Name of "
-"the list if assigned</li><li><b>{LIST_DESC}</b>: Description of the assigned "
-"list</li><li><a href='#replacementtags'>You could use more tags.</a> But it "
-"is not recommend, since the QR code is generated within the admin area.</"
-"li></ul>"
+"the list if assigned</li><li><b>{LIST_DESC}</b>: Description of the assigned"
+" list</li><li><a href='#replacementtags'>You could use more tags.</a> But it"
+" is not recommend, since the QR code is generated within the admin "
+"area.</li></ul>"
 msgstr ""
 "Kérjük, ügyeljen arra, hogy ne adjon meg túl sok információt, minél többet "
 "ad hozzá, annál finomabb QR-olvasóra van szükség a beolvasáshoz.<br>A "
 "következő helyőrzőket használhatja a tartalomban:<ul><li><b>{CODE}</b>: A "
-"számmal lesz helyettesítve (elválasztók nélkül)</li><li><b>{CODEDISPLAY}</"
-"b>: A számmal lesz helyettesítve (elválasztókkal)</li><b>{LIST}</b>: A lista "
-"neve, ha hozzá van rendelve</li><li><b>{LIST_DESC}</b>: A hozzárendelt lista "
-"leírása</li><li><a href='#replacementtags'>További címkéket is használhat.</"
-"a> De ez nem ajánlott, mivel a QR-kód az adminisztrációs területen kerül "
+"számmal lesz helyettesítve (elválasztók "
+"nélkül)</li><li><b>{CODEDISPLAY}</b>: A számmal lesz helyettesítve "
+"(elválasztókkal)</li><b>{LIST}</b>: A lista neve, ha hozzá van "
+"rendelve</li><li><b>{LIST_DESC}</b>: A hozzárendelt lista leírása</li><li><a"
+" href='#replacementtags'>További címkéket is használhat.</a> De ez nem "
+"ajánlott, mivel a QR-kód az adminisztrációs területen kerül "
 "generálásra.</li></ul>"
 
 #: backend.js:4257
@@ -4896,7 +4919,8 @@ msgstr "Előbeállítás: Azonnali szkennelés és beváltás"
 
 #: sasoEventtickets_Options.php:247
 msgid "Preset: Start cam to scan next ticket immediately"
-msgstr "Előbeállítás: Kamera azonnali indítása a következő jegy szkenneléséhez"
+msgstr ""
+"Előbeállítás: Kamera azonnali indítása a következő jegy szkenneléséhez"
 
 #: backend.js:173 backend.js:2029
 msgid "Preview Test Template Code as PDF"
@@ -5077,7 +5101,8 @@ msgstr "Mai bevaltasok: <b>%1$d</b> / <b>%2$d</b>"
 
 #: sasoEventtickets_Options.php:691
 msgid "Redirect already registered tickets and the user is the same."
-msgstr "Átirányítás már regisztrált jegyeknél is, ha a felhasználó megegyezik."
+msgstr ""
+"Átirányítás már regisztrált jegyeknél is, ha a felhasználó megegyezik."
 
 #: sasoEventtickets_Options.php:547
 msgid "Refresh page"
@@ -5220,8 +5245,8 @@ msgid ""
 "Reuse ticket from the ticket list assigned to the woocommerce product, that "
 "are not already used by a woocommerce purchase."
 msgstr ""
-"Jegy újrafelhasználása a WooCommerce termékhez rendelt jegylistából, amelyet "
-"még nem használtak fel WooCommerce vásárláshoz."
+"Jegy újrafelhasználása a WooCommerce termékhez rendelt jegylistából, amelyet"
+" még nem használtak fel WooCommerce vásárláshoz."
 
 #: backend.js:2133
 msgctxt "label"
@@ -5314,8 +5339,7 @@ msgstr "Ülőhely"
 #: includes/woocommerce/class-frontend.php:1668
 #, php-format
 msgid "Seat \"%s\" is no longer available. Please choose another seat."
-msgstr ""
-"A(z) \"%s\" ülőhely már nem elérhető. Kérjük, válasszon másik ülőhelyet."
+msgstr "A(z) \"%s\" ülőhely már nem elérhető. Kérjük, válasszon másik ülőhelyet."
 
 #: includes/woocommerce/class-order.php:606
 msgid "Seat ID"
@@ -5552,8 +5576,8 @@ msgid ""
 "Set the order automatically to completed, if all purchased products are "
 "tickets"
 msgstr ""
-"A rendelés automatikus befejezettként való beállítása, ha minden megvásárolt "
-"termék jegy"
+"A rendelés automatikus befejezettként való beállítása, ha minden megvásárolt"
+" termék jegy"
 
 #: sasoEventtickets_Options.php:725
 msgid "Set the ticket number formatter pattern for new sales."
@@ -5566,7 +5590,8 @@ msgid ""
 "be still valid. Tickets cannot be redeemed after that day."
 msgstr ""
 "Állítsd be ezt, hogy megjelenjen a jegyen és megakadályozza, hogy a jegy "
-"továbbra is érvényes legyen. A jegyek nem érvényesíthetők ez után a nap után."
+"továbbra is érvényes legyen. A jegyek nem érvényesíthetők ez után a nap "
+"után."
 
 #: includes/woocommerce/class-product.php:274
 #: includes/woocommerce/class-product.php:684
@@ -5814,8 +5839,8 @@ msgid ""
 "your wordpress installation!"
 msgstr ""
 "Egyes bővítmények és/vagy sablonok ob (gyorsítótárazási) műveletet "
-"alkalmaznak, ami zavarhatja a PDF generálást. Ha azt tapasztalja, hogy a PDF "
-"jegy nem jelenik meg, próbálja aktiválni ezt az opciót. De ez kissé "
+"alkalmaznak, ami zavarhatja a PDF generálást. Ha azt tapasztalja, hogy a PDF"
+" jegy nem jelenik meg, próbálja aktiválni ezt az opciót. De ez kissé "
 "lelassíthatja a WordPress telepítését!"
 
 #: backend.js:3926
@@ -5983,7 +6008,8 @@ msgstr "Szöveg az ICS naptárfájl letöltési címkéjeként"
 
 #: sasoEventtickets_Options.php:306
 msgid "Text that will be added as the Order Ticket detail view label"
-msgstr "Szöveg, amely a rendelési jegy részletek nézet feliratként jelenik meg"
+msgstr ""
+"Szöveg, amely a rendelési jegy részletek nézet feliratként jelenik meg"
 
 #: sasoEventtickets_Options.php:305
 msgid "Text that will be added as the PDF Ticket download label"
@@ -5998,8 +6024,8 @@ msgid ""
 "Text that will be added before the ticket number on the PDF invoice, order "
 "table and order details"
 msgstr ""
-"Szöveg, amely a jegyszám elé kerül a PDF számlán, a rendelési táblázatban és "
-"a rendelés részleteinél"
+"Szöveg, amely a jegyszám elé kerül a PDF számlán, a rendelési táblázatban és"
+" a rendelés részleteinél"
 
 #: sasoEventtickets_Options.php:729
 msgid ""
@@ -6009,8 +6035,8 @@ msgstr "Szöveg, amely a jegyszám(ok) előtt jelenik meg."
 
 #: sasoEventtickets_Options.php:352
 msgid ""
-"Text that will be added to the PDF if the option <b>'Display the quantity of "
-"the purchased tickets'</b> is activated."
+"Text that will be added to the PDF if the option <b>'Display the quantity of"
+" the purchased tickets'</b> is activated."
 msgstr ""
 "Szöveg, amely a PDF-en megjelenik, ha a <b>'Vásárolt jegyek mennyiségének "
 "megjelenítése'</b> opció aktiválva van."
@@ -6035,13 +6061,13 @@ msgstr "A PDF HTML értéke"
 
 #: sasoEventtickets_Options.php:582
 msgid ""
-"The ICS calendar file will cointain the event info and date (if added). This "
-"allows your customer to add the event easily from within the email to their "
-"calendar. Will work on most mail client."
+"The ICS calendar file will cointain the event info and date (if added). This"
+" allows your customer to add the event easily from within the email to their"
+" calendar. Will work on most mail client."
 msgstr ""
 "Az ICS naptárfájl tartalmazza az esemény adatait és dátumát (ha meg van "
-"adva). Ez lehetővé teszi az ügyfeleid számára, hogy az e-mailből közvetlenül "
-"hozzáadják az eseményt a naptárukhoz. A legtöbb levelezőprogrammal működik."
+"adva). Ez lehetővé teszi az ügyfeleid számára, hogy az e-mailből közvetlenül"
+" hozzáadják az eseményt a naptárukhoz. A legtöbb levelezőprogrammal működik."
 
 #: index.php:1982
 msgid ""
@@ -6062,57 +6088,58 @@ msgstr ""
 #: sasoEventtickets_Options.php:599 sasoEventtickets_Options.php:692
 #: sasoEventtickets_Options.php:696
 msgid ""
-"The URL can be relative like '/page/' or absolute 'https//domain/url/'."
-"<br>You can use these placeholder for your URL:<ul><li><b>{USERID}</b>: Will "
-"be replaced with the userid if the user is loggedin or empty</"
-"li><li><b>{CODE}</b>: Will be replaced with the ticket number (without the "
-"delimiters)</li><li><b>{CODEDISPLAY}</b>: Will be replaced with the ticket "
-"number (WITH the delimiters)</li><li><b>{IP}</b>: The IP address of the "
-"user</li><li><b>{LIST}</b>: Name of the list if assigned</"
-"li><li><b>{LIST_DESC}</b>: Description of the assigned list</li><li><a "
-"href='#replacementtags'>More tags here</a></li></ul>"
+"The URL can be relative like '/page/' or absolute "
+"'https//domain/url/'.<br>You can use these placeholder for your "
+"URL:<ul><li><b>{USERID}</b>: Will be replaced with the userid if the user is"
+" loggedin or empty</li><li><b>{CODE}</b>: Will be replaced with the ticket "
+"number (without the delimiters)</li><li><b>{CODEDISPLAY}</b>: Will be "
+"replaced with the ticket number (WITH the delimiters)</li><li><b>{IP}</b>: "
+"The IP address of the user</li><li><b>{LIST}</b>: Name of the list if "
+"assigned</li><li><b>{LIST_DESC}</b>: Description of the assigned "
+"list</li><li><a href='#replacementtags'>More tags here</a></li></ul>"
 msgstr ""
-"Az URL lehet relatív, pl. '/oldal/' vagy abszolút 'https://domain/url/'."
-"<br>A következő helyettesítőket használhatod az URL-ben:<ul><li><b>{USERID}</"
-"b>: A felhasználó azonosítójával lesz helyettesítve, ha be van jelentkezve, "
-"különben üres</li><li><b>{CODE}</b>: A jegyszámmal lesz helyettesítve "
-"(elválasztók nélkül)</li><li><b>{CODEDISPLAY}</b>: A jegyszámmal lesz "
-"helyettesítve (elválasztókkal)</li><li><b>{IP}</b>: A felhasználó IP-címe</"
-"li><li><b>{LIST}</b>: A lista neve, ha hozzá van rendelve</"
-"li><li><b>{LIST_DESC}</b>: A hozzárendelt lista leírása</li><li><a "
-"href='#replacementtags'>További címkék itt</a></li></ul>"
+"Az URL lehet relatív, pl. '/oldal/' vagy abszolút "
+"'https://domain/url/'.<br>A következő helyettesítőket használhatod az URL-"
+"ben:<ul><li><b>{USERID}</b>: A felhasználó azonosítójával lesz "
+"helyettesítve, ha be van jelentkezve, különben üres</li><li><b>{CODE}</b>: A"
+" jegyszámmal lesz helyettesítve (elválasztók "
+"nélkül)</li><li><b>{CODEDISPLAY}</b>: A jegyszámmal lesz helyettesítve "
+"(elválasztókkal)</li><li><b>{IP}</b>: A felhasználó IP-"
+"címe</li><li><b>{LIST}</b>: A lista neve, ha hozzá van "
+"rendelve</li><li><b>{LIST_DESC}</b>: A hozzárendelt lista leírása</li><li><a"
+" href='#replacementtags'>További címkék itt</a></li></ul>"
 
 #: sasoEventtickets_Options.php:735
 msgid ""
-"The URL should be absolute, if you like to provide the generated QR image to "
-"your customers. The image can be retrieved within the event ticket area. The "
-"ticket number detail contains a button for it.<br>You can use these "
+"The URL should be absolute, if you like to provide the generated QR image to"
+" your customers. The image can be retrieved within the event ticket area. "
+"The ticket number detail contains a button for it.<br>You can use these "
 "placeholder for your URL:<ul><li><b>{CODE}</b>: Will be replaced with the "
 "number (without the delimiters)</li><li><b>{CODEDISPLAY}</b>: Will be "
 "replaced with the number (WITH the delimiters)</li><b>{LIST}</b>: Name of "
-"the list if assigned</li><li><b>{LIST_DESC}</b>: Description of the assigned "
-"list</li><li><a href='#replacementtags'>You could use more tags.</a> But it "
-"is not recommend, since the QR code is generated within the admin area.</"
-"li></ul>"
+"the list if assigned</li><li><b>{LIST_DESC}</b>: Description of the assigned"
+" list</li><li><a href='#replacementtags'>You could use more tags.</a> But it"
+" is not recommend, since the QR code is generated within the admin "
+"area.</li></ul>"
 msgstr ""
 "Az URL-nek abszolútnak kell lennie, ha a generált QR-képet az ügyfeleidnek "
 "adod. A kép az eseményjegy adminisztrációs területen tekinthető meg. A "
 "jegyszám részletei tartalmaznak egy gombot ehhez.<br>A következő "
 "helyettesítőket használhatod az URL-ben:<ul><li><b>{CODE}</b>: A számmal "
 "lesz helyettesítve (elválasztók nélkül)</li><li><b>{CODEDISPLAY}</b>: A "
-"számmal lesz helyettesítve (elválasztókkal)</li><b>{LIST}</b>: A lista neve, "
-"ha hozzá van rendelve</li><li><b>{LIST_DESC}</b>: A hozzárendelt lista "
-"leírása</li><li><a href='#replacementtags'>További címkéket is használhatsz."
-"</a> De nem ajánlott, mivel a QR-kód az adminisztrációs területen "
-"generálódik.</li></ul>"
+"számmal lesz helyettesítve (elválasztókkal)</li><b>{LIST}</b>: A lista neve,"
+" ha hozzá van rendelve</li><li><b>{LIST_DESC}</b>: A hozzárendelt lista "
+"leírása</li><li><a href='#replacementtags'>További címkéket is "
+"használhatsz.</a> De nem ajánlott, mivel a QR-kód az adminisztrációs "
+"területen generálódik.</li></ul>"
 
 #: index.php:931
 msgid ""
 "The event calendar form will be displayed. You can add the following "
 "parameters to change the output:"
 msgstr ""
-"Az eseménynaptár űrlap megjelenik. A következő paramétereket adhatja hozzá a "
-"kimenet módosításához:"
+"Az eseménynaptár űrlap megjelenik. A következő paramétereket adhatja hozzá a"
+" kimenet módosításához:"
 
 #: sasoEventtickets_Options.php:237
 msgid ""
@@ -6144,8 +6171,7 @@ msgstr "A(z) \"{PRODUCT_NAME}\" termékhez érvényes dátum megadása szükség
 
 #: sasoEventtickets_Options.php:309
 msgid "The product \"{PRODUCT_NAME}\" requires a value for checkout."
-msgstr ""
-"A(z) \"{PRODUCT_NAME}\" termékhez érték megadása szükséges a fizetéshez."
+msgstr "A(z) \"{PRODUCT_NAME}\" termékhez érték megadása szükséges a fizetéshez."
 
 #: sasoEventtickets_Options.php:310
 msgid ""
@@ -6156,7 +6182,8 @@ msgstr ""
 "szükséges a fizetéshez."
 
 #: sasoEventtickets_Options.php:313
-msgid "The product {PRODUCT_NAME} requires a date from today or in the future."
+msgid ""
+"The product {PRODUCT_NAME} requires a date from today or in the future."
 msgstr ""
 "A(z) {PRODUCT_NAME} termékhez mai vagy jövőbeli dátum megadása szükséges."
 
@@ -6191,7 +6218,8 @@ msgid ""
 "ticket. Use <b>{QRCODE_INLINE}</b> to place the QR-Code anywhere"
 msgstr ""
 "A sablon képernyő <b>tesztkód</b> - TWIG HTML érték a jegy teszteléséhez. "
-"Használja a <b>{QRCODE_INLINE}</b> elemet a QR-kód tetszőleges elhelyezéséhez"
+"Használja a <b>{QRCODE_INLINE}</b> elemet a QR-kód tetszőleges "
+"elhelyezéséhez"
 
 #: includes/woocommerce/class-product.php:506
 msgid "The ticket number format settings."
@@ -6203,8 +6231,8 @@ msgid ""
 "like a normal ticket. The system will store the auth token to the browser."
 msgstr ""
 "A felhasználó a jegyszkennerrel beolvassa a hitelesítési token QR-kódját. "
-"Ugyanúgy, mint egy normál jegyet. A rendszer eltárolja a hitelesítési tokent "
-"a böngészőben."
+"Ugyanúgy, mint egy normál jegyet. A rendszer eltárolja a hitelesítési tokent"
+" a böngészőben."
 
 #: backend.js:875
 msgid ""
@@ -6213,8 +6241,8 @@ msgid ""
 "immediately.</p>"
 msgstr ""
 "A felhasználó ezzel a hitelesítési tokennel többé nem fogja tudni használni "
-"a szervert. A felhasználónak egy új hitelesítési tokent kell kérnie Öntől."
-"<p>A hatás azonnali.</p>"
+"a szervert. A felhasználónak egy új hitelesítési tokent kell kérnie "
+"Öntől.<p>A hatás azonnali.</p>"
 
 #: includes/woocommerce/class-product.php:454
 #: includes/woocommerce/class-product.php:493
@@ -6239,8 +6267,8 @@ msgid ""
 "These settings can help to make it work, in case you adjusted your server "
 "and/or Wordpress settings."
 msgstr ""
-"Ezek a beállítások segíthetnek a működésben, ha módosította a szerver és/"
-"vagy WordPress beállításait."
+"Ezek a beállítások segíthetnek a működésben, ha módosította a szerver "
+"és/vagy WordPress beállításait."
 
 #: backend.js:4611 backend.js:4617 backend.js:4624 backend.js:4632
 msgctxt "label"
@@ -6290,11 +6318,12 @@ msgstr "Ez a nap nem választható"
 #: sasoEventtickets_Options.php:569
 msgid ""
 "This feature is in Beta. This means, good results are not guaranteed, still "
-"optimizing this. If active, the PDF will be generated with RTL option active."
+"optimizing this. If active, the PDF will be generated with RTL option "
+"active."
 msgstr ""
 "Ez a funkció béta állapotban van. Ez azt jelenti, hogy a jó eredmények nem "
-"garantáltak, még optimalizálás alatt áll. Ha aktív, a PDF jobbról balra írás "
-"opcióval lesz generálva."
+"garantáltak, még optimalizálás alatt áll. Ha aktív, a PDF jobbról balra írás"
+" opcióval lesz generálva."
 
 #: includes/woocommerce/class-product.php:371
 #: includes/woocommerce/class-product.php:470
@@ -6356,8 +6385,8 @@ msgstr "Ez kevesebb mint 2 percet vesz igénybe."
 #: sasoEventtickets_Options.php:554
 #, php-format
 msgid ""
-"This text will be added to the PDF ticket only if the ticket can be redeemed "
-"more than one time! Use the placeholder %s to display the amount."
+"This text will be added to the PDF ticket only if the ticket can be redeemed"
+" more than one time! Use the placeholder %s to display the amount."
 msgstr ""
 "Ez a szöveg csak akkor kerül a PDF jegyre, ha a jegy egynél többször "
 "érvényesíthető! Használd a(z) %s helyettesítőt a mennyiség megjelenítéséhez."
@@ -6392,8 +6421,8 @@ msgstr ""
 #: includes/woocommerce/class-product.php:364
 msgid ""
 "This will set how many days in the future do you allow your customer to "
-"choose a date. 0 unlimited into the future, 1 means until tomorrow on and so "
-"on. If a end date is set, then this option is ignored and the end date is "
+"choose a date. 0 unlimited into the future, 1 means until tomorrow on and so"
+" on. If a end date is set, then this option is ignored and the end date is "
 "used."
 msgstr ""
 "Ez határozza meg, hány nappal előre választhat dátumot az ügyfél. A 0 "
@@ -6403,14 +6432,14 @@ msgstr ""
 
 #: includes/woocommerce/class-product.php:354
 msgid ""
-"This will set how many days to skip before you allow your customer to choose "
-"a date. 0 means starting from the same day, 1 means from tomorrow on and so "
-"on. If you set a start date, the the start date will be considered as a "
+"This will set how many days to skip before you allow your customer to choose"
+" a date. 0 means starting from the same day, 1 means from tomorrow on and so"
+" on. If you set a start date, the the start date will be considered as a "
 "minimum starting date."
 msgstr ""
 "Ez határozza meg, hány napot kell kihagyni, mielőtt az ügyfél dátumot "
-"választhat. A 0 azt jelenti, hogy az aktuális naptól, az 1 azt jelenti, hogy "
-"holnaptól kezdődően, és így tovább. Ha kezdő dátumot állít be, az lesz a "
+"választhat. A 0 azt jelenti, hogy az aktuális naptól, az 1 azt jelenti, hogy"
+" holnaptól kezdődően, és így tovább. Ha kezdő dátumot állít be, az lesz a "
 "minimális kezdő dátum."
 
 #: wc_backend.js:468
@@ -6668,8 +6697,8 @@ msgstr "A prémium funkciók visszaállításához:"
 
 #: includes/woocommerce/class-product.php:333
 msgid ""
-"To select more than one, hold down the CTRL key. The selected days cannot be "
-"choosen by your customer in date chooser."
+"To select more than one, hold down the CTRL key. The selected days cannot be"
+" choosen by your customer in date chooser."
 msgstr ""
 "Több kiválasztásához tartsa lenyomva a CTRL billentyűt. A kiválasztott "
 "napokat az ügyfél nem választhatja ki a dátumválasztóban."
@@ -6857,7 +6886,8 @@ msgstr "URL a szolgáltatásodhoz, ha a jegy <b>inaktív</b>."
 #: sasoEventtickets_Options.php:699
 msgid ""
 "URL to your service if the checked ticket <b>is invalid</b> (not found)."
-msgstr "URL a szolgáltatásodhoz, ha a jegy <b>érvénytelen</b> (nem található)."
+msgstr ""
+"URL a szolgáltatásodhoz, ha a jegy <b>érvénytelen</b> (nem található)."
 
 #: sasoEventtickets_Options.php:698
 msgid "URL to your service if the checked ticket <b>is valid</b>."
@@ -6926,7 +6956,8 @@ msgstr "Frissítés most"
 
 #: index.php:1968
 msgid "Update the Premium plugin via Plugins > Updates"
-msgstr "Frissítse a Premium bővítményt a Bővítmények > Frissítések menüpontban"
+msgstr ""
+"Frissítse a Premium bővítményt a Bővítmények > Frissítések menüpontban"
 
 #: index.php:1963
 msgid "Update your license key in Event Tickets settings"
@@ -7002,7 +7033,8 @@ msgstr "Hasznos, ha a /ticket/ URL útvonal nem működik a szerverén."
 #: index.php:952
 msgid "Useful if you cannot open the ticket scanner due to security issues."
 msgstr ""
-"Hasznos, ha biztonsági beállítások miatt nem tudod megnyitni a jegyszkennert."
+"Hasznos, ha biztonsági beállítások miatt nem tudod megnyitni a "
+"jegyszkennert."
 
 #: sasoEventtickets_Core.php:279
 msgid "User id of the WooCommerce sales."
@@ -7151,8 +7183,7 @@ msgstr ""
 #: sasoEventtickets_AdminSettings.php:3281
 #, php-format
 msgid ""
-"WARNING: The ticket number format for list \"%s\" is running out of "
-"combinations!\n"
+"WARNING: The ticket number format for list \"%s\" is running out of combinations!\n"
 "\n"
 "It took %d attempts to generate a ticket code.\n"
 "\n"
@@ -7163,8 +7194,7 @@ msgid ""
 "\n"
 "This is a proactive warning to prevent future issues."
 msgstr ""
-"FIGYELMEZTETÉS: A(z) \"%s\" lista jegyszám-formátuma kifogy a "
-"kombinációkból!\n"
+"FIGYELMEZTETÉS: A(z) \"%s\" lista jegyszám-formátuma kifogy a kombinációkból!\n"
 "\n"
 "%d kísérlet kellett egy jegykód generálásához.\n"
 "\n"
@@ -7218,7 +7248,8 @@ msgid ""
 "Will be overridden if you set the ticket number format settings on the "
 "product!"
 msgstr ""
-"Felülírásra kerül, ha a terméken beállítod a jegyszám formátum beállításokat!"
+"Felülírásra kerül, ha a terméken beállítod a jegyszám formátum "
+"beállításokat!"
 
 #: sasoEventtickets_Options.php:571
 msgid ""
@@ -7263,11 +7294,11 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:508
 msgid ""
-"Will be used to set the width of the PDF. If empty or zero or lower than 20, "
-"the default of 210 will be used."
+"Will be used to set the width of the PDF. If empty or zero or lower than 20,"
+" the default of 210 will be used."
 msgstr ""
-"A PDF szélességének beállítására szolgál. Ha üres, nulla vagy 20-nál kisebb, "
-"az alapértelmezett 210 lesz használva."
+"A PDF szélességének beállítására szolgál. Ha üres, nulla vagy 20-nál kisebb,"
+" az alapértelmezett 210 lesz használva."
 
 #: sasoEventtickets_Options.php:518
 msgid ""
@@ -7282,17 +7313,17 @@ msgid ""
 "With the Premium version you can attach PDF tickets directly to the order "
 "email — as individual files or merged into one PDF."
 msgstr ""
-"A Prémium verzióval PDF jegyeket csatolhat közvetlenül a rendelési e-mailhez "
-"— egyedi fájlokként vagy egy PDF-be egyesítve."
+"A Prémium verzióval PDF jegyeket csatolhat közvetlenül a rendelési e-mailhez"
+" — egyedi fájlokként vagy egy PDF-be egyesítve."
 
 #: includes/woocommerce/class-product.php:152
 #, php-format
 msgid ""
-"With the free basic plugin, you can only <b>create up to %d tickets!</"
-"b><br>Make sure your are not selling more tickets :)"
+"With the free basic plugin, you can only <b>create up to %d "
+"tickets!</b><br>Make sure your are not selling more tickets :)"
 msgstr ""
-"Az ingyenes alap bővítménnyel <b>legfeljebb %d jegyet</b> hozhatsz létre."
-"<br>Figyelj arra, hogy ne adj el többet :)"
+"Az ingyenes alap bővítménnyel <b>legfeljebb %d jegyet</b> hozhatsz "
+"létre.<br>Figyelj arra, hogy ne adj el többet :)"
 
 #: backend.js:4642
 msgctxt "title"
@@ -7315,7 +7346,8 @@ msgstr "A kódhoz rendelt WooCommerce rendelésszám."
 msgid ""
 "WooCommerce order id, that was purchases using this code as an allowance to "
 "purchase a restricted product."
-msgstr "A rendelésszám, amelyhez ezt a kódot engedélyezési kódként használták."
+msgstr ""
+"A rendelésszám, amelyhez ezt a kódot engedélyezési kódként használták."
 
 #: sasoEventtickets_Core.php:276
 msgid "WooCommerce product id assigned to the code."
@@ -7393,19 +7425,19 @@ msgid ""
 "You can add comma separated \",\" product ids. This will limit the user to "
 "redeem tickets only of products listed here. If left empty, all are allowed."
 msgstr ""
-"Vesszővel elválasztott \",\" termékazonosítókat adhatsz hozzá. Ez korlátozza "
-"a felhasználót, hogy csak az itt felsorolt termékek jegyeit válthassa be. Ha "
-"üresen hagyod, az összes engedélyezett."
+"Vesszővel elválasztott \",\" termékazonosítókat adhatsz hozzá. Ez korlátozza"
+" a felhasználót, hogy csak az itt felsorolt termékek jegyeit válthassa be. "
+"Ha üresen hagyod, az összes engedélyezett."
 
 #: sasoEventtickets_Options.php:289
 msgid ""
-"You can assign a list to a product and this will generate or re-use a ticket "
-"from this list as a ticket number. It will be printed on the purchase "
+"You can assign a list to a product and this will generate or re-use a ticket"
+" from this list as a ticket number. It will be printed on the purchase "
 "information to the customer."
 msgstr ""
-"Listát rendelhetsz egy termékhez, ami jegyszámokat generál vagy használ újra "
-"a listából az eladásoknál. A felhasznált szabad jegyszámok ebből a listából "
-"származnak, vagy újonnan generálódnak és ehhez a listához rendelődnek. A "
+"Listát rendelhetsz egy termékhez, ami jegyszámokat generál vagy használ újra"
+" a listából az eladásoknál. A felhasznált szabad jegyszámok ebből a listából"
+" származnak, vagy újonnan generálódnak és ehhez a listához rendelődnek. A "
 "jegyszám megjelenik a vásárlási visszaigazoláson az ügyfél számára."
 
 #: backend.js:3597
@@ -7428,7 +7460,8 @@ msgstr "További szöveg megjelenítése a PDF jegyen"
 
 #: sasoEventtickets_Options.php:728
 #, php-format
-msgid "You can display the tickets assigned to an user with this shortcode %s."
+msgid ""
+"You can display the tickets assigned to an user with this shortcode %s."
 msgstr ""
 "Ezzel a shortcode-dal %s jelenítheted meg a felhasználóhoz rendelt jegyeket."
 
@@ -7443,11 +7476,11 @@ msgstr ""
 #: sasoEventtickets_Options.php:563
 msgid ""
 "You can download a badge for each ticket. This badge can be give to your "
-"customer so they can wear it as a name badge. You can download the badge PDF "
-"within the ticket detail view."
+"customer so they can wear it as a name badge. You can download the badge PDF"
+" within the ticket detail view."
 msgstr ""
-"Minden jegyhez letölthet egy kitűzőt. Ezt a kitűzőt odaadhatja a vásárlónak, "
-"hogy névkitűzőként viselhesse. A kitűző PDF-et a jegy részletező nézetben "
+"Minden jegyhez letölthet egy kitűzőt. Ezt a kitűzőt odaadhatja a vásárlónak,"
+" hogy névkitűzőként viselhesse. A kitűző PDF-et a jegy részletező nézetben "
 "töltheti le."
 
 #: index.php:919
@@ -7497,8 +7530,8 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:313
 msgid ""
-"You can use the placeholder {PRODUCT_NAME} and {count} for the product name. "
-"If left empty, default will be 'The product {PRODUCT_NAME} requires a date "
+"You can use the placeholder {PRODUCT_NAME} and {count} for the product name."
+" If left empty, default will be 'The product {PRODUCT_NAME} requires a date "
 "from today or in the future.' as the error message on the cart."
 msgstr ""
 "A terméknévhez használhatja a {PRODUCT_NAME} és {count} helyőrzőket. Ha "
@@ -7507,9 +7540,9 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:312
 msgid ""
-"You can use the placeholder {PRODUCT_NAME} and {count} for the product name. "
-"If left empty, default will be 'The product {PRODUCT_NAME} requires a valid "
-"date.' as the error message on the cart."
+"You can use the placeholder {PRODUCT_NAME} and {count} for the product name."
+" If left empty, default will be 'The product {PRODUCT_NAME} requires a valid"
+" date.' as the error message on the cart."
 msgstr ""
 "A terméknévhez használhatja a {PRODUCT_NAME} és {count} helyőrzőket. Ha "
 "üresen hagyja, az alapértelmezett hibaüzenet a kosárban: 'A(z) "
@@ -7517,9 +7550,9 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:311
 msgid ""
-"You can use the placeholder {PRODUCT_NAME} and {count} for the product name. "
-"If left empty, default will be 'The product {PRODUCT_NAME} requires a value "
-"from the dropdown for checkout.' as the error message on the cart."
+"You can use the placeholder {PRODUCT_NAME} and {count} for the product name."
+" If left empty, default will be 'The product {PRODUCT_NAME} requires a value"
+" from the dropdown for checkout.' as the error message on the cart."
 msgstr ""
 "A terméknévhez használhatja a {PRODUCT_NAME} és {count} helyőrzőket. Ha "
 "üresen hagyja, az alapértelmezett hibaüzenet a kosárban: 'A(z) "
@@ -7531,18 +7564,18 @@ msgid ""
 "empty, default will be 'The product {PRODUCT_NAME} requires a value for "
 "checkout.' as the error message on the cart."
 msgstr ""
-"A terméknévhez használhatja a {PRODUCT_NAME} helyőrzőt. Ha üresen hagyja, az "
-"alapértelmezett hibaüzenet a kosárban: 'A(z) {PRODUCT_NAME} termékhez érték "
-"megadása szükséges a fizetéshez.'"
+"A terméknévhez használhatja a {PRODUCT_NAME} helyőrzőt. Ha üresen hagyja, az"
+" alapértelmezett hibaüzenet a kosárban: 'A(z) {PRODUCT_NAME} termékhez érték"
+" megadása szükséges a fizetéshez.'"
 
 #: sasoEventtickets_Options.php:310
 msgid ""
 "You can use the placeholder {PRODUCT_NAME} for the product name. If left "
-"empty, default will be 'The product {PRODUCT_NAME} requires a value from the "
-"dropdown for checkout.' as the error message on the cart."
+"empty, default will be 'The product {PRODUCT_NAME} requires a value from the"
+" dropdown for checkout.' as the error message on the cart."
 msgstr ""
-"A terméknévhez használhatja a {PRODUCT_NAME} helyőrzőt. Ha üresen hagyja, az "
-"alapértelmezett hibaüzenet a kosárban: 'A(z) {PRODUCT_NAME} termékhez a "
+"A terméknévhez használhatja a {PRODUCT_NAME} helyőrzőt. Ha üresen hagyja, az"
+" alapértelmezett hibaüzenet a kosárban: 'A(z) {PRODUCT_NAME} termékhez a "
 "legördülő listából való választás szükséges a fizetéshez.'"
 
 #: backend.js:1612
@@ -7650,8 +7683,8 @@ msgstr "Mostantól hozzáfér a következő funkciókhoz:"
 
 #: backend.js:4368
 msgid ""
-"You reached maximum amount of tickets. You need to delete tickets before you "
-"can add more new tickets or buy the premium version to have unlimited "
+"You reached maximum amount of tickets. You need to delete tickets before you"
+" can add more new tickets or buy the premium version to have unlimited "
 "tickets."
 msgstr ""
 "Elérted a jegyek maximális számát. Jegyeket kell törölnöd, mielőtt újakat "
@@ -7804,7 +7837,8 @@ msgid ""
 "Please upgrade PHP to ensure full compatibility."
 msgstr ""
 "A szervere PHP %1$s verziót futtat. Ez a bővítmény PHP %2$s vagy újabb "
-"verziót igényel. Kérjük, frissítse a PHP-t a teljes kompatibilitás érdekében."
+"verziót igényel. Kérjük, frissítse a PHP-t a teljes kompatibilitás "
+"érdekében."
 
 #: backend.js:3472
 #, javascript-format
@@ -7812,7 +7846,8 @@ msgid "Your settings have been configured for %s."
 msgstr "A beállítások a(z) %s számára lettek konfigurálva."
 
 #: backend.js:2724
-msgid "Your start number is not correct. It has to be an integer bigger than 0"
+msgid ""
+"Your start number is not correct. It has to be an integer bigger than 0"
 msgstr "A kezdőszámod nem megfelelő. 0-nál nagyobb egész számnak kell lennie"
 
 #: sasoEventtickets_Options.php:756
@@ -7832,8 +7867,8 @@ msgid ""
 "Your tickets, orders, and data are completely safe. You can continue using "
 "the basic features while updating."
 msgstr ""
-"A jegyei, rendelései és adatai teljesen biztonságban vannak. Folytathatja az "
-"alapfunkciók használatát a frissítés közben."
+"A jegyei, rendelései és adatai teljesen biztonságban vannak. Folytathatja az"
+" alapfunkciók használatát a frissítés közben."
 
 #: sasoEventtickets_AdminSettings.php:3271
 #, php-format
@@ -7894,7 +7929,8 @@ msgid "function \"%s\" in wc backend not implemented"
 msgstr "A(z) \"%s\" funkció nincs implementálva a WC backendben"
 
 #: sasoEventtickets_AdminSettings.php:259 sasoEventtickets_Frontend.php:26
-#: sasoEventtickets_Seating.php:388 includes/woocommerce/class-frontend.php:298
+#: sasoEventtickets_Seating.php:388
+#: includes/woocommerce/class-frontend.php:298
 #: includes/seating/class-seating-frontend.php:347
 #, php-format
 msgid "function \"%s\" not implemented"
@@ -8063,8 +8099,8 @@ msgid ""
 "receives or stores any ticket data."
 msgstr ""
 "Ha aktív, az ügyfelek hozzáadhatják jegyeiket a Vollstart Wallet "
-"alkalmazáshoz (wallet.vollstart.com). Egy gomb jelenik meg a jegy részletező "
-"oldalán és a rendelési e-mailekben. A wallet alkalmazás lehetővé teszi az "
+"alkalmazáshoz (wallet.vollstart.com). Egy gomb jelenik meg a jegy részletező"
+" oldalán és a rendelési e-mailekben. A wallet alkalmazás lehetővé teszi az "
 "ügyfelek számára, hogy különböző boltokból származó jegyeiket egy helyen "
 "gyűjtsék össze. <b>Az adatai biztonságban maradnak</b> — a jegyadatok "
 "közvetlenül az Ön boltjából a vásárló böngészőjébe kerülnek. A Vollstart "
@@ -8084,8 +8120,8 @@ msgstr "Hozzáadás a Wallethez"
 
 #: sasoEventtickets_Options.php:294
 msgid ""
-"Warning: The WordPress REST API appears to be disabled. The Vollstart Wallet "
-"requires the REST API to function."
+"Warning: The WordPress REST API appears to be disabled. The Vollstart Wallet"
+" requires the REST API to function."
 msgstr ""
 "Figyelmeztetés: A WordPress REST API úgy tűnik, le van tiltva. A Vollstart "
 "Wallet működéséhez szükség van a REST API-ra."
@@ -8099,8 +8135,8 @@ msgstr ""
 
 #: backend.js:2987
 msgid ""
-"Do you want to enable the \"Add to Vollstart Wallet\" button on ticket pages "
-"and in emails?"
+"Do you want to enable the \"Add to Vollstart Wallet\" button on ticket pages"
+" and in emails?"
 msgstr ""
 "Szeretné engedélyezni a \"Hozzáadás a Vollstart Wallethez\" gombot a "
 "jegyoldalakon és az e-mailekben?"
@@ -8139,7 +8175,8 @@ msgstr ""
 
 msgid ""
 "Public calendar publishing was disabled — the eventado.com server rejected "
-"this site (license or domain mismatch). Please contact support@vollstart.com."
+"this site (license or domain mismatch). Please contact "
+"support@vollstart.com."
 msgstr ""
 "A nyilvános naptár közzététele letiltva — az eventado.com szervere "
 "elutasította ezt az oldalt (licenc vagy domain hiba). Kérjük, írj a "
@@ -8161,6 +8198,632 @@ msgstr "A Premium licenced lejárt. A frissítések már nem érhetők el."
 msgid "Your premium license will expire in %1$d days (on %2$s)."
 msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 
+msgid "+ Add section"
+msgstr "+ Szakasz hozzáadása"
+
+msgid "Access denied."
+msgstr "Hozzáférés megtagadva."
+
+msgid "Access denied. Invalid ticket or order cancelled."
+msgstr "Hozzáférés megtagadva. Érvénytelen jegy vagy törölt rendelés."
+
+msgid "Access expires (optional)"
+msgstr "Hozzáférés lejárata (opcionális)"
+
+msgid "assigned (manage on product level)"
+msgstr "hozzárendelve (kezelés termékszinten)"
+
+msgid "Assign via the WooCommerce product settings."
+msgstr "Rendelje hozzá a WooCommerce termékbeállításokban."
+
+msgid "Congresses"
+msgstr "Kongresszusok"
+
+msgid ""
+"Congresses let you attach structured information (programme, downloads, "
+"media, texts) to an event. Ticket holders can access the congress page using"
+" their ticket ID. Assign a congress to a product in the WooCommerce product "
+"settings — one congress can be shared across multiple products."
+msgstr ""
+"A kongresszusok lehetővé teszik strukturált információk (program, "
+"letöltések, média, szövegek) csatolását egy eseményhez. A jegytulajdonosok a"
+" kongresszus oldalát a jegyszámukkal érhetik el. Rendelje hozzá a "
+"kongresszust egy termékhez a WooCommerce termékbeállításokban — egy "
+"kongresszus több termékhez is hozzárendelhető."
+
+msgid "Congress not found."
+msgstr "A kongresszus nem található."
+
+msgid "Delete section?"
+msgstr "Szakasz törlése?"
+
+msgid "Delete this congress?"
+msgstr "Törli ezt a kongresszust?"
+
+msgid "Edit congress"
+msgstr "Kongresszus szerkesztése"
+
+msgid "HTML content (info/custom only):"
+msgstr "HTML tartalom (csak info/egyéni):"
+
+msgid "New congress"
+msgstr "Új kongresszus"
+
+msgid "New edition"
+msgstr "Új kiadás"
+
+msgid "No sections yet."
+msgstr "Még nincsenek szakaszok."
+
+msgid "Password"
+msgstr "Jelszó"
+
+msgid "Please save the congress first before adding sections."
+msgstr ""
+"Kérjük, először mentse el a kongresszust, mielőtt szakaszokat ad hozzá."
+
+msgid "Room"
+msgstr "Terem"
+
+msgid "Save congress"
+msgstr "Kongresszus mentése"
+
+msgid "Sections"
+msgstr "Szakaszok"
+
+msgid "Section title:"
+msgstr "Szakasz címe:"
+
+msgid "Slug for new edition:"
+msgstr "Slug az új kiadáshoz:"
+
+msgid "Speaker"
+msgstr "Előadó"
+
+msgid "This congress has expired."
+msgstr "Ez a kongresszus lejárt."
+
+msgid "This section is password-protected."
+msgstr "Ez a szakasz jelszóval védett."
+
+msgid "Time"
+msgstr "Idő"
+
+msgid "Title and slug are required."
+msgstr "A cím és a slug kötelező."
+
+msgid "Title for new edition (leave empty to auto-generate):"
+msgstr "Cím az új kiadáshoz (hagyja üresen az automatikus generáláshoz):"
+
+msgid "Unlock"
+msgstr "Feloldás"
+
+msgid "Wrong password"
+msgstr "Helytelen jelszó"
+
+msgid "Wrong password."
+msgstr "Helytelen jelszó."
+
+msgid "Access denied. Invalid ticket or no congress assigned to this ticket."
+msgstr ""
+"Hozzáférés megtagadva. Érvénytelen jegy, vagy nincs kongresszus rendelve "
+"ehhez a jegyhez."
+
+msgid "Add congress link to the order email"
+msgstr "Kongresszus-hivatkozás hozzáadása a rendelési e-mailhez"
+
+msgid "Add day"
+msgstr "Nap hozzáadása"
+
+msgid "Add days and time slots. Each slot has time, title, speaker and room."
+msgstr ""
+"Adjon hozzá napokat és időpontokat. Minden időpontnak van időpontja, címe, "
+"előadója és terme."
+
+msgid "Add file"
+msgstr "Fájl hozzáadása"
+
+msgid "Add image"
+msgstr "Kép hozzáadása"
+
+msgid "Add page"
+msgstr "Oldal hozzáadása"
+
+msgid "Add section"
+msgstr "Szakasz hozzáadása"
+
+msgid "Add slot"
+msgstr "Időpont hozzáadása"
+
+msgid "Add URL"
+msgstr "URL hozzáadása"
+
+msgid "Caption (optional)"
+msgstr "Felirat (opcionális)"
+
+msgid "Choose"
+msgstr "Választás"
+
+msgid "Choose image"
+msgstr "Kép kiválasztása"
+
+msgid "Choose video"
+msgstr "Videó kiválasztása"
+
+msgid ""
+"Choose which page this section belongs to. Change it to move the section to "
+"another page."
+msgstr ""
+"Válassza ki, melyik oldalhoz tartozik ez a szakasz. Módosítsa, ha másik "
+"oldalra szeretné áthelyezni a szakaszt."
+
+msgid "Congress access — days available after event end"
+msgstr "Kongresszus-hozzáférés — az esemény vége után elérhető napok"
+
+msgid "Congress access — hours before event start"
+msgstr "Kongresszus-hozzáférés — az esemény kezdete előtti órák"
+
+msgid "Congress-Modus"
+msgstr "Kongresszus-mód"
+
+msgid "Congress page active"
+msgstr "Kongresszus-oldal aktív"
+
+msgid "Content"
+msgstr "Tartalom"
+
+msgid "Could not load the congress page."
+msgstr "A kongresszus oldala nem tölthető be."
+
+msgid "Could not load this page."
+msgstr "Ez az oldal nem tölthető be."
+
+msgid "Create"
+msgstr "Létrehozás"
+
+msgid "Created:"
+msgstr "Létrehozva:"
+
+msgid "Current slug:"
+msgstr "Jelenlegi slug:"
+
+msgid "Current title:"
+msgstr "Jelenlegi cím:"
+
+msgid "Custom width"
+msgstr "Egyéni szélesség"
+
+msgid "Delete page?"
+msgstr "Törli az oldalt?"
+
+msgid "Details"
+msgstr "Részletek"
+
+msgid "Display size"
+msgstr "Megjelenítési méret"
+
+msgid "Drag to reorder"
+msgstr "Húzza az átrendezéshez"
+
+msgid "Drag to reorder pages"
+msgstr "Húzza az oldalak átrendezéséhez"
+
+msgid "Edit section"
+msgstr "Szakasz szerkesztése"
+
+msgid "Event end (optional)"
+msgstr "Esemény vége (opcionális)"
+
+msgid "Event start (optional)"
+msgstr "Esemény kezdete (opcionális)"
+
+msgid "Files"
+msgstr "Fájlok"
+
+msgid "Full width"
+msgstr "Teljes szélesség"
+
+msgid "Gallery"
+msgstr "Galéria"
+
+msgid ""
+"How many days after a congress' event end the page stays available. Only "
+"applies when the congress has an event end time set. 0 = available forever "
+"(no automatic expiry)."
+msgstr ""
+"Hány napig marad elérhető az oldal a kongresszus eseményének vége után. Csak"
+" akkor érvényes, ha a kongresszushoz be van állítva esemény-befejezési "
+"időpont. 0 = mindig elérhető (nincs automatikus lejárat)."
+
+msgid ""
+"How many hours before a congress' event start the page becomes accessible. "
+"Only applies when the congress has an event start time set. 0 = no early "
+"restriction (accessible immediately)."
+msgstr ""
+"Hány órával a kongresszus eseményének kezdete előtt válik elérhetővé az "
+"oldal. Csak akkor érvényes, ha a kongresszushoz be van állítva esemény-"
+"kezdési időpont. 0 = nincs korai korlátozás (azonnal elérhető)."
+
+msgid "HTML allowed (same rules as blog posts). JavaScript is stripped."
+msgstr ""
+"HTML engedélyezett (ugyanazok a szabályok, mint a blogbejegyzéseknél). A "
+"JavaScript eltávolításra kerül."
+
+msgid ""
+"If active, a link to the congress page is added to the WooCommerce order "
+"email for every ticket whose product has a congress assigned."
+msgstr ""
+"Ha aktív, a kongresszus oldalára mutató hivatkozás kerül a WooCommerce "
+"rendelési e-mailbe minden olyan jegy esetén, amelynek termékéhez kongresszus"
+" van rendelve."
+
+msgid ""
+"If active, the congress page offers the ticket holder a link to add/open the"
+" ticket in the Vollstart Wallet app."
+msgstr ""
+"Ha aktív, a kongresszus oldala hivatkozást kínál a jegytulajdonosnak a jegy "
+"Vollstart Wallet alkalmazásba történő hozzáadásához/megnyitásához."
+
+msgid "Image"
+msgstr "Kép"
+
+msgid "Images"
+msgstr "Képek"
+
+msgid "Image URL and optional caption for each item. Drag to reorder."
+msgstr "Kép-URL és opcionális felirat minden elemhez. Húzza az átrendezéshez."
+
+msgid "Internal"
+msgstr "Belső"
+
+msgid ""
+"Internal links open in the same tab. External links open in a new tab. Drag "
+"to reorder."
+msgstr ""
+"A belső hivatkozások ugyanabban a lapon nyílnak meg. A külső hivatkozások új"
+" lapon nyílnak meg. Húzza az átrendezéshez."
+
+msgid "Its sections will be moved to the start page. This cannot be undone."
+msgstr ""
+"A szakaszai a kezdőoldalra kerülnek át. Ez a művelet nem vonható vissza."
+
+msgid "Label for the congress link in the email"
+msgstr "Az e-mailben szereplő kongresszus-hivatkozás felirata"
+
+msgid "Label for visitors"
+msgstr "Felirat a látogatók számára"
+
+msgid "Link (YouTube, Vimeo, …)"
+msgstr "Hivatkozás (YouTube, Vimeo, …)"
+
+msgid "Loading…"
+msgstr "Betöltés…"
+
+msgid "Manual hard cutoff. Leave empty for unlimited access."
+msgstr "Manuális végleges határidő. Hagyja üresen a korlátlan hozzáféréshez."
+
+msgid "Menu"
+msgstr "Menü"
+
+msgid "No content on this page yet."
+msgstr "Ezen az oldalon még nincs tartalom."
+
+msgid "No file selected"
+msgstr "Nincs kiválasztott fájl"
+
+msgid "No pages yet. Add a page to start."
+msgstr "Még nincsenek oldalak. Adjon hozzá egy oldalt a kezdéshez."
+
+msgid "No sections on this page yet."
+msgstr "Ezen az oldalon még nincsenek szakaszok."
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Open full size when clicked"
+msgstr "Teljes méret megnyitása kattintásra"
+
+msgid "Open in browser instead of downloading (PDF, images)."
+msgstr "Megnyitás böngészőben letöltés helyett (PDF, képek)."
+
+msgid "Open inline"
+msgstr "Megnyitás beágyazva"
+
+msgid "Open your congress page"
+msgstr "Nyissa meg a kongresszus oldalát"
+
+msgid "Original size"
+msgstr "Eredeti méret"
+
+msgid "Page"
+msgstr "Oldal"
+
+msgid "Pages"
+msgstr "Oldalak"
+
+msgid ""
+"Paste a YouTube, Vimeo or other supported link. It is embedded "
+"automatically."
+msgstr ""
+"Illesszen be egy YouTube-, Vimeo- vagy más támogatott hivatkozást. "
+"Automatikusan beágyazódik."
+
+msgid ""
+"Pick files from the media library. Label is shown to visitors. Drag to "
+"reorder."
+msgstr ""
+"Válasszon fájlokat a médiatárból. A felirat a látogatók számára jelenik meg."
+" Húzza az átrendezéshez."
+
+msgid "Program"
+msgstr "Program"
+
+msgid "Remove day"
+msgstr "Nap eltávolítása"
+
+msgid "Remove slot"
+msgstr "Időpont eltávolítása"
+
+msgid "Rename"
+msgstr "Átnevezés"
+
+msgid "Rename page"
+msgstr "Oldal átnevezése"
+
+msgid "Save"
+msgstr "Mentés"
+
+msgid "Save the congress first to add pages and sections."
+msgstr ""
+"Mentse el először a kongresszust az oldalak és szakaszok hozzáadásához."
+
+msgid "Select file"
+msgstr "Fájl kiválasztása"
+
+msgid "Select image"
+msgstr "Kép kiválasztása"
+
+msgid "Select video"
+msgstr "Videó kiválasztása"
+
+msgid "Show 'Add to Wallet' link on the congress page"
+msgstr ""
+"A „Hozzáadás a Wallethez” hivatkozás megjelenítése a kongresszus oldalán"
+
+msgid ""
+"Shows the congress information page publicly to ticket holders. The page is "
+"only displayed when the ticket's product has a congress assigned to it. The "
+"congress admin area (Congresses menu) is always available regardless of this"
+" setting."
+msgstr ""
+"Nyilvánosan megjeleníti a kongresszus információs oldalát a jegytulajdonosok"
+" számára. Az oldal csak akkor jelenik meg, ha a jegy termékéhez kongresszus "
+"van rendelve. A kongresszus adminisztrációs felülete (Kongresszusok menü) "
+"ettől a beállítástól függetlenül mindig elérhető."
+
+msgid "Source"
+msgstr "Forrás"
+
+msgid "start page"
+msgstr "kezdőoldal"
+
+msgid "Start page"
+msgstr "Kezdőoldal"
+
+msgid ""
+"The clickable text for the congress link in the order email. If left empty, "
+"a default is used."
+msgstr ""
+"A rendelési e-mailben szereplő kongresszus-hivatkozás kattintható szövege. "
+"Ha üresen marad, az alapértelmezett szöveg jelenik meg."
+
+msgid ""
+"The first page is the start page (shown first to visitors). Drag pages and "
+"sections to reorder."
+msgstr ""
+"Az első oldal a kezdőoldal (amely elsőként jelenik meg a látogatóknak). "
+"Húzza az oldalakat és szakaszokat az átrendezéshez."
+
+msgid "This action cannot be undone."
+msgstr "Ez a művelet nem vonható vissza."
+
+msgid "This action cannot be undone. All sections will be deleted as well."
+msgstr "Ez a művelet nem vonható vissza. Az összes szakasz is törlésre kerül."
+
+msgid "Type"
+msgstr "Típus"
+
+msgid ""
+"Unique identifier for this congress. Visitors open it through their personal"
+" ticket link, not the slug."
+msgstr ""
+"Egyedi azonosító ehhez a kongresszushoz. A látogatók a személyes "
+"jegyhivatkozásukon keresztül nyitják meg, nem a slug segítségével."
+
+msgid "Updated"
+msgstr "Frissítve"
+
+msgid "Updated:"
+msgstr "Frissítve:"
+
+msgid "Uploaded video file"
+msgstr "Feltöltött videófájl"
+
+msgid "URLs"
+msgstr "URL-ek"
+
+msgid "Used with the global \"days available after\" retention setting."
+msgstr ""
+"A globális „elérhető napok ezután” megőrzési beállítással együtt "
+"használatos."
+
+msgid "Used with the global \"hours before\" access setting."
+msgstr ""
+"A globális „órákkal előtte” hozzáférési beállítással együtt használatos."
+
+msgid "Video"
+msgstr "Videó"
+
+msgid "Video file"
+msgstr "Videófájl"
+
+msgid "Video URL"
+msgstr "Videó URL"
+
+msgid "— None —"
+msgstr "— Nincs —"
+
+msgid "Assign congress"
+msgstr "Kongresszus hozzárendelése"
+
+msgid "Require CVV at the ticket scanner"
+msgstr "CVV megkövetelése a jegyolvasónál"
+
+msgid "Same-day cutoff time"
+msgstr "Aznapi határidő"
+
+msgid "Name per ticket (text input)"
+msgstr "Név jegyenként (szövegmező)"
+
+msgid "-- Inherit from parent product --"
+msgstr "-- Öröklés a szülőtermékből --"
+
+msgid "Request name per ticket"
+msgstr "Név bekérése jegyenként"
+
+msgid "Override: Ask for a name/text input per ticket."
+msgstr "Felülírás: Név/szöveg bekérése jegyenként."
+
+msgid "Name field label"
+msgstr "Névmező címkéje"
+
+msgid "Override label. Leave empty to inherit from parent."
+msgstr "Címke felülírása. Hagyja üresen az örökléshez a szülőtől."
+
+msgid "Name field mandatory"
+msgstr "Névmező kötelező"
+
+msgid "Value per ticket (dropdown)"
+msgstr "Érték jegyenként (legördülő)"
+
+msgid "Request dropdown per ticket"
+msgstr "Legördülő bekérése jegyenként"
+
+msgid "Override: Ask for a dropdown selection per ticket."
+msgstr "Felülírás: Legördülő kiválasztásának bekérése jegyenként."
+
+msgid "Dropdown label"
+msgstr "Legördülő címkéje"
+
+msgid "Dropdown values"
+msgstr "Legördülő értékei"
+
+msgid "One value per line. Leave empty to inherit from parent."
+msgstr "Soronként egy érték. Hagyja üresen az örökléshez a szülőtől."
+
+msgid "Dropdown default value"
+msgstr "Legördülő alapértelmezett értéke"
+
+msgid "Override default. Leave empty to inherit from parent."
+msgstr "Alapértelmezett felülírása. Hagyja üresen az örökléshez a szülőtől."
+
+msgid "Dropdown mandatory"
+msgstr "Legördülő kötelező"
+
+msgid "AUTHTOKEN DELETED"
+msgstr "AUTHTOKEN TÖRÖLVE"
+
+msgid "Version notice seen"
+msgstr "Verzióértesítés megtekintve"
+
+msgid "Scanner: mask the CVV input field"
+msgstr "Olvasó: a CVV beviteli mező elrejtése"
+
+msgid "Scanner: use compact one-stage CVV flow"
+msgstr "Olvasó: kompakt, egylépéses CVV-folyamat használata"
+
+msgid "Validating license — please wait…"
+msgstr "Licenc ellenőrzése — kérjük, várjon…"
+
+msgid "License key saved. Reloading…"
+msgstr "Licenckulcs elmentve. Újratöltés…"
+
+msgid "congress page disabled in options"
+msgstr "a kongresszus oldal le van tiltva a beállításokban"
+
+msgid "Sold Tickets"
+msgstr "Eladott jegyek"
+
+msgid "Products:"
+msgstr "Termékek:"
+
+msgid "Auto-refresh:"
+msgstr "Automatikus frissítés:"
+
+msgid "Off"
+msgstr "Ki"
+
+msgid "No tickets found for this month."
+msgstr "Ehhez a hónaphoz nem található jegy."
+
+msgid "Insert Tag"
+msgstr "Címke beszúrása"
+
+msgid "Dismiss"
+msgstr "Elvetés"
+
+msgid "CVV attempts:"
+msgstr "CVV-próbálkozások:"
+
+msgid "Last attempt:"
+msgstr "Utolsó próbálkozás:"
+
+msgid "LOCKED — too many wrong attempts"
+msgstr "ZÁROLVA — túl sok hibás próbálkozás"
+
+msgid "Reset CVV attempts"
+msgstr "CVV-próbálkozások visszaállítása"
+
+msgid "Reset CVV attempt counter and unlock this ticket?"
+msgstr ""
+"Visszaállítja a CVV-próbálkozások számlálóját és feloldja ezt a jegyet?"
+
+msgid "Redeemed via authtoken:"
+msgstr "Beváltva authtoken segítségével:"
+
+msgid "Congress"
+msgstr "Kongresszus"
+
+msgid "Open congress page"
+msgstr "Kongresszus oldal megnyitása"
+
+msgid "Security code required"
+msgstr "Biztonsági kód szükséges"
+
+msgid "Show"
+msgstr "Megjelenítés"
+
+msgid "Hide"
+msgstr "Elrejtés"
+
+msgid "Confirm code"
+msgstr "Kód megerősítése"
+
+msgid "Attempts remaining:"
+msgstr "Hátralévő próbálkozások:"
+
+msgid "Code valid — please take back the device"
+msgstr "A kód érvényes — kérjük, vegye vissza az eszközt"
+
+msgid "Continue →"
+msgstr "Folytatás →"
+
+msgid "Ticket locked"
+msgstr "Jegy zárolva"
+
+msgid "Confirm codes"
+msgstr "Kódok megerősítése"
+
 #~ msgid ""
 #~ "Please enter your Premium license key in the settings to activate your "
 #~ "subscription."
@@ -8170,8 +8833,8 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 
 #~ msgid ""
 #~ "You can add auth tokens, that can be used to access your ticket scanner. "
-#~ "Create an auth token and pass the QR code to the user or let the user "
-#~ "scan it from your admin area. The used auth token will bypass any access "
+#~ "Create an auth token and pass the QR code to the user or let the user scan "
+#~ "it from your admin area. The used auth token will bypass any access "
 #~ "restricton settings for the ticket scanner that are set in the options."
 #~ msgstr ""
 #~ "Hitelesítési tokeneket adhat hozzá, amelyekkel hozzáférhet a "
@@ -8182,13 +8845,12 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ "beállításokban adott meg."
 
 #~ msgid ""
-#~ "You can add comma seperated \",\" product ids. This will limit the user "
-#~ "to redeem tickets only of products listed here. If left empty, all are "
-#~ "allowed."
+#~ "You can add comma seperated \",\" product ids. This will limit the user to "
+#~ "redeem tickets only of products listed here. If left empty, all are allowed."
 #~ msgstr ""
-#~ "Vesszővel \",\" elválasztott termékazonosítókat adhat hozzá. Ez "
-#~ "korlátozza a felhasználót, hogy csak az itt felsorolt termékek jegyeit "
-#~ "válthassa be. Ha üresen hagyja, mind engedélyezett."
+#~ "Vesszővel \",\" elválasztott termékazonosítókat adhat hozzá. Ez korlátozza a"
+#~ " felhasználót, hogy csak az itt felsorolt termékek jegyeit válthassa be. Ha "
+#~ "üresen hagyja, mind engedélyezett."
 
 #~ msgid "The following libraries are used in the plugin."
 #~ msgstr "A következő könyvtárak használatosak a bővítményben."
@@ -8199,26 +8861,25 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ "egyaránt használatosak."
 
 #~ msgid ""
-#~ "Do you realy want to try to repair your database table definitions for "
-#~ "the plugin? It should be safe, but only needed in very rare cases. You "
-#~ "might see errors messages during the page reload - that is normal. Why "
-#~ "not asking support, if you should do it? ;)"
+#~ "Do you realy want to try to repair your database table definitions for the "
+#~ "plugin? It should be safe, but only needed in very rare cases. You might see"
+#~ " errors messages during the page reload - that is normal. Why not asking "
+#~ "support, if you should do it? ;)"
 #~ msgstr ""
 #~ "Biztosan meg akarod próbálni javítani a bővítmény adatbázis "
 #~ "táblaszerkezetét? Ez biztonságos művelet, de csak nagyon ritka esetekben "
 #~ "szükséges. Lehet, hogy néhány hibaüzenetet fogsz látni az oldal "
-#~ "újratöltésekor - ez normális. Miért nem kérdezed meg előbb a "
-#~ "támogatást? ;)"
+#~ "újratöltésekor - ez normális. Miért nem kérdezed meg előbb a támogatást? ;)"
 
 #~ msgid ""
 #~ "Each entry will turn green (successfull stored) or red (NOT OK - duplicat "
-#~ "entry on the server).<br>Scroll down and wait for all to finish.<br>In "
-#~ "the textarea below you will find all the successful stored tickets."
+#~ "entry on the server).<br>Scroll down and wait for all to finish.<br>In the "
+#~ "textarea below you will find all the successful stored tickets."
 #~ msgstr ""
-#~ "Minden bejegyzés zöldre (sikeresen mentve) vagy pirosra (NEM OK - "
-#~ "duplikált bejegyzés a szerveren) vált.<br>Görgess le és várd meg, amíg "
-#~ "minden befejeződik.<br>Az alábbi szövegmezőben találod az összes "
-#~ "sikeresen mentett jegyszámot."
+#~ "Minden bejegyzés zöldre (sikeresen mentve) vagy pirosra (NEM OK - duplikált "
+#~ "bejegyzés a szerveren) vált.<br>Görgess le és várd meg, amíg minden "
+#~ "befejeződik.<br>Az alábbi szövegmezőben találod az összes sikeresen mentett "
+#~ "jegyszámot."
 
 #~ msgctxt "title"
 #~ msgid "Successfull stored ticket numbers"
@@ -8229,8 +8890,8 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ "you have too many tickets. In that case, you can export your tickets in "
 #~ "several steps. e.g. 0 and 20000 amount and then 20001 and 20000 amount."
 #~ msgstr ""
-#~ "Egyes rendszerek lassúak, és a kapcsolat időtúllépés miatt megszakad, ha "
-#~ "túl sok jegyet exportálsz. Ebben az esetben több lépésben exportálhatod a "
+#~ "Egyes rendszerek lassúak, és a kapcsolat időtúllépés miatt megszakad, ha túl"
+#~ " sok jegyet exportálsz. Ebben az esetben több lépésben exportálhatod a "
 #~ "jegyeidet. Pl. 0-tól 20000-ig, majd 20001-től újabb 20000 jegyet."
 
 #~ msgid ""
@@ -8251,11 +8912,11 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ msgstr "Jegyértékesítési lehetőségek"
 
 #~ msgid ""
-#~ "Enter your premium licence key. After updating the Premium plugin to "
-#~ "version 1.6.0+, all premium features will be restored."
+#~ "Enter your premium licence key. After updating the Premium plugin to version"
+#~ " 1.6.0+, all premium features will be restored."
 #~ msgstr ""
-#~ "Adja meg prémium licenckulcsát. A Prémium bővítmény 1.6.0+ verzióra "
-#~ "történő frissítése után minden prémium funkció visszaáll."
+#~ "Adja meg prémium licenckulcsát. A Prémium bővítmény 1.6.0+ verzióra történő "
+#~ "frissítése után minden prémium funkció visszaáll."
 
 #~ msgid "Premium Serial Key"
 #~ msgstr "Prémium sorozatszám"
@@ -8267,18 +8928,18 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ msgstr "Adja meg a sorozatkulcsát az Event Tickets beállításokban"
 
 #~ msgid ""
-#~ "You are using the premium version. Many thanks, please enter your serial "
-#~ "key within the options"
+#~ "You are using the premium version. Many thanks, please enter your serial key"
+#~ " within the options"
 #~ msgstr ""
 #~ "A Premium verziót használod. Köszönjük szépen, kérjük add meg a "
 #~ "sorozatszámodat a beállításokban."
 
 #~ msgid ""
-#~ "You can create and generate tickets and codes. You can redeem the tickets "
-#~ "at entrance using the built-in ticket scanner. You customer can download "
-#~ "a PDF with the ticket information. The Premium allows you also to "
-#~ "activate user registration and more. This allows your user to register "
-#~ "them self to a ticket."
+#~ "You can create and generate tickets and codes. You can redeem the tickets at"
+#~ " entrance using the built-in ticket scanner. You customer can download a PDF"
+#~ " with the ticket information. The Premium allows you also to activate user "
+#~ "registration and more. This allows your user to register them self to a "
+#~ "ticket."
 #~ msgstr ""
 #~ "Jegyeket és jegykódokat hozhatsz létre és generálhatsz. A jegyeket a "
 #~ "beépített jegyszkennerrel érvényesítheted a bejáratnál. Ügyfeleid PDF "
@@ -8318,8 +8979,8 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ msgstr "Válaszd ki az exportálási beállításokat"
 
 #~ msgid ""
-#~ "Do you want to empty the \"%s\" table? All data will be lost. No ticket "
-#~ "will be deleted. Just the list."
+#~ "Do you want to empty the \"%s\" table? All data will be lost. No ticket will"
+#~ " be deleted. Just the list."
 #~ msgstr ""
 #~ "Szeretnéd kiüríteni a(z) \"%s\" táblát? Minden adat elvész. Egyetlen jegy "
 #~ "sem lesz törölve. Csak a lista."
@@ -8347,14 +9008,14 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 
 #~ msgid ""
 #~ "If the order is deleted or the status is set to 'refund', then the "
-#~ "WooCommerce order information is removed from the ticket number(s). If "
-#~ "the option 'one time usage' is active, then the ticket number will be "
-#~ "unmarked as used."
+#~ "WooCommerce order information is removed from the ticket number(s). If the "
+#~ "option 'one time usage' is active, then the ticket number will be unmarked "
+#~ "as used."
 #~ msgstr ""
 #~ "Ha a rendelés törlésre kerül vagy az állapota 'visszatérítés' lesz, a "
-#~ "WooCommerce rendelési információ eltávolításra kerül a jegyszám(ok)ról. "
-#~ "Ha az 'egyszeri használat' opció aktív, a jegyszám felhasználatlanként "
-#~ "lesz megjelölve."
+#~ "WooCommerce rendelési információ eltávolításra kerül a jegyszám(ok)ról. Ha "
+#~ "az 'egyszeri használat' opció aktív, a jegyszám felhasználatlanként lesz "
+#~ "megjelölve."
 
 #~ msgid ""
 #~ "If active, the system will try to use an existing ticket from the ticket "
@@ -8365,8 +9026,7 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ "jegylistából. Ha nem található szabad kód, új jegy kerül létrehozásra és "
 #~ "hozzárendelésre a vásárláshoz."
 
-#~ msgid ""
-#~ "Do not print the ticket number CVV on the confirmation to the customer"
+#~ msgid "Do not print the ticket number CVV on the confirmation to the customer"
 #~ msgstr ""
 #~ "Ne jelenjen meg a jegyszám CVV az ügyfélnek küldött visszaigazolásban."
 
@@ -8376,18 +9036,15 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ msgid "No special role allowed"
 #~ msgstr "Nincs speciális szerepkör szükséges"
 
-#~ msgid ""
-#~ "Do not show the redeem button on the ticket detail view for the client"
+#~ msgid "Do not show the redeem button on the ticket detail view for the client"
 #~ msgstr ""
-#~ "Ne jelenjen meg az érvényesítés gomb a jegy részletes nézetében az "
-#~ "ügyfélnek (megakadályozza az önérvényesítést)"
+#~ "Ne jelenjen meg az érvényesítés gomb a jegy részletes nézetében az ügyfélnek"
+#~ " (megakadályozza az önérvényesítést)"
 
 #~ msgid ""
-#~ "If active, it will not add the self-redeem button on the ticket detail "
-#~ "view."
+#~ "If active, it will not add the self-redeem button on the ticket detail view."
 #~ msgstr ""
-#~ "Ha aktív, az önérvényesítés gomb nem jelenik meg a jegy részletes "
-#~ "nézetében."
+#~ "Ha aktív, az önérvényesítés gomb nem jelenik meg a jegy részletes nézetében."
 
 #~ msgid ""
 #~ "Text that will be added before the ticket code on the PDF invoice, order "
@@ -8397,18 +9054,18 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ "táblázatban és rendelési részletekben"
 
 #~ msgid ""
-#~ "If active, it will not display the PDF download option on the purchase "
-#~ "email to the client. But the PDF can still be generated with the URL."
+#~ "If active, it will not display the PDF download option on the purchase email"
+#~ " to the client. But the PDF can still be generated with the URL."
 #~ msgstr ""
-#~ "Ha aktív, a PDF letöltési lehetőség nem jelenik meg a vásárlási e-mailben "
-#~ "az ügyfélnek. De a PDF továbbra is generálható az URL-lel."
+#~ "Ha aktív, a PDF letöltési lehetőség nem jelenik meg a vásárlási e-mailben az"
+#~ " ügyfélnek. De a PDF továbbra is generálható az URL-lel."
 
 #~ msgid ""
 #~ "If active, it will not display the URL to the ticket detail page on the "
 #~ "purchase email to the client."
 #~ msgstr ""
-#~ "Ha aktív, a jegy részletes oldalára mutató URL nem jelenik meg az "
-#~ "ügyfélnek küldött e-mailben."
+#~ "Ha aktív, a jegy részletes oldalára mutató URL nem jelenik meg az ügyfélnek "
+#~ "küldött e-mailben."
 
 #~ msgid "Display a banner image image at the top of the PDF"
 #~ msgstr "Bannerkép megjelenítése a PDF tetején"
@@ -8427,17 +9084,16 @@ msgstr "A Premium licenced %1$d nap múlva lejár (%2$s)."
 #~ "page. For this, the feature 'Do not show the redeem button on the ticket "
 #~ "detail view for the client' has to be NOT checked."
 #~ msgstr ""
-#~ "Ha az ügyfeled érvényesíti a saját jegyét, átirányíthatod egy másik "
-#~ "oldalra. Ehhez a 'Ne jelenjen meg az érvényesítés gomb' opció NEM lehet "
-#~ "bejelölve."
+#~ "Ha az ügyfeled érvényesíti a saját jegyét, átirányíthatod egy másik oldalra."
+#~ " Ehhez a 'Ne jelenjen meg az érvényesítés gomb' opció NEM lehet bejelölve."
 
 #~ msgid "Redeemed at:"
 #~ msgstr "Érvényesítve:"
 
 #~ msgid ""
-#~ "This text will be added to the ticket scanner and ticket detail page "
-#~ "view. Only if the ticket can be redeemed more than one time! Use the "
-#~ "placeholders %1$s and %2$s to display the amounts."
+#~ "This text will be added to the ticket scanner and ticket detail page view. "
+#~ "Only if the ticket can be redeemed more than one time! Use the placeholders "
+#~ "%1$s and %2$s to display the amounts."
 #~ msgstr ""
 #~ "Ez a szöveg a jegyszkennerben és a jegy részletes nézetében jelenik meg. "
 #~ "Csak ha a jegy egynél többször érvényesíthető! Használd a %1$s és %2$s "

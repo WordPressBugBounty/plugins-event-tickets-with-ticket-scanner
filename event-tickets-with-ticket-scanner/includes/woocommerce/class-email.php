@@ -430,6 +430,30 @@ if (!class_exists('sasoEventtickets_WC_Email')) {
 				}
 			}
 
+			// Display congress page link(s) — one per ticket whose product has a congress assigned
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('congressEmailLinkActive')
+				&& file_exists(plugin_dir_path(dirname(__FILE__)) . 'congress/class-congress-repository.php')) {
+				$repo  = $this->MAIN->getCongressRepository();
+				$label = trim((string)$this->MAIN->getOptions()->getOptionValue('congressEmailLinkLabel'));
+				if ($label === '') {
+					$label = __('Open your congress page', 'event-tickets-with-ticket-scanner');
+				}
+				foreach ($order->get_items() as $item) {
+					$product_id = (int)$item->get_product_id();
+					if (!$product_id || !$repo->getForProduct($product_id)) {
+						continue;
+					}
+					$public_ids_value = (string)$item->get_meta(self::META_ORDER_ITEM_PUBLIC_IDS);
+					$public_ids = $public_ids_value !== '' ? explode(',', $public_ids_value) : [];
+					foreach ($public_ids as $pid) {
+						$pid = trim($pid);
+						if ($pid === '') continue;
+						$url = $repo->getUrl($pid);
+						echo '<p><a target="_blank" href="' . esc_url($url) . '"><b>' . esc_html($label) . '</b></a></p>';
+					}
+				}
+			}
+
 			do_action($this->MAIN->_do_action_prefix . 'woocommerce-hooks_woocommerce_email_order_meta', $order, $sent_to_admin, $plain_text, $email);
 		}
 	}

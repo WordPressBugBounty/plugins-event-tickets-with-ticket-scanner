@@ -3,11 +3,11 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.0.9
+ * Version: 3.1.0
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
- * Tested up to: 6.9
+ * Tested up to: 7.0
  * Requires PHP: 8.1
  * Text Domain: event-tickets-with-ticket-scanner
  * License: GPLv2 or later
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.0.9');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.1.0');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -72,6 +72,9 @@ class sasoEventtickets {
 	private $ADMIN = null;
 	private $FRONTEND = null;
 	private $OPTIONS = null;
+	private $CONGRESS_REPO = null;
+	private $CONGRESS_ADMIN = null;
+	private $CONGRESS_PAGE = null;
 
 	private $isAllowedAccess = null;
 
@@ -251,6 +254,27 @@ class sasoEventtickets {
 	public function getSeating() {
 		$this->loadOnce('sasoEventtickets_Seating');
 		return sasoEventtickets_Seating::Instance($this);
+	}
+	public function getCongressRepository() {
+		if ($this->CONGRESS_REPO === null) {
+			require_once plugin_dir_path(__FILE__) . 'includes/congress/class-congress-repository.php';
+			$this->CONGRESS_REPO = new sasoEventtickets_CongressRepository($this);
+		}
+		return $this->CONGRESS_REPO;
+	}
+	public function getCongressAdmin() {
+		if ($this->CONGRESS_ADMIN === null) {
+			require_once plugin_dir_path(__FILE__) . 'includes/congress/class-congress-admin.php';
+			$this->CONGRESS_ADMIN = new sasoEventtickets_CongressAdmin($this);
+		}
+		return $this->CONGRESS_ADMIN;
+	}
+	public function getCongressPage() {
+		if ($this->CONGRESS_PAGE === null) {
+			require_once plugin_dir_path(__FILE__) . 'includes/congress/class-congress-page.php';
+			$this->CONGRESS_PAGE = new sasoEventtickets_CongressPage($this);
+		}
+		return $this->CONGRESS_PAGE;
 	}
 
 	public function isOldPremiumDetected(): bool {
@@ -583,6 +607,18 @@ class sasoEventtickets {
 		add_shortcode($this->_shortcode_eventviews, [$this, 'replacingShortcodeEventViews']);
 		add_shortcode($this->_shortcode_feature_list, [$this, 'replacingShortcodeFeatureList']);
 		add_shortcode($this->_shortcode_ticket_detail, [$this, 'replacingShortcodeTicketDetail']);
+
+		// Congress: REST API always registered; frontend page only when active
+		// (guarded — class files arrive in later tasks)
+		add_action('rest_api_init', function() {
+			$apiFile = plugin_dir_path(__FILE__) . 'includes/congress/class-congress-api.php';
+			if (!file_exists($apiFile)) return;
+			require_once $apiFile;
+			(new sasoEventtickets_CongressApi($this))->registerRoutes();
+		});
+		// Congress page is served via the ticket route (…/ticket/{TICKETID}?congress) — see
+		// sasoEventtickets_Ticket::output(). No separate front route needed.
+
 		do_action( $this->_do_action_prefix.'main_init_frontend' );
 	}
 	private function init_backend() {
@@ -607,6 +643,16 @@ class sasoEventtickets {
 		}
 
 		add_action('admin_init', [$this, 'periodicLicenseCheck']);
+
+		// Congress: Admin menu always active (guarded — class files arrive in later tasks)
+		if (file_exists(plugin_dir_path(__FILE__) . 'includes/congress/class-congress-admin.php')) {
+			add_action('admin_menu', [$this, 'relay_congress_register_menu']);
+
+			// Congress AJAX: only when on admin-ajax.php
+			if (basename($_SERVER['SCRIPT_NAME'] ?? '') == "admin-ajax.php") {
+				add_action('wp_ajax_saso_et_congress', [$this, 'relay_congress_handle_ajax']);
+			}
+		}
 
 		do_action( $this->_do_action_prefix.'main_init_backend' );
 	}
@@ -781,6 +827,37 @@ class sasoEventtickets {
 				echo '<p><a href="' . esc_url($url) . '" target="_blank" rel="noopener">' . esc_html__('Add to Wallet', 'event-tickets-with-ticket-scanner') . '</a></p>';
 			}
 		}
+	}
+
+	public function relay_congress_register_menu(): void {
+		$this->getCongressAdmin()->registerMenu();
+	}
+	public function relay_congress_handle_ajax(): void {
+		$this->getCongressAdmin()->handleAjax();
+	}
+
+	/**
+	 * product_id => public congress URL template (…/ticket/__TICKETID__?congress) for products that
+	 * have a congress assigned. The admin ticket detail swaps __TICKETID__ for the public ticket id.
+	 */
+	public function getCongressProductUrlMap(): array {
+		$map = [];
+		$repoFile = plugin_dir_path(__FILE__) . 'includes/congress/class-congress-repository.php';
+		if (!file_exists($repoFile)) return $map;
+		global $wpdb;
+		$rows = $wpdb->get_results(
+			"SELECT cp.product_id, c.slug
+			 FROM {$wpdb->prefix}saso_eventtickets_congress_products cp
+			 JOIN {$wpdb->prefix}saso_eventtickets_congresses c ON c.id = cp.congress_id",
+			ARRAY_A
+		);
+		if (!$rows) return $map;
+		$repo = $this->getCongressRepository();
+		foreach ($rows as $r) {
+			// URL template with a placeholder; JS swaps in the public ticket id.
+			$map[(int)$r['product_id']] = $repo->getUrl('__TICKETID__');
+		}
+		return $map;
 	}
 
 	public function relay_woocommerce_after_shop_loop_item() {
@@ -1002,8 +1079,10 @@ class sasoEventtickets {
 			'event-tickets-backend',
 			plugins_url('css/styles_backend.css', __FILE__),
 			array(),
-			$this->getPluginVersion()
+			$this->getPluginVersion() . '.' . filemtime(__DIR__ . '/css/styles_backend.css')
 		);
+		wp_enqueue_editor();
+		wp_enqueue_media();
 
 		$js_url = "jquery.qrcode.min.js?_v=".$this->_js_version;
 		wp_register_script('ajax_script2', plugins_url( "3rd/".$js_url,__FILE__ ), array('jquery', 'jquery-ui-dialog'));
@@ -1023,6 +1102,10 @@ class sasoEventtickets {
 		$vars = array(
 			'_plugin_home_url' =>plugins_url( "",__FILE__ ),
 			'_plugin_version' => $this->getPluginVersion(),
+			'_congress_assets_v' => $this->getPluginVersion() . '.' . max(
+				@filemtime(__DIR__ . '/js/congress-admin.js') ?: 0,
+				@filemtime(__DIR__ . '/css/congress-admin.css') ?: 0
+			),
 			'_action' => $this->_prefix.'_executeAdminSettings',
 			'_max'=>$this->getBase()->getMaxValues(),
 			'_isPremium'=>$this->isPremium(),
@@ -1034,7 +1117,10 @@ class sasoEventtickets {
 			'ajaxActionPrefix' => $this->_prefix,
 			'divPrefix' => $this->_prefix,
 			'divId' => $this->_divId,
-			'jsFiles' => plugins_url( 'backend.js?_v='.$this->_js_version.'&_f='.filemtime(__DIR__.'/backend.js'),__FILE__ )
+			'jsFiles' => plugins_url( 'backend.js?_v='.$this->_js_version.'&_f='.filemtime(__DIR__.'/backend.js'),__FILE__ ),
+			// product_id => congress URL template (…/ticket/__TICKETID__?congress); JS swaps in the public ticket id.
+			// Lets the admin jump straight to a ticket's congress page from the ticket detail.
+			'_congressProducts' => $this->getCongressProductUrlMap()
 		);
 		// Version notices for "What's New" banner
 		$versionNoticesFile = __DIR__ . '/version-notices.json';

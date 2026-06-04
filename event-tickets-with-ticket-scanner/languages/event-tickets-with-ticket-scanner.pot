@@ -7294,3 +7294,748 @@ msgstr ""
 
 msgid "Upload a custom file for this product."
 msgstr ""
+
+msgid "Access denied."
+msgstr ""
+
+msgid "Access denied. Invalid ticket or no congress assigned to this ticket."
+msgstr ""
+
+msgid "Access expires (optional)"
+msgstr ""
+
+msgid "Add congress link to the order email"
+msgstr ""
+
+msgid "Add day"
+msgstr ""
+
+msgid "Add days and time slots. Each slot has time, title, speaker and room."
+msgstr ""
+
+msgid "Add file"
+msgstr ""
+
+msgid "Add image"
+msgstr ""
+
+msgid "Add page"
+msgstr ""
+
+msgid "Add section"
+msgstr ""
+
+msgid "Add slot"
+msgstr ""
+
+msgid "Add URL"
+msgstr ""
+
+msgid "assigned (manage on product level)"
+msgstr ""
+
+msgid "Assign via the WooCommerce product settings."
+msgstr ""
+
+msgid "Caption (optional)"
+msgstr ""
+
+msgid "Choose"
+msgstr ""
+
+msgid "Choose image"
+msgstr ""
+
+msgid "Choose video"
+msgstr ""
+
+msgid ""
+"Choose which page this section belongs to. Change it to move the section to "
+"another page."
+msgstr ""
+
+msgid "Congress access — days available after event end"
+msgstr ""
+
+msgid "Congress access — hours before event start"
+msgstr ""
+
+msgid "Congresses"
+msgstr ""
+
+msgid ""
+"Congresses let you attach structured information (programme, downloads, "
+"media, texts) to an event. Ticket holders can access the congress page using "
+"their ticket ID. Assign a congress to a product in the WooCommerce product "
+"settings — one congress can be shared across multiple products."
+msgstr ""
+
+msgid "Congress-Modus"
+msgstr ""
+
+msgid "Congress not found."
+msgstr ""
+
+msgid "Congress page active"
+msgstr ""
+
+msgid "Content"
+msgstr ""
+
+msgid "Could not load the congress page."
+msgstr ""
+
+msgid "Could not load this page."
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Created:"
+msgstr ""
+
+msgid "Current slug:"
+msgstr ""
+
+msgid "Current title:"
+msgstr ""
+
+msgid "Custom width"
+msgstr ""
+
+msgid "Delete page?"
+msgstr ""
+
+msgid "Delete section?"
+msgstr ""
+
+msgid "Delete this congress?"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Display size"
+msgstr ""
+
+msgid "Drag to reorder"
+msgstr ""
+
+msgid "Drag to reorder pages"
+msgstr ""
+
+msgid "Edit congress"
+msgstr ""
+
+msgid "Edit section"
+msgstr ""
+
+msgid "Event end (optional)"
+msgstr ""
+
+msgid "Event start (optional)"
+msgstr ""
+
+msgid "Files"
+msgstr ""
+
+msgid "Full width"
+msgstr ""
+
+msgid "Gallery"
+msgstr ""
+
+msgid ""
+"How many days after a congress' event end the page stays available. Only "
+"applies when the congress has an event end time set. 0 = available forever "
+"(no automatic expiry)."
+msgstr ""
+
+msgid ""
+"How many hours before a congress' event start the page becomes accessible. "
+"Only applies when the congress has an event start time set. 0 = no early "
+"restriction (accessible immediately)."
+msgstr ""
+
+msgid "HTML allowed (same rules as blog posts). JavaScript is stripped."
+msgstr ""
+
+msgid ""
+"If active, a link to the congress page is added to the WooCommerce order "
+"email for every ticket whose product has a congress assigned."
+msgstr ""
+
+msgid ""
+"If active, the congress page offers the ticket holder a link to add/open the "
+"ticket in the Vollstart Wallet app."
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "Images"
+msgstr ""
+
+msgid "Image URL and optional caption for each item. Drag to reorder."
+msgstr ""
+
+msgid "Internal"
+msgstr ""
+
+msgid ""
+"Internal links open in the same tab. External links open in a new tab. Drag "
+"to reorder."
+msgstr ""
+
+msgid "Its sections will be moved to the start page. This cannot be undone."
+msgstr ""
+
+msgid "Label for the congress link in the email"
+msgstr ""
+
+msgid "Label for visitors"
+msgstr ""
+
+msgid "Link (YouTube, Vimeo, …)"
+msgstr ""
+
+msgid "Loading…"
+msgstr ""
+
+msgid "Manual hard cutoff. Leave empty for unlimited access."
+msgstr ""
+
+msgid "Menu"
+msgstr ""
+
+msgid "New congress"
+msgstr ""
+
+msgid "New edition"
+msgstr ""
+
+msgid "No content on this page yet."
+msgstr ""
+
+msgid "No file selected"
+msgstr ""
+
+msgid "No pages yet. Add a page to start."
+msgstr ""
+
+msgid "No sections on this page yet."
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "Open full size when clicked"
+msgstr ""
+
+msgid "Open in browser instead of downloading (PDF, images)."
+msgstr ""
+
+msgid "Open inline"
+msgstr ""
+
+msgid "Open your congress page"
+msgstr ""
+
+msgid "Original size"
+msgstr ""
+
+msgid "Page"
+msgstr ""
+
+msgid "Pages"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid ""
+"Paste a YouTube, Vimeo or other supported link. It is embedded automatically."
+msgstr ""
+
+msgid ""
+"Pick files from the media library. Label is shown to visitors. Drag to "
+"reorder."
+msgstr ""
+
+msgid "Program"
+msgstr ""
+
+msgid "Remove day"
+msgstr ""
+
+msgid "Remove slot"
+msgstr ""
+
+msgid "Rename"
+msgstr ""
+
+msgid "Rename page"
+msgstr ""
+
+msgid "Room"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Save congress"
+msgstr ""
+
+msgid "Save the congress first to add pages and sections."
+msgstr ""
+
+msgid "Select file"
+msgstr ""
+
+msgid "Select image"
+msgstr ""
+
+msgid "Select video"
+msgstr ""
+
+msgid "Show 'Add to Wallet' link on the congress page"
+msgstr ""
+
+msgid ""
+"Shows the congress information page publicly to ticket holders. The page is "
+"only displayed when the ticket's product has a congress assigned to it. The "
+"congress admin area (Congresses menu) is always available regardless of this "
+"setting."
+msgstr ""
+
+msgid "Slug for new edition:"
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "Speaker"
+msgstr ""
+
+msgid "start page"
+msgstr ""
+
+msgid "Start page"
+msgstr ""
+
+msgid ""
+"The clickable text for the congress link in the order email. If left empty, "
+"a default is used."
+msgstr ""
+
+msgid ""
+"The first page is the start page (shown first to visitors). Drag pages and "
+"sections to reorder."
+msgstr ""
+
+msgid "This action cannot be undone."
+msgstr ""
+
+msgid "This action cannot be undone. All sections will be deleted as well."
+msgstr ""
+
+msgid "This congress has expired."
+msgstr ""
+
+msgid "This section is password-protected."
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Title and slug are required."
+msgstr ""
+
+msgid "Title for new edition (leave empty to auto-generate):"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid ""
+"Unique identifier for this congress. Visitors open it through their personal "
+"ticket link, not the slug."
+msgstr ""
+
+msgid "Unlock"
+msgstr ""
+
+msgid "Updated"
+msgstr ""
+
+msgid "Updated:"
+msgstr ""
+
+msgid "Uploaded video file"
+msgstr ""
+
+msgid "URLs"
+msgstr ""
+
+msgid "Used with the global \"days available after\" retention setting."
+msgstr ""
+
+msgid "Used with the global \"hours before\" access setting."
+msgstr ""
+
+msgid "Video"
+msgstr ""
+
+msgid "Video file"
+msgstr ""
+
+msgid "Video URL"
+msgstr ""
+
+msgid "Wrong password"
+msgstr ""
+
+msgid "Wrong password."
+msgstr ""
+
+#. Plugin Name of the plugin
+#: index.php
+msgid "Event Tickets with Ticket Scanner"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: index.php
+msgid "https://vollstart.com/event-tickets-with-ticket-scanner/docs/"
+msgstr ""
+
+#. Description of the plugin
+#: index.php
+msgid ""
+"You can create and generate tickets and codes. You can redeem the tickets at "
+"entrance using the built-in ticket scanner. You customer can download a PDF "
+"with the ticket information. The Premium allows you also to activate user "
+"registration and more. This allows your user to register them self to a "
+"ticket."
+msgstr ""
+
+#. Author of the plugin
+#: index.php
+msgid "Vollstart"
+msgstr ""
+
+#. Author URI of the plugin
+#: index.php
+msgid "https://vollstart.com"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:186
+msgid "— None —"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:199
+msgid "Assign congress"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:200
+msgid ""
+"Ticket holders of this product will get access to the assigned congress page."
+msgstr ""
+
+#: includes/woocommerce/class-product.php:212
+msgid "Require CVV at the ticket scanner"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:213
+msgid ""
+"If active, a CVV is auto-generated for every new ticket on this product, and "
+"the ticket scanner asks the customer to enter the CVV before redeem. The CVV "
+"is delivered via the order email and customer profile, never embedded in the "
+"QR code. Best for private/exclusive events where a lost ticket card alone "
+"must not grant entry."
+msgstr ""
+
+#: includes/woocommerce/class-product.php:405
+msgid "Same-day cutoff time"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:407
+msgid ""
+"If the current time is past this value, today will no longer be selectable. "
+"Only applies when \"Offset days for start date\" is 0. Leave empty to "
+"disable."
+msgstr ""
+
+#: includes/woocommerce/class-product.php:836
+msgid "Name per ticket (text input)"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:837
+msgid "-- Inherit from parent product --"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:842
+msgid "Request name per ticket"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:843
+#: includes/woocommerce/class-product.php:861
+#: includes/woocommerce/class-product.php:875
+#: includes/woocommerce/class-product.php:909
+msgid "No"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:845
+msgid "Override: Ask for a name/text input per ticket."
+msgstr ""
+
+#: includes/woocommerce/class-product.php:851
+msgid "Name field label"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:852
+#: includes/woocommerce/class-product.php:884
+msgid "Override label. Leave empty to inherit from parent."
+msgstr ""
+
+#: includes/woocommerce/class-product.php:860
+msgid "Name field mandatory"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:869
+msgid "Value per ticket (dropdown)"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:874
+msgid "Request dropdown per ticket"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:877
+msgid "Override: Ask for a dropdown selection per ticket."
+msgstr ""
+
+#: includes/woocommerce/class-product.php:883
+msgid "Dropdown label"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:891
+msgid "Dropdown values"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:892
+msgid "One value per line. Leave empty to inherit from parent."
+msgstr ""
+
+#: includes/woocommerce/class-product.php:899
+msgid "Dropdown default value"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:900
+msgid "Override default. Leave empty to inherit from parent."
+msgstr ""
+
+#: includes/woocommerce/class-product.php:908
+msgid "Dropdown mandatory"
+msgstr ""
+
+#: includes/woocommerce/class-product.php:1092
+msgid ""
+"Calendar is available for date picker products. For all products use the "
+"Attendance tab."
+msgstr ""
+
+#: sasoEventtickets_Core.php:231
+msgid "AUTHTOKEN DELETED"
+msgstr ""
+
+#: sasoEventtickets_Options.php:188
+msgid "Version notice seen"
+msgstr ""
+
+#: sasoEventtickets_Options.php:188
+msgid ""
+"Stores the plugin version when the version notice was dismissed. Clear this "
+"value to show the notice again."
+msgstr ""
+
+#: sasoEventtickets_Options.php:242
+msgid "Scanner: mask the CVV input field"
+msgstr ""
+
+#: sasoEventtickets_Options.php:243
+msgid ""
+"If active (default), the security-code input on the ticket scanner shows the "
+"typed characters as dots, helping against shoulder-surfing from people "
+"queuing behind. Disable for verbal entry where the staff types what the "
+"customer says."
+msgstr ""
+
+#: sasoEventtickets_Options.php:249
+msgid "Scanner: use compact one-stage CVV flow"
+msgstr ""
+
+#: sasoEventtickets_Options.php:250
+msgid ""
+"If active, the security-code input and the redeem button appear on the same "
+"screen. If inactive (default), the scanner shows a two-stage flow: first "
+"hand the device to the customer to enter the code, then the staff sees a "
+"confirmation and redeems."
+msgstr ""
+
+#: backend.js:324
+msgid "Validating license — please wait…"
+msgstr ""
+
+#: backend.js:330
+msgid "License key saved. Reloading…"
+msgstr ""
+
+#: backend.js:1447
+msgid "congress page disabled in options"
+msgstr ""
+
+#: backend.js:2315
+msgctxt "tab"
+msgid "Sold Tickets"
+msgstr ""
+
+#: backend.js:2316
+msgctxt "tab"
+msgid "Daily Redemption Summary"
+msgstr ""
+
+#: backend.js:2354
+msgid "Products:"
+msgstr ""
+
+#: backend.js:2383
+msgid "Auto-refresh:"
+msgstr ""
+
+#: backend.js:2385
+msgid "Off"
+msgstr ""
+
+#: backend.js:2444
+msgid "Error loading data."
+msgstr ""
+
+#: backend.js:2603
+msgid "No tickets found for this month."
+msgstr ""
+
+#: backend.js:2847
+msgid "Insert Tag"
+msgstr ""
+
+#: backend.js:2980
+msgctxt "label"
+msgid "Congresses"
+msgstr ""
+
+#: backend.js:3487
+msgid ""
+"Eventado.com is a free public event calendar — Premium customers can list "
+"their ticket events automatically."
+msgstr ""
+
+#: backend.js:3488
+msgid ""
+"Do you want to publish your ticket events to Eventado.com for more reach and "
+"SEO?"
+msgstr ""
+
+#: backend.js:3637
+msgid "Dismiss"
+msgstr ""
+
+#: backend.js:5232
+msgid "CVV attempts:"
+msgstr ""
+
+#: backend.js:5233
+msgid "Last attempt:"
+msgstr ""
+
+#: backend.js:5235
+msgid "LOCKED — too many wrong attempts"
+msgstr ""
+
+#: backend.js:5237
+msgid "Reset CVV attempts"
+msgstr ""
+
+#: backend.js:5239
+msgid "Reset CVV attempt counter and unlock this ticket?"
+msgstr ""
+
+#: backend.js:5723
+msgid "Redeemed via authtoken:"
+msgstr ""
+
+#: backend.js:5743
+msgctxt "label"
+msgid "Congress"
+msgstr ""
+
+#: backend.js:5743
+msgctxt "label"
+msgid "Open congress page"
+msgstr ""
+
+#: js/congress-admin.js:55 js/congress-admin.js:205 js/congress-admin.js:556
+#: js/congress-admin.js:870
+msgid "Title"
+msgstr ""
+
+#: js/congress-admin.js:1035
+msgid "Add"
+msgstr ""
+
+#: ticket_scanner.js:921 ticket_scanner.js:1413
+msgid "Security code required"
+msgstr ""
+
+#: ticket_scanner.js:922
+msgid ""
+"Please hand this device to the customer to enter the security code from "
+"their e-mail or profile."
+msgstr ""
+
+#: ticket_scanner.js:935 ticket_scanner.js:939
+msgid "Show"
+msgstr ""
+
+#: ticket_scanner.js:939
+msgid "Hide"
+msgstr ""
+
+#: ticket_scanner.js:945
+msgid "Confirm code"
+msgstr ""
+
+#: ticket_scanner.js:947 ticket_scanner.js:1425
+msgid "Attempts remaining:"
+msgstr ""
+
+#: ticket_scanner.js:1001
+msgid "Code valid — please take back the device"
+msgstr ""
+
+#: ticket_scanner.js:1003
+msgid "Continue →"
+msgstr ""
+
+#: ticket_scanner.js:1022 ticket_scanner.js:1410
+msgid "Ticket locked"
+msgstr ""
+
+#: ticket_scanner.js:1023
+msgid ""
+"Too many wrong security code attempts. Please ask the event admin to reset "
+"this ticket."
+msgstr ""
+
+#: ticket_scanner.js:1464
+msgctxt "label"
+msgid "Confirm codes"
+msgstr ""

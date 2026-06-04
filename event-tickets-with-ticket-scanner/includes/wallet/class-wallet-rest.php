@@ -220,6 +220,25 @@ class sasoEventtickets_Wallet_REST {
 		// Downloads (empty in free, extensible via filter for premium)
 		$downloads = apply_filters('saso_eventtickets_wallet_downloads', [], $codeObj, $metaObj);
 
+		// Generic wallet actions (extensible: future POS/voucher types add their own).
+		$actions = [];
+		if (file_exists(plugin_dir_path(dirname(__FILE__)) . 'congress/class-congress-repository.php')) {
+			$av = $this->MAIN->getCongressRepository()->getAvailability($public_id, $codeObj); // codeObj → daychooser-accurate event date
+			if (!empty($av['congress'])) { // a congress is assigned → always emit the action (enabled or disabled)
+				$actions[] = [
+					'key'             => 'congress',
+					'label'           => __('Open congress', 'event-tickets-with-ticket-scanner'),
+					'url'             => $av['url'],
+					'available'       => (bool) $av['available'],
+					'reason'          => $av['reason'],
+					'available_from'  => $av['available_from'] ? gmdate('c', $av['available_from']) : null,
+					'available_until' => $av['available_until'] ? gmdate('c', $av['available_until']) : null,
+					'target'          => '_blank',
+				];
+			}
+		}
+		$actions = apply_filters('saso_eventtickets_wallet_actions', $actions, $codeObj, $metaObj);
+
 		return [
 			'ticket_id'      => $public_id,
 			'code'           => $codeObj['code'],
@@ -232,6 +251,7 @@ class sasoEventtickets_Wallet_REST {
 				'url'  => site_url(),
 			],
 			'downloads'      => $downloads,
+			'actions'        => $actions,
 			'redeemed_at'    => !empty($metaObj['wc_ticket']['redeemed_date']) ? $metaObj['wc_ticket']['redeemed_date'] : null,
 			'wallet_version' => self::API_VERSION,
 		];

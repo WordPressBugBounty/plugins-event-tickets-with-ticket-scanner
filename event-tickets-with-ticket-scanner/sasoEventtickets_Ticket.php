@@ -3236,6 +3236,15 @@ final class sasoEventtickets_Ticket {
 		return false;
 	}
 
+	private function isCongressRequest() {
+		if (isset($_GET['congress'])) return true;
+		$this->getParts();
+		if ($this->parts != null && isset($this->parts['_isCongressRequest'])) {
+			return $this->parts['_isCongressRequest'];
+		}
+		return false;
+	}
+
 	private function isOrderTicketInfo() {
 		$parts = $this->getParts();
 		// bsp ordertickets-395-3477288899
@@ -3309,7 +3318,16 @@ final class sasoEventtickets_Ticket {
 
 			try {
 				if (!$this->isScanner()) {
-					if($this->isPDFRequest()) {
+					if ($this->isCongressRequest()) {
+						$this->getParts();
+						// Full public ticket id ({idcode}-{order}-{code}) so self-referential
+						// URLs (manifest/start_url) stay valid ticket URLs.
+						$congress_ticket_id = ($this->parts != null && isset($this->parts['code']))
+							? $this->parts['idcode'] . '-' . $this->parts['order_id'] . '-' . $this->parts['code']
+							: '';
+						$this->MAIN->getCongressPage()->renderForTicket($congress_ticket_id);
+						exit;
+					} elseif($this->isPDFRequest()) {
 						$this->checkIfDownloadIsAllowed();
 						try {
 							$this->outputPDF();

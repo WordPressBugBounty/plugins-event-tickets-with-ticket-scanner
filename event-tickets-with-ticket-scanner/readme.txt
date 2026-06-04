@@ -1,10 +1,10 @@
 === Event Tickets with Ticket Scanner ===
 Contributors: sasonikolov
-Tags: event tickets, ticket scanner, QR code tickets, woocommerce tickets, seating plan
+Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.0.9
-Tested up to: 6.9
+Stable tag: 3.1.0
+Tested up to: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -86,6 +86,20 @@ Your customers can collect tickets from multiple shops in one free app:
 
 Enable it in Settings → Digital Wallets. Free for all users.
 
+= 🎓 Congress & Attendee Portal =
+
+Give ticket holders a private event portal — no extra login, no separate app. Assign a **congress** to any ticket product and buyers reach it straight from their ticket ID.
+
+* **Organize content into pages** — a start page plus as many pages as you need (Speakers, Programme, Downloads, Sponsors …), with a sidebar on desktop and a hamburger menu on mobile
+* **Rich section types** — formatted text, a day-by-day programme schedule, downloadable files, link lists, image galleries, single images, and embedded videos (paste a YouTube/Vimeo link or upload your own)
+* **Password-protect** individual sections for VIP or speaker-only content
+* **Fast by design** — the start page loads instantly and other pages are fetched on demand, so even congresses with dozens of speakers stay snappy
+* **Installable & offline-friendly** — the portal ships as a mini Progressive Web App
+* **Time-controlled access** — open the portal a set number of hours before the event and keep it available for a chosen number of days afterwards
+* **Recurring events** — duplicate a congress as a "new edition" in one click
+
+Build it under the Congresses menu, assign it in the product's Event Tickets tab, and optionally add a portal link to the order email. Included free.
+
 = Powerful Ticket Types =
 
 * **Single entry** — classic one-time event ticket
@@ -115,6 +129,7 @@ The free version covers everything you need to start selling tickets:
 * ✅ Seat selection at checkout
 * ✅ Multi-entry and family tickets
 * ✅ Day chooser for date-based events
+* ✅ Congress / attendee portal (pages, programme, downloads, media, password-protected sections)
 * ✅ Webhooks for third-party integrations
 
 **Premium adds professional features for larger events:**
@@ -191,7 +206,7 @@ In the free version, the order confirmation email includes a link to download th
 The ticket is automatically deactivated, the assigned seat is released, and the ticket number is recovered for reuse.
 
 = Is the plugin compatible with WPML? =
-Yes. WPML is supported for multilingual ticket sales. The scanner also supports multiple languages including German, Spanish, French, Italian, Japanese, Dutch, Portuguese, and Chinese.
+Yes. WPML is supported for multilingual ticket sales. The plugin also ships translations for German, Spanish, French, Italian, Hungarian, Japanese, Dutch, Portuguese, and Chinese.
 
 = What if I exceed the free ticket limit? =
 If you reach the limit, the plugin will display a message asking the customer to contact support. Your sales are never interrupted. Premium has no ticket limits.
@@ -201,6 +216,9 @@ Yes. The built-in scanner page accepts input from hardware barcode scanners in a
 
 = How do I prevent ticket fraud? =
 Every ticket number is unique. The scanner detects duplicate redemption attempts. Premium adds CVV verification and brute-force IP blocking for additional security.
+
+= What is the congress / attendee portal? =
+It's a private event portal you can attach to a ticket product — organized into pages (start page, speakers, programme, downloads, sponsors, etc.) with text, schedules, files, image galleries and embedded videos. Ticket holders open it directly via their ticket, no separate account needed. You can password-protect individual sections, control when the portal opens and how long it stays available, and the page works offline as a mini PWA. It's included in the free version; build it under the Congresses menu and assign it in the product's Event Tickets tab.
 
 == Screenshots ==
 
@@ -228,8 +246,49 @@ Old premium version will no longer work with this version. You need to downgrade
 
 == Changelog ==
 
+= 3.1.0 - 2026-06-04 =
+* New: Congress mode — organizers create congress objects (programme, downloads, texts, media) and assign them to WooCommerce products.
+* New: A dismissible "What's New" banner in the admin introduces the Congress feature (shown once per version).
+* New: Ticket holders open the congress page via their ticket ID. Like the ticket detail and scanner pages it is served from the plugin path (`…/ticket/{ticket-id}?congress`, query fallback `…/?code={ticket-id}&congress`), so it is compatibility-mode aware and never collides with shop page slugs.
+* New: Offline-capable congress page with a Web App Manifest (installable as a mini PWA).
+* New: Sections with optional password protection (server-side transient, 1h TTL).
+* New: Programme sections with a day/slot structure, plus download and media sections (WordPress Media Library).
+* New: "New edition" button for recurring congresses — duplicates the congress and sets an automatic expiry date on the original.
+* New: Option to activate/deactivate the public congress page (default: active); the admin area stays available either way.
+* New: Event-relative access window — optional event start/end time per congress; global options control how many hours before the start access opens and how many days after the end the data stays available.
+* Improvement: Congress assignment now lives directly in the Event Tickets product tab (instead of a separate tab); the dropdown shows the event/expiry date for easier selection.
+* New: `congress_url` in the Wallet API response — the Wallet app shows an "Open congress" button when the product is assigned to an active congress.
+* New: Congress URL pattern listed on the Support/System Info page (adapts to the site location); the admin ticket detail shows a direct "Open congress page" link for tickets whose product is assigned to a congress.
+* Fix: Congress access now accepts the public ticket ID (as used by the Wallet/QR), not only the internal code — so the Wallet/customer link works reliably.
+* New: Congress section editor with full input masks per type — Info/Custom use a visual editor, Download picks files from the media library, URL with internal/external link option, Program with day & time-slot structure, Media gallery.
+* New: Congress sections now track and display created/updated date and the editing user.
+* New: Visual text editor (TinyMCE) for the "Additional text on PDF ticket" and "Ticket Badge HTML" options instead of a plain textarea.
+* New: Tag picker dropdown inside the Ticket Badge editor — insert replacement tags ({TICKET.*}, {ORDER.*}, {PRODUCT.*} …) at the cursor instead of copy-pasting from the list below.
+* Improvement: Modernized admin UI — compact buttons, lightweight ghost-style table action buttons grouped together, navigation menu with active highlight, modern DataTables styling.
+* Improvement: Congress editor redesigned as a clean card layout; all native browser confirm/prompt dialogs replaced with the plugin's own styled dialogs and loading spinner.
+* New: Congress pages — sections are now grouped into pages (the first page is the start page). Visitors get a sidebar (desktop) / hamburger drawer (mobile) navigation; the start page loads instantly and other pages are fetched on demand, so large congresses stay fast.
+* New: Congress section types Image (from the media library, with caption) and Video (paste a YouTube/Vimeo link for automatic embedding, or upload a video file).
+* New: Image sections have a display-size option — full width (default), original size, or a custom width (px or %).
+* New: Image sections can optionally open full size in a lightbox when clicked (default off).
+* New: Download files can be set to "open inline" (PDF/images open in the browser) instead of forcing a download.
+* New: Admin can create, rename, delete and reorder congress pages (drag & drop) and move a section to another page; sections are drag-sortable within a page.
+* Security: All HTML content is sanitized with `wp_kses_post()` — no JavaScript allowed in congress content; video embeds are generated server-side via WordPress oEmbed.
+* i18n: All new congress strings (admin editor + visitor page) translated into 11 locales (de_DE, de_CH, es_ES, fr_FR, hu_HU, it_IT, ja_JP, nl_NL, pt_BR, pt_PT, zh_CN), including the JavaScript UI (script-translation JSON).
+* Performance: Transient cache (5 min) for access checks; ETag/Last-Modified for browser cache invalidation.
+* Fix: Same-day cutoff time was not working when the product also had a fixed start date configured. The absolute start date was applied after the cutoff check and silently overrode it, leaving today selectable past the cutoff time. Cutoff check now runs after all date overrides and correctly disables today in every configuration.
+* Fix: Same-day cutoff time is now validated server-side at checkout. A customer who selected today's date before the cutoff and held the cart past it is now blocked at checkout.
+* New: Congress can be switched active/inactive per congress (on top of the global on/off) — hide it everywhere without unassigning, e.g. to publish the info only later after purchase.
+* New: The Vollstart Wallet shows a congress button on the ticket; it enables/disables on the next refresh based on the global switch, the per-congress active flag, the order status, and the access window (which now derives the event date from the ticket's product). Outside the window it shows a disabled "available from …" hint.
+* Changed: Wallet API now returns a generic, extensible `actions` array (future content types reuse it) instead of the single `congress_url` field.
+* Changed: Removed the redundant per-congress "Event start/end" fields from the congress editor — the event date comes from the WooCommerce product.
+
+= 3.0.10 - 2026-05-18 =
+* Fix: Same-day cutoff time was not working when the product also had a fixed start date configured. The absolute start date was applied after the cutoff check and silently overrode it, leaving today selectable past the cutoff time. Cutoff check now runs after all date overrides and correctly disables today in every configuration.
+* Fix: Same-day cutoff time is now validated server-side at checkout. A customer who selected today's date before the cutoff and held the cart past it is now blocked at checkout.
+
 = 3.0.9 - 2026-05-18 =
 * New: Day-chooser products can now define a "Same-day cutoff time" (HH:MM) in the product's ticket settings. When the customer's local time is past that value, today's date is automatically disabled in the date picker — only tomorrow and future dates remain selectable. The field has no effect when "Offset days for start date" is already ≥ 1 (today would be excluded anyway).
+* Fix: Same-day cutoff time was ineffective on products that also have a fixed start date (ticket_start_date) configured. The absolute start date was applied after the cutoff check and silently overrode it, leaving today selectable past the cutoff. The cutoff check now runs after all min-date overrides and correctly shifts the minimum to tomorrow whenever today would still be reachable.
 * New: CVV-at-Scanner — a per-product opt-in second-factor for ticket redemption. Enable "Require security code at scanner" (`saso_eventtickets_require_cvv_at_scanner`) on any ticket product; a unique 4-character alphanumeric code (uppercase A–Z plus 2–9, no visually ambiguous O/0/I/1) is generated automatically at WC order-completion time and stored alongside the ticket. At the scanner, the ticket's public ID is shown immediately on QR scan but all identifying information (name, seat, billing details, product title) is withheld until the bearer reads the code from their ticket and enters it. An incorrect code counts as one strike; after 5 consecutive wrong attempts the ticket locks and the scanner shows a prominent locked-screen warning — the attendant must contact the organiser to reset via the "Reset CVV attempts" button in the admin code-edit modal. The default UI is a two-stage hand-over flow: first stage confirms the public ticket ID and prompts the organiser to hand the device to the attendee; second stage shows the masked code entry field with a show/hide toggle. An optional one-stage flow (global option `wcTicketScannerCVVOneStageFlow`, default off) skips the hand-over prompt for high-trust environments. Input masking is on by default and controlled globally via `wcTicketScannerCVVMaskInput` (default on). The anti-information-leak short-circuit response from REST endpoints exposes only `requires_cvv`, `attempts_remaining`, `locked`, and `public_ticket_id` — no product name, seat, billing, or order metadata is returned before a correct CVV is entered.
 * New: Order-ticket QR codes (one QR for an entire order) now honor the per-product CVV requirement on a per-ticket-row basis. When an order QR is scanned and one or more of its tickets is from a CVV-protected product, the scanner UI renders a compact CVV input next to each protected row instead of revealing name/seat/order details for it, while non-protected rows in the same order continue to show full information. A "Confirm codes" button at the bottom submits all entered codes in one round-trip; rows with a correct CVV unlock and become fully redeemable. Wrong-CVV rows decrement the per-ticket attempt counter (same 5-strike lockout as single-ticket scans); attempts on one row do not affect other rows. Anti-information-leak: blocked rows expose only `requires_cvv`, `attempts_remaining`, `locked`, and `public_ticket_id`.
 * New: CSV ticket export gains two new columns — `meta_cvv_attempts` (number of failed attempts so far) and `meta_cvv_locked` (boolean, 1 if the 5-strike limit was reached) — so organisers can audit CVV activity across all tickets without opening individual admin screens.

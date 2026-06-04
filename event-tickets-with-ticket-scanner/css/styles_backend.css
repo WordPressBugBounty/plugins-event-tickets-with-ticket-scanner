@@ -55,6 +55,11 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes lds-dual-ring {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* --- Bootstrap-like form utilities --- */
 .sngmbh_mb-3, .sngmbh_my-3 {
     margin-bottom: 1rem!important;
@@ -332,7 +337,7 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active {
     align-items: center;
     justify-content: center;
 
-    padding: 6px 10px;
+    padding: 6px 14px;
     border-radius: 999px;
 
     font-size: 13px;
@@ -344,16 +349,20 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active {
 
     color: #111827;
     background: transparent;
+    border: 1px solid var(--et-border);
 
-    transition: background 0.15s ease, color 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 button.event-tickets-with-ticket-scanner-topmenu-item:hover {
     background: #f3f4f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 button.event-tickets-with-ticket-scanner-topmenu-item-active {
-    background: #cececf;
+    background: var(--et-primary-light);
+    color: var(--et-primary);
+    border-color: var(--et-primary);
 }
 
 button.event-tickets-with-ticket-scanner-topmenu-item:focus,
@@ -449,20 +458,21 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     animation: lds-dual-ring 0.8s linear infinite;
 }
 
-/* Overlay spinner (fixed position) */
-.event-tickets-with-ticket-scanner-admin-page .et-spinner-overlay {
+/* Overlay spinner — appended to body, so NOT scoped to admin-page */
+.et-spinner-overlay {
     display: none;
     position: fixed;
-    z-index: 1031;
+    z-index: 99999;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--et-card-bg);
-    border: 1px solid var(--et-border);
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
     padding: 24px 32px;
-    border-radius: var(--et-radius);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
     text-align: center;
+    min-width: 100px;
 }
 
 /* Content loading area */
@@ -580,7 +590,89 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
 }
 
 /* ==========================================================================
-   DataTables inside cards
+   DataTables — general overrides (inside and outside cards)
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page table.dataTable {
+    border-collapse: collapse;
+    width: 100% !important;
+}
+
+.event-tickets-with-ticket-scanner-admin-page table.dataTable thead th {
+    background: var(--et-bg);
+    border-bottom: 2px solid var(--et-border);
+    color: var(--et-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 10px 12px;
+    vertical-align: bottom;
+}
+
+.event-tickets-with-ticket-scanner-admin-page table.dataTable tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--et-border-light);
+    font-size: 13px;
+    color: var(--et-text);
+}
+
+.event-tickets-with-ticket-scanner-admin-page table.dataTable tbody tr:nth-child(even) {
+    background-color: var(--et-bg);
+}
+
+.event-tickets-with-ticket-scanner-admin-page table.dataTable tbody tr:hover {
+    background-color: var(--et-primary-light);
+}
+
+/* DataTables search / length / pagination controls */
+.event-tickets-with-ticket-scanner-admin-page .dataTables_wrapper .dataTables_filter input {
+    border: 1px solid var(--et-border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 13px;
+    transition: border-color var(--et-transition), box-shadow var(--et-transition);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .dataTables_wrapper .dataTables_filter input:focus {
+    border-color: var(--et-primary);
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.15);
+    outline: none;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .dataTables_wrapper .dataTables_length select {
+    border: 1px solid var(--et-border);
+    border-radius: 6px;
+    padding: 4px 20px 4px 8px;
+    font-size: 13px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .dataTables_wrapper .dataTables_info {
+    font-size: 12px;
+    color: var(--et-text-secondary);
+    padding-top: 10px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 6px !important;
+    font-size: 13px;
+    padding: 4px 10px !important;
+    transition: all var(--et-transition);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--et-primary) !important;
+    border-color: var(--et-primary) !important;
+    color: #fff !important;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: var(--et-primary-light) !important;
+    border-color: var(--et-primary) !important;
+    color: var(--et-primary) !important;
+}
+
+/* ==========================================================================
+   DataTables inside cards (scoped, for hover override consistency)
    ========================================================================== */
 .event-tickets-with-ticket-scanner-admin-page .et-card table.dataTable {
     border-collapse: collapse;
@@ -621,13 +713,14 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     background: var(--et-primary) !important;
     border-color: var(--et-primary) !important;
     color: #fff !important;
-    border-radius: 6px;
-    padding: 4px 16px;
-    font-size: 13px;
+    border-radius: 5px;
+    padding: 2px 12px !important;
+    font-size: 12px;
     font-weight: 500;
+    line-height: 1.8;
     transition: background var(--et-transition), box-shadow var(--et-transition);
-    box-shadow: none;
-    text-shadow: none;
+    box-shadow: none !important;
+    text-shadow: none !important;
 }
 
 .event-tickets-with-ticket-scanner-admin-page .button-primary:hover,
@@ -635,16 +728,41 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     background: var(--et-primary-hover) !important;
     border-color: var(--et-primary-hover) !important;
     color: #fff !important;
-    box-shadow: 0 2px 4px rgba(147, 51, 234, 0.3) !important;
+    box-shadow: 0 1px 3px rgba(147, 51, 234, 0.25) !important;
 }
 
 .event-tickets-with-ticket-scanner-admin-page .button-secondary,
 .event-tickets-with-ticket-scanner-admin-page .button {
-    border-radius: 6px;
-    padding: 4px 16px;
-    font-size: 13px;
-    font-weight: 500;
+    border-radius: 5px;
+    padding: 2px 10px !important;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.8;
+    box-shadow: none !important;
+    text-shadow: none !important;
     transition: all var(--et-transition);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .button-delete,
+.event-tickets-with-ticket-scanner-admin-page .sngmbh_btn-delete {
+    background: var(--et-danger) !important;
+    border-color: var(--et-danger) !important;
+    color: #fff !important;
+    border-radius: 5px;
+    padding: 2px 12px !important;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.8;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    transition: background var(--et-transition), box-shadow var(--et-transition);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .button-delete:hover,
+.event-tickets-with-ticket-scanner-admin-page .sngmbh_btn-delete:hover {
+    background: var(--et-danger-hover) !important;
+    border-color: var(--et-danger-hover) !important;
+    box-shadow: 0 1px 3px rgba(239, 68, 68, 0.25) !important;
 }
 
 /* ==========================================================================
@@ -732,6 +850,10 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     border-radius: 6px;
     border: 1px solid var(--et-border);
     transition: border-color var(--et-transition), box-shadow var(--et-transition);
+}
+
+.event-tickets-with-ticket-scanner-admin-page select {
+    padding-right: 20px;
 }
 
 .event-tickets-with-ticket-scanner-admin-page input[type="text"]:focus,
@@ -1102,4 +1224,112 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
 
 .saso-wizard-dialog .ui-dialog-titlebar {
     border-radius: 0 !important;
+}
+
+/* ==========================================================================
+   Table row action buttons — lightweight ghost style
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action {
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--et-text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: color var(--et-transition), background var(--et-transition), border-color var(--et-transition);
+    box-shadow: none !important;
+    text-shadow: none !important;
+    margin: 0 1px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action:hover,
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action:focus {
+    color: var(--et-text);
+    background: var(--et-border-light);
+    border-color: var(--et-border);
+    box-shadow: none !important;
+    outline: none;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action--danger {
+    color: #b91c1c;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action--danger:hover,
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action--danger:focus {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+/* ==========================================================================
+   Toolbar & Button Groups
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-toolbar-hint {
+    font-size: 12px;
+    color: var(--et-text-muted);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group {
+    display: inline-flex;
+    border: 1px solid var(--et-border);
+    border-radius: 5px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group--danger {
+    border-color: #fecaca;
+}
+
+/* et-btn-action inside a group */
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-btn-action {
+    border-radius: 0;
+    border: none;
+    border-right: 1px solid var(--et-border);
+    margin: 0;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group--danger .et-btn-action {
+    border-right-color: #fecaca;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-btn-action:last-child {
+    border-right: none;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-btn-action:hover,
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-btn-action:focus {
+    border-color: transparent;
+    z-index: 1;
+}
+
+/* button / button-secondary inside a group (toolbar) */
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .button-secondary,
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .button {
+    border-radius: 0 !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: 1px solid var(--et-border) !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .button-secondary:last-child,
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .button:last-child {
+    border-right: none !important;
 }

@@ -179,6 +179,32 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 			) );
 			echo '</div>';
 
+			// Congress assignment (only when the congress module is present and at least one congress exists)
+			if (file_exists(plugin_dir_path(dirname(__FILE__)) . 'congress/class-congress-repository.php')) {
+				$congresses = $this->MAIN->getCongressRepository()->getAll();
+				if (!empty($congresses)) {
+					$congress_options = ['0' => __('— None —', 'event-tickets-with-ticket-scanner')];
+					foreach ($congresses as $c) {
+						$label = $c['title'];
+						$date  = !empty($c['event_start_at']) ? $c['event_start_at'] : ($c['access_expires_at'] ?? '');
+						if (!empty($date)) {
+							$label .= ' (' . date_i18n(get_option('date_format'), strtotime($date)) . ')';
+						}
+						$congress_options[(string)(int)$c['id']] = $label;
+					}
+					echo '<div class="options_group">';
+					woocommerce_wp_select([
+						'id'          => 'saso_et_congress_id',
+						'value'       => (string)(int)get_post_meta(get_the_ID(), '_saso_et_congress_id', true),
+						'label'       => __('Assign congress', 'event-tickets-with-ticket-scanner'),
+						'description' => __('Ticket holders of this product will get access to the assigned congress page.', 'event-tickets-with-ticket-scanner'),
+						'desc_tip'    => true,
+						'options'     => $congress_options,
+					]);
+					echo '</div>';
+				}
+			}
+
 			echo '<div class="options_group">';
 			woocommerce_wp_checkbox([
 				'id'          => 'saso_eventtickets_require_cvv_at_scanner',
@@ -682,6 +708,30 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 
 			if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'saso_eventtickets_wc_save_fields')) {
 				$this->MAIN->getPremiumFunctions()->saso_eventtickets_wc_save_fields($id, $post);
+			}
+
+			// Save congress assignment
+			if (file_exists(plugin_dir_path(dirname(__FILE__)) . 'congress/class-congress-repository.php')) {
+				$congress_id     = (int)($_POST['saso_et_congress_id'] ?? 0);
+				$old_congress_id = (int)get_post_meta($id, '_saso_et_congress_id', true);
+				$repo            = $this->MAIN->getCongressRepository();
+
+				// Remove product from old congress when switching
+				if ($old_congress_id > 0 && $old_congress_id !== $congress_id) {
+					$old_ids = array_values(array_diff(array_map('intval', $repo->getProductIds($old_congress_id)), [$id]));
+					$repo->setProducts($old_congress_id, $old_ids);
+				}
+
+				if ($congress_id > 0) {
+					update_post_meta($id, '_saso_et_congress_id', $congress_id);
+					$current_ids = array_map('intval', $repo->getProductIds($congress_id));
+					if (!in_array($id, $current_ids, true)) {
+						$current_ids[] = $id;
+						$repo->setProducts($congress_id, $current_ids);
+					}
+				} else {
+					delete_post_meta($id, '_saso_et_congress_id');
+				}
 			}
 		}
 
