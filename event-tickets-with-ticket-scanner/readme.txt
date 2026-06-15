@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 Tested up to: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -245,6 +245,22 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.1 - 2026-06-15 =
+* New: Event portals — the Congress tool now works for any event (opera, zoo, festival, …).
+* New: Optional card-grid landing showing each page as a card with an icon or image and a short description.
+* New: Customizable portal label per portal (with a global default, "Infos") — used on the page, in the wallet action and the order email.
+* New: Back-to-home control in the portal view.
+* New: Insert ticket/order/product/customer variables into info and custom section text; they are filled with the visitor's data when the page is opened.
+* Improvement: Internal data and links are unchanged — existing congresses keep working exactly as before.
+* Improved: Cleaner admin dashboard — moved the "List of tickets" description into the list card next to its buttons and removed the redundant heading and divider.
+* New: Speaker sections — add one or more speakers (photo, name, title, short bio). A single speaker is shown in full; multiple speakers appear as a grid of cards with a detail view and a back control.
+* New: "My ticket" entry in the portal always shows the ticket's QR code, so attendees without a printed badge can present it at the entrance.
+* New: Portal entries (such as "My ticket") also appear as cards on the card-grid landing.
+* Improvement: The portal title is now clickable and returns to the start page; the "Add to Vollstart Wallet" link moved from the header into the "My ticket" view.
+* New: View access toggles (security) — each output reachable through the ticket link (ticket detail view, PDF, ICS calendar, badge PDF, all-tickets-in-one-PDF, event portal/congress) can now be switched off individually. When off, the view is no longer rendered and a short "deactivated" notice (or 403 for downloads) is shown. All default to on, so existing installs are unaffected. Unlike the older "hide button" options, this actually blocks the URL.
+* New: Optional "Allow redemption by plain ticket number" (off by default). When enabled, a ticket can additionally be redeemed using only the plain ticket number printed on the card; the full ticket id keeps working as before. Note: for the plain number the copy protection does not apply, and it is unsafe together with ticket reuse (a warning is shown on both options).
+* Fix: Settings checkboxes whose default is "on" (e.g. the new view-access toggles, the QR scanner on the validation form, the seating-plan/venue buttons) could appear unchecked until the settings page was saved once. The admin UI compared a boolean default too strictly; it now renders the correct checked state. The actual behaviour was always correct (the option was on) — only the checkbox display was wrong.
 
 = 3.1.0 - 2026-06-04 =
 * New: Congress mode — organizers create congress objects (programme, downloads, texts, media) and assign them to WooCommerce products.

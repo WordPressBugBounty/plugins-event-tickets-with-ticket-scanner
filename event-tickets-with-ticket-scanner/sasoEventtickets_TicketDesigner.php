@@ -48,6 +48,17 @@ class sasoEventtickets_TicketDesigner {
     }
 
     public function renderHTML($codeObj, $forPDFOutput=false) {
+        $this->variables = $this->buildVariables($codeObj, $forPDFOutput);
+        $timezone_id = $this->variables['TICKET']['timezone_id'] ?? wp_timezone_string();
+        $html = $this->getTemplate();
+        $loader = new \Twig\Loader\ArrayLoader(['index' => $html]);
+        $twig = new \Twig\Environment($loader);
+        $this->configureTwigEnvironment($twig, $timezone_id);
+        $output = $twig->render('index', $this->variables);
+        return $output;
+    }
+
+    public function buildVariables($codeObj, $forPDFOutput=false): array {
         $codeObj = $this->MAIN->getCore()->setMetaObj($codeObj);
 		$metaObj = $codeObj['metaObj'];
         $order_id = intval($codeObj['order_id']);
@@ -186,88 +197,11 @@ class sasoEventtickets_TicketDesigner {
             $options[$key] = $this->MAIN->getOptions()->getOptionValue($key);
         }
 
-        $html = $this->getTemplate();
-
-        $loader = new \Twig\Loader\ArrayLoader(['index' => $html]);
-        $twig = new \Twig\Environment($loader);
-        $twig->getExtension(\Twig\Extension\CoreExtension::class)->setTimezone($ticket['timezone_id']);
-
-        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('wp_kses_post', function($twig_env, $value, $charset) {
-            return wp_kses_post($value);
-        });
-        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('wp_filter_nohtml_kses', function ($twig_env, $value, $charset) {
-            return wp_filter_nohtml_kses($value);
-        });
-        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('stripslashes', function ($twig_env, $value, $charset) {
-            return stripslashes($value);
-        });
-        $filter_format_datetime = new \Twig\TwigFilter('format_datetime', function ($date, $pattern="", $timezone="") {
-            if (empty($pattern)) {
-                $pattern = $this->MAIN->getOptions()->getOptionDateTimeFormat();
-            }
-            if (is_object($date)) {
-                if (!empty($timezone)) {
-                    $date->setTimezone($timezone);
-                }
-                return $date->format($pattern);
-            } else if (is_int($date)) {
-                // Use date_i18n with gmt=true - prevents timezone conversion but translates month/day names
-                return date_i18n($pattern, $date, true);
-            }
-            return date_i18n($pattern, strtotime($date), true);
-        });
-        $twig->addFilter($filter_format_datetime);
-        $filter_stripslashes = new \Twig\TwigFilter('stripslashes', function ($text) {
-            return stripslashes($text);
-        });
-        $twig->addFilter($filter_stripslashes);
-
-        $filter_wc_price = new \Twig\TwigFunction('wc_price', function ($value) {
-            return wc_price($value, ['decimals'=>2]);
-        });
-        $twig->addFunction($filter_wc_price);
-        $filter_getMediaData = new \Twig\TwigFunction('getMediaData', function ($media_id) {
-            return SASO_EVENTTICKETS::getMediaData($media_id);
-        });
-        $twig->addFunction($filter_getMediaData);
-
-        // hmm. oder get_product_addons auf dem Produkt. - no clue which plugin is extending the wc product to have add ons
-        if (function_exists("wc_product_addons_get_product_addons")) {
-            $filter_wc_product_addons_get_product_addons = new \Twig\TwigFunction('wc_product_addons_get_product_addons', function ($product) {
-                return wc_product_addons_get_product_addons($product); // wc plugin spezifisch
-            });
-            $twig->addFunction($filter_wc_product_addons_get_product_addons);
-        } else {
-            $filter_wc_product_addons_get_product_addons = new \Twig\TwigFunction('wc_product_addons_get_product_addons', function ($product) {
-                return [];
-            });
-            $twig->addFunction($filter_wc_product_addons_get_product_addons);
-        }
-        if (function_exists("get_field")) { // ACF support
-            $filter_get_field = new \Twig\TwigFunction('get_field', function ($field_name, $product_id, array $options = []) {
-                return get_field($field_name, $product_id, ...$options);
-            }, ['is_variadic' => true]);
-            $twig->addFunction($filter_get_field);
-        }
-
-        //$twig->addTest(new \Twig\TwigTest('object', [$this, 'isObject'])); // make inline
-        $twig->addTest(new \Twig\TwigTest('object', function ($object){
-            return is_object($object);
-        }));
-        $twig->addTest(new \Twig\TwigTest('array', function ($value) {
-            return is_array($value);
-        }));
-        $twig->addTest(new \Twig\TwigTest('numeric', function ($value) {
-            return is_numeric($value);
-        }));
-        $twig->addTest(new \Twig\TwigTest('string', function ($value) {
-            return is_string($value);
-        }));
         global $wpdb;
 
         $list_metaObj["desc"] = stripslashes($list_metaObj["desc"]);
 
-        $this->variables = [
+        return [
             'PRODUCT' => $product,
             'PRODUCT_PARENT' => $product_parent,
             'PRODUCT_ORIGINAL' => $product_original,
@@ -291,9 +225,63 @@ class sasoEventtickets_TicketDesigner {
             ],
             'WPDB' => $wpdb
         ];
-        $output = $twig->render('index', $this->variables);
+    }
 
-        return $output;
+    /**
+     * Configure a Twig environment with the plugin's escapers, filters, functions and tests.
+     * Shared by the ticket-PDF template render and the inline (congress section) render so
+     * both expose exactly the same capabilities.
+     */
+    private function configureTwigEnvironment(\Twig\Environment $twig, string $timezone_id): void {
+        $twig->getExtension(\Twig\Extension\CoreExtension::class)->setTimezone($timezone_id);
+
+        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('wp_kses_post', function($twig_env, $value, $charset) {
+            return wp_kses_post($value);
+        });
+        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('wp_filter_nohtml_kses', function ($twig_env, $value, $charset) {
+            return wp_filter_nohtml_kses($value);
+        });
+        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('stripslashes', function ($twig_env, $value, $charset) {
+            return stripslashes($value);
+        });
+        $twig->addFilter(new \Twig\TwigFilter('format_datetime', function ($date, $pattern="", $timezone="") {
+            if (empty($pattern)) { $pattern = $this->MAIN->getOptions()->getOptionDateTimeFormat(); }
+            if (is_object($date)) {
+                if (!empty($timezone)) { $date->setTimezone($timezone); }
+                return $date->format($pattern);
+            } else if (is_int($date)) {
+                return date_i18n($pattern, $date, true);
+            }
+            return date_i18n($pattern, strtotime($date), true);
+        }));
+        $twig->addFilter(new \Twig\TwigFilter('stripslashes', function ($text) { return stripslashes($text); }));
+        $twig->addFunction(new \Twig\TwigFunction('wc_price', function ($value) { return wc_price($value, ['decimals'=>2]); }));
+        $twig->addFunction(new \Twig\TwigFunction('getMediaData', function ($media_id) { return SASO_EVENTTICKETS::getMediaData($media_id); }));
+        if (function_exists("wc_product_addons_get_product_addons")) {
+            $twig->addFunction(new \Twig\TwigFunction('wc_product_addons_get_product_addons', function ($product) { return wc_product_addons_get_product_addons($product); }));
+        } else {
+            $twig->addFunction(new \Twig\TwigFunction('wc_product_addons_get_product_addons', function ($product) { return []; }));
+        }
+        if (function_exists("get_field")) {
+            $twig->addFunction(new \Twig\TwigFunction('get_field', function ($field_name, $product_id, array $options = []) { return get_field($field_name, $product_id, ...$options); }, ['is_variadic' => true]));
+        }
+        $twig->addTest(new \Twig\TwigTest('object',  function ($object){ return is_object($object); }));
+        $twig->addTest(new \Twig\TwigTest('array',   function ($value){ return is_array($value); }));
+        $twig->addTest(new \Twig\TwigTest('numeric', function ($value){ return is_numeric($value); }));
+        $twig->addTest(new \Twig\TwigTest('string',  function ($value){ return is_string($value); }));
+    }
+
+    /**
+     * Render an arbitrary Twig string with the plugin's full filter/function set.
+     * Used for congress section text (info/custom). $vars is the variable map
+     * (e.g. from buildVariables()). $timezone_id falls back to the site timezone.
+     */
+    public function renderInlineString(string $source, array $vars, string $timezone_id = ''): string {
+        if ($timezone_id === '') { $timezone_id = wp_timezone_string(); }
+        $loader = new \Twig\Loader\ArrayLoader(['index' => $source]);
+        $twig   = new \Twig\Environment($loader);
+        $this->configureTwigEnvironment($twig, $timezone_id);
+        return $twig->render('index', $vars);
     }
 
     public function getTemplate() {

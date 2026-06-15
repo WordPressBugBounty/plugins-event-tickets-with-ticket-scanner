@@ -8039,3 +8039,140 @@ msgstr ""
 msgctxt "label"
 msgid "Confirm codes"
 msgstr ""
+
+#. translators: %s = portal label, e.g. "Infos", "Opera"
+#: includes/wallet/class-wallet-rest.php:235
+#, php-format
+msgid "Open %s"
+msgstr ""
+
+#: sasoEventtickets_Options.php:772
+msgid "Default portal label"
+msgstr ""
+
+#: sasoEventtickets_Options.php:773
+msgid ""
+"The generic name for the info portal when a portal has no own label set (e."
+"g. \"Infos\", \"Congress\", \"Opera\", \"Zoo\"). Shown in the wallet action "
+"and the order email."
+msgstr ""
+
+#: sasoEventtickets_Options.php:775
+msgid "Infos"
+msgstr ""
+
+#: sasoEventtickets_Options.php:825
+msgid "Contact sharing (Premium only)"
+msgstr ""
+
+#: sasoEventtickets_Options.php:826
+msgid ""
+"Let congress attendees enter and exchange contact details (badge scan). "
+"Available in the premium version."
+msgstr ""
+
+#: js/congress-admin.js:98
+msgid "Export contacts"
+msgstr ""
+
+#: js/congress-admin.js:232
+msgid "Portal label"
+msgstr ""
+
+#: js/congress-admin.js:234
+msgid ""
+"Shown in the wallet and email (e.g. \"Opera evening\", \"Zoo visit\"). Empty "
+"= use the global default."
+msgstr ""
+
+#: js/congress-admin.js:243
+msgid "Show pages as a card grid on the start screen"
+msgstr ""
+
+#: js/congress-admin.js:245
+msgid ""
+"Visitors first see a grid of page cards (icon/image + description) instead "
+"of jumping straight into the first page."
+msgstr ""
+
+#: js/congress-admin.js:264
+msgid "Active — visible to ticket holders"
+msgstr ""
+
+#: js/congress-admin.js:266
+msgid ""
+"Turn off to hide this congress everywhere (page + wallet) without "
+"unassigning it — e.g. to publish the info only later."
+msgstr ""
+
+#: js/congress-admin.js:483
+msgid "No icon"
+msgstr ""
+
+#: js/congress-admin.js:496
+msgid "Remove image"
+msgstr ""
+
+#: js/congress-admin.js:518
+msgid ""
+"Icon, optional image, card color and a short description shown on the page "
+"card."
+msgstr ""
+
+#: js/congress-admin.js:519
+msgid "Icon"
+msgstr ""
+
+#: js/congress-admin.js:520
+msgid "Image (optional, overrides icon)"
+msgstr ""
+
+#: js/congress-admin.js:522
+msgid "Card color"
+msgstr ""
+
+#: js/congress-admin.js:524
+msgid "Short description (max 160)"
+msgstr ""
+
+#: js/congress-admin.js:527
+msgid "Page card settings"
+msgstr ""
+
+#: js/congress-admin.js:567
+msgid "Settings"
+msgstr ""
+
+#: js/congress-admin.js:668 js/congress-admin.js:946
+msgid "Speakers"
+msgstr ""
+
+#: js/congress-admin.js:715
+msgid "Insert variable…"
+msgstr ""
+
+#: js/congress-admin.js:927
+msgid "Short bio (max 500 characters)"
+msgstr ""
+
+#: js/congress-admin.js:941
+msgid "Add speaker"
+msgstr ""
+
+#: js/congress-admin.js:947
+msgid ""
+"Each speaker has an image, name, title and a short bio (max 500 characters). "
+"One speaker is shown in full; several are shown as boxes. Drag to reorder."
+msgstr ""
+
+#: js/congress-frontend.js:161
+msgid "No speakers yet."
+msgstr ""
+
+#: js/congress-frontend.js:493 js/congress-frontend.js:496
+msgid "My ticket"
+msgstr ""
+
+#: js/congress-frontend.js:499
+msgid "Ticket QR code"
+msgstr ""

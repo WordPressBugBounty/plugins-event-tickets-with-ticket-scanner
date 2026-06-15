@@ -3209,6 +3209,52 @@ final class sasoEventtickets_Ticket {
         echo "\n<!-- Ende Meta TICKET EVENT -->\n\n";
 	}
 
+	/**
+	 * Per-view access toggle. Each output reachable through the ticket link
+	 * (view/pdf/ics/badge/onepdf/congress) can be switched off individually via
+	 * its wcTicketShow* option. Default is ENABLED, so an unknown view type or a
+	 * missing option never blocks an existing flow.
+	 */
+	public function isViewEnabled(string $viewType): bool {
+		$map = [
+			'view'     => 'wcTicketShowView',
+			'pdf'      => 'wcTicketShowPDFView',
+			'ics'      => 'wcTicketShowICSView',
+			'badge'    => 'wcTicketShowBadgeView',
+			'onepdf'   => 'wcTicketShowOnePDFView',
+			'congress' => 'wcTicketShowCongressView',
+		];
+		if (!isset($map[$viewType])) return true;
+		return $this->MAIN->getOptions()->isOptionCheckboxActive($map[$viewType]);
+	}
+
+	/**
+	 * Notice shown when a view was switched off via its wcTicketShow* option.
+	 */
+	public function getViewDisabledMessage(): string {
+		return __("This view has been deactivated.", 'event-tickets-with-ticket-scanner');
+	}
+
+	/**
+	 * Download view (pdf/ics/badge/onepdf) is switched off → 403 + notice, exit.
+	 */
+	private function sendViewDisabled403() {
+		header("HTTP/1.1 403 Forbidden");
+		echo esc_html($this->getViewDisabledMessage());
+		exit;
+	}
+
+	/**
+	 * HTML view (ticket detail / congress) is switched off → small notice page.
+	 */
+	private function renderViewDisabledHtmlPage() {
+		if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideHeader') == false) get_header();
+		echo '<div style="max-width:640px;margin:40px auto;padding:15px;border:1px solid #ccc;text-align:center;">';
+		echo '<p>'.esc_html($this->getViewDisabledMessage()).'</p>';
+		echo '</div>';
+		if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideFooter') == false) get_footer();
+	}
+
 	private function isPDFRequest() {
 		if (isset($_GET['pdf'])) return true;
 		$this->getParts();
@@ -3319,6 +3365,7 @@ final class sasoEventtickets_Ticket {
 			try {
 				if (!$this->isScanner()) {
 					if ($this->isCongressRequest()) {
+						if (!$this->isViewEnabled('congress')) { $this->renderViewDisabledHtmlPage(); exit; }
 						$this->getParts();
 						// Full public ticket id ({idcode}-{order}-{code}) so self-referential
 						// URLs (manifest/start_url) stay valid ticket URLs.
@@ -3328,20 +3375,24 @@ final class sasoEventtickets_Ticket {
 						$this->MAIN->getCongressPage()->renderForTicket($congress_ticket_id);
 						exit;
 					} elseif($this->isPDFRequest()) {
+						if (!$this->isViewEnabled('pdf')) { $this->sendViewDisabled403(); }
 						$this->checkIfDownloadIsAllowed();
 						try {
 							$this->outputPDF();
 							exit;
 						} catch (Exception $e) {}
 					} elseif ($this->isICSRequest()) {
+						if (!$this->isViewEnabled('ics')) { $this->sendViewDisabled403(); }
 						$this->checkIfDownloadIsAllowed();
 						$this->sendICSFile();
 						exit;
 					} elseif ($this->isBadgeRequest()) {
+						if (!$this->isViewEnabled('badge')) { $this->sendViewDisabled403(); }
 						$this->checkIfDownloadIsAllowed();
 						$this->sendBadgeFile();
 						exit;
 					} elseif ($this->isOnePDFRequest()) {
+						if (!$this->isViewEnabled('onepdf')) { $this->sendViewDisabled403(); }
 						$this->checkIfDownloadIsAllowed();
 						$this->initOnePDFOutput();
 						exit;
@@ -3378,6 +3429,8 @@ final class sasoEventtickets_Ticket {
 					if ($this->isScanner()) { // old approach
 						$this->executeRequestScanner();
 						$this->outputTicketScanner();
+					} elseif (!$this->isViewEnabled('view')) {
+						echo '<p>'.esc_html($this->getViewDisabledMessage()).'</p>';
 					} else {
 						$this->executeRequest();
 						if ($this->isOrderTicketInfo()) {

@@ -515,3 +515,11 @@
 .ce-dialog-meta b {
     color: var(--et-text);
 }
+
+.ce-icon-grid { display:flex; flex-wrap:wrap; gap:6px; }
+.ce-icon-pick { width:38px; height:38px; border:1px solid var(--et-border,#ccc); border-radius:6px; background:#fff; cursor:pointer; }
+.ce-icon-pick.selected { border-color:var(--et-primary,#2271b1); box-shadow:0 0 0 2px rgba(34,113,177,.25); }
+.ce-img-row { display:flex; align-items:center; gap:10px; }
+.ce-page-img-preview { width:54px; height:54px; border:1px solid var(--et-border,#ccc); border-radius:6px; background-size:cover; background-position:center; display:inline-block; }
+.ce-icon-pick.ce-icon-none .dashicons { color:var(--et-text-muted,#9ca3af); }
+.ce-page-color { width:48px; height:32px; padding:0; border:1px solid var(--et-border,#ccc); border-radius:6px; background:#fff; cursor:pointer; }

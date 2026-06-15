@@ -1283,6 +1283,11 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     color: var(--et-text-muted);
 }
 
+.event-tickets-with-ticket-scanner-admin-page .et-toolbar-desc {
+    margin-right: auto;
+    color: var(--et-text-muted);
+}
+
 .event-tickets-with-ticket-scanner-admin-page .et-btn-group {
     display: inline-flex;
     border: 1px solid var(--et-border);

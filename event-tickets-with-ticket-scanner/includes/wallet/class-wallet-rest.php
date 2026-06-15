@@ -225,9 +225,14 @@ class sasoEventtickets_Wallet_REST {
 		if (file_exists(plugin_dir_path(dirname(__FILE__)) . 'congress/class-congress-repository.php')) {
 			$av = $this->MAIN->getCongressRepository()->getAvailability($public_id, $codeObj); // codeObj → daychooser-accurate event date
 			if (!empty($av['congress'])) { // a congress is assigned → always emit the action (enabled or disabled)
+				$congressLabel = $this->MAIN->getCongressRepository()->resolveLabel($av['congress']);
 				$actions[] = [
 					'key'             => 'congress',
-					'label'           => __('Open congress', 'event-tickets-with-ticket-scanner'),
+					// Icon REFERENCE only (never raw icon content). The wallet app resolves it
+					// against its own icon table; an unknown reference shows no icon.
+					'icon'            => 'congress',
+					/* translators: %s = portal label, e.g. "Infos", "Opera" */
+					'label'           => sprintf(__('Open %s', 'event-tickets-with-ticket-scanner'), $congressLabel),
 					'url'             => $av['url'],
 					'available'       => (bool) $av['available'],
 					'reason'          => $av['reason'],
@@ -238,6 +243,14 @@ class sasoEventtickets_Wallet_REST {
 			}
 		}
 		$actions = apply_filters('saso_eventtickets_wallet_actions', $actions, $codeObj, $metaObj);
+
+		// Redemption progress so the wallet can show "scanned" and, for multi-entry passes,
+		// how many of N entries were used. max_redeems: 0 = unlimited, 1 = single, N = limited.
+		$redeem_product = $display_product ?: $product;
+		$max_redeems    = $redeem_product ? intval(get_post_meta($redeem_product->get_id(), 'saso_eventtickets_ticket_max_redeem_amount', true)) : 1;
+		if ($max_redeems < 0) $max_redeems = 1;
+		$stats_redeemed = $metaObj['wc_ticket']['stats_redeemed'] ?? [];
+		$redeemed_count = is_array($stats_redeemed) ? count($stats_redeemed) : 0;
 
 		return [
 			'ticket_id'      => $public_id,
@@ -253,6 +266,8 @@ class sasoEventtickets_Wallet_REST {
 			'downloads'      => $downloads,
 			'actions'        => $actions,
 			'redeemed_at'    => !empty($metaObj['wc_ticket']['redeemed_date']) ? $metaObj['wc_ticket']['redeemed_date'] : null,
+			'redeemed_count' => $redeemed_count,
+			'max_redeems'    => $max_redeems,
 			'wallet_version' => self::API_VERSION,
 		];
 	}

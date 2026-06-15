@@ -62,6 +62,63 @@ class sasoEventtickets_Core {
 		return $ret[0];
 	}
 
+	/**
+	 * Look up a single ticket row by its plain printed ticket number, matching
+	 * either the internal `code` or the human `code_display`. Used only by the
+	 * opt-in "redeem by plain ticket number" path. Throws when nothing matches,
+	 * and — deliberately — when more than one row matches (ambiguous, e.g. a
+	 * recycled number under the reuse option): we never guess which ticket.
+	 */
+	public function retrieveCodeByTicketNumber($number) {
+		$number = $this->clearCode($number);
+		$number = $this->MAIN->getDB()->reinigen_in($number);
+		if (empty($number)) throw new Exception("#260 ticket number empty");
+		$table = $this->MAIN->getDB()->getTabelle("codes");
+		$sql = "select * from ".$table." where code = '".$number."' or code_display = '".$number."'";
+		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
+		if (count($ret) == 0) throw new Exception("#261 ticket number ".$number." not found");
+		if (count($ret) > 1) throw new Exception("#262 ticket number ".$number." is ambiguous");
+		return $ret[0];
+	}
+
+	/**
+	 * Rebuild the full public ticket id ({idcode}-{order_id}-{code}) from a plain
+	 * ticket number. Returns '' if it cannot be resolved to exactly one ticket.
+	 * Because the rebuilt id carries the real stored idcode/order_id, every
+	 * downstream copy-protection check passes unchanged.
+	 */
+	public function reconstructPublicTicketIdFromNumber($number) {
+		$codeObj = $this->retrieveCodeByTicketNumber($number);
+		$metaObj = $this->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		return $this->getTicketId($codeObj, $metaObj);
+	}
+
+	/**
+	 * If the opt-in option is active and $foundcode is a bare ticket number
+	 * (not already a 3-part public id and not an order-ticket id), expand it to
+	 * the full public ticket id. Any "?request" suffix is preserved. On any
+	 * failure the original value is returned untouched, so the normal flow (and
+	 * its existing #9303 error) is never disturbed.
+	 */
+	public function maybeExpandPlainTicketNumber($foundcode) {
+		if (empty($foundcode)) return $foundcode;
+		if (!$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemByTicketNumber')) return $foundcode;
+		$fc = trim($foundcode);
+		$core = explode('?', $fc)[0];
+		if (substr($core, 0, 13) === 'ordertickets-') return $foundcode; // order ticket, not in scope
+		if (count(explode('-', $core)) >= 3) return $foundcode;           // already a full public id
+		try {
+			$full = $this->reconstructPublicTicketIdFromNumber($core);
+			if (!empty($full)) {
+				$suffix = (strpos($fc, '?') !== false) ? substr($fc, strpos($fc, '?')) : '';
+				return $full . $suffix;
+			}
+		} catch (Exception $e) {
+			// not resolvable → leave untouched; normal parsing throws #9303 as before
+		}
+		return $foundcode;
+	}
+
 	public function checkCodesSize() {
 		if ($this->isCodeSizeExceeded()) throw new Exception("#208 too many tickets. Unlimited tickets only with premium");
 	}
@@ -1036,6 +1093,7 @@ class sasoEventtickets_Core {
 		}
 		if (SASO_EVENTTICKETS::issetRPara('code')) { // overwrites any found code, if parameter is available
 			$foundcode = trim(SASO_EVENTTICKETS::getRequestPara('code'));
+			$foundcode = $this->maybeExpandPlainTicketNumber($foundcode); // opt-in: bare ticket number → full public id
 			if (strpos($foundcode, "'") === false) {
 				$parts = explode("-", $foundcode);
 			} else {
@@ -1058,6 +1116,7 @@ class sasoEventtickets_Core {
 			$is_congress_request = in_array("congress", $t);
 		} else {
 			if (empty($foundcode)) throw new Exception("#9301 ticket id not found from ticket url");
+			$foundcode = $this->maybeExpandPlainTicketNumber($foundcode); // opt-in: bare ticket number → full public id
 			$parts = explode("-", $foundcode);
 			if (count($parts) < 3) throw new Exception("#9303 ticket id is wrong");
 			$t = explode("?", $parts[2]);

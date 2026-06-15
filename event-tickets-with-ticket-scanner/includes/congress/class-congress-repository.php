@@ -29,6 +29,13 @@ class sasoEventtickets_CongressRepository {
         return $row ?: null;
     }
 
+    /** Per-portal label, falling back to the global default option. */
+    public function resolveLabel(?array $congress): string {
+        $own = trim((string)($congress['label'] ?? ''));
+        if ($own !== '') return $own;
+        return (string) $this->MAIN->getOptions()->getOptionValue('congressDefaultLabel');
+    }
+
     public function getBySlug(string $slug): ?array {
         global $wpdb;
         $row = $wpdb->get_row($wpdb->prepare(
@@ -190,6 +197,20 @@ class sasoEventtickets_CongressRepository {
         return [];
     }
 
+    /** Resolve a ticket id (raw code or public id) to its codeObj (metaObj filled), or null. */
+    public function getCodeObjForTicket(string $ticket_id): ?array {
+        global $wpdb;
+        if ($ticket_id === '') return null;
+        $code = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}saso_eventtickets_codes
+             WHERE (code = %s OR JSON_UNQUOTE(JSON_EXTRACT(meta, '$.wc_ticket._public_ticket_id')) = %s)
+             AND aktiv = 1",
+            $ticket_id, $ticket_id
+        ), ARRAY_A);
+        if (!$code) return null;
+        return $this->MAIN->getCore()->setMetaObj($code);
+    }
+
     public function save(array $data): int {
         global $wpdb;
         $now = current_time('mysql');
@@ -207,6 +228,15 @@ class sasoEventtickets_CongressRepository {
             $existingRow = $this->getById((int) $data['id']);
             $data['is_active'] = $existingRow ? (int) $existingRow['is_active'] : 1;
         }
+        // Preserve existing label on partial update (mirrors meta-preservation pattern above).
+        if (array_key_exists('label', $data)) {
+            $label = sanitize_text_field($data['label']);
+        } elseif (!empty($data['id'])) {
+            $existingForLabel = $this->getById((int)$data['id']);
+            $label = $existingForLabel ? (string)($existingForLabel['label'] ?? '') : '';
+        } else {
+            $label = '';
+        }
         $row = [
             'slug'              => sanitize_title($data['slug'] ?? ''),
             'title'             => sanitize_text_field($data['title'] ?? ''),
@@ -214,10 +244,11 @@ class sasoEventtickets_CongressRepository {
             'event_start_at'    => !empty($data['event_start_at']) ? sanitize_text_field($data['event_start_at']) : null,
             'event_end_at'      => !empty($data['event_end_at']) ? sanitize_text_field($data['event_end_at']) : null,
             'is_active'         => array_key_exists('is_active', $data) ? (int) (!empty($data['is_active'])) : 1,
+            'label'             => $label,
             'updated_at'        => $now,
             'meta'              => wp_json_encode($meta),
         ];
-        $fmt = ['%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s'];
+        $fmt = ['%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s'];
         if (empty($row['slug'])) {
             return 0;
         }
@@ -265,6 +296,7 @@ class sasoEventtickets_CongressRepository {
             'slug'              => $new_slug,
             'title'             => $new_title ?? $orig['title'] . ' (Kopie)',
             'access_expires_at' => $orig['access_expires_at'] ?? null,
+            'label'             => $orig['label'] ?? '',
             'meta'              => $meta,
         ]);
         // Copy pages first, mapping old page id → new page id, so sections keep their page.
@@ -439,18 +471,52 @@ class sasoEventtickets_CongressRepository {
         return $pages[0] ?? null;
     }
 
+    /** Page display meta, read-with-defaults (old rows may have no/empty/foreign meta). */
+    public function getPageMeta(?array $page): array {
+        $defaults = ['icon' => '', 'image_id' => 0, 'description' => '', 'color' => ''];
+        $decoded  = json_decode((string)($page['meta'] ?? ''), true);
+        $meta     = array_merge($defaults, is_array($decoded) ? $decoded : []);
+        return [
+            'icon'        => (string) $meta['icon'],
+            'image_id'    => (int) $meta['image_id'],
+            'description' => (string) $meta['description'],
+            'color'       => (string) $meta['color'],
+        ];
+    }
+
+    /** Congress behaviour meta, read-with-defaults. */
+    public function getCongressMeta(?array $congress): array {
+        $defaults = ['landing_cards' => false];
+        $decoded  = json_decode((string)($congress['meta'] ?? ''), true);
+        $meta     = array_merge($defaults, is_array($decoded) ? $decoded : []);
+        return ['landing_cards' => !empty($meta['landing_cards'])];
+    }
+
     public function savePage(array $data): int {
         global $wpdb;
         $now     = current_time('mysql');
         $user_id = get_current_user_id();
         $table   = "{$wpdb->prefix}saso_eventtickets_congress_pages";
         $congress_id = (int)($data['congress_id'] ?? 0);
+
+        // Merge only the page-meta keys the caller actually sent (merge-on-write).
+        $mergePageMeta = function(?array $existingRow = null) use ($data) {
+            $decoded = $existingRow ? (json_decode((string)($existingRow['meta'] ?? ''), true) ?: []) : [];
+            if (array_key_exists('icon', $data))        $decoded['icon']        = sanitize_text_field($data['icon']);
+            if (array_key_exists('image_id', $data))    $decoded['image_id']    = (int) $data['image_id'];
+            if (array_key_exists('description', $data)) $decoded['description'] = sanitize_text_field($data['description']);
+            if (array_key_exists('color', $data))       $decoded['color']       = sanitize_hex_color($data['color']) ?: '';
+            return wp_json_encode($decoded);
+        };
+
         if (!empty($data['id'])) {
+            $existing = $this->getPageById((int)$data['id']);
             $wpdb->update($table, [
                 'title'              => sanitize_text_field($data['title'] ?? ''),
+                'meta'               => $mergePageMeta($existing),
                 'updated_at'         => $now,
                 'updated_by_user_id' => $user_id,
-            ], ['id' => (int)$data['id']], ['%s', '%s', '%d'], ['%d']);
+            ], ['id' => (int)$data['id']], ['%s', '%s', '%s', '%d'], ['%d']);
             $this->touch($congress_id);
             return (int)$data['id'];
         }
@@ -462,11 +528,12 @@ class sasoEventtickets_CongressRepository {
             'congress_id'        => $congress_id,
             'title'              => sanitize_text_field($data['title'] ?? ''),
             'sort_order'         => $max + 1,
+            'meta'               => $mergePageMeta(null),
             'created_at'         => $now,
             'updated_at'         => $now,
             'created_by_user_id' => $user_id,
             'updated_by_user_id' => $user_id,
-        ], ['%d', '%s', '%d', '%s', '%s', '%d', '%d']);
+        ], ['%d', '%s', '%d', '%s', '%s', '%s', '%d', '%d']);
         $this->touch($congress_id);
         return (int)$wpdb->insert_id;
     }

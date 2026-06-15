@@ -73,7 +73,23 @@ class sasoEventtickets_CongressPage {
         $js_ver     = SASO_EVENTTICKETS_PLUGIN_VERSION . '.' . (@filemtime($js_file) ?: '0');
         $show_wallet = (bool) $this->MAIN->getOptions()->isOptionCheckboxActive('congressShowWalletLink');
 
-        wp_register_style('saso-congress-frontend', $plugin_url . 'css/congress-frontend.css', [], $css_ver);
+        // Ticket QR as a data-URI so the portal can always offer a "My ticket" entry —
+        // attendees without a physical badge can show it at the door. The handler caches
+        // the PNG on disk by filename, so this is cheap on repeat loads.
+        $ticketQr = '';
+        try {
+            $qrh = $this->MAIN->getTicketQRHandler();
+            $qrh->setFilepath(trailingslashit(get_temp_dir()));
+            $png = $qrh->renderPNG($ticket_id, 'F'); // returns a file path; content is PNG
+            if ($png && file_exists($png)) {
+                $ticketQr = 'data:image/png;base64,' . base64_encode((string) file_get_contents($png));
+            }
+        } catch (\Throwable $e) { $ticketQr = ''; }
+
+        // Depend on core 'dashicons' so the page-card icons actually render the glyph font —
+        // it isn't loaded on the public frontend for anonymous visitors by default. The
+        // dependency also makes wp_print_styles() below emit it alongside our stylesheet.
+        wp_register_style('saso-congress-frontend', $plugin_url . 'css/congress-frontend.css', ['dashicons'], $css_ver);
         wp_enqueue_style('saso-congress-frontend');
 
         wp_register_script('saso-congress-frontend', $plugin_url . 'js/congress-frontend.js', ['wp-i18n'], $js_ver, true);
@@ -87,8 +103,18 @@ class sasoEventtickets_CongressPage {
             'expired'        => $expired ? 1 : 0,
             'showWalletLink' => $show_wallet ? 1 : 0,
             'walletUrl'      => $show_wallet ? $this->MAIN->getCore()->getWalletImportURL($ticket_id) : '',
+            'ticketQr'       => $ticketQr,
+            'ticketLabel'    => $ticket_id,
         ]);
         wp_enqueue_script('saso-congress-frontend');
+
+        // Seam for premium (separate plugin) to register+enqueue its own assets on this
+        // self-contained document. Fires BEFORE any repo call that could throw.
+        do_action($this->MAIN->_do_action_prefix.'congress_enqueue', $congress, $ticket_id);
+
+        // Premium can add its handle here so it is actually printed below (this is a
+        // standalone document — only handles in this list get emitted). Default is unchanged.
+        $print_handles = apply_filters($this->MAIN->_add_filter_prefix.'congress_print_handles', ['saso-congress-frontend']);
 
         $manifest_url = add_query_arg('manifest', '1', $this->MAIN->getCongressRepository()->getUrl($ticket_id));
         ?><!DOCTYPE html>
@@ -98,13 +124,13 @@ class sasoEventtickets_CongressPage {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo esc_html($congress['title']); ?></title>
 <link rel="manifest" href="<?php echo esc_url($manifest_url); ?>">
-<?php wp_print_styles('saso-congress-frontend'); ?>
+<?php wp_print_styles($print_handles); ?>
 </head>
 <body class="congress-page">
 <div id="congress-app" class="congress-app" data-loading="1">
     <div class="congress-loading"><?php esc_html_e('Loading…', 'event-tickets-with-ticket-scanner'); ?></div>
 </div>
-<?php wp_print_scripts('saso-congress-frontend'); ?>
+<?php wp_print_scripts($print_handles); ?>
 </body>
 </html><?php
     }

@@ -51,24 +51,34 @@ class sasoEventtickets_CongressApi {
 
         $expired = !empty($congress['access_expires_at']) && strtotime($congress['access_expires_at']) < time();
 
-        // Page menu (id, title, sort_order) — the navigation.
-        $pages = array_map(function($p) {
+        $repoMain = $repo;
+        // Page menu (id, title, sort_order, + card-landing display meta).
+        $pages = array_map(function($p) use ($repoMain) {
+            $meta = $repoMain->getPageMeta($p);
             return [
-                'id'         => (int)$p['id'],
-                'title'      => $p['title'],
-                'sort_order' => (int)$p['sort_order'],
+                'id'          => (int)$p['id'],
+                'title'       => $p['title'],
+                'sort_order'  => (int)$p['sort_order'],
+                'icon'        => $meta['icon'],
+                'image'       => $meta['image_id'] ? (wp_get_attachment_image_url($meta['image_id'], 'large') ?: '') : '',
+                'description' => $meta['description'],
+                'color'       => $meta['color'],
             ];
         }, $repo->getPages((int)$congress['id']));
 
-        // Start page = first page; its sections ship with the initial load.
-        $start_page  = $repo->getStartPage((int)$congress['id']);
-        $start_id    = $start_page ? (int)$start_page['id'] : 0;
-        $sections    = $start_id ? $this->serializePageSections($start_id, $ticket_id) : [];
+        $landingCards = $repo->getCongressMeta($congress)['landing_cards'];
+
+        // Card landing shows the page grid first → don't auto-ship start-page sections.
+        $start_page = $repo->getStartPage((int)$congress['id']);
+        $start_id   = $start_page ? (int)$start_page['id'] : 0;
+        $sections   = ($start_id && !$landingCards) ? $this->serializePageSections($start_id, $ticket_id) : [];
 
         $response = new WP_REST_Response([
             'id'                => (int)$congress['id'],
             'slug'              => $congress['slug'],
             'title'             => $congress['title'],
+            'label'             => $repo->resolveLabel($congress),
+            'landing_cards'     => $landingCards,
             'updated_at'        => $congress['updated_at'],
             'access_expires_at' => $congress['access_expires_at'],
             'expired'           => $expired,
@@ -130,7 +140,7 @@ class sasoEventtickets_CongressApi {
                 $unlocked   = (bool) get_transient($unlock_key);
             }
             if ($unlocked) {
-                $out['content'] = $this->prepareContent($s['type'], json_decode($s['content'], true));
+                $out['content'] = $this->prepareContent($s['type'], json_decode($s['content'], true), $ticket_id);
             }
             return $out;
         }, $repo->getSectionsForPage($page_id));
@@ -139,12 +149,49 @@ class sasoEventtickets_CongressApi {
     /**
      * Per-type content post-processing done server-side (so JS only places data):
      * video → add sanitized oEmbed HTML for provider URLs.
+     * info/custom → render Twig placeholders against the viewer's ticket context,
+     * but only when `{{` or `{%` notation is present (perf + avoids needless engine runs).
      */
-    private function prepareContent(string $type, $content) {
+    private function prepareContent(string $type, $content, string $ticket_id = '') {
         if (!is_array($content)) return $content;
         if ($type === 'video' && ($content['provider'] ?? '') === 'oembed' && !empty($content['url'])) {
             $embed = wp_oembed_get($content['url']);
             $content['embed_html'] = $embed ? $embed : '';
+        }
+        if (($type === 'info' || $type === 'custom') && $ticket_id !== '' && $this->needsTwig($content['html'] ?? '')) {
+            $vars = $this->buildTicketVars($ticket_id);
+            if ($vars !== null) {
+                $content = $this->renderSectionTwig($content, $vars);
+            }
+        }
+        return $content;
+    }
+
+    /** True if the text contains Twig output/statement notation. */
+    private function needsTwig(string $text): bool {
+        return strpos($text, '{{') !== false || strpos($text, '{%') !== false;
+    }
+
+    /** Build the template variable map for a ticket, or null if it can't be resolved. */
+    private function buildTicketVars(string $ticket_id): ?array {
+        $codeObj = $this->MAIN->getCongressRepository()->getCodeObjForTicket($ticket_id);
+        if (!$codeObj) return null;
+        try {
+            return $this->MAIN->getTicketDesignerHandler()->buildVariables($codeObj, false);
+        } catch (\Throwable $e) {
+            $this->MAIN->getAdmin()->logErrorToDB($e, null, 'Congress section Twig vars failed');
+            return null;
+        }
+    }
+
+    /** Render the html field of an info/custom content array with Twig. */
+    private function renderSectionTwig(array $content, array $vars): array {
+        try {
+            $tz = $vars['TICKET']['timezone_id'] ?? '';
+            $content['html'] = $this->MAIN->getTicketDesignerHandler()->renderInlineString((string)($content['html'] ?? ''), $vars, $tz);
+        } catch (\Throwable $e) {
+            $this->MAIN->getAdmin()->logErrorToDB($e, null, 'Congress section Twig render failed');
+            // On error, leave the raw text (with placeholders) rather than breaking the page.
         }
         return $content;
     }
@@ -174,6 +221,6 @@ class sasoEventtickets_CongressApi {
         $unlock_key = 'congress_section_unlock_' . md5($ticket_id . '_' . $section_id);
         set_transient($unlock_key, true, HOUR_IN_SECONDS);
 
-        return new WP_REST_Response(['content' => $this->prepareContent($section['type'], json_decode($section['content'], true))]);
+        return new WP_REST_Response(['content' => $this->prepareContent($section['type'], json_decode($section['content'], true), $ticket_id)]);
     }
 }

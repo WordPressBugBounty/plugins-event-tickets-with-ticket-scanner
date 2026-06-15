@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.1.0
+ * Version: 3.1.1
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.1.0');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.1.1');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -1120,7 +1120,14 @@ class sasoEventtickets {
 			'jsFiles' => plugins_url( 'backend.js?_v='.$this->_js_version.'&_f='.filemtime(__DIR__.'/backend.js'),__FILE__ ),
 			// product_id => congress URL template (…/ticket/__TICKETID__?congress); JS swaps in the public ticket id.
 			// Lets the admin jump straight to a ticket's congress page from the ticket detail.
-			'_congressProducts' => $this->getCongressProductUrlMap()
+			'_congressProducts' => $this->getCongressProductUrlMap(),
+			// Twig placeholder variables for the congress section editor's "Insert variable…" dropdown.
+			// Threaded through here because the integrated admin loads congress-admin.js via $.getScript
+			// (no wp_localize_script), so the standalone-page global sasoEtCongress is absent there.
+			'_congressVariables' => (function () {
+				require_once __DIR__ . '/includes/congress/class-template-variables.php';
+				return sasoEventtickets_TemplateVariables::getList();
+			})()
 		);
 		// Version notices for "What's New" banner
 		$versionNoticesFile = __DIR__ . '/version-notices.json';

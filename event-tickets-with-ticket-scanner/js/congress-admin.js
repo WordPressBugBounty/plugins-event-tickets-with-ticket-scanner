@@ -8,6 +8,7 @@
     var $app    = null;
     var dtTable = null;
     var layout  = null;
+    var cfgVariables = []; // Twig variables for the section editor dropdown (from init cfg)
 
     function escAttr(s) {
         return String(s || '')
@@ -39,6 +40,9 @@
 
     function renderListView() {
         $app.html('');
+        // Scroll back to the top so the whole overview is visible (e.g. after saving from
+        // a long editor the user would otherwise land mid-page).
+        window.scrollTo(0, 0);
 
         var $card = $('<div class="et-card">').appendTo($app);
 
@@ -87,8 +91,13 @@
                     var lbl = d === 'active' ? __('Active', 'event-tickets-with-ticket-scanner') : __('Expired', 'event-tickets-with-ticket-scanner');
                     return '<span class="congress-badge ' + cls + '">' + lbl + '</span>';
                 }},
-                { data: 'id', orderable: false, className: 'dt-right', render: function (id) {
-                    return '<div class="et-btn-group"><button class="et-btn-action congress-btn-edit" data-id="' + id + '">' + __('Edit', 'event-tickets-with-ticket-scanner') + '</button><button class="et-btn-action congress-btn-edition" data-id="' + id + '">' + __('New edition', 'event-tickets-with-ticket-scanner') + '</button></div><div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger congress-btn-delete" data-id="' + id + '">' + __('Delete', 'event-tickets-with-ticket-scanner') + '</button></div>';
+                { data: 'id', orderable: false, className: 'dt-right', render: function (id, type, row) {
+                    // Premium-only: export_url is supplied server-side (esc_url + nonce). Render an
+                    // export action only if present; without premium there is no button.
+                    var extra = (row && row.export_url)
+                        ? '<div class="et-btn-group"><a class="et-btn-action congress-btn-export" href="' + row.export_url + '">' + __('Export contacts', 'event-tickets-with-ticket-scanner') + '</a></div>'
+                        : '';
+                    return '<div class="et-btn-group"><button class="et-btn-action congress-btn-edit" data-id="' + id + '">' + __('Edit', 'event-tickets-with-ticket-scanner') + '</button><button class="et-btn-action congress-btn-edition" data-id="' + id + '">' + __('New edition', 'event-tickets-with-ticket-scanner') + '</button></div>' + extra + '<div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger congress-btn-delete" data-id="' + id + '">' + __('Delete', 'event-tickets-with-ticket-scanner') + '</button></div>';
                 }}
             ]
         });
@@ -217,6 +226,26 @@
         );
         $grid.append($slugField);
 
+        // Portal label (generic name, e.g. Opera / Zoo / Congress)
+        $grid.append(
+            $('<div class="ce-field ce-field--full">').append(
+                $('<label class="ce-label" for="ce-label">').text(__('Portal label', 'event-tickets-with-ticket-scanner')),
+                $('<input type="text" id="ce-label" class="ce-input">').val(c.label || ''),
+                $('<span class="ce-hint">').text(__('Shown in the wallet and email (e.g. "Opera evening", "Zoo visit"). Empty = use the global default.', 'event-tickets-with-ticket-scanner'))
+            )
+        );
+        // Card landing toggle
+        var landingChecked = parseInt(c.landing_cards, 10) === 1 || c.landing_cards === true;
+        $grid.append(
+            $('<div class="ce-field ce-field--full">').append(
+                $('<label class="ce-label" style="display:flex;align-items:center;gap:8px;font-weight:normal;">').append(
+                    $('<input type="checkbox" id="ce-landing-cards">').prop('checked', landingChecked),
+                    document.createTextNode(__('Show pages as a card grid on the start screen', 'event-tickets-with-ticket-scanner'))
+                ),
+                $('<span class="ce-hint">').text(__('Visitors first see a grid of page cards (icon/image + description) instead of jumping straight into the first page.', 'event-tickets-with-ticket-scanner'))
+            )
+        );
+
         // Access expires (manual hard cutoff)
         $grid.append(
             $('<div class="ce-field">').append(
@@ -309,7 +338,7 @@
 
         $app.off('click', '#ce-cancel').on('click', '#ce-cancel', function () {
             $app.off('click', '#ce-cancel').off('click', '#ce-save').off('click', '#ce-add-page')
-                .off('click', '.ce-page-rename').off('click', '.ce-page-delete').off('click', '.ce-page-add-section')
+                .off('click', '.ce-page-rename').off('click', '.ce-page-settings').off('click', '.ce-page-delete').off('click', '.ce-page-add-section')
                 .off('click', '.section-btn-edit').off('click', '.section-btn-delete');
             renderListView();
         });
@@ -335,6 +364,23 @@
             _promptPageTitle(cur, __('Rename page', 'event-tickets-with-ticket-scanner'), function (title) {
                 layout && layout.renderSpinnerShow();
                 post('save_page', { congress_id: cid, page_id: pid, title: title }, function () {
+                    layout && layout.renderSpinnerHide();
+                    loadPagesTree(cid);
+                });
+            });
+        });
+
+        $app.off('click', '.ce-page-settings').on('click', '.ce-page-settings', function () {
+            var $block = $(this).closest('.ce-page-block');
+            var pid = $block.data('page-id');
+            var cid = parseInt($('#ce-id').val(), 10);
+            var page = (currentPages.filter(function (p) { return parseInt(p.id, 10) === parseInt(pid, 10); })[0]) || {};
+            _promptPageSettings(page, function (vals) {
+                layout && layout.renderSpinnerShow();
+                post('save_page', {
+                    congress_id: cid, page_id: pid, title: page.title || '',
+                    icon: vals.icon, image_id: vals.image_id, description: vals.description, color: vals.color
+                }, function () {
                     layout && layout.renderSpinnerHide();
                     loadPagesTree(cid);
                 });
@@ -382,6 +428,9 @@
                 }
             );
         });
+
+        // Generic seam: premium can append a section to the editor (fires for new + edit).
+        document.dispatchEvent(new CustomEvent('sasoEtCongressEditorRendered', { detail: { congress: c, root: $app.get(0) } }));
     }
 
     // ── Pages tree (pages → sections) ──────────────────────────
@@ -412,6 +461,81 @@
         });
     }
 
+    var CE_ICONS = ['dashicons-calendar-alt','dashicons-location','dashicons-tickets-alt','dashicons-groups',
+        'dashicons-format-gallery','dashicons-media-document','dashicons-admin-links','dashicons-megaphone',
+        'dashicons-info','dashicons-star-filled','dashicons-clock','dashicons-store','dashicons-coffee',
+        'dashicons-microphone','dashicons-video-alt3','dashicons-images-alt2'];
+
+    function _promptPageSettings(page, onOk) {
+        var icon = page.icon || '';
+        var imageId = parseInt(page.image_id, 10) || 0;
+        var imageUrl = page.image_url || '';
+
+        var color = page.color || '#9333ea'; // a card always has a color; default = brand primary
+
+        // Icon picker — leading "No icon" tile makes "no icon" an explicit choice.
+        var $icons = $('<div class="ce-icon-grid">');
+        function _selectIcon(val, $tile) {
+            icon = val;
+            $icons.find('.ce-icon-pick').removeClass('selected');
+            $tile.addClass('selected');
+        }
+        $('<button type="button" class="ce-icon-pick ce-icon-none" title="' + escAttr(__('No icon', 'event-tickets-with-ticket-scanner')) + '"><span class="dashicons dashicons-minus"></span></button>')
+            .toggleClass('selected', icon === '')
+            .on('click', function () { _selectIcon('', $(this)); })
+            .appendTo($icons);
+        CE_ICONS.forEach(function (ic) {
+            $('<button type="button" class="ce-icon-pick"><span class="dashicons ' + ic + '"></span></button>')
+                .toggleClass('selected', ic === icon)
+                .on('click', function () { _selectIcon(ic, $(this)); })
+                .appendTo($icons);
+        });
+
+        // Image (optional, overrides icon). "Remove image" only shows when an image is set.
+        var $imgPreview = $('<span class="ce-page-img-preview">').css('background-image', imageUrl ? 'url(' + imageUrl + ')' : '');
+        var $imgClear = $('<button type="button" class="button-link">').text(__('Remove image', 'event-tickets-with-ticket-scanner'))
+            .on('click', function () { imageId = 0; imageUrl = ''; $imgPreview.css('background-image', ''); $(this).hide(); });
+        $imgClear.toggle(!!imageId);
+        var $imgBtn = $('<button type="button" class="button-secondary">').text(__('Choose image', 'event-tickets-with-ticket-scanner'))
+            .on('click', function () {
+                var frame = wp.media({ title: __('Select image', 'event-tickets-with-ticket-scanner'), multiple: false, library: { type: 'image' } });
+                frame.on('select', function () {
+                    var att = frame.state().get('selection').first().toJSON();
+                    imageId = att.id; imageUrl = (att.sizes && att.sizes.medium ? att.sizes.medium.url : att.url);
+                    $imgPreview.css('background-image', 'url(' + imageUrl + ')');
+                    $imgClear.show();
+                });
+                frame.open();
+            });
+
+        // Card color — always set (a card always has a color); default is the brand primary.
+        var $color = $('<input type="color" class="ce-page-color">').val(color);
+        $color.on('input change', function () { color = $(this).val(); });
+
+        var $desc = $('<textarea class="ce-dialog-input" rows="2" maxlength="160">').val(page.description || '');
+
+        var $dlg = $('<div>').append(
+            $('<p class="ce-dialog-hint">').text(__('Icon, optional image, card color and a short description shown on the page card.', 'event-tickets-with-ticket-scanner')),
+            $('<label class="ce-dialog-label">').text(__('Icon', 'event-tickets-with-ticket-scanner')), $icons,
+            $('<label class="ce-dialog-label" style="margin-top:10px;display:block;">').text(__('Image (optional, overrides icon)', 'event-tickets-with-ticket-scanner')),
+            $('<div class="ce-img-row">').append($imgPreview, $imgBtn, $imgClear),
+            $('<label class="ce-dialog-label" style="margin-top:10px;display:block;">').text(__('Card color', 'event-tickets-with-ticket-scanner')),
+            $('<div class="ce-img-row">').append($color),
+            $('<label class="ce-dialog-label" style="margin-top:10px;display:block;">').text(__('Short description (max 160)', 'event-tickets-with-ticket-scanner')), $desc
+        );
+        $dlg.dialog({
+            title: __('Page card settings', 'event-tickets-with-ticket-scanner'), modal: true, width: 480,
+            buttons: [{
+                text: __('OK', 'event-tickets-with-ticket-scanner'), class: 'button-primary',
+                click: function () { $(this).dialog('close'); onOk({ icon: icon, image_id: imageId, description: $desc.val().trim(), color: color }); }
+            }, {
+                text: __('Cancel', 'event-tickets-with-ticket-scanner'), class: 'button-secondary',
+                click: function () { $(this).dialog('close'); }
+            }],
+            close: function () { $(this).dialog('destroy').remove(); }
+        });
+    }
+
     function loadPagesTree(congressId) {
         post('get_pages', { congress_id: congressId }, function (data) {
             currentPages = (data && data.pages) || [];
@@ -428,6 +552,9 @@
         pages.forEach(function (p, idx) {
             var isStart = (idx === 0);
             var $block = $('<div class="ce-page-block" data-page-id="' + p.id + '">');
+            // Show the page's card color as a left accent, so it's visible right in the editor.
+            var pColor = (/^#[0-9a-fA-F]{3,8}$/.test(p.color || '')) ? p.color : '#9333ea';
+            $block.css('border-left', '4px solid ' + pColor);
 
             var $head = $('<div class="ce-page-head">').appendTo($block);
             $head.append($('<span class="ce-page-handle dashicons dashicons-move" title="' + escAttr(__('Drag to reorder pages', 'event-tickets-with-ticket-scanner')) + '">'));
@@ -437,6 +564,7 @@
             var $pageActions = $('<span class="ce-page-actions">').appendTo($head);
             $pageActions.append($('<div class="et-btn-group"><button class="et-btn-action ce-page-add-section">' + __('Add section', 'event-tickets-with-ticket-scanner') + '</button></div>'));
             $pageActions.append($('<div class="et-btn-group"><button class="et-btn-action ce-page-rename">' + __('Rename', 'event-tickets-with-ticket-scanner') + '</button></div>'));
+            $pageActions.append($('<div class="et-btn-group"><button class="et-btn-action ce-page-settings">' + __('Settings', 'event-tickets-with-ticket-scanner') + '</button></div>'));
             // The last remaining page cannot be deleted (server refuses); hide its delete button.
             if (pages.length > 1) {
                 $pageActions.append($('<div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger ce-page-delete">' + __('Delete', 'event-tickets-with-ticket-scanner') + '</button></div>'));
@@ -537,6 +665,7 @@
                 '<option value="image">' + __('Image', 'event-tickets-with-ticket-scanner') + '</option>',
                 '<option value="video">' + __('Video', 'event-tickets-with-ticket-scanner') + '</option>',
                 '<option value="media">' + __('Gallery', 'event-tickets-with-ticket-scanner') + '</option>',
+                '<option value="speakers">' + __('Speakers', 'event-tickets-with-ticket-scanner') + '</option>',
                 '<option value="custom">Custom</option>'
             ).val(s.type || 'info');
             $row1.append(
@@ -576,6 +705,40 @@
                     $('<p class="ce-dialog-hint">').html('<span class="dashicons dashicons-info" style="font-size:13px;width:13px;height:13px;vertical-align:middle;margin-right:3px;"></span>' + __('HTML allowed (same rules as blog posts). JavaScript is stripped.', 'event-tickets-with-ticket-scanner')),
                     $('<textarea id="' + editorId + '" class="ce-dialog-textarea ce-sec-html">').val(content.html || '')
                 );
+                // Prefer the variables passed via init cfg (integrated admin loads this script
+                // via $.getScript with no localized global); fall back to the standalone-page global.
+                var vars = (cfgVariables && cfgVariables.length)
+                    ? cfgVariables
+                    : ((typeof sasoEtCongress !== 'undefined' && sasoEtCongress && sasoEtCongress.variables) || []);
+                if (vars.length) {
+                    var $varSel = $('<select class="ce-dialog-input ce-var-insert" style="max-width:260px;margin-bottom:6px;">');
+                    $varSel.append('<option value="">' + __('Insert variable…', 'event-tickets-with-ticket-scanner') + '</option>');
+                    var groups = {};
+                    vars.forEach(function (v) { (groups[v.group] = groups[v.group] || []).push(v); });
+                    Object.keys(groups).forEach(function (g) {
+                        var $og = $('<optgroup>').attr('label', g);
+                        groups[g].forEach(function (v) { $og.append($('<option>').val('{{ ' + v.token + ' }}').text(v.label)); });
+                        $varSel.append($og);
+                    });
+                    $varSel.on('change', function () {
+                        var token = $(this).val();
+                        if (!token) return;
+                        var ed = (typeof tinymce !== 'undefined') ? tinymce.get(editorId) : null;
+                        if (ed && !ed.isHidden()) {
+                            ed.execCommand('mceInsertContent', false, token);
+                        } else {
+                            var ta = document.getElementById(editorId);
+                            if (ta) {
+                                var s = ta.selectionStart || 0, selEnd = ta.selectionEnd || 0;
+                                ta.value = ta.value.slice(0, s) + token + ta.value.slice(selEnd);
+                                ta.selectionStart = ta.selectionEnd = s + token.length;
+                                ta.focus();
+                            }
+                        }
+                        $(this).val('');
+                    });
+                    $f.find('textarea.ce-sec-html').before($varSel);
+                }
                 $contentArea.html('').append($f);
                 setTimeout(function () {
                     if (typeof wp !== 'undefined' && wp.oldEditor) {
@@ -741,6 +904,53 @@
                 _makeListSortable($rows);
             }
 
+            function _buildSpeakersEditor() {
+                var speakers = (content && content.speakers) || [];
+                var $wrap = $('<div class="ce-list-editor">');
+                var $rows = $('<div class="ce-list-rows">').appendTo($wrap);
+
+                function _addSpeakerRow(spk) {
+                    spk = spk || {};
+                    var $imgId  = $('<input type="hidden" class="ce-speaker-img-id">').val(spk.image_id || 0);
+                    var $imgUrl = $('<input type="hidden" class="ce-speaker-img-url">').val(spk.image_url || '');
+                    var $preview = $('<img class="ce-speaker-img-preview" style="width:64px;height:64px;object-fit:cover;border-radius:8px;display:' + (spk.image_url ? 'block' : 'none') + ';">').attr('src', spk.image_url || '');
+                    var $pick = $('<button class="button-secondary ce-speaker-img-pick">').html(
+                        '<span class="dashicons dashicons-format-image" style="vertical-align:middle;font-size:14px;width:14px;height:14px;margin-right:3px;"></span>' + __('Choose image', 'event-tickets-with-ticket-scanner')
+                    ).on('click', function () {
+                        _openImagePicker(function (att) {
+                            $imgId.val(att.id); $imgUrl.val(att.url);
+                            $preview.attr('src', att.url).show();
+                        });
+                    });
+                    var $name  = $('<input type="text" class="ce-dialog-input ce-speaker-name" placeholder="' + __('Name', 'event-tickets-with-ticket-scanner') + '" style="flex:1;">').val(spk.name || '');
+                    var $title = $('<input type="text" class="ce-dialog-input ce-speaker-title" placeholder="' + __('Title', 'event-tickets-with-ticket-scanner') + '" style="flex:1;">').val(spk.title || '');
+                    var $bio   = $('<textarea class="ce-dialog-input ce-speaker-bio" maxlength="500" rows="3" placeholder="' + escAttr(__('Short bio (max 500 characters)', 'event-tickets-with-ticket-scanner')) + '">').val((spk.bio || '').slice(0, 500));
+                    var $r = $('<div class="ce-list-row ce-speaker-row" style="flex-wrap:wrap;align-items:flex-start;">').append(
+                        _listHandle(),
+                        $imgId, $imgUrl,
+                        $('<div class="ce-speaker-img-wrap" style="display:flex;flex-direction:column;gap:6px;align-items:center;">').append($preview, $pick),
+                        $('<div class="ce-speaker-fields" style="flex:1;display:flex;flex-direction:column;gap:6px;min-width:200px;">').append($name, $title, $bio),
+                        $('<button class="ce-list-remove" title="' + __('Remove', 'event-tickets-with-ticket-scanner') + '">×</button>').on('click', function () { $r.remove(); })
+                    );
+                    $rows.append($r);
+                }
+                speakers.forEach(_addSpeakerRow);
+
+                $wrap.append(
+                    $('<button class="button-secondary ce-list-add">').html(
+                        '<span class="dashicons dashicons-plus-alt2" style="vertical-align:middle;font-size:14px;width:14px;height:14px;margin-right:3px;"></span>' + __('Add speaker', 'event-tickets-with-ticket-scanner')
+                    ).on('click', function () { _addSpeakerRow({ image_id: 0, image_url: '', name: '', title: '', bio: '' }); _refreshSortable($rows); })
+                );
+                $contentArea.html('').append(
+                    $('<div class="ce-dialog-field">').append(
+                        $('<label class="ce-dialog-label">').text(__('Speakers', 'event-tickets-with-ticket-scanner')),
+                        $('<p class="ce-dialog-hint">').text(__('Each speaker has an image, name, title and a short bio (max 500 characters). One speaker is shown in full; several are shown as boxes. Drag to reorder.', 'event-tickets-with-ticket-scanner')),
+                        $wrap
+                    )
+                );
+                _makeListSortable($rows);
+            }
+
             // Media picker restricted to images only (for the image section type).
             function _openImagePicker(onSelect) {
                 _blurActive();
@@ -899,6 +1109,7 @@
                 else if (type === 'image')                  { _buildImageEditor(); }
                 else if (type === 'video')                  { _buildVideoEditor(); }
                 else if (type === 'media')                  { _buildMediaEditor(); }
+                else if (type === 'speakers')               { _buildSpeakersEditor(); }
                 else if (type === 'program')                { _buildProgramEditor(); }
                 else                                        { $contentArea.html(''); }
             }
@@ -963,6 +1174,19 @@
                         url:           $contentArea.find('.ce-video-url').val().trim(),
                         attachment_id: parseInt($contentArea.find('.ce-video-att-id').val(), 10) || 0
                     };
+                }
+                if (type === 'speakers') {
+                    var speakers = [];
+                    $contentArea.find('.ce-speaker-row').each(function () {
+                        var imgId = parseInt($(this).find('.ce-speaker-img-id').val(), 10) || 0;
+                        var imgUrl = $(this).find('.ce-speaker-img-url').val().trim();
+                        var name  = $(this).find('.ce-speaker-name').val().trim();
+                        var title = $(this).find('.ce-speaker-title').val().trim();
+                        var bio   = $(this).find('.ce-speaker-bio').val().trim().slice(0, 500);
+                        if (!name && !bio && !imgUrl) return; // skip empty rows
+                        speakers.push({ image_id: imgId, image_url: imgUrl, name: name, title: title, bio: bio });
+                    });
+                    return { speakers: speakers };
                 }
                 if (type === 'program') {
                     var days = [];
@@ -1081,21 +1305,26 @@
         };
         var expires    = toMysql('#ce-expires');
         var wasExisting = $('#ce-id').val() !== '';
-        layout && layout.renderSpinnerShow();
-        post('save', {
+        var data = {
             id:                $('#ce-id').val(),
             title:             title,
             slug:              slug,
             access_expires_at: expires,
-            is_active:         $('#ce-is-active').is(':checked') ? 1 : 0
-        }, function (data) {
+            is_active:         $('#ce-is-active').is(':checked') ? 1 : 0,
+            label:             $('#ce-label').val() || '',
+            landing_cards:     $('#ce-landing-cards').is(':checked') ? 1 : 0
+        };
+        // Generic seam: premium can add its own keys to the save payload (→ $_POST → congress_save_meta).
+        document.dispatchEvent(new CustomEvent('sasoEtCongressBeforeSave', { detail: { data: data } }));
+        layout && layout.renderSpinnerShow();
+        post('save', data, function (resp) {
             layout && layout.renderSpinnerHide();
             if (wasExisting) {
                 // Existing congress saved → back to the overview list
                 renderListView();
             } else {
                 // New congress just created → reopen editor so sections can be added
-                openEditor(data.id);
+                openEditor(resp.id);
             }
         });
     }
@@ -1107,6 +1336,7 @@
         ajaxUrl = cfg.ajaxUrl;
         nonce   = cfg.nonce;
         layout  = cfg.layout || null;
+        cfgVariables = cfg.variables || [];
         dtTable = null;
         $app.off(); // detach old event handlers if re-initialising
         renderListView();

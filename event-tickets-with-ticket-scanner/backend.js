@@ -1902,8 +1902,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							}
 							break;
 						case "checkbox":
-							v.value = intval(v.value);
-							elem_input.prop("checked",v.value === 1 ? true : false);
+							// Accept any truthy representation (1, "1", true, "true", "yes") so a
+							// default-on checkbox renders checked even before it is first saved.
+							elem_input.prop("checked", v.value === true || v.value === "true" || v.value === "yes" || intval(v.value) === 1);
 							elem_input.on("change", function(){
 								_makePost('changeOption', {'key':v.key, 'value':elem_input[0].checked ? 1:0});
 							});
@@ -2292,7 +2293,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			}).appendTo('head');
 		}
 
-		var cfg = { ajaxUrl: myAjax.url, nonce: myAjax.nonce, layout: LAYOUT };
+		var cfg = { ajaxUrl: myAjax.url, nonce: myAjax.nonce, layout: LAYOUT, variables: myAjax._congressVariables || [] };
 		if (window.sasoEtCongressAdmin) {
 			window.sasoEtCongressAdmin.init($container, cfg);
 		} else {
@@ -3690,7 +3691,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				let btn = $('<button class="button button-small"/>').text(step.actionLabel).appendTo(content);
 				if (step.actionType === 'scroll') {
 					btn.on('click', () => {
-						let target = $('h3:contains("' + _x('List of tickets', 'title', 'event-tickets-with-ticket-scanner') + '")');
+						let target = $('#event-tickets-with-ticket-scanner-list-of-tickets');
 						if (target.length) $('html,body').animate({scrollTop: target.offset().top - 50}, 400);
 					});
 				} else if (step.actionType === 'link') {
@@ -4210,7 +4211,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 	class Layout {
 		constructor(){
 			DIV.addClass("sngmbh_container");
-			this.div_liste = $('<div class="et-card"/>').html(_getSpinnerHTML());
+			this.div_liste = $('<div class="et-card" id="event-tickets-with-ticket-scanner-list-of-tickets"/>').html(_getSpinnerHTML());
 			this.div_codes = $('<div class="et-card"/>').html(_getSpinnerHTML());
 			this.div_spinner = $('<div class="et-spinner-overlay"/>').html(_getSpinnerHTML("loading"));
 			$("body").append(this.div_spinner);
@@ -4243,10 +4244,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			if (infoBoxFirstSteps) {
 				div_body.append(infoBoxFirstSteps);
 			}
-			div_body.append($('<h3/>').html(_x('List of tickets', 'title', 'event-tickets-with-ticket-scanner')));
-			div_body.append($('<p/>').html(__("Organize your tickets in lists. You can assign tickets to a list.", 'event-tickets-with-ticket-scanner')));
 			div_body.append(this.div_liste);
-			div_body.append($('<hr/>'));
 			div_body.append($('<h3/>').html(_x("Event Tickets", 'title', 'event-tickets-with-ticket-scanner')));
 			div_body.append(this.div_codes);
 			return div_body;
@@ -4908,7 +4906,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					__showMaskList(null);
 				});
 				let grp_liste_danger = $('<div class="et-btn-group et-btn-group--danger"/>').append(btn_liste_empty);
-				this.div_liste.html($('<div class="et-toolbar"/>').css('margin-bottom','10px').append(grp_liste_danger).append(isPremium()?'':$('<span class="et-toolbar-hint"/>').html(' '+sprintf(/* translators: 1: max possible lists amount 2: link to premium */__('Max. %1$d list. Unlimited with %2$s', 'event-tickets-with-ticket-scanner'), myAjax._max.lists, getLabelPremiumOnly())+' ')).append(btn_liste_new));
+				let lbl_liste_desc = $('<span class="et-toolbar-desc"/>').html(__("Organize your tickets in lists. You can assign tickets to a list.", 'event-tickets-with-ticket-scanner'));
+				this.div_liste.html($('<div class="et-toolbar"/>').css('margin-bottom','10px').append(lbl_liste_desc).append(grp_liste_danger).append(isPremium()?'':$('<span class="et-toolbar-hint"/>').html(' '+sprintf(/* translators: 1: max possible lists amount 2: link to premium */__('Max. %1$d list. Unlimited with %2$s', 'event-tickets-with-ticket-scanner'), myAjax._max.lists, getLabelPremiumOnly())+' ')).append(btn_liste_new));
 				this.div_liste.append(tplace);
 
 				__renderTabelleListen();

@@ -1,7 +1,7 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventticketsDB extends sasoEventtickets_DB {
-	public $dbversion = '1.18';
+	public $dbversion = '1.19';
 	public function __construct($MAIN) {
 		$this->MAIN = $MAIN;
 		parent::$dbprefix = "saso_eventtickets_";
@@ -216,6 +216,7 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				event_start_at datetime DEFAULT NULL,
 				event_end_at datetime DEFAULT NULL,
 				is_active tinyint(1) NOT NULL DEFAULT 1,
+				label varchar(191) NOT NULL DEFAULT '',
 				meta longtext NOT NULL DEFAULT '',
 				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
 			"additional" => [
@@ -233,6 +234,7 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 				created_by_user_id int(11) unsigned NOT NULL DEFAULT 0,
 				updated_by_user_id int(11) unsigned NOT NULL DEFAULT 0,
+				meta longtext NOT NULL DEFAULT '',
 				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
 			"additional" => [
 				"CREATE INDEX idx1 ON ".$this->getTabelle('congress_pages')." (congress_id, sort_order)"
