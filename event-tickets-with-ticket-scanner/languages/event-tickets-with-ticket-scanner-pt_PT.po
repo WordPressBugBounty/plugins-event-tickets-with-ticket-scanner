@@ -9212,3 +9212,6 @@ msgstr "Confirmar códigos"
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "Números de bilhete gratuitos esgotados. Adicionados:"
+
+msgid "(not set — \"Ticket detail URL path\" option is empty, compatibility mode off)"
+msgstr "(não definido – a opção «Caminho URL dos detalhes do bilhete» está vazia, modo de compatibilidade desativado)"

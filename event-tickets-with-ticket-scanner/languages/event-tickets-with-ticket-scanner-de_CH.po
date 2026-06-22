@@ -10122,3 +10122,6 @@ msgstr "Teilnehmern erlauben, ihre gesammelten Kontakte als CSV-Datei zu exporti
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "Mögliche Anzahl an Tickets verbraucht. Hinzugefügt:"
+
+msgid "(not set — \"Ticket detail URL path\" option is empty, compatibility mode off)"
+msgstr "(nicht gesetzt – Option „Ticketdetail-URL-Pfad“ ist leer, Kompatibilitätsmodus aus)"

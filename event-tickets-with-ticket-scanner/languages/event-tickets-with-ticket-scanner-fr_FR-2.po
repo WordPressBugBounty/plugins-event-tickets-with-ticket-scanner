@@ -9176,3 +9176,6 @@ msgstr "Confirmer les codes"
 #~ "client peut télécharger un PDF avec les informations du billet. La Premium "
 #~ "vous permet également d'activer l'enregistrement des utilisateurs et plus "
 #~ "encore. Cela permet à votre utilisateur de s'inscrire à un ticket."
+
+msgid "(not set — \"Ticket detail URL path\" option is empty, compatibility mode off)"
+msgstr "(non défini – l’option « Chemin d’accès à l’URL du détail du ticket » est vide, mode de compatibilité désactivé)"

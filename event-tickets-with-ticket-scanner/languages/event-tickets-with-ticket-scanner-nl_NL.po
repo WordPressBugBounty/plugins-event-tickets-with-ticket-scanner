@@ -9155,3 +9155,6 @@ msgstr "Codes bevestigen"
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "Beschikbaar aantal gratis tickets opgebruikt. Toegevoegd:"
+
+msgid "(not set — \"Ticket detail URL path\" option is empty, compatibility mode off)"
+msgstr "(niet ingesteld – optie «URL-pad voor ticketdetails» is leeg, compatibiliteitsmodus uit)"

@@ -8810,6 +8810,9 @@ msgstr "Entrada bloqueada"
 msgid "Confirm codes"
 msgstr "Confirmar los códigos"
 
+
+msgid "(not set — \"Ticket detail URL path\" option is empty, compatibility mode off)"
+msgstr "(sin definir: la opción «Ticket detail URL path» está vacía, modo de compatibilidad desactivado)"
 #~ msgid ""
 #~ "Please enter your Premium license key in the settings to activate your "
 #~ "subscription."
@@ -9106,3 +9109,4 @@ msgstr "Confirmar los códigos"
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "Números de tickets gratuitos agotados. Añadidos:"
+

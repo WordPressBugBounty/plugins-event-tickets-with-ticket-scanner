@@ -9120,3 +9120,6 @@ msgstr "Kódok megerősítése"
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "Szabad jegyszámok elfogytak. Hozzáadva:"
+
+msgid "(not set — \"Ticket detail URL path\" option is empty, compatibility mode off)"
+msgstr "(nincs beállítva – a(z) „Jegy részletek URL útvonala“ beállítás üres, kompatibilitási mód kikapcsolva)"

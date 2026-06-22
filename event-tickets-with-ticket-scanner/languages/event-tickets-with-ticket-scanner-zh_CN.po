@@ -8250,3 +8250,6 @@ msgstr "确认安全码"
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "免费门票编号已用完。已添加："
+
+msgid "(not set — \"Ticket detail URL path\" option is empty, compatibility mode off)"
+msgstr "(未设置 — “票券详情 URL 路径”选项为空，兼容模式已关闭)"

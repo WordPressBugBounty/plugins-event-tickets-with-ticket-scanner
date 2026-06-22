@@ -10188,3 +10188,6 @@ msgid "Off by default — you decide which events go public. Tick this to give t
 msgstr "Standardmäßig aus — du entscheidest, welche Events öffentlich werden. Aktiviere dies, um diesem Event einen kostenlosen öffentlichen Eintrag auf eventado.com zu geben, unserer markenneutralen Event-Entdeckungsplattform, damit neue Kunden es finden und Tickets kaufen können. Lass es deaktiviert, um das Event vom öffentlichen Kalender fernzuhalten (z. B. interne, Mitarbeiter- oder private Events)."
 
 
+
+msgid "(not set — \"Ticket detail URL path\" option is empty, compatibility mode off)"
+msgstr "(nicht gesetzt – Option „Ticketdetail-URL-Pfad“ ist leer, Kompatibilitätsmodus aus)"

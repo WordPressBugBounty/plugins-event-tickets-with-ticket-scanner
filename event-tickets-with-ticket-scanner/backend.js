@@ -1376,8 +1376,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				lines.push('Site URL: '+reply.infos.site.site_url);
 				lines.push('');
 				lines.push('=== Ticket URLs ===');
-				lines.push('Detail Own URL: '+reply.infos.site.home+'/'+_getOptions_getValByKey("wcTicketCompatibilityModeURLPath"));
-				lines.push('Scanner Own URL: '+reply.infos.site.home+'/'+_getOptions_getValByKey("wcTicketCompatibilityModeURLPath")+'/scanner/');
+				var _ownPath = (_getOptions_getValByKey("wcTicketCompatibilityModeURLPath")||'').replace(/^\/+|\/+$/g,'');
+				lines.push('Detail Own URL: '+(_ownPath ? reply.infos.site.home+'/'+_ownPath : '(not set — "Ticket detail URL path" option is empty, compatibility mode off)'));
+				lines.push('Scanner Own URL: '+(_ownPath ? reply.infos.site.home+'/'+_ownPath+'/scanner/' : '(not set — "Ticket detail URL path" option is empty, compatibility mode off)'));
 				lines.push('Detail Default URL: '+reply.infos.ticket.ticket_base_url);
 				lines.push('Scanner Default: '+reply.infos.ticket.ticket_scanner_path);
 				lines.push('Detail Plugin Path: '+reply.infos.ticket.ticket_detail_path);
@@ -1437,8 +1438,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			// Ticket URLs sub-section
 			urlsCard.append('<div class="et-card-header" style="margin-top:16px;"><span class="dashicons dashicons-tickets-alt" style="color:var(--et-primary);margin-right:6px;"></span>Ticket URLs</div>');
 			let ticketUrlRows = '';
-			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Detail Own URL</span><span class="et-kv-value" style="word-break:break-all;">'+reply.infos.site.home+'/'+_getOptions_getValByKey("wcTicketCompatibilityModeURLPath")+'</span></div>';
-			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Scanner Own URL</span><span class="et-kv-value" style="word-break:break-all;">'+reply.infos.site.home+'/'+_getOptions_getValByKey("wcTicketCompatibilityModeURLPath")+'/scanner/</span></div>';
+			let _ownPath = (_getOptions_getValByKey("wcTicketCompatibilityModeURLPath")||'').replace(/^\/+|\/+$/g,'');
+			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Detail Own URL</span><span class="et-kv-value" style="word-break:break-all;">'+(_ownPath ? reply.infos.site.home+'/'+_ownPath : '<i>'+__('(not set — "Ticket detail URL path" option is empty, compatibility mode off)', 'event-tickets-with-ticket-scanner')+'</i>')+'</span></div>';
+			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Scanner Own URL</span><span class="et-kv-value" style="word-break:break-all;">'+(_ownPath ? reply.infos.site.home+'/'+_ownPath+'/scanner/' : '<i>'+__('(not set — "Ticket detail URL path" option is empty, compatibility mode off)', 'event-tickets-with-ticket-scanner')+'</i>')+'</span></div>';
 			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Detail Default URL</span><span class="et-kv-value" style="word-break:break-all;">'+reply.infos.ticket.ticket_base_url+'</span></div>';
 			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Scanner Default</span><span class="et-kv-value" style="word-break:break-all;">'+reply.infos.ticket.ticket_scanner_path+'</span></div>';
 			ticketUrlRows += '<div class="et-kv-row"><span class="et-kv-label">Detail Plugin Path</span><span class="et-kv-value" style="word-break:break-all;">'+reply.infos.ticket.ticket_detail_path+'</span></div>';

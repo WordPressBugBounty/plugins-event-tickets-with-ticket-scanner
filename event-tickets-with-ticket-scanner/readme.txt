@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 Tested up to: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -245,6 +245,9 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.2 - 2026-06-22 =
+* Fixed: Support info no longer shows a broken "Own URL" with a double slash when no ticket detail URL path (compatibility mode) is set — both the displayed cards and the copy-to-clipboard text now show "(not set)" instead.
 
 = 3.1.1 - 2026-06-15 =
 * New: Event portals — the Congress tool now works for any event (opera, zoo, festival, …).

@@ -8318,3 +8318,6 @@ msgstr "コードを確認"
 
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "無料チケット番号を使い切りました。追加済み："
+
+msgid "(not set — \"Ticket detail URL path\" option is empty, compatibility mode off)"
+msgstr "(未設定 — 「チケット詳細URLパス」オプションが空です。互換モードはオフです)"
