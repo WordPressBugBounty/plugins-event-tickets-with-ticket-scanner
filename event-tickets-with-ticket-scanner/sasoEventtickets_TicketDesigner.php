@@ -22,10 +22,37 @@ class sasoEventtickets_TicketDesigner {
                         @trigger_error(($package || $version ? "Since $package $version: " : '') . ($args ? vsprintf($message, $args) : $message), \E_USER_DEPRECATED);
                     }
                 }
+                self::assertPhpSupportsTwig();
                 require_once __DIR__.'/vendors/twig/autoload.php';
             }
         }
         return $inst;
+	}
+
+	/**
+	 * The bundled Twig engine (3.22) requires PHP 8.1+. When the ticket / scanner page is
+	 * opened as a direct plugin-folder file, some hosts execute it under an older PHP than
+	 * the main site, so Composer's platform_check.php aborts with a raw, uncatchable 500.
+	 * This guard runs BEFORE the Twig autoload and turns that into a catchable, actionable
+	 * Exception (caught by sasoEventtickets_Ticket::output() and shown as a readable page).
+	 *
+	 * Threshold mirrors platform_check exactly: PHP_VERSION_ID >= 80100 (8.1.0) passes.
+	 *
+	 * @param int|null $versionId Defaults to PHP_VERSION_ID; injectable for testing.
+	 * @throws Exception when the running PHP is below 8.1.
+	 */
+	public static function assertPhpSupportsTwig(?int $versionId = null): void {
+		$versionId = $versionId ?? PHP_VERSION_ID;
+		if ($versionId < 80100) {
+			throw new Exception(
+				'Event Tickets: rendering the ticket / scanner page requires PHP 8.1 or higher, '
+				.'but this request is running PHP '.PHP_VERSION.'. This typically happens when the '
+				.'page is opened directly from the plugin folder while your host uses an older PHP '
+				.'there than on your main site. To fix it, set the "Ticket detail URL path" option '
+				.'so the scanner runs through WordPress, or ask your host to enable PHP 8.1+ for the '
+				.'whole hosting account.'
+			);
+		}
 	}
 
     public function __construct($main=null, $html="") {

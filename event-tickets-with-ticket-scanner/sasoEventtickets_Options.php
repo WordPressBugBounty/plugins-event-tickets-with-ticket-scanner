@@ -1049,13 +1049,6 @@ class sasoEventtickets_Options {
 		if ($data['key'] === 'serial' && ($this->MAIN->isOldPremiumDetected() || $this->MAIN->isStarterOrStopDetected())) {
 			$newSerial = trim($data['value']);
 			update_option("saso-event-tickets-premium_serial", $newSerial);
-
-			// If a valid-format serial was entered, trigger an immediate update
-			// check so the user doesn't have to manually click "Update" to
-			// replace the starter/stop plugin with the real premium.
-			if (!empty($newSerial) && preg_match('/^(abo_|lts_)?[A-Z0-9]{3,}-[A-Z0-9]{3,}-[A-Z0-9]{3,}-[A-Z0-9]{3,}$/i', $newSerial)) {
-				$this->MAIN->autoUpgradePremiumAfterLicenseSave();
-			}
 		}
 		// Suppress all license-related admin banners for 60s while the license
 		// check/upgrade runs. Prevents the scary red "expired"/"Starter plugin"
