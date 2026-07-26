@@ -4872,13 +4872,45 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 									}
 									let btn = $(e.target);
 									btn.prop('disabled', true).text(__('Deleting...', 'event-tickets-with-ticket-scanner'));
-									_makePost('removeAllCodesFromList', {'list_id': data.id}, result=>{
+
+									// The server deletes one batch per request, so we keep asking until
+									// the list is empty. That keeps every single request small.
+									let bar = $('<progress value="0" max="1" style="width:120px;vertical-align:middle;">');
+									let barLabel = $('<span style="margin-left:8px;">');
+									let barWrap = $('<span style="margin-left:8px;">').append(bar).append(barLabel);
+									btn.after(barWrap);
+
+									let done = 0;
+									let total = 0;
+									let restoreButton = ()=>{
+										barWrap.remove();
 										btn.prop('disabled', false).text(_x('Delete All Tickets', 'label', 'event-tickets-with-ticket-scanner'));
 										tabelle_codes_datatable.ajax.reload();
-										if (result && result.deleted !== undefined) {
-											alert(sprintf(__('%d tickets have been deleted.', 'event-tickets-with-ticket-scanner'), result.deleted));
-										}
-									});
+									};
+									let finish = ()=>{
+										restoreButton();
+										alert(sprintf(__('%d tickets have been deleted.', 'event-tickets-with-ticket-scanner'), done));
+									};
+									let deleteNextBatch = ()=>{
+										_makePost('removeAllCodesFromList', {'list_id': data.id}, result=>{
+											if (!result || result.deleted === undefined) return finish();
+											done += result.deleted;
+											if (total === 0) total = done + result.remaining;
+											bar.attr('max', total).attr('value', done);
+											barLabel.text(sprintf(/* translators: 1: deleted tickets, 2: total tickets */__('%1$d of %2$d', 'event-tickets-with-ticket-scanner'), done, total));
+											// stop when nothing is left, or when a batch could not delete anything
+											if (result.remaining > 0 && result.deleted > 0) {
+												setTimeout(deleteNextBatch, 250); // let the server breathe
+											} else {
+												finish();
+											}
+										}, response=>{
+											// keep the plugin's usual error dialog, but do not leave the button stuck
+											restoreButton();
+											LAYOUT.renderFatalError(response && response.data);
+										});
+									};
+									deleteNextBatch();
 								}
 							);
 						}

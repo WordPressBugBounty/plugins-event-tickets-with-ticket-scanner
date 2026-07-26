@@ -1149,8 +1149,67 @@ class sasoEventtickets_Core {
 		return $parts_assoc;
 	}
 
+	/**
+	 * Returns a writable directory for the plugin's temporary PDF files.
+	 *
+	 * WordPress' get_temp_dir() returns '/tmp/' as a last resort even when
+	 * nothing there is writable — common on Plesk hosts and with open_basedir
+	 * or PHP-FPM PrivateTmp. Writing the ticket PDF then failed silently while
+	 * a path was still handed on, so the merge step aborted with FPDI's
+	 * "No stream given." and the customer received an email without a ticket.
+	 *
+	 * The uploads directory is used as a fallback because it must be writable
+	 * for WordPress to work at all.
+	 *
+	 * @return string Writable directory, with a trailing slash.
+	 * @throws Exception When neither candidate is writable.
+	 */
+	public function getWritableTempDir(): string {
+		$subdir = trailingslashit($this->MAIN->getPrefix());
+
+		$system_temp = apply_filters( $this->MAIN->_add_filter_prefix.'core_system_temp_dir', get_temp_dir() );
+
+		$candidates = [trailingslashit($system_temp).$subdir];
+		$uploads = wp_upload_dir();
+		if (empty($uploads['error']) && !empty($uploads['basedir'])) {
+			$candidates[] = trailingslashit($uploads['basedir']).$subdir;
+		}
+
+		foreach($candidates as $dir) {
+			if (!file_exists($dir)) {
+				wp_mkdir_p($dir); // return value is unreliable across hosts - verify below
+			}
+			if (is_dir($dir) && wp_is_writable($dir)) {
+				return $dir;
+			}
+		}
+
+		throw new Exception("#8022 ".esc_html__("No writable temporary directory is available for the ticket PDF. Please define WP_TEMP_DIR in wp-config.php or ask your host to make the temporary directory writable.", 'event-tickets-with-ticket-scanner'));
+	}
+
 	public function mergePDFs($filepaths, $filename, $filemode="I", $deleteFilesAfterMerge=true) {
 		if (count($filepaths) > 0) {
+			// Drop sources that were never written - FPDI would abort the whole
+			// merge with "No stream given." and take the readable tickets with it.
+			$readable = [];
+			$skipped = [];
+			foreach($filepaths as $filepath) {
+				if (!empty($filepath) && is_readable($filepath) && filesize($filepath) > 0) {
+					$readable[] = $filepath;
+				} else {
+					$skipped[] = $filepath;
+				}
+			}
+			if (count($skipped) > 0) {
+				$this->MAIN->getAdmin()->logErrorToDB(
+					new Exception("#8023 ".esc_html__("PDF file was not created and is skipped in the merge.", 'event-tickets-with-ticket-scanner')),
+					null,
+					"skipped unreadable PDFs while merging. Filepaths: (".join(", ", $skipped).")"
+				);
+			}
+			if (count($readable) == 0) return null;
+			$filepaths = $readable;
+
 			$pdf = $this->MAIN->getNewPDFObject();
 			$pdf->setFilemode($filemode);
 			$pdf->setFilename($filename);

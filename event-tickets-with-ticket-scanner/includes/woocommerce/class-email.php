@@ -335,19 +335,16 @@ if (!class_exists('sasoEventtickets_WC_Email')) {
 		 * @return string|false Directory path or false if not writable
 		 */
 		private function getTempDirectory() {
-			$dirname = get_temp_dir();
-
-			if (!wp_is_writable($dirname)) {
+			// Single source of truth: sasoEventtickets_Core::getWritableTempDir().
+			// It throws when nothing is writable, but the callers here rely on a
+			// falsy return so that a failing attachment never aborts the whole
+			// WooCommerce email - so the exception is logged and swallowed.
+			try {
+				return $this->MAIN->getCore()->getWritableTempDir();
+			} catch (Exception $e) {
+				$this->MAIN->getAdmin()->logErrorToDB($e, null, "no writable directory for email attachments");
 				return false;
 			}
-
-			$dirname .= trailingslashit($this->MAIN->getPrefix());
-
-			if (!file_exists($dirname)) {
-				wp_mkdir_p($dirname);
-			}
-
-			return $dirname;
 		}
 
 		/**
@@ -361,7 +358,14 @@ if (!class_exists('sasoEventtickets_WC_Email')) {
 		 * @return void
 		 */
 		private function delete_specific_attachments(array $attachments): void {
-			$dirname = get_temp_dir() . $this->MAIN->getPrefix();
+			// Must resolve the directory the same way the files were written,
+			// otherwise the dirname() comparison below silently stops matching
+			// and temporary PDFs are never cleaned up again.
+			$dirname = $this->getTempDirectory();
+			if (!$dirname) {
+				return; // no temp directory means nothing of ours was written
+			}
+			$dirname = untrailingslashit($dirname);
 
 			foreach ($attachments as $item) {
 				try {

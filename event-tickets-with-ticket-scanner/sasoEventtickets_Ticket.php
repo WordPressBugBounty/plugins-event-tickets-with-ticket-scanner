@@ -2174,33 +2174,27 @@ final class sasoEventtickets_Ticket {
 		try {
 			if (count($codes) > 0) {
 				$badgeHandler = $this->MAIN->getTicketBadgeHandler();
-				$dirname = get_temp_dir(); // pfad zu den dateien
-				if (wp_is_writable($dirname)) {
-					$dirname .=  trailingslashit($this->MAIN->getPrefix());
-					if (!file_exists($dirname)) {
-						wp_mkdir_p($dirname);
+				// Same source of truth as the ticket PDF; falls back to the
+				// uploads directory and reports #8022 when nothing is writable.
+				$dirname = $this->MAIN->getCore()->getWritableTempDir();
+				set_time_limit(0);
+				$filepaths = [];
+				foreach($codes as $code) {
+					try {
+						$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($code);
+					} catch (Exception $e) {
+						continue;
 					}
-					set_time_limit(0);
-					$filepaths = [];
-					foreach($codes as $code) {
-						try {
-							$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($code);
-						} catch (Exception $e) {
-							continue;
-						}
-						$this->setCodeObj($codeObj);
-						// attach PDF
-						$filepaths[] = $badgeHandler->getPDFTicketBadgeFilepath($codeObj, $dirname);
-					}
-					if ($filename == null) {
-						$filename = "ticketsbadges_".wp_date("Ymd_Hi").".pdf";
-					}
-					// merge files
-					$fullFilePath = $this->MAIN->getCore()->mergePDFs($filepaths, $filename, $filemode);
-					return $fullFilePath; // if not already exit call was made
-				} else {
-					$this->MAIN->getAdmin()->logErrorToDB(new Exception("#8012 cannot create badge pdf - no write access to ".$dirname));
+					$this->setCodeObj($codeObj);
+					// attach PDF
+					$filepaths[] = $badgeHandler->getPDFTicketBadgeFilepath($codeObj, $dirname);
 				}
+				if ($filename == null) {
+					$filename = "ticketsbadges_".wp_date("Ymd_Hi").".pdf";
+				}
+				// merge files
+				$fullFilePath = $this->MAIN->getCore()->mergePDFs($filepaths, $filename, $filemode);
+				return $fullFilePath; // if not already exit call was made
 			}
 		} catch (Exception $e) {
 			$this->MAIN->getAdmin()->logErrorToDB($e);
@@ -2338,10 +2332,10 @@ final class sasoEventtickets_Ticket {
 
 		$pdf->setFilemode($filemode);
 		if ($pdf->getFilemode() == "F") {
-			$dirname = get_temp_dir();
-			$dirname .= trailingslashit($this->MAIN->getPrefix());
+			// getWritableTempDir() throws when no directory is writable, so a
+			// broken path can no longer reach the merge step unnoticed.
+			$dirname = $this->MAIN->getCore()->getWritableTempDir();
 			$filename = "ticket_".$order->get_id()."_".$ticket_id.".pdf";
-			wp_mkdir_p($dirname);
 			$pdf->setFilepath($dirname);
 		} else {
 			$filename = "ticket_".$order->get_id()."_".$ticket_id.".pdf";
@@ -2476,7 +2470,13 @@ final class sasoEventtickets_Ticket {
 			$pdf->render();
 		} catch(Exception $e) {}
 		if ($pdf->getFilemode() == "F") {
-			return $pdf->getFullFilePath();
+			$fullFilePath = $pdf->getFullFilePath();
+			// Verify the render actually produced a file - returning a path to a
+			// missing file made WooCommerce send the email without the ticket.
+			if (!is_readable($fullFilePath) || filesize($fullFilePath) === 0) {
+				throw new Exception("#8024 ".esc_html__("The ticket PDF could not be written to the temporary directory.", 'event-tickets-with-ticket-scanner')." (".$fullFilePath.")");
+			}
+			return $fullFilePath;
 		} else {
 			die("PDF render not possible. Please remove HTML tags from the product description and ticket info with the product detail view.");
 		}

@@ -179,6 +179,33 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 			) );
 			echo '</div>';
 
+			// Purchase restriction: buyers must enter a valid code/ticket number
+			// from a chosen list before they can buy. The whole block only exists
+			// when the master option is on, so shops that do not use it never see it.
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
+				$restriction_lists = ['' => esc_attr__('— No restriction —', 'event-tickets-with-ticket-scanner')];
+				foreach ($this->MAIN->getAdmin()->getLists() as $list) {
+					$restriction_lists[$list['id']] = $list['name'];
+				}
+				echo '<div class="options_group">';
+				woocommerce_wp_select([
+					'id'          => self::META_PRODUCT_RESTRICTION,
+					'value'       => get_post_meta(get_the_ID(), self::META_PRODUCT_RESTRICTION, true),
+					'label'       => __('Required ticket / access code', 'event-tickets-with-ticket-scanner'),
+					'description' => __('Buyers must enter a valid, unused code or ticket number from this list before they can buy this product. Use it for presale/access codes, or to require a ticket from an earlier event.', 'event-tickets-with-ticket-scanner'),
+					'desc_tip'    => true,
+					'options'     => $restriction_lists
+				]);
+				woocommerce_wp_checkbox([
+					'id'          => 'saso_eventtickets_restriction_allow_multiuse',
+					'value'       => get_post_meta(get_the_ID(), 'saso_eventtickets_restriction_allow_multiuse', true),
+					'label'       => __('Allow the same code for several purchases', 'event-tickets-with-ticket-scanner'),
+					'description' => __('If off (default), each code unlocks exactly one purchase. If on, the same code stays valid for further purchases.', 'event-tickets-with-ticket-scanner'),
+					'desc_tip'    => true
+				]);
+				echo '</div>';
+			}
+
 			// Congress assignment (only when the congress module is present and at least one congress exists)
 			if (file_exists(plugin_dir_path(dirname(__FILE__)) . 'congress/class-congress-repository.php')) {
 				$congresses = $this->MAIN->getCongressRepository()->getAll();
@@ -602,6 +629,7 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'saso_eventtickets_list_formatter',
 				$seating->getMetaProductSeatingRequired(),
 				'saso_eventtickets_require_cvv_at_scanner',  // NEW
+				'saso_eventtickets_restriction_allow_multiuse',
 			];
 			foreach($keys_checkbox as $key) {
 				// Variation rows render <select name="<key>[<i>]"> for some of these

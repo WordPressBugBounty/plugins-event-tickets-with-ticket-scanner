@@ -2573,11 +2573,20 @@ class sasoEventtickets_AdminSettings {
 	}
 
 	/**
-	 * Remove all codes/tickets from a specific list
+	 * Tickets removed per removeAllCodesFromList call. A list can hold many thousands
+	 * of tickets, so the caller repeats the request until nothing is left instead of
+	 * keeping one request busy for minutes.
+	 */
+	const REMOVE_ALL_BATCH_SIZE = 100;
+
+	/**
+	 * Remove one batch of codes/tickets from a specific list
 	 * Uses removeCode() for each ticket to ensure proper cleanup of WooCommerce data
 	 *
+	 * Call again while 'remaining' is above zero to empty the whole list.
+	 *
 	 * @param array $data Must contain 'list_id'
-	 * @return array ['deleted' => int, 'errors' => int]
+	 * @return array ['deleted' => int, 'errors' => int, 'remaining' => int]
 	 */
 	private function removeAllCodesFromList(array $data): array {
 		if (!isset($data['list_id'])) {
@@ -2589,9 +2598,13 @@ class sasoEventtickets_AdminSettings {
 			throw new Exception("#212 list_id must be a positive integer");
 		}
 
-		// Get all codes from this list
-		$sql = "SELECT id, code FROM " . $this->MAIN->getDB()->getTabelle("codes") . " WHERE list_id = " . $list_id;
-		$codes = $this->MAIN->getDB()->_db_select($sql);
+		$db = $this->MAIN->getDB();
+		$tabelle = $db->getTabelle("codes");
+
+		// Only one batch per call - the browser loops and the server can breathe.
+		$sql = "SELECT id, code FROM " . $tabelle . " WHERE list_id = " . $list_id
+			. " ORDER BY id ASC LIMIT " . self::REMOVE_ALL_BATCH_SIZE;
+		$codes = $db->_db_datenholen($sql);
 
 		$deleted = 0;
 		$errors = 0;
@@ -2603,19 +2616,21 @@ class sasoEventtickets_AdminSettings {
 				$deleted++;
 			} catch (Exception $e) {
 				$errors++;
-				$this->MAIN->getCore()->logError("Error deleting code ID " . $codeRow['id'] . ": " . $e->getMessage());
+				$this->MAIN->getDB()->logError("Error deleting code ID " . $codeRow['id'] . ": " . $e->getMessage(), 'removeAllCodesFromList');
 			}
 		}
 
+		$remaining = intval($db->_db_getRecordCountOfTable("codes", "list_id = " . $list_id));
+
 		// Log the bulk deletion
-		$this->MAIN->getCore()->logError(
-			sprintf("Bulk delete: %d tickets deleted from list ID %d (errors: %d)", $deleted, $list_id, $errors),
-			'info'
+		$this->MAIN->getDB()->logError(
+			sprintf("Bulk delete: %d tickets deleted from list ID %d (errors: %d, remaining: %d)", $deleted, $list_id, $errors, $remaining),
+			'removeAllCodesFromList'
 		);
 
 		do_action($this->MAIN->_do_action_prefix . 'admin_removeAllCodesFromList', $data, $deleted, $errors);
 
-		return ['deleted' => $deleted, 'errors' => $errors];
+		return ['deleted' => $deleted, 'errors' => $errors, 'remaining' => $remaining];
 	}
 
 	/**

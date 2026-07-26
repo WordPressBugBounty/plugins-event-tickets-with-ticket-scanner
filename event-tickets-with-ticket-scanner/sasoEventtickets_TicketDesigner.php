@@ -22,11 +22,40 @@ class sasoEventtickets_TicketDesigner {
                         @trigger_error(($package || $version ? "Since $package $version: " : '') . ($args ? vsprintf($message, $args) : $message), \E_USER_DEPRECATED);
                     }
                 }
-                self::assertPhpSupportsTwig();
-                require_once __DIR__.'/vendors/twig/autoload.php';
+                // Guard: the bundled Twig 3.22 requires PHP 8.1+. In the WEB context
+                // the guard turns a raw Composer platform_check 500 into a catchable,
+                // actionable Exception. In the CLI context (WP-CLI, cron over CLI,
+                // cache builds) Twig is never used to render, so the guard would only
+                // trigger a Fatal on split-PHP hosts (IONOS: site=8.3, CLI=8.0) that
+                // some host-monitoring then misreads as a broken plugin and
+                // auto-deactivates it. Skip the guard in CLI; the autoload is
+                // best-effort there (a local CLI Fatal has no effect on the active
+                // web plugin, unlike a web-request Exception caught by output()).
+                if (self::isCliContext()) {
+                    @include_once __DIR__.'/vendors/twig/autoload.php';
+                } else {
+                    self::assertPhpSupportsTwig();
+                    require_once __DIR__.'/vendors/twig/autoload.php';
+                }
             }
         }
         return $inst;
+	}
+
+	/**
+	 * Whether the current request runs in a CLI/non-web SAPI context.
+	 *
+	 * Used to decide whether the Twig PHP-8.1 guard should fire. In a CLI process
+	 * (WP-CLI, cron-over-CLI, composer scripts) no ticket/scanner page is ever
+	 * rendered, so the guard only risks a Fatal that split-PHP hosts (IONOS,
+	 * cPanel PHP-Selector) then misread as a broken plugin and auto-deactivate.
+	 * Only real `cli` / `phpdbg` SAPIs count; cgi/cgi-fcgi/fpm-fcgi are web.
+	 *
+	 * @param string|null $sapi Defaults to PHP_SAPI; injectable for testing.
+	 */
+	public static function isCliContext(?string $sapi = null): bool {
+		$sapi = $sapi ?? PHP_SAPI;
+		return in_array($sapi, ['cli', 'phpdbg'], true);
 	}
 
 	/**
@@ -35,6 +64,9 @@ class sasoEventtickets_TicketDesigner {
 	 * the main site, so Composer's platform_check.php aborts with a raw, uncatchable 500.
 	 * This guard runs BEFORE the Twig autoload and turns that into a catchable, actionable
 	 * Exception (caught by sasoEventtickets_Ticket::output() and shown as a readable page).
+	 *
+	 * Only invoked in the WEB context (see isCliContext()). In the CLI context Twig is never
+	 * rendered and the guard is skipped to avoid a Fatal on split-PHP hosts.
 	 *
 	 * Threshold mirrors platform_check exactly: PHP_VERSION_ID >= 80100 (8.1.0) passes.
 	 *

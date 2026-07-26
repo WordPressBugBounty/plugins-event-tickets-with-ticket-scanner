@@ -77,12 +77,14 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			// Register hook for rendering input fields after cart item name
 			add_action('woocommerce_after_cart_item_name', [$this, 'woocommerce_after_cart_item_name_handler'], 10, 2);
 
+			// Only load the cart script when it is actually needed. The precise
+			// condition is "a restricted product is in this cart" - the master
+			// switch is already part of containsProductsWithRestrictions(), so
+			// checking it again here would be a second gate for the same rule.
 			$added = false;
-			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
-				if ($this->containsProductsWithRestrictions()) {
-					$this->addJSFileAndHandler();
-					$added = true;
-				}
+			if ($this->containsProductsWithRestrictions()) {
+				$this->addJSFileAndHandler();
+				$added = true;
 			}
 			if ($this->hasTicketsInCart() && $added === false) {
 				$this->addJSFileAndHandler();
@@ -208,6 +210,14 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		public function containsProductsWithRestrictions(): bool {
 			if ($this->_containsProductsWithRestrictions === null) {
 				$this->_containsProductsWithRestrictions = false;
+				// wcRestrictPurchase is the global off-switch for the feature.
+				// Gating here covers every consumer at once (checkout validation,
+				// cart input, JS loading) - previously only the JS was gated, so
+				// switching it off still enforced codes on products that had a
+				// list assigned, with no visible way to configure them.
+				if (!$this->MAIN->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
+					return false;
+				}
 				if (WC()->cart === null) {
 					return false;
 				}
@@ -460,10 +470,15 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 							return 3; // not valid - wrong list
 						}
 						if ($this->MAIN->getFrontend()->isUsed($codeObj)) {
-							return 2; // used
-						} else {
-							return 1; // valid
+							// Per-product opt-in: the same code may unlock several
+							// purchases. Only the used-check is skipped - active
+							// state and list membership above still apply.
+							$allow_multiuse = get_post_meta($cart_item['product_id'], 'saso_eventtickets_restriction_allow_multiuse', true) === 'yes';
+							if (!$allow_multiuse) {
+								return 2; // used
+							}
 						}
+						return 1; // valid
 					} catch (Exception $e) {
 						$ret = 3; // not valid - code not found
 					}
@@ -666,7 +681,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			// Show input for purchase restriction code (separate feature — works on
 			// any product type, ticket or not).
 			$saso_eventtickets_list = get_post_meta($cart_item['product_id'], self::META_KEY_CODELIST_RESTRICTION, true);
-			if (!empty($saso_eventtickets_list)) {
+			if (!empty($saso_eventtickets_list) && $this->MAIN->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
 				$code = isset($cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM]) ? $cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM] : '';
 				$infoLabel = $this->MAIN->getOptions()->getOptionValue('wcRestrictCartInfo');
 				$fieldPlaceholder = $this->MAIN->getOptions()->getOptionValue('wcRestrictCartFieldPlaceholder');

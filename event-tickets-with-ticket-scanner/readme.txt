@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.3
+Stable tag: 3.1.4
 Tested up to: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -107,7 +107,7 @@ Build it under the Congresses menu, assign it in the product's Event Tickets tab
 * **Family tickets** — generate multiple tickets per order item
 * **Memberships & season passes** — set expiration dates
 * **Day chooser tickets** — let customers pick their event date at checkout
-* **Purchase allowance codes** — restrict who can buy specific products
+* **Purchase allowance codes** — require a valid ticket or access code before a product can be bought. Use it for presale and access codes, or to require a ticket from an earlier event (for example a group-stage ticket in order to buy the final). Per product you decide whether a code unlocks one purchase or several
 
 = Built for WooCommerce =
 
@@ -130,6 +130,7 @@ The free version covers everything you need to start selling tickets:
 * ✅ Multi-entry and family tickets
 * ✅ Day chooser for date-based events
 * ✅ Congress / attendee portal (pages, programme, downloads, media, password-protected sections)
+* ✅ Purchase allowance codes (presale/access codes, or require a ticket from an earlier event)
 * ✅ Webhooks for third-party integrations
 
 **Premium adds professional features for larger events:**
@@ -245,6 +246,16 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.4 - 2026-07-26 =
+* New: Optionally require a valid ticket or access code to purchase a product. Pick the required event/code list in the product's Event Tickets tab — until you do, nothing changes for any product. Buyers enter their code in the cart and can only check out with a valid, unused code from that list. Use it for presale and access codes, or to require a ticket from an earlier event — for example a group-stage ticket in order to buy the final. Free.
+* New: Per product, the same code can optionally unlock several purchases ("Allow the same code for several purchases"). Off by default, so each code unlocks exactly one purchase.
+* New: The cart tells the buyer straight away whether the entered code was accepted, is already used, or is not valid for that product — instead of only failing at checkout.
+* Fix: The global switch "Allow requiring a ticket or access code to purchase" now really disables the feature everywhere when switched off. Previously it only controlled the cart script, while checkout still demanded a code for any product that had a list assigned — which, combined with the cart field not submitting the code, could make such a product impossible to buy.
+* Fix: On hosting accounts where the server's temporary directory cannot be written to (common with Plesk, open_basedir or PHP-FPM private temp directories), ticket PDFs were never created. The plugin still passed the file path on, so the PDF merge failed and the order email was sent without the ticket and without the calendar/info attachment — with no visible error. The plugin now falls back to a folder inside the WordPress uploads directory, and reports a clear, actionable error if no writable location exists at all. The same fallback now applies to badge PDFs and to all email attachments, which previously failed silently on these hosts as well.
+* Fix: Merging ticket PDFs no longer aborts completely when a single source file is missing. Unreadable files are skipped and logged individually, so the remaining tickets are still delivered.
+* Fix: The "Delete All Tickets" button on a ticket list failed with a server error instead of deleting anything. The button never worked since it was introduced; it now removes all tickets of the selected list, including their WooCommerce order data. Long lists are deleted in small batches with a progress bar, so even lists with many thousands of tickets no longer run into a server timeout.
+* Fix: On hosts that run a different PHP version for WP-CLI than for the website (IONOS and similar split-PHP setups), the plugin's template-engine PHP 8.1 check no longer aborts WP-CLI runs with a fatal error. Ticket and scanner pages are never rendered from WP-CLI, so the check is now skipped in CLI mode. This prevents some hosts from auto-disabling the plugin after a WP-CLI or cache-build run. Website behaviour is unchanged — the actionable PHP 8.1 notice still appears when a ticket or scanner page is opened under an older PHP in the browser.
 
 = 3.1.3 - 2026-07-12 =
 * New: Interface translations expanded to the full language set — added Arabic, Czech, Danish, Greek, Hindi, Korean, Norwegian Bokmål, Polish, Romanian, Russian, Swedish, Turkish, Ukrainian, Traditional Chinese, plus corrected Japanese (ja) and French (fr_FR) locale files.

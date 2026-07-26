@@ -156,7 +156,45 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		let waitingTimeout = null;
 		let isChanged = false;
 
-		function sendCode(elem, code, type) {
+		// Immediate feedback under the purchase-restriction input. The endpoint
+		// already returns check_values, so the buyer learns about a wrong or
+		// already-used code right in the cart instead of only at checkout.
+		function renderRestrictionFeedback(elem, check_values) {
+			let itemId = elem.attr('data-cart-item-id') || '';
+			$('.saso-eventtickets-restriction-feedback[data-cart-item-id="' + itemId + '"]').remove();
+
+			if (!check_values) return;
+
+			let message = '';
+			let isError = true;
+			if (check_values.isValid) {
+				message = __('Code accepted.', 'event-tickets-with-ticket-scanner');
+				isError = false;
+			} else if (check_values.isUsed) {
+				message = __('This code has already been used.', 'event-tickets-with-ticket-scanner');
+			} else if (check_values.notValid) {
+				message = __('This code is not valid for this product.', 'event-tickets-with-ticket-scanner');
+			} else {
+				return; // empty input or missing item - nothing to say yet
+			}
+
+			let note = document.createElement('span');
+			note.className = 'saso-eventtickets-restriction-feedback';
+			note.setAttribute('data-cart-item-id', itemId);
+			note.setAttribute('role', 'status');
+			note.style.display = 'block';
+			note.style.marginTop = '4px';
+			note.style.color = isError ? '#b32d2e' : '#1e7e34';
+			note.appendChild(document.createTextNode(message));
+			elem.after(note);
+		}
+
+		// action defaults to the per-ticket meta endpoint; the purchase-restriction
+		// input needs its own endpoint, which stores the code on the cart item and
+		// validates it against the required list.
+		function sendCode(elem, code, type, action) {
+			action = action || 'updateSerialCodeToCartItem';
+			let isRestriction = action === 'updateSerialCodeToCartItemRestriction';
 			//clearWaitingTimeout();
 			if (!isStoring) {
 				$('div[class="woocommerce"]').block({
@@ -177,7 +215,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		 				url: phpObject.ajaxurl,
 		 				data: {
 		 					action: phpObject.action,
-		 					a: 'updateSerialCodeToCartItem',
+		 					a: action,
 		 					security: nonce,
 		 					cart_item_id: cart_item_id,
 							cart_item_count: cart_item_count,
@@ -189,6 +227,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		 					$('.cart_totals').unblock();
 		 					if (response.success) {
 			 					elem.val(response.code);
+								if (isRestriction) renderRestrictionFeedback(elem, response.check_values);
 		 					} else {
 		 						if (response.msg) alert(response.msg);
 		 					}
@@ -213,15 +252,18 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			}, 2500);
 		}
 
-		// finde die code text inputs
-		// eventcoderrestriction is no longer used, but still in the code
+		// Purchase-restriction code input ("enter a valid ticket/access code to buy").
+		// It must post to updateSerialCodeToCartItemRestriction — the per-ticket
+		// endpoint would store the value as a name and never reach the required-list
+		// check, so the code never arrived on the cart item and checkout always blocked.
+		var RESTRICTION_ACTION = 'updateSerialCodeToCartItemRestriction';
 		$('body').find('input[data-input-type="eventcoderestriction"][data-plugin="event"]')
 			.on('keydown',function(e){
 				if (e.which === 13) {
 					e.preventDefault();
 					let elem = $(this);
 					isChanged = true;
-					sendCode(elem, elem.val().trim(), "saso_eventtickets_request_name_per_ticket");
+					sendCode(elem, elem.val().trim(), null, RESTRICTION_ACTION);
 				}
 			})
 			.on('paste', event=>{
@@ -231,16 +273,14 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				if (typeof code == "string") {
 					code = code.trim();
 					isChanged = true;
-					sendCode(elem, code, "saso_eventtickets_request_name_per_ticket");
+					sendCode(elem, code, null, RESTRICTION_ACTION);
 				} else { alert("no text"); }
 			})
 			.on('change',function(){
 				let elem = $(this);
 				let code = elem.val().trim();
-				//let cart_item_id = elem.data('cart-item-id');
-				//let d = document.querySelector('input[data-cart-item-id="'+cart_item_id+'"]').value
 				isChanged = true;
-				sendCode(elem, code, "saso_eventtickets_request_name_per_ticket");
+				sendCode(elem, code, null, RESTRICTION_ACTION);
 			})
 			/*
 			.on('blur',function(){
