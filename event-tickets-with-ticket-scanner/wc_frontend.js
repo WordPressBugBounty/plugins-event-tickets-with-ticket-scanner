@@ -411,12 +411,11 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				// Same-day cutoff: runs after min-attribute override so absolute start dates
 				// (ticket_start_date) cannot silently undo the cutoff effect.
 				// If current time >= cutoff and the resolved minDate still includes today, shift to tomorrow.
-				let _saso_cutoff = elem_intern.attr('data-cutoff-time');
-				if (_saso_cutoff) {
-					let _cp = _saso_cutoff.split(':');
-					let _cutoffDate = new Date();
-					_cutoffDate.setHours(parseInt(_cp[0], 10), parseInt(_cp[1], 10), 0, 0);
-					if (new Date() >= _cutoffDate) {
+				// The cutoff arrives as an absolute moment in shop time, so a buyer in
+				// another timezone gets the same cutoff the server enforces.
+				let _saso_cutoff = parseInt(elem_intern.attr('data-cutoff-ts'), 10);
+				if (_saso_cutoff > 0) {
+					if (Date.now() / 1000 >= _saso_cutoff) {
 						let _todayMidnight = new Date(); _todayMidnight.setHours(0, 0, 0, 0);
 						let _resolvedMin = _sasoResolveLimitDate(data_offset_start);
 						if (_resolvedMin === null || _resolvedMin <= _todayMidnight) {

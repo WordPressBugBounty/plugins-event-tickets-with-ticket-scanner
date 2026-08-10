@@ -613,7 +613,15 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			$params['custom_attributes']['data-exclude-wdays'] = is_array($saso_eventtickets_daychooser_exclude_wdays) ? implode(",", $saso_eventtickets_daychooser_exclude_wdays) : $saso_eventtickets_daychooser_exclude_wdays;
 			$daychooser_cutoff_time = get_post_meta($product_id_orig, 'saso_eventtickets_daychooser_cutoff_time', true);
 			if (!empty($daychooser_cutoff_time) && $saso_eventtickets_daychooser_offset_start == 0) {
-				$params['custom_attributes']['data-cutoff-time'] = sanitize_text_field($daychooser_cutoff_time);
+				// Absolute moment in shop time — the raw "HH:MM" would be compared
+				// against the buyer's browser clock and differ from the server rule
+				$cutoff_ts = $this->MAIN->getTicketHandler()->localDateToTimestamp(
+					wp_date('Y-m-d'),
+					sanitize_text_field($daychooser_cutoff_time)
+				);
+				if ($cutoff_ts > 0) {
+					$params['custom_attributes']['data-cutoff-ts'] = $cutoff_ts;
+				}
 			}
 
 			if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getDayChooserExclusionDates')) {
@@ -981,6 +989,9 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			// Check day chooser dates
 			$this->validateDayChooserDates($cart_items);
 
+			// Check sales cutoff (online sales closed before event start)
+			$this->validateSalesCutoff($cart_items);
+
 			// Check seat reservations (blocks not expired)
 			$this->validateSeatReservations($cart_items);
 		}
@@ -1155,6 +1166,172 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param array $cart_items Cart items
 		 * @return void
 		 */
+		/**
+		 * Hide the buy button once online sales for a ticket are closed
+		 *
+		 * Runs on woocommerce_is_purchasable and woocommerce_variation_is_purchasable,
+		 * which also covers direct ?add-to-cart= links and the Store API.
+		 *
+		 * Deliberately narrow: never turns a false into a true, stays out of the
+		 * admin, ignores everything that is not a ticket, and leaves day chooser
+		 * products alone — their date is picked per cart item, so the product as
+		 * such never expires.
+		 *
+		 * @param bool $purchasable Current state
+		 * @param mixed $product Product object
+		 * @return bool
+		 */
+		public function woocommerce_is_purchasable_handler($purchasable, $product): bool {
+			if (!$purchasable || !($product instanceof WC_Product)) {
+				return (bool) $purchasable;
+			}
+
+			// Admin screens keep working — an organiser must be able to edit and
+			// hand-book a product whose event already started
+			if (is_admin() && !wp_doing_ajax()) {
+				return true;
+			}
+
+			$product_id = $product->get_id();
+			$variation_id = 0;
+			if ($product->is_type('variation')) {
+				$variation_id = $product_id;
+				$product_id = $product->get_parent_id();
+			}
+
+			if ($product_id < 1 || !$this->MAIN->getWC()->getProductManager()->isTicketByProductId($product_id)) {
+				return true;
+			}
+
+			// No selected date at product level, so a day chooser never resolves to
+			// a cutoff here — see Core::getSalesCutoffTimestamp()
+			return !$this->MAIN->getCore()->isSalesCutoffReached($product_id, null, $variation_id);
+		}
+
+		/**
+		 * Explain on the product page why the buy button is gone
+		 *
+		 * @return void
+		 */
+		public function woocommerce_single_product_summary_cutoff(): void {
+			global $product;
+			if (!($product instanceof WC_Product)) {
+				return;
+			}
+
+			$product_id = $product->get_id();
+			if (!$this->MAIN->getWC()->getProductManager()->isTicketByProductId($product_id)) {
+				return;
+			}
+
+			if (!$this->MAIN->getCore()->isSalesCutoffReached($product_id)) {
+				return;
+			}
+
+			echo '<p class="saso-eventtickets-sales-closed">' . $this->getSalesCutoffLabel($product->get_name()) . '</p>';
+		}
+
+		/**
+		 * Customer facing notice for a product whose online sales are closed
+		 *
+		 * @param string $product_name Product name for the {PRODUCT_NAME} placeholder
+		 * @return void
+		 */
+		private function displayWarningSalesCutoff(string $product_name): void {
+			wc_add_notice($this->getSalesCutoffLabel($product_name), 'error');
+		}
+
+		/**
+		 * Escaped "sales closed" text for a product
+		 *
+		 * @param string $product_name Product name for the {PRODUCT_NAME} placeholder
+		 * @param string $option_key Option holding the text
+		 * @param string $fallback Text used when the option is empty, with {PRODUCT_NAME}
+		 * @return string
+		 */
+		private function getSalesCutoffLabel(string $product_name, string $option_key = 'wcTicketTransSalesCutoffMessage', string $fallback = ''): string {
+			$label = trim((string) $this->MAIN->getOptions()->getOptionValue($option_key));
+			if ($label === '') {
+				/* translators: %s: product name */
+				$label = $fallback !== '' ? $fallback : sprintf(__('Online sales for "%s" have closed.', 'event-tickets-with-ticket-scanner'), '{PRODUCT_NAME}');
+			}
+			$label = str_replace('{PRODUCT_NAME}', '%s', $label);
+
+			return wp_kses_post(sprintf($label, esc_html($product_name)));
+		}
+
+		/**
+		 * Own wording when WooCommerce drops a closed ticket from the cart
+		 *
+		 * WooCommerce removes items that are no longer purchasable while loading the
+		 * session and says "contact us if you need assistance" — misleading when the
+		 * presale simply ended. Every other removal reason keeps WooCommerce's text.
+		 *
+		 * @param string $message WooCommerce message
+		 * @param mixed $product Product that was removed
+		 * @return string
+		 */
+		public function woocommerce_cart_item_removed_message_handler($message, $product): string {
+			if (!($product instanceof WC_Product)) {
+				return (string) $message;
+			}
+
+			$product_id = $product->is_type('variation') ? $product->get_parent_id() : $product->get_id();
+			$variation_id = $product->is_type('variation') ? $product->get_id() : 0;
+
+			if ($product_id < 1 || !$this->MAIN->getWC()->getProductManager()->isTicketByProductId($product_id)) {
+				return (string) $message;
+			}
+
+			// Removed for some other reason (out of stock, unpublished, ...)
+			if (!$this->MAIN->getCore()->isSalesCutoffReached($product_id, null, $variation_id)) {
+				return (string) $message;
+			}
+
+			return $this->getSalesCutoffLabel(
+				$product->get_name(),
+				'wcTicketTransSalesCutoffRemovedMessage',
+				/* translators: %s: product name */
+				sprintf(__('Online sales for "%s" have closed, so it was removed from your cart.', 'event-tickets-with-ticket-scanner'), '{PRODUCT_NAME}')
+			);
+		}
+
+		/**
+		 * Validate the sales cutoff for cart items
+		 *
+		 * Catches carts that were filled before the cutoff and held past it.
+		 *
+		 * @param array $cart_items Cart items
+		 * @return void
+		 */
+		private function validateSalesCutoff(array $cart_items): void {
+			$core = $this->MAIN->getCore();
+			$_pm = $this->MAIN->getWC()->getProductManager();
+
+			foreach ($cart_items as $item_id => $cart_item) {
+				$_pid = isset($cart_item['product_id']) ? intval($cart_item['product_id']) : 0;
+				if ($_pid < 1 || !$_pm->isTicketByProductId($_pid)) {
+					continue;
+				}
+				$_vid = isset($cart_item['variation_id']) ? intval($cart_item['variation_id']) : 0;
+
+				// Day chooser: every picked date is checked on its own
+				$dates = [null];
+				if (get_post_meta($_pid, 'saso_eventtickets_is_daychooser', true) == 'yes') {
+					$key = self::SESSION_KEY_DAYCHOOSER;
+					$valueArray = isset($cart_item[$key]) ? $cart_item[$key] : $this->session_get_value($key . '_' . $item_id);
+					$dates = is_array($valueArray) ? array_filter(array_map('trim', $valueArray)) : [];
+				}
+
+				foreach ($dates as $date) {
+					if ($core->isSalesCutoffReached($_pid, $date, $_vid)) {
+						$this->displayWarningSalesCutoff($cart_item['data']->get_name());
+						break;
+					}
+				}
+			}
+		}
+
 		private function validateDayChooserDates(array $cart_items): void {
 			$_pm = $this->MAIN->getWC()->getProductManager();
 			foreach ($cart_items as $item_id => $cart_item) {
@@ -1241,11 +1418,12 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 						}
 					}
 
-					// Validate same-day cutoff time
+					// Validate same-day cutoff time — the admin enters it in shop time,
+					// so it must not be read with the PHP timezone (WordPress runs on UTC)
 					$cutoff_time = get_post_meta($cart_item['product_id'], 'saso_eventtickets_daychooser_cutoff_time', true);
-					if (!empty($cutoff_time) && $offset_start == 0 && $value === date('Y-m-d')) {
-						$cutoff_ts = strtotime(date('Y-m-d') . ' ' . $cutoff_time);
-						if ($cutoff_ts !== false && time() >= $cutoff_ts) {
+					if (!empty($cutoff_time) && $offset_start == 0 && $value === wp_date('Y-m-d')) {
+						$cutoff_ts = $this->MAIN->getTicketHandler()->localDateToTimestamp(wp_date('Y-m-d'), $cutoff_time);
+						if ($cutoff_ts > 0 && time() >= $cutoff_ts) {
 							$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a);
 							continue;
 						}
@@ -1384,7 +1562,11 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			$this->validateSeatReservations(WC()->cart->get_cart());
 
 			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketShowInputFieldsOnCheckoutPage')) {
-				// Skip other validations on cart page when checkout-only option is active
+				// Skip the input field validations on the cart page when the checkout-only
+				// option is active — but the sales cutoff is no input field and must still
+				// block here, not least because the block checkout never fires
+				// woocommerce_checkout_process and this hook is all it triggers
+				$this->validateSalesCutoff(WC()->cart->get_cart());
 				return;
 			}
 			$this->check_cart_item_and_add_warnings();
@@ -1616,6 +1798,8 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		public function woocommerce_add_to_cart_validation_handler($passed, $product_id, $quantity): bool {
 		$product_id = intval($product_id);
 		$quantity = intval($quantity);
+			$selectedDate = null;
+
 			// Daychooser validation
 			if (isset($_REQUEST["is_daychooser"]) && $_REQUEST["is_daychooser"] == "1") {
 				// Verify nonce if present
@@ -1636,6 +1820,18 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				if ($date < date('Y-m-d')) {
 					$product = wc_get_product($product_id);
 					$this->displayWarningDatePicker($product->get_name(), '0', 1, true);
+					return false;
+				}
+
+				$selectedDate = $date;
+			}
+
+			// Sales cutoff: online sales close X hours before the event starts
+			if ($this->MAIN->getWC()->getProductManager()->isTicketByProductId($product_id)) {
+				$variation_id = isset($_REQUEST['variation_id']) ? intval($_REQUEST['variation_id']) : 0;
+				if ($this->MAIN->getCore()->isSalesCutoffReached($product_id, $selectedDate, $variation_id)) {
+					$product = wc_get_product($product_id);
+					$this->displayWarningSalesCutoff($product ? $product->get_name() : '');
 					return false;
 				}
 			}

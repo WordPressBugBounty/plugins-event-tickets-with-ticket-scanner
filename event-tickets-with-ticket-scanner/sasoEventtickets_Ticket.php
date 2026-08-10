@@ -1421,7 +1421,7 @@ final class sasoEventtickets_Ticket {
 	 * Convert a local date+time (as entered by admin in WordPress timezone) to a UTC Unix timestamp.
 	 * WordPress sets PHP timezone to UTC, so strtotime() would wrongly interpret local dates as UTC.
 	 */
-	private function localDateToTimestamp(string $date, string $time = ''): int {
+	public function localDateToTimestamp(string $date, string $time = ''): int {
 		$datetime_str = trim($date . ' ' . $time);
 		try {
 			$dt = new \DateTime($datetime_str, wp_timezone());
@@ -1445,6 +1445,7 @@ final class sasoEventtickets_Ticket {
 		$ret['is_end_time_set'] = false;
 
 		$ret['ticket_start_date'] = trim(get_post_meta( $product_id_orig, 'saso_eventtickets_ticket_start_date', true ));
+		$ret['is_start_date_set'] = !empty($ret['ticket_start_date']) ? true : false;
 		$ret['ticket_start_time'] = trim(get_post_meta( $product_id_orig, 'saso_eventtickets_ticket_start_time', true ));
 		$ret['is_start_time_set'] = !empty($ret['ticket_start_time']) ? true : false;
 		$ret['ticket_end_date'] = trim(get_post_meta( $product_id_orig, 'saso_eventtickets_ticket_end_date', true ));

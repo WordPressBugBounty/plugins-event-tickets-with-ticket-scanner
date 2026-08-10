@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.1.4
+ * Version: 3.1.5
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.1.4');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.1.5');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -688,6 +688,10 @@ class sasoEventtickets {
 
 		add_action('woocommerce_after_shop_loop_item', [$this, 'relay_woocommerce_after_shop_loop_item'], 9); // with 9 we are just before the add to cart button
 		add_filter('woocommerce_add_to_cart_validation', [$this, 'relay_woocommerce_add_to_cart_validation'], 10, 3);
+		add_filter('woocommerce_is_purchasable', [$this, 'relay_woocommerce_is_purchasable'], 10, 2);
+		add_filter('woocommerce_variation_is_purchasable', [$this, 'relay_woocommerce_is_purchasable'], 10, 2);
+		add_action('woocommerce_single_product_summary', [$this, 'relay_woocommerce_single_product_summary_cutoff'], 31);
+		add_filter('woocommerce_cart_item_removed_message', [$this, 'relay_woocommerce_cart_item_removed_message'], 10, 2);
 		add_filter('woocommerce_add_cart_item_data', [$this, 'relay_woocommerce_add_cart_item_data'], 10, 3);
 		add_action('woocommerce_add_to_cart', [$this, 'relay_woocommerce_add_to_cart'], 10, 6);
 		add_action('woocommerce_cart_item_removed', [$this, 'relay_woocommerce_cart_item_removed'], 10, 2);
@@ -801,6 +805,17 @@ class sasoEventtickets {
 	public function relay_woocommerce_add_to_cart_validation() {
 		$args = func_get_args();
 		return $this->getWC()->getFrontendManager()->woocommerce_add_to_cart_validation_handler(...$args);
+	}
+	public function relay_woocommerce_is_purchasable() {
+		$args = func_get_args();
+		return $this->getWC()->getFrontendManager()->woocommerce_is_purchasable_handler(...$args);
+	}
+	public function relay_woocommerce_single_product_summary_cutoff() {
+		$this->getWC()->getFrontendManager()->woocommerce_single_product_summary_cutoff();
+	}
+	public function relay_woocommerce_cart_item_removed_message() {
+		$args = func_get_args();
+		return $this->getWC()->getFrontendManager()->woocommerce_cart_item_removed_message_handler(...$args);
 	}
 	public function relay_woocommerce_add_cart_item_data() {
 		$args = func_get_args();

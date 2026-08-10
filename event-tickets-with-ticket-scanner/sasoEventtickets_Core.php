@@ -587,6 +587,82 @@ class sasoEventtickets_Core {
 		$wpdb->update($this->MAIN->getDB()->getTabelle('codes'), $updates, ['id' => $codeId], $formats, ['%d']);
 	}
 
+	/**
+	 * Timestamp at which online sales for a product close
+	 *
+	 * Single source for the "stop selling X hours before the event starts" rule.
+	 * Returns null whenever the rule cannot apply: option off, product without an
+	 * event date, or a day chooser product without a picked date.
+	 *
+	 * A product with a date but without a start time counts as starting at the
+	 * end of that day (23:59:59).
+	 *
+	 * @param int $productId Product ID
+	 * @param string|null $selectedDate Date picked by the customer (day chooser), Y-m-d
+	 * @param int $variationId Variation ID, if the customer picked one
+	 * @return int|null Cutoff timestamp or null if there is none
+	 */
+	public function getSalesCutoffTimestamp(int $productId, ?string $selectedDate = null, int $variationId = 0): ?int {
+		$cutoff = null;
+		$options = $this->MAIN->getOptions();
+		$ticketHandler = $this->MAIN->getTicketHandler();
+
+		if ($options->isOptionCheckboxActive('wcTicketSalesCutoffActive')) {
+			// Resolve against the variation when it carries its own event date
+			$dates = $ticketHandler->getCalcDateStringAllowedRedeemFromCorrectProduct($variationId > 0 ? $variationId : $productId);
+			$date = null;
+
+			if (!empty($dates['is_daychooser'])) {
+				// Without a picked date there is no event start to count back from
+				$date = !empty($selectedDate) ? $selectedDate : null;
+			} elseif (!empty($dates['is_start_date_set'])) {
+				// A start time alone must not create a cutoff that repeats every day
+				$date = $dates['ticket_start_date'];
+			}
+
+			if ($date !== null) {
+				$time = !empty($dates['is_start_time_set']) ? $dates['ticket_start_time'] : '23:59:59';
+				$startTs = $ticketHandler->localDateToTimestamp($date, $time);
+				if (!empty($startTs)) {
+					$hours = max(0, intval(apply_filters(
+						$this->MAIN->_add_filter_prefix.'core_getSalesCutoffHours',
+						$options->getOptionValue('wcTicketSalesCutoffHours'),
+						$productId,
+						$variationId,
+						$selectedDate
+					)));
+					$cutoff = $startTs - ($hours * 3600);
+				}
+			}
+		}
+
+		// Fired on the null path as well, so premium can set a per product cutoff
+		// even while the global rule is switched off
+		$cutoff = apply_filters(
+			$this->MAIN->_add_filter_prefix.'core_getSalesCutoffTimestamp',
+			$cutoff,
+			$productId,
+			$variationId,
+			$selectedDate
+		);
+
+		return $cutoff === null ? null : (int) $cutoff;
+	}
+
+	/**
+	 * Whether online sales for a product are closed by now
+	 *
+	 * @param int $productId Product ID
+	 * @param string|null $selectedDate Date picked by the customer (day chooser), Y-m-d
+	 * @param int $variationId Variation ID, if the customer picked one
+	 * @return bool True if the product must not be sold anymore
+	 */
+	public function isSalesCutoffReached(int $productId, ?string $selectedDate = null, int $variationId = 0): bool {
+		$cutoff = $this->getSalesCutoffTimestamp($productId, $selectedDate, $variationId);
+
+		return $cutoff !== null && time() >= $cutoff;
+	}
+
 	public function getQRCodeContent($codeObj, $metaObj=null) {
 		if (!isset($codeObj['metaObj']) || $codeObj['metaObj'] == null) {
 			if ($metaObj != null) {

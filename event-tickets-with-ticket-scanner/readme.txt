@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.4
+Stable tag: 3.1.5
 Tested up to: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -246,6 +246,12 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.5 - 2026-08-10 =
+* New: Online sales can now be stopped a set number of hours before the event starts ("Stop online sales before the event starts" in the WooCommerce settings, off by default; when switched on it stops sales two hours before the event unless you change the number). Useful when you also sell at the box office and want the online shop to close first. Products without an event date are never affected; for day-chooser products the date the customer picked counts. Buyers are told when they add the product to the cart, and a cart that was filled before the cutoff is blocked at checkout. The message is configurable.
+* Tweak: When online sales have closed for a ticket, the buy button is now hidden on the product page and in product lists, and a short line explains why, instead of letting the buyer add the ticket and only failing afterwards. This also covers direct "add to cart" links. Products without an event date, day-chooser products (the buyer picks the date later) and everything that is not a ticket are never affected, and the shop admin still sees the normal buttons in the backend.
+* Tweak: If a buyer leaves a ticket in the cart until online sales close, WooCommerce drops it from the cart — the wording is now yours instead of WooCommerce's "please contact us if you need assistance", and can be changed in the settings ("Message when a closed ticket is dropped from the cart"). Items removed for any other reason keep the WooCommerce text.
+* Fix: The "Same-day cutoff time" of day-chooser products was evaluated in the server's timezone instead of the shop's, so on a site ahead of UTC it took effect hours too late — with a shop in Central European Summer Time, a cutoff set to 17:00 only blocked today's date from 19:00 on. It now applies at the time you entered, in the timezone configured in WordPress, both in the date picker and when the cart is checked. The date picker previously also used the buyer's own browser clock, which gave visitors abroad a different cutoff than the one enforced at checkout; it now follows the shop's clock as well.
 
 = 3.1.4 - 2026-07-26 =
 * New: Optionally require a valid ticket or access code to purchase a product. Pick the required event/code list in the product's Event Tickets tab — until you do, nothing changes for any product. Buyers enter their code in the cart and can only check out with a valid, unused code from that list. Use it for presale and access codes, or to require a ticket from an earlier event — for example a group-stage ticket in order to buy the final. Free.
