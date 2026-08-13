@@ -26,7 +26,7 @@ class sasoEventtickets_AdminSettings {
 
 		// Defense in depth: require manage_options for sensitive actions
 		$sensitive_actions = [
-			'changeOption', 'resetOptions', 'deleteOptions', 'exportOptions', 'importOptions', 'applyWizardPreset', 'applyPremiumDefaults', 'checkPremiumUpdate', 'recheckLicense', 'migrateOptionsToCustomTable', 'getOptionsHistory', 'revertOption', 'cleanupOptionsHistory', 'dismissSuggestion',
+			'changeOption', 'resetOptions', 'deleteOptions', 'exportOptions', 'importOptions', 'applyWizardPreset', 'applyPremiumDefaults', 'recheckLicense', 'migrateOptionsToCustomTable', 'getOptionsHistory', 'revertOption', 'cleanupOptionsHistory', 'dismissSuggestion',
 			'emptyTableCodes', 'emptyTableLists', 'emptyTableErrorLogs',
 			'removeCode', 'removeCodes', 'removeAllCodesFromList', 'resetCVVAttempts',
 			'addAuthtoken', 'editAuthtoken', 'removeAuthtoken',
@@ -37,7 +37,7 @@ class sasoEventtickets_AdminSettings {
 			'removeUserRegistrationFromCode', 'removeUsedInformationFromCode',
 			'removeUsedInformationFromCodeBulk', 'editTicketMetaEntry',
 			'getAllDaychooserCalendarData', 'getProductCalendarDetails', 'getRedemptionSummary', 'getRedemptionDetails', 'downloadRedemptionSummary',
-			'downloadSoldTicketsCSV', 'downloadErrorLogsCSV', 'checkLicenseServer',
+			'downloadSoldTicketsCSV', 'downloadErrorLogsCSV',
 		];
 		if (in_array(trim($a), $sensitive_actions) && !current_user_can('manage_options')) {
 			if (!$this->MAIN->isUserAllowedToAccessAdminArea()) {
@@ -164,9 +164,6 @@ class sasoEventtickets_AdminSettings {
 				case "applyPremiumDefaults":
 					$ret = $this->applyPremiumDefaults($data);
 					break;
-				case "checkPremiumUpdate":
-					$ret = $this->checkPremiumUpdate();
-					break;
 				case "recheckLicense":
 					$ret = $this->recheckLicense();
 					break;
@@ -266,9 +263,6 @@ class sasoEventtickets_AdminSettings {
 					break;
 				case "downloadErrorLogsCSV":
 					$this->downloadErrorLogsCSV();
-					break;
-				case "checkLicenseServer":
-					$ret = $this->checkLicenseServer($data);
 					break;
 				default:
 					throw new Exception(sprintf(esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'), $a));
@@ -760,6 +754,16 @@ class sasoEventtickets_AdminSettings {
 			$ret = ['options'=>$options, 'options_special'=>$options_special, 'meta_tags_keys'=>$tags, 'versions'=>$versions, 'infos'=>$infos, 'tickets_for_testing'=>$tickets_for_testing, 'ticket_templates'=>$ticket_templates];
 		}
 		$ret['dismissed_suggestions'] = $this->getDismissedSuggestions();
+		$ret['essentials'] = $this->getEssentialOptionKeys();
+		// Travels with the options payload on purpose: the admin page already
+		// waits for this one call, and a second round trip would let the setup
+		// hint drop in after the page has been read and scrolled past.
+		// Dismissed means dismissed: no data, and no queries to produce it.
+		// Exception, and only one: broken permalinks make the ticket page and
+		// the scanner unreachable. That is worth an option read even on an
+		// installation that asked for quiet.
+		$hidden = $this->isSetupStatusDismissed() && get_option('permalink_structure') !== '';
+		$ret['setup_status'] = $hidden ? null : $this->getSetupStatus();
 
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'admin_getOptions', $ret );
 
@@ -768,8 +772,26 @@ class sasoEventtickets_AdminSettings {
 	public function changeOption($data) {
 		$this->MAIN->getOptions()->changeOption($data);
 	}
-	public function resetOptions() {
-		return $this->MAIN->getOptions()->resetAllOptionValuesToDefault();
+	/**
+	 * Resets options to their defaults - all of them, or only the keys the
+	 * current view is responsible for ($data['keys']).
+	 *
+	 * Without keys it keeps returning true - the premium plugin and the existing
+	 * "Reset All Options" button rely on that.
+	 *
+	 * @param array<string,mixed> $data
+	 * @return array{reset:int,all:bool}|bool
+	 */
+	public function resetOptions($data = []) {
+		$keys = [];
+		if (is_array($data) && isset($data['keys'])) {
+			$keys = is_array($data['keys']) ? $data['keys'] : explode(',', (string) $data['keys']);
+			$keys = array_filter(array_map('trim', $keys));
+		}
+		if (empty($keys)) {
+			return $this->MAIN->getOptions()->resetAllOptionValuesToDefault();
+		}
+		return ['reset' => $this->MAIN->getOptions()->resetOptionValuesToDefault($keys), 'all' => false];
 	}
 	public function deleteOptions() {
 		return $this->MAIN->getOptions()->deleteAllOptionValues();
@@ -819,6 +841,159 @@ class sasoEventtickets_AdminSettings {
 	}
 
 	/**
+	 * Reads the real state of the installation and answers the very first question
+	 * a new admin has: "what do I actually have to do?".
+	 *
+	 * Two steps make up a setup that can sell and check tickets. Each step is
+	 * derived from data, never from an option that somebody could have flipped
+	 * without doing the work.
+	 *
+	 * Creating a ticket list is deliberately not a step: plugin_activated() does
+	 * it through generateFirstCodeList(). A step that is always done is noise.
+	 * Only if every list was deleted does the product step point there instead.
+	 *
+	 * @return array{ready:bool,steps:array<int,array<string,mixed>>,counts:array<string,int>}
+	 */
+	/**
+	 * Whether the shop has waved the setup hint away. The check itself costs one
+	 * option read, the hint it saves costs four queries - so this is asked
+	 * before anything is counted.
+	 */
+	public function isSetupStatusDismissed(): bool {
+		return trim((string) $this->MAIN->getOptions()->getOptionValue('setupStatusDismissed')) !== '';
+	}
+
+	public function getSetupStatus(): array {
+		$db = $this->MAIN->getDB();
+
+		$listCount = (int) $db->_db_getRecordCountOfTable('lists');
+		$productCounts = $this->countTicketProducts();
+		$tokenCount = (int) $db->_db_getRecordCountOfTable('authtokens', 'aktiv = 1');
+		$scannerRole = (string) $this->MAIN->getOptions()->getOptionValue('wcTicketScannerAllowedRoles');
+		$isWCAvailable = class_exists('WooCommerce');
+
+		$productStep = [
+			'key' => 'product',
+			'done' => $productCounts['with_list'] > 0,
+			'label' => __('Connect a product with a ticket list', 'event-tickets-with-ticket-scanner'),
+			'desc' => $productCounts['without_list'] > 0
+				? __('A product is marked as a ticket but has no list assigned - without a list it does not create tickets.', 'event-tickets-with-ticket-scanner')
+				: __('Mark a WooCommerce product as a ticket and assign your list. That is all it takes to sell tickets.', 'event-tickets-with-ticket-scanner'),
+			'action_label' => $isWCAvailable
+				? __('Open products', 'event-tickets-with-ticket-scanner')
+				: __('Install WooCommerce', 'event-tickets-with-ticket-scanner'),
+			'action' => 'products',
+			'action_url' => $isWCAvailable
+				? admin_url('edit.php?post_type=product')
+				: admin_url('plugin-install.php?s=woocommerce&tab=search&type=term')
+		];
+		if ($listCount === 0) {
+			// Every list was deleted, so there is nothing to connect the product to.
+			$productStep['desc'] = __('There is no ticket list to connect a product to - create one first, then assign it to your product.', 'event-tickets-with-ticket-scanner');
+			$productStep['action_label'] = __('Create list', 'event-tickets-with-ticket-scanner');
+			$productStep['action'] = 'lists';
+			$productStep['action_url'] = '';
+		}
+
+		$steps = [];
+
+		// Ohne saubere Permalinks sind Ticket-Detailseite und Scanner nicht
+		// erreichbar - alles andere waere dann vergebliche Muehe. Der Schritt
+		// erscheint nur, wenn es wirklich klemmt: eine korrekte Installation
+		// braucht die Zeile nicht.
+		if (get_option('permalink_structure') === '') {
+			$steps[] = [
+				'key' => 'permalinks',
+				'done' => false,
+				'label' => __('Switch permalinks away from "Plain"', 'event-tickets-with-ticket-scanner'),
+				'desc' => __('With plain permalinks the ticket page and the ticket scanner cannot be reached. Pick any other structure in the WordPress permalink settings - "Post name" is the usual choice.', 'event-tickets-with-ticket-scanner'),
+				'action_label' => __('Open permalink settings', 'event-tickets-with-ticket-scanner'),
+				'action' => 'permalinks',
+				'action_url' => admin_url('options-permalink.php')
+			];
+		}
+
+		$steps[] = $productStep;
+		$steps[] = [
+			'key' => 'scanner',
+			'done' => $tokenCount > 0 || ($scannerRole !== '' && $scannerRole !== '-'),
+			'label' => __('Set up scanner access', 'event-tickets-with-ticket-scanner'),
+			'desc' => __('Your door team needs access to the ticket scanner - either with an auth token or by allowing a user role.', 'event-tickets-with-ticket-scanner'),
+			'action_label' => __('Set up access', 'event-tickets-with-ticket-scanner'),
+			'action' => 'authtokens',
+			'action_url' => ''
+		];
+
+		$ready = true;
+		foreach ($steps as $step) {
+			if (!$step['done']) {
+				$ready = false;
+			}
+		}
+
+		return [
+			'ready' => $ready,
+			'steps' => $steps,
+			'counts' => [
+				'lists' => $listCount,
+				'ticket_products' => $productCounts['with_list'] + $productCounts['without_list'],
+				'ticket_products_without_list' => $productCounts['without_list'],
+				'authtokens' => $tokenCount,
+				'is_wc_available' => $isWCAvailable ? 1 : 0
+			]
+		];
+	}
+
+	/**
+	 * Counts published products (and variations) that are marked as a ticket,
+	 * split by whether a ticket list is assigned to them.
+	 *
+	 * @return array{with_list:int,without_list:int}
+	 */
+	private function countTicketProducts(): array {
+		global $wpdb;
+
+		$sql = "SELECT COUNT(DISTINCT p.ID) AS anzahl,
+				SUM(CASE WHEN ml.meta_value IS NOT NULL AND ml.meta_value <> '' AND ml.meta_value <> '0' THEN 1 ELSE 0 END) AS mit_liste
+			FROM {$wpdb->posts} p
+			INNER JOIN {$wpdb->postmeta} mt ON mt.post_id = p.ID AND mt.meta_key = %s AND mt.meta_value = 'yes'
+			LEFT JOIN {$wpdb->postmeta} ml ON ml.post_id = p.ID AND ml.meta_key = %s
+			WHERE p.post_type IN ('product','product_variation') AND p.post_status = 'publish'";
+
+		$row = $wpdb->get_row($wpdb->prepare($sql, 'saso_eventtickets_is_ticket', 'saso_eventtickets_list'), ARRAY_A);
+
+		$all = isset($row['anzahl']) ? (int) $row['anzahl'] : 0;
+		$withList = isset($row['mit_liste']) ? (int) $row['mit_liste'] : 0;
+
+		return ['with_list' => $withList, 'without_list' => max(0, $all - $withList)];
+	}
+
+	/**
+	 * The handful of options that actually decide how a shop of a given kind
+	 * behaves - the entry point of the filtered settings view.
+	 *
+	 * Grouping by use-case alone barely helps: most groups matter to every kind
+	 * of sale, so "event" still leaves 233 of 306 options on the page. The setup
+	 * wizard already carries the curated shortlist per kind, so the view reuses
+	 * exactly that list instead of inventing a second, competing curation.
+	 *
+	 * @return array<string,array<int,string>> use-case => option keys
+	 */
+	public function getEssentialOptionKeys(): array {
+		// Whatever must never be filtered away is part of the entry view too -
+		// the license key is of no use to anybody if it only shows up two clicks
+		// deeper than the support answer says.
+		$always = $this->MAIN->getOptions()->getAlwaysVisibleOptionKeys();
+		$essentials = [];
+		foreach (sasoEventtickets_Options::USE_CASES as $useCase) {
+			$essentials[$useCase] = array_values(array_unique(
+				array_merge($always, array_keys(self::getWizardPresetDefaults($useCase)))
+			));
+		}
+		return apply_filters( $this->MAIN->_add_filter_prefix.'options_essentials', $essentials );
+	}
+
+	/**
 	 * Returns the preset option values for a given use-case.
 	 *
 	 * @param string $preset One of: event, daypass, membership, voucher
@@ -827,6 +1002,8 @@ class sasoEventtickets_AdminSettings {
 	public static function getWizardPresetDefaults(string $preset): array {
 		$presets = [
 			'event' => [
+				// Printed cards: off by default, the wizard asks for it
+				'wcTicketAllowTicketsWithoutOrder' => 0,
 				// Redemption rules
 				'wcTicketDontAllowRedeemTicketBeforeStart' => 1,
 				'wcTicketOffsetAllowRedeemTicketBeforeStart' => 1,
@@ -848,6 +1025,8 @@ class sasoEventtickets_AdminSettings {
 				'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets' => 1,
 			],
 			'daypass' => [
+				// Printed cards: off by default, the wizard asks for it
+				'wcTicketAllowTicketsWithoutOrder' => 0,
 				// Redemption rules
 				'wcTicketDontAllowRedeemTicketBeforeStart' => 0,
 				'wcTicketOffsetAllowRedeemTicketBeforeStart' => 1,
@@ -869,6 +1048,8 @@ class sasoEventtickets_AdminSettings {
 				'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets' => 1,
 			],
 			'membership' => [
+				// Printed cards: off by default, the wizard asks for it
+				'wcTicketAllowTicketsWithoutOrder' => 0,
 				// Redemption rules
 				'wcTicketDontAllowRedeemTicketBeforeStart' => 0,
 				'wcTicketOffsetAllowRedeemTicketBeforeStart' => 1,
@@ -890,6 +1071,8 @@ class sasoEventtickets_AdminSettings {
 				'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets' => 1,
 			],
 			'voucher' => [
+				// Printed cards: off by default, the wizard asks for it
+				'wcTicketAllowTicketsWithoutOrder' => 0,
 				// Redemption rules
 				'wcTicketDontAllowRedeemTicketBeforeStart' => 0,
 				'wcTicketOffsetAllowRedeemTicketBeforeStart' => 1,
@@ -1004,6 +1187,17 @@ class sasoEventtickets_AdminSettings {
 			'value' => $this->MAIN->getPluginVersion(),
 		]);
 
+		// The wizard's second step asks exactly what the settings view asks:
+		// which kind of sale is this? Answering it once has to be enough, so the
+		// answer becomes the event type and the settings page stops asking.
+		if (in_array($preset, sasoEventtickets_Options::USE_CASES, true)) {
+			$this->MAIN->getOptions()->changeOption(['key' => 'wcTicketUseCase', 'value' => $preset]);
+			$this->MAIN->getOptions()->changeOption([
+				'key' => 'useCaseChooserSeen',
+				'value' => $this->MAIN->getPluginVersion(),
+			]);
+		}
+
 		return ['applied' => $applied, 'preset' => $preset];
 	}
 
@@ -1044,43 +1238,11 @@ class sasoEventtickets_AdminSettings {
 	}
 
 	/**
-	 * Check if a premium plugin update is available (for old premium < 1.6.0).
-	 * Triggers wp_update_plugins() to force a fresh check, then inspects the transient.
-	 */
-	public function checkPremiumUpdate(): array {
-		if (!$this->MAIN->isOldPremiumDetected()) {
-			return ['hasUpdate' => false];
-		}
-
-		// Force WordPress to re-check plugin updates
-		delete_site_transient('update_plugins');
-		wp_update_plugins();
-
-		$updates = get_site_transient('update_plugins');
-		$premiumFolder = $this->MAIN->getPremiumPluginFolder();
-		if (empty($premiumFolder)) {
-			return ['hasUpdate' => false];
-		}
-		$premiumSlug = $premiumFolder . 'index.php';
-
-		if (isset($updates->response[$premiumSlug])) {
-			$update = $updates->response[$premiumSlug];
-			$updateUrl = wp_nonce_url(
-				admin_url('update.php?action=upgrade-plugin&plugin=' . urlencode($premiumSlug)),
-				'upgrade-plugin_' . $premiumSlug
-			);
-			return [
-				'hasUpdate' => true,
-				'newVersion' => $update->new_version ?? '',
-				'updateUrl' => $updateUrl,
-			];
-		}
-		return ['hasUpdate' => false];
-	}
-
-	/**
 	 * Re-check the premium license status by calling checkForPremiumSerialExpiration()
 	 * and returning the current license info for display in the admin UI.
+	 *
+	 * No traffic leaves the site from here: the basic plugin only asks the premium
+	 * plugin to refresh (action 'license_refresh_requested') and reads the stored state.
 	 */
 	public function recheckLicense(): array {
 		$this->MAIN->getTicketHandler()->checkForPremiumSerialExpiration(true);
@@ -1287,6 +1449,20 @@ class sasoEventtickets_AdminSettings {
 			}
 			if (isset($data['meta']['webhooks']) && isset($data['meta']['webhooks']['webhookURLaddwcticketsold'])) {
 				$metaObj['webhooks']['webhookURLaddwcticketsold'] = trim($data['meta']['webhooks']['webhookURLaddwcticketsold']);
+			}
+			if (isset($data['meta']['orderless'])) {
+				$metaObj['orderless'] = intval($data['meta']['orderless']) === 1 ? 1 : 0;
+			}
+			foreach (['event_start_date', 'event_end_date'] as $_dateKey) {
+				if (isset($data['meta'][$_dateKey])) {
+					$metaObj[$_dateKey] = SASO_EVENTTICKETS::sanitize_date_from_datepicker($data['meta'][$_dateKey]);
+				}
+			}
+			foreach (['event_start_time', 'event_end_time'] as $_timeKey) {
+				if (isset($data['meta'][$_timeKey])) {
+					$_time = trim(sanitize_text_field($data['meta'][$_timeKey]));
+					$metaObj[$_timeKey] = preg_match('/^\d{1,2}:\d{2}(:\d{2})?$/', $_time) ? $_time : '';
+				}
 			}
 		}
 		return $metaObj;
@@ -3539,66 +3715,6 @@ class sasoEventtickets_AdminSettings {
 		} catch (Exception $e) {
 			$this->logErrorToDB($e, "", "clearFormatWarning for list $list_id");
 		}
-	}
-
-	/**
-	 * Check if the license/update server is reachable.
-	 * Useful for diagnosing Premium update issues.
-	 *
-	 * @param array $data
-	 * @return array Result with 'success' (bool), 'time' (ms), 'message' (string)
-	 */
-	public function checkLicenseServer($data) {
-		$start_time = microtime(true);
-
-		// Test vollstart.com reachability
-		$test_url = 'https://vollstart.com/';
-		$response = wp_remote_get($test_url, [
-			'timeout' => 10,
-			'sslverify' => true,
-			'user-agent' => 'Event-Tickets-License-Check/' . $this->MAIN->getPluginVersion()
-		]);
-
-		$time_ms = round((microtime(true) - $start_time) * 1000);
-
-		if (is_wp_error($response)) {
-			$error_msg = $response->get_error_message();
-			return [
-				'success' => false,
-				'reachable' => false,
-				'time' => $time_ms,
-				'message' => sprintf(
-					__('License server NOT reachable. Error: %s', 'event-tickets-with-ticket-scanner'),
-					esc_html($error_msg)
-				),
-				'error' => $error_msg
-			];
-		}
-
-		$http_code = wp_remote_retrieve_response_code($response);
-		if ($http_code >= 200 && $http_code < 300) {
-			return [
-				'success' => true,
-				'reachable' => true,
-				'time' => $time_ms,
-				'message' => sprintf(
-					__('License server reachable! Response time: %d ms', 'event-tickets-with-ticket-scanner'),
-					$time_ms
-				),
-				'http_code' => $http_code
-			];
-		}
-
-		return [
-			'success' => false,
-			'reachable' => false,
-			'time' => $time_ms,
-			'message' => sprintf(
-				__('License server returned unexpected HTTP code: %d', 'event-tickets-with-ticket-scanner'),
-				$http_code
-			),
-			'http_code' => $http_code
-		];
 	}
 
 	// ── Context-Wizards: dismissed suggestions per user (#232) ──

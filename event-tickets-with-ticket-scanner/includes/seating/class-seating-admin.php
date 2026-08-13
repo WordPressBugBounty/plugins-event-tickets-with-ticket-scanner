@@ -198,6 +198,9 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 				case 'deleteSeat':
 					$ret = $this->handleDeleteSeat($data);
 					break;
+				case 'reorderSeats':
+					$ret = $this->handleReorderSeats($data);
+					break;
 
 				// Statistics
 				case 'getStats':
@@ -599,6 +602,20 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 			'fail_count' => count($results) - $successCount,
 			'message' => sprintf(__('%d seats updated successfully', 'event-tickets-with-ticket-scanner'), $successCount)
 		];
+	}
+
+	/**
+	 * Handle: Persist a custom seat order for a plan
+	 *
+	 * Seat CRUD lives in sasoEventtickets_Seating — this endpoint only forwards,
+	 * so both routers share one implementation.
+	 *
+	 * @param array $data Request data
+	 * @return array Number of reordered seats
+	 * @throws Exception On failure
+	 */
+	private function handleReorderSeats(array $data): array {
+		return $this->MAIN->getSeating()->handleReorderSeats($data);
 	}
 
 	/**

@@ -265,7 +265,7 @@ jQuery(document).ready(()=>{
                 _storeValue("ticketScannerCameraId", event.target.value, 365);
                 qrScanner.setCamera(event.target.value);//.then(updateFlashAvailability);
             });
-            let btn = $('<button>').text("Stop Camera").appendTo($('#reader')).on("click", event=>{
+            let btn = $('<button class="button-ticket-options">').text("Stop Camera").appendTo($('#reader')).on("click", event=>{
                 qrScanner.stop();
                 qrScanner.destroy();
                 qrScanner = null;
@@ -363,12 +363,24 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 startScanner();
             }).appendTo(btngrp);
             if (system.status == "retrieved") {
-                let btn_redeem = $('<button class="button-ticket-options">').html(_x('Redeem Ticket', 'label', 'event-tickets-with-ticket-scanner')).css("background-color", 'gray').css('color', 'white').prop("disabled", true).on('click', e=>{
-                    redeemTicket(system.code);
+                buildRedeemButton(system.last_scanned_ticket.data, false).appendTo(btngrp);
+            }
+            // After a redeem, keep the "Ticket Info" button visible so the
+            // operator can re-open the same ticket data without scanning
+            // again. The HTML is held in memory by displayTicketInfo().
+            if (system.status == "redeemed" && system._ticketInfoHtml) {
+                $('<button class="button-ticket-options">').html(_x('Ticket Info', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+                    showTicketInfoOverlay();
                 }).appendTo(btngrp);
-                if (canTicketBeRedeemed(system.last_scanned_ticket.data)) {
-                    btn_redeem.prop("disabled", false).css('background-color','green');
-                }
+            }
+            // Multi-pass: if the ticket allows more redeems and the
+            // operator wants to validate the same ticket again (e.g.
+            // for split entry, multiple-day events, validation counts),
+            // offer "Redeem again" without forcing a re-scan.
+            if (system.status == "redeemed"
+                    && system.last_scanned_ticket.data
+                    && canTicketBeRedeemed(system.last_scanned_ticket.data)) {
+                buildRedeemButton(system.last_scanned_ticket.data, true).appendTo(btngrp);
             }
             if (qrScanner != null) {
                 $('<button class="button-ticket-options">').html(__("Stop camera", 'event-tickets-with-ticket-scanner')).on("click", e=>{
@@ -441,6 +453,15 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                     + (system.PARA.useoldticketscanner ? "" : "&useoldticketscanner=1");
             }).prop("checked", system.PARA.useoldticketscanner).appendTo(div);
             div.append(' '+__("Use old ticket scanner library - compatibility mode", 'event-tickets-with-ticket-scanner'));
+            div.append("<br>");
+
+            $('<input type="checkbox">').on("click", e=>{
+                window.location.href = "?code="+encodeURIComponent(system.code)
+                    + (ticket_scanner_operating_option.redeem_auto ? "&redeemauto=1" : "")
+                    + (system.PARA.useoldticketscanner ? "&useoldticketscanner=1" : "")
+                    + (system.PARA.layout === "legacy" ? "" : "&layout=legacy");
+            }).prop("checked", system.PARA.layout === "legacy").appendTo(div);
+            div.append(' '+__("Use classic layout", 'event-tickets-with-ticket-scanner'));
         }
 
         $('<div style="margin-top:40px;">').append(system.INPUTFIELD).appendTo(div);
@@ -649,6 +670,30 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     }
     function _getSpinnerHTML() {
         return '<span class="lds-dual-ring"></span>';
+    }
+    /**
+     * Append the redeem-counter block (max amount / usage / per-day /
+     * confirmed-check) to an existing jQuery container. Used in both
+     * the un-redeemed detail view and the post-redeem status view so
+     * the operator sees the same numbers regardless of where they are
+     * in the flow. Safe to call when data is partial (e.g. a re-scan
+     * mid-redeem) — missing fields just mean the row is skipped.
+     */
+    function appendRedeemCounters(container, data) {
+        if (!data || !data._ret || !data.metaObj || !data.metaObj.wc_ticket) return;
+        if (data._ret._options && data._ret._options.displayConfirmedCounter) {
+            $('<div>').html(sprintf(/* translators: %s: confirmed check counter */__('Confirmed: <b>%s</b>', 'event-tickets-with-ticket-scanner'), data.metaObj.confirmedCount)).appendTo(container);
+        }
+        $('<div>').html(sprintf(/* translators: %s: max redeem amount */__('Max Redeem Amount for this ticket: <b>%s</b>', 'event-tickets-with-ticket-scanner'), data._ret.max_redeem_amount)).appendTo(container);
+        // Always show the "Redeem usage: X of Y" line, even when the max
+        // amount is 1 (single-use ticket). The operator needs the same
+        // number on every ticket - a 1-of-1 line is just as informative as
+        // a 10-of-100 line. Hiding it for single-use tickets used to make
+        // the count quietly disappear on the most common ticket type.
+        $('<div>').html(sprintf(/* translators: 1: redeemd tickets 2: max redeem */__('Redeem usage: <b>%1$d</b> of <b>%2$d</b>', 'event-tickets-with-ticket-scanner'), data.metaObj.wc_ticket.stats_redeemed.length, data._ret.max_redeem_amount)).appendTo(container);
+        if (data._ret.max_redeem_per_day > 0) {
+            $('<div>').html(sprintf(/* translators: 1: redeems used today 2: max per day */__('Redeems today: <b>%1$d</b> of <b>%2$d</b>', 'event-tickets-with-ticket-scanner'), data._ret.redeems_today, data._ret.max_redeem_per_day)).appendTo(container);
+        }
     }
     function _getSeatInfoHtml(obj) {
         if (!obj.seat_label || obj.seat_label == "") {
@@ -1104,7 +1149,13 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         let metaObj = data.metaObj
         let is_expired = isTicketExpired(data._ret);
         if (!data._ret.is_paid) {
-            $('<h4 style="color:red !important;">').html(sprintf(/* translators: %s: order status */__('Ticket is NOT paid (%s).', 'label', 'event-tickets-with-ticket-scanner'),data._ret.order_status)).appendTo(div);
+            // Karten ohne Bestellung sind der vorgesehene Fall, kein Mangel -
+            // "nicht bezahlt ()" mit leerer Klammer sah aus wie ein Fehler.
+            if (data._ret.is_without_order) {
+                $('<h4 style="color:#8a5700 !important;">').text(__('Ticket without a shop order - handed out directly.', 'event-tickets-with-ticket-scanner')).appendTo(div);
+            } else {
+                $('<h4 style="color:red !important;">').html(sprintf(/* translators: %s: order status */__('Ticket is NOT paid (%s).', 'label', 'event-tickets-with-ticket-scanner'),data._ret.order_status)).appendTo(div);
+            }
         } else {
             if (is_expired == false && metaObj['wc_ticket']['redeemed_date'] != "") {
                 let color = "red";
@@ -1189,16 +1240,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         } else {
             $('<div>').html(__('Ticket not redeemed', 'event-tickets-with-ticket-scanner')).appendTo(div);
         }
-        if (data._ret._options.displayConfirmedCounter) {
-            $('<div>').html(sprintf(/* translators: %s: confirmed check counter */__('Confirmed status validation check counter: <b>%s</b>', 'event-tickets-with-ticket-scanner'), data.metaObj.confirmedCount)).appendTo(div);
-        }
-        $('<div>').html(sprintf(/* translators: %s: max redeem amount */__('Max Redeem Amount for this ticket: <b>%s</b>', 'event-tickets-with-ticket-scanner'), data._ret.max_redeem_amount)).appendTo(div);
-        if(data._ret.max_redeem_amount > 1) {
-            $('<div>').html(sprintf(/* translators: 1: redeemd tickets 2: max redeem */__('Redeem usage: <b>%1$d</b> of <b>%2$d</b>', 'event-tickets-with-ticket-scanner'), data.metaObj.wc_ticket.stats_redeemed.length, data._ret.max_redeem_amount)).appendTo(div);
-        }
-        if (data._ret.max_redeem_per_day > 0) {
-            $('<div>').html(sprintf(/* translators: 1: redeems used today 2: max per day */__('Redeems today: <b>%1$d</b> of <b>%2$d</b>', 'event-tickets-with-ticket-scanner'), data._ret.redeems_today, data._ret.max_redeem_per_day)).appendTo(div);
-        }
+        appendRedeemCounters(div, data);
 
         let div2 = $('<div style="width:50%;display:inline-block;">');
         if (data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart && typeof data._ret.is_date_set != "undefined" && data._ret.is_date_set) {
@@ -1264,13 +1306,11 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         let content = $('<div>').html('<div style="display:flex;text-align:center;flex-wrap: nowrap;flex-direction: row;justify-content: center;flex-basis: auto;">'+system.code+'</div>');
         if (system.redeemed_successfully) {
             content.append('<h3 style="color:green !important;text-align:center;">'+__('Redeemed', 'event-tickets-with-ticket-scanner')+'</h3>');
-            //content.append('<p style="text-align:center;color:green"><img src="'+system.img_pfad+'button_ok.png"><br><b>'+__('Successfully redeemed', 'event-tickets-with-ticket-scanner')+'</b></p>');
-            content.append('<p style="text-align:center;color:green"><img src="'+system.img_pfad+'button_ok.png"></p>');
+            content.append('<p style="text-align:center;color:green"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></p>');
             t = 'Redeemed';
         } else {
             content.append('<h3 style="color:red !important;text-align:center;">'+__('NOT REDEEMED - see reason below', 'event-tickets-with-ticket-scanner')+'</h3>');
-            //content.append('<p style="text-align:center;color:red;"><img src="'+system.img_pfad+'button_cancel.png"><br><b>'+__('Failed to redeem', 'event-tickets-with-ticket-scanner')+'</b></p>');
-            content.append('<p style="text-align:center;color:red;"><img src="'+system.img_pfad+'button_cancel.png"></p>');
+            content.append('<p style="text-align:center;color:red;"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></p>');
             t = 'Not redeemed';
         }
         if (typeof system.last_scanned_ticket.data != null && system.last_scanned_ticket.data._ret && system.last_scanned_ticket.data._ret.ticket_title && system.last_scanned_ticket.data._ret.ticket_title != "") {
@@ -1286,7 +1326,17 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         if (typeof system.last_scanned_ticket.data != null && system.last_scanned_ticket.data.metaObj && system.last_scanned_ticket.data.metaObj.wc_ticket && system.last_scanned_ticket.data.metaObj.wc_ticket.redeemed_date && system.last_scanned_ticket.data.metaObj.wc_ticket.redeemed_date != "") {
             content.append('<div style="text-align:center;">'+system.last_scanned_ticket.data._ret.redeemed_date_label+' '+system.last_scanned_ticket.data.metaObj.wc_ticket.redeemed_date+'</div>');
         }
-        speakText(t, 'en-EN');
+        // Show the redeem counters (max amount / usage / per-day) in the
+        // redeemed view so the operator can see how many redeems are left
+        // before reaching "Redeem again" becomes a dead button. Uses the
+        // shared helper so the format is identical to the un-redeemed view.
+        appendRedeemCounters(content, system.last_scanned_ticket.data);
+        // Defer the TTS call to the next frame so the browser can paint
+        // the redeemed banner first - otherwise the speech engine can
+        // race with the paint and the user sees the banner a beat before
+        // the audio starts, which feels delayed. requestAnimationFrame
+        // schedules the speak() call after the current paint.
+        requestAnimationFrame(() => speakText(t, 'en-EN'));
         showScanNextTicketButton();
         updateTicketScannerInfoArea(content);
     }
@@ -1309,6 +1359,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function redeemTicket(code) {
         clearAreas();
         system.redeemed_successfully = false;
+        // Scroll to top so the user sees the result of the redeem action
+        // (the buttons are below the fold on mobile, the result is at the top).
+        window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
         $("#reader_output").html(__("start redeem ticket...loading..."));
         updateTicketScannerInfoArea(_getSpinnerHTML());
         _makeGet('redeem_ticket', {'code':code, 'cvv': system.currentCVV || ''}, data=>{
@@ -1565,8 +1618,73 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         }
         $('<p style="text-align:center;">').html(system.code).appendTo(div);
 
-        div_ticket_info_area = $('#ticket_info').html(div);
+        // Store the ticket info HTML for the overlay — don't render inline.
+        // Render a compact "summary card" inline so the area is never empty.
+        system._ticketInfoHtml = div;
+        renderTicketSummary(data);
         displayTicketInfoButtons(data);
+    }
+
+    /**
+     * Render a compact ticket summary inline in #ticket_info.
+     * Shows only the essentials (heading, date, state badge) so the user
+     * immediately sees the result without waiting on full details.
+     * Full info opens via the "Ticket Info" button → showTicketInfoOverlay().
+     */
+    function renderTicketSummary(data) {
+        let codeObj = data;
+        let metaObj = data.metaObj;
+        let ret = data._ret;
+
+        // Determine state (same logic as scanner card)
+        let state = 'valid';
+        if (metaObj['wc_ticket']['redeemed_date'] != "") {
+            state = 'redeemed';
+        } else if (isTicketExpired(data._ret)) {
+            state = 'expired';
+        }
+
+        let summary = $('<div class="saso-scanner__ticket-card" data-state="' + state + '">');
+        // Compact summary: heading + date + state label
+        if (ret.ticket_heading && ret.ticket_heading != "") {
+            $('<div class="saso-scanner__ticket-code">').text(ret.ticket_heading).appendTo(summary);
+        }
+        if (ret.ticket_title && ret.ticket_title != "") {
+            $('<div style="font-weight:700;font-size:var(--saso-font-size-base);margin-top:var(--saso-space-xs);">').text(ret.ticket_title).appendTo(summary);
+        }
+        if (ret.ticket_date_as_string && ret.ticket_date_as_string != "") {
+            $('<div style="font-size:var(--saso-font-size-sm);color:var(--saso-text-muted);">').html(ret.ticket_date_as_string).appendTo(summary);
+        }
+
+        div_ticket_info_area = $('#ticket_info').html(summary);
+    }
+
+    /**
+     * Show the ticket info overlay (fullscreen modal).
+     * Content comes from system._ticketInfoHtml which was stored by displayTicketInfo().
+     */
+    function showTicketInfoOverlay() {
+        // Remove any existing overlay
+        $('.saso-ticket-overlay').remove();
+        if (!system._ticketInfoHtml) return;
+
+        let overlay = $('<div class="saso-ticket-overlay">');
+        let header = $('<div class="saso-ticket-overlay__header">').appendTo(overlay);
+        $('<h2 class="saso-ticket-overlay__title">').text(__("Ticket Info", 'event-tickets-with-ticket-scanner')).appendTo(header);
+        let closeBtn = $('<button class="saso-ticket-overlay__close">').html('&times;').appendTo(header);
+        let body = $('<div class="saso-ticket-overlay__body">').appendTo(overlay);
+        body.append(system._ticketInfoHtml);
+
+        closeBtn.on('click', function(){
+            overlay.removeClass('saso-ticket-overlay--open');
+            setTimeout(function(){ overlay.remove(); }, 200);
+        });
+
+        $('body').append(overlay);
+        // Trigger transition
+        requestAnimationFrame(function(){
+            overlay.addClass('saso-ticket-overlay--open');
+        });
     }
     function canTicketBeRedeemed(data) {
         let allow_redeem = false;
@@ -1595,23 +1713,44 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     }
     function displayTicketInfoButtons(data) {
         let div = $('<div>').css('text-align', 'center');
-        if (!data._ret.is_paid) {
+        if (!data._ret.is_paid && !data._ret.is_without_order) {
             $('<h4 style="color:red !important;">').html(sprintf(/* translators: %s: order status */__('Ticket is NOT paid (%s).', 'event-tickets-with-ticket-scanner'), data._ret.order_status)).appendTo(div);
         }
         $('<button class="button-ticket-options">').html(_x('Reload', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div).on('click', e=>{
             retrieveTicket(system.code, true);
         });
-        let btn_redeem = $('<button class="button-ticket-options">').html(_x('Redeem Ticket', 'label', 'event-tickets-with-ticket-scanner')).css("background-color", 'gray').css('color', 'white').prop("disabled", true).appendTo(div).on('click', e=>{
-            redeemTicket(system.code);
-        });
+        // Ticket Info button — opens the fullscreen overlay
+        if (system._ticketInfoHtml) {
+            $('<button class="button-ticket-options">').html(_x('Ticket Info', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div).on('click', e=>{
+                showTicketInfoOverlay();
+            });
+        }
+        buildRedeemButton(data, false).appendTo(div);
         if (ticket_scanner_operating_option.ticketScannerDontShowBtnPDF == false) {
             $('<button class="button-ticket-options">').html(_x('PDF', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div).on('click', e=>{
-                window.open(data.metaObj['wc_ticket']['_url']+'?pdf', '_blank');
+                let btn = $(e.target);
+                let originalLabel = btn.text();
+                btn.prop('disabled', true).html(_x('PDF', 'label', 'event-tickets-with-ticket-scanner') + ' <span class="saso-btn-spinner"></span>');
+                let win = window.open(data.metaObj['wc_ticket']['_url']+'?pdf', '_blank');
+                setTimeout(()=>{
+                    btn.prop('disabled', false).text(originalLabel);
+                }, 1500);
             });
         }
         if (ticket_scanner_operating_option.ticketScannerDontShowBtnBadge == false) {
             $('<button class="button-ticket-options">').html(_x('Badge', 'label', 'event-tickets-with-ticket-scanner')).appendTo(div).on('click', e=>{
-                _downloadFile('downloadPDFTicketBadge', {'code':data.code}, "eventticket_badge_"+data.code+".pdf");
+                let btn = $(e.target);
+                let originalLabel = btn.text();
+                btn.prop('disabled', true).html(_x('Badge', 'label', 'event-tickets-with-ticket-scanner') + ' <span class="saso-btn-spinner"></span>');
+                _downloadFile('downloadPDFTicketBadge', {'code':data.code}, "eventticket_badge_"+data.code+".pdf", ()=>{
+                    // Success callback
+                    btn.prop('disabled', false).text(originalLabel);
+                }, ()=>{
+                    // Error callback
+                    btn.prop('disabled', false).text(originalLabel);
+                }, (progress)=>{
+                    // Progress callback — keep spinner until done
+                });
                 return false;
             });
         }
@@ -1630,14 +1769,33 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             });
         }
 
-        if (canTicketBeRedeemed(data)) {
-            btn_redeem.prop("disabled", false).css('background-color','green');
-        }
-
         div.append(displayRedeemedTicketsInfo(data));
         div.append(displayTimezoneInformation(data));
         $('#ticket_info_btns').html(div);
     }
+    /**
+     * Build a "Redeem" button as a jQuery element.
+     *
+     * Caller appends the result to its container. By default the button
+     * is disabled and grey - it enables itself green if canTicketBeRedeemed()
+     * returns true for the data passed in, so the caller does not have to
+     * wire that condition again. The "again" variant is the same button with
+     * a different label (used in the post-redeem multi-pass flow).
+     */
+    function buildRedeemButton(data, again) {
+        let label = again
+            ? _x('Redeem again', 'label', 'event-tickets-with-ticket-scanner')
+            : _x('Redeem Ticket', 'label', 'event-tickets-with-ticket-scanner');
+        let btn = $('<button class="button-ticket-options">').html(label)
+            .css("background-color", 'gray').css('color', 'white')
+            .prop("disabled", true)
+            .on('click', e => redeemTicket(system.code));
+        if (canTicketBeRedeemed(data)) {
+            btn.prop("disabled", false).css('background-color', 'green');
+        }
+        return btn;
+    }
+
     // Helper: escape HTML
     function escapeHtml(text) {
         if (!text) return '';
@@ -2045,7 +2203,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         system.AUTHTOKENREMOVEBUTTON = div;
     }
     function addClearCamDeviceButton() {
-        let btn = $('<button>').html("Clear the stored cam device").on("click", event=>{
+        let btn = $('<button class="button-ticket-options">').html("Clear the stored cam device").on("click", event=>{
             _storeValue("ticketScannerCameraId", "", 1);
             window.location.reload(true);
         });
@@ -2265,6 +2423,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         $ = jQuery;
         initStyle();
         addMetaTag("viewport", "width=device-width, initial-scale=1");
+        // Show spinner in reader area immediately — stays until ping completes
         $('#reader').html(_getSpinnerHTML());
         _makeGet('ping', [], data=>{
             system.data = data; // initialer daten empfang mit options
@@ -2309,6 +2468,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 if (system.code != "") {
                     system.code = cleanPublicTicketNumber(system.code);
                     system.INPUTFIELD.val(system.code);
+                    // Show spinner in ticket_info area immediately — space is reserved
+                    $('#ticket_info').html(_getSpinnerHTML()).css("display", "block");
+                    $('#ticket_info_retrieved').html(_getSpinnerHTML());
                     retrieveTicket(system.code);
                 }
             } else {

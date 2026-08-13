@@ -1,0 +1,273 @@
+- generic [active] [ref=f16e1]:
+  - table [ref=f16e3]:
+    - rowgroup [ref=f16e4]:
+      - row [ref=f16e5]:
+        - 'columnheader "( ! ) Deprecated: File Theme without header.php is <strong>deprecated</strong> since version 3.0.0 with no alternative available. Please include a header.php template in your theme. in /var/www/html/verwicklung.de/wordpress/wp-includes/functions.php on line 6170" [ref=f16e6]'
+      - row [ref=f16e7]:
+        - columnheader "Call Stack" [ref=f16e8]
+      - row [ref=f16e9]:
+        - columnheader "#" [ref=f16e10]
+        - columnheader "Time" [ref=f16e11]
+        - columnheader "Memory" [ref=f16e12]
+        - columnheader "Function" [ref=f16e13]
+        - columnheader "Location" [ref=f16e14]
+      - row [ref=f16e15]:
+        - cell "1" [ref=f16e16]
+        - cell "0.0010" [ref=f16e17]
+        - cell "371736" [ref=f16e18]
+        - 'cell "{main}( )" [ref=f16e19]'
+        - cell ".../index.php:0" [ref=f16e20]
+      - row [ref=f16e21]:
+        - cell "2" [ref=f16e22]
+        - cell "0.0015" [ref=f16e23]
+        - cell "373080" [ref=f16e24]
+        - cell "require( '/var/www/html/verwicklung.de/wordpress/wp-blog-header.php )" [ref=f16e25]
+        - cell ".../index.php:17" [ref=f16e26]
+      - row [ref=f16e27]:
+        - cell "3" [ref=f16e28]
+        - cell "1.3670" [ref=f16e29]
+        - cell "138620536" [ref=f16e30]
+        - cell "require_once( '/var/www/html/verwicklung.de/wordpress/wp-includes/template-loader.php )" [ref=f16e31]
+        - cell ".../wp-blog-header.php:19" [ref=f16e32]
+      - row [ref=f16e33]:
+        - cell "4" [ref=f16e34]
+        - cell "1.3670" [ref=f16e35]
+        - cell "138620536" [ref=f16e36]
+        - cell "do_action( $hook_name = 'template_redirect' )" [ref=f16e37]
+        - cell ".../template-loader.php:23" [ref=f16e38]
+      - row [ref=f16e39]:
+        - cell "5" [ref=f16e40]
+        - cell "1.3670" [ref=f16e41]
+        - cell "138620752" [ref=f16e42]
+        - cell "WP_Hook->do_action( $args = [0 => ''] )" [ref=f16e43]
+        - cell ".../plugin.php:522" [ref=f16e44]
+      - row [ref=f16e45]:
+        - cell "6" [ref=f16e46]
+        - cell "1.3670" [ref=f16e47]
+        - cell "138620752" [ref=f16e48]
+        - cell "WP_Hook->apply_filters( $value = '', $args = [0 => ''] )" [ref=f16e49]
+        - cell ".../class-wp-hook.php:365" [ref=f16e50]
+      - row [ref=f16e51]:
+        - cell "7" [ref=f16e52]
+        - cell "1.3897" [ref=f16e53]
+        - cell "139085904" [ref=f16e54]
+        - 'cell "sasoEventtickets_Ticket->{closure:/var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner/sasoEventtickets_Ticket.php:1708-1713}( '''' )" [ref=f16e55]'
+        - cell ".../class-wp-hook.php:341" [ref=f16e56]
+      - row [ref=f16e57]:
+        - cell "8" [ref=f16e58]
+        - cell "1.3897" [ref=f16e59]
+        - cell "139086096" [ref=f16e60]
+        - cell "sasoEventtickets_Ticket->output( )" [ref=f16e61]
+        - cell ".../sasoEventtickets_Ticket.php:1711" [ref=f16e62]
+      - row [ref=f16e63]:
+        - cell "9" [ref=f16e64]
+        - cell "1.3916" [ref=f16e65]
+        - cell "139088888" [ref=f16e66]
+        - cell "get_header( $name = ???, $args = ??? )" [ref=f16e67]
+        - cell ".../sasoEventtickets_Ticket.php:3614" [ref=f16e68]
+      - row [ref=f16e69]:
+        - cell "10" [ref=f16e70]
+        - cell "1.3916" [ref=f16e71]
+        - cell "139106456" [ref=f16e72]
+        - cell "locate_template( $template_names = [0 => 'header.php'], $load = TRUE, $load_once = TRUE, $args = [] )" [ref=f16e73]
+        - cell ".../general-template.php:48" [ref=f16e74]
+      - row [ref=f16e75]:
+        - cell "11" [ref=f16e76]
+        - cell "1.3917" [ref=f16e77]
+        - cell "139106568" [ref=f16e78]
+        - cell "load_template( $_template_file = '/var/www/html/verwicklung.de/wordpress/wp-includes/theme-compat/header.php', $load_once = TRUE, $args = [] )" [ref=f16e79]
+        - cell ".../template.php:749" [ref=f16e80]
+      - row [ref=f16e81]:
+        - cell "12" [ref=f16e82]
+        - cell "1.3930" [ref=f16e83]
+        - cell "139116776" [ref=f16e84]
+        - cell "require_once( '/var/www/html/verwicklung.de/wordpress/wp-includes/theme-compat/header.php )" [ref=f16e85]
+        - cell ".../template.php:814" [ref=f16e86]
+      - row [ref=f16e87]:
+        - cell "13" [ref=f16e88]
+        - cell "1.3930" [ref=f16e89]
+        - cell "139117416" [ref=f16e90]
+        - cell "_deprecated_file( $file = 'Theme without header.php', $version = '3.0.0', $replacement = NULL, $message = 'Please include a header.php template in your theme.' )" [ref=f16e91]
+        - cell ".../header.php:9" [ref=f16e92]
+      - row [ref=f16e93]:
+        - cell "14" [ref=f16e94]
+        - cell "1.3930" [ref=f16e95]
+        - cell "139117608" [ref=f16e96]
+        - cell "wp_trigger_error( $function_name = '', $message = 'File Theme without header.php is <strong>deprecated</strong> since version 3.0.0 with no alternative available. Please include a header.php template in your theme.', $error_level = 16384 )" [ref=f16e97]
+        - cell ".../functions.php:5853" [ref=f16e98]
+      - row [ref=f16e99]:
+        - cell "15" [ref=f16e100]
+        - cell "1.3932" [ref=f16e101]
+        - cell "139126736" [ref=f16e102]
+        - cell [ref=f16e103]:
+          - link "trigger_error" [ref=f16e104] [cursor=pointer]:
+            - /url: http://www.php.net/function.trigger-error
+          - text: ( $message = 'File Theme without header.php is <strong>deprecated</strong> since version 3.0.0 with no alternative available. Please include a header.php template in your theme.', $error_level = 16384 )
+        - cell ".../functions.php:6170" [ref=f16e105]
+  - generic [ref=f16e106]:
+    - banner [ref=f16e107]:
+      - generic [ref=f16e108]:
+        - heading [level=1] [ref=f16e109]:
+          - link "Verwicklung" [ref=f16e110] [cursor=pointer]:
+            - /url: https://verwicklung.de/wordpress/
+        - generic [ref=f16e111]: Eine weitere WordPress-Website
+    - separator [ref=f16e112]
+    - generic [ref=f16e114]:
+      - text: My one ticket Templates
+      - heading "Ticket Details" [level=3] [ref=f16e115]
+      - heading "Test Event Ticket Event" [level=4] [ref=f16e116]
+      - table [ref=f16e117]:
+        - rowgroup [ref=f16e118]:
+          - row [ref=f16e119]:
+            - cell [ref=f16e120]:
+              - paragraph [ref=f16e121]: 2026-08-12 06:02:00 - 2026-08-12 14:00:00 EXPIREDLocation Texas Hilll
+              - paragraph [ref=f16e122]: Big Party Finish DJ Olivia N 8:00 PM TO 11:00 PM Doors @ 7:00 PM
+              - paragraph [ref=f16e123]: Big Party 8:00 PM TO 11:00 PM DOORS @ 7:00 PM
+      - table [ref=f16e124]:
+        - rowgroup [ref=f16e125]:
+          - row [ref=f16e126]:
+            - cell [ref=f16e127]:
+              - paragraph [ref=f16e128]: Customer
+            - cell [ref=f16e129]:
+              - paragraph [ref=f16e130]: "Payment detailsOrder paid at: -Order completed at: -Free ticket"
+      - text: 1 of 1 Tickets You have used this ticket 1 of 1000.
+      - table [ref=f16e131]:
+        - rowgroup [ref=f16e132]:
+          - row [ref=f16e133]:
+            - 'cell "Ticket: ticket_2026043016_YGW-JTK-YGM-WNH-STV Price: CHF 10,00" [ref=f16e134]':
+              - text: "Ticket: ticket_2026043016_YGW-JTK-YGM-WNH-STVPrice:"
+              - generic [ref=f16e135]: CHF 10,00
+            - cell "EmptyList" [ref=f16e138]
+      - paragraph [ref=f16e141]: 2472997391-734-ticket_2026043016_YGWJTKYGMWNHSTV
+      - generic [ref=f16e142]:
+        - heading "Ticket redeemed" [level=4] [ref=f16e143]
+        - text: "Last Redeemed: 2026-06-05 17:34:30"
+      - heading "Too late. Event started already" [level=4] [ref=f16e145]
+      - paragraph [ref=f16e146]:
+        - link "Download PDF Ticket" [ref=f16e147] [cursor=pointer]:
+          - /url: https://verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner/ticket/2472997391-734-ticket_2026043016_YGWJTKYGMWNHSTV?pdf
+        - link "Download calendar file" [ref=f16e148] [cursor=pointer]:
+          - /url: https://verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner/ticket/2472997391-734-ticket_2026043016_YGWJTKYGMWNHSTV?ics
+        - link "Download ticket badge" [ref=f16e149] [cursor=pointer]:
+          - /url: https://verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner/ticket/2472997391-734-ticket_2026043016_YGWJTKYGMWNHSTV?badge
+      - paragraph [ref=f16e150]:
+        - link "Add to Vollstart Wallet" [ref=f16e151] [cursor=pointer]:
+          - /url: https://wallet.vollstart.com/add?shop=https%3A%2F%2Fverwicklung.de%2Fwordpress&ticket=2472997391-734-ticket_2026043016_YGWJTKYGMWNHSTV
+      - generic [ref=f16e152]:
+        - link "WhatsApp" [ref=f16e153] [cursor=pointer]:
+          - /url: https://wa.me/?text=Ticket%20for%20Verwicklung%20https%3A%2F%2Fverwicklung.de%2Fwordpress%2Fwp-content%2Fplugins%2Fevent-tickets-with-ticket-scanner%2Fticket%2F2472997391-734-ticket_2026043016_YGWJTKYGMWNHSTV
+        - link "Telegram" [ref=f16e154] [cursor=pointer]:
+          - /url: https://t.me/share/url?url=https%3A%2F%2Fverwicklung.de%2Fwordpress%2Fwp-content%2Fplugins%2Fevent-tickets-with-ticket-scanner%2Fticket%2F2472997391-734-ticket_2026043016_YGWJTKYGMWNHSTV&text=Ticket%20for%20Verwicklung
+        - text: Only send it to the person who is coming — whoever has the link can show the QR code.
+    - table [ref=f16e156]:
+      - rowgroup [ref=f16e157]:
+        - row [ref=f16e158]:
+          - 'columnheader "( ! ) Deprecated: File Theme without footer.php is <strong>deprecated</strong> since version 3.0.0 with no alternative available. Please include a footer.php template in your theme. in /var/www/html/verwicklung.de/wordpress/wp-includes/functions.php on line 6170" [ref=f16e159]'
+        - row [ref=f16e160]:
+          - columnheader "Call Stack" [ref=f16e161]
+        - row [ref=f16e162]:
+          - columnheader "#" [ref=f16e163]
+          - columnheader "Time" [ref=f16e164]
+          - columnheader "Memory" [ref=f16e165]
+          - columnheader "Function" [ref=f16e166]
+          - columnheader "Location" [ref=f16e167]
+        - row [ref=f16e168]:
+          - cell "1" [ref=f16e169]
+          - cell "0.0010" [ref=f16e170]
+          - cell "371736" [ref=f16e171]
+          - 'cell "{main}( )" [ref=f16e172]'
+          - cell ".../index.php:0" [ref=f16e173]
+        - row [ref=f16e174]:
+          - cell "2" [ref=f16e175]
+          - cell "0.0015" [ref=f16e176]
+          - cell "373080" [ref=f16e177]
+          - cell "require( '/var/www/html/verwicklung.de/wordpress/wp-blog-header.php )" [ref=f16e178]
+          - cell ".../index.php:17" [ref=f16e179]
+        - row [ref=f16e180]:
+          - cell "3" [ref=f16e181]
+          - cell "1.3670" [ref=f16e182]
+          - cell "138620536" [ref=f16e183]
+          - cell "require_once( '/var/www/html/verwicklung.de/wordpress/wp-includes/template-loader.php )" [ref=f16e184]
+          - cell ".../wp-blog-header.php:19" [ref=f16e185]
+        - row [ref=f16e186]:
+          - cell "4" [ref=f16e187]
+          - cell "1.3670" [ref=f16e188]
+          - cell "138620536" [ref=f16e189]
+          - cell "do_action( $hook_name = 'template_redirect' )" [ref=f16e190]
+          - cell ".../template-loader.php:23" [ref=f16e191]
+        - row [ref=f16e192]:
+          - cell "5" [ref=f16e193]
+          - cell "1.3670" [ref=f16e194]
+          - cell "138620752" [ref=f16e195]
+          - cell "WP_Hook->do_action( $args = [0 => ''] )" [ref=f16e196]
+          - cell ".../plugin.php:522" [ref=f16e197]
+        - row [ref=f16e198]:
+          - cell "6" [ref=f16e199]
+          - cell "1.3670" [ref=f16e200]
+          - cell "138620752" [ref=f16e201]
+          - cell "WP_Hook->apply_filters( $value = '', $args = [0 => ''] )" [ref=f16e202]
+          - cell ".../class-wp-hook.php:365" [ref=f16e203]
+        - row [ref=f16e204]:
+          - cell "7" [ref=f16e205]
+          - cell "1.3897" [ref=f16e206]
+          - cell "139085904" [ref=f16e207]
+          - 'cell "sasoEventtickets_Ticket->{closure:/var/www/html/verwicklung.de/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner/sasoEventtickets_Ticket.php:1708-1713}( '''' )" [ref=f16e208]'
+          - cell ".../class-wp-hook.php:341" [ref=f16e209]
+        - row [ref=f16e210]:
+          - cell "8" [ref=f16e211]
+          - cell "1.3897" [ref=f16e212]
+          - cell "139086096" [ref=f16e213]
+          - cell "sasoEventtickets_Ticket->output( )" [ref=f16e214]
+          - cell ".../sasoEventtickets_Ticket.php:1711" [ref=f16e215]
+        - row [ref=f16e216]:
+          - cell "9" [ref=f16e217]
+          - cell "2.0078" [ref=f16e218]
+          - cell "154024024" [ref=f16e219]
+          - cell "get_footer( $name = ???, $args = ??? )" [ref=f16e220]
+          - cell ".../sasoEventtickets_Ticket.php:3647" [ref=f16e221]
+        - row [ref=f16e222]:
+          - cell "10" [ref=f16e223]
+          - cell "2.0078" [ref=f16e224]
+          - cell "154024240" [ref=f16e225]
+          - cell "locate_template( $template_names = [0 => 'footer.php'], $load = TRUE, $load_once = TRUE, $args = [] )" [ref=f16e226]
+          - cell ".../general-template.php:92" [ref=f16e227]
+        - row [ref=f16e228]:
+          - cell "11" [ref=f16e229]
+          - cell "2.0079" [ref=f16e230]
+          - cell "154024352" [ref=f16e231]
+          - cell "load_template( $_template_file = '/var/www/html/verwicklung.de/wordpress/wp-includes/theme-compat/footer.php', $load_once = TRUE, $args = [] )" [ref=f16e232]
+          - cell ".../template.php:749" [ref=f16e233]
+        - row [ref=f16e234]:
+          - cell "12" [ref=f16e235]
+          - cell "2.0084" [ref=f16e236]
+          - cell "154027592" [ref=f16e237]
+          - cell "require_once( '/var/www/html/verwicklung.de/wordpress/wp-includes/theme-compat/footer.php )" [ref=f16e238]
+          - cell ".../template.php:814" [ref=f16e239]
+        - row [ref=f16e240]:
+          - cell "13" [ref=f16e241]
+          - cell "2.0084" [ref=f16e242]
+          - cell "154028232" [ref=f16e243]
+          - cell "_deprecated_file( $file = 'Theme without footer.php', $version = '3.0.0', $replacement = NULL, $message = 'Please include a footer.php template in your theme.' )" [ref=f16e244]
+          - cell ".../footer.php:9" [ref=f16e245]
+        - row [ref=f16e246]:
+          - cell "14" [ref=f16e247]
+          - cell "2.0085" [ref=f16e248]
+          - cell "154028424" [ref=f16e249]
+          - cell "wp_trigger_error( $function_name = '', $message = 'File Theme without footer.php is <strong>deprecated</strong> since version 3.0.0 with no alternative available. Please include a footer.php template in your theme.', $error_level = 16384 )" [ref=f16e250]
+          - cell ".../functions.php:5853" [ref=f16e251]
+        - row [ref=f16e252]:
+          - cell "15" [ref=f16e253]
+          - cell "2.0085" [ref=f16e254]
+          - cell "154028616" [ref=f16e255]
+          - cell [ref=f16e256]:
+            - link "trigger_error" [ref=f16e257] [cursor=pointer]:
+              - /url: http://www.php.net/function.trigger-error
+            - text: ( $message = 'File Theme without footer.php is <strong>deprecated</strong> since version 3.0.0 with no alternative available. Please include a footer.php template in your theme.', $error_level = 16384 )
+          - cell ".../functions.php:6170" [ref=f16e258]
+    - separator [ref=f16e259]
+    - contentinfo [ref=f16e260]:
+      - paragraph [ref=f16e261]:
+        - text: Verwicklung is proudly powered by
+        - link "WordPress" [ref=f16e262] [cursor=pointer]:
+          - /url: https://wordpress.org/
+  - status [ref=f16e263]

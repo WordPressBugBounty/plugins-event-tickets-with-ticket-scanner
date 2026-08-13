@@ -102,7 +102,12 @@ class sasoEventtickets_Core {
 	 */
 	public function maybeExpandPlainTicketNumber($foundcode) {
 		if (empty($foundcode)) return $foundcode;
-		if (!$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemByTicketNumber')) return $foundcode;
+		// Wer Karten ohne Bestellung ausgibt, tippt an der Tuer die aufgedruckte
+		// Nummer ein - einen QR mit voller Ticket-Id gibt es dort nicht. Ohne
+		// diese Zeile scheiterte genau der vorgesehene Weg mit "#9302", solange
+		// nicht zusaetzlich das Entwerten per Ticketnummer eingeschaltet war.
+		$allowedByOrderless = $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowTicketsWithoutOrder');
+		if (!$allowedByOrderless && !$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemByTicketNumber')) return $foundcode;
 		$fc = trim($foundcode);
 		$core = explode('?', $fc)[0];
 		if (substr($core, 0, 13) === 'ordertickets-') return $foundcode; // order ticket, not in scope
@@ -375,6 +380,14 @@ class sasoEventtickets_Core {
 	public function getMetaObjectList() {
 		$metaObj = [
 			'desc'=>'',
+			'orderless'=>0, // tickets of this list may exist without a WooCommerce order
+			'idcode'=>'',   // shared idcode of the list, used by order-less ticket ids
+			// Event window for order-less tickets — they have no product to take it from
+			'event_start_date'=>'',
+			'event_start_time'=>'',
+			'event_end_date'=>'',
+			'event_end_time'=>'',
+
 			'redirect'=>['url'=>''],
 			'formatter'=>[
 				'active'=>1,
@@ -690,7 +703,7 @@ class sasoEventtickets_Core {
 	public function getMetaObjectAuthtoken() {
 		$metaObj = [
 			'desc'=>'',
-			'ticketscanner'=>["bound_to_products"=>""]
+			'ticketscanner'=>["bound_to_products"=>"", "bound_to_lists"=>""]
 		];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getMetaObjectAuthtoken')) {
 			$metaObj = $this->MAIN->getPremiumFunctions()->getMetaObjectAuthtoken($metaObj);
@@ -1084,8 +1097,133 @@ class sasoEventtickets_Core {
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'core_getTicketURLBase', $ret );
 		return $ret;
 	}
+	/**
+	 * Whether a ticket may exist without a WooCommerce order
+	 *
+	 * Single source for both switches: the global option and the per-list flag.
+	 * Only ever true for tickets that really have no order.
+	 *
+	 * @param array|null $codeObj Ticket row
+	 * @return bool
+	 */
+	public function isOrderlessTicketAllowed($codeObj = null): bool {
+		if (!is_array($codeObj) || intval($codeObj['order_id'] ?? 0) !== 0) {
+			return false;
+		}
+
+		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowTicketsWithoutOrder')) {
+			return true;
+		}
+
+		$listId = intval($codeObj['list_id'] ?? 0);
+		if ($listId < 1) {
+			return false;
+		}
+
+		$listObj = $this->getListById($listId);
+		if (empty($listObj) || empty($listObj['meta'])) {
+			return false;
+		}
+
+		$listMeta = $this->encodeMetaValuesAndFillObjectList($listObj['meta']);
+
+		return intval($listMeta['orderless'] ?? 0) === 1;
+	}
+
+	/**
+	 * Shared idcode of a ticket list, generated on first use
+	 *
+	 * Order-less tickets have no order to take an idcode from; the list provides
+	 * one instead, so the scanner keeps its idcode check (Ticket.php #8006).
+	 *
+	 * @param int $listId Ticket list ID
+	 * @return string Idcode or empty string if the list is unknown
+	 */
+	public function getListTicketIDCode(int $listId): string {
+		if ($listId < 1) {
+			return '';
+		}
+
+		$listObj = $this->getListById($listId);
+		if (empty($listObj)) {
+			return '';
+		}
+
+		$listMeta = $this->encodeMetaValuesAndFillObjectList($listObj['meta'] ?? '');
+		$idcode = trim((string) ($listMeta['idcode'] ?? ''));
+		if ($idcode !== '') {
+			return $idcode;
+		}
+
+		$idcode = strtoupper(md5($listId . '-' . time() . '-' . uniqid()));
+		$listMeta['idcode'] = $idcode;
+		$this->MAIN->getDB()->update(
+			'lists',
+			['meta' => $this->json_encode_with_error_handling($listMeta)],
+			['id' => $listId]
+		);
+
+		return $idcode;
+	}
+
+	/**
+	 * Event window of an order-less ticket, taken from its ticket list
+	 *
+	 * A ticket sold through WooCommerce takes its event times from the ordered
+	 * product; a printed card has none, so the list carries them. Returns null
+	 * whenever the rule cannot apply.
+	 *
+	 * @param array $codeObj Ticket row
+	 * @return array{start: int|null, end: int|null}|null
+	 */
+	public function getOrderlessEventWindow($codeObj): ?array {
+		if (!$this->isOrderlessTicketAllowed($codeObj)) {
+			return null;
+		}
+
+		$listObj = $this->getListById(intval($codeObj['list_id'] ?? 0));
+		if (empty($listObj) || empty($listObj['meta'])) {
+			return null;
+		}
+
+		$listMeta = $this->encodeMetaValuesAndFillObjectList($listObj['meta']);
+		$startDate = trim((string) ($listMeta['event_start_date'] ?? ''));
+		$endDate = trim((string) ($listMeta['event_end_date'] ?? ''));
+		if ($startDate === '' && $endDate === '') {
+			return null;
+		}
+
+		$ticketHandler = $this->MAIN->getTicketHandler();
+		$start = $startDate !== ''
+			? $ticketHandler->localDateToTimestamp($startDate, trim((string) ($listMeta['event_start_time'] ?? '')))
+			: null;
+		// An end date without a time means the whole day counts
+		$end = $endDate !== ''
+			? $ticketHandler->localDateToTimestamp($endDate, trim((string) ($listMeta['event_end_time'] ?? '')) ?: '23:59:59')
+			: null;
+
+		return ['start' => $start ?: null, 'end' => $end ?: null];
+	}
+
 	public function getTicketId($codeObj, $metaObj) {
 		$ret = "";
+
+		// Order-less ticket: take the idcode from its list and remember it on the
+		// ticket, together with the ticket marker itself — a hand created number
+		// carries neither. Both are what every downstream check reads, so nothing
+		// else has to learn about order-less tickets.
+		if ($this->isOrderlessTicketAllowed($codeObj)
+			&& (empty($metaObj['wc_ticket']['idcode']) || intval($metaObj['wc_ticket']['is_ticket'] ?? 0) !== 1)) {
+			$idcode = !empty($metaObj['wc_ticket']['idcode'])
+				? $metaObj['wc_ticket']['idcode']
+				: $this->getListTicketIDCode(intval($codeObj['list_id'] ?? 0));
+			if ($idcode !== '') {
+				$metaObj['wc_ticket']['idcode'] = $idcode;
+				$metaObj['wc_ticket']['is_ticket'] = 1;
+				$this->saveMetaObject($codeObj, $metaObj);
+			}
+		}
+
 		if (isset($codeObj['code']) && isset($codeObj['order_id']) && isset($metaObj['wc_ticket']['idcode'])) {
 			$ret = $metaObj['wc_ticket']['idcode']."-".$codeObj['order_id']."-".$codeObj['code'];
 		}

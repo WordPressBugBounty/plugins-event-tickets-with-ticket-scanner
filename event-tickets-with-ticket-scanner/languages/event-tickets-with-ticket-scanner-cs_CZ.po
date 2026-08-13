@@ -993,8 +993,8 @@ msgstr "Počet potvrzených"
 
 #: ticket_scanner.js:1012
 #, javascript-format
-msgid "Confirmed status validation check counter: <b>%s</b>"
-msgstr "Počet kontrol stavu potvrzení: <b>%s</b>"
+msgid "Confirmed: <b>%s</b>"
+msgstr "Potvrzeno: <b>%s</b>"
 
 #: backend.js:1139
 msgid "Consecutive failures"

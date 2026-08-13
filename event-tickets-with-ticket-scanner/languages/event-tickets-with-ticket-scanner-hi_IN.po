@@ -995,8 +995,8 @@ msgstr "पुष्टि किए गए की संख्या"
 
 #: ticket_scanner.js:1012
 #, javascript-format
-msgid "Confirmed status validation check counter: <b>%s</b>"
-msgstr "पुष्टि स्थिति सत्यापन जांच काउंटर: <b>%s</b>"
+msgid "Confirmed: <b>%s</b>"
+msgstr "पुष्टि: <b>%s</b>"
 
 #: backend.js:1139
 msgid "Consecutive failures"

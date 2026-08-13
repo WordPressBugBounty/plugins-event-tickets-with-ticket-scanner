@@ -118,8 +118,30 @@ final class sasoEventtickets_Ticket {
 	 *
 	 * @return bool True if subscription is active, false if expired
 	 */
+	/**
+	 * Does the installed premium plugin refresh the license state itself?
+	 *
+	 * Since premium 1.8.0 the premium plugin owns the server call. Older premium
+	 * versions cannot refresh anything — the basic plugin must not switch their
+	 * features off for that reason alone.
+	 *
+	 * @return bool
+	 */
+	public function premiumProvidesLicenseState(): bool {
+		$provides = defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')
+			&& version_compare(SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION, '1.8.0', '>=');
+
+		return (bool) apply_filters( $this->MAIN->_add_filter_prefix.'ticket_premiumProvidesLicenseState', $provides );
+	}
+
 	public function isSubscriptionActive(): bool {
 		$info = $this->get_expiration();
+
+		// Premium too old to refresh the state on its own: keep the features on and
+		// ask for an update instead of silently expiring a paying customer
+		if (defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION') && !$this->premiumProvidesLicenseState()) {
+			return true;
+		}
 
 		// Lifetime = immer aktiv
 		if (isset($info['timestamp']) && $info['timestamp'] == -1) return true;
@@ -158,6 +180,61 @@ final class sasoEventtickets_Ticket {
 		// Normale Expiration + Grace Period
 		$grace_days = intval($info['grace_period_days'] ?? 7);
 		return time() < ($info['timestamp'] + ($grace_days * 86400));
+	}
+
+	/**
+	 * Store the result of a license check
+	 *
+	 * The license server is talked to by the premium plugin; the basic plugin only
+	 * keeps the answer and decides the feature gate from it. Kept here so the
+	 * checksum stays in one place.
+	 *
+	 * @param array $state Fields from the license server (timestamp, expiration_date,
+	 *                     timezone, notvalid, subscription_type, grace_period_days)
+	 * @return bool
+	 */
+	public function applyLicenseState(array $state): bool {
+		$option_name = $this->MAIN->getPrefix()."_premium_serial_expiration";
+		$info = get_option($option_name);
+		$info_obj = !empty($info) ? json_decode($info, true) : [];
+		if (!is_array($info_obj)) $info_obj = [];
+
+		foreach (['timestamp', 'expiration_date', 'timezone', 'notvalid', 'isCheckCall', 'subscription_type', 'grace_period_days'] as $key) {
+			if (array_key_exists($key, $state)) {
+				$info_obj[$key] = $state[$key];
+			}
+		}
+
+		$info_obj['last_run'] = time();
+		$info_obj['last_success'] = time();
+		$info_obj['consecutive_failures'] = 0;
+		$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
+
+		$ret = update_option($option_name, $this->MAIN->getCore()->json_encode_with_error_handling($info_obj));
+		do_action( $this->MAIN->_do_action_prefix.'ticket_applyLicenseState', $info_obj );
+
+		return $ret !== false;
+	}
+
+	/**
+	 * Record a license check that did not reach a verdict
+	 *
+	 * Counted, but the last successful check is kept — a short server outage must
+	 * not switch premium off (isSubscriptionActive tolerates up to 10 in a row).
+	 *
+	 * @return void
+	 */
+	public function recordLicenseCheckFailure(): void {
+		$option_name = $this->MAIN->getPrefix()."_premium_serial_expiration";
+		$info = get_option($option_name);
+		$info_obj = !empty($info) ? json_decode($info, true) : [];
+		if (!is_array($info_obj)) $info_obj = [];
+
+		$info_obj['consecutive_failures'] = intval($info_obj['consecutive_failures'] ?? 0) + 1;
+		$info_obj['last_run'] = time();
+		$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
+
+		update_option($option_name, $this->MAIN->getCore()->json_encode_with_error_handling($info_obj));
 	}
 
 	/**
@@ -215,10 +292,22 @@ final class sasoEventtickets_Ticket {
 			// Force-check with failures = deadlock recovery: reset failures so the
 			// server response can actually fix the state (otherwise isSubscriptionActive
 			// stays false even after a successful server check).
+			$stateChanged = false;
 			if ($force && intval($info_obj["consecutive_failures"] ?? 0) > 0) {
 				$info_obj["consecutive_failures"] = 0;
+				$stateChanged = true;
+			}
+			if (($info_obj["_serial_hash"] ?? '') !== $serial_hash) {
+				$stateChanged = true;
 			}
 			$info_obj["_serial_hash"] = $serial_hash;
+
+			// Persist only what we actually decided here (force-reset, new serial) —
+			// this write used to happen at the end of the removed server call
+			if ($stateChanged) {
+				$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
+				update_option($option_name, $this->MAIN->getCore()->json_encode_with_error_handling($info_obj));
+			}
 
 			$doCheck = false;
 			if ($force) {
@@ -241,50 +330,10 @@ final class sasoEventtickets_Ticket {
 				}
 			}
 			if ($doCheck && $hasSerial && defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION')) {
-				$domain = parse_url( get_site_url(), PHP_URL_HOST );
-
-				$url = "https://vollstart.com/plugins/event-tickets-with-ticket-scanner-premium/"
-							.'?checking_for_updates=2&ver='.SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION
-							."&m=".get_option('admin_email')
-							."&d=".$domain
-							."&serial=".urlencode($serial);
-
-				$response = wp_remote_get($url, ['timeout' => 45]);
-				if (is_wp_error($response)) {
-					// Network error — count as transient failure (half weight)
-					$info_obj["consecutive_failures"] = intval($info_obj["consecutive_failures"] ?? 0) + 1;
-					$info_obj["last_run"] = time();
-				} else {
-					$http_code = intval(wp_remote_retrieve_response_code($response));
-					$body = wp_remote_retrieve_body( $response );
-					$data = json_decode( $body, true );
-					if (isset($data["isCheckCall"]) && $data["isCheckCall"] == 1) {
-						// Success: valid license response
-						$info_obj["last_run"] = time();
-						$info_obj["last_success"] = time();
-						$info_obj["consecutive_failures"] = 0;
-						// Clear notvalid if server doesn't send it (successful check = valid)
-						if (!isset($data["notvalid"])) {
-							unset($info_obj["notvalid"]);
-						}
-						// Server-Daten gezielt übernehmen (Server gewinnt)
-						foreach (['timestamp', 'expiration_date', 'timezone', 'notvalid', 'isCheckCall', 'subscription_type', 'grace_period_days'] as $key) {
-							if (isset($data[$key])) $info_obj[$key] = $data[$key];
-						}
-					} elseif ($http_code >= 500 || empty($body) || $data === null) {
-						// Server error (5xx), empty body, or non-JSON response (maintenance page, etc.)
-						// Treat as transient — count failure but don't touch last_success
-						$info_obj["consecutive_failures"] = intval($info_obj["consecutive_failures"] ?? 0) + 1;
-						$info_obj["last_run"] = time();
-					} else {
-						// HTTP OK with parseable JSON but no isCheckCall — genuine rejection
-						$info_obj["consecutive_failures"] = intval($info_obj["consecutive_failures"] ?? 0) + 2;
-						$info_obj["last_run"] = time();
-					}
-				}
-				$info_obj['_checksum'] = $this->calculateExpirationChecksum($info_obj);
-				$value = $this->MAIN->getCore()->json_encode_with_error_handling($info_obj);
-				update_option($option_name, $value);
+				// The basic plugin is on WordPress.org and must not phone home for
+				// licensing. The premium plugin listens here, asks the server and
+				// hands the verdict back via applyLicenseState().
+				do_action( $this->MAIN->_do_action_prefix.'license_refresh_requested', $force );
 			}
 		}
 		do_action( $this->MAIN->_do_action_prefix.'ticket_checkForPremiumSerialExpiration' );
@@ -451,6 +500,28 @@ final class sasoEventtickets_Ticket {
 			throw new Exception("#301 - product id ".join(", ", $product_ids)." is not allowed to be rededemed with this ticket scanner authentication");
 		}
 	}
+	/**
+	 * Guard: may this scanner token redeem a ticket of this list?
+	 *
+	 * Applies to every ticket. For tickets without an order it is the only
+	 * restriction there is — they carry no product to bind a token to.
+	 *
+	 * @param int $list_id Ticket list of the scanned ticket
+	 * @return void
+	 * @throws Exception When the token is bound to other lists
+	 */
+	private function isListAllowedByAuthToken($list_id) {
+		$list_id = intval($list_id);
+		$ret = true;
+		if ($this->authtoken != null) {
+			$ret = $this->MAIN->getAuthtokenHandler()->isListAllowedByAuthToken($this->authtoken, [$list_id]);
+		}
+		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_isListAllowedByAuthToken', $ret, $list_id );
+		if ($ret == false) {
+			throw new Exception("#304 - ticket list ".$list_id." is not allowed to be redeemed with this ticket scanner authentication");
+		}
+	}
+
 	private function is_ticket_code_orderticket($code) {
 		// is it an order ticket id
 		$ret = false;
@@ -610,9 +681,6 @@ final class sasoEventtickets_Ticket {
 				}
 			}
 		}
-
-		// TODO:check auch ob sofort redeem gemacht werden soll
-			// redeem liefert für jedes ticket eine Meldung - muss dann aufgelistet werden im ticket scanner
 
 		$infos = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_retrieve_order_ticket', $infos, $code );
 
@@ -794,44 +862,69 @@ final class sasoEventtickets_Ticket {
 			$metaObj = $codeObj['metaObj'];
 		}
 
-		$order = $this->getOrderById($codeObj["order_id"]);
-		$order_item = $this->getOrderItem($order, $metaObj);
-		if ($order_item == null) return wp_send_json_error(__("Order item not found", 'event-tickets-with-ticket-scanner'));
-		$product = $order_item->get_product();
-		if ($product == null) return wp_send_json_error(esc_html__("product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+		// A ticket without an order has neither order item nor product. Everything
+		// derived from them stays empty below; the ticket's own state (valid,
+		// redeemed, expired, CVV) is what the scanner needs and works regardless.
+		$this->isListAllowedByAuthToken($codeObj['list_id'] ?? 0);
 
-		$is_variation = $product->get_type() == "variation" ? true : false;
-		$product_parent = $product;
-		$product_parent_id = $product->get_parent_id();
-
-		if ($is_variation && $product_parent_id > 0) {
-			$product_parent = $this->get_product( $product_parent_id );
-		}
-
-		$product_original = $product; // original product, due to wpml
-		$product_parent_original = $product_parent; // original product parent, due to wpml
-		$product_original_id = $product->get_id();
-
-		// load a possible language based product
-		$product_original_id = $this->getWPMLProductId($product_original_id);
-		if ($product_original == null) {
-			return wp_send_json_error(esc_html__("original product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
-		}
-		if ($product_original_id < 1) {
-			$product_original_id = $product->get_id(); // repair the product id
-		} else {
-			$product_original = $this->get_product($product_original_id);
-			if ($product_original_id > 0 && $product_original_id != $product->get_id()) {
-				$product_original = $this->get_product($product_original_id);
-			}
-		}
-
+		$isOrderless = $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj);
+		$order = null;
+		$is_variation = false;
+		$product_parent_id = 0;
 		$saso_eventtickets_is_date_for_all_variants = true;
-		if ($is_variation && $product_parent_id > 0) {
-			$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
+
+		if ($isOrderless) {
+			// Empty stand-ins carrying the ticket list name: every product meta read
+			// below resolves to nothing instead of fataling, and the scanner shows the
+			// list as the ticket title
+			$order_item = new WC_Order_Item_Product();
+			$product = new WC_Product_Simple();
+			$listObj = $this->MAIN->getCore()->getListById(intval($codeObj['list_id'] ?? 0));
+			$product->set_name(!empty($listObj['name']) ? $listObj['name'] : '');
+			$product_parent = $product;
+			$product_original = $product;
+			$product_parent_original = $product;
 		}
 
-		$this->isProductAllowedByAuthToken([$product->get_id()]);
+		if (!$isOrderless) {
+			$order = $this->getOrderById($codeObj["order_id"]);
+			$order_item = $this->getOrderItem($order, $metaObj);
+			if ($order_item == null) return wp_send_json_error(__("Order item not found", 'event-tickets-with-ticket-scanner'));
+			$product = $order_item->get_product();
+			if ($product == null) return wp_send_json_error(esc_html__("product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+
+			$is_variation = $product->get_type() == "variation" ? true : false;
+			$product_parent = $product;
+			$product_parent_id = $product->get_parent_id();
+
+			if ($is_variation && $product_parent_id > 0) {
+				$product_parent = $this->get_product( $product_parent_id );
+			}
+
+			$product_original = $product; // original product, due to wpml
+			$product_parent_original = $product_parent; // original product parent, due to wpml
+			$product_original_id = $product->get_id();
+
+			// load a possible language based product
+			$product_original_id = $this->getWPMLProductId($product_original_id);
+			if ($product_original == null) {
+				return wp_send_json_error(esc_html__("original product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+			}
+			if ($product_original_id < 1) {
+				$product_original_id = $product->get_id(); // repair the product id
+			} else {
+				$product_original = $this->get_product($product_original_id);
+				if ($product_original_id > 0 && $product_original_id != $product->get_id()) {
+					$product_original = $this->get_product($product_original_id);
+				}
+			}
+
+			if ($is_variation && $product_parent_id > 0) {
+				$saso_eventtickets_is_date_for_all_variants = get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
+			}
+
+			$this->isProductAllowedByAuthToken([$product->get_id()]);
+		}
 
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketScanneCountRetrieveAsConfirmed')) {
 			$codeObj = $this->MAIN->getFrontend()->countConfirmedStatus($codeObj, true);
@@ -852,8 +945,11 @@ final class sasoEventtickets_Ticket {
 		$ret['option_displayDateTimeFormat'] = $date_time_format;
 
 		$ret['is_paid'] = $this->isPaid($order);
+		// Eine Karte, die nie durch den Shop lief, ist nicht "unbezahlt" - sie ist
+		// ein anderer Fall. Der Scanner soll ihn benennen statt einen Mangel zu melden.
+		$ret['is_without_order'] = $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj);
 		$ret['allow_redeem_only_paid'] = $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemOnlyPaid');
-		$ret['order_status'] = $order->get_status();
+		$ret['order_status'] = $order != null ? $order->get_status() : '';
 		$ret = array_merge($ret, $this->rest_helper_tickets_redeemed($codeObj));
 		$ret['ticket_heading'] = esc_html($this->MAIN->getAdmin()->getOptionValue("wcTicketHeading"));
 		$ret['ticket_title'] = esc_html($product_parent->get_Title());
@@ -874,7 +970,10 @@ final class sasoEventtickets_Ticket {
 
 		$ret = array_merge($ret, $this->calcDateStringAllowedRedeemFrom($tmp_product->get_id(), $codeObj));
 
-		$ret['ticket_date_as_string'] = $this->displayTicketDateAsString($tmp_product->get_id(), $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
+		// No product behind an order-less ticket, so there is no event date to print
+		$ret['ticket_date_as_string'] = $tmp_product->get_id() > 0
+			? $this->displayTicketDateAsString($tmp_product->get_id(), $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj)
+			: '';
 		$ret['short_desc'] = "";
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDisplayShortDesc')) {
 			$ret['short_desc'] = wp_kses_post(trim($product_parent->get_short_description()));
@@ -883,7 +982,7 @@ final class sasoEventtickets_Ticket {
 		$ret['cst_billing_address'] = "";
 		if (!$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDontDisplayCustomer')) {
 			$ret['cst_label'] = wp_kses_post($this->MAIN->getAdmin()->getOptionValue("wcTicketTransCustomer"));
-			$ret['cst_billing_address'] = wp_kses_post(trim($order->get_formatted_billing_address()));
+			$ret['cst_billing_address'] = $order != null ? wp_kses_post(trim($order->get_formatted_billing_address())) : '';
 		}
 		$ret['payment_label'] = "";
 		$ret['payment_paid_at_label'] = "";
@@ -899,17 +998,17 @@ final class sasoEventtickets_Ticket {
 			$ret['payment_label'] = wp_kses_post(trim($this->MAIN->getAdmin()->getOptionValue("wcTicketTransPaymentDetail")));
 			$ret['payment_paid_at_label'] = wp_kses_post($this->MAIN->getAdmin()->getOptionValue("wcTicketTransPaymentDetailPaidAt"));
 			$ret['payment_completed_at_label'] = wp_kses_post($this->MAIN->getAdmin()->getOptionValue("wcTicketTransPaymentDetailCompletedAt"));
-			$ret['payment_paid_at'] = $order->get_date_paid() != null ? wp_date($date_time_format, strtotime($order->get_date_paid())) : "-";
-			$ret['payment_completed_at'] = $order->get_date_completed() != null ? wp_date($date_time_format, strtotime($order->get_date_completed())) : "-";
-			$payment_method = $order->get_payment_method_title();
+			$ret['payment_paid_at'] = ($order != null && $order->get_date_paid() != null) ? wp_date($date_time_format, strtotime($order->get_date_paid())) : "-";
+			$ret['payment_completed_at'] = ($order != null && $order->get_date_completed() != null) ? wp_date($date_time_format, strtotime($order->get_date_completed())) : "-";
+			$payment_method = $order != null ? $order->get_payment_method_title() : '';
 			if (!empty($payment_method)) {
 				$ret['payment_method_label'] = wp_kses_post($this->MAIN->getAdmin()->getOptionValue("wcTicketTransPaymentDetailPaidVia"));
 				$ret['payment_method'] = esc_html($payment_method);
-				$ret['payment_trx_id'] = esc_html($order->get_transaction_id());
+				$ret['payment_trx_id'] = $order != null ? esc_html($order->get_transaction_id()) : '';
 			} else {
 				$ret['payment_method_label'] = wp_kses_post($this->MAIN->getAdmin()->getOptionValue("wcTicketTransPaymentDetailFreeTicket"));
 			}
-			$coupons = $order->get_coupon_codes();
+			$coupons = $order != null ? $order->get_coupon_codes() : [];
 			if (count($coupons) > 0) {
 				$ret['coupon_label'] = wp_kses_post($this->MAIN->getAdmin()->getOptionValue("wcTicketTransPaymentDetailCouponUsed"));
 				$ret['coupon'] = esc_html(implode(", ", $coupons));
@@ -1373,13 +1472,21 @@ final class sasoEventtickets_Ticket {
 			// CVV verified — fall through to actual redeem
 		}
 
-		$order = $this->getOrderById($codeObj["order_id"]);
-		$order_item = $this->getOrderItem($order, $metaObj);
-		if ($order_item == null) return wp_send_json_error("#302 ".__("Order item not found", 'event-tickets-with-ticket-scanner'));
-		$product = $order_item->get_product();
-		if ($product == null) return wp_send_json_error("#303 ".esc_html__("product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+		// Token may be bound to ticket lists — the only binding that can apply to
+		// tickets without an order
+		$this->isListAllowedByAuthToken($codeObj['list_id'] ?? 0);
 
-		$this->isProductAllowedByAuthToken([$product->get_id()]);
+		// A ticket without an order has no order item and no product to check
+		// against — the switch says that is wanted, everything else below stays
+		if (!$this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
+			$order = $this->getOrderById($codeObj["order_id"]);
+			$order_item = $this->getOrderItem($order, $metaObj);
+			if ($order_item == null) return wp_send_json_error("#302 ".__("Order item not found", 'event-tickets-with-ticket-scanner'));
+			$product = $order_item->get_product();
+			if ($product == null) return wp_send_json_error("#303 ".esc_html__("product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+
+			$this->isProductAllowedByAuthToken([$product->get_id()]);
+		}
 
 		$this->redeemTicket($codeObj);
 		$ticket_id = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
@@ -1844,8 +1951,9 @@ final class sasoEventtickets_Ticket {
 		if ($this->getParts($code)['idcode'] != $metaObj['wc_ticket']['idcode']) throw new Exception("#8006 ".esc_html($this->MAIN->getAdmin()->getOptionValue("wcTicketTransTicketNumberWrong")));
 		// check ob serial ein ticket ist
 		if ($metaObj['wc_ticket']['is_ticket'] != 1) throw new Exception("#8002 ".esc_html($this->MAIN->getAdmin()->getOptionValue("wcTicketTransTicketNotValid")));
-		// check ob order bezahlt ist
-		if ($dontFailPaid == false) {
+		// check ob order bezahlt ist — entfällt für Tickets ohne Order, das ist
+		// der bewusste Verzicht hinter dem Schalter (Core::isOrderlessTicketAllowed)
+		if ($dontFailPaid == false && !$this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
 			$order = $this->getOrderById($codeObj["order_id"]);
 			$ok_order_statuses = $this->get_is_paid_statuses();
 			if (!$dontFailPaid && !$this->isPaid($order)) throw new Exception("#8003 Ticket payment is not completed. The ticket order status has to be set to a paid status like ".join(" or ", $ok_order_statuses).".");
@@ -1860,7 +1968,27 @@ final class sasoEventtickets_Ticket {
 	}
 
 	public function getTicketScannerHTMLBoilerplate() {
-		$t = '
+		$modern = $this->isModernLayout();
+		if ($modern) {
+			// Modern: BEM classes, no inline styles — styled by styles-frontend.css
+			$t = '
+		<div class="saso-scanner__wrapper">
+			<div class="saso-ticket ticket_content">
+				<div id="ticket_scanner_info_area"></div>
+				<div id="ticket_info_retrieved"></div>
+				<div id="reader_output"></div>
+				<div id="reader"></div>
+				<div id="order_info"></div>
+				<div id="ticket_info"></div>
+				<div id="ticket_add_info"></div>
+				<div id="ticket_info_btns"></div>
+				<div id="reader_options"></div>
+			</div>
+		</div>
+		';
+		} else {
+			// Legacy: original inline styles, frozen
+			$t = '
 		<div style="width: 100%; justify-content: center;align-items: center;position: relative;">
 			<div class="ticket_content" style="background-color:white;color:black;padding:15px;display:block;position: relative;left: 0;right: 0;margin: auto;text-align:left;border:1px solid black;">
 				<div id="ticket_scanner_info_area"></div>
@@ -1875,11 +2003,25 @@ final class sasoEventtickets_Ticket {
 			</div>
 		</div>
 		';
+		}
 		$t = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_getTicketScannerHTMLBoilerplate', $t );
 		return trim($t);
 	}
 
 	public function outputTicketScannerStandalone() {
+		$this->handleLayoutSwitchRequest();
+
+		if ($this->isModernLayout()) {
+			$this->outputTicketScannerStandaloneModern();
+		} else {
+			$this->outputTicketScannerStandaloneLegacy();
+		}
+	}
+
+	/**
+	 * Legacy standalone scanner — the original PWA page, frozen.
+	 */
+	public function outputTicketScannerStandaloneLegacy() {
 		header('HTTP/1.1 200 OK');
 		$this->MAIN->setTicketScannerJS();
 		$pwaEnabled = $this->MAIN->getOptions()->isOptionCheckboxActive('ticketScannerPWA');
@@ -1919,14 +2061,113 @@ final class sasoEventtickets_Ticket {
         </div>
         </center>
 		<?php
-		//echo determine_locale();
-		//load_script_translations(__DIR__.'/languages/event-tickets-with-ticket-scanner-de_CH-ajax_script_ticket_scanner.json', 'ajax_script_ticket_scanner', 'event-tickets-with-ticket-scanner');
-		get_footer();
-		//wp_footer();
-		//echo '</body></html>';
+		wp_footer();
+		echo '</body></html>';
+	}
+
+	/**
+	 * Modern standalone scanner — loads the BEM CSS, adds body class.
+	 * Uses the same boilerplate as legacy (JS fills it).
+	 * No header/title — looks like a real scanner device display.
+	 */
+	public function outputTicketScannerStandaloneModern() {
+		header('HTTP/1.1 200 OK');
+		$this->MAIN->setTicketScannerJS();
+		$this->enqueueModernFrontendCSS();
+		$pwaEnabled = $this->MAIN->getOptions()->isOptionCheckboxActive('ticketScannerPWA');
+		$themeColor = $this->MAIN->getOptions()->getOptionValue('ticketScannerThemeColor', '#2e74b5');
+		if (empty($themeColor)) $themeColor = '#2e74b5';
+
+		echo '<!DOCTYPE html>';
+		echo '<html lang="'.esc_attr(get_locale()).'">';
+		echo '<head>';
+		echo '<meta charset="UTF-8">';
+		echo '<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">';
+		if ($pwaEnabled) {
+			echo '<meta name="theme-color" content="'.esc_attr($themeColor).'">';
+			echo '<meta name="mobile-web-app-capable" content="yes">';
+			echo '<link rel="manifest" href="'.esc_url(rest_url(SASO_EVENTTICKETS::getRESTPrefixURL().'/ticket/scanner/pwa-manifest')).'">';
+			echo '<link rel="apple-touch-icon" href="'.esc_url(plugins_url('img/pwa-icon-192.png', __FILE__)).'">';
+		}
+		wp_head();
+		echo '</head><body class="saso-scanner-standalone">';
+		echo $this->getTicketScannerHTMLBoilerplate();
+		wp_footer();
+		echo '</body></html>';
+	}
+
+	// ── Layout dispatcher ──────────────────────────────────────
+	// Routes to the modern BEM layout or the legacy layout depending on
+	// the frontendLayoutVersion option. Legacy is kept for 2-3 releases
+	// as a fallback; security fixes go into both paths.
+
+	/**
+	 * Returns true if the modern layout is active.
+	 * Reads the URL parameter ?layout=legacy — same pattern as useoldticketscanner.
+	 * No option, no admin setting. Toggle is directly in the scanner UI.
+	 */
+	public function isModernLayout(): bool {
+		// URL parameter ?layout=legacy switches to legacy mode
+		if (isset($_GET['layout']) && $_GET['layout'] === 'legacy') {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Enqueues the modern frontend stylesheet (css/styles-frontend.css).
+	 * Called only when isModernLayout() returns true.
+	 */
+	public function enqueueModernFrontendCSS(): void {
+		wp_enqueue_style(
+			'saso-eventtickets-frontend',
+			plugins_url('css/styles-frontend.css', __FILE__),
+			[],
+			$this->MAIN->getPluginVersion()
+		);
+		// Inject the PWA theme color as the --saso-primary CSS variable
+		$themeColor = $this->MAIN->getOptions()->getOptionValue('ticketScannerThemeColor', '#2e74b5');
+		if (empty($themeColor)) $themeColor = '#2e74b5';
+		$inline = ':root{--saso-primary:' . esc_attr($themeColor) . ';--saso-primary-hover:' . esc_attr($themeColor) . ';}';
+		wp_add_inline_style('saso-eventtickets-frontend', $inline);
+	}
+
+	/**
+	 * Renders the admin quick-switch link (only visible to manage_options users).
+	 * Uses AJAX to toggle frontendLayoutVersion without going to WP-Admin.
+	 */
+	/**
+	 * Standalone scanner layout switch was attempted as an in-page button.
+	 * Removed — the layout is a plain plugin option now (frontendLayoutVersion),
+	 * set in the admin settings next to the other scanner options.
+	 */
+	private function renderAdminLayoutSwitch(): void {
+		// Intentionally empty — option is set in plugin settings.
+	}
+
+	/**
+	 * Handle inline layout switch POST (legacy fallback — if AJAX fails).
+	 * No-op if not applicable. The proper AJAX endpoint is saso_et_layout_switch
+	 * registered in index.php.
+	 */
+	public function handleLayoutSwitchRequest(): void {
+		// Intentionally empty — AJAX endpoint handles this now.
+		// Kept for backward compat with any code that calls it.
 	}
 
 	public function outputTicketScanner() {
+		if ($this->isModernLayout()) {
+			$this->outputTicketScannerModern();
+		} else {
+			$this->outputTicketScannerLegacy();
+		}
+	}
+
+	/**
+	 * Legacy scanner output — the original layout, frozen.
+	 * Kept as fallback for 2-3 releases. Security fixes go into both paths.
+	 */
+	public function outputTicketScannerLegacy() {
 		echo '<center>';
 		echo '<h3>'.__('Ticket scanner', 'event-tickets-with-ticket-scanner').'</h3>';
 		echo '<div id="ticket_scanner_info_area">';
@@ -1958,11 +2199,10 @@ final class sasoEventtickets_Ticket {
 				}
 
 				if (SASO_EVENTTICKETS::issetRPara('action') && SASO_EVENTTICKETS::getRequestPara('action') == "redeem") {
-					$pfad = plugins_url( "img/",__FILE__ );
 					if ($this->redeem_successfully) {
-						echo '<p style="text-align:center;color:green"><img src="'.$pfad.'button_ok.png"><br><b>'.__("Successfully redeemed", 'event-tickets-with-ticket-scanner').'</b></p>';
+						echo '<p style="text-align:center;color:green"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><br><b>'.__("Successfully redeemed", 'event-tickets-with-ticket-scanner').'</b></p>';
 					} else {
-						echo '<p style="text-align:center;color:red;"><img src="'.$pfad.'button_cancel.png"><br><b>'.__("Failed to redeem", 'event-tickets-with-ticket-scanner').'</b></p>';
+						echo '<p style="text-align:center;color:red;"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><br><b>'.__("Failed to redeem", 'event-tickets-with-ticket-scanner').'</b></p>';
 					}
 				}
 
@@ -1971,8 +2211,8 @@ final class sasoEventtickets_Ticket {
 				echo '</div>';
 
 				echo '<form id="f_reload" action="?" method="get">
-				<input type="hidden" name="code" value="'.urlencode($ticket_id).'">
-				</form>';
+					<input type="hidden" name="code" value="'.urlencode($ticket_id).'">
+					</form>';
 				echo '
 					<script>
 					function reload_ticket() {
@@ -1982,9 +2222,9 @@ final class sasoEventtickets_Ticket {
 				';
 				if (empty($metaObj['wc_ticket']['redeemed_date'])) {
 					echo '<form id="f_redeem" action="?" method="post">
-							<input type="hidden" name="action" value="redeem">
-							<input type="hidden" name="code" value="'.urlencode($ticket_id).'">
-							</form></p></center>';
+						<input type="hidden" name="action" value="redeem">
+						<input type="hidden" name="code" value="'.urlencode($ticket_id).'">
+						</form></p></center>';
 					echo '
 						<script>
 						function redeem_ticket() {
@@ -2008,6 +2248,16 @@ final class sasoEventtickets_Ticket {
 		echo '<center>';
 		echo '<div id="reader" style="width:600px"></div>';
 		echo '</center>';
+		$this->outputScannerJSScriptsLegacy();
+		$this->outputScannerOptionsAndCounterLegacy();
+	}
+
+	/**
+	 * Legacy JS scripts for the scanner — shared between legacy and modern
+	 * because the Html5QrcodeScanner logic is identical.
+	 * Marked Legacy because it writes directly to the legacy element IDs.
+	 */
+	private function outputScannerJSScriptsLegacy(): void {
 		echo '<script>
 			var serial_ticket_scanner_redeem = '.(isset($_GET['redeemauto']) ? 'true' : 'false').';
 			var loadingticket = false;
@@ -2017,23 +2267,13 @@ final class sasoEventtickets_Ticket {
 			function onScanSuccess(decodedText, decodedResult) {
 				if (loadingticket) return;
 				loadingticket = true;
-				// handle the scanned code as you like, for example:
 				jQuery("#reader_output").html(decodedText+"<br>...'.__("loading", 'event-tickets-with-ticket-scanner').'...");
 				window.location.href = "?code="+encodeURIComponent(decodedText) + (serial_ticket_scanner_redeem ? "&redeemauto=1" : "");
 				window.setTimeout(()=>{
-					html5QrcodeScanner.stop().then((ignore) => {
-						// QR Code scanning is stopped.
-						// reload the page with the ticket info and redeem button
-						//console.log("stop success");
-					}).catch((err) => {
-						// Stop failed, handle it.
-						//console.log("stop failed");
-					});
+					html5QrcodeScanner.stop().then((ignore) => {}).catch((err) => {});
 				}, 250);
 		  	}
 		  	function onScanFailure(error) {
-				// handle scan failure, usually better to ignore and keep scanning.
-				// for example:
 				console.warn("Code scan error = ${error}");
 		  	}
 		  	var html5QrcodeScanner = new Html5QrcodeScanner(
@@ -2048,25 +2288,161 @@ final class sasoEventtickets_Ticket {
 			  	html5QrcodeScanner.render(onScanSuccess, onScanFailure);
 		  }
 		  </script>';
+	}
 
+	/**
+	 * Legacy options row and counter — separate so modern can reuse the logic
+	 * without the legacy markup.
+	 */
+	private function outputScannerOptionsAndCounterLegacy(): void {
 		if (SASO_EVENTTICKETS::issetRPara("code")) {
 			echo "<center>";
 			echo '<input type="checkbox" onclick="setRedeemImmediately()"'.(SASO_EVENTTICKETS::issetRPara("redeemauto") ? " ".'checked' :'').'> '.esc_html__('Scan and Redeem immediately', 'event-tickets-with-ticket-scanner').'<br>';
 			echo '<button onclick="startScanner()">'.esc_attr__("Scan next Ticket", 'event-tickets-with-ticket-scanner').'</button>';
 			echo "</center>";
 
-			// display the amount entered already
-			$redeemed_tickets = $this->rest_helper_tickets_redeemed($codeObj);
-			if ($redeemed_tickets['tickets_redeemed_show']) {
-				echo "<center><h5>";
-				echo $redeemed_tickets['tickets_redeemed']." ".__('ticket redeemed already', 'event-tickets-with-ticket-scanner');
-				echo "</h5></center>";
-			}
+			try {
+				$codeObj = $this->getCodeObj();
+				$redeemed_tickets = $this->rest_helper_tickets_redeemed($codeObj);
+				if ($redeemed_tickets['tickets_redeemed_show']) {
+					echo "<center><h5>";
+					echo $redeemed_tickets['tickets_redeemed']." ".__('ticket redeemed already', 'event-tickets-with-ticket-scanner');
+					echo "</h5></center>";
+				}
+			} catch (Exception $e) {}
 		} else {
 			echo '<script>
 			startScanner();
 			</script>';
 		}
+	}
+
+	/**
+	 * Modern scanner output — BEM layout with CSS custom properties.
+	 * Same business logic as legacy, new HTML structure.
+	 * Old element IDs are kept as aliases for backward compatibility.
+	 */
+	public function outputTicketScannerModern() {
+		$this->enqueueModernFrontendCSS();
+
+		echo '<div class="saso-scanner">';
+		echo '<div class="saso-scanner__header"><p class="saso-scanner__title">' . esc_html__('Ticket Scanner', 'event-tickets-with-ticket-scanner') . '</p></div>';
+
+		// Status banner
+		echo '<div class="saso-scanner__status" id="ticket_scanner_info_area">';
+		if (isset($_GET['code']) && isset($_GET['redeemauto']) && $this->redeem_successfully == false) {
+			echo $this->renderStatusBanner('error', esc_html__('Ticket not redeemed', 'event-tickets-with-ticket-scanner'), esc_html__('See reason below.', 'event-tickets-with-ticket-scanner'));
+		} else if (isset($_GET['code']) && isset($_GET['redeemauto']) && $this->redeem_successfully) {
+			echo $this->renderStatusBanner('success', esc_html__('TICKET OK — Redeemed', 'event-tickets-with-ticket-scanner'), '');
+		}
+		echo '</div>';
+
+		// Ticket result area
+		echo '<div class="saso-scanner__result" id="reader_output">';
+		if (SASO_EVENTTICKETS::issetRPara("code")) {
+			try {
+				$codeObj = $this->getCodeObj();
+				$metaObj = $codeObj["metaObj"];
+				$ticket_id = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
+
+				$ticket_times = $this->getCalcDateStringAllowedRedeemFromCorrectProduct($metaObj['woocommerce']['product_id'], $codeObj);
+				$ticket_end_date = $ticket_times['ticket_end_date'];
+				$ticket_end_date_timestamp = $ticket_times['ticket_end_date_timestamp'];
+
+				$state = 'valid';
+				if (!empty($metaObj['wc_ticket']['redeemed_date'])) {
+					$state = 'redeemed';
+				} elseif ($ticket_end_date != "" && $ticket_end_date_timestamp < time()) {
+					$state = 'expired';
+				}
+
+				if (SASO_EVENTTICKETS::issetRPara('action') && SASO_EVENTTICKETS::getRequestPara('action') == "redeem") {
+					if ($this->redeem_successfully) {
+						echo $this->renderStatusBanner('success', __("Successfully redeemed", 'event-tickets-with-ticket-scanner'), '');
+					} else {
+						echo $this->renderStatusBanner('error', __("Failed to redeem", 'event-tickets-with-ticket-scanner'), '');
+					}
+				}
+
+				echo '<div class="saso-scanner__ticket-card" data-state="' . esc_attr($state) . '">';
+				$this->outputTicketInfo();
+				echo '</div>';
+
+				// Hidden forms (same IDs as legacy for JS compatibility)
+				echo '<form id="f_reload" action="?" method="get"><input type="hidden" name="code" value="' . urlencode($ticket_id) . '"></form>';
+				echo '<script>function reload_ticket(){document.getElementById("f_reload").submit();}</script>';
+				if (empty($metaObj['wc_ticket']['redeemed_date'])) {
+					echo '<form id="f_redeem" action="?" method="post"><input type="hidden" name="action" value="redeem"><input type="hidden" name="code" value="' . urlencode($ticket_id) . '"></form>';
+					echo '<script>function redeem_ticket(){document.getElementById("f_redeem").submit();}</script>';
+				}
+
+				// Action buttons
+				echo '<div class="saso-scanner__actions">';
+				echo '<button class="saso-btn saso-btn--outline saso-btn--lg" onclick="reload_ticket()">' . esc_html__("Reload Ticket", 'event-tickets-with-ticket-scanner') . '</button>';
+				if (empty($metaObj['wc_ticket']['redeemed_date'])) {
+					echo '<button class="saso-btn saso-btn--success saso-btn--lg" onclick="redeem_ticket()">' . esc_html__("Redeem Ticket", 'event-tickets-with-ticket-scanner') . '</button>';
+				}
+				echo '</div>';
+			} catch (Exception $e) {
+				echo $this->renderStatusBanner('error', $e->getMessage(), $this->getParts()['code'] ?? '');
+			}
+		}
+		echo '</div>'; // /.saso-scanner__result
+
+		// QR Reader (same ID as legacy for Html5QrcodeScanner compatibility)
+		echo '<div class="saso-scanner__reader" id="reader"></div>';
+
+		// JS scripts (identical logic, legacy element IDs still used by Html5QrcodeScanner)
+		$this->outputScannerJSScriptsLegacy();
+
+		// Options + counter
+		if (SASO_EVENTTICKETS::issetRPara("code")) {
+			echo '<div class="saso-scanner__options">';
+			$checked = SASO_EVENTTICKETS::issetRPara("redeemauto") ? ' checked' : '';
+			echo '<label class="saso-scanner__toggle"><input type="checkbox" onclick="setRedeemImmediately()"' . $checked . '><span class="saso-scanner__toggle-slider"></span></label>';
+			echo '<span>' . esc_html__('Scan and Redeem immediately', 'event-tickets-with-ticket-scanner') . '</span>';
+			echo '</div>';
+
+			echo '<div class="saso-scanner__actions">';
+			echo '<button class="saso-btn saso-btn--primary" onclick="startScanner()">' . esc_html__("Scan next Ticket", 'event-tickets-with-ticket-scanner') . '</button>';
+			echo '</div>';
+
+			try {
+				$codeObj = $this->getCodeObj();
+				$redeemed_tickets = $this->rest_helper_tickets_redeemed($codeObj);
+				if ($redeemed_tickets['tickets_redeemed_show']) {
+					echo '<div class="saso-scanner__counter"><strong>' . esc_html($redeemed_tickets['tickets_redeemed']) . '</strong> ' . esc_html__('ticket redeemed already', 'event-tickets-with-ticket-scanner') . '</div>';
+				}
+			} catch (Exception $e) {}
+		} else {
+			echo '<script>startScanner();</script>';
+		}
+
+		// Admin quick-switch
+		$this->renderAdminLayoutSwitch();
+
+		echo '</div>'; // /.saso-scanner
+	}
+
+	/**
+	 * Helper: render a status banner with BEM classes.
+	 * @param string $type success|error|warning|info
+	 * @param string $title
+	 * @param string $detail
+	 * @return string
+	 */
+	private function renderStatusBanner(string $type, string $title, string $detail = ''): string {
+		$icons = ['success' => '✓', 'error' => '✕', 'warning' => '!', 'info' => 'i'];
+		$icon = $icons[$type] ?? 'i';
+		$html = '<div class="saso-status saso-status--' . esc_attr($type) . '">';
+		$html .= '<div class="saso-status__icon">' . $icon . '</div>';
+		$html .= '<div class="saso-status__body">';
+		$html .= '<div class="saso-status__title">' . wp_kses_post($title) . '</div>';
+		if (!empty($detail)) {
+			$html .= '<div class="saso-status__detail">' . wp_kses_post($detail) . '</div>';
+		}
+		$html .= '</div></div>';
+		return $html;
 	}
 
 	private function checkIfDownloadIsAllowed() {
@@ -2566,6 +2942,9 @@ final class sasoEventtickets_Ticket {
 
 	public function getOrderItem($order, $metaObj) {
 		$order_item = null;
+		if (!is_object($order) || !method_exists($order, 'get_items')) {
+			return $order_item; // no order (deleted, or a ticket that never had one)
+		}
 		foreach ( $order->get_items() as $item_id => $item ) {
 			if ($metaObj['woocommerce']['item_id'] == $item_id) {
 				$order_item = $item;
@@ -2820,7 +3199,7 @@ final class sasoEventtickets_Ticket {
 			if ($ticket_template != null) {
 				$template = $ticket_template['template'];
 			}
-			if (SASO_EVENTTICKETS::issetRPara('testDesigner') ) { // TODO: quick fix, so that users can work
+			if (SASO_EVENTTICKETS::issetRPara('testDesigner') ) {
 				if (empty($template)) {
 					$template = $this->MAIN->getAdmin()->getOptionValue("wcTicketDesignerTemplateTest");
 				}
@@ -2993,6 +3372,10 @@ final class sasoEventtickets_Ticket {
 	}
 
 	private function isRedeemOperationTooEarly($codeObj, $metaObj, $order) {
+		// see checkEventStart(): the list carries the window
+		if ($order == null && $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
+			return $this->isOrderlessRedeemTooEarly($codeObj);
+		}
 		// ermittel product
 		$order_item = $this->getOrderItem($order, $metaObj);
 		if ($order_item == null) throw new Exception("#8015 ".esc_html__("Can not find the product for this ticket.", 'event-tickets-with-ticket-scanner'));
@@ -3005,6 +3388,10 @@ final class sasoEventtickets_Ticket {
 		return $ret['redeem_allowed_from_timestamp'] >= $ret['server_time_timestamp'];
 	}
 	private function isRedeemOperationTooLateEventEnded($codeObj, $metaObj, $order) {
+		// see checkEventStart(): the list carries the window
+		if ($order == null && $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
+			return $this->isOrderlessRedeemTooLate($codeObj, true);
+		}
 		$order_item = $this->getOrderItem($order, $metaObj);
 		if ($order_item == null) throw new Exception("#8015 ".esc_html__("Can not find the product for this ticket.", 'event-tickets-with-ticket-scanner'));
 		$product = $order_item->get_product();
@@ -3016,6 +3403,10 @@ final class sasoEventtickets_Ticket {
 		return $ret['ticket_end_date_timestamp'] <= $ret['server_time_timestamp'];
 	}
 	private function isRedeemOperationTooLate($codeObj, $metaObj, $order) {
+		// see checkEventStart(): the list carries the window
+		if ($order == null && $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
+			return $this->isOrderlessRedeemTooLate($codeObj, false);
+		}
 		$order_item = $this->getOrderItem($order, $metaObj);
 		if ($order_item == null) throw new Exception("#8018 ".esc_html__("Can not find the product for this ticket.", 'event-tickets-with-ticket-scanner'));
 		$product = $order_item->get_product();
@@ -3026,7 +3417,53 @@ final class sasoEventtickets_Ticket {
 		$ret = $this->getCalcDateStringAllowedRedeemFromCorrectProduct($product_id, $codeObj);
 		return $ret['is_date_set'] && $ret['ticket_start_date_timestamp'] < $ret['server_time_timestamp'];
 	}
+	/**
+	 * Is an order-less ticket scanned before its list's event starts?
+	 *
+	 * @param array $codeObj Ticket row
+	 * @return bool
+	 */
+	private function isOrderlessRedeemTooEarly($codeObj): bool {
+		$window = $this->MAIN->getCore()->getOrderlessEventWindow($codeObj);
+		if ($window === null || empty($window['start'])) {
+			return false;
+		}
+
+		$offsetHours = intval($this->MAIN->getOptions()->getOptionValue('wcTicketOffsetAllowRedeemTicketBeforeStart'));
+
+		return time() < ($window['start'] - ($offsetHours * 3600));
+	}
+
+	/**
+	 * Is an order-less ticket scanned after its list's event ended (or started)?
+	 *
+	 * @param array $codeObj Ticket row
+	 * @param bool $useEnd true = compare against the end, false = against the start
+	 * @return bool
+	 */
+	private function isOrderlessRedeemTooLate($codeObj, bool $useEnd): bool {
+		$window = $this->MAIN->getCore()->getOrderlessEventWindow($codeObj);
+		if ($window === null) {
+			return false;
+		}
+
+		$moment = $useEnd ? ($window['end'] ?? null) : ($window['start'] ?? null);
+		if (empty($moment)) {
+			return false;
+		}
+
+		return time() > $moment;
+	}
+
 	private function checkEventStart($codeObj, $metaObj, $order) {
+		// No product behind an order-less ticket — its window comes from the list
+		if ($order == null && $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDontAllowRedeemTicketBeforeStart')
+				&& $this->isOrderlessRedeemTooEarly($codeObj)) {
+				throw new Exception("#8016 ".esc_html__("Too early. Ticket cannot be redeemed yet.", 'event-tickets-with-ticket-scanner'));
+			}
+			return;
+		}
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketDontAllowRedeemTicketBeforeStart')) {
 			if ($this->isRedeemOperationTooEarly($codeObj, $metaObj, $order)) {
 				throw new Exception("#8016 ".esc_html__("Too early. Ticket cannot be redeemed yet.", 'event-tickets-with-ticket-scanner'));
@@ -3034,6 +3471,18 @@ final class sasoEventtickets_Ticket {
 		}
 	}
 	private function checkEventEnd($codeObj, $metaObj, $order) {
+		// see checkEventStart(): the list carries the window
+		if ($order == null && $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemTicketAfterEnd') == false
+				&& $this->isOrderlessRedeemTooLate($codeObj, true)) {
+				throw new Exception("#8017 ".esc_html__("Too late, event finished. Ticket cannot be redeemed anymore.", 'event-tickets-with-ticket-scanner'));
+			}
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wsticketDenyRedeemAfterstart')
+				&& $this->isOrderlessRedeemTooLate($codeObj, false)) {
+				throw new Exception("#8019 ".esc_html__("Too late, event started. Ticket cannot be redeemed anymore.", 'event-tickets-with-ticket-scanner'));
+			}
+			return;
+		}
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemTicketAfterEnd') == false) {
 			if ($this->isRedeemOperationTooLateEventEnded($codeObj, $metaObj, $order)) {
 				throw new Exception("#8017 ".esc_html__("Too late, event finished. Ticket cannot be redeemed anymore.", 'event-tickets-with-ticket-scanner'));
@@ -3078,16 +3527,22 @@ final class sasoEventtickets_Ticket {
 		$max_redeem_amount = $this->getMaxRedeemAmountOfTicket($codeObj);
 
 		if ($metaObj['wc_ticket']['redeemed_date'] == "" || $max_redeem_amount > 0) {
-			$order = $this->getOrderById($codeObj["order_id"]);
-			$is_paid = $this->isPaid($order);
-			if (!$is_paid && $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemOnlyPaid')) {
-				throw new Exception("#8014 ".esc_html__("Order is not paid. And the option is active to allow only paid ticket to be redeemed is active.", 'event-tickets-with-ticket-scanner'));
+			// A ticket without an order has nothing to check the payment against —
+			// that is what the switch buys. The time window still applies.
+			$isOrderless = $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj);
+			$order = $isOrderless ? null : $this->getOrderById($codeObj["order_id"]);
+
+			if (!$isOrderless) {
+				$is_paid = $this->isPaid($order);
+				if (!$is_paid && $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemOnlyPaid')) {
+					throw new Exception("#8014 ".esc_html__("Order is not paid. And the option is active to allow only paid ticket to be redeemed is active.", 'event-tickets-with-ticket-scanner'));
+				}
 			}
 
 			$this->checkEventStart($codeObj, $metaObj, $order);
 			$this->checkEventEnd($codeObj, $metaObj, $order);
 
-			$user_id = $order->get_user_id();
+			$user_id = $order != null ? intval($order->get_user_id()) : get_current_user_id();
 			$user_id = intval($user_id);
 			$data = [
 				'code'=>$codeObj['code'],
@@ -3107,6 +3562,7 @@ final class sasoEventtickets_Ticket {
 	}
 
 	private function executeRequestScanner() {
+		$this->handleLayoutSwitchRequest();
 		if (SASO_EVENTTICKETS::issetRPara('action') && SASO_EVENTTICKETS::getRequestPara('action') == "redeem" || (SASO_EVENTTICKETS::issetRPara('redeemauto') && SASO_EVENTTICKETS::issetRPara('code'))) {
 			if (!SASO_EVENTTICKETS::issetRPara('code')) throw new Exception("#8008 ".esc_html__('Ticket number to redeem is missing', 'event-tickets-with-ticket-scanner')); // hmm, seems that this will never be called
 			$this->redeemTicket();
@@ -3249,10 +3705,18 @@ final class sasoEventtickets_Ticket {
 	 * HTML view (ticket detail / congress) is switched off → small notice page.
 	 */
 	private function renderViewDisabledHtmlPage() {
+		$modern = $this->isModernLayout();
+		if ($modern) $this->enqueueModernFrontendCSS();
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideHeader') == false) get_header();
-		echo '<div style="max-width:640px;margin:40px auto;padding:15px;border:1px solid #ccc;text-align:center;">';
-		echo '<p>'.esc_html($this->getViewDisabledMessage()).'</p>';
-		echo '</div>';
+		if ($modern) {
+			echo '<div style="max-width:640px;margin:40px auto;">';
+			echo $this->renderStatusBanner('info', esc_html($this->getViewDisabledMessage()), '');
+			echo '</div>';
+		} else {
+			echo '<div style="max-width:640px;margin:40px auto;padding:15px;border:1px solid #ccc;text-align:center;">';
+			echo '<p>'.esc_html($this->getViewDisabledMessage()).'</p>';
+			echo '</div>';
+		}
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideFooter') == false) get_footer();
 	}
 
@@ -3329,6 +3793,9 @@ final class sasoEventtickets_Ticket {
 			return '<p>' . esc_html__('No WooCommerce Support Found', 'event-tickets-with-ticket-scanner') . '</p>';
 		}
 
+		$modern = $this->isModernLayout();
+		if ($modern) $this->enqueueModernFrontendCSS();
+
 		wp_enqueue_style("wp-jquery-ui-dialog");
 		$js_url = "jquery.qrcode.min.js?_v=" . $this->MAIN->getPluginVersion();
 		wp_enqueue_script(
@@ -3339,7 +3806,13 @@ final class sasoEventtickets_Ticket {
 		wp_set_script_translations('ajax_script', 'event-tickets-with-ticket-scanner', __DIR__ . '/languages');
 
 		ob_start();
-		echo '<div class="ticket_content" style="background-color:white;color:black;padding:15px;display:block;position:relative;text-align:left;max-width:640px;border:1px solid black;margin:0 auto;">';
+		// Wrapper: BEM class 'saso-ticket' + legacy class 'ticket_content' for backward compat.
+		// Inline styles only in legacy mode; modern mode styles via styles-frontend.css.
+		if ($modern) {
+			echo '<div class="saso-ticket ticket_content">';
+		} else {
+			echo '<div class="ticket_content" style="background-color:white;color:black;padding:15px;display:block;position:relative;text-align:left;max-width:640px;border:1px solid black;margin:0 auto;">';
+		}
 		try {
 			if ($this->isOrderTicketInfo()) {
 				$this->outputOrderTicketsInfos();
@@ -3351,8 +3824,12 @@ final class sasoEventtickets_Ticket {
 				}
 			}
 		} catch (Exception $e) {
-			echo '<h1 style="color:red;">' . esc_html__('Error', 'event-tickets-with-ticket-scanner') . '</h1>';
-			echo '<p>' . esc_html($e->getMessage()) . '</p>';
+			if ($modern) {
+				echo $this->renderStatusBanner('error', __('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage()));
+			} else {
+				echo '<h1 style="color:red;">' . esc_html__('Error', 'event-tickets-with-ticket-scanner') . '</h1>';
+				echo '<p>' . esc_html($e->getMessage()) . '</p>';
+			}
 		}
 		echo '</div>';
 		return ob_get_clean();
@@ -3402,14 +3879,28 @@ final class sasoEventtickets_Ticket {
 			} catch(Exception $e) {
 				$this->MAIN->getAdmin()->logErrorToDB($e);
 				$hasError = true;
+				$modern = $this->isModernLayout();
+				if ($modern) $this->enqueueModernFrontendCSS();
 				get_header();
-				echo '<div style="width: 100%; justify-content: center;align-items: center;position: relative;">';
-				echo '<div class="ticket_content" style="background-color:white;color:black;padding:15px;display:block;position: relative;left: 0;right: 0;margin: auto;text-align:left;max-width:640px;border:1px solid black;">';
-				echo '<h1 style="color:red;">'.esc_html__('Error', 'event-tickets-with-ticket-scanner').'</h1>';
-				echo '<p>'.$e->getMessage().'</p>';
+				if ($modern) {
+					echo '<div style="width:100%;">';
+					echo '<div class="saso-ticket ticket_content">';
+				} else {
+					echo '<div style="width: 100%; justify-content: center;align-items: center;position: relative;">';
+					echo '<div class="ticket_content" style="background-color:white;color:black;padding:15px;display:block;position: relative;left: 0;right: 0;margin: auto;text-align:left;max-width:640px;border:1px solid black;">';
+				}
+				if ($modern) {
+					echo $this->renderStatusBanner('error', __('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage()));
+				} else {
+					echo '<h1 style="color:red;">'.esc_html__('Error', 'event-tickets-with-ticket-scanner').'</h1>';
+					echo '<p>'.$e->getMessage().'</p>';
+				}
 			}
 
 			if (!$hasError) {
+				$modern = $this->isModernLayout();
+				if ($modern) $this->enqueueModernFrontendCSS();
+
 				wp_enqueue_style("wp-jquery-ui-dialog");
 
 				$js_url = "jquery.qrcode.min.js?_v=".$this->MAIN->getPluginVersion();
@@ -3423,15 +3914,25 @@ final class sasoEventtickets_Ticket {
 				if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideHeader') == false) {
 					get_header();
 				}
-				echo '<div style="width: 100%; justify-content: center;align-items: center;position: relative;">';
-				echo '<div class="ticket_content" style="background-color:white;color:black;padding:15px;display:block;position: relative;left: 0;right: 0;margin: auto;text-align:left;max-width:640px;border:1px solid black;">';
+				// Wrapper: modern uses BEM class + legacy alias; legacy keeps inline styles.
+				if ($modern) {
+					echo '<div style="width:100%;">';
+					echo '<div class="saso-ticket ticket_content">';
+				} else {
+					echo '<div style="width: 100%; justify-content: center;align-items: center;position: relative;">';
+					echo '<div class="ticket_content" style="background-color:white;color:black;padding:15px;display:block;position: relative;left: 0;right: 0;margin: auto;text-align:left;max-width:640px;border:1px solid black;">';
+				}
 
 				try {
 					if ($this->isScanner()) { // old approach
 						$this->executeRequestScanner();
 						$this->outputTicketScanner();
 					} elseif (!$this->isViewEnabled('view')) {
-						echo '<p>'.esc_html($this->getViewDisabledMessage()).'</p>';
+						if ($modern) {
+							echo $this->renderStatusBanner('info', esc_html($this->getViewDisabledMessage()), '');
+						} else {
+							echo '<p>'.esc_html($this->getViewDisabledMessage()).'</p>';
+						}
 					} else {
 						$this->executeRequest();
 						if ($this->isOrderTicketInfo()) {
@@ -3445,8 +3946,12 @@ final class sasoEventtickets_Ticket {
 						}
 					}
 				} catch(Exception $e) {
-					echo '<h1 style="color:red;">Error</h1>';
-					echo $e->getMessage();
+					if ($modern) {
+						echo $this->renderStatusBanner('error', __('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage()));
+					} else {
+						echo '<h1 style="color:red;">Error</h1>';
+						echo $e->getMessage();
+					}
 				}
 			}
 

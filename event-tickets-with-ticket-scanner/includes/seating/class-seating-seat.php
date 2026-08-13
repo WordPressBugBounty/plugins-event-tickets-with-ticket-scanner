@@ -788,6 +788,74 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 	}
 
 	/**
+	 * Persist an explicit seat sequence in sort_order
+	 *
+	 * Seat IDs that do not belong to the plan (or are soft-deleted) are ignored.
+	 * Seats of the plan that are missing from the sequence keep their relative
+	 * order and are placed behind it.
+	 *
+	 * @param int $planId Seating plan ID
+	 * @param array $orderedIds Seat IDs in the desired order
+	 * @return int Number of seats taken from $orderedIds
+	 */
+	public function reorder(int $planId, array $orderedIds): int {
+		global $wpdb;
+
+		// Current order of the plan, soft-deleted seats excluded
+		$seats = $this->getByPlanId($planId);
+		if (empty($seats)) {
+			return 0;
+		}
+
+		$known = [];
+		foreach ($seats as $seat) {
+			$known[(int) $seat['id']] = true;
+		}
+
+		$sequence = [];
+		foreach ($orderedIds as $id) {
+			$id = (int) $id;
+			if (isset($known[$id]) && !isset($sequence[$id])) {
+				$sequence[$id] = true;
+			}
+		}
+
+		$reordered = count($sequence);
+		if ($reordered === 0) {
+			return 0;
+		}
+
+		// Seats left out keep their relative order behind the sequence
+		foreach ($seats as $seat) {
+			$sequence[(int) $seat['id']] = true;
+		}
+
+		// One statement for the whole plan — a half written order would be worse
+		// than none, and large plans would otherwise cost one query per seat
+		$ids = array_keys($sequence);
+		$cases = '';
+		$params = [];
+		$position = 1;
+		foreach ($ids as $id) {
+			$cases .= ' WHEN %d THEN %d';
+			$params[] = $id;
+			$params[] = $position++;
+		}
+
+		$placeholders = implode(',', array_fill(0, count($ids), '%d'));
+		$sql = "UPDATE {$this->getTable($this->table)}
+			SET sort_order = CASE id{$cases} END, updated_by = %d, updated_at = %s
+			WHERE seatingplan_id = %d AND id IN ({$placeholders})";
+
+		$wpdb->query($wpdb->prepare(
+			$sql,
+			array_merge($params, [get_current_user_id(), current_time('mysql'), $planId], $ids)
+		));
+
+		return $reordered;
+	}
+
+	/**
 	 * Update visual position for a seat
 	 *
 	 * @param int $seatId Seat ID

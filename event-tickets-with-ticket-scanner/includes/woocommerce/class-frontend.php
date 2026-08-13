@@ -1228,7 +1228,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				return;
 			}
 
-			echo '<p class="saso-eventtickets-sales-closed">' . $this->getSalesCutoffLabel($product->get_name()) . '</p>';
+			echo '<p class="saso-eventtickets-sales-closed">' . $this->getSalesCutoffLabel($product->get_name(), 'wcTicketTransSalesCutoffMessage', '', (int) $product_id) . '</p>';
 		}
 
 		/**
@@ -1249,15 +1249,25 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		 * @param string $fallback Text used when the option is empty, with {PRODUCT_NAME}
 		 * @return string
 		 */
-		private function getSalesCutoffLabel(string $product_name, string $option_key = 'wcTicketTransSalesCutoffMessage', string $fallback = ''): string {
+		private function getSalesCutoffLabel(string $product_name, string $option_key = 'wcTicketTransSalesCutoffMessage', string $fallback = '', int $product_id = 0): string {
 			$label = trim((string) $this->MAIN->getOptions()->getOptionValue($option_key));
 			if ($label === '') {
 				/* translators: %s: product name */
 				$label = $fallback !== '' ? $fallback : sprintf(__('Online sales for "%s" have closed.', 'event-tickets-with-ticket-scanner'), '{PRODUCT_NAME}');
 			}
 			$label = str_replace('{PRODUCT_NAME}', '%s', $label);
+			$label = wp_kses_post(sprintf($label, esc_html($product_name)));
 
-			return wp_kses_post(sprintf($label, esc_html($product_name)));
+			// Einstieg fuer das Premium: eigener Text je Event und der Hinweis auf
+			// die Abendkasse. Der Shop-Text bleibt die Vorgabe, das Premium
+			// verfeinert ihn - deshalb hier und nicht in jeder Aufrufstelle.
+			return (string) apply_filters(
+				$this->MAIN->_add_filter_prefix.'wc_salesCutoffLabel',
+				$label,
+				$product_name,
+				$product_id,
+				$option_key
+			);
 		}
 
 		/**
@@ -1292,7 +1302,8 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				$product->get_name(),
 				'wcTicketTransSalesCutoffRemovedMessage',
 				/* translators: %s: product name */
-				sprintf(__('Online sales for "%s" have closed, so it was removed from your cart.', 'event-tickets-with-ticket-scanner'), '{PRODUCT_NAME}')
+				sprintf(__('Online sales for "%s" have closed, so it was removed from your cart.', 'event-tickets-with-ticket-scanner'), '{PRODUCT_NAME}'),
+				(int) $product_id
 			);
 		}
 

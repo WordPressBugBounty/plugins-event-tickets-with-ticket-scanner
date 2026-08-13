@@ -168,8 +168,8 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 				{
 					data: null,
 					orderable: false,
-					className: 'dt-right',
-					width: 250,
+					className: 'dt-right saso-actions-col',
+					width: 320,
 					render: (data, type, row) => {
 						let buttons = '';
 						// View button only if image exists (check > 0)
@@ -735,7 +735,7 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 			seatsData = data.seats || [];
 			renderSeats();
 			updateSeatsCount();
-			updateAddSeatButton();
+			updateSeatToolbarButtons();
 		});
 	}
 
@@ -846,8 +846,12 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 		$('.saso-seats-count').text(sprintf(__('%d seats', 'event-tickets-with-ticket-scanner'), seatsData.length));
 	}
 
-	function updateAddSeatButton() {
+	function updateSeatToolbarButtons() {
 		const $btn = $('.saso-add-seat');
+
+		// Seat order only matters where customers pick from the dropdown (simple layout)
+		$('.saso-seating-admin-wrap').first().find('.saso-reorder-seats')
+			.toggle(currentPlanLayoutType !== 'visual' && seatsData.length > 1);
 
 		// In Visual mode, Add button is always disabled (use Designer)
 		if (currentPlanLayoutType === 'visual') {
@@ -933,6 +937,83 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 				$modal.hide();
 			}
 		});
+	}
+
+	/**
+	 * Seat order editor — drag & drop list, persisted in sort_order (#212).
+	 *
+	 * The seat table itself stays sortable by column; the explicit order lives
+	 * in this dialog so paging and column sorting cannot interfere with it.
+	 */
+	function openSeatOrderModal() {
+		if (!seatsData || seatsData.length === 0) {
+			showNotice(config.i18n.noSeats, 'error');
+			return;
+		}
+
+		// A second click must not stack another overlay on top of the first
+		$('.saso-seat-order-modal').remove();
+
+		// Current persisted order, not the order the table happens to display
+		const ordered = seatsData.slice().sort(function(a, b) {
+			const diff = (parseInt(a.sort_order, 10) || 0) - (parseInt(b.sort_order, 10) || 0);
+			return diff !== 0 ? diff : String(a.seat_identifier).localeCompare(String(b.seat_identifier), undefined, {numeric: true, sensitivity: 'base'});
+		});
+
+		const $modal = $(`
+			<div class="saso-modal saso-seat-order-modal" style="display:flex;">
+				<div class="saso-modal-content" style="max-width:520px;">
+					<div class="saso-modal-header">
+						<h3 class="saso-modal-title">${__('Seat Order', 'event-tickets-with-ticket-scanner')}</h3>
+						<button type="button" class="saso-modal-close">&times;</button>
+					</div>
+					<div class="saso-modal-body">
+						<p class="description">${__('Drag the seats into the order customers should see in the dropdown.', 'event-tickets-with-ticket-scanner')}</p>
+						<ul class="saso-seat-order-list"></ul>
+					</div>
+					<div class="saso-modal-footer">
+						<button type="button" class="button saso-modal-cancel">${__('Cancel', 'event-tickets-with-ticket-scanner')}</button>
+						<button type="button" class="button button-primary saso-seat-order-save">${__('Save Order', 'event-tickets-with-ticket-scanner')}</button>
+					</div>
+				</div>
+			</div>
+		`);
+
+		const $list = $modal.find('.saso-seat-order-list');
+		ordered.forEach(function(seat) {
+			const label = (seat.meta && seat.meta.seat_label) || seat.seat_identifier;
+			const $item = $('<li class="saso-seat-order-item">').attr('data-seat-id', seat.id);
+			$item.append($('<span class="saso-seat-order-handle dashicons dashicons-menu">').attr('title', __('Drag to reorder', 'event-tickets-with-ticket-scanner')));
+			$item.append($('<code>').text(seat.seat_identifier));
+			if (label !== seat.seat_identifier) {
+				$item.append($('<span class="saso-seat-order-label">').text(label));
+			}
+			$list.append($item);
+		});
+
+		if (typeof $list.sortable === 'function') {
+			$list.sortable({ handle: '.saso-seat-order-handle', axis: 'y', tolerance: 'pointer', containment: 'parent' });
+		}
+
+		function close() { $modal.remove(); }
+		$modal.on('click', '.saso-modal-close, .saso-modal-cancel', close);
+		$modal.on('click', function(e) { if (e.target === this) close(); });
+
+		$modal.on('click', '.saso-seat-order-save', function() {
+			const ids = $list.find('.saso-seat-order-item').map(function() {
+				return parseInt($(this).attr('data-seat-id'), 10);
+			}).get();
+
+			// No error callback on purpose: _makePost renders server errors itself,
+			// an own callback would swallow them.
+			makeRequest('reorderSeats', { plan_id: currentPlanId, ordered_ids: JSON.stringify(ids) }, function() {
+				close();
+				showNotice(__('Seat order saved.', 'event-tickets-with-ticket-scanner'));
+				loadSeats();
+			});
+		});
+
+		$('body').append($modal);
 	}
 
 	function deleteSeat(seatId) {
@@ -1071,7 +1152,7 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 		batchInProgress = inProgress;
 
 		// Disable/Enable UI elements
-		$('.saso-seat-checkbox, .saso-seat-select-all, .saso-batch-action, .saso-batch-execute, .saso-add-seat, .saso-back-to-plans')
+		$('.saso-seat-checkbox, .saso-seat-select-all, .saso-batch-action, .saso-batch-execute, .saso-add-seat, .saso-reorder-seats, .saso-back-to-plans')
 			.prop('disabled', inProgress);
 
 		// Show/hide progress
@@ -1199,6 +1280,7 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 		$wrap.on('click.sasoSeating', '.saso-add-plan', function() { openPlanModal(null); });
 		$wrap.on('click.sasoSeating', '.saso-back-to-plans', function() { showPlansView(); });
 		$wrap.on('click.sasoSeating', '.saso-add-seat', function() { openSeatModal(null); });
+		$wrap.on('click.sasoSeating', '.saso-reorder-seats', function() { openSeatOrderModal(); });
 		$wrap.on('click.sasoSeating', '.saso-export-seats-csv', function() {
 			if (!currentPlanId) return;
 			let url = BASIC._requestURL('seating', {c: 'exportSeatsCSV', plan_id: currentPlanId});
@@ -1300,6 +1382,10 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 				<div class="saso-layout-explanation" style="display:none;"></div>
 				<div class="saso-seating-seats-toolbar">
 					<button type="button" class="button button-primary saso-add-seat">${__('+ Add Seat', 'event-tickets-with-ticket-scanner')}</button>
+					<button type="button" class="button saso-reorder-seats" style="display:none;">
+						<span class="dashicons dashicons-menu" style="vertical-align:middle;margin-right:2px;"></span>
+						${__('Seat Order', 'event-tickets-with-ticket-scanner')}
+					</button>
 					<button type="button" class="button saso-toggle-plan-image" style="display:none;">
 						<span class="dashicons dashicons-format-image"></span>
 						${__('Show Layout', 'event-tickets-with-ticket-scanner')}

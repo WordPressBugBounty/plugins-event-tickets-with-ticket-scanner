@@ -1,0 +1,671 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - navigation "Main menu":
+      - link "Skip to main content" [ref=f4e3] [cursor=pointer]:
+        - /url: "#wpbody-content"
+      - link "Skip to toolbar" [ref=f4e4] [cursor=pointer]:
+        - /url: "#wp-toolbar"
+      - list [ref=f4e7]:
+        - listitem [ref=f4e8]:
+          - link "Dashboard" [ref=f4e9] [cursor=pointer]:
+            - /url: index.php
+            - generic [ref=f4e10]: 
+          - list [ref=f4e12]:
+            - listitem [ref=f4e13]:
+              - link "Home" [ref=f4e14] [cursor=pointer]:
+                - /url: index.php
+            - listitem [ref=f4e15]:
+              - link "Updates 4" [ref=f4e16] [cursor=pointer]:
+                - /url: update-core.php
+                - text: Updates
+                - generic [ref=f4e17]: "4"
+        - listitem [ref=f4e18]
+        - listitem [ref=f4e20]:
+          - link "Posts" [ref=f4e21] [cursor=pointer]:
+            - /url: edit.php
+            - generic [ref=f4e22]: 
+          - list [ref=f4e24]:
+            - listitem [ref=f4e25]:
+              - link "All Posts" [ref=f4e26] [cursor=pointer]:
+                - /url: edit.php
+            - listitem [ref=f4e27]:
+              - link "Add Post" [ref=f4e28] [cursor=pointer]:
+                - /url: post-new.php
+            - listitem [ref=f4e29]:
+              - link "Categories" [ref=f4e30] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=category
+            - listitem [ref=f4e31]:
+              - link "Tags" [ref=f4e32] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=post_tag
+        - listitem [ref=f4e33]:
+          - link "Media" [ref=f4e34] [cursor=pointer]:
+            - /url: upload.php
+            - generic [ref=f4e35]: 
+          - list [ref=f4e37]:
+            - listitem [ref=f4e38]:
+              - link "Library" [ref=f4e39] [cursor=pointer]:
+                - /url: upload.php
+            - listitem [ref=f4e40]:
+              - link "Add Media File" [ref=f4e41] [cursor=pointer]:
+                - /url: media-new.php
+        - listitem [ref=f4e42]:
+          - link "Pages" [ref=f4e43] [cursor=pointer]:
+            - /url: edit.php?post_type=page
+            - generic [ref=f4e44]: 
+          - list [ref=f4e46]:
+            - listitem [ref=f4e47]:
+              - link "All Pages" [ref=f4e48] [cursor=pointer]:
+                - /url: edit.php?post_type=page
+            - listitem [ref=f4e49]:
+              - link "Add Page" [ref=f4e50] [cursor=pointer]:
+                - /url: post-new.php?post_type=page
+        - listitem [ref=f4e51]:
+          - link "Comments" [ref=f4e52] [cursor=pointer]:
+            - /url: edit-comments.php
+            - generic [ref=f4e53]: 
+        - listitem [ref=f4e55]:
+          - link "Repair Desk" [ref=f4e56] [cursor=pointer]:
+            - /url: admin.php?page=vollstart-repair-desk
+            - generic [ref=f4e57]: 
+        - listitem [ref=f4e59]
+        - listitem [ref=f4e61]:
+          - link "WooCommerce" [ref=f4e62] [cursor=pointer]:
+            - /url: admin.php?page=wc-admin
+          - list [ref=f4e65]:
+            - listitem [ref=f4e66]:
+              - link "Home 3" [ref=f4e67] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin
+                - text: Home
+                - generic [ref=f4e68]: "3"
+            - listitem [ref=f4e69]:
+              - link "Orders" [ref=f4e70] [cursor=pointer]:
+                - /url: admin.php?page=wc-orders
+            - listitem [ref=f4e71]:
+              - link "Subscriptions" [ref=f4e72] [cursor=pointer]:
+                - /url: admin.php?page=wc-orders--shop_subscription
+            - listitem [ref=f4e73]:
+              - link "Customers" [ref=f4e74] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/customers
+            - listitem [ref=f4e75]:
+              - link "Coupons" [ref=f4e76] [cursor=pointer]:
+                - /url: admin.php?page=coupons-moved
+            - listitem [ref=f4e77]:
+              - link "Geo-Tier Pricing" [ref=f4e78] [cursor=pointer]:
+                - /url: admin.php?page=vollstart-geo-pricing
+            - listitem [ref=f4e79]:
+              - link "Reports" [ref=f4e80] [cursor=pointer]:
+                - /url: admin.php?page=wc-reports
+            - listitem [ref=f4e81]:
+              - link "Settings" [ref=f4e82] [cursor=pointer]:
+                - /url: admin.php?page=wc-settings
+            - listitem [ref=f4e83]:
+              - link "Status" [ref=f4e84] [cursor=pointer]:
+                - /url: admin.php?page=wc-status
+            - listitem [ref=f4e85]:
+              - link "Extensions" [ref=f4e86] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/extensions
+        - listitem [ref=f4e87]:
+          - link "Products" [ref=f4e88] [cursor=pointer]:
+            - /url: edit.php?post_type=product
+            - generic [ref=f4e89]: 
+          - list [ref=f4e91]:
+            - listitem [ref=f4e92]:
+              - link "All Products" [ref=f4e93] [cursor=pointer]:
+                - /url: edit.php?post_type=product
+            - listitem [ref=f4e94]:
+              - link "Add new product" [ref=f4e95] [cursor=pointer]:
+                - /url: post-new.php?post_type=product
+            - listitem [ref=f4e96]:
+              - link "Brands" [ref=f4e97] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=product_brand&post_type=product
+            - listitem [ref=f4e98]:
+              - link "Categories" [ref=f4e99] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=product_cat&post_type=product
+            - listitem [ref=f4e100]:
+              - link "Tags" [ref=f4e101] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=product_tag&post_type=product
+            - listitem [ref=f4e102]:
+              - link "Attributes" [ref=f4e103] [cursor=pointer]:
+                - /url: edit.php?post_type=product&page=product_attributes
+            - listitem [ref=f4e104]:
+              - link "Reviews" [ref=f4e105] [cursor=pointer]:
+                - /url: edit.php?post_type=product&page=product-reviews
+        - listitem [ref=f4e106]:
+          - link "Payments" [ref=f4e107] [cursor=pointer]:
+            - /url: admin.php?page=wc-settings&tab=checkout&from=PAYMENTS_MENU_ITEM
+        - listitem [ref=f4e110]:
+          - link "Analytics" [ref=f4e111] [cursor=pointer]:
+            - /url: admin.php?page=wc-admin&path=/analytics/overview
+            - generic [ref=f4e112]: 
+          - list [ref=f4e114]:
+            - listitem [ref=f4e115]:
+              - link "Overview" [ref=f4e116] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/overview
+            - listitem [ref=f4e117]:
+              - link "Products" [ref=f4e118] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/products
+            - listitem [ref=f4e119]:
+              - link "Revenue" [ref=f4e120] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/revenue
+            - listitem [ref=f4e121]:
+              - link "Orders" [ref=f4e122] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/orders
+            - listitem [ref=f4e123]:
+              - link "Variations" [ref=f4e124] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/variations
+            - listitem [ref=f4e125]:
+              - link "Categories" [ref=f4e126] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/categories
+            - listitem [ref=f4e127]:
+              - link "Coupons" [ref=f4e128] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/coupons
+            - listitem [ref=f4e129]:
+              - link "Taxes" [ref=f4e130] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/taxes
+            - listitem [ref=f4e131]:
+              - link "Downloads" [ref=f4e132] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/downloads
+            - listitem [ref=f4e133]:
+              - link "Stock" [ref=f4e134] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/stock
+            - listitem [ref=f4e135]:
+              - link "Settings" [ref=f4e136] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/settings
+        - listitem [ref=f4e137]:
+          - link "Marketing" [ref=f4e138] [cursor=pointer]:
+            - /url: admin.php?page=wc-admin&path=/marketing
+            - generic [ref=f4e139]: 
+          - list [ref=f4e141]:
+            - listitem [ref=f4e142]:
+              - link "Overview" [ref=f4e143] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/marketing
+            - listitem [ref=f4e144]:
+              - link "Coupons" [ref=f4e145] [cursor=pointer]:
+                - /url: edit.php?post_type=shop_coupon
+        - listitem [ref=f4e146]
+        - listitem [ref=f4e148]:
+          - link "Appearance" [ref=f4e149] [cursor=pointer]:
+            - /url: themes.php
+            - generic [ref=f4e150]: 
+          - list [ref=f4e152]:
+            - listitem [ref=f4e153]:
+              - link "Themes" [ref=f4e154] [cursor=pointer]:
+                - /url: themes.php
+            - listitem [ref=f4e155]:
+              - link "Editor" [ref=f4e156] [cursor=pointer]:
+                - /url: site-editor.php
+            - listitem [ref=f4e157]:
+              - link "Fonts" [ref=f4e158] [cursor=pointer]:
+                - /url: font-library.php
+        - listitem [ref=f4e159]:
+          - link "Plugins 3" [ref=f4e160] [cursor=pointer]:
+            - /url: plugins.php
+            - generic [ref=f4e161]: 
+            - generic [ref=f4e162]:
+              - text: Plugins
+              - generic [ref=f4e163]: "3"
+          - list [ref=f4e164]:
+            - listitem [ref=f4e165]:
+              - link "Installed Plugins" [ref=f4e166] [cursor=pointer]:
+                - /url: plugins.php
+            - listitem [ref=f4e167]:
+              - link "Add Plugin" [ref=f4e168] [cursor=pointer]:
+                - /url: plugin-install.php
+        - listitem [ref=f4e169]:
+          - link "Users" [ref=f4e170] [cursor=pointer]:
+            - /url: users.php
+            - generic [ref=f4e171]: 
+          - list [ref=f4e173]:
+            - listitem [ref=f4e174]:
+              - link "All Users" [ref=f4e175] [cursor=pointer]:
+                - /url: users.php
+            - listitem [ref=f4e176]:
+              - link "Add User" [ref=f4e177] [cursor=pointer]:
+                - /url: user-new.php
+            - listitem [ref=f4e178]:
+              - link "Profile" [ref=f4e179] [cursor=pointer]:
+                - /url: profile.php
+        - listitem [ref=f4e180]:
+          - link "Tools" [ref=f4e181] [cursor=pointer]:
+            - /url: tools.php
+            - generic [ref=f4e182]: 
+          - list [ref=f4e184]:
+            - listitem [ref=f4e185]:
+              - link "Available Tools" [ref=f4e186] [cursor=pointer]:
+                - /url: tools.php
+            - listitem [ref=f4e187]:
+              - link "Import" [ref=f4e188] [cursor=pointer]:
+                - /url: import.php
+            - listitem [ref=f4e189]:
+              - link "Export" [ref=f4e190] [cursor=pointer]:
+                - /url: export.php
+            - listitem [ref=f4e191]:
+              - link "Site Health" [ref=f4e192] [cursor=pointer]:
+                - /url: site-health.php
+            - listitem [ref=f4e193]:
+              - link "Export Personal Data" [ref=f4e194] [cursor=pointer]:
+                - /url: export-personal-data.php
+            - listitem [ref=f4e195]:
+              - link "Erase Personal Data" [ref=f4e196] [cursor=pointer]:
+                - /url: erase-personal-data.php
+            - listitem [ref=f4e197]:
+              - link "Scheduled Actions" [ref=f4e198] [cursor=pointer]:
+                - /url: tools.php?page=action-scheduler
+            - listitem [ref=f4e199]:
+              - link "Theme File Editor" [ref=f4e200] [cursor=pointer]:
+                - /url: theme-editor.php
+            - listitem [ref=f4e201]:
+              - link "Plugin File Editor" [ref=f4e202] [cursor=pointer]:
+                - /url: plugin-editor.php
+        - listitem [ref=f4e203]:
+          - link "Settings" [ref=f4e204] [cursor=pointer]:
+            - /url: options-general.php
+            - generic [ref=f4e205]: 
+          - list [ref=f4e207]:
+            - listitem [ref=f4e208]:
+              - link "General" [ref=f4e209] [cursor=pointer]:
+                - /url: options-general.php
+            - listitem [ref=f4e210]:
+              - link "Connectors" [ref=f4e211] [cursor=pointer]:
+                - /url: options-connectors.php
+            - listitem [ref=f4e212]:
+              - link "Writing" [ref=f4e213] [cursor=pointer]:
+                - /url: options-writing.php
+            - listitem [ref=f4e214]:
+              - link "Reading" [ref=f4e215] [cursor=pointer]:
+                - /url: options-reading.php
+            - listitem [ref=f4e216]:
+              - link "Discussion" [ref=f4e217] [cursor=pointer]:
+                - /url: options-discussion.php
+            - listitem [ref=f4e218]:
+              - link "Media" [ref=f4e219] [cursor=pointer]:
+                - /url: options-media.php
+            - listitem [ref=f4e220]:
+              - link "Permalinks" [ref=f4e221] [cursor=pointer]:
+                - /url: options-permalink.php
+            - listitem [ref=f4e222]:
+              - link "Privacy" [ref=f4e223] [cursor=pointer]:
+                - /url: options-privacy.php
+        - listitem [ref=f4e224]
+        - listitem [ref=f4e226]:
+          - link "Event Tickets" [ref=f4e227] [cursor=pointer]:
+            - /url: admin.php?page=event-tickets-with-ticket-scanner
+          - list [ref=f4e230]:
+            - listitem [ref=f4e231]:
+              - link "Event Tickets" [ref=f4e232] [cursor=pointer]:
+                - /url: admin.php?page=event-tickets-with-ticket-scanner
+            - listitem [ref=f4e233]:
+              - link "★ More Plugins" [ref=f4e234] [cursor=pointer]:
+                - /url: admin.php?page=event-tickets-with-ticket-scanner-more-plugins
+        - listitem [ref=f4e235]:
+          - link "Serial Codes Validator" [ref=f4e236] [cursor=pointer]:
+            - /url: admin.php?page=sngmbh-serialcodes-validator
+            - generic [ref=f4e237]: 
+          - list [ref=f4e239]:
+            - listitem [ref=f4e240]:
+              - link "Serial Codes Validator" [ref=f4e241] [cursor=pointer]:
+                - /url: admin.php?page=sngmbh-serialcodes-validator
+            - listitem [ref=f4e242]:
+              - link "★ More Plugins" [ref=f4e243] [cursor=pointer]:
+                - /url: admin.php?page=sngmbh-serialcodes-validator-more-plugins
+        - listitem [ref=f4e244]:
+          - button "Collapse Main menu" [expanded] [ref=f4e245] [cursor=pointer]:
+            - generic [ref=f4e247]: Collapse Menu
+    - generic [ref=f4e248]:
+      - generic [ref=f4e249]:
+        - navigation "Toolbar":
+          - menu:
+            - group [ref=f4e250]:
+              - menuitem "About WordPress" [ref=f4e251] [cursor=pointer]
+            - group [ref=f4e254]:
+              - menuitem "Agent Test WP" [ref=f4e255] [cursor=pointer]
+            - group [ref=f4e256]:
+              - menuitem "Live" [ref=f4e257] [cursor=pointer]
+            - group [ref=f4e258]:
+              - menuitem "4 updates available" [ref=f4e259] [cursor=pointer]:
+                - generic [ref=f4e261]: "4"
+            - group [ref=f4e263]:
+              - menuitem "Ctrl+K Open command palette" [ref=f4e264] [cursor=pointer]:
+                - generic [ref=f4e266]:
+                  - text: Ctrl+K
+                  - generic [ref=f4e267]: Open command palette
+            - group [ref=f4e268]:
+              - menuitem "0 Comments in moderation" [ref=f4e269] [cursor=pointer]:
+                - generic [ref=f4e271]: "0"
+            - group [ref=f4e273]:
+              - menuitem "New" [ref=f4e274] [cursor=pointer]
+          - menu [ref=f4e277]:
+            - group [ref=f4e278]:
+              - menuitem "Howdy, agent" [ref=f4e279] [cursor=pointer]
+      - main [ref=f4e280]:
+        - generic [ref=f4e281]:
+          - generic [ref=f4e282]:
+            - link "WordPress 7.0.3" [ref=f4e283] [cursor=pointer]:
+              - /url: https://wordpress.org/documentation/wordpress-version/version-7-0-3/
+            - text: is available!
+            - link "Please update WordPress now" [ref=f4e284] [cursor=pointer]:
+              - /url: https://verwicklung.de/testing/wordpress/wp-admin/update-core.php
+              - text: Please update now
+            - text: .
+          - generic [ref=f4e285]:
+            - generic [ref=f4e286]:
+              - strong [ref=f4e287]: Appointment Desk
+              - text: NEW Appointment booking with walk-in queue, reception cockpit, and double-booking prevention. Free.
+            - link "Try it free" [ref=f4e288] [cursor=pointer]:
+              - /url: https://wordpress.org/plugins/vollstart-appointment-desk/
+            - button "Dismiss this notice." [ref=f4e289] [cursor=pointer]
+          - paragraph [ref=f4e292]:
+            - strong [ref=f4e293]: "Action Scheduler:"
+            - text: "30"
+            - link "past-due actions" [ref=f4e294] [cursor=pointer]:
+              - /url: https://verwicklung.de/testing/wordpress/wp-admin/tools.php?page=action-scheduler&status=past-due&order=asc
+            - text: found; something may be wrong.
+            - link "Read documentation »" [ref=f4e295] [cursor=pointer]:
+              - /url: https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do
+          - generic [ref=f4e296]:
+            - generic [ref=f4e297]:
+              - generic [ref=f4e298]:
+                - img "Event Tickets" [ref=f4e299]
+                - generic [ref=f4e300]:
+                  - generic [ref=f4e301]: Event Tickets with Ticket Scanner
+                  - generic [ref=f4e302]: "Version: 3.2.0 DEBUG: is active, LANG: en_US"
+              - link "Upgrade" [ref=f4e377] [cursor=pointer]:
+                - /url: https://vollstart.com/event-tickets-with-ticket-scanner/?utm_source=etwts_plugin&utm_medium=plugin_link&utm_campaign=etwts_upgrade_to_premium
+            - generic [ref=f4e378]:
+              - navigation "Event Tickets navigation" [ref=f4e380]:
+                - button "Support Info" [ref=f4e381] [cursor=pointer]
+                - button "FAQ" [ref=f4e382] [cursor=pointer]
+                - button "Ticket Scanner" [ref=f4e383] [cursor=pointer]
+                - button "Auth Token" [ref=f4e384] [cursor=pointer]
+                - button "Congresses" [ref=f4e385] [cursor=pointer]
+                - button "Options" [ref=f4e386] [cursor=pointer]
+              - generic [ref=f4e387]:
+                - generic [ref=f4e389]:
+                  - generic [ref=f4e390]: ★
+                  - generic [ref=f4e391]:
+                    - generic [ref=f4e392]: "New: Congress / Attendee Portal"
+                    - generic [ref=f4e393]:
+                      - text: Attach a private event portal to your tickets — pages with programme, downloads, links, images and videos. Ticket holders open it straight from their ticket (and from the Vollstart Wallet). Build it under the Congresses menu and assign it in the product's Event Tickets tab.
+                      - link "Learn more →" [ref=f4e394] [cursor=pointer]:
+                        - /url: https://vollstart.com/event-tickets-with-ticket-scanner/docs/event-tickets-congress-tool/
+                - button "Dismiss" [ref=f4e396] [cursor=pointer]
+              - generic [ref=f4e397]:
+                - generic [ref=f4e398]:
+                  - heading "Getting Started" [level=3] [ref=f4e399]
+                  - generic [ref=f4e400]: 1/4
+                - generic [ref=f4e404]:
+                  - generic [ref=f4e405]:
+                    - generic [ref=f4e406]: ✓
+                    - generic [ref=f4e407]:
+                      - strong [ref=f4e408]: Create a ticket list
+                      - generic [ref=f4e409]: Organize your tickets in lists for different events or purposes.
+                  - generic [ref=f4e410]:
+                    - generic [ref=f4e411]: "2"
+                    - generic [ref=f4e412]:
+                      - strong [ref=f4e413]: Assign list to a WooCommerce product
+                      - generic [ref=f4e414]: Open a product, go to the Event Ticket tab, and enable ticketing.
+                      - button "Go to products" [ref=f4e415] [cursor=pointer]
+                  - generic [ref=f4e416]:
+                    - generic [ref=f4e417]: "3"
+                    - generic [ref=f4e418]:
+                      - strong [ref=f4e419]: Process a test order
+                      - generic [ref=f4e420]: Place an order and complete it to generate tickets.
+                  - generic [ref=f4e421]:
+                    - generic [ref=f4e422]: "4"
+                    - generic [ref=f4e423]:
+                      - strong [ref=f4e424]: Scan a ticket at the entrance
+                      - generic [ref=f4e425]: Use the browser-based QR scanner to redeem tickets.
+                      - button "Open Scanner" [ref=f4e426] [cursor=pointer]
+                - generic [ref=f4e427]:
+                  - heading "Useful videos" [level=3] [ref=f4e428]
+                  - list [ref=f4e429]:
+                    - listitem [ref=f4e430]:
+                      - generic [ref=f4e431]: 
+                      - link "Setup for use case Event Organizer (Youtube)" [ref=f4e432] [cursor=pointer]:
+                        - /url: https://youtu.be/yJcHMV7oAFc
+                    - listitem [ref=f4e433]:
+                      - generic [ref=f4e434]: 
+                      - link "Setup for use case Club, Spa and Fitness clubs (Youtube)" [ref=f4e435] [cursor=pointer]:
+                        - /url: https://www.youtube.com/watch?v=TDMWI0R_HXQ
+                - generic [ref=f4e436]:
+                  - paragraph [ref=f4e437]: If you need help, please contact us via email. The information is in "Support Info" area - button above.
+                  - button "Don't show this again" [ref=f4e438] [cursor=pointer]
+              - generic [ref=f4e439]:
+                - generic [ref=f4e440]:
+                  - generic [ref=f4e441]: Organize your tickets in lists. You can assign tickets to a list.
+                  - button "Empty table" [ref=f4e443] [cursor=pointer]
+                  - generic [ref=f4e444]:
+                    - text: Max. 5 list. Unlimited with [
+                    - link "PREMIUM ONLY" [ref=f4e445] [cursor=pointer]:
+                      - /url: https://vollstart.com/event-tickets-with-ticket-scanner/?utm_source=etwts_plugin&utm_medium=plugin_link&utm_campaign=etwts_upgrade_to_premium
+                    - text: "]"
+                  - button "Add" [ref=f4e446] [cursor=pointer]
+                - generic [ref=f4e448]:
+                  - generic [ref=f4e450]:
+                    - text: Show
+                    - combobox "Show entries" [ref=f4e451] [cursor=pointer]:
+                      - option "10" [selected]
+                      - option "25"
+                      - option "50"
+                      - option "100"
+                    - text: entries
+                  - generic [ref=f4e453]:
+                    - text: "Search:"
+                    - searchbox "Search:" [ref=f4e454]
+                  - grid [ref=f4e455]:
+                    - rowgroup [ref=f4e456]:
+                      - row [ref=f4e457]:
+                        - 'columnheader "Name: activate to sort column descending" [ref=f4e458] [cursor=pointer]': Name
+                        - 'columnheader "Created: activate to sort column ascending" [ref=f4e459] [cursor=pointer]': Created
+                        - columnheader [ref=f4e460]
+                    - rowgroup [ref=f4e461]:
+                      - row [ref=f4e462]:
+                        - gridcell "Ticket list" [ref=f4e463]
+                        - gridcell "2026/08/12 07:40" [ref=f4e464]
+                        - gridcell [ref=f4e465]:
+                          - generic [ref=f4e466]:
+                            - button "Tickets" [ref=f4e467] [cursor=pointer]
+                            - button "Edit" [ref=f4e468] [cursor=pointer]
+                          - generic [ref=f4e469]:
+                            - button "Delete All Tickets" [ref=f4e470] [cursor=pointer]
+                            - button "Delete" [ref=f4e471] [cursor=pointer]
+                  - status [ref=f4e472]: Showing 1 to 1 of 1 entries
+                  - generic [ref=f4e473]:
+                    - generic [ref=f4e474]: Previous
+                    - generic [ref=f4e475]: "1"
+                    - generic [ref=f4e477]: Next
+              - heading "Event Tickets" [level=3] [ref=f4e478]
+              - generic [ref=f4e479]:
+                - generic [ref=f4e480]:
+                  - combobox [ref=f4e481] [cursor=pointer]:
+                    - option "Bulk Action" [selected]
+                    - option "Delete"
+                    - option "Remove marked as used"
+                    - option "Delete Redeem Information"
+                    - option "Generate ticket PDF"
+                    - option "Generate badge ticket"
+                    - option "Move to ticket list"
+                  - combobox [ref=f4e482] [cursor=pointer]:
+                    - option "Default search filter" [selected]
+                    - option "Filter for list id"
+                    - option "Filter for order id"
+                    - option "Filter for cvv value"
+                    - option "Filter for status (1:active, 0:inactive, 2:stolen)"
+                    - option "Filter for redeemed status (0:not redeemed yet, 1:redeemed)"
+                    - option "Filter for registered user id"
+                    - option "Filter for customer name in billing first and last name"
+                    - option "Filter for product id"
+                    - option "Filter for chosen date (enter YYYY-MM-DD)"
+                  - generic [ref=f4e483]:
+                    - button "Refresh table" [ref=f4e484] [cursor=pointer]
+                    - button "Export tickets" [ref=f4e485] [cursor=pointer]
+                  - button "Empty table" [ref=f4e487] [cursor=pointer]
+                  - generic [ref=f4e488]:
+                    - text: Max. 50 tickets. Unlimited with [
+                    - link "PREMIUM ONLY" [ref=f4e489] [cursor=pointer]:
+                      - /url: https://vollstart.com/event-tickets-with-ticket-scanner/?utm_source=etwts_plugin&utm_medium=plugin_link&utm_campaign=etwts_upgrade_to_premium
+                    - text: "]"
+                  - button "Add" [ref=f4e490] [cursor=pointer]
+                - generic [ref=f4e491]:
+                  - generic [ref=f4e493]:
+                    - text: Show
+                    - combobox "Show entries" [ref=f4e494] [cursor=pointer]:
+                      - option "10" [selected]
+                      - option "25"
+                      - option "50"
+                      - option "100"
+                    - text: entries
+                  - generic [ref=f4e496]:
+                    - text: "Search:"
+                    - searchbox "Search:" [ref=f4e497]
+                  - grid [ref=f4e498]:
+                    - rowgroup [ref=f4e499]:
+                      - row [ref=f4e500]:
+                        - columnheader [ref=f4e501]:
+                          - checkbox [ref=f4e502] [cursor=pointer]
+                        - columnheader "&nbsp;" [ref=f4e503]
+                        - 'columnheader "Ticket: activate to sort column ascending" [ref=f4e504] [cursor=pointer]': Ticket
+                        - 'columnheader "List: activate to sort column ascending" [ref=f4e505] [cursor=pointer]': List
+                        - 'columnheader "Created: activate to sort column ascending" [ref=f4e506] [cursor=pointer]': Created
+                        - 'columnheader "Redeemed: activate to sort column ascending" [ref=f4e507] [cursor=pointer]': Redeemed
+                        - 'columnheader "OrderId: activate to sort column ascending" [ref=f4e508] [cursor=pointer]': OrderId
+                        - columnheader "CVV" [ref=f4e509]
+                        - 'columnheader "Status: activate to sort column ascending" [ref=f4e510] [cursor=pointer]': Status
+                        - columnheader [ref=f4e511]
+                    - rowgroup [ref=f4e512]:
+                      - row [ref=f4e513]:
+                        - 'columnheader "Redeemed tickets: 0 (filtered) of 0 (total redeemed tickets)" [ref=f4e514]'
+                    - rowgroup [ref=f4e515]:
+                      - row [ref=f4e516]:
+                        - gridcell [ref=f4e517]:
+                          - generic [ref=f4e518]:
+                            - text: You have no tickets yet.
+                            - paragraph [ref=f4e519]: Tickets (number) can be added by two ways.
+                            - list [ref=f4e520]:
+                              - listitem [ref=f4e521]:
+                                - text: Automatically with each sale of a ticket product.Please configure a woocommerce product to be a ticket product - recommended
+                                - link "Check out the quick start video" [ref=f4e522] [cursor=pointer]:
+                                  - /url: https://vollstart.com/event-tickets-quick-start-video
+                              - listitem [ref=f4e523]: Or add ticket numbers upfront to a ticket listClick on the add button to import ticket numbers.For this activate the option wcassignmentReuseNotusedCodes
+                  - status [ref=f4e524]: Showing 0 to 0 of 0 entries
+                  - generic [ref=f4e525]:
+                    - generic [ref=f4e526]: Previous
+                    - generic [ref=f4e527]: Next
+            - generic [ref=f4e306]:
+              - generic [ref=f4e307]:
+                - generic [ref=f4e308]:
+                  - generic [ref=f4e309]:
+                    - generic [ref=f4e310]: 
+                    - text: Documentation
+                  - paragraph [ref=f4e311]:
+                    - link "Click here, to visit the documentation of this plugin." [ref=f4e312] [cursor=pointer]:
+                      - /url: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
+                  - paragraph [ref=f4e313]:
+                    - text: You can use this plugin to sell tickets and even redeem them. Check out the documentation for
+                    - link "more details here" [ref=f4e314] [cursor=pointer]:
+                      - /url: https://vollstart.com/event-tickets-with-ticket-scanner/docs/#ticket
+                    - text: .
+                - generic [ref=f4e315]:
+                  - generic [ref=f4e316]:
+                    - generic [ref=f4e317]: 
+                    - text: Plugin Rating
+                  - paragraph [ref=f4e318]:
+                    - text: If you like our plugin, then please give us a
+                    - link "5-Star Rating" [ref=f4e319] [cursor=pointer]:
+                      - /url: https://wordpress.org/support/plugin/event-tickets-with-ticket-scanner/reviews?rate=5#new-post
+                    - text: .
+                - generic [ref=f4e320]:
+                  - generic [ref=f4e321]:
+                    - generic [ref=f4e322]: 
+                    - text: Premium Homepage
+                  - paragraph [ref=f4e323]:
+                    - text: You can find more details about the
+                    - link "premium version here" [ref=f4e324] [cursor=pointer]:
+                      - /url: https://vollstart.com/event-tickets-with-ticket-scanner/
+                    - text: .
+                - generic [ref=f4e325]:
+                  - generic [ref=f4e326]:
+                    - generic [ref=f4e327]: 
+                    - text: Maintenance & Support
+                  - paragraph [ref=f4e328]: Version 3.2.0, last updated August 10, 2026.
+                  - paragraph [ref=f4e329]:
+                    - link "See what changed in each release" [ref=f4e330] [cursor=pointer]:
+                      - /url: https://wordpress.org/plugins/event-tickets-with-ticket-scanner/#developers
+                  - paragraph [ref=f4e331]:
+                    - link "Ask a question" [ref=f4e332] [cursor=pointer]:
+                      - /url: https://vollstart.com/support/
+              - generic [ref=f4e333]:
+                - generic [ref=f4e334]:
+                  - generic [ref=f4e335]: 
+                  - text: Shortcodes
+                - heading "Shortcode to display the event calendar form within a page" [level=3] [ref=f4e336]
+                - generic [ref=f4e337]: "[sasoEventTicketsValidator_eventsview]"
+                - paragraph [ref=f4e338]: "The event calendar form will be displayed. You can add the following parameters to change the output:"
+                - list [ref=f4e339]:
+                  - listitem [ref=f4e340]: "months_to_show - Values can be a number higher than 0. Default: 3"
+                - paragraph [ref=f4e341]:
+                  - text: "CSS file:"
+                  - link "calendar.css" [ref=f4e342] [cursor=pointer]:
+                    - /url: https://verwicklung.de/testing/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner/css/calendar.css
+                - heading "Shortcode to display the assigned tickets and codes of an user within a page" [level=3] [ref=f4e343]
+                - generic [ref=f4e344]: "[sasoEventTicketsValidator_code]"
+                - paragraph [ref=f4e345]: Displays tickets assigned to the current logged-in user (default) or tickets from a specific order.
+                - list [ref=f4e346]:
+                  - listitem [ref=f4e347]:
+                    - generic [ref=f4e348]: order_id
+                    - text: "- Show tickets from a specific order instead of user tickets. Security: User must own the order or have valid order key in URL. Example: [sasoEventTicketsValidator_code order_id=\"123\"]"
+                  - listitem [ref=f4e349]:
+                    - generic [ref=f4e350]: format
+                    - text: "- Output format. Values: json"
+                  - listitem [ref=f4e351]:
+                    - generic [ref=f4e352]: display
+                    - text: "- Fields to show (comma-separated). Values: codes, validation, user, used, confirmedCount, woocommerce, wc_rp, wc_ticket"
+                  - listitem [ref=f4e353]:
+                    - generic [ref=f4e354]: download_all_pdf
+                    - text: "- Show download button for all tickets as one PDF. Values: true/false"
+                - paragraph [ref=f4e355]: "Example with JSON output: [sasoEventTicketsValidator_code format=\"json\" display=\"code,wc_ticket\"]"
+                - heading "Shortcode to display the ticket scanner within a page" [level=3] [ref=f4e356]
+                - text: Useful if you cannot open the ticket scanner due to security issues.
+                - generic [ref=f4e357]: "[sasoEventTicketsValidator_ticket_scanner]"
+                - heading "Shortcode to display ticket detail view within a page" [level=3] [ref=f4e358]
+                - text: Useful if the /ticket/ URL path does not work on your server.
+                - generic [ref=f4e359]: "[sasoEventTicketsValidator_ticket_detail]"
+                - paragraph [ref=f4e360]: "Usage: Add the shortcode to a page and access it with ?ticket=YOUR-TICKET-CODE in the URL. Example: yoursite.com/ticket-page/?ticket=ABC-123-XYZ Or use the code attribute: [sasoEventTicketsValidator_ticket_detail code=\"ABC-123-XYZ\"]"
+                - heading "PHP Filters" [level=3] [ref=f4e361]
+                - paragraph [ref=f4e362]:
+                  - text: You can use PHP code to register your filter functions for the validation check.
+                  - link "Click here for more help about the functions" [ref=f4e363] [cursor=pointer]:
+                    - /url: https://vollstart.com/event-tickets-with-ticket-scanner/docs/#filters
+                - list [ref=f4e364]:
+                  - listitem [ref=f4e365]: add_filter('saso_eventtickets_beforeCheckCodePre', 'myfunc', 20, 1)
+                  - listitem [ref=f4e366]: add_filter('saso_eventtickets_beforeCheckCode', 'myfunc', 20, 1)
+                  - listitem [ref=f4e367]: add_filter('saso_eventtickets_afterCheckCodePre', 'myfunc', 20, 1)
+                  - listitem [ref=f4e368]: add_filter('saso_eventtickets_afterCheckCode', 'myfunc', 20, 1)
+                - paragraph [ref=f4e369]:
+                  - text: More BETA filters and actions hooks can be found
+                  - link "here (NOT STABLE, be aware that they might be changed in the future)" [ref=f4e370] [cursor=pointer]:
+                    - /url: https://vollstart.com/event-tickets-with-ticket-scanner/docs/ticket-plugin-api/
+                  - text: .
+              - generic [ref=f4e371]:
+                - link "VOLLSTART" [ref=f4e372] [cursor=pointer]:
+                  - /url: https://vollstart.com
+                - text: "· More plugins:"
+                - link "Serial Code Validator" [ref=f4e373] [cursor=pointer]:
+                  - /url: https://wordpress.org/plugins/serial-codes-generator-and-validator/
+  - dialog "Warning" [ref=f4e528]:
+    - generic [ref=f4e529]:
+      - text: Warning
+      - button "× Close" [ref=f4e530] [cursor=pointer]:
+        - generic [ref=f4e531]: ×
+        - text: Close
+    - generic [ref=f4e532]: In order to make the ticket detail view and the ticket scanner work, you need to set a permalink structure within the settings.Please go to the settings->permalinks and choose a permalink structure, that is not 'plain'.
+    - button "Ok" [ref=f4e535] [cursor=pointer]
+  - dialog "Premium License Key" [ref=f4e545]:
+    - generic [ref=f4e546]: Premium License Key ×
+    - generic [ref=f4e547]:
+      - paragraph [ref=f4e548]: Thank you for using the Premium version!
+      - paragraph [ref=f4e549]: Please enter your license key to activate updates and premium features.
+      - textbox "XXXX-XXXX-XXXX-XXXX" [active] [ref=f4e550]
+    - generic [ref=f4e552]:
+      - button "Activate" [ref=f4e553] [cursor=pointer]
+      - button "Later" [ref=f4e554] [cursor=pointer]

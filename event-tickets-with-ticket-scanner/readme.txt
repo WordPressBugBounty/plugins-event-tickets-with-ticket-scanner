@@ -3,24 +3,24 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.5
+Stable tag: 3.1.6
 Tested up to: 7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Sell event tickets with WooCommerce. Design seating plans, generate PDF tickets with QR codes, and scan them at the door. No per-ticket fees.
+Sell tickets with WooCommerce: seating plans, PDF tickets with QR codes, door scanner. No per-ticket service fees; free version up to 50 tickets.
 
 == Description ==
 
-**Stop paying per-ticket fees. Own your entire ticketing workflow inside WordPress.**
+**Run your entire ticketing workflow inside WordPress.** No platform service fees, no per-ticket commissions — you only pay your payment processor (Stripe, PayPal, etc.) like any WooCommerce product.
 
 Event Tickets with Ticket Scanner turns any WooCommerce product into a scannable event ticket — complete with QR code, downloadable PDF, and a built-in mobile ticket scanner for your team at the door.
 
-Unlike platforms like Eventbrite or Ticketmaster, you keep 100% of your revenue. Unlike other WordPress plugins, you get a **visual seating plan designer** and a **ticket PDF designer** included — not as expensive add-ons.
+Unlike ticketing platforms that charge service fees on paid tickets, this plugin adds no per-ticket commission — you keep your ticket revenue (minus your payment processor's standard fee). Unlike other WordPress plugins, you get a **visual seating plan designer** and a **ticket PDF designer** included — not as expensive add-ons.
 
 https://youtu.be/uWSdKdOyn70
 
-**Used by 1,000+ event organizers worldwide** — from small community events to large concert venues. Rated ⭐ 4.9/5 on WordPress.org.
+**Active on 1,000+ WordPress sites** — from small community events to large concert venues.
 
 = Who is this for? =
 
@@ -28,7 +28,7 @@ https://youtu.be/uWSdKdOyn70
 * **Theaters & venues** — design your seating layout with drag & drop, let customers pick their seats
 * **Sports events & arenas** — handle high volumes with offline fallback and team scanner access
 * **Clubs, spas, gyms & theme parks** — sell multi-entry passes, family tickets, or memberships with expiration
-* **Community events & fundraisers** — get started in minutes with the free version
+* **Community events & fundraisers** — get started in minutes with the free version (up to 50 tickets)
 
 = How it works — 3 steps =
 
@@ -120,12 +120,12 @@ Build it under the Congresses menu, assign it in the product's Event Tickets tab
 
 = Free vs. Premium =
 
-The free version covers everything you need to start selling tickets:
+The free version covers everything you need to start selling tickets — ideal for small events up to **50 tickets**:
 
-* ✅ Ticket generation with QR codes
+* ✅ Ticket generation with QR codes (up to 50 tickets, 5 ticket lists)
 * ✅ PDF ticket download (via link in email)
 * ✅ Built-in ticket scanner
-* ✅ Interactive seating plan designer
+* ✅ Interactive seating plan designer (1 plan, up to 20 seats)
 * ✅ Seat selection at checkout
 * ✅ Multi-entry and family tickets
 * ✅ Day chooser for date-based events
@@ -133,7 +133,7 @@ The free version covers everything you need to start selling tickets:
 * ✅ Purchase allowance codes (presale/access codes, or require a ticket from an earlier event)
 * ✅ Webhooks for third-party integrations
 
-**Premium adds professional features for larger events:**
+**Premium adds professional features for larger events and removes all ticket limits:**
 
 * 🔓 PDF ticket as email attachment (not just a link)
 * 🔓 Team scanner access via Auth Tokens
@@ -141,7 +141,7 @@ The free version covers everything you need to start selling tickets:
 * 🔓 Custom flyers and multi-page PDFs
 * 🔓 CVV security check on tickets
 * 🔓 Brute-force IP blocking
-* 🔓 No ticket limits
+* 🔓 Unlimited tickets (removes the 50-ticket free limit)
 * 🔓 Advanced shortcodes for ticket display and validation
 
 [Get Premium](https://vollstart.com/event-tickets-with-ticket-scanner/)
@@ -210,7 +210,7 @@ The ticket is automatically deactivated, the assigned seat is released, and the 
 Yes. WPML is supported for multilingual ticket sales. The plugin also ships translations for German, Spanish, French, Italian, Hungarian, Japanese, Dutch, Portuguese, and Chinese.
 
 = What if I exceed the free ticket limit? =
-If you reach the limit, the plugin will display a message asking the customer to contact support. Your sales are never interrupted. Premium has no ticket limits.
+The free version supports up to 50 tickets. If you reach the limit, the plugin shows a notice in the admin area (your customers are never blocked from purchasing). Premium removes the limit entirely.
 
 = Can I use my own QR code or barcode scanner hardware? =
 Yes. The built-in scanner page accepts input from hardware barcode scanners in addition to camera-based QR scanning.
@@ -246,6 +246,54 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.6 - 2026-08-13 =
+* Tweak: The admin area was redesigned. The top navigation is now a segmented control, the footer cards sit in a four-column grid, ticket status pills use semantic colors, and the primary action buttons share one style across the whole settings page.
+* Tweak: The support footer now has a "Rate this Plugin" card linking to the WordPress.org review page, so the four footer cards fill one row.
+* Fix: The "Dismiss" button of the version-notice box sat outside the card; it is now inside the card where it belongs.
+* Fix: The Dashicons inside primary (lila) buttons inherited the WordPress default blue and clashed with the background; they are now white.
+* Tweak: The ticket scanner and the ticket detail page now feel like one product. A design system was added - CSS custom properties for colors, spacing and radius, a BEM class structure on top of the existing IDs - and the parts that grew ugly over the years were cleaned up (hard-coded black border on the ticket box, the &lt;center&gt; tag on the scanner, the orphaned button_ok.png / button_cancel.png images). Every existing ID and class is still there, so a custom CSS file you wrote for an earlier release keeps working.
+* Tweak: On the scanner page the ticket information no longer appears inline after a scan - the event name, date and seat only filled the space between the reader and the buttons, and on a phone the layout jumped around while the answer was on the way. While the scanner is waiting for the answer, the area shows a loading hint; as soon as the ticket is retrieved, a compact summary card appears (heading, title, date) with a color that matches the ticket state - green for valid, orange for expired or not yet redeemable, red for already redeemed. The full details open behind an "Show ticket info" button as a full-screen overlay with a close button, so the scanner display stays clean.
+* Tweak: On the scanner the option row was moved up next to the buttons, so the "Scan and Redeem immediately" checkbox and its peers are visible right where the action buttons are. A new "Use classic layout" checkbox sits next to the existing "Use old ticket scanner library" one and toggles the scanner layout via a URL parameter - the same pattern that toggle uses.
+* Tweak: The standalone ticket scanner is no longer preceded by a "Ticket Scanner" headline - it looks like a scanner device now, not like a page. On the public ticket view the wrapper no longer carries a hard border; the content sits directly on the page, with only the page's own padding for air. Scanner buttons are now 48 minimum height (56 for primary actions), so the person at the door in January gloves does not have to fight the touch target.
+* Fix: The spinner shown while the scanner waits for the server was invisible on the modern layout - the CSS class that animated it lived only inside the legacy HTML page. The animation is now defined in the design system stylesheet, so the spinner shows wherever it is used.
+* Fix: Three button styles in the scanner used three different looks - one was a bare HTML button, one used a class the stylesheet had never heard of, and one toggled between gray and green via inline JavaScript. They are now all built on the same BEM class, and the disabled state has a real visual treatment instead of just disappearing.
+* Fix: The "Badge" and "PDF" buttons on the scanner did nothing to indicate the download was on the way. They are now disabled while the file is being fetched and show a small spinner inside the button label, restoring the original label as soon as the download is delivered (or fails).
+* Tweak: The "AI Support Bot" card is gone from the support view. It answered from a knowledge base we stopped keeping up to date, and an answer about last year's plugin is worse than none. Documentation, release notes and the support address are where they were.
+* New: A ticket can be passed along from the ticket page. On a phone the usual share sheet opens - WhatsApp, Telegram, Signal, mail, whatever is installed - on a desktop browser WhatsApp and Telegram are offered as links. That is how the second ticket reaches the friend who is coming along, and how the ticket gets from the laptop to the phone. Your shop sends nothing itself; the customer does. The page says out loud that whoever receives the link can show the QR code. Can be switched off ("Let customers send their ticket on"), and it is shown in every kind of ticket sale, including vouchers.
+* Tweak: The last pieces of premium licensing left this plugin. The "Check License Server" button and the update dialog that appeared after entering a license key are gone - both reached out to our server from the free plugin, which is not what a plugin on WordPress.org should do. Updating premium is the premium plugin's own job ("Check license & update" next to the license key, version 1.7.3 and newer). What stays here is the display: the license status and a button to refresh it, which asks the premium plugin to do the checking.
+* New: A message you can set for events where tickets are still sold at the door - it is added to the "sales closed" text when the premium version marks a product that way, so a buyer who arrives too late for the online sale is not left with a dead end.
+* Fix: Tickets without a WooCommerce order could not be redeemed by typing their number into the scanner - the very way a printed card is meant to be checked at the door. It failed with "#9302" unless a second, separate option was switched on as well. Allowing tickets without an order is now enough.
+* Tweak: The scanner said "Ticket is NOT paid ()." for a card that was never sold in the shop - a defect message for the case the feature is made for, with an empty bracket on top. It now says the ticket was handed out directly.
+* Tweak: In the product's Event Tickets tab and in the ticket list, option keys no longer appear in customer-facing text. The settings page hides them in the entry view as well and shows them under "All options", where support answers need them.
+* Tweak: The "Getting Started" checklist now reads the real state of your installation instead of guessing from counters. Until now it ticked off "assign a list to a product" as soon as any ticket existed anywhere, and it congratulated you for the ticket list that the plugin creates by itself. It also no longer counts a fixed four steps: what needs doing is what is listed.
+* Tweak: In the product's Event Tickets tab, the ticket switch and the list now come first and the note about the free ticket limit follows below - it used to be the first thing in the tab, in red, before the setting it belongs to.
+* New: After activation the plugin says where to go next, once, with a button - instead of leaving you to find the menu entry at the bottom of the sidebar. Installations that already have tickets are not bothered with it.
+* New: The setup wizard now ends by showing what it actually switched on for you ("redemption locked until the event starts", "scan redeems immediately", …). The defaults fit most shops - you just could not see them. It also stops claiming you are all set while listing things you still have to do: what is left is one product, and the button goes straight there.
+* Tweak: The warning about "Plain" permalinks was a dialog on every single page load, with no way to act on it. It is now the first step of the setup check, with a button that opens the permalink settings - and it is the one thing that still shows up even after you dismissed the setup check, because without it the ticket page and the scanner cannot be reached.
+* Tweak: The setup wizard now remembers which kind of sale you picked. Until now the settings page asked the same question a second time, minutes after the wizard had already asked it.
+* Fix: In dialogs, the recommended button is highlighted again instead of whichever button happens to sit on the left. In the setup wizard that meant "Skip" and "Back" looked like the main action while "Start Setup" and "Apply & Finish" looked secondary.
+* Fix: A tip in the setup wizard showed "&#9889;" as plain text instead of the symbol, and the product tab said "Make sure your are not selling" instead of "you are".
+* Fix: The free version asked for a premium license key. On a plain installation without the premium plugin, a dialog appeared saying "Thank you for using the Premium version!" and asked for a key that such an installation never had — a comparison error made "no premium version" look like "premium version installed, key missing". The dialog now only appears when the premium plugin is really installed.
+* New: The plugin page now shows when the plugin was last updated, next to the version, with a link to the changelog of every release. Whether a plugin is still being looked after is a fair question, and the answer belongs where you are, not on a sales page.
+* New: A setting that belongs to a different kind of sale but was changed anyway is now shown in the filtered view instead of being hidden - highlighted, with a note that it can make your shop behave unexpectedly and a "reset to default" button right next to it. Those are exactly the leftovers that cause the "it does something I never asked for" cases.
+* New: "Restore the defaults of this view" resets only what is currently in front of you, and lists beforehand which settings would change. The existing button that resets all options is untouched.
+* New: Existing installations are asked once which kind of ticket sale they run. Whoever answers gets the filtered view, whoever declines keeps all options and is not asked again.
+* New: The settings page can now show only the settings that belong to your kind of ticket sale. Pick your event type once - event tickets, day passes, memberships or vouchers - and the page starts with the handful of settings that decide how your shop behaves (14 instead of 306). From there it is one click to everything that belongs to your event type, and one more to all options; nothing is ever hidden for good. The search always looks through every setting and tells you when a match sits outside your event type.
+* New: The settings page has a search field. Type two letters and only the matching settings stay on the page - it searches the name, the description and the option key, so you can also paste the key from a support answer or from the documentation ("wcTicketHideTicketAfterEventEnd"). The number of matches is shown, the search term is highlighted, "Esc" clears the field and the "/" key jumps into it. An empty field brings the page back exactly as it was.
+* New: Once the setup check has nothing left to report, you can dismiss it for good with the small x. From then on it is not only hidden but no longer worked out either - a finished installation pays nothing for a check it does not need. Clear "setupStatusDismissed" in the settings export to bring it back.
+* New: The settings page now opens with a short setup check that reads your actual installation instead of showing you more options: is a product connected to a ticket list, and does your door team have access to the ticket scanner. Every open step has a button that takes you straight to the right place; once both are done the check simply confirms that you can sell and check tickets.
+* New: Tickets can now work entirely without a WooCommerce order, for printed cards you hand out yourself. Create the ticket numbers in a ticket list as before, switch on "Allow tickets without a WooCommerce order" — either globally in the WooCommerce settings or for a single ticket list — and the scanner accepts them, shows them and redeems them. Both switches are off by default. Note what you give up for those tickets: the plugin can no longer verify them against a paid order, only that the number exists, is active, has not been redeemed yet and belongs to its list. Tickets sold through WooCommerce are untouched and keep the full check.
+* Tweak: This plugin no longer contacts the license server of the premium version. That check now lives in the premium plugin itself, where it belongs — this plugin only stores the answer and uses it to switch premium features on or off. If you use the premium version, update it to 1.8.0 or newer; until you do, your premium features stay switched on and the plugin asks you to update instead of expiring them.
+* New: Scanner auth tokens can now be restricted to ticket lists, not only to products ("Bound to ticket list(s)" when editing a token, comma separated list ids, empty means all). A door team then only redeems the lists it is responsible for — for a venue with its own ticket list, one token per venue. This is also the only restriction that can apply to tickets without an order, because those have no product to bind a token to.
+* New: A ticket list can carry its own event window ("From" / "Until" with date and time). It applies to tickets without an order, which have no product to take event times from, and is governed by the same scanner options as before — no redemption before the start, none after the end, or none after the start. Empty means no time limit.
+* New: Seat order can now be arranged by hand. A "Seat Order" button above the seat list of a simple (dropdown) seating plan opens a drag-and-drop list; the order you save is the order buyers see in the seat dropdown. Until now the order was fixed to the sequence in which the seats were created.
+* Tweak: The action buttons of the seating plan list no longer wrap onto a second line — the column is wider and kept on one line.
+* Fix: The "Go to Seating Plans" and "Create one first" links in the product panel, and the admin link passed to the frontend seat selector, pointed to a non-existent admin page (`?page=sasoEventTickets`). Following them produced "Sorry, you are not allowed to access this page." The links now use the correct page slug so the seating tab opens as expected.
+* Tweak: Plugin description and FAQ now clearly state the 50-ticket free-version limit and the exact free-tier caps (5 ticket lists, 1 seating plan with 20 seats, 3 scanner auth tokens).
+* Tweak: Removed unverified social-proof claims ("4.9/5" rating, "1,000+ event organizers") and replaced with the verifiable WordPress.org metric ("Active on 1,000+ WordPress sites").
+* Tweak: Removed named-competitor comparison (Eventbrite, Ticketmaster) from the plugin description.
+* Tweak: "No per-ticket fees" clarified to "No per-ticket service fees" with payment-processor qualifier.
 
 = 3.1.5 - 2026-08-10 =
 * New: Online sales can now be stopped a set number of hours before the event starts ("Stop online sales before the event starts" in the WooCommerce settings, off by default; when switched on it stops sales two hours before the event unless you change the number). Useful when you also sell at the box office and want the online shop to close first. Products without an event date are never affected; for day-chooser products the date the customer picked counts. Buyers are told when they add the product to the cart, and a cart that was filled before the cutoff is blocked at checkout. The message is configurable.

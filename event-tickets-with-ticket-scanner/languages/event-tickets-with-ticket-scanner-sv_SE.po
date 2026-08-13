@@ -992,8 +992,8 @@ msgstr "Bekräftat antal"
 
 #: ticket_scanner.js:1012
 #, javascript-format
-msgid "Confirmed status validation check counter: <b>%s</b>"
-msgstr "Räknare för bekräftad statusvalidering: <b>%s</b>"
+msgid "Confirmed: <b>%s</b>"
+msgstr "Bekräftat: <b>%s</b>"
 
 #: backend.js:1139
 msgid "Consecutive failures"

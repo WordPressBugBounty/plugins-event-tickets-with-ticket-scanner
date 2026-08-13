@@ -360,6 +360,9 @@ class sasoEventtickets_Seating {
 				case "deleteSeat":
 					$ret = $this->handleDeleteSeat($data);
 					break;
+				case "reorderSeats":
+					$ret = $this->handleReorderSeats($data);
+					break;
 
 				// Export / Import
 				case "exportSeatsCSV":
@@ -556,6 +559,42 @@ class sasoEventtickets_Seating {
 			'created_count' => count($createdIds),
 			'seat_ids' => $createdIds,
 			'message' => sprintf(__('%d seats created successfully', 'event-tickets-with-ticket-scanner'), count($createdIds))
+		];
+	}
+
+	/**
+	 * Persist a custom seat order for a plan
+	 *
+	 * Accepts: {plan_id: 1, ordered_ids: [3, 1, 2]} — ordered_ids may also be a JSON string
+	 *
+	 * @param array $data Request data
+	 * @return array Number of reordered seats
+	 * @throws Exception On failure
+	 */
+	public function handleReorderSeats(array $data): array {
+		$planId = (int) ($data['plan_id'] ?? 0);
+		if ($planId <= 0) {
+			throw new Exception('#8595 missing plan_id');
+		}
+
+		$orderedIds = $data['ordered_ids'] ?? [];
+		if (is_string($orderedIds)) {
+			$orderedIds = json_decode(wp_unslash($orderedIds), true);
+		}
+
+		if (!is_array($orderedIds)) {
+			throw new Exception('#8596 ordered_ids must be an array of seat IDs');
+		}
+
+		$reordered = $this->getSeatManager()->reorder($planId, $orderedIds);
+
+		return [
+			'reordered' => $reordered,
+			'message' => sprintf(
+				/* translators: %d: number of seats */
+				__('Order saved for %d seats', 'event-tickets-with-ticket-scanner'),
+				$reordered
+			)
 		];
 	}
 

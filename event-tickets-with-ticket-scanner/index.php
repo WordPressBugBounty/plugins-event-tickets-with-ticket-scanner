@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.1.5
+ * Version: 3.1.6
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.1.5');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.1.6');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -570,6 +570,7 @@ class sasoEventtickets {
 		add_action( 'admin_notices', [$this, 'showFormatWarning'] );
 		add_action( 'admin_notices', [$this, 'showPhpVersionWarning'] );
 		add_action( 'admin_notices', [$this, 'showOptionsMigrationNotice'] );
+		add_action( 'admin_notices', [$this, 'showWelcomeNotice'] );
 		add_action( 'wp_ajax_saso_et_dismiss_fomo', [$this, 'ajaxDismissFomo'] );
 
 		if (basename($_SERVER['SCRIPT_NAME'] ?? '') == "admin-ajax.php") {
@@ -702,6 +703,9 @@ class sasoEventtickets {
 		// Vollstart Wallet: "Add to Wallet" button on ticket detail page
 		add_action($this->_do_action_prefix . 'ticket_outputTicketInfo_after', [$this, 'wallet_render_ticket_button'], 10, 2);
 
+		// "Send this ticket on" — the customer forwards it, the shop sends nothing
+		add_action($this->_do_action_prefix . 'ticket_outputTicketInfo_after', [$this, 'share_render_ticket_button'], 12, 2);
+
 		// Vollstart Wallet: link in order emails
 		add_action($this->_do_action_prefix . 'woocommerce-hooks_woocommerce_email_order_meta', [$this, 'wallet_render_email_link'], 10, 4);
 
@@ -725,6 +729,100 @@ class sasoEventtickets {
 		echo esc_html__('Add to Vollstart Wallet', 'event-tickets-with-ticket-scanner');
 		echo '</a>';
 		echo '</p>';
+	}
+
+	/**
+	 * Render the "send this ticket on" buttons on the ticket detail page.
+	 *
+	 * Delivering a ticket by messenger is not something a shop can do on its own:
+	 * WhatsApp wants a verified business and an approved template, Telegram bots may
+	 * only answer someone who wrote to them first. What works without any of that is
+	 * the customer passing the ticket along himself — to his phone, or to the person
+	 * coming with him. The links do exactly that and nothing else.
+	 *
+	 * @param array $codeObj      The ticket row
+	 * @param bool  $forPDFOutput True while rendering the PDF - no buttons there
+	 * @return void
+	 */
+	public function share_render_ticket_button(array $codeObj, bool $forPDFOutput): void {
+		if ($forPDFOutput) return;
+		if (!$this->getOptions()->isOptionCheckboxActive('ticketShareEnable')) return;
+
+		$codeObj = $this->getCore()->setMetaObj($codeObj);
+		$metaObj = $codeObj['metaObj'];
+		if (intval($metaObj['wc_ticket']['is_ticket'] ?? 0) !== 1) return;
+
+		$url = (string) ($metaObj['wc_ticket']['_url'] ?? '');
+		if (empty($url)) return;
+
+		$shopName = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
+		/* translators: %s: name of the shop */
+		$text = sprintf(__('Ticket for %s', 'event-tickets-with-ticket-scanner'), $shopName);
+
+		$whatsapp = 'https://wa.me/?text=' . rawurlencode($text . ' ' . $url);
+		$telegram = 'https://t.me/share/url?url=' . rawurlencode($url) . '&text=' . rawurlencode($text);
+		$label    = __('Send to phone', 'event-tickets-with-ticket-scanner');
+		$hint     = __('Only send it to the person who is coming — whoever has the link can show the QR code.', 'event-tickets-with-ticket-scanner');
+
+		echo '<div class="saso-et-share" style="text-align:center;margin-top:10px;"';
+		echo ' data-share-url="' . esc_attr($url) . '"';
+		echo ' data-share-text="' . esc_attr($text) . '"';
+		echo ' data-share-label="' . esc_attr($label) . '">';
+		echo '<a class="button saso-et-share-link" href="' . esc_url($whatsapp) . '" target="_blank" rel="noopener">WhatsApp</a> ';
+		echo '<a class="button saso-et-share-link" href="' . esc_url($telegram) . '" target="_blank" rel="noopener">Telegram</a>';
+		echo '<br><small style="font-size:12px;opacity:0.8;">' . esc_html($hint) . '</small>';
+		echo '</div>';
+
+		$this->share_render_native_share_script();
+	}
+
+	/**
+	 * Upgrade the share links to the phone's own share sheet where there is one.
+	 *
+	 * Printed once per page. Without JavaScript the two links stay and still work,
+	 * which is why they are in the markup and not built here.
+	 *
+	 * @return void
+	 */
+	private function share_render_native_share_script(): void {
+		static $printed = false;
+		if ($printed) return;
+		$printed = true;
+		?>
+<script>
+(function(){
+	function upgrade() {
+		if (!navigator.share) return;
+		var boxes = document.querySelectorAll('.saso-et-share[data-share-url]');
+		for (var i = 0; i < boxes.length; i++) {
+			(function(box){
+				if (box.getAttribute('data-share-ready')) return;
+				box.setAttribute('data-share-ready', '1');
+				var links = box.querySelectorAll('.saso-et-share-link');
+				for (var l = 0; l < links.length; l++) links[l].style.display = 'none';
+				var btn = document.createElement('button');
+				btn.type = 'button';
+				btn.className = 'button';
+				btn.textContent = box.getAttribute('data-share-label');
+				btn.addEventListener('click', function(){
+					navigator.share({
+						title: box.getAttribute('data-share-text'),
+						text: box.getAttribute('data-share-text'),
+						url: box.getAttribute('data-share-url')
+					}).catch(function(){ /* the visitor closed the sheet */ });
+				});
+				box.insertBefore(btn, box.firstChild);
+			})(boxes[i]);
+		}
+	}
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', upgrade);
+	} else {
+		upgrade();
+	}
+})();
+</script>
+		<?php
 	}
 
 	/**
@@ -992,8 +1090,49 @@ class sasoEventtickets {
 		}
 		$this->getAdmin()->generateFirstCodeList();
 		$this->cronjob_daily_activate();
+		$this->markWelcomeNoticePending();
 		do_action( $this->_do_action_prefix.'activated' );
 		do_action( $this->_do_action_prefix.'main_plugin_activated' );
+	}
+
+	/**
+	 * Merkt vor, dass beim naechsten Admin-Aufruf der Willkommens-Hinweis faellig
+	 * ist. plugin_activated() laeuft auch bei jedem Versionswechsel — ob der
+	 * Hinweis wirklich erscheint, entscheidet showWelcomeNotice() am Zustand.
+	 */
+	public function markWelcomeNoticePending(): void {
+		update_option('saso_eventtickets_welcome_notice', '1', false);
+	}
+
+	/**
+	 * Nach der Aktivierung stand da "Plugin activated." und sonst nichts — der
+	 * Menuepunkt liegt weit unten in der Seitenleiste, und wer das Plugin gerade
+	 * installiert hat, sucht ihn oben. Ein Hinweis mit Knopf, genau einmal.
+	 *
+	 * Nicht gezeigt wird er, wenn schon Tickets existieren: eine laufende
+	 * Installation, die nur ein Update bekommen hat, braucht keine
+	 * Einsteiger-Ansprache.
+	 */
+	public function showWelcomeNotice(): void {
+		if (get_option('saso_eventtickets_welcome_notice', '') !== '1') return;
+		if (!current_user_can('manage_options')) return;
+
+		delete_option('saso_eventtickets_welcome_notice');
+
+		if ((int) $this->getDB()->_db_getRecordCountOfTable('codes') > 0) return;
+
+		$url = admin_url('admin.php?page=event-tickets-with-ticket-scanner');
+		?>
+		<div class="notice notice-info is-dismissible">
+			<p style="font-size:14px;margin:12px 0 6px;">
+				<b><?php esc_html_e('Event Tickets is active.', 'event-tickets-with-ticket-scanner'); ?></b>
+				<?php esc_html_e('Two steps and your shop can sell and check tickets: connect a product with a ticket list, and give your door team access to the scanner.', 'event-tickets-with-ticket-scanner'); ?>
+			</p>
+			<p style="margin-bottom:12px;">
+				<a href="<?php echo esc_url($url); ?>" class="button button-primary"><?php esc_html_e('Set up now', 'event-tickets-with-ticket-scanner'); ?></a>
+			</p>
+		</div>
+		<?php
 	}
 	public function plugins_loaded() {
 		if (SASO_EVENTTICKETS_PLUGIN_VERSION !== get_option('SASO_EVENTTICKETS_PLUGIN_VERSION', '')) $this->plugin_activated(); // vermutlich wurde die aktivierung übersprungen, bei änderungen direkt an den files
@@ -1035,8 +1174,11 @@ class sasoEventtickets {
 		wp_enqueue_media();
 
 		$js_url = "jquery.qrcode.min.js?_v=".$this->_js_version;
-		wp_register_script('ajax_script2', plugins_url( "3rd/".$js_url,__FILE__ ), array('jquery', 'jquery-ui-dialog'));
-		wp_enqueue_script('ajax_script2');
+		// Eigener Handle-Name: "ajax_script2" benutzt auch das Serial-Codes-Plugin
+		// fuer seine eigene Kopie derselben Bibliothek. WordPress laedt bei
+		// gleichem Handle nur eine davon - welche, entscheidet die Ladereihenfolge.
+		wp_register_script('saso_eventtickets_qrcode', plugins_url( "3rd/".$js_url,__FILE__ ), array('jquery', 'jquery-ui-dialog'));
+		wp_enqueue_script('saso_eventtickets_qrcode');
 
 		wp_enqueue_media(); // um die js wp.media lib zu laden
 
@@ -1059,10 +1201,14 @@ class sasoEventtickets {
 			'_action' => $this->_prefix.'_executeAdminSettings',
 			'_max'=>$this->getBase()->getMaxValues(),
 			'_isPremium'=>$this->isPremium(),
+			// Known before the first request, so a dismissed setup hint does not
+			// even get a placeholder reserved for it.
+			'_setupStatusDismissed'=>$this->getAdmin()->isSetupStatusDismissed(),
 			'_isUserLoggedin'=>is_user_logged_in(),
 			'_premJS'=>$this->isPremium() && method_exists($this->getPremiumFunctions(), "getJSBackendFile") ? $this->getPremiumFunctions()->getJSBackendFile() : '',
 			'url'   => admin_url( 'admin-ajax.php' ),
 			'ticket_url' => $this->getCore()->getTicketURLPath(),
+			'_products_url' => admin_url('edit.php?post_type=product'),
 			'nonce' => wp_create_nonce( $this->_js_nonce ),
 			'ajaxActionPrefix' => $this->_prefix,
 			'divPrefix' => $this->_prefix,
@@ -1150,6 +1296,31 @@ class sasoEventtickets {
 						</div>
 						<p><?php esc_html_e('You can find more details about the', 'event-tickets-with-ticket-scanner'); ?> <a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/"><?php esc_html_e('premium version here', 'event-tickets-with-ticket-scanner'); ?></a>.</p>
 					</div>
+					<?php $trust = $this->getBase()->getPluginTrustInfo(); ?>
+					<div class="et-card et-footer-card">
+						<div class="et-card-header">
+							<span class="dashicons dashicons-update" style="color:#16a34a;margin-right:6px;"></span>
+							<?php esc_html_e('Maintenance &amp; Support', 'event-tickets-with-ticket-scanner'); ?>
+						</div>
+						<p>
+							<?php esc_html_e('Version', 'event-tickets-with-ticket-scanner'); ?>
+							<b><?php echo esc_html($trust['version']); ?></b><?php
+							if ($trust['last_update'] !== '') {
+								echo ', ';
+								/* translators: %s: date of the last plugin update */
+								printf(esc_html__('last updated %s', 'event-tickets-with-ticket-scanner'), '<b>'.esc_html(date_i18n(get_option('date_format'), strtotime($trust['last_update']))).'</b>');
+							}
+							?>.
+						</p>
+						<p><a target="_blank" href="<?php echo esc_url($trust['changelog_url']); ?>"><?php esc_html_e('See what changed in each release', 'event-tickets-with-ticket-scanner'); ?></a></p>
+						<?php if ($trust['support_response_hours'] > 0) { ?>
+						<p><?php
+							/* translators: %d: average number of hours until support replies */
+							printf(esc_html(_n('Support replies in %d hour on average.', 'Support replies in %d hours on average.', $trust['support_response_hours'], 'event-tickets-with-ticket-scanner')), (int) $trust['support_response_hours']);
+						?></p>
+						<?php } ?>
+						<p><a target="_blank" href="https://vollstart.com/support/"><?php esc_html_e('Ask a question', 'event-tickets-with-ticket-scanner'); ?></a></p>
+					</div>
 				</div>
 
 				<div class="et-card et-footer-shortcodes">
@@ -1158,40 +1329,77 @@ class sasoEventtickets {
 						<?php esc_html_e('Shortcodes', 'event-tickets-with-ticket-scanner'); ?>
 					</div>
 
-					<h3><?php esc_html_e('Shortcode to display the event calendar form within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
-					<b>[<?php echo esc_html($this->_shortcode_eventviews); ?>]</b>
-					<p><?php esc_html_e('The event calendar form will be displayed. You can add the following parameters to change the output:', 'event-tickets-with-ticket-scanner'); ?></p>
-					<ul>
-						<li>months_to_show - Values can be a number higher than 0. Default: 3</li>
-					</ul>
-					<p>CSS file: <a href="<?php echo plugins_url( "",__FILE__ ); ?>/css/calendar.css" target="_blank">calendar.css</a></p>
-
-					<h3><?php esc_html_e('Shortcode to display the assigned tickets and codes of an user within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
-					<b>[<?php echo esc_html($this->_shortcode_mycode); ?>]</b>
-					<p><?php esc_html_e('Displays tickets assigned to the current logged-in user (default) or tickets from a specific order.', 'event-tickets-with-ticket-scanner'); ?></p>
-					<ul>
-						<li><b>order_id</b> - <?php esc_html_e('Show tickets from a specific order instead of user tickets. Security: User must own the order or have valid order key in URL.', 'event-tickets-with-ticket-scanner'); ?><br>
-						<?php esc_html_e('Example:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_mycode); ?> order_id="123"]</li>
-						<li><b>format</b> - <?php esc_html_e('Output format. Values: json', 'event-tickets-with-ticket-scanner'); ?></li>
-						<li><b>display</b> - <?php esc_html_e('Fields to show (comma-separated). Values: codes, validation, user, used, confirmedCount, woocommerce, wc_rp, wc_ticket', 'event-tickets-with-ticket-scanner'); ?></li>
-						<li><b>download_all_pdf</b> - <?php esc_html_e('Show download button for all tickets as one PDF. Values: true/false', 'event-tickets-with-ticket-scanner'); ?></li>
-					</ul>
-					<p>
-						<?php esc_html_e('Example with JSON output:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_mycode); ?> format="json" display="code,wc_ticket"]
-					</p>
-
-					<h3><?php esc_html_e('Shortcode to display the ticket scanner within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
-					<?php esc_html_e('Useful if you cannot open the ticket scanner due to security issues.', 'event-tickets-with-ticket-scanner'); ?><br>
-					<b>[<?php echo esc_html($this->_shortcode_ticket_scanner); ?>]</b>
-
-					<h3><?php esc_html_e('Shortcode to display ticket detail view within a page', 'event-tickets-with-ticket-scanner'); ?></h3>
-					<?php esc_html_e('Useful if the /ticket/ URL path does not work on your server.', 'event-tickets-with-ticket-scanner'); ?><br>
-					<b>[<?php echo esc_html($this->_shortcode_ticket_detail); ?>]</b>
-					<p>
-						<?php esc_html_e('Usage: Add the shortcode to a page and access it with ?ticket=YOUR-TICKET-CODE in the URL.', 'event-tickets-with-ticket-scanner'); ?><br>
-						<?php esc_html_e('Example:', 'event-tickets-with-ticket-scanner'); ?> yoursite.com/ticket-page/?ticket=ABC-123-XYZ<br>
-						<?php esc_html_e('Or use the code attribute:', 'event-tickets-with-ticket-scanner'); ?> [<?php echo esc_html($this->_shortcode_ticket_detail); ?> code="ABC-123-XYZ"]
-					</p>
+					<?php
+					// Shortcode-Liste als Tabelle (laut Admin-Redesign Mockup).
+					// SRP: Daten im Array, Layout im Markup — Aenderung an einem Shortcode
+					// erfordert keinen Edit am Render-Pfad.
+					$_shortcodes_table = [
+						[
+							'tag' => $this->_shortcode_eventviews,
+							'name' => __('Event calendar form', 'event-tickets-with-ticket-scanner'),
+							'desc' => __('Displays the event calendar. Supports parameters below.', 'event-tickets-with-ticket-scanner'),
+							'params' => [
+								['months_to_show', __('Number of months to display (higher than 0). Default: 3', 'event-tickets-with-ticket-scanner')],
+							],
+							'css' => 'calendar.css',
+						],
+						[
+							'tag' => $this->_shortcode_mycode,
+							'name' => __('Assigned tickets and codes', 'event-tickets-with-ticket-scanner'),
+							'desc' => __('Displays tickets assigned to the current user or a specific order.', 'event-tickets-with-ticket-scanner'),
+							'params' => [
+								['order_id', __('Show tickets from a specific order (user must own it)', 'event-tickets-with-ticket-scanner')],
+								['format', __('Output format. Values: json', 'event-tickets-with-ticket-scanner')],
+								['display', __('Fields to show: codes, validation, user, used, confirmedCount, woocommerce, wc_rp, wc_ticket', 'event-tickets-with-ticket-scanner')],
+								['download_all_pdf', __('Show download button for all tickets as PDF. Values: true/false', 'event-tickets-with-ticket-scanner')],
+							],
+						],
+						[
+							'tag' => $this->_shortcode_ticket_scanner,
+							'name' => __('Ticket scanner', 'event-tickets-with-ticket-scanner'),
+							'desc' => __('Embeds the browser-based scanner in a page. Useful when the standalone scanner URL has security restrictions.', 'event-tickets-with-ticket-scanner'),
+							'params' => [],
+						],
+						[
+							'tag' => $this->_shortcode_ticket_detail,
+							'name' => __('Ticket detail view', 'event-tickets-with-ticket-scanner'),
+							'desc' => __('Shows the ticket detail page within a page. Useful when /ticket/ URL rewriting fails.', 'event-tickets-with-ticket-scanner'),
+							'params' => [
+								['ticket', __('Read ?ticket=CODE from URL (default behaviour)', 'event-tickets-with-ticket-scanner')],
+								['code', __('Show details for a specific code directly', 'event-tickets-with-ticket-scanner')],
+							],
+						],
+					];
+					?>
+					<table class="et-shortcodes-table">
+						<thead>
+							<tr>
+								<th scope="col"><?php esc_html_e('Shortcode', 'event-tickets-with-ticket-scanner'); ?></th>
+								<th scope="col"><?php esc_html_e('Description', 'event-tickets-with-ticket-scanner'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php foreach ($_shortcodes_table as $_sc) { ?>
+							<tr>
+								<td class="et-shortcodes-code"><code>[<?php echo esc_html($_sc['tag']); ?>]</code><?php if (!empty($_sc['css'])) { ?><br><small>CSS: <a href="<?php echo esc_url(plugins_url('',__FILE__) . '/css/' . $_sc['css']); ?>" target="_blank"><?php echo esc_html($_sc['css']); ?></a></small><?php } ?></td>
+								<td>
+									<strong><?php echo esc_html($_sc['name']); ?></strong>
+									<p class="et-shortcodes-desc"><?php echo esc_html($_sc['desc']); ?></p>
+									<?php if (!empty($_sc['params'])) { ?>
+									<table class="et-shortcodes-params">
+									<?php foreach ($_sc['params'] as $_p) { ?>
+										<tr>
+											<td><code><?php echo esc_html($_p[0]); ?></code></td>
+											<td><?php echo esc_html($_p[1]); ?></td>
+											</tr>
+									<?php } ?>
+								</table>
+							<?php } ?>
+							</td>
+						</tr>
+				<?php } ?>
+					</tbody>
+				</table>
 
 					<h3><?php esc_html_e('PHP Filters', 'event-tickets-with-ticket-scanner'); ?></h3>
 					<p><?php esc_html_e('You can use PHP code to register your filter functions for the validation check.', 'event-tickets-with-ticket-scanner'); ?>
@@ -1207,7 +1415,7 @@ class sasoEventtickets {
 				</div>
 
 				<div class="et-footer-credits">
-					<a target="_blank" href="https://vollstart.com">VOLLSTART</a> &middot; More plugins: <a target="_blank" href="https://wordpress.org/plugins/serial-codes-generator-and-validator/">Serial Code Validator</a>
+					<a target="_blank" href="https://vollstart.com">VOLLSTART</a> &middot; <a href="<?php echo esc_url(admin_url('admin.php?page=event-tickets-with-ticket-scanner-more-plugins')); ?>">More plugins</a>
 				</div>
 			</div>
 	  	</div>
@@ -1326,7 +1534,7 @@ class sasoEventtickets {
 
 		$js_url = "jquery.qrcode.min.js?_v=".$this->getPluginVersion();
 		wp_enqueue_script(
-			'ajax_script2',
+			'saso_eventtickets_qrcode',
 			plugins_url( "3rd/".$js_url,__FILE__ ),
 			array('jquery', 'jquery-ui-dialog')
 		);

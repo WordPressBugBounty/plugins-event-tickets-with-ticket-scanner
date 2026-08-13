@@ -1,0 +1,621 @@
+- generic [active] [ref=f18e1]:
+  - generic [ref=f18e2]:
+    - banner [ref=f18e3]:
+      - generic [ref=f18e4]:
+        - generic [ref=f18e5]: VOLLSTART Control
+        - generic [ref=f18e6]: 2026-08-12
+        - generic [ref=f18e7]: Heute 0 € (0) ·Aug 881 € → 2.276 €
+      - generic [ref=f18e8]:
+        - generic [ref=f18e9]: Live 10:18
+        - combobox [ref=f18e13] [cursor=pointer]:
+          - option "2026-08-12" [selected]
+          - option "2026-08-11"
+          - option "2026-08-10"
+          - option "2026-08-09"
+          - option "2026-08-08"
+          - option "2026-08-07"
+          - option "2026-08-06"
+          - option "2026-08-05"
+          - option "2026-08-04"
+          - option "2026-08-03"
+          - option "2026-08-02"
+          - option "2026-08-01"
+          - option "2026-07-31"
+          - option "2026-07-30"
+          - option "2026-07-29"
+          - option "2026-07-28"
+          - option "2026-07-27"
+          - option "2026-07-26"
+          - option "2026-07-25"
+          - option "2026-07-24"
+          - option "2026-07-23"
+          - option "2026-07-22"
+          - option "2026-07-21"
+          - option "2026-07-20"
+          - option "2026-07-19"
+          - option "2026-07-18"
+          - option "2026-07-17"
+          - option "2026-07-16"
+          - option "2026-07-15"
+          - option "2026-07-14"
+          - option "2026-07-13"
+          - option "2026-07-12"
+          - option "2026-07-11"
+          - option "2026-07-10"
+          - option "2026-07-09"
+          - option "2026-07-08"
+          - option "2026-07-07"
+          - option "2026-07-06"
+          - option "2026-07-05"
+          - option "2026-07-04"
+          - option "2026-07-03"
+          - option "2026-07-02"
+          - option "2026-07-01"
+          - option "2026-06-30"
+          - option "2026-06-29"
+          - option "2026-06-28"
+          - option "2026-06-27"
+          - option "2026-06-26"
+          - option "2026-06-25"
+          - option "2026-06-24"
+          - option "2026-06-23"
+          - option "2026-06-22"
+          - option "2026-06-21"
+          - option "2026-06-20"
+          - option "2026-06-19"
+          - option "2026-06-18"
+          - option "2026-06-17"
+          - option "2026-06-16"
+          - option "2026-06-15"
+          - option "2026-06-14"
+          - option "2026-06-13"
+          - option "2026-06-12"
+          - option "2026-06-11"
+          - option "2026-06-10"
+          - option "2026-06-09"
+          - option "2026-06-08"
+          - option "2026-06-07"
+          - option "2026-06-06"
+          - option "2026-06-05"
+          - option "2026-06-04"
+          - option "2026-06-03"
+          - option "2026-06-02"
+          - option "2026-06-01"
+          - option "2026-05-31"
+          - option "2026-05-30"
+          - option "2026-05-29"
+          - option "2026-05-28"
+          - option "2026-05-27"
+          - option "2026-05-26"
+          - option "2026-05-25"
+          - option "2026-05-24"
+          - option "2026-05-23"
+          - option "2026-05-22"
+          - option "2026-05-21"
+          - option "2026-05-20"
+          - option "2026-05-19"
+          - option "2026-05-18"
+          - option "2026-05-17"
+          - option "2026-05-16"
+          - option "2026-05-15"
+          - option "2026-05-14"
+          - option "2026-05-13"
+          - option "2026-05-12"
+          - option "2026-05-11"
+          - option "2026-05-10"
+          - option "2026-05-09"
+          - option "2026-05-08"
+          - option "2026-05-07"
+          - option "2026-05-06"
+          - option "2026-05-05"
+          - option "2026-05-04"
+          - option "2026-05-03"
+          - option "2026-05-02"
+          - option "2026-05-01"
+          - option "2026-04-30"
+          - option "2026-04-29"
+          - option "2026-04-28"
+          - option "2026-04-27"
+          - option "2026-04-26"
+          - option "2026-04-25"
+          - option "2026-04-24"
+          - option "2026-04-23"
+          - option "2026-04-22"
+          - option "2026-04-21"
+          - option "2026-04-19"
+          - option "2026-04-18"
+          - option "2026-04-17"
+          - option "2026-04-16"
+          - option "2026-04-15"
+          - option "2026-04-14"
+          - option "2026-04-13"
+          - option "2026-04-12"
+          - option "2026-04-11"
+          - option "2026-04-10"
+          - option "2026-04-09"
+          - option "2026-04-08"
+          - option "2026-04-07"
+          - option "2026-04-06"
+          - option "2026-04-05"
+          - option "2026-04-04"
+          - option "2026-04-03"
+          - option "2026-04-02"
+          - option "2026-04-01"
+          - option "2026-03-31"
+          - option "2026-03-30"
+          - option "2026-03-29"
+          - option "2026-03-28"
+          - option "2026-03-27"
+          - option "2026-03-26"
+          - option "2026-03-25"
+          - option "2026-03-24"
+          - option "2026-03-23"
+          - option "2026-03-22"
+          - option "2026-03-21"
+          - option "2026-03-20"
+          - option "2026-03-19"
+          - option "2026-03-18"
+          - option "2026-03-17"
+          - option "2026-03-16"
+          - option "2026-03-15"
+          - option "2026-03-14"
+          - option "2026-03-13"
+          - option "2026-03-12"
+        - button "▶ Vorlesen" [ref=f18e14] [cursor=pointer]
+        - button "⚙" [ref=f18e15] [cursor=pointer]
+        - generic [ref=f18e16]:
+          - button "A-" [ref=f18e17] [cursor=pointer]
+          - button "100%" [ref=f18e18] [cursor=pointer]
+          - button "A+" [ref=f18e19] [cursor=pointer]
+        - combobox "Theme" [ref=f18e20] [cursor=pointer]:
+          - option "Default" [selected]
+          - option "Light"
+          - option "Elite"
+          - option "Abyss"
+          - option "Midnight"
+          - option "Nebula"
+          - option "Cockpit"
+          - option "Deep Space"
+          - option "Star Trek"
+          - option "Cyberpunk"
+          - option "Inferno"
+          - option "Neo Tokyo"
+          - option "Alien"
+        - button "🔔 2" [ref=f18e22] [cursor=pointer]:
+          - text: 🔔
+          - generic: "2"
+        - link "→ Logout" [ref=f18e23] [cursor=pointer]:
+          - /url: "?logout"
+    - generic [ref=f18e24]:
+      - button "BUSINESS INTELLIGENCE" [ref=f18e25] [cursor=pointer]
+      - button "MARKETING" [ref=f18e26] [cursor=pointer]
+      - button "TEAM MEETING" [ref=f18e27] [cursor=pointer]
+      - button "DOWNLOADS" [ref=f18e28] [cursor=pointer]
+      - button "JOBS" [ref=f18e29] [cursor=pointer]
+      - button "INBOX" [ref=f18e30] [cursor=pointer]
+      - button "PROJEKTE" [ref=f18e31] [cursor=pointer]
+      - button "🛰 COCKPIT" [ref=f18e32] [cursor=pointer]
+      - button "🧠 EXPERT-GREMIUM" [ref=f18e33] [cursor=pointer]
+      - button "🎫 TASKS" [ref=f18e34] [cursor=pointer]
+      - button "📚 VAULT" [ref=f18e35] [cursor=pointer]
+      - button "🛡 MODERATION" [ref=f18e36] [cursor=pointer]
+      - button "🔌 MCP" [ref=f18e37] [cursor=pointer]
+  - main [ref=f18e38]:
+    - text: Feed 1 · Kai Feed 2 · Maya Feed 3 · Tom Feed 4 · Lina Feed 5 · Adrian Feed 6 · Nadia Feed 7 · Felix
+    - generic [ref=f18e40]:
+      - generic [ref=f18e41]:
+        - generic [ref=f18e42]:
+          - generic [ref=f18e43]: Downloads
+          - link "downloads/" [ref=f18e45] [cursor=pointer]:
+            - /url: "#"
+        - generic [ref=f18e46]:
+          - textbox "Suche in downloads…" [ref=f18e47]
+          - button "🔍 Suchen" [ref=f18e48] [cursor=pointer]
+          - button "⌂ Root" [ref=f18e49] [cursor=pointer]
+          - button "↻ Refresh" [ref=f18e50] [cursor=pointer]
+          - button "⬆ Upload" [ref=f18e51] [cursor=pointer]
+      - table [ref=f18e53]:
+        - rowgroup [ref=f18e54]:
+          - row [ref=f18e55]:
+            - columnheader "Name" [ref=f18e56]
+            - columnheader "Groesse" [ref=f18e57]
+            - columnheader "Aktualisiert" [ref=f18e58]
+            - columnheader [ref=f18e59]
+        - rowgroup [ref=f18e60]:
+          - row [ref=f18e61]:
+            - cell [ref=f18e62]:
+              - link "📁analysen" [ref=f18e63] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e64]
+            - cell "12.08.26, 10:17" [ref=f18e65]
+            - cell [ref=f18e66]
+          - row [ref=f18e67]:
+            - cell [ref=f18e68]:
+              - link "📁dig-461" [ref=f18e69] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e70]
+            - cell "30.07.26, 15:01" [ref=f18e71]
+            - cell [ref=f18e72]
+          - row [ref=f18e73]:
+            - cell [ref=f18e74]:
+              - link "📁dig-598-mailchimp-options" [ref=f18e75] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e76]
+            - cell "30.07.26, 15:01" [ref=f18e77]
+            - cell [ref=f18e78]
+          - row [ref=f18e79]:
+            - cell [ref=f18e80]:
+              - link "📁dig-837-staging-sink" [ref=f18e81] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e82]
+            - cell "30.07.26, 13:38" [ref=f18e83]
+            - cell [ref=f18e84]
+          - row [ref=f18e85]:
+            - cell [ref=f18e86]:
+              - link "📁dig503-datenschutz-backup" [ref=f18e87] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e88]
+            - cell "30.07.26, 15:01" [ref=f18e89]
+            - cell [ref=f18e90]
+          - row [ref=f18e91]:
+            - cell [ref=f18e92]:
+              - link "📁dig652" [ref=f18e93] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e94]
+            - cell "21.07.26, 21:04" [ref=f18e95]
+            - cell [ref=f18e96]
+          - row [ref=f18e97]:
+            - cell [ref=f18e98]:
+              - link "📁dig656" [ref=f18e99] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e100]
+            - cell "21.07.26, 22:18" [ref=f18e101]
+            - cell [ref=f18e102]
+          - row [ref=f18e103]:
+            - cell [ref=f18e104]:
+              - link "📁dsgvo-avv-2026-07" [ref=f18e105] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e106]
+            - cell "30.07.26, 15:01" [ref=f18e107]
+            - cell [ref=f18e108]
+          - row [ref=f18e109]:
+            - cell [ref=f18e110]:
+              - link "📁e2e" [ref=f18e111] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e112]
+            - cell "30.07.26, 15:01" [ref=f18e113]
+            - cell [ref=f18e114]
+          - row [ref=f18e115]:
+            - cell [ref=f18e116]:
+              - link "📁kurs-ki-business-os" [ref=f18e117] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e118]
+            - cell "24.04.26, 11:13" [ref=f18e119]
+            - cell [ref=f18e120]
+          - row [ref=f18e121]:
+            - cell [ref=f18e122]:
+              - link "📁legal-evidence" [ref=f18e123] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e124]
+            - cell "22.07.26, 21:44" [ref=f18e125]
+            - cell [ref=f18e126]
+          - row [ref=f18e127]:
+            - cell [ref=f18e128]:
+              - link "📁manager_overview-legacy" [ref=f18e129] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e130]
+            - cell "22.07.26, 11:37" [ref=f18e131]
+            - cell [ref=f18e132]
+          - row [ref=f18e133]:
+            - cell [ref=f18e134]:
+              - link "📁perfex-banners" [ref=f18e135] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e136]
+            - cell "25.07.26, 04:29" [ref=f18e137]
+            - cell [ref=f18e138]
+          - row [ref=f18e139]:
+            - cell [ref=f18e140]:
+              - link "📁perfex-woo-2026-07-22" [ref=f18e141] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e142]
+            - cell "22.07.26, 10:46" [ref=f18e143]
+            - cell [ref=f18e144]
+          - row [ref=f18e145]:
+            - cell [ref=f18e146]:
+              - link "📁projekte" [ref=f18e147] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e148]
+            - cell "30.07.26, 15:01" [ref=f18e149]
+            - cell [ref=f18e150]
+          - row [ref=f18e151]:
+            - cell [ref=f18e152]:
+              - link "📁public" [ref=f18e153] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e154]
+            - cell "18.06.26, 13:10" [ref=f18e155]
+            - cell [ref=f18e156]
+          - row [ref=f18e157]:
+            - cell [ref=f18e158]:
+              - link "📁repair-desk-dev-backup-2026-06-17" [ref=f18e159] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e160]
+            - cell "30.07.26, 15:01" [ref=f18e161]
+            - cell [ref=f18e162]
+          - row [ref=f18e163]:
+            - cell [ref=f18e164]:
+              - link "📁repair-desk-dev-tables-backup-2026-06-17" [ref=f18e165] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e166]
+            - cell "30.07.26, 15:01" [ref=f18e167]
+            - cell [ref=f18e168]
+          - row [ref=f18e169]:
+            - cell [ref=f18e170]:
+              - link "📁repair-desk-shop-backup-2026-06-11" [ref=f18e171] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e172]
+            - cell "30.07.26, 15:01" [ref=f18e173]
+            - cell [ref=f18e174]
+          - row [ref=f18e175]:
+            - cell [ref=f18e176]:
+              - link "📁wp-legal-backup-2026-06-18" [ref=f18e177] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e178]
+            - cell "30.07.26, 15:01" [ref=f18e179]
+            - cell [ref=f18e180]
+          - row [ref=f18e181]:
+            - cell [ref=f18e182]:
+              - link "📁yt-ad-event-tickets" [ref=f18e183] [cursor=pointer]:
+                - /url: "#"
+            - cell "-" [ref=f18e184]
+            - cell "30.07.26, 15:01" [ref=f18e185]
+            - cell [ref=f18e186]
+          - row [ref=f18e187]:
+            - cell [ref=f18e188]:
+              - link "📑angelreminder-osticket-multilang.md" [ref=f18e189] [cursor=pointer]:
+                - /url: "#"
+            - cell "3.1 KB" [ref=f18e190]
+            - cell "30.07.26, 15:01" [ref=f18e191]
+            - cell [ref=f18e192]:
+              - button "👁" [ref=f18e193] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e194] [cursor=pointer]
+              - button "🌐" [ref=f18e195] [cursor=pointer]
+          - row [ref=f18e196]:
+            - cell [ref=f18e197]:
+              - link "📃angelreminder-startpost.txt" [ref=f18e198] [cursor=pointer]:
+                - /url: "#"
+            - cell "1.9 KB" [ref=f18e199]
+            - cell "30.07.26, 15:01" [ref=f18e200]
+            - cell [ref=f18e201]:
+              - button "👁" [ref=f18e202] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e203] [cursor=pointer]
+              - button "🌐" [ref=f18e204] [cursor=pointer]
+          - row [ref=f18e205]:
+            - cell [ref=f18e206]:
+              - link "📑ANLEITUNG_angelreminder-fix.md" [ref=f18e207] [cursor=pointer]:
+                - /url: "#"
+            - cell "3.5 KB" [ref=f18e208]
+            - cell "30.07.26, 15:01" [ref=f18e209]
+            - cell [ref=f18e210]:
+              - button "👁" [ref=f18e211] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e212] [cursor=pointer]
+              - button "🌐" [ref=f18e213] [cursor=pointer]
+          - row [ref=f18e214]:
+            - cell [ref=f18e215]:
+              - link "📃crontab-backup-20260722-113810.txt" [ref=f18e216] [cursor=pointer]:
+                - /url: "#"
+            - cell "13 KB" [ref=f18e217]
+            - cell "22.07.26, 11:38" [ref=f18e218]
+            - cell [ref=f18e219]:
+              - button "👁" [ref=f18e220] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e221] [cursor=pointer]
+              - button "🌐" [ref=f18e222] [cursor=pointer]
+          - row [ref=f18e223]:
+            - cell [ref=f18e224]:
+              - link "📄fix-jetzt.sh" [ref=f18e225] [cursor=pointer]:
+                - /url: "#"
+            - cell "1.3 KB" [ref=f18e226]
+            - cell "22.07.26, 11:43" [ref=f18e227]
+            - cell [ref=f18e228]:
+              - button "⇩ DL" [ref=f18e229] [cursor=pointer]
+              - button "🌐" [ref=f18e230] [cursor=pointer]
+          - row [ref=f18e231]:
+            - cell [ref=f18e232]:
+              - link "📃newcron.txt" [ref=f18e233] [cursor=pointer]:
+                - /url: "#"
+            - cell "13 KB" [ref=f18e234]
+            - cell "22.07.26, 11:42" [ref=f18e235]
+            - cell [ref=f18e236]:
+              - button "👁" [ref=f18e237] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e238] [cursor=pointer]
+              - button "🌐" [ref=f18e239] [cursor=pointer]
+          - row [ref=f18e240]:
+            - cell [ref=f18e241]:
+              - link "📃stripe_kunden_zum_kopieren.csv" [ref=f18e242] [cursor=pointer]:
+                - /url: "#"
+            - cell "7.3 KB" [ref=f18e243]
+            - cell "04.08.26, 11:37" [ref=f18e244]
+            - cell [ref=f18e245]:
+              - button "👁" [ref=f18e246] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e247] [cursor=pointer]
+              - button "🌐" [ref=f18e248] [cursor=pointer]
+          - row [ref=f18e249]:
+            - cell [ref=f18e250]:
+              - link "📃stripe_mapping_2026-08-04.csv" [ref=f18e251] [cursor=pointer]:
+                - /url: "#"
+            - cell "92 KB" [ref=f18e252]
+            - cell "04.08.26, 12:34" [ref=f18e253]
+            - cell [ref=f18e254]:
+              - button "👁" [ref=f18e255] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e256] [cursor=pointer]
+              - button "🌐" [ref=f18e257] [cursor=pointer]
+          - row [ref=f18e258]:
+            - cell [ref=f18e259]:
+              - link "📄Ticket-013400.pdf" [ref=f18e260] [cursor=pointer]:
+                - /url: "#"
+            - cell "717 KB" [ref=f18e261]
+            - cell "30.07.26, 15:01" [ref=f18e262]
+            - cell [ref=f18e263]:
+              - button "👁" [ref=f18e264] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e265] [cursor=pointer]
+              - button "🌐" [ref=f18e266] [cursor=pointer]
+          - row [ref=f18e267]:
+            - cell [ref=f18e268]:
+              - link "📃tiktok-1-organization.txt" [ref=f18e269] [cursor=pointer]:
+                - /url: "#"
+            - cell "771 B" [ref=f18e270]
+            - cell "30.07.26, 15:01" [ref=f18e271]
+            - cell [ref=f18e272]:
+              - button "👁" [ref=f18e273] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e274] [cursor=pointer]
+              - button "🌐" [ref=f18e275] [cursor=pointer]
+          - row [ref=f18e276]:
+            - cell [ref=f18e277]:
+              - link "📃tiktok-2-goal.txt" [ref=f18e278] [cursor=pointer]:
+                - /url: "#"
+            - cell "1.0 KB" [ref=f18e279]
+            - cell "30.07.26, 15:01" [ref=f18e280]
+            - cell [ref=f18e281]:
+              - button "👁" [ref=f18e282] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e283] [cursor=pointer]
+              - button "🌐" [ref=f18e284] [cursor=pointer]
+          - row [ref=f18e285]:
+            - cell [ref=f18e286]:
+              - link "📃tiktok-3-daily-users.txt" [ref=f18e287] [cursor=pointer]:
+                - /url: "#"
+            - cell "1.0 B" [ref=f18e288]
+            - cell "30.07.26, 15:01" [ref=f18e289]
+            - cell [ref=f18e290]:
+              - button "👁" [ref=f18e291] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e292] [cursor=pointer]
+              - button "🌐" [ref=f18e293] [cursor=pointer]
+          - row [ref=f18e294]:
+            - cell [ref=f18e295]:
+              - link "📃tiktok-4-usage-estimate.txt" [ref=f18e296] [cursor=pointer]:
+                - /url: "#"
+            - cell "678 B" [ref=f18e297]
+            - cell "30.07.26, 15:01" [ref=f18e298]
+            - cell [ref=f18e299]:
+              - button "👁" [ref=f18e300] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e301] [cursor=pointer]
+              - button "🌐" [ref=f18e302] [cursor=pointer]
+          - row [ref=f18e303]:
+            - cell [ref=f18e304]:
+              - link "📃tiktok-5-data-fields.txt" [ref=f18e305] [cursor=pointer]:
+                - /url: "#"
+            - cell "769 B" [ref=f18e306]
+            - cell "30.07.26, 15:01" [ref=f18e307]
+            - cell [ref=f18e308]:
+              - button "👁" [ref=f18e309] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e310] [cursor=pointer]
+              - button "🌐" [ref=f18e311] [cursor=pointer]
+          - row [ref=f18e312]:
+            - cell [ref=f18e313]:
+              - link "📃tiktok-caption-126.txt" [ref=f18e314] [cursor=pointer]:
+                - /url: "#"
+            - cell "318 B" [ref=f18e315]
+            - cell "30.07.26, 15:01" [ref=f18e316]
+            - cell [ref=f18e317]:
+              - button "👁" [ref=f18e318] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e319] [cursor=pointer]
+              - button "🌐" [ref=f18e320] [cursor=pointer]
+          - row [ref=f18e321]:
+            - cell [ref=f18e322]:
+              - link "📃tiktok-caption-128.txt" [ref=f18e323] [cursor=pointer]:
+                - /url: "#"
+            - cell "291 B" [ref=f18e324]
+            - cell "30.07.26, 15:01" [ref=f18e325]
+            - cell [ref=f18e326]:
+              - button "👁" [ref=f18e327] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e328] [cursor=pointer]
+              - button "🌐" [ref=f18e329] [cursor=pointer]
+          - row [ref=f18e330]:
+            - cell [ref=f18e331]:
+              - link "📃tiktok-caption-129.txt" [ref=f18e332] [cursor=pointer]:
+                - /url: "#"
+            - cell "309 B" [ref=f18e333]
+            - cell "30.07.26, 15:01" [ref=f18e334]
+            - cell [ref=f18e335]:
+              - button "👁" [ref=f18e336] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e337] [cursor=pointer]
+              - button "🌐" [ref=f18e338] [cursor=pointer]
+          - row [ref=f18e339]:
+            - cell [ref=f18e340]:
+              - link "📃tiktok-caption-149.txt" [ref=f18e341] [cursor=pointer]:
+                - /url: "#"
+            - cell "300 B" [ref=f18e342]
+            - cell "30.07.26, 15:01" [ref=f18e343]
+            - cell [ref=f18e344]:
+              - button "👁" [ref=f18e345] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e346] [cursor=pointer]
+              - button "🌐" [ref=f18e347] [cursor=pointer]
+          - row [ref=f18e348]:
+            - cell [ref=f18e349]:
+              - link "📃tiktok-go-live.txt" [ref=f18e350] [cursor=pointer]:
+                - /url: "#"
+            - cell "3.4 KB" [ref=f18e351]
+            - cell "30.07.26, 15:01" [ref=f18e352]
+            - cell [ref=f18e353]:
+              - button "👁" [ref=f18e354] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e355] [cursor=pointer]
+              - button "🌐" [ref=f18e356] [cursor=pointer]
+          - row [ref=f18e357]:
+            - cell [ref=f18e358]:
+              - link "📃tiktok-post-127.txt" [ref=f18e359] [cursor=pointer]:
+                - /url: "#"
+            - cell "566 B" [ref=f18e360]
+            - cell "30.07.26, 15:01" [ref=f18e361]
+            - cell [ref=f18e362]:
+              - button "👁" [ref=f18e363] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e364] [cursor=pointer]
+              - button "🌐" [ref=f18e365] [cursor=pointer]
+          - row [ref=f18e366]:
+            - cell [ref=f18e367]:
+              - link "📑tiktok-ready-2026-06-17.md" [ref=f18e368] [cursor=pointer]:
+                - /url: "#"
+            - cell "8.3 KB" [ref=f18e369]
+            - cell "30.07.26, 15:01" [ref=f18e370]
+            - cell [ref=f18e371]:
+              - button "👁" [ref=f18e372] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e373] [cursor=pointer]
+              - button "🌐" [ref=f18e374] [cursor=pointer]
+          - row [ref=f18e375]:
+            - cell [ref=f18e376]:
+              - link "📃tiktok-review-text.txt" [ref=f18e377] [cursor=pointer]:
+                - /url: "#"
+            - cell "826 B" [ref=f18e378]
+            - cell "30.07.26, 15:01" [ref=f18e379]
+            - cell [ref=f18e380]:
+              - button "👁" [ref=f18e381] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e382] [cursor=pointer]
+              - button "🌐" [ref=f18e383] [cursor=pointer]
+          - row [ref=f18e384]:
+            - cell [ref=f18e385]:
+              - link "📄vollstart-consent-myaccount.php.bak-DIG858-20260804-1003" [ref=f18e386] [cursor=pointer]:
+                - /url: "#"
+            - cell "16 KB" [ref=f18e387]
+            - cell "29.07.26, 16:53" [ref=f18e388]
+            - cell [ref=f18e389]:
+              - button "⇩ DL" [ref=f18e390] [cursor=pointer]
+              - button "🌐" [ref=f18e391] [cursor=pointer]
+          - row [ref=f18e392]:
+            - cell [ref=f18e393]:
+              - link "📃vscode-settings-fix.json" [ref=f18e394] [cursor=pointer]:
+                - /url: "#"
+            - cell "1.5 KB" [ref=f18e395]
+            - cell "22.07.26, 11:21" [ref=f18e396]
+            - cell [ref=f18e397]:
+              - button "👁" [ref=f18e398] [cursor=pointer]
+              - button "⇩ DL" [ref=f18e399] [cursor=pointer]
+              - button "🌐" [ref=f18e400] [cursor=pointer]
+  - button "Business-Berater" [ref=f18e401] [cursor=pointer]
+  - generic [ref=f18e405]:
+    - generic [ref=f18e406]:
+      - generic [ref=f18e407]: Business-Berater
+      - button "×" [ref=f18e409] [cursor=pointer]
+    - generic [ref=f18e411]:
+      - strong [ref=f18e412]: Business-Berater
+      - text: Frag mich zu Umsatz, Lizenzen, Marketing, Strategie oder zu deinen aktuellen Business-Daten.
+    - generic [ref=f18e413]:
+      - textbox "Nachricht schreiben..." [ref=f18e414]
+      - button "Senden" [ref=f18e415] [cursor=pointer]
+  - contentinfo [ref=f18e418]: VOLLSTART Control — Business OS Dashboard

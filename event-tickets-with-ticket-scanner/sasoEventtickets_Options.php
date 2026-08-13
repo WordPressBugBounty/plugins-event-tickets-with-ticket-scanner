@@ -1,6 +1,13 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventtickets_Options {
+	/**
+	 * The four use-cases the settings view filters by. Same four the setup
+	 * wizard asks about (AdminSettings::getWizardPresetDefaults) - one
+	 * vocabulary, so a shop that answered the wizard sees a matching view.
+	 */
+	public const USE_CASES = ['event', 'daypass', 'membership', 'voucher'];
+
 	private $_options;
 	private $MAIN;
 	private $_prefix;
@@ -181,6 +188,51 @@ class sasoEventtickets_Options {
 
 		$this->_options = [];
 
+		// The event type drives the filtered settings view. It is not rendered in
+		// the option list - it lives in the tab bar above it, where the choice
+		// belongs - but it is a normal option, so export/import carries it along.
+		$this->_options[] = $this->getOptionsObject(
+			'wcTicketUseCase',
+			esc_html__("Event type", 'event-tickets-with-ticket-scanner'),
+			esc_html__("Which kind of tickets do you sell? The settings view then shows the options that belong to that kind. Nothing is hidden for good - 'All options' stays one click away.", 'event-tickets-with-ticket-scanner'),
+			"dropdown",
+			"-",
+			[
+				"doNotRender" => 1,
+				"values" => [
+					["label" => esc_html__("All settings (no filter)", 'event-tickets-with-ticket-scanner'), "value" => "-"],
+					["label" => esc_html__("Event tickets", 'event-tickets-with-ticket-scanner'), "value" => "event"],
+					["label" => esc_html__("Day passes", 'event-tickets-with-ticket-scanner'), "value" => "daypass"],
+					["label" => esc_html__("Memberships", 'event-tickets-with-ticket-scanner'), "value" => "membership"],
+					["label" => esc_html__("Vouchers", 'event-tickets-with-ticket-scanner'), "value" => "voucher"]
+				]
+			]
+		);
+
+		// Once the setup hint has nothing left to say, it can be dismissed for
+		// good - and from then on it is not computed either, so an installation
+		// that is done paying nothing for the check.
+		$this->_options[] = $this->getOptionsObject(
+			'setupStatusDismissed',
+			esc_html__("Setup hint dismissed", 'event-tickets-with-ticket-scanner'),
+			esc_html__("Stores the plugin version when the setup hint on the settings page was dismissed. Clear this value to show it again.", 'event-tickets-with-ticket-scanner'),
+			"text",
+			"",
+			["doNotRender" => 1]
+		);
+
+		// Existing installations are asked once which kind of sale they run.
+		// Holds the plugin version of the moment they answered (or declined) -
+		// clear it to ask again, same as with the setup wizard.
+		$this->_options[] = $this->getOptionsObject(
+			'useCaseChooserSeen',
+			esc_html__("Event type question answered", 'event-tickets-with-ticket-scanner'),
+			esc_html__("Stores the plugin version when the event type was chosen or the question was dismissed. Clear this value to be asked again.", 'event-tickets-with-ticket-scanner'),
+			"text",
+			"",
+			["doNotRender" => 1]
+		);
+
 		$this->_options[] = $this->getOptionsObject('h99', esc_html__("Display options", 'event-tickets-with-ticket-scanner'),"","heading");
 		$this->_options[] = $this->getOptionsObject('displayFirstStepsHelp', esc_html__("Display the first steps helper info", 'event-tickets-with-ticket-scanner'), esc_html__("If activated then an information widget will be shown at the admin area to guide you through the first steps.", 'event-tickets-with-ticket-scanner'),"checkbox", true, [], true);
 		$this->_options[] = $this->getOptionsObject('wizardCompleted', esc_html__("Setup wizard completed", 'event-tickets-with-ticket-scanner'), esc_html__("Stores the plugin version when the setup wizard was completed. Clear this value to show the wizard again.", 'event-tickets-with-ticket-scanner'),"text", "", [], false);
@@ -310,6 +362,15 @@ class sasoEventtickets_Options {
 			}
 			$options[] = ['key'=>'walletVollstartEnable', 'label'=>__("Enable Vollstart Wallet", 'event-tickets-with-ticket-scanner'), 'desc'=>$walletDesc, 'type'=>"checkbox", 'def'=>false];
 
+			$options[] = [
+				'key'=>'ticketShareEnable',
+				'label'=>__("Let customers send their ticket on", 'event-tickets-with-ticket-scanner'),
+				'desc'=>__("If active, the ticket page offers to pass the ticket along: on a phone the usual share sheet opens (WhatsApp, Telegram, Signal, mail, whatever is installed), in a desktop browser WhatsApp and Telegram are offered as links. Your shop sends nothing — the customer does, which is how the second ticket reaches the friend who is coming along. The page says out loud that whoever receives the link can show the QR code.", 'event-tickets-with-ticket-scanner'),
+				'type'=>"checkbox",
+				'def'=>1,
+				'usecases'=>self::USE_CASES
+			];
+
 		$options[] = [
 				'key'=>'h12',
 				'label'=>__("Woocommerce ticket sale", 'event-tickets-with-ticket-scanner'),
@@ -348,7 +409,9 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketHideTicketAfterEventEnd', 'label'=>__("Hide ticket product after the event", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, then the plugin will search, once per day at 0:05, all ticket products that are public. Checks if the event date is set and expireed, and then set it to 'hidden' if so. <b>Important: this is not working for day chooser tickets date, where your customer can select the event date! The system will use the end date, that is set on the end date value, to hide the product.</b>", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/vKQjVjfUnGc'];
 		$options[] = ['key'=>'wcTicketSalesCutoffActive', 'label'=>__("Stop online sales before the event starts", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, ticket products can no longer be bought once the event start is closer than the number of hours below. Useful if you also sell at the box office and want the online shop to close first. Products without an event date are never affected. For day chooser products the date the customer picked is used.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>""];
 		$options[] = ['key'=>'wcTicketSalesCutoffHours', 'label'=>__("How many hours before the event should online sales stop?", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Only used if the option above is active. 0 means sales stop exactly at the event start. If the product has a date but no start time, the end of that day (23:59:59) counts as the start.", 'event-tickets-with-ticket-scanner'), 'type'=>"number", 'def'=>2, "additional"=>["min"=>0]];
+		$options[] = ['key'=>'wcTicketTransSalesCutoffBoxOffice', 'label'=>__("Message added when tickets are still available at the box office", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Appended to the 'sales closed' message for products where the box office is switched on (premium, per product).", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('Tickets are still available at the box office.', 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketTransSalesCutoffMessage', 'label'=>__("Message when online sales are closed", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. Shown in the cart and when the product is added to the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('Online sales for "{PRODUCT_NAME}" have closed.', 'event-tickets-with-ticket-scanner')];
+		$options[] = ['key'=>'wcTicketAllowTicketsWithoutOrder', 'label'=>__("Allow tickets without a WooCommerce order", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Off by default. If active, tickets that belong to no order — for example numbers you generated yourself for printed cards — can be opened, shown and redeemed at the scanner. <b>You give up the order check as copy protection for those tickets:</b> the plugin can no longer verify against a paid order, only that the number exists, is active, is not redeemed yet and belongs to its ticket list. Tickets sold through WooCommerce are unaffected and keep the full check. You can also switch this on for a single ticket list instead of the whole shop, in the list's settings.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>false];
 		$options[] = ['key'=>'wcTicketTransSalesCutoffRemovedMessage', 'label'=>__("Message when a closed ticket is dropped from the cart", 'event-tickets-with-ticket-scanner'), 'desc'=>__("WooCommerce removes a ticket from the cart as soon as it can no longer be bought — this happens when the buyer leaves the cart open past the sales stop. You can use the placeholder {PRODUCT_NAME}. Leave empty for the default text.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('Online sales for "{PRODUCT_NAME}" have closed, so it was removed from your cart.', 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketLabelCartForName', 'label'=>__("Label for error message on cart for missing text value", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a value for checkout.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" requires a value for checkout.', 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketLabelCartForValue', 'label'=>__("Label for error message on cart for not choosen dropdown value", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a value from the dropdown for checkout.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" requires a value from the dropdown for checkout.', 'event-tickets-with-ticket-scanner')];
@@ -682,7 +745,7 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketUserProfileDisplayRedeemAmount', 'label'=>__("Display the redeem information for the ticket", 'event-tickets-with-ticket-scanner'), 'desc'=>"", 'type'=>"checkbox", 'def'=>""];
 
 		foreach($options as $o) {
-			$this->_options[] = $this->getOptionsObject(
+			$option = $this->getOptionsObject(
 				$o['key'], $o['label'], $o['desc'], $o['type'],
 				isset($o['def']) ? $o['def'] : null,
 				isset($o['additional']) ? $o['additional'] : [],
@@ -690,6 +753,13 @@ class sasoEventtickets_Options {
 				isset($o['_doc_video']) ? $o['_doc_video'] : '',
 				isset($o['_do_not_trim']) ? $o['_do_not_trim'] : ''
 			);
+			// An option may name its own kinds of sale instead of inheriting them
+			// from the heading above it (see applyUseCases). Without this line the
+			// declaration would be silently dropped here.
+			if (isset($o['usecases']) && is_array($o['usecases'])) {
+				$option['usecases'] = $o['usecases'];
+			}
+			$this->_options[] = $option;
 		}
 
 		$this->_options[] = $this->getOptionsObject('h0', __("Validator Form for ticket number check", 'event-tickets-with-ticket-scanner'),"","heading");
@@ -881,8 +951,106 @@ class sasoEventtickets_Options {
 			array_unshift($this->_options, $serialOption);
 		}
 
+		$this->_options = $this->applyUseCases($this->_options);
+
 		return $this->_options;
 	}
+
+	/**
+	 * Which option group belongs to which kind of ticket sale.
+	 *
+	 * 29 decisions instead of 307: the group decides, a single option may
+	 * override it, and a group that is not listed here (premium groups, future
+	 * groups) is shown under "More settings" - never dropped.
+	 *
+	 * This is data, not logic: correcting an entry needs no release, the filter
+	 * saso_eventtickets_options_usecases can change every line of it, and that
+	 * is also how the premium plugin declares its own groups.
+	 *
+	 * @return array<string,array<int,string>> heading key => use-cases
+	 */
+	public function getUseCaseMap(): array {
+		$all = self::USE_CASES;
+		$map = [
+			'h99'            => $all,                                    // Display options
+			'h0a'            => $all,                                    // Access
+			'h12a'           => $all,                                    // Ticket scanner
+			'hWallet'        => ['event', 'daypass', 'membership'],      // Digital Wallets
+			'h12'            => $all,                                    // WooCommerce ticket sale
+			'h_view_access'  => $all,                                    // View access (security)
+			'h12b2'          => $all,                                    // Ticket PDF settings
+			'h120'           => ['event'],                               // Seating Plan settings
+			'h16'            => $all,                                    // Ticket Designer
+			'h12b1'          => $all,                                    // Ticket Translations
+			'h15'            => ['event', 'membership'],                 // Ticket Badge
+			'h12d'           => ['event', 'daypass'],                    // Calendar file (ICS)
+			'h12c'           => ['event', 'daypass'],                    // Event Flyer
+			'h20'            => ['membership'],                          // User profile
+			'h0'             => ['membership', 'voucher'],               // Validator form
+			'h1'             => ['membership', 'voucher'],               // Validation messages
+			'h2'             => ['membership', 'voucher'],               // Logged in user only
+			'h5'             => ['membership', 'voucher'],               // Register user to ticket
+			'h6'             => ['membership', 'voucher'],               // Display registered information
+			'h10'            => $all,                                    // WooCommerce product ticket assignment
+			'h13'            => ['membership', 'voucher'],               // Display ticket number to logged-in user
+			'h14'            => $all,                                    // QR code
+			'hCongress'      => ['event'],                               // Congress mode
+			'h_contact_premium' => ['event'],                            // Contact sharing (premium hint)
+			'h13prem'        => $all,                                    // Expiration and validity (premium)
+			'h16prem'        => $all,                                    // Branding (premium)
+			'h_eventado'     => ['event', 'daypass'],                    // Public event calendar (premium)
+			// Deliberately unassigned - they belong to no kind of sale and are
+			// reachable under "More settings": h12b3 (compatibility mode),
+			// h16a (designer test), h12b (ticket redirect), h8 (user redirection),
+			// h9 (webhooks), h3/h7 (IP tracking, premium hints).
+		];
+		return apply_filters($this->MAIN->_add_filter_prefix.'options_usecases', $map);
+	}
+
+	/**
+	 * Resolves the use-cases of every entry: a heading takes them from the map,
+	 * an option inherits from the heading above it unless it brings its own
+	 * 'usecases' key. Everything ends up with an array - "none" is [], never
+	 * missing, so the view never has to guess.
+	 *
+	 * @param array<int,array<string,mixed>> $options
+	 * @return array<int,array<string,mixed>>
+	 */
+	public function applyUseCases(array $options): array {
+		$map = $this->getUseCaseMap();
+		$always = $this->getAlwaysVisibleOptionKeys();
+		$current = [];
+		foreach ($options as $idx => $option) {
+			if (isset($option['type']) && $option['type'] === 'heading') {
+				$current = isset($map[$option['key']]) && is_array($map[$option['key']]) ? array_values($map[$option['key']]) : [];
+				$options[$idx]['usecases'] = $current;
+				continue;
+			}
+			if (in_array($option['key'], $always, true)) {
+				$options[$idx]['usecases'] = self::USE_CASES;
+				continue;
+			}
+			$options[$idx]['usecases'] = isset($option['usecases']) && is_array($option['usecases'])
+				? array_values($option['usecases'])
+				: $current;
+		}
+		return $options;
+	}
+
+	/**
+	 * Options no filter may ever take off the page.
+	 *
+	 * The license key is the case that made this necessary: support answers say
+	 * "enter your license key in the settings", and the premium plugin appends
+	 * that field without a group of its own - so the filter would have buried it
+	 * under "More settings" and every such answer would have run dry.
+	 *
+	 * @return array<int,string>
+	 */
+	public function getAlwaysVisibleOptionKeys(): array {
+		return apply_filters($this->MAIN->_add_filter_prefix.'options_always_visible', ['serial']);
+	}
+
 	public function getOptionsObject($key, $label, $desc="",$type="checkbox",$def=null,$additional=[], $isPublic=false, $doc_video='', $do_not_trim=false) {
 		if ($def == null) {
 			switch($type) {
@@ -975,6 +1143,32 @@ class sasoEventtickets_Options {
 			}
 		}
 	}
+	/**
+	 * Resets only the named options to their default.
+	 *
+	 * The big button resets all 306 options; somebody who only wants to clean up
+	 * the view in front of them would lose everything else with it. Unknown keys
+	 * are skipped, and an option already at its default is not touched, so the
+	 * caller can tell the user exactly how many values will really change.
+	 *
+	 * @param array<int,string> $keys
+	 * @return int how many options were actually changed
+	 */
+	public function resetOptionValuesToDefault(array $keys): int {
+		$changed = 0;
+		$touched = [];
+		foreach ($keys as $key) {
+			$option = $this->getOption(trim((string) $key));
+			if ($option === null || $option['type'] === 'heading') continue;
+			if ((string) $this->_getOptionValue($option) === (string) $option['default']) continue;
+			$this->changeOption(['key' => $option['key'], 'value' => $option['default']]);
+			$touched[] = $option['key'];
+			$changed++;
+		}
+		do_action( $this->MAIN->_do_action_prefix.'options_resetOptionValuesToDefault', $touched );
+		return $changed;
+	}
+
 	public function resetAllOptionValuesToDefault() {
 		$allOption = $this->getOptions();
 		foreach ($allOption as $key => $singleOption) {

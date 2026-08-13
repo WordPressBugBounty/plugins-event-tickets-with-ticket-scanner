@@ -287,7 +287,7 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 				'lines' => $plan['meta']['lines'] ?? [],
 				'labels' => $plan['meta']['labels'] ?? [],
 			],
-			'adminUrl' => admin_url('admin.php?page=sasoEventTickets&tab=seating'),
+			'adminUrl' => admin_url('admin.php?page=event-tickets-with-ticket-scanner&tab=seating'),
 		];
 
 		// Unique ID for this selector instance

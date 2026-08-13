@@ -147,10 +147,6 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 
 			echo '<div id="saso_eventtickets_wc_product_data" class="panel woocommerce_options_panel hidden">';
 
-			if (!$this->MAIN->isPremium()) {
-				$mv = $this->MAIN->getMV();
-				echo '<p style="color:red;">'.sprintf(/* translators: %d: amount of maximum ticket that can be created */__('With the free basic plugin, you can only <b>create up to %d tickets!</b><br>Make sure your are not selling more tickets :)', 'event-tickets-with-ticket-scanner'), intval($mv['codes_total'])).'<br>'.sprintf(/* translators: 1: start of a-tag 2: end of a-tag */__('Here you can purchase the %1$spremium plugin%2$s for unlimited tickets.', 'event-tickets-with-ticket-scanner'), '<a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/">', '</a>').'</p>';
-			}
 
 			$is_ticket_activated = get_post_meta( get_the_ID(), self::META_PRODUCT_IS_TICKET, true );
 			echo '<div class="options_group">';
@@ -177,6 +173,13 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'desc_tip'    => true,
 				'options'     => $ticket_lists
 			) );
+			// Der Hinweis auf das Ticket-Limit stand frueher als erste Zeile im
+			// Reiter - vor dem Schalter, um den es geht, und in Rot wie ein Fehler.
+			// Er gehoert hinter die Aktion und sieht jetzt aus wie ein Hinweis.
+			if (!$this->MAIN->isPremium()) {
+				$mv = $this->MAIN->getMV();
+				echo '<p style="color:#8a5700;background:#fffaeb;border-left:4px solid #dba617;padding:10px 12px;margin:0 12px 10px;">'.sprintf(/* translators: %d: amount of maximum ticket that can be created */__('With the free basic plugin, you can only <b>create up to %d tickets!</b><br>Make sure you are not selling more tickets :)', 'event-tickets-with-ticket-scanner'), intval($mv['codes_total'])).'<br>'.sprintf(/* translators: 1: start of a-tag 2: end of a-tag */__('Here you can purchase the %1$spremium plugin%2$s for unlimited tickets.', 'event-tickets-with-ticket-scanner'), '<a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/">', '</a>').'</p>';
+			}
 			echo '</div>';
 
 			// Purchase restriction: buyers must enter a valid code/ticket number
@@ -279,7 +282,7 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				echo '<p class="form-field saso-seating-draft-warning" style="' . ($showWarning ? '' : 'display:none;') . '">';
 				echo '<span class="description" style="color: #d63638; font-weight: bold;">';
 				echo '⚠️ ' . esc_html__('This seating plan has not been published yet. Customers will not see a seat selection until you publish the plan.', 'event-tickets-with-ticket-scanner');
-				echo ' <a href="' . esc_url(admin_url('admin.php?page=sasoEventTickets&tab=seating')) . '">' . esc_html__('Go to Seating Plans', 'event-tickets-with-ticket-scanner') . '</a>';
+				echo ' <a href="' . esc_url(admin_url('admin.php?page=event-tickets-with-ticket-scanner&tab=seating')) . '">' . esc_html__('Go to Seating Plans', 'event-tickets-with-ticket-scanner') . '</a>';
 				echo '</span></p>';
 
 				// JavaScript for toggling warning
@@ -312,7 +315,7 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				echo '<p class="form-field">';
 				echo '<label>' . esc_html__('Seating Plan', 'event-tickets-with-ticket-scanner') . '</label>';
 				echo '<span class="description">' . esc_html__('No seating plans available.', 'event-tickets-with-ticket-scanner') . ' ';
-				echo '<a href="' . esc_url(admin_url('admin.php?page=sasoEventTickets&tab=seating')) . '">';
+				echo '<a href="' . esc_url(admin_url('admin.php?page=event-tickets-with-ticket-scanner&tab=seating')) . '">';
 				echo esc_html__('Create one first', 'event-tickets-with-ticket-scanner') . '</a></span>';
 				echo '</p>';
 			}

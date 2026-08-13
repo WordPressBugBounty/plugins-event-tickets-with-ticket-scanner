@@ -8940,8 +8940,8 @@ msgstr "Ticket nicht eingelöst"
 
 #. translators: %s: confirmed check counter
 #: ticket_scanner.js:1193
-msgid "Confirmed status validation check counter: <b>%s</b>"
-msgstr "Bestätigte Statuschecks-Zähler: <b>(%s)</b>"
+msgid "Confirmed: <b>%s</b>"
+msgstr "Bestätigt: <b>%s</b>"
 
 #. translators: %s: max redeem amount
 #: ticket_scanner.js:1195

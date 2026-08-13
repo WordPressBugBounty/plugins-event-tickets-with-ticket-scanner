@@ -944,8 +944,8 @@ msgstr "確認済み回数"
 
 #: ticket_scanner.js:1012
 #, javascript-format
-msgid "Confirmed status validation check counter: <b>%s</b>"
-msgstr "確認済みステータスバリデーションチェックカウンター：<b>%s</b>"
+msgid "Confirmed: <b>%s</b>"
+msgstr "確認済み: <b>%s</b>"
 
 #: backend.js:1139
 msgid "Consecutive failures"

@@ -319,56 +319,61 @@
     transform: translateY(1px);
 }
 
-/* Top menu (pill buttons) */
+/* Top menu (segmented control — Linear/Vercel style) */
 .event-tickets-with-ticket-scanner-topmenu {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    justify-content: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--et-border-light);
+    border-radius: var(--et-radius-sm);
 }
 
 /* === RESET + STYLE FOR TOPMENU BUTTONS === */
 button.event-tickets-with-ticket-scanner-topmenu-item,
 button.event-tickets-with-ticket-scanner-topmenu-item-active {
-    all: unset;
+    appearance: none;
+    -webkit-appearance: none;
     box-sizing: border-box;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    padding: 6px 14px;
-    border-radius: 999px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid transparent;
 
     font-size: 13px;
     font-family: inherit;
     font-weight: 500;
+    line-height: 1.4;
 
     cursor: pointer;
     text-decoration: none;
 
-    color: #111827;
+    color: var(--et-text-secondary);
     background: transparent;
-    border: 1px solid var(--et-border);
 
-    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    transition: background var(--et-transition), color var(--et-transition);
 }
 
 button.event-tickets-with-ticket-scanner-topmenu-item:hover {
-    background: #f3f4f6;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    color: var(--et-text);
+    background: rgba(255, 255, 255, 0.6);
 }
 
 button.event-tickets-with-ticket-scanner-topmenu-item-active {
-    background: var(--et-primary-light);
-    color: var(--et-primary);
-    border-color: var(--et-primary);
+    color: var(--et-text);
+    background: var(--et-card-bg);
+    border-color: var(--et-border);
+    box-shadow: var(--et-shadow-sm);
 }
 
 button.event-tickets-with-ticket-scanner-topmenu-item:focus,
 button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
-    outline: none;
-    box-shadow: none;
+    outline: 2px solid var(--et-primary);
+    outline-offset: 1px;
 }
 
 /* ==========================================================================
@@ -498,7 +503,7 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
 
 .event-tickets-with-ticket-scanner-admin-page .et-footer-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--et-spacing-sm);
     margin-bottom: var(--et-spacing);
 }
@@ -722,6 +727,13 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     box-shadow: none !important;
     text-shadow: none !important;
 }
+/* Dashicons in button-primary: white (WP-Default wp-admin-blue clash with lila bg).
+   Saso 2026-08-13: 'icon in blau auf lila buttons sehen schlimm aus'. */
+.event-tickets-with-ticket-scanner-admin-page .button-primary .dashicons {
+    color: #fff !important;
+    vertical-align: middle;
+    margin-right: 2px;
+}
 
 .event-tickets-with-ticket-scanner-admin-page .button-primary:hover,
 .event-tickets-with-ticket-scanner-admin-page .button-primary:focus {
@@ -791,6 +803,237 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
 .event-tickets-with-ticket-scanner-admin-page .et-badge-purple {
     background: var(--et-primary-light);
     color: var(--et-primary);
+}
+
+/* ---------------------------------------------------------------------------
+   Status Pills (ticket-table column): dot indicator + uppercase label
+   --------------------------------------------------------------------------- */
+.event-tickets-with-ticket-scanner-admin-page .et-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 9px 2px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-pill--active {
+    background: #dcfce7;
+    color: #166534;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-pill--used {
+    background: var(--et-border-light);
+    color: var(--et-text-secondary);
+}
+.event-tickets-with-ticket-scanner-admin-page .et-pill--inactive {
+    background: var(--et-border-light);
+    color: var(--et-text-secondary);
+}
+.event-tickets-with-ticket-scanner-admin-page .et-pill--stolen {
+    background: #fef2f2;
+    color: #991b1b;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-pill--warning {
+    background: #fef3c7;
+    color: #b45309;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-pill--neutral {
+    background: var(--et-border-light);
+    color: var(--et-text-secondary);
+}
+
+/* Card-Header Icons: gedämpft (Text-Secondary), nicht Brand-Color.
+   Saso 2026-08-13: 'professionelles auftreten vermitteln'. 11x Lila
+   Dashicons = visuell ermuedend. Brand-Color nur fuer echte Aktionen. */
+/* Card-Header + Card-Body Icons: gedämpft (Text-Secondary), nicht Brand-Color.
+   Saso 2026-08-13: 'professionelles auftreten vermitteln'. Lila Dashicons
+   in jeder Card = visuell ermuedend. Brand-Color nur fuer echte Aktionen. */
+.event-tickets-with-ticket-scanner-admin-page .et-card .dashicons,
+.event-tickets-with-ticket-scanner-admin-page .et-card-header .dashicons {
+    color: var(--et-text-secondary);
+}
+
+/* Fixed Back-To-Top Button: Lila Button mit weissem Dashicon-Icon.
+   Saso 2026-08-13: 'icon in blau auf lila buttons sehen schlimm aus'. */
+.event-tickets-with-ticket-scanner-admin-page .et-btn--top {
+    text-decoration: none;
+    position: fixed;
+    bottom: 50px;
+    right: 10px;
+    background-color: var(--et-primary);
+    color: #fff;
+    border-radius: 15px;
+    display: inline-block;
+    padding: 10px;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-btn--top .dashicons {
+    color: #fff;
+    vertical-align: middle;
+}
+
+/* ---------------------------------------------------------------------------
+   License Status Badge (SRP: konsolidiert Status-Anzeige in Options-Tab)
+   --------------------------------------------------------------------------- */
+.event-tickets-with-ticket-scanner-admin-page .saso-license-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.8;
+}
+.event-tickets-with-ticket-scanner-admin-page .saso-license-status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    background: currentColor;
+}
+.event-tickets-with-ticket-scanner-admin-page .saso-license-status--active {
+    background: var(--et-success-light, #dcfce7);
+    color: var(--et-success);
+}
+.event-tickets-with-ticket-scanner-admin-page .saso-license-status--inactive,
+.event-tickets-with-ticket-scanner-admin-page .saso-license-status--error {
+    background: var(--et-danger-light, #fee2e2);
+    color: var(--et-danger);
+}
+.event-tickets-with-ticket-scanner-admin-page .saso-license-status--pending {
+    background: var(--et-primary-light);
+    color: var(--et-primary);
+}
+.event-tickets-with-ticket-scanner-admin-page .saso-license-status-failures {
+    margin-left: 8px;
+    font-size: 12px;
+    color: var(--et-text-secondary);
+}
+
+/* ---------------------------------------------------------------------------
+   Serial-Input Row (License Key Option: Check-License Button auf eigener Zeile)
+   --------------------------------------------------------------------------- */
+.event-tickets-with-ticket-scanner-admin-page .saso-serial-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.event-tickets-with-ticket-scanner-admin-page .saso-serial-row .saso-serial-check {
+    align-self: flex-start;
+}
+
+/* ---------------------------------------------------------------------------
+   Shortcodes Table (et-footer-shortcodes card)
+   --------------------------------------------------------------------------- */
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--et-spacing-xs);
+}
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-table thead th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--et-text-secondary);
+    padding: var(--et-spacing-xs) var(--et-spacing-sm);
+    border-bottom: 1px solid var(--et-border);
+}
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-table tbody td {
+    padding: var(--et-spacing-sm);
+    border-bottom: 1px solid var(--et-border-light);
+    vertical-align: top;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-code code {
+    background: var(--et-primary-light);
+    color: var(--et-primary);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-code small {
+    display: block;
+    margin-top: 4px;
+    color: var(--et-text-muted);
+    font-size: 11px;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-desc {
+    margin: 4px 0;
+    color: var(--et-text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-params {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--et-spacing-xs);
+}
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-params td {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: none;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-params td:first-child {
+    width: 30%;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-shortcodes-params code {
+    background: var(--et-bg-subtle);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: var(--et-text);
+}
+
+/* ---------------------------------------------------------------------------
+   Empty State (bulk cards, empty data tables).
+   --------------------------------------------------------------------------- */
+.event-tickets-with-ticket-scanner-admin-page .et-empty-state {
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--et-text-secondary);
+}
+.event-tickets-with-ticket-scanner-admin-page .et-empty-state-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--et-primary-light);
+    color: var(--et-primary);
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-empty-state-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--et-text);
+    margin: 0 0 6px 0;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-empty-state-text {
+    font-size: 13px;
+    color: var(--et-text-secondary);
+    margin: 0 auto 16px auto;
+    max-width: 480px;
+    line-height: 1.5;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-empty-state .button {
+    margin-top: 4px;
 }
 
 /* ==========================================================================
@@ -970,11 +1213,18 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     flex-shrink: 0;
 }
 
+.event-tickets-with-ticket-scanner-admin-page .et-support-link > div {
+    min-width: 0;
+    flex: 1;
+}
+
 .event-tickets-with-ticket-scanner-admin-page .et-support-link strong {
     display: block;
     color: var(--et-text);
     font-size: 14px;
     margin-bottom: 2px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .event-tickets-with-ticket-scanner-admin-page .et-support-link span {
@@ -1165,13 +1415,19 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     margin: 0 !important;
 }
 
-.ui-dialog .ui-dialog-buttonpane button:first-child {
+/* Hervorgehoben wird die empfohlene Aktion, nicht die erste Position.
+   Vorher faerbte :first-child blind den linken Knopf ein - im Wizard also
+   "Skip" statt "Start Setup" und "Back" statt "Apply & Finish". Dialoge ohne
+   ausgezeichneten Knopf (Ja/Nein) behalten die alte Darstellung. */
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset:not(:has(.button-primary)) button:first-child,
+.ui-dialog .ui-dialog-buttonpane button.button-primary {
     background: #9333ea !important;
     border-color: #9333ea !important;
     color: #fff !important;
 }
 
-.ui-dialog .ui-dialog-buttonpane button:first-child:hover {
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset:not(:has(.button-primary)) button:first-child:hover,
+.ui-dialog .ui-dialog-buttonpane button.button-primary:hover {
     background: #7c22d0 !important;
     border-color: #7c22d0 !important;
     box-shadow: 0 2px 4px rgba(147, 51, 234, 0.3);
@@ -1182,7 +1438,8 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     border-color: #d1d5db !important;
 }
 
-.ui-dialog .ui-dialog-buttonpane button:first-child:hover {
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset:not(:has(.button-primary)) button:first-child:hover,
+.ui-dialog .ui-dialog-buttonpane button.button-primary:hover {
     background: #7c22d0 !important;
     color: #fff !important;
 }
@@ -1337,4 +1594,300 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
 .event-tickets-with-ticket-scanner-admin-page .et-btn-group .button-secondary:last-child,
 .event-tickets-with-ticket-scanner-admin-page .et-btn-group .button:last-child {
     border-right: none !important;
+}
+
+/* ==========================================================================
+   Startpunkt-Anzeige (setup status on the options page)
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-setup-status {
+    background: var(--et-card-bg);
+    border: 1px solid var(--et-border);
+    border-left: 4px solid var(--et-primary);
+    border-radius: var(--et-radius);
+    padding: var(--et-spacing);
+    margin-bottom: var(--et-spacing);
+    position: relative;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-status--ready {
+    border-left-color: #46b450;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-status-head {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--et-text);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-status--ready .et-setup-status-head .dashicons {
+    color: #46b450;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 0;
+    border-top: 1px solid var(--et-border-light);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-step:first-child {
+    border-top: none;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-step-icon {
+    color: #b4b9be;
+    flex: 0 0 auto;
+    margin-top: 2px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-step--done .et-setup-step-icon {
+    color: #46b450;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-step-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-step-label {
+    display: block;
+    font-weight: 600;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-step--done .et-setup-step-label {
+    font-weight: 400;
+    color: var(--et-text-light, #646970);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-step-desc {
+    display: block;
+    font-size: 13px;
+    color: var(--et-text-light, #646970);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-step-action {
+    flex: 0 0 auto;
+    align-self: center;
+}
+
+/* ==========================================================================
+   Options search (finds a setting by name, description or key)
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-options-search {
+    position: sticky;
+    top: 32px;
+    z-index: 20;
+    background: var(--et-card-bg);
+    border: 1px solid var(--et-border);
+    border-radius: var(--et-radius);
+    padding: 8px 12px;
+    margin: var(--et-spacing-sm) 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-options-search-input {
+    flex: 1 1 320px;
+    max-width: 480px;
+    padding: 6px 10px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-options-search-result {
+    font-size: 13px;
+    color: var(--et-text-light, #646970);
+}
+
+.event-tickets-with-ticket-scanner-admin-page mark.et-search-hit {
+    background: #fff3cd;
+    color: inherit;
+    padding: 0 1px;
+}
+
+@media screen and (max-width: 782px) {
+    .event-tickets-with-ticket-scanner-admin-page .et-options-search {
+        top: 46px;
+    }
+}
+
+/* ==========================================================================
+   Use-case view bar (filters the settings by kind of ticket sale)
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-view-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: var(--et-spacing-sm) 0;
+    padding: 10px 12px;
+    background: var(--et-card-bg);
+    border: 1px solid var(--et-border);
+    border-radius: var(--et-radius);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-view-tabs {
+    display: inline-flex;
+    border: 1px solid var(--et-border);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-view-tabs .et-view-tab {
+    border-radius: 0 !important;
+    border: none !important;
+    border-right: 1px solid var(--et-border) !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-view-tabs .et-view-tab:last-child {
+    border-right: none !important;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-view-tabs .et-view-tab-active {
+    background: var(--et-primary) !important;
+    color: #fff !important;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-view-info {
+    font-size: 13px;
+    color: var(--et-text-light, #646970);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-view-more {
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   Event-type question (asked once) and the counter-check on foreign settings
+   ========================================================================== */
+.event-tickets-with-ticket-scanner-admin-page .et-usecase-chooser {
+    background: var(--et-card-bg);
+    border: 1px solid var(--et-border);
+    border-left: 4px solid var(--et-primary);
+    border-radius: var(--et-radius);
+    padding: var(--et-spacing);
+    margin-bottom: var(--et-spacing-sm);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-usecase-chooser-head {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-usecase-chooser-desc {
+    font-size: 13px;
+    color: var(--et-text-light, #646970);
+    margin-bottom: 12px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-usecase-tiles {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-usecase-later {
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-view-foreign {
+    font-size: 13px;
+    color: #b26200;
+}
+
+.event-tickets-with-ticket-scanner-admin-page [data-et-opt].et-opt-foreign {
+    border-left: 4px solid #dba617;
+    background: #fffbf0;
+    padding: 10px 12px;
+    border-radius: var(--et-radius);
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-foreign-note {
+    font-size: 13px;
+    color: #8a5700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-foreign-reset {
+    cursor: pointer;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-status-head {
+    padding-right: 28px;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-status-dismiss {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    padding: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--et-text-secondary, #6b7280);
+    line-height: 1;
+    z-index: 1;
+}
+
+.event-tickets-with-ticket-scanner-admin-page .et-setup-status-dismiss:hover {
+    color: var(--et-text, #1d2327);
+    background: var(--et-border-light, #f3f4f6);
+}
+
+/* Wizard-Abschluss: was eingestellt wurde, statt nur "fertig" */
+.saso-wizard-done-lead {
+    font-size: 13px;
+    color: #4b5563;
+    margin: 14px 0 6px;
+}
+
+.saso-wizard-done-applied {
+    text-align: left;
+    margin: 0 auto 4px;
+    padding-left: 20px;
+    max-width: 420px;
+    font-size: 13px;
+    color: #111827;
+    list-style: none;
+}
+
+.saso-wizard-done-applied li {
+    position: relative;
+    margin-bottom: 5px;
+    padding-left: 20px;
+}
+
+.saso-wizard-done-applied li::before {
+    content: "\2713";
+    position: absolute;
+    left: 0;
+    color: #16a34a;
+    font-weight: 700;
+}
+
+/* Options-Schlüssel: im Einstieg aus, in der vollen Ansicht an */
+.event-tickets-with-ticket-scanner-admin-page .et-hide-opt-keys .et-opt-key {
+    display: none;
 }

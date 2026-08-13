@@ -995,8 +995,8 @@ msgstr "Кількість підтверджених"
 
 #: ticket_scanner.js:1012
 #, javascript-format
-msgid "Confirmed status validation check counter: <b>%s</b>"
-msgstr "Лічильник перевірок статусу підтвердження: <b>%s</b>"
+msgid "Confirmed: <b>%s</b>"
+msgstr "Підтверджено: <b>%s</b>"
 
 #: backend.js:1139
 msgid "Consecutive failures"

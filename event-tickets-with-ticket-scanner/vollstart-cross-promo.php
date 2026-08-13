@@ -45,6 +45,13 @@ function vollstart_cross_promo_get_plugins() {
             'menu_slug' => 'vollstart-appointment-desk',
             'new' => true,
         ],
+        'vollstart-repair-desk' => [
+            'name' => 'Repair Desk',
+            'short' => 'Repair tracking and customer notifications for workshops. QR status page, work steps, photos.',
+            'icon' => 'https://ps.w.org/vollstart-repair-desk/assets/icon-128x128.png',
+            'wporg' => 'https://wordpress.org/plugins/vollstart-repair-desk/',
+            'menu_slug' => 'vollstart-repair-desk',
+        ],
     ];
 }
 
@@ -148,7 +155,10 @@ if (!function_exists('vollstart_render_more_plugins_page')):
 function vollstart_render_more_plugins_page($plugins) {
     // WP.org API Daten (24h Cache) — always fetch ALL plugins, not just the
     // ones passed to this function, so the cache works across all callers.
-    $api_data = get_transient('vollstart_promo_wporg_data');
+    // Transient-Key enthaelt die Plugin-Anzahl: bei neuen Plugins wird der
+    // Cache automatisch invalidiert (kein 24h-Stale-State).
+    $cache_key = 'vollstart_promo_wporg_data_' . count(vollstart_cross_promo_get_plugins());
+    $api_data = get_transient($cache_key);
     if (!$api_data) {
         $api_data = [];
         $all_plugins = vollstart_cross_promo_get_plugins();
@@ -168,7 +178,7 @@ function vollstart_render_more_plugins_page($plugins) {
                 }
             }
         }
-        set_transient('vollstart_promo_wporg_data', $api_data, DAY_IN_SECONDS);
+        set_transient($cache_key, $api_data, DAY_IN_SECONDS);
     }
 
     echo '<div class="wrap">';

@@ -975,8 +975,8 @@ msgstr "عدد مؤكد"
 
 #: ticket_scanner.js:1012
 #, javascript-format
-msgid "Confirmed status validation check counter: <b>%s</b>"
-msgstr "عداد التحقق من الحالة المؤكدة: <b>%s</b>"
+msgid "Confirmed: <b>%s</b>"
+msgstr "مؤكد: <b>%s</b>"
 
 #: backend.js:1139
 msgid "Consecutive failures"

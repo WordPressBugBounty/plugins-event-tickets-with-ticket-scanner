@@ -940,7 +940,7 @@ msgstr ""
 
 #: ticket_scanner.js:1012
 #, javascript-format
-msgid "Confirmed status validation check counter: <b>%s</b>"
+msgid "Confirmed: <b>%s</b>"
 msgstr ""
 
 #: backend.js:1139
