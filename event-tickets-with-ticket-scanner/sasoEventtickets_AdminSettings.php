@@ -2293,13 +2293,19 @@ class sasoEventtickets_AdminSettings {
 						$public_ticket_ids = [];
 						$daychooser = [];
 						$new_codes = [];
+						// an der Bestellposition steht die Nummer in der Anzeigeform (mit Trennzeichen),
+						// im Datensatz ohne - beide Formen vergleichen, sonst trifft der Filter nie zu
+						$code_to_remove = trim($codeObj["code"]);
+						$code_display_to_remove = isset($codeObj["code_display"]) ? trim($codeObj["code_display"]) : "";
 						foreach($codes as $idx => $code) {
-							if ($code != $codeObj["code"]) { // do not re-add the ticket number, that need to be removed
+							$code = trim($code);
+							if ($code != $code_to_remove && ($code_display_to_remove === "" || $code != $code_display_to_remove)) { // do not re-add the ticket number, that need to be removed
 								$new_codes[] = $code;
-								if(isset($existing_plublic_ticket_ids[$idx])) {
-									$public_ticket_ids[] = $existing_plublic_ticket_ids[$idx];
-									$daychooser[] = $existing_saso_eventtickets_daychooser[$idx];
-								}
+								// die drei Listen laufen ueber denselben Index: fuer jede behaltene
+								// Nummer muss auch dann ein Platz belegt werden, wenn die oeffentliche
+								// Nummer oder der Tag fehlt - sonst verschieben sie sich gegeneinander
+								$public_ticket_ids[] = isset($existing_plublic_ticket_ids[$idx]) ? $existing_plublic_ticket_ids[$idx] : "";
+								$daychooser[] = isset($existing_saso_eventtickets_daychooser[$idx]) ? $existing_saso_eventtickets_daychooser[$idx] : "";
 							}
 						}
 						if (count($new_codes) == 0) {
@@ -2307,7 +2313,7 @@ class sasoEventtickets_AdminSettings {
 							$this->removeWoocommerceTicketForCode($data);
 						} else {
 							wc_delete_order_item_meta( $item_id, '_saso_eventtickets_product_code' );
-							wc_add_order_item_meta($item_id , '_saso_eventtickets_product_code', implode(",", $codes) );
+							wc_add_order_item_meta($item_id , '_saso_eventtickets_product_code', implode(",", $new_codes) );
 							wc_delete_order_item_meta( $item_id, "_saso_eventtickets_public_ticket_ids" );
 							wc_add_order_item_meta($item_id , "_saso_eventtickets_public_ticket_ids", implode(",", $public_ticket_ids) ) ;
 							wc_delete_order_item_meta( $item_id, "_saso_eventtickets_daychooser" );
@@ -2913,7 +2919,7 @@ class sasoEventtickets_AdminSettings {
 			'meta_confirmedCount',
 			'meta_woocommerce', 'meta_woocommerce_order_id', 'meta_woocommerce_product_id', 'meta_woocommerce_creation_date', 'meta_woocommerce_creation_date_tz', 'meta_woocommerce_item_id', 'meta_woocommerce_user_id',
 			'meta_wc_rp', 'meta_wc_rp_order_id', 'meta_wc_rp_product_id', 'meta_wc_rp_creation_date', 'meta_wc_rp_creation_date_tz', 'meta_wc_rp_item_id',
-			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_redeemed_via_authtoken_id', 'meta_wc_ticket_redeemed_via_authtoken_name', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket', 'meta_wc_ticket_subs', 'meta_wc_ticket_seat_id', 'meta_wc_ticket_seat_identifier', 'meta_wc_ticket_seat_label', 'meta_wc_ticket_seat_category',
+			'meta_wc_ticket', 'meta_wc_ticket_is_ticket', 'meta_wc_ticket_ip', 'meta_wc_ticket_userid', 'meta_wc_ticket_redeemed_date', 'meta_wc_ticket_redeemed_date_tz', 'meta_wc_ticket_redeemed_by_admin', 'meta_wc_ticket_redeemed_via_authtoken_id', 'meta_wc_ticket_redeemed_via_authtoken_name', 'meta_wc_ticket_set_by_admin', 'meta_wc_ticket_set_by_admin_date', 'meta_wc_ticket_set_by_admin_date_tz', 'meta_wc_ticket_idcode', 'meta_wc_ticket_stats_redeemed', 'meta_wc_ticket_public_ticket_id','meta_wc_ticket_customer_name', 'meta_wc_ticket_name_per_ticket', 'meta_wc_ticket_value_per_ticket', 'meta_wc_ticket_is_daychooser', 'meta_wc_ticket_day_per_ticket', 'meta_wc_ticket_subs', 'meta_wc_ticket_seat_id', 'meta_wc_ticket_seat_identifier', 'meta_wc_ticket_seat_label', 'meta_wc_ticket_seat_category',
 			'meta_cvv_attempts_count',
 			'meta_cvv_attempts_last_at',
 			'meta_cvv_attempts_locked'
@@ -3001,6 +3007,7 @@ class sasoEventtickets_AdminSettings {
 				if (!empty($metaObj['wc_ticket']['stats_redeemed'])) $row['meta_wc_ticket_stats_redeemed'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj['wc_ticket']['stats_redeemed']);
 				if (!empty($metaObj['wc_ticket']['_public_ticket_id'])) $row['meta_wc_ticket_public_ticket_id'] = $metaObj['wc_ticket']['_public_ticket_id'];
 				if (!empty($metaObj['wc_ticket']['name_per_ticket'])) $row['meta_wc_ticket_name_per_ticket'] = $metaObj['wc_ticket']['name_per_ticket'];
+				if (!empty($metaObj['wc_ticket']['value_per_ticket'])) $row['meta_wc_ticket_value_per_ticket'] = $metaObj['wc_ticket']['value_per_ticket'];
 				if (!empty($metaObj['wc_ticket']['is_daychooser'])) $row['meta_wc_ticket_is_daychooser'] = $metaObj['wc_ticket']['is_daychooser'];
 				if (!empty($metaObj['wc_ticket']['day_per_ticket'])) $row['meta_wc_ticket_day_per_ticket'] = $metaObj['wc_ticket']['day_per_ticket'];
 				if (!empty($metaObj['wc_ticket']['subs'])) $row['meta_wc_ticket_subs'] = $metaObj['wc_ticket']['subs'];

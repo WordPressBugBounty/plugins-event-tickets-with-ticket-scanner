@@ -3,8 +3,8 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.6
-Tested up to: 7.0
+Stable tag: 3.1.7
+Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -223,19 +223,16 @@ It's a private event portal you can attach to a ticket product — organized int
 
 == Screenshots ==
 
-1. **Ticket on Mobile** — Customers see their ticket details optimized for any device, with QR code and PDF download.
-2. **Ticket Details Desktop** — Configure exactly which information appears on the ticket detail page.
-3. **PDF Ticket** — Professionally designed PDF ticket with QR code, ready for print or mobile display.
-4. **Ticket Scanner** — Built-in mobile scanner for your team at the entrance. No app required.
-5. **Event Badge** — Print name badges for conferences, VIP events, or staff credentials.
-6. **Admin Options** — Comprehensive settings to configure ticket behavior, formats, and delivery.
-7. **Ticket Management** — Overview of all generated tickets with status, redemption info, and filters.
-8. **Ticket Number Formats** — Pre-generate ticket numbers or let the plugin create them automatically.
-9. **Event Flyer** — Generate promotional flyers for your event directly from the plugin.
-10. **PDF Designer** — Customize every area of your ticket PDF: logo, images, QR position, colors.
-11. **Product Settings** — Enable ticket sales on any WooCommerce product with one checkbox.
-12. **Flyer Settings** — Configure flyer content, images, and event details.
-13. **Order Ticket View** — Quick-scan tickets directly from the WooCommerce order detail page.
+1. **Event Tickets Dashboard** — Manage ticket lists, sold tickets, and everything else from one place in your WordPress admin.
+2. **Visual Seating Plan Designer** — Drag & drop seats, rows, shapes and labels to design your venue. No design tools needed.
+3. **Interactive Seat Map at Checkout** — Customers pick their own seat on a live seat map. Taken seats are blocked automatically.
+4. **Sell Tickets as WooCommerce Products** — Any product becomes a ticket with one checkbox. Works with variations like VIP or General Admission.
+5. **PDF Ticket** — Branded PDF ticket with QR code, ready for print or mobile display.
+6. **Ticket on Mobile** — Customers see their ticket with QR code, PDF download and calendar file on any device.
+7. **Ticket Scanner** — Scan and redeem tickets with any phone. No extra app required; installs as a PWA with fullscreen mode.
+8. **Ticket Management** — All generated tickets with status, redemption info, filters and CSV export.
+9. **Tickets on the Order Page** — See and quick-scan the tickets of every WooCommerce order directly in the order detail view.
+10. **Product Settings** — Enable ticket sales, assign a ticket list and a seating plan on the product's Event Tickets tab.
 
 == Upgrade Notice ==
 
@@ -246,6 +243,13 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.7 - 2026-08-24 =
+* Fix: Removing a single ticket number from an order left that number on the order line. The number was freed in the ticket list, but the order, the email and the invoice PDF kept showing it, and it no longer lined up with the public ticket numbers next to it. The number was compared in its internal spelling against the one printed on the order, which never matched, so nothing was ever removed. Orders with several tickets on one line are the ones affected.
+* New: For developers: the decision whether an order line gets a ticket now lives in one place and can be overruled with the filter saso_eventtickets_wc_order_item_is_ticket. It exists for shops where another plugin splits one product into several order lines - split VAT or invoicing plugins - so that only the original line carries the ticket while the other lines stay bookkeeping. Nothing changes unless the filter is used.
+* New: For developers: the order manager now answers, per order line, how many ticket numbers a line is supposed to carry and which lines are still short of them (getExpectedTicketAmountForItem, countOrderItemsWithMissingTicketnumbers, orderNeedsTicketNumbers). Ticket creation uses the same calculation, so a tool that looks for missing numbers and the code that draws them can no longer drift apart. The premium bulk assignment is the first user.
+* New: The ticket export now has its own column for the value you ask per ticket (the product setting "Request a value for each ticket from dropdown"). Until now only the name per ticket had one, so the answer was in the export but buried inside the raw meta column, where a spreadsheet cannot filter or sort it. The column stays in the file even when a product does not ask for a value, so the header does not change from export to export.
+* Tweak: An extra safeguard so a product that is not configured as a ticket can never receive a ticket number, not even when it sits in the same order as tickets. Selling through the shop was never affected - the check was already made for every single order line - but the entry point that other code (the premium plugin, custom code) can call did not make it itself. It does now.
 
 = 3.1.6 - 2026-08-13 =
 * Tweak: The admin area was redesigned. The top navigation is now a segmented control, the footer cards sit in a four-column grid, ticket status pills use semantic colors, and the primary action buttons share one style across the whole settings page.
