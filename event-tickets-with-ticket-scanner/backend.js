@@ -317,6 +317,43 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 	}
 
+	// ── License Status Helper (SRP) ─────────────────────────────────────────
+	// Konsolidiert das Rendering von License-State in Badge/CSS-Klassen.
+	// Vorher: 3 verstreute Call-Sites mit direktem 'color:green|red'/'#xxx'
+	// inline-Style. Saso 2026-08-13: 'die müssten wir irgendwie srp oder so
+	// hinbekommen'.
+	// NOTE: Must live at the top level of sasoEventtickets() so ALL call-sites
+	// see it (_saveOptionValue, _displayOptionsArea). It was originally placed
+	// inside a callback of _setOptions (3.1.6, commit ac4e161) which made every
+	// other caller crash with ReferenceError BEFORE firing the AJAX request
+	// ("Check License" button spun forever, no network traffic). Fixed 3.1.9.
+	function _buildLicenseStatusBadge(result, opts) {
+		let label;
+		let variantClass;
+		let failures = '';
+		if (opts && opts.pending) {
+			label = opts.pendingLabel || __('Checking license...', 'event-tickets-with-ticket-scanner');
+			variantClass = 'saso-license-status--pending';
+		} else if (result && result.active) {
+			label = __('Active', 'event-tickets-with-ticket-scanner');
+			if (result.subscription_type === 'lifetime') label += ' (Lifetime)';
+			variantClass = 'saso-license-status--active';
+			if (result.consecutive_failures > 0) {
+				failures = '<span class="saso-license-status-failures">— ' + result.consecutive_failures + ' ' + __('failures', 'event-tickets-with-ticket-scanner') + '</span>';
+			}
+		} else if (result) {
+			label = __('Inactive', 'event-tickets-with-ticket-scanner');
+			variantClass = 'saso-license-status--inactive';
+			if (result.consecutive_failures > 0) {
+				failures = '<span class="saso-license-status-failures">— ' + result.consecutive_failures + ' ' + __('failures', 'event-tickets-with-ticket-scanner') + '</span>';
+			}
+		} else {
+			label = __('Check failed', 'event-tickets-with-ticket-scanner');
+			variantClass = 'saso-license-status--error';
+		}
+		return '<span class="saso-license-status ' + variantClass + '">' + label + '</span>' + failures;
+	}
+
 	function _setOptions(optionData) {
 		OPTIONS.list = optionData.options;
 		for (let a=0;a<OPTIONS.list.length;a++) {
@@ -420,40 +457,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 										);
 	
 
-	// ── License Status Helper (SRP) ─────────────────────────────────────────
-	// Konsolidiert das Rendering von License-State in Badge/CSS-Klassen.
-	// Vorher: 3 verstreute Call-Sites mit direktem 'color:green|red'/'#xxx'
-	// inline-Style. Saso 2026-08-13: 'die müssten wir irgendwie srp oder so
-	// hinbekommen'.
-	function _buildLicenseStatusBadge(result, opts) {
-		let label;
-		let variantClass;
-		let failures = '';
-		if (opts && opts.pending) {
-			label = opts.pendingLabel || __('Checking license...', 'event-tickets-with-ticket-scanner');
-			variantClass = 'saso-license-status--pending';
-		} else if (result && result.active) {
-			label = __('Active', 'event-tickets-with-ticket-scanner');
-			if (result.subscription_type === 'lifetime') label += ' (Lifetime)';
-			variantClass = 'saso-license-status--active';
-			if (result.consecutive_failures > 0) {
-				failures = '<span class="saso-license-status-failures">— ' + result.consecutive_failures + ' ' + __('failures', 'event-tickets-with-ticket-scanner') + '</span>';
-			}
-		} else if (result) {
-			label = __('Inactive', 'event-tickets-with-ticket-scanner');
-			variantClass = 'saso-license-status--inactive';
-			if (result.consecutive_failures > 0) {
-				failures = '<span class="saso-license-status-failures">— ' + result.consecutive_failures + ' ' + __('failures', 'event-tickets-with-ticket-scanner') + '</span>';
-			}
-		} else {
-			label = __('Check failed', 'event-tickets-with-ticket-scanner');
-			variantClass = 'saso-license-status--error';
-		}
-		return '<span class="saso-license-status ' + variantClass + '">' + label + '</span>' + failures;
-	}
-									setTimeout(function(){ location.reload(); }, 1500);
-									}, function(err) {
-										$dlg.parent().find('.ui-dialog-buttonpane button').prop('disabled', false).css({opacity: 1, cursor: 'pointer'});
+				setTimeout(function(){ location.reload(); }, 1500);
+					}, function(err) {
+						$dlg.parent().find('.ui-dialog-buttonpane button').prop('disabled', false).css({opacity: 1, cursor: 'pointer'});
 										$dlg.parent().find('.ui-dialog-buttonpane button.button-primary').text(__('Activate', 'event-tickets-with-ticket-scanner'));
 										serialInput.prop('disabled', false).css('opacity', 1);
 										statusDiv.html('<span style="color:red;">'+__('Error:', 'event-tickets-with-ticket-scanner')+' '+(err && err.data ? err.data : 'unknown')+'</span>').show();

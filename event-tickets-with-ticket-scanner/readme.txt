@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.8
+Stable tag: 3.1.9
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -243,6 +243,9 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.9 - 2026-08-26 =
+* Fix: The "Check License" button in the settings did nothing since 3.1.6 - it showed "Checking..." forever and never contacted the license server, and after saving a license key the page never confirmed the activation. A helper function used by the button was defined in a place the button could not see, so the click stopped with an error before the request was sent. Your license was still checked in the background as before - only the visible check and the confirmation after entering a new key were dead. Moving the helper where every part of the settings page can use it brings both back.
 
 = 3.1.8 - 2026-08-26 =
 * New: Fields that another plugin adds to an order line - for example the answers of a product add-on plugin - can now be shown as a column in the ticket list. Switch on "Display a column with the extra fields of the order line" in the settings. Until now those answers were only visible by opening each order, which is why shops with more questions than our two per-ticket fields had to build their own list. A second setting hides individual fields by name, for answers that belong in the order but not in a list. The values belong to the whole order line, not to a single ticket: an order line for three tickets carries one set of answers.
