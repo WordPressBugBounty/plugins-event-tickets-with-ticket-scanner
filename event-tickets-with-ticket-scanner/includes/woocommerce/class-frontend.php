@@ -781,9 +781,11 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 
 					// Show message if seats are required but not selected
 					if (!$hasSeats) {
-						$planId = get_post_meta($product_id_orig, $seating->getMetaProductSeatingplan(), true);
+						// Die Variante bringt ihren eigenen Plan mit; ohne eigenen erbt sie den des Produkts.
+						$variationIdOfItem = isset($cart_item['variation_id']) ? intval($cart_item['variation_id']) : 0;
+						$planOfItem = $seating->getFrontendManager()->getPlanForProductFrontend($product_id_orig, $variationIdOfItem > 0 ? $variationIdOfItem : null);
 						$seatingRequired = get_post_meta($product_id_orig, $seating->getMetaProductSeatingRequired(), true) === 'yes';
-						if (!empty($planId) && $seatingRequired) {
+						if ($planOfItem !== null && $seatingRequired) {
 							echo '<p class="saso-seats-required-notice">';
 							echo '<strong>' . esc_html__('Note:', 'event-tickets-with-ticket-scanner') . '</strong> ';
 							echo esc_html__('Please select your seats on the product page before checkout.', 'event-tickets-with-ticket-scanner');
@@ -1661,20 +1663,17 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 
 			// Seating plan handling
 			$seating = $this->MAIN->getSeating();
-			$planId = get_post_meta($product_id_orig, $seating->getMetaProductSeatingplan(), true);
-			if (!empty($planId)) {
-				$frontendManager = $seating->getFrontendManager();
+			$frontendManager = $seating->getFrontendManager();
 
-				// Check if plan is available for frontend (published or admin preview)
-				$plan = $frontendManager->getPlanForProductFrontend($product_id_orig);
+			// Welcher Plan gilt, sagt eine Stelle: der Resolver. In der Shop-Uebersicht
+			// steht keine Variante fest, hier gilt der Plan des Produkts.
+			$plan = $frontendManager->getPlanForProductFrontend($product_id_orig);
+			if ($plan) {
+				$frontendManager->enqueueScripts();
 
-				if ($plan) {
-					$frontendManager->enqueueScripts();
-
-					echo '<div class="saso-seating-wrapper" data-product-id="' . esc_attr($product_id) . '" data-requires-date="' . ($isDaychooser ? '1' : '0') . '">';
-					echo $frontendManager->renderSeatSelector($product_id_orig, $eventDate);
-					echo '</div>';
-				}
+				echo '<div class="saso-seating-wrapper" data-product-id="' . esc_attr($product_id) . '" data-requires-date="' . ($isDaychooser ? '1' : '0') . '">';
+				echo $frontendManager->renderSeatSelector($product_id_orig, $eventDate);
+				echo '</div>';
 			}
 		}
 
@@ -1733,20 +1732,23 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			// 2. Plan is published (or admin preview mode)
 			// 3. If daychooser is active, selector is hidden until date is chosen (via JS)
 			$seating = $this->MAIN->getSeating();
-			$planId = get_post_meta($product_id, $seating->getMetaProductSeatingplan(), true);
-			if (!empty($planId)) {
-				$frontendManager = $seating->getFrontendManager();
+			$frontendManager = $seating->getFrontendManager();
 
-				// Check if plan is available for frontend (published or admin preview)
-				$plan = $frontendManager->getPlanForProductFrontend($product_id);
+			// Der Kunde waehlt die Variante erst im Browser. Serverseitig faellt hier
+			// der Plan des Produkts, das JS tauscht die Karte beim Variantenwechsel.
+			$plan = $frontendManager->getPlanForProductFrontend($product_id);
 
+			// Auch wenn das Produkt selbst keinen Plan hat: sobald eine Variante
+			// einen mitbringt, braucht die Seite den Platz dafuer. Sonst hat das
+			// JS beim Variantenwechsel nichts, was es fuellen koennte.
+			if ($plan || $frontendManager->hasVariationPlans($product_id)) {
+				$frontendManager->enqueueScripts();
+
+				echo '<div class="saso-seating-wrapper" data-product-id="' . esc_attr($product_id) . '" data-requires-date="' . ($isDaychooser ? '1' : '0') . '">';
 				if ($plan) {
-					$frontendManager->enqueueScripts();
-
-					echo '<div class="saso-seating-wrapper" data-requires-date="' . ($isDaychooser ? '1' : '0') . '">';
 					echo $frontendManager->renderSeatSelector($product_id, $eventDate);
-					echo '</div>';
 				}
+				echo '</div>';
 			}
 		}
 
@@ -1849,133 +1851,132 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 
 			// Seating validation
 			$seating = $this->MAIN->getSeating();
-			$planId = get_post_meta($product_id, $seating->getMetaProductSeatingplan(), true);
-			if (!empty($planId)) {
-				$frontendManager = $seating->getFrontendManager();
-				$fieldName = $seating->getFieldSeatSelection();
-				$seatingRequired = get_post_meta($product_id, $seating->getMetaProductSeatingRequired(), true) === 'yes';
-				// wp_unslash is required because WordPress adds slashes to all $_REQUEST data
-				// sanitize_text_field is not suitable for JSON - validation is done via json_decode
-				$seatSelection = isset($_REQUEST[$fieldName]) ? wp_unslash($_REQUEST[$fieldName]) : '';
+			$variationIdOfRequest = isset($_REQUEST['variation_id']) ? intval($_REQUEST['variation_id']) : 0;
+			$frontendManager = $seating->getFrontendManager();
+			$fieldName = $seating->getFieldSeatSelection();
+			$seatingRequired = get_post_meta($product_id, $seating->getMetaProductSeatingRequired(), true) === 'yes';
+			// wp_unslash is required because WordPress adds slashes to all $_REQUEST data
+			// sanitize_text_field is not suitable for JSON - validation is done via json_decode
+			$seatSelection = isset($_REQUEST[$fieldName]) ? wp_unslash($_REQUEST[$fieldName]) : '';
 
-				// Check if plan is actually available to customers (published)
-				$plan = $frontendManager->getPlanForProductFrontend($product_id);
-				$planIsAvailable = !empty($plan);
+			// Check if plan is actually available to customers (published).
+			// Die gewaehlte Variante entscheidet, gegen welchen Plan geprueft wird.
+			$plan = $frontendManager->getPlanForProductFrontend($product_id, $variationIdOfRequest > 0 ? $variationIdOfRequest : null);
+			$planIsAvailable = !empty($plan);
 
-				// Only validate if plan is published and visible to customer
-				if ($planIsAvailable) {
-					// Parse seat selection (always array format)
-					$seatsToValidate = [];
-					if (!empty($seatSelection)) {
-						$seatData = json_decode($seatSelection, true);
-						if (is_array($seatData)) {
-							if (isset($seatData['seat_id'])) {
-								// Legacy single seat - wrap in array
-								$seatsToValidate = [$seatData];
-							} elseif (!empty($seatData) && isset($seatData[0]['seat_id'])) {
-								$seatsToValidate = $seatData;
-							}
+			// Only validate if plan is published and visible to customer
+			if ($planIsAvailable) {
+				// Parse seat selection (always array format)
+				$seatsToValidate = [];
+				if (!empty($seatSelection)) {
+					$seatData = json_decode($seatSelection, true);
+					if (is_array($seatData)) {
+						if (isset($seatData['seat_id'])) {
+							// Legacy single seat - wrap in array
+							$seatsToValidate = [$seatData];
+						} elseif (!empty($seatData) && isset($seatData[0]['seat_id'])) {
+							$seatsToValidate = $seatData;
 						}
 					}
+				}
 
-					$seatCount = count($seatsToValidate);
+				$seatCount = count($seatsToValidate);
 
-					// Check if seats are required but missing
-					if ($seatingRequired && $seatCount === 0) {
+				// Check if seats are required but missing
+				if ($seatingRequired && $seatCount === 0) {
+					wc_add_notice(
+						sprintf(
+							__('Please select %d seat(s) before adding to cart.', 'event-tickets-with-ticket-scanner'),
+							$quantity
+						),
+						'error'
+					);
+					return false;
+				}
+
+				// Check if seat count matches quantity
+				if ($seatCount > 0 && $seatCount !== $quantity) {
+					wc_add_notice(
+						sprintf(
+							__('Please select exactly %d seat(s). You have selected %d.', 'event-tickets-with-ticket-scanner'),
+							$quantity,
+							$seatCount
+						),
+						'error'
+					);
+					return false;
+				}
+
+				// Validate each seat availability
+				$eventDate = isset($_REQUEST[self::FIELD_KEY]) ? SASO_EVENTTICKETS::sanitize_date_from_datepicker($_REQUEST[self::FIELD_KEY]) : null;
+				$blockOnAddToCart = $this->MAIN->getOptions()->isOptionCheckboxActive('seatingBlockOnAddToCart');
+				$blockManager = $seating->getBlockManager();
+				$sessionId = WC()->session ? WC()->session->get_customer_id() : session_id();
+				$blockedSeatsData = [];
+
+				foreach ($seatsToValidate as $index => $seat) {
+					if (!isset($seat['seat_id'])) {
+						continue;
+					}
+
+					$seatId = (int) $seat['seat_id'];
+
+					// Validate seat belongs to the product's seating plan (security check)
+					$seatPlanId = $seating->getSeatManager()->getSeatingPlanIdForSeatId($seatId);
+					if ($seatPlanId === null || (int)$seatPlanId !== (int)$planId) {
 						wc_add_notice(
-							sprintf(
-								__('Please select %d seat(s) before adding to cart.', 'event-tickets-with-ticket-scanner'),
-								$quantity
-							),
+							__('Invalid seat selection. Please reload the page and try again.', 'event-tickets-with-ticket-scanner'),
 							'error'
 						);
 						return false;
 					}
 
-					// Check if seat count matches quantity
-					if ($seatCount > 0 && $seatCount !== $quantity) {
-						wc_add_notice(
-							sprintf(
-								__('Please select exactly %d seat(s). You have selected %d.', 'event-tickets-with-ticket-scanner'),
-								$quantity,
-								$seatCount
-							),
-							'error'
-						);
-						return false;
-					}
+					// If blockOnAddToCart is active, we need to create blocks now
+					if ($blockOnAddToCart) {
+						// Try to block the seat
+						$blockResult = $blockManager->blockSeat($seatId, $planId, $product_id, $eventDate, $sessionId);
 
-					// Validate each seat availability
-					$eventDate = isset($_REQUEST[self::FIELD_KEY]) ? SASO_EVENTTICKETS::sanitize_date_from_datepicker($_REQUEST[self::FIELD_KEY]) : null;
-					$blockOnAddToCart = $this->MAIN->getOptions()->isOptionCheckboxActive('seatingBlockOnAddToCart');
-					$blockManager = $seating->getBlockManager();
-					$sessionId = WC()->session ? WC()->session->get_customer_id() : session_id();
-					$blockedSeatsData = [];
-
-					foreach ($seatsToValidate as $index => $seat) {
-						if (!isset($seat['seat_id'])) {
-							continue;
-						}
-
-						$seatId = (int) $seat['seat_id'];
-
-						// Validate seat belongs to the product's seating plan (security check)
-						$seatPlanId = $seating->getSeatManager()->getSeatingPlanIdForSeatId($seatId);
-						if ($seatPlanId === null || (int)$seatPlanId !== (int)$planId) {
+						if (!$blockResult['success']) {
+							$seatLabel = $seat['seat_label'] ?? $seat['seat_id'];
 							wc_add_notice(
-								__('Invalid seat selection. Please reload the page and try again.', 'event-tickets-with-ticket-scanner'),
+								sprintf(__('Seat "%s" is no longer available. Please choose another seat.', 'event-tickets-with-ticket-scanner'), $seatLabel),
 								'error'
 							);
 							return false;
 						}
 
-						// If blockOnAddToCart is active, we need to create blocks now
-						if ($blockOnAddToCart) {
-							// Try to block the seat
-							$blockResult = $blockManager->blockSeat($seatId, $planId, $product_id, $eventDate, $sessionId);
+						// Store block info to update the seat data
+						$blockedSeatsData[$index] = [
+							'block_id' => $blockResult['block_id'],
+							'expires_at' => $blockResult['expires_at'],
+						];
+					} else {
+						// Standard validation - seat should already be blocked
+						$validation = $frontendManager->validateSeatSelection(
+							$product_id,
+							$seatId,
+							$eventDate
+						);
 
-							if (!$blockResult['success']) {
-								$seatLabel = $seat['seat_label'] ?? $seat['seat_id'];
-								wc_add_notice(
-									sprintf(__('Seat "%s" is no longer available. Please choose another seat.', 'event-tickets-with-ticket-scanner'), $seatLabel),
-									'error'
-								);
-								return false;
-							}
-
-							// Store block info to update the seat data
-							$blockedSeatsData[$index] = [
-								'block_id' => $blockResult['block_id'],
-								'expires_at' => $blockResult['expires_at'],
-							];
-						} else {
-							// Standard validation - seat should already be blocked
-							$validation = $frontendManager->validateSeatSelection(
-								$product_id,
-								$seatId,
-								$eventDate
-							);
-
-							if (!$validation['valid']) {
-								$seatLabel = $seat['seat_label'] ?? $seat['seat_id'];
-								$errorMsg = $validation['error'] === 'seat_unavailable'
-									? sprintf(__('Seat "%s" is no longer available. Please choose another seat.', 'event-tickets-with-ticket-scanner'), $seatLabel)
-									: sprintf(__('Invalid seat selection: %s. Please try again.', 'event-tickets-with-ticket-scanner'), $seatLabel);
-								wc_add_notice($errorMsg, 'error');
-								return false;
-							}
+						if (!$validation['valid']) {
+							$seatLabel = $seat['seat_label'] ?? $seat['seat_id'];
+							$errorMsg = $validation['error'] === 'seat_unavailable'
+								? sprintf(__('Seat "%s" is no longer available. Please choose another seat.', 'event-tickets-with-ticket-scanner'), $seatLabel)
+								: sprintf(__('Invalid seat selection: %s. Please try again.', 'event-tickets-with-ticket-scanner'), $seatLabel);
+							wc_add_notice($errorMsg, 'error');
+							return false;
 						}
 					}
+				}
 
-					// If blockOnAddToCart, update REQUEST data with block info for the add_to_cart_handler
-					if ($blockOnAddToCart && !empty($blockedSeatsData)) {
-						foreach ($blockedSeatsData as $index => $blockInfo) {
-							$seatsToValidate[$index]['block_id'] = $blockInfo['block_id'];
-							$seatsToValidate[$index]['expires_at'] = $blockInfo['expires_at'];
-						}
-						// Update the REQUEST data so add_to_cart_handler gets the block info
-						$_REQUEST[$fieldName] = wp_json_encode($seatsToValidate);
+				// If blockOnAddToCart, update REQUEST data with block info for the add_to_cart_handler
+				if ($blockOnAddToCart && !empty($blockedSeatsData)) {
+					foreach ($blockedSeatsData as $index => $blockInfo) {
+						$seatsToValidate[$index]['block_id'] = $blockInfo['block_id'];
+						$seatsToValidate[$index]['expires_at'] = $blockInfo['expires_at'];
 					}
+					// Update the REQUEST data so add_to_cart_handler gets the block info
+					$_REQUEST[$fieldName] = wp_json_encode($seatsToValidate);
 				}
 			}
 

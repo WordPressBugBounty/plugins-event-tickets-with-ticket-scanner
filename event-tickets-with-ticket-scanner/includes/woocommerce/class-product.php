@@ -785,7 +785,9 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 			woocommerce_wp_checkbox(
 				array(
 					'id'          => '_saso_eventtickets_is_not_ticket[' . $loop . ']',
-					'label'       => __('This variation is NOT a ticket product', 'event-tickets-with-ticket-scanner'),
+					// Das Label steht direkt neben der Checkbox. Ein normales
+					// Leerzeichen faellt beim Rendern weg, deshalb ein geschuetztes.
+					'label'       => '&nbsp;' . __('This variation is NOT a ticket product', 'event-tickets-with-ticket-scanner'),
 					'desc_tip'    => 'true',
 					'description' => __('This allows you to exclude a variation to be a ticket', 'event-tickets-with-ticket-scanner'),
 					'value'       => get_post_meta($variation->ID, self::META_VARIATION_NOT_TICKET, true)

@@ -244,6 +244,8 @@ class sasoEventtickets_Options {
 		$this->_options[] = $this->getOptionsObject('displayAdminAreaColumnConfirmedCount', esc_html__("Display the column 'confirmed count' of the ticket", 'event-tickets-with-ticket-scanner'), esc_html__("If active, then a new column within the admin area for each ticket will be shown with the confirmed count value.", 'event-tickets-with-ticket-scanner'), "checkbox");
 		$this->_options[] = $this->getOptionsObject('displayAdminAreaColumnRedeemedInfo', esc_html__("Display a column with the information how often the ticket is redeemed", 'event-tickets-with-ticket-scanner'), esc_html__("If active, then a new column within the admin area for each ticket will be shown with the redeem ticket information. This feature can be very slow.", 'event-tickets-with-ticket-scanner'), "checkbox");
 		$this->_options[] = $this->getOptionsObject('displayAdminAreaColumnBillingName', esc_html__("Display a column with the name of the buyer", 'event-tickets-with-ticket-scanner'), __('If active, then a new column within the admin area for each ticket will be shown with the billing name. <b>This feature can be very slow.</b>', 'event-tickets-with-ticket-scanner'),"checkbox");
+		$this->_options[] = $this->getOptionsObject('displayAdminAreaColumnOrderItemFields', esc_html__("Display a column with the extra fields of the order line", 'event-tickets-with-ticket-scanner'), __('If active, then a new column within the admin area for each ticket will be shown with the fields another plugin added to the order line - for example the answers of a product add-on plugin. The values belong to the whole order line, not to the single ticket. <b>This feature can be very slow.</b>', 'event-tickets-with-ticket-scanner'),"checkbox");
+		$this->_options[] = $this->getOptionsObject('wcTicketOrderItemFieldsExclude', esc_html__("Hide these fields of the order line", 'event-tickets-with-ticket-scanner'), esc_html__("Field names that should never be shown, one per line. Use this for answers that belong in the order but not on a ticket or in a list, like a phone number.", 'event-tickets-with-ticket-scanner'),"text", "", [], false, '', true);
 		$this->_options[] = $this->getOptionsObject('displayAdminAreaColumnBillingCompany', esc_html__("Display a column with the billing company of the order", 'event-tickets-with-ticket-scanner'), __('If active, then a new column within the admin area for each ticket will be shown with the billing company. <b>This feature can be very slow.</b>', 'event-tickets-with-ticket-scanner'),"checkbox");
 
 		$this->_options[] = $this->getOptionsObject('h0a', "Access","","heading");
@@ -521,6 +523,22 @@ class sasoEventtickets_Options {
 			]
 		];
 		$options[] = [
+			'key'=>'seatingConfirmSeatsOnOrderStatus',
+			'label'=>__("Mark seats as sold from this order status", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("A seat becomes red on the seat map as soon as the ticket number is created - with payment methods that take days (cash voucher, bank transfer) the seat stays available for everyone else until then. Choose an order status here and the seat is taken from that status onwards, no matter when the ticket itself is created. Leave it on the default to keep the previous behaviour.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"dropdown",
+			'def'=>"",
+			'additional'=>["values"=>
+				[
+					["label"=>__('When the ticket number is created (default)', 'event-tickets-with-ticket-scanner'), "value"=>""],
+					["label"=>__('Pending payment', 'event-tickets-with-ticket-scanner'), "value"=>"pending"],
+					["label"=>__('On hold', 'event-tickets-with-ticket-scanner'), "value"=>"on-hold"],
+					["label"=>__('Processing', 'event-tickets-with-ticket-scanner'), "value"=>"processing"],
+					["label"=>__('Completed', 'event-tickets-with-ticket-scanner'), "value"=>"completed"]
+				]
+			]
+		];
+		$options[] = [
 			'key'=>'seatingHideExpirationTime',
 			'label'=>__("Hide seat reservation expiration time", 'event-tickets-with-ticket-scanner'),
 			'desc'=>__("If active, the countdown timer showing when the seat reservation expires will be hidden. This can help prevent automated bots from exploiting the reservation system.", 'event-tickets-with-ticket-scanner'),
@@ -614,7 +632,7 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketSizeWidth', 'label'=>__('Size in mm for the width', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Will be used to set the width of the PDF. If empty or zero or lower than 20, the default of 210 will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>'number', 'def'=>210, "additional"=>["min"=>20], '_doc_video'=>'https://youtu.be/c2XtUY2l1OM'];
 		$options[] = ['key'=>'wcTicketSizeHeight', 'label'=>__('Size in mm for the height', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Will be used to set the height of the PDF. If empty or zero or lower than 20, the default of 297 will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>'number', 'def'=>297, "additional"=>["min"=>20], '_doc_video'=>'https://youtu.be/c2XtUY2l1OM'];
 		$options[] = ['key'=>'wcTicketQRSize', 'label'=>__('Size for the QR code image on the PDF', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Will be used to set the width and height of the QR code image on the PDF ticket. If empty or zero, the default of 50 will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>'number', 'def'=>50, "additional"=>["min"=>0], '_doc_video'=>'https://youtu.be/c2XtUY2l1OM'];
-		$options[] = ['key'=>'wcTicketDesignerTemplate', 'label'=>__("The TWIG HTML value for the ticket. Use <b>{QRCODE_INLINE}</b> to place the QR-Code anywhere", 'event-tickets-with-ticket-scanner'), 'desc'=>__('If left empty, default will be used. Check out this additional information about how you could use it: <a href="https://vollstart.com/posts/events/documentation/option-wcticketdesignertemplate/" target="_blank">Option Documentation</a>', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>$this->MAIN->getTicketDesignerHandler()->getDefaultTemplate(), "additional"=>["rows"=>30], '_doc_video'=>'https://youtu.be/aAfZIwFE7Zk'];
+		$options[] = ['key'=>'wcTicketDesignerTemplate', 'label'=>__("The TWIG HTML value for the ticket. Use <b>{QRCODE_INLINE}</b> to place the QR-Code anywhere", 'event-tickets-with-ticket-scanner'), 'desc'=>__('If left empty, default will be used. Check out this additional information about how you could use it: <a href="https://vollstart.com/posts/events/documentation/option-wcticketdesignertemplate/" target="_blank">Option Documentation</a>', 'event-tickets-with-ticket-scanner')."<br>".__('Fields that another plugin collects at checkout can be printed on the ticket. Use them in the ticket template like this:', 'event-tickets-with-ticket-scanner').' <b>{{ ORDER.get_meta("your_key") }}</b> — <a href="#orderfields">'._x('Checkout fields of other plugins', 'title', 'event-tickets-with-ticket-scanner').'</a>', 'type'=>"textarea", 'def'=>$this->MAIN->getTicketDesignerHandler()->getDefaultTemplate(), "additional"=>["rows"=>30], '_doc_video'=>'https://youtu.be/aAfZIwFE7Zk'];
 
 		$options[] = ['key'=>'h16a', 'label'=>__("Ticket Designer Test", 'event-tickets-with-ticket-scanner'), 'desc'=>"", 'type'=>"heading"];
 		$options[] = ['key'=>'wcTicketPDFZeroMarginTest', 'label'=>__("Do not use padding within the <b>test</b> PDF ticket", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, then the PDF content will start directly from the beginning of the paper. You need to add your own padding and margin within the template.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"", '_doc_video'=>'https://youtu.be/jewIPLsu5nw'];

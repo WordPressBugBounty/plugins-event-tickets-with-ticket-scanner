@@ -1792,6 +1792,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		getOptionsFromServer(reply=>{
 			let data = reply.options; // options values
 			let meta_tags_keys = reply.meta_tags_keys;
+			let order_field_keys = reply.order_field_keys || [];
 
 			__renderSetupStatus(div_setup_status, reply.setup_status);
 			div_body.html('');
@@ -1860,6 +1861,43 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				let t = '<p><b>{'+v.key+'}</b>: '+v.label+'</p>';
 				div_infos.append(t);
 			});
+
+			// Felder, die andere Plugins am Checkout einsammeln. Ohne ein Plugin,
+			// das unseren Filter bedient, ist die Liste leer - dann steht hier nur
+			// der Hinweis, mit dem der Kunde seinen Anbieter fragen kann.
+			div_infos.append('<a name="orderfields"></a><h3>'+_x('Checkout fields of other plugins', 'title', 'event-tickets-with-ticket-scanner')+'</h3>');
+			div_infos.append('<p>'+__('Fields that another plugin collects at checkout can be printed on the ticket. Use them in the ticket template like this:', 'event-tickets-with-ticket-scanner')+' <code>{{ ORDER.get_meta("your_key") }}</code></p>');
+			if (order_field_keys.length > 0) {
+				// Nach Anbieter gruppiert: der title aus dem Filter ist die
+				// Ueberschrift. So sieht der Shopbetreiber, welches Meta von
+				// welchem Plugin kommt, wenn mehrere den Hook bedienen.
+				// Gruppiert wird nach Herkunft UND Ueberschrift: zwei Plugins, die
+				// zufaellig denselben Titel waehlen, bleiben zwei Bloecke - sonst
+				// wuerden wir eine Zusammengehoerigkeit behaupten, die es nicht gibt.
+				let groups = [];
+				let byGroup = {};
+				order_field_keys.forEach(v=>{
+					let title = v.title || __('Other plugins', 'event-tickets-with-ticket-scanner');
+					let id = (v.source || '') + '|' + title;
+					if (!byGroup[id]) {
+						byGroup[id] = {title:title, items:[]};
+						groups.push(id);
+					}
+					byGroup[id].items.push(v);
+				});
+				groups.forEach(id=>{
+					div_infos.append($('<h4/>').css({margin:'12px 0 4px'}).text(byGroup[id].title));
+					byGroup[id].items.forEach(v=>{
+						let $p = $('<p/>').css({margin:'0 0 2px'});
+						$p.append($('<b/>').text(v.key));
+						$p.append(document.createTextNode(': ' + v.name));
+						div_infos.append($p);
+					});
+				});
+			} else {
+				div_infos.append('<p><i>'+__('No plugin has registered its fields here yet.', 'event-tickets-with-ticket-scanner')+'</i></p>');
+			}
+			div_infos.append('<p>'+__('We offer a filter hook so that other plugins can list their meta keys here. If your checkout plugin does not show up, ask its provider to support our hook - it takes them a few lines of code.', 'event-tickets-with-ticket-scanner')+' <b>saso_eventtickets_template_order_fields</b></p>');
 
 			//div_options.append('<h3>'+_x('Options', 'title', 'event-tickets-with-ticket-scanner')+'</h3>');
 			div_options.append('<p><span class="dashicons dashicons-external"></span><a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/" target="_blank">Click here, to visit the documentation.</a></p>');
@@ -5507,7 +5545,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				__renderTabelleListen();
 
 				let additionalColumn_counter_before_created_field = 0;
-				let additionalColumn = {customerName:'',customerCompany:'',redeemAmount:'',confirmedCount:''};
+				let additionalColumn = {customerName:'',customerCompany:'',redeemAmount:'',confirmedCount:'',orderItemFields:''};
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnConfirmedCount')) {
 					additionalColumn.confirmedCount = '<th>'+_x('Confirmed Count', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
@@ -5522,13 +5560,16 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				if (_getOptions_isActivatedByKey('displayAdminAreaColumnRedeemedInfo')) {
 					additionalColumn.redeemAmount = '<th>'+_x('Redeem Amount', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
 				}
+				if (_getOptions_isActivatedByKey('displayAdminAreaColumnOrderItemFields')) {
+					additionalColumn.orderItemFields = '<th align="left">'+_x('Order line details', 'label', 'event-tickets-with-ticket-scanner')+'</th>';
+				}
 
 				tabelle_codes.html('<thead><tr><th style="text-align:left;padding-left:10px;"><input type="checkbox" data-id="checkAll"></th><th>&nbsp;</th><th align="left">'
 					+_x('Ticket', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.customerName+additionalColumn.customerCompany+'<th align="left">'
 					+_x('List', 'label', 'event-tickets-with-ticket-scanner')+'</th><th align="left">'
 					+_x('Created', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.confirmedCount+'<th align="left">'
 					+_x('Redeemed', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.redeemAmount+'<th>'
-					+_x('OrderId', 'label', 'event-tickets-with-ticket-scanner')+'</th><th>CVV</th><th>'
+					+_x('OrderId', 'label', 'event-tickets-with-ticket-scanner')+'</th>'+additionalColumn.orderItemFields+'<th>CVV</th><th>'
 					+_x('Status', 'label', 'event-tickets-with-ticket-scanner')+'</th><th ></th></tr></thead><tfoot><th colspan="10" style="text-align:left;font-weight:normal;padding-left:0;padding-bottom:0;"></th></tfoot>');
 				tabelle_codes.find('input[data-id="checkAll"]').on('click', (e)=> {
 					let isChecked = $(e.currentTarget).prop('checked');
@@ -5730,6 +5771,19 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 								ret = row._redeemed_counter+'/unlimited';
 							}
 							return ret;
+						}
+					});
+				}
+
+				if (_getOptions_isActivatedByKey('displayAdminAreaColumnOrderItemFields')) {
+					// Direkt hinter die Bestellnummer - die Felder gehoeren zur Bestellposition
+					table_columns.splice(7+addition_column_offset, 0, {
+						"data":"_order_item_fields","orderable":false,"defaultContent":'',
+						"render":function(data,type,row) {
+							if (!data) return '';
+							let text = destroy_tags(data);
+							let short = text.length > 60 ? text.substring(0, 60)+'…' : text;
+							return '<span title="'+text.replace(/"/g, '&quot;')+'">'+short+'</span>';
 						}
 					});
 				}

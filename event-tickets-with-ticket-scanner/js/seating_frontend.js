@@ -596,6 +596,16 @@
 		bindEvents: function() {
 			var self = this;
 
+			// Variantenwechsel: jede Variante kann ihren eigenen Sitzplan haben
+			$(document).on('found_variation', 'form.variations_form', function(e, variation) {
+				var variationId = variation && variation.variation_id ? parseInt(variation.variation_id, 10) : 0;
+				self.onVariationChanged($(this), variationId);
+			});
+
+			$(document).on('reset_data', 'form.variations_form', function() {
+				self.onVariationChanged($(this), 0);
+			});
+
 			// Simple selector (dropdown)
 			$(document).on('change', '.saso-seat-dropdown', function(e) {
 				var $selector = $(this).closest('.saso-seating-selector');
@@ -1378,6 +1388,111 @@
 					block_id: blockId
 				}
 			});
+		},
+
+		/**
+		 * Der Kunde hat eine andere Variante gewaehlt.
+		 *
+		 * Welcher Plan zu welcher Variante gehoert, weiss der Server. Das JS
+		 * fragt danach und baut die Karte neu auf.
+		 *
+		 * @param {jQuery} $form The variations form
+		 * @param {number} variationId Chosen variation, 0 when none is chosen
+		 */
+		onVariationChanged: function($form, variationId) {
+			var self = this;
+			var $wrapper = $form.find('.saso-seating-wrapper').first();
+
+			if (!$wrapper.length) {
+				return;
+			}
+
+			var $selector = $wrapper.find('.saso-seating-selector').first();
+			var productId = $wrapper.attr('data-product-id') || ($selector.length ? $selector.attr('data-product-id') : '');
+
+			if (!productId) {
+				return;
+			}
+
+			// Schon die richtige Karte - nichts zu tun
+			if ($selector.length && String($selector.attr('data-variation-id') || '0') === String(variationId)) {
+				return;
+			}
+
+			var eventDate = $selector.length ? (self.getEventDate($selector) || '') : '';
+
+			// Sitze der alten Karte wieder freigeben, sie gehoeren zu einem anderen Plan
+			if ($selector.length) {
+				self.clearSelection($selector);
+			}
+
+			$.ajax({
+				url: sasoSeatingData.ajaxurl,
+				type: 'POST',
+				data: {
+					action: sasoSeatingData.action, // sasoEventtickets_executeSeatingFrontend
+					a: 'getSelectorData',
+					security: sasoSeatingData.nonce,
+					product_id: productId,
+					variation_id: variationId,
+					event_date: eventDate
+				},
+				success: function(response) {
+					if (!response || !response.success) {
+						return;
+					}
+					self.applySelectorData($wrapper, productId, variationId, response.data ? response.data.selector : null);
+				},
+				error: function() {
+					// AJAX error - silently handle
+				}
+			});
+		},
+
+		/**
+		 * Die Karte der gewaehlten Variante in die Seite setzen.
+		 *
+		 * @param {jQuery} $wrapper The seating wrapper
+		 * @param {number} productId Product ID
+		 * @param {number} variationId Chosen variation
+		 * @param {Object|null} data Selector data from the server, null when the variation has no plan
+		 */
+		applySelectorData: function($wrapper, productId, variationId, data) {
+			var $selector = $wrapper.find('.saso-seating-selector').first();
+
+			// Keine Karte fuer diese Variante: Platz raeumen, aber stehen lassen,
+			// die naechste Variante kann wieder eine haben.
+			if (!data) {
+				if ($selector.length) {
+					$('#' + $selector.attr('id') + '-data').remove();
+					$selector.remove();
+				}
+				return;
+			}
+
+			if (!$selector.length) {
+				$selector = $('<div>')
+					.addClass('saso-seating-selector')
+					.attr('id', 'saso-seating-' + productId + '-' + variationId)
+					.attr('data-product-id', productId)
+					.attr('data-event-date', '')
+					.attr('data-cart-item-key', '');
+				$('<input>')
+					.attr('type', 'hidden')
+					.attr('name', sasoSeatingData.fieldName)
+					.addClass('saso-seat-selection-input')
+					.val('')
+					.appendTo($selector);
+				$wrapper.append($selector);
+			}
+
+			// Die alte Karte muss weg, sonst haengt die neue darunter
+			$selector.children().not('.saso-seat-selection-input').remove();
+			$selector.find('.saso-seat-selection-input').val('');
+
+			$selector.attr('data-variation-id', variationId);
+			this.selectedSeats = [];
+			this.buildSelectorUI($selector, data);
 		},
 
 		/**

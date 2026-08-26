@@ -1581,7 +1581,11 @@ final class sasoEventtickets_Ticket {
 					$ret['ticket_start_time'] = "00:00:00";
 				}
 				$ret['ticket_start_date'] = $day_per_ticket;
+				// Der gewaehlte Tag ist Anfang und Ende zugleich. Das Enddatum ist
+				// hier also wieder ein Fuellwert und keine Eingabe - sonst stuende
+				// der Tag auf dem Ticket zweimal (#014841).
 				$ret['ticket_end_date'] = $day_per_ticket;
+				$ret['is_end_date_set'] = false;
 				$ret['is_daychooser_value_set'] = true;
 			}
 		}
@@ -2908,6 +2912,7 @@ final class sasoEventtickets_Ticket {
 		$ticket_end_time = $ticket_times['ticket_end_time'];
 		$is_daychooser = $ticket_times['is_daychooser'];
 		$is_date_set = $ticket_times['is_date_set'];
+		$is_end_date_set = $ticket_times['is_end_date_set'];
 		$is_end_time_set = $ticket_times['is_end_time_set'];
 		$is_start_time_set = $ticket_times['is_start_time_set'];
 		$ret = "";
@@ -2928,10 +2933,18 @@ final class sasoEventtickets_Ticket {
 		} else if ($is_start_time_set) {
 			$ret .= date_i18n($time_format, strtotime($ticket_start_time), true);
 		}
-		if (!empty($ret) && !empty($ticket_end_date) || $is_end_time_set) $ret .= " - ";
-		if (!empty($ticket_end_date) && $is_end_time_set) {
+		// Ein fehlendes Enddatum wird intern mit dem Startdatum aufgefuellt, damit
+		// das Ticket bis 23:59 des Eventtags gilt (calcDateStringAllowedRedeemFrom).
+		// Fuer die ANZEIGE ist dieser Fuellwert keine Eingabe: wird er wie eine
+		// behandelt, steht bei einer eintaegigen Veranstaltung der Tag zweimal auf
+		// dem Ticket (#014841). Massgeblich ist deshalb is_end_date_set, nicht der
+		// gefuellte Wert. Die Klammern sind ebenfalls Absicht: ohne sie band das
+		// UND staerker als das ODER, und eine reine Endzeit ohne Startangabe
+		// begann mit einem fuehrenden " - ".
+		if (!empty($ret) && ($is_end_date_set || $is_end_time_set)) $ret .= " - ";
+		if ($is_end_date_set && $is_end_time_set) {
 			$ret .= date_i18n($date_format." ".$time_format, strtotime($ticket_end_date." ".$ticket_end_time), true);
-		} else if (!empty($ticket_end_date)) {
+		} else if ($is_end_date_set) {
 			$ret .= date_i18n($date_format, strtotime($ticket_end_date), true);
 		} else if ($is_end_time_set) {
 			$ret .= date_i18n($time_format, strtotime($ticket_end_time), true);

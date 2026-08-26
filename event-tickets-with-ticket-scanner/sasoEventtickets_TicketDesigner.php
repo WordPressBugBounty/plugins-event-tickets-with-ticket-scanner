@@ -176,7 +176,13 @@ class sasoEventtickets_TicketDesigner {
         $ticket["start_time"] = $ticket_times["ticket_start_time"];
         $ticket['start_date_timestamp'] = $ticket_times["ticket_start_date_timestamp"];
         $ticket["end_date"] = $ticket_times["ticket_end_date"];
+        // end_date is never empty: without an entry it carries the start date so
+        // the ticket stays valid until the end of the event day. A template that
+        // wants to know whether an end was actually entered has to ask this flag
+        // instead of testing end_date for emptiness (#014841).
+        $ticket["is_end_date_set"] = $ticket_times["is_end_date_set"];
         $ticket["end_time"] = $ticket_times["ticket_end_time"];
+        $ticket["is_end_time_set"] = $ticket_times["is_end_time_set"];
         $ticket["end_date_timestamp"] = $ticket_times["ticket_end_date_timestamp"];
         $ticket["redeem_allowed_from"] = $ticket_times["redeem_allowed_from"];
         $ticket["redeem_allowed_from_timestamp"] = $ticket_times["redeem_allowed_from_timestamp"];

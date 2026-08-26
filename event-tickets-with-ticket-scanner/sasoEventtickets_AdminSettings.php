@@ -1,6 +1,9 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventtickets_AdminSettings {
+
+	/** A foreign plugin may fill the template-fields filter, not flood it. */
+	private const MAX_TEMPLATE_ORDER_FIELDS = 200;
 	private $MAIN;
 
 	private $_CACHE = [];
@@ -668,13 +671,212 @@ class sasoEventtickets_AdminSettings {
 		return $timezone;
 	}
 
+	/**
+	 * Checkout fields of other plugins that a ticket template can print.
+	 *
+	 * We do not read anyone else's storage format - a helper written for one
+	 * plugin's tables stays in our support queue forever, long after that plugin
+	 * is gone. Instead we publish a seam: a plugin (or a snippet in a theme)
+	 * hands us its own fields, and we only show them where the template is
+	 * written, so nobody has to look up a meta key in the database.
+	 *
+	 * Two shapes are accepted. Grouped, which spares the caller from repeating
+	 * its name on every single field:
+	 *
+	 *     $fields['My Checkout Plugin'] = [
+	 *         ['key' => '_arrival_day', 'name' => 'Arrival day'],
+	 *     ];
+	 *
+	 * And flat, where an entry may carry its own title:
+	 *
+	 *     $fields[] = ['key' => '_arrival_day', 'name' => 'Arrival day'];
+	 *
+	 * Without a title we name the plugin that registered the callback, so the
+	 * caller usually has to provide nothing but key and name.
+	 *
+	 * Every entry also carries a source: the registering plugin. Two plugins
+	 * that happen to pick the same heading must NOT end up in one group - that
+	 * would claim they belong together. The heading is what the user reads, the
+	 * source is what keeps them apart.
+	 *
+	 * Whatever arrives here is foreign code: it is trimmed, stripped of markup,
+	 * capped, and deduplicated per source before it reaches the options page.
+	 *
+	 * @return array List of ['key'=>string, 'name'=>string, 'title'=>string, 'source'=>string]
+	 */
+	public function getTemplateOrderFields(): array {
+		$hook = $this->MAIN->_add_filter_prefix.'template_order_fields';
+		$ret = [];
+		$seen = [];
+
+		foreach ($this->collectTemplateOrderFieldsPerCallback($hook) as $batch) {
+			foreach ($this->flattenTemplateOrderFields($batch['fields'], $batch['source_name']) as $entry) {
+				if (count($ret) >= self::MAX_TEMPLATE_ORDER_FIELDS) break 2;
+				// Herkunft UND Titel gehoeren zur Identitaet: zwei Anbieter mit
+				// derselben Ueberschrift duerfen nicht zu einer Gruppe werden, und
+				// zwei Ueberschriften desselben Anbieters bleiben getrennt.
+				$id = $batch['source'].'|'.$entry['title'].'|'.$entry['key'];
+				if (isset($seen[$id])) continue;
+				$seen[$id] = true;
+				$entry['source'] = $batch['source'];
+				$ret[] = $entry;
+			}
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Run the registered callbacks one by one so every field keeps its origin.
+	 *
+	 * apply_filters() would hand back one merged array in which nobody can tell
+	 * who contributed what - and then a missing title could not be filled in,
+	 * and two plugins sharing a heading could not be kept apart. Priority order
+	 * is preserved, and each callback sees what the previous ones returned, so
+	 * the result is the same as a normal filter run.
+	 *
+	 * @param string $hook Filter name
+	 * @return array List of ['fields'=>array, 'source'=>string, 'source_name'=>string]
+	 */
+	private function collectTemplateOrderFieldsPerCallback(string $hook): array {
+		global $wp_filter;
+		if (!isset($wp_filter[$hook])) return [];
+
+		$callbacks = $wp_filter[$hook]->callbacks;
+		if (!is_array($callbacks)) return [];
+		ksort($callbacks);
+
+		$batches = [];
+		$carry = [];
+		$index = 0;
+		foreach ($callbacks as $group) {
+			foreach ($group as $cb) {
+				$index++;
+				if (!isset($cb['function']) || !is_callable($cb['function'])) continue;
+
+				$before = $carry;
+				$result = call_user_func($cb['function'], $carry);
+				if (!is_array($result)) continue;
+				$carry = $result;
+
+				$added = $this->diffTemplateOrderFields($before, $carry);
+				if (!$added) continue;
+
+				$plugin = $this->pluginNameForCallback($cb['function']);
+				$batches[] = [
+					'fields' => $added,
+					'source' => $plugin !== '' ? $plugin : 'callback-'.$index,
+					'source_name' => $plugin,
+				];
+			}
+		}
+
+		return $batches;
+	}
+
+	/** What this callback added on top of what was already there. */
+	private function diffTemplateOrderFields(array $before, array $after): array {
+		$added = [];
+		foreach ($after as $key => $value) {
+			if (array_key_exists($key, $before) && $before[$key] === $value) continue;
+			$added[$key] = $value;
+		}
+		return $added;
+	}
+
+	/**
+	 * Normalize both shapes into a flat list.
+	 *
+	 * @param array $fields Raw value from one callback
+	 * @param string $fallbackTitle Name of the registering plugin, used when no title is given
+	 * @return array List of ['key'=>string, 'name'=>string, 'title'=>string]
+	 */
+	private function flattenTemplateOrderFields(array $fields, string $fallbackTitle = ''): array {
+		$ret = [];
+		foreach ($fields as $groupKey => $value) {
+			if (!is_array($value)) continue;
+
+			// Grouped: a non-numeric key is the heading, the value a list of entries.
+			$groupTitle = is_string($groupKey) ? trim(wp_strip_all_tags($groupKey)) : '';
+			$entries = ($groupTitle !== '' && !isset($value['key'])) ? $value : [$value];
+
+			foreach ($entries as $entry) {
+				if (!is_array($entry) || !isset($entry['key'])) continue;
+
+				$key = trim(wp_strip_all_tags((string) $entry['key']));
+				if ($key === '') continue;
+
+				$name = isset($entry['name']) ? trim(wp_strip_all_tags((string) $entry['name'])) : '';
+				$title = isset($entry['title']) ? trim(wp_strip_all_tags((string) $entry['title'])) : '';
+				if ($title === '') $title = $groupTitle;
+				if ($title === '') $title = $fallbackTitle;
+
+				$ret[] = [
+					'key' => $key,
+					'name' => $name !== '' ? $name : $key,
+					'title' => $title,
+				];
+			}
+		}
+		return $ret;
+	}
+
+	/**
+	 * The plugin a callback was written in, via the file it is defined in.
+	 *
+	 * Best effort by design: a callback from a theme or a mu-plugin has no
+	 * plugin name, and then the caller's own title decides. Never fatal - a
+	 * heading is not worth an error page.
+	 *
+	 * @param mixed $callback
+	 * @return string Plugin name, or an empty string
+	 */
+	private function pluginNameForCallback($callback): string {
+		try {
+			if (is_string($callback) && strpos($callback, '::') !== false) {
+				$callback = explode('::', $callback);
+			}
+			if (is_array($callback) && count($callback) === 2) {
+				$ref = new ReflectionMethod($callback[0], $callback[1]);
+			} elseif (is_object($callback) && !($callback instanceof Closure)) {
+				$ref = new ReflectionMethod($callback, '__invoke');
+			} else {
+				$ref = new ReflectionFunction($callback);
+			}
+			$file = (string) $ref->getFileName();
+		} catch (Throwable $e) {
+			return '';
+		}
+
+		if ($file === '') return '';
+		$file = wp_normalize_path($file);
+
+		// Am Pfadsegment erkannt, nicht am Praefix von WP_PLUGIN_DIR: Plugin-Ordner
+		// duerfen verlinkt sein oder woanders liegen, und in der Testumgebung tun
+		// sie es auch.
+		if (!preg_match('#/plugins/([^/]+)/#', $file, $m)) return '';
+		$slug = $m[1];
+		if ($slug === '') return '';
+
+		if (!function_exists('get_plugins')) {
+			require_once ABSPATH.'wp-admin/includes/plugin.php';
+		}
+		foreach (get_plugins() as $pluginFile => $pluginData) {
+			if (strpos($pluginFile, $slug.'/') === 0 && !empty($pluginData['Name'])) {
+				return trim(wp_strip_all_tags($pluginData['Name']));
+			}
+		}
+
+		return $slug;
+	}
+
 	public function getOptions() {
 		global $wpdb, $wp_version ;
 		$options = $this->MAIN->getOptions()->getOptions();
 
 		$tags = $this->MAIN->getCore()->getMetaObjectAllowedReplacementTags();
 
-		$ret = ['options'=>$options, 'meta_tags_keys'=>$tags, 'versions'=>[], 'infos'=>[]];
+		$ret = ['options'=>$options, 'meta_tags_keys'=>$tags, 'order_field_keys'=>$this->getTemplateOrderFields(), 'versions'=>[], 'infos'=>[]];
 		if (is_admin()) {
 			$pversions = $this->MAIN->getPluginVersions();
 			$premium_db_version = '';
@@ -1685,6 +1887,7 @@ class sasoEventtickets_AdminSettings {
 		$displayAdminAreaColumnRedeemedInfo = $this->isOptionCheckboxActive('displayAdminAreaColumnRedeemedInfo');
 		$displayAdminAreaColumnBillingName = $this->isOptionCheckboxActive('displayAdminAreaColumnBillingName');
 		$displayAdminAreaColumnBillingCompany = $this->isOptionCheckboxActive('displayAdminAreaColumnBillingCompany');
+		$displayAdminAreaColumnOrderItemFields = $this->isOptionCheckboxActive('displayAdminAreaColumnOrderItemFields');
 
 		if (isset($request['order'])) {
 			$order_columns = array('', '', 'code');
@@ -1695,6 +1898,7 @@ class sasoEventtickets_AdminSettings {
 			$order_columns[] = 'redeemed';
 			if ($displayAdminAreaColumnRedeemedInfo) $order_columns[] = '';
 			$order_columns[] = 'order_id';
+			if ($displayAdminAreaColumnOrderItemFields) $order_columns[] = '';
 			$order_columns[] = '';
 			$order_columns[] = 'aktiv';
 			$order_column = $order_columns[intval($request['order'][0]['column'])];
@@ -1857,6 +2061,28 @@ class sasoEventtickets_AdminSettings {
 			$redeemedRecordsFiltered = $d['anzahl'];
 		}
 
+		if ($displayAdminAreaColumnOrderItemFields) {
+			// Was ein Add-on-Plugin an der Bestellzeile abgefragt hat. Der Wert gehoert
+			// zur Position, nicht zum einzelnen Ticket - deshalb heisst die Spalte nach
+			// der Bestellposition und nicht nach dem Gast.
+			$orderManager = $this->MAIN->getWC()->getOrderManager();
+			$had_error = false;
+			foreach($daten as $key => $item) {
+				$daten[$key]['_order_item_fields'] = "";
+				try {
+					$parts = [];
+					foreach ($orderManager->getOrderItemExtraFields($item) as $field) {
+						$parts[] = $field['key'].': '.$field['value'];
+					}
+					$daten[$key]['_order_item_fields'] = join(' · ', $parts);
+				} catch (Exception $e) {
+					if ($had_error == false) {
+						$this->logErrorToDB($e->getMessage());
+					}
+					$had_error = true;
+				}
+			}
+		}
 		if ($displayAdminAreaColumnBillingName) {
 			$had_error = false;
 			foreach($daten as $key => $item) {

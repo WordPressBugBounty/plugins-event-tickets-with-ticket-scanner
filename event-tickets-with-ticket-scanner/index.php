@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.1.7
+ * Version: 3.1.8
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.1.7');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.1.8');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -1411,6 +1411,25 @@ class sasoEventtickets {
 						<li>add_filter('<?php echo $this->_add_filter_prefix.'afterCheckCodePre'; ?>', 'myfunc', 20, 1)</li>
 						<li>add_filter('<?php echo $this->_add_filter_prefix.'afterCheckCode'; ?>', 'myfunc', 20, 1)</li>
 					</ul>
+
+					<h3><?php esc_html_e('For plugin developers: show your checkout fields on the ticket', 'event-tickets-with-ticket-scanner'); ?></h3>
+					<p><?php esc_html_e('Does your plugin add fields to the checkout or to the order? Register them here and they are listed where our users write their ticket template, so nobody has to look up a meta key in the database. The values themselves need nothing from us - a ticket template reads any order meta with ORDER.get_meta("your_key").', 'event-tickets-with-ticket-scanner'); ?></p>
+					<ul>
+						<li>add_filter('<?php echo $this->_add_filter_prefix.'template_order_fields'; ?>', 'myfunc', 20, 1)</li>
+					</ul>
+					<p><?php esc_html_e('Your function receives an array and returns it with your fields added. Two keys per field are enough:', 'event-tickets-with-ticket-scanner'); ?></p>
+					<ul>
+						<li><code>key</code> — <?php esc_html_e('the order meta key, exactly as you store it', 'event-tickets-with-ticket-scanner'); ?></li>
+						<li><code>name</code> — <?php esc_html_e('what the field is called for the shop owner', 'event-tickets-with-ticket-scanner'); ?></li>
+					</ul>
+					<p><?php esc_html_e('The heading above your fields is the name of your plugin - we take it from the plugin the callback lives in, you do not have to send it. Want a different heading? Then use your own, once as the array key:', 'event-tickets-with-ticket-scanner'); ?></p>
+					<pre style="background:#f6f7f7;border:1px solid #dcdcde;padding:10px;overflow:auto;">add_filter('<?php echo $this->_add_filter_prefix.'template_order_fields'; ?>', function($fields) {
+    $fields['Booking questions'] = [
+        ['key' => '_arrival_day', 'name' => 'Arrival day'],
+        ['key' => '_meal_choice', 'name' => 'Meal choice'],
+    ];
+    return $fields;
+});</pre>
 					<p>More BETA filters and actions hooks can be found <a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/ticket-plugin-api/" target="_blank">here (NOT STABLE, be aware that they might be changed in the future)</a>.</p>
 				</div>
 

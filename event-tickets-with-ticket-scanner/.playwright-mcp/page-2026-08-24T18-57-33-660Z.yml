@@ -1,0 +1,199 @@
+- generic [ref=f6e2]:
+  - navigation "Main menu":
+    - link "Skip to main content" [ref=f6e3] [cursor=pointer]:
+      - /url: "#wpbody-content"
+    - text:               
+  - generic [ref=f6e4]:
+    - generic [ref=f6e5]:
+      - navigation "Toolbar":
+        - menu:
+          - group [ref=f6e6]:
+            - menuitem "Menu" [ref=f6e7] [cursor=pointer]:
+              - generic [ref=f6e8]: 
+          - group [ref=f6e10]:
+            - menuitem "About WordPress" [ref=f6e11] [cursor=pointer]
+          - group [ref=f6e14]:
+            - menuitem "Agent Test WP" [ref=f6e15] [cursor=pointer]
+          - group [ref=f6e16]:
+            - menuitem "7 updates available" [ref=f6e17] [cursor=pointer]:
+              - generic [ref=f6e19]: "7"
+          - group [ref=f6e21]:
+            - menuitem "Ctrl+K Open command palette" [ref=f6e22] [cursor=pointer]:
+              - generic [ref=f6e24]:
+                - text: Ctrl+K
+                - generic [ref=f6e25]: Open command palette
+          - group [ref=f6e26]:
+            - menuitem "0 Comments in moderation" [ref=f6e27] [cursor=pointer]:
+              - generic [ref=f6e29]: "0"
+          - group [ref=f6e31]:
+            - menuitem "New" [ref=f6e32] [cursor=pointer]
+        - menu [ref=f6e35]:
+          - group [ref=f6e36]:
+            - menuitem "Howdy, agent" [ref=f6e37] [cursor=pointer]
+    - main [ref=f6e38]:
+      - generic [ref=f6e39]:
+        - generic [ref=f6e40]:
+          - link "WordPress 7.1" [ref=f6e41] [cursor=pointer]:
+            - /url: https://wordpress.org/documentation/wordpress-version/version-7-1/
+          - text: is available!
+          - link "Please update WordPress now" [ref=f6e42] [cursor=pointer]:
+            - /url: https://verwicklung.de/testing/wordpress/wp-admin/update-core.php
+            - text: Please update now
+          - text: .
+        - generic [ref=f6e43]:
+          - generic [ref=f6e44]:
+            - strong [ref=f6e45]: Appointment Desk
+            - text: NEW Appointment booking with walk-in queue, reception cockpit, and double-booking prevention. Free.
+          - link "Try it free" [ref=f6e46] [cursor=pointer]:
+            - /url: https://wordpress.org/plugins/vollstart-appointment-desk/
+          - button "Dismiss this notice." [ref=f6e47] [cursor=pointer]
+        - paragraph [ref=f6e50]:
+          - strong [ref=f6e51]: "Action Scheduler:"
+          - text: "35"
+          - link "past-due actions" [ref=f6e52] [cursor=pointer]:
+            - /url: https://verwicklung.de/testing/wordpress/wp-admin/tools.php?page=action-scheduler&status=past-due&order=asc
+          - text: found; something may be wrong.
+          - link "Read documentation »" [ref=f6e53] [cursor=pointer]:
+            - /url: https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do
+        - generic [ref=f6e54]:
+          - generic [ref=f6e56]:
+            - img "Event Tickets" [ref=f6e57]
+            - generic [ref=f6e58]:
+              - generic [ref=f6e59]: Event Tickets with Ticket Scanner
+              - generic [ref=f6e60]: "Version: 3.1.8, Premium: 1.8.2 DEBUG: is active, LANG: en_US"
+          - generic [ref=f6e64]:
+            - generic [ref=f6e65]:
+              - generic [ref=f6e66]:
+                - generic [ref=f6e67]:
+                  - generic [ref=f6e68]: 
+                  - text: Documentation
+                - paragraph [ref=f6e69]:
+                  - link "Click here, to visit the documentation of this plugin." [ref=f6e70] [cursor=pointer]:
+                    - /url: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
+                - paragraph [ref=f6e71]:
+                  - text: You can use this plugin to sell tickets and even redeem them. Check out the documentation for
+                  - link "more details here" [ref=f6e72] [cursor=pointer]:
+                    - /url: https://vollstart.com/event-tickets-with-ticket-scanner/docs/#ticket
+                  - text: .
+              - generic [ref=f6e73]:
+                - generic [ref=f6e74]:
+                  - generic [ref=f6e75]: 
+                  - text: Plugin Rating
+                - paragraph [ref=f6e76]:
+                  - text: If you like our plugin, then please give us a
+                  - link "5-Star Rating" [ref=f6e77] [cursor=pointer]:
+                    - /url: https://wordpress.org/support/plugin/event-tickets-with-ticket-scanner/reviews?rate=5#new-post
+                  - text: .
+              - generic [ref=f6e78]:
+                - generic [ref=f6e79]:
+                  - generic [ref=f6e80]: 
+                  - text: Premium Homepage
+                - paragraph [ref=f6e81]:
+                  - text: You can find more details about the
+                  - link "premium version here" [ref=f6e82] [cursor=pointer]:
+                    - /url: https://vollstart.com/event-tickets-with-ticket-scanner/
+                  - text: .
+              - generic [ref=f6e83]:
+                - generic [ref=f6e84]:
+                  - generic [ref=f6e85]: 
+                  - text: Maintenance & Support
+                - paragraph [ref=f6e86]: Version 3.1.8, last updated August 24, 2026.
+                - paragraph [ref=f6e87]:
+                  - link "See what changed in each release" [ref=f6e88] [cursor=pointer]:
+                    - /url: https://wordpress.org/plugins/event-tickets-with-ticket-scanner/#developers
+                - paragraph [ref=f6e89]:
+                  - link "Ask a question" [ref=f6e90] [cursor=pointer]:
+                    - /url: https://vollstart.com/support/
+            - generic [ref=f6e91]:
+              - generic [ref=f6e92]:
+                - generic [ref=f6e93]: 
+                - text: Shortcodes
+              - table [ref=f6e94]:
+                - rowgroup [ref=f6e95]:
+                  - row [ref=f6e96]:
+                    - columnheader "Shortcode" [ref=f6e97]
+                    - columnheader "Description" [ref=f6e98]
+                - rowgroup [ref=f6e99]:
+                  - row [ref=f6e100]:
+                    - cell [ref=f6e101]:
+                      - code [ref=f6e102]: "[sasoEventTicketsValidator_eventsview]"
+                      - generic [ref=f6e103]:
+                        - text: "CSS:"
+                        - link "calendar.css" [ref=f6e104] [cursor=pointer]:
+                          - /url: https://verwicklung.de/testing/wordpress/wp-content/plugins/event-tickets-with-ticket-scanner/css/calendar.css
+                    - cell [ref=f6e105]:
+                      - strong [ref=f6e106]: Event calendar form
+                      - paragraph [ref=f6e107]: Displays the event calendar. Supports parameters below.
+                      - table [ref=f6e108]:
+                        - rowgroup [ref=f6e109]:
+                          - row [ref=f6e110]:
+                            - cell [ref=f6e111]:
+                              - code [ref=f6e112]: months_to_show
+                            - 'cell "Number of months to display (higher than 0). Default: 3" [ref=f6e113]'
+                  - row [ref=f6e114]:
+                    - cell [ref=f6e115]:
+                      - code [ref=f6e116]: "[sasoEventTicketsValidator_code]"
+                    - cell [ref=f6e117]:
+                      - strong [ref=f6e118]: Assigned tickets and codes
+                      - paragraph [ref=f6e119]: Displays tickets assigned to the current user or a specific order.
+                      - table [ref=f6e120]:
+                        - rowgroup [ref=f6e121]:
+                          - row [ref=f6e122]:
+                            - cell [ref=f6e123]:
+                              - code [ref=f6e124]: order_id
+                            - cell "Show tickets from a specific order (user must own it)" [ref=f6e125]
+                          - row [ref=f6e126]:
+                            - cell [ref=f6e127]:
+                              - code [ref=f6e128]: format
+                            - 'cell "Output format. Values: json" [ref=f6e129]'
+                          - row [ref=f6e130]:
+                            - cell [ref=f6e131]:
+                              - code [ref=f6e132]: display
+                            - 'cell "Fields to show: codes, validation, user, used, confirmedCount, woocommerce, wc_rp, wc_ticket" [ref=f6e133]'
+                          - row [ref=f6e134]:
+                            - cell [ref=f6e135]:
+                              - code [ref=f6e136]: download_all_pdf
+                            - 'cell "Show download button for all tickets as PDF. Values: true/false" [ref=f6e137]'
+                  - row [ref=f6e138]:
+                    - cell [ref=f6e139]:
+                      - code [ref=f6e140]: "[sasoEventTicketsValidator_ticket_scanner]"
+                    - cell [ref=f6e141]:
+                      - strong [ref=f6e142]: Ticket scanner
+                      - paragraph [ref=f6e143]: Embeds the browser-based scanner in a page. Useful when the standalone scanner URL has security restrictions.
+                  - row [ref=f6e144]:
+                    - cell [ref=f6e145]:
+                      - code [ref=f6e146]: "[sasoEventTicketsValidator_ticket_detail]"
+                    - cell [ref=f6e147]:
+                      - strong [ref=f6e148]: Ticket detail view
+                      - paragraph [ref=f6e149]: Shows the ticket detail page within a page. Useful when /ticket/ URL rewriting fails.
+                      - table [ref=f6e150]:
+                        - rowgroup [ref=f6e151]:
+                          - row [ref=f6e152]:
+                            - cell [ref=f6e153]:
+                              - code [ref=f6e154]: ticket
+                            - cell "Read ?ticket=CODE from URL (default behaviour)" [ref=f6e155]
+                          - row [ref=f6e156]:
+                            - cell [ref=f6e157]:
+                              - code [ref=f6e158]: code
+                            - cell "Show details for a specific code directly" [ref=f6e159]
+              - heading "PHP Filters" [level=3] [ref=f6e160]
+              - paragraph [ref=f6e161]:
+                - text: You can use PHP code to register your filter functions for the validation check.
+                - link "Click here for more help about the functions" [ref=f6e162] [cursor=pointer]:
+                  - /url: https://vollstart.com/event-tickets-with-ticket-scanner/docs/#filters
+              - list [ref=f6e163]:
+                - listitem [ref=f6e164]: add_filter('saso_eventtickets_beforeCheckCodePre', 'myfunc', 20, 1)
+                - listitem [ref=f6e165]: add_filter('saso_eventtickets_beforeCheckCode', 'myfunc', 20, 1)
+                - listitem [ref=f6e166]: add_filter('saso_eventtickets_afterCheckCodePre', 'myfunc', 20, 1)
+                - listitem [ref=f6e167]: add_filter('saso_eventtickets_afterCheckCode', 'myfunc', 20, 1)
+              - paragraph [ref=f6e168]:
+                - text: More BETA filters and actions hooks can be found
+                - link "here (NOT STABLE, be aware that they might be changed in the future)" [ref=f6e169] [cursor=pointer]:
+                  - /url: https://vollstart.com/event-tickets-with-ticket-scanner/docs/ticket-plugin-api/
+                - text: .
+            - generic [ref=f6e170]:
+              - link "VOLLSTART" [ref=f6e171] [cursor=pointer]:
+                - /url: https://vollstart.com
+              - text: ·
+              - link "More plugins" [ref=f6e172] [cursor=pointer]:
+                - /url: https://verwicklung.de/testing/wordpress/wp-admin/admin.php?page=event-tickets-with-ticket-scanner-more-plugins
