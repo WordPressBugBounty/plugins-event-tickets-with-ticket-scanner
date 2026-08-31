@@ -2596,6 +2596,32 @@ final class sasoEventtickets_Ticket {
 			$this->setOrderStatusAfterViewOperation($order);
 		}
 
+		// Map the stored product_id through getWPMLProductId() before the
+		// template filter is consulted, so that multilingual setups (WPML,
+		// Polylang, TranslatePress, Weglot, …) and leftover translation
+		// hooks resolve the template against the original product rather
+		// than the translated id. Mirrors the mapping in the other render
+		// paths (frontend list, AJAX code-gen, variation setup, calcDateString,
+		// Twig setup). Falls back to the stored id when the hook returns 0.
+		//
+		// Note: $codeObj is a value-copy of $this->codeObj (PHP arrays are
+		// copy-on-write), so the mutation below only lands on $this->codeObj
+		// when we re-store it via setCodeObj(). Without that re-store the
+		// local $codeObj still carries the mapped value, which is enough
+		// for the apply_filters() call below, but downstream $this->getCodeObj()
+		// calls in this same request would still see the un-mapped value.
+		if ( isset($codeObj['metaObj']['woocommerce']['product_id']) ) {
+			$stored_product_id = intval( $codeObj['metaObj']['woocommerce']['product_id'] );
+			$mapped_product_id  = intval( $this->MAIN->getTicketHandler()->getWPMLProductId( $stored_product_id ) );
+			if ( $mapped_product_id > 0 ) {
+				$codeObj['metaObj']['woocommerce']['product_id'] = $mapped_product_id;
+				// Re-store so the mapped value sticks for any further
+				// getCodeObj() call in this request (e.g. the Twig
+				// variable setup later in outputTicketInfo()).
+				$this->setCodeObj( $codeObj );
+			}
+		}
+
 		$ticket_template = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_outputTicketInfo_template', null, $codeObj );
 
 		$product = $order_item->get_product();
@@ -3187,6 +3213,30 @@ final class sasoEventtickets_Ticket {
 		$codeObj = $this->getCodeObj();
 		$codeObj = $this->MAIN->getCore()->setMetaObj($codeObj);
 		$metaObj = $codeObj['metaObj'];
+
+		// Map the stored product_id through getWPMLProductId() so that the
+		// premium template filter resolves against the original product in
+		// multilingual setups (WPML, Polylang, TranslatePress, Weglot, …) and
+		// leftover translation hooks. Mirrors the mapping in outputPDF()
+		// and the other render paths (frontend list, AJAX code-gen, variation
+		// setup, calcDateString, Twig setup). Defensive: skip the assignment
+		// when the wpml_object_id hook returns 0 / empty / non-numeric so a
+		// broken mapping does not propagate an invalid id.
+		//
+		// Note: $codeObj is a value-copy of $this->codeObj (PHP arrays are
+		// copy-on-write), so the mutation below only lands on $this->codeObj
+		// when we re-store it via setCodeObj(). Without that re-store, any
+		// later codeObj lookup in this request would still see the un-mapped
+		// value.
+		if ( isset($codeObj['metaObj']['woocommerce']['product_id']) ) {
+			$stored_product_id = intval( $codeObj['metaObj']['woocommerce']['product_id'] );
+			$mapped_product_id  = intval( $this->MAIN->getTicketHandler()->getWPMLProductId( $stored_product_id ) );
+			if ( $mapped_product_id > 0 ) {
+				$codeObj['metaObj']['woocommerce']['product_id'] = $mapped_product_id;
+				$metaObj = $codeObj['metaObj'];
+				$this->setCodeObj( $codeObj );
+			}
+		}
 
 		if ($forPDFOutput == false) {
 			do_action( $this->MAIN->_do_action_prefix.'trackIPForTicketView', $codeObj );

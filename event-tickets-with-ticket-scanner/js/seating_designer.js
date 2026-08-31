@@ -1924,10 +1924,11 @@
 		html += '</div>';
 
 		// Action buttons (Publish is in the unpublished-changes banner)
+		// Note: the "Sync seats to DB" checkbox was removed (fix for #014864).
+		// It was a no-op — the server-side sanitizeSeatData() whitelisted
+		// fields and silently dropped syncToPubData. With the new
+		// deleted_seat_ids payload, soft-deletes always persist on save.
 		html += '<div class="saso-designer-actions">';
-		html += '<label class="saso-sync-option"><input type="checkbox" class="saso-sync-to-pub-checkbox"> ';
-		html += (this.config.i18n.syncToPubData || 'Sync seats to DB');
-		html += '</label>';
 		html += '<button type="button" class="button saso-save-draft">';
 		html += '<span class="dashicons dashicons-saved"></span> ';
 		html += (this.config.i18n.saveDraft || 'Save Draft');
@@ -3955,6 +3956,22 @@
 	};
 
 	/**
+	 * Track a seat deletion for server-side persistence (fix for #014864).
+	 * Called from both deleteElement (single) and deleteSelectedElements
+	 * (batch / delete-key / toolbar). Skip unsaved seats (dbId 0) — they
+	 * only exist in client state and need no server roundtrip.
+	 */
+	SeatingDesigner.prototype.trackDeletedSeat = function(element) {
+		if (!element || !element.isSeat || !element.dbId) {
+			return;
+		}
+		if (!this.deletedSeatIds) {
+			this.deletedSeatIds = new Set();
+		}
+		this.deletedSeatIds.add(parseInt(element.dbId, 10));
+	};
+
+	/**
 	 * Delete element
 	 *
 	 * @param {string} id Element ID
@@ -3962,6 +3979,10 @@
 	SeatingDesigner.prototype.deleteElement = function(id) {
 		var element = this.findElement(id);
 		if (!element) return;
+
+		// Fix for support #014864 — track the server-side seat dbId so the
+		// soft-delete path can apply on save (see also deleteSelectedElements).
+		this.trackDeletedSeat(element);
 
 		// Check if seat has tickets (would need AJAX check in real implementation)
 		// For now, just delete
@@ -3999,6 +4020,12 @@
 		if (toDelete.length === 0) return;
 
 		toDelete.forEach(function(el) {
+			// Fix for #014864 — track seat dbIds for the server-side soft-delete
+			// payload. Without this, batch deletion (delete-key, toolbar) would
+			// only update the client state and revert on reload, exactly like
+			// the single-element delete did before the fix.
+			self.trackDeletedSeat(el);
+
 			// Remove from arrays (find by ID, not reference)
 			var arrays = ['seats', 'decorations', 'lines', 'labels'];
 			for (var i = 0; i < arrays.length; i++) {
@@ -4261,11 +4288,11 @@
 			labels: this.elements.labels
 		};
 
-		// Check if sync to published data is requested
-		var $container = $(this.config.container);
-		var syncToPubData = $container.find('.saso-sync-to-pub-checkbox').is(':checked');
-
-		// Seats are saved separately via the seats endpoint
+		// Note: the legacy syncToPubData flag was removed (fix for #014864).
+		// Server-side sanitizeSeatData() whitelisted fields and silently
+		// dropped it, so the "Sync seats to DB" checkbox was a no-op.
+		// Soft-deletes now always persist on save via the deleted_seat_ids
+		// payload added below.
 		var seatsData = this.elements.seats.map(function(seat) {
 			// For circles: always use r*2 (diameter), ignore stale width/height
 			// For rects: use width/height
@@ -4290,48 +4317,60 @@
 					height: seatHeight
 				},
 				color: seat.fill,
-				seat_desc: seat.seat_desc,
-				syncToPubData: syncToPubData
+				seat_desc: seat.seat_desc
 			};
 		});
 
 		$.ajax({
-			url: this.config.ajaxUrl,
-			type: 'POST',
-			data: {
-				action: this.config.ajaxAction,
-				a: 'saveDraft',
-				plan_id: this.config.planId,
-				nonce: this.config.nonce,
-				decorations: JSON.stringify(draftData.decorations),
-				lines: JSON.stringify(draftData.lines),
-				labels: JSON.stringify(draftData.labels),
-				canvas_width: draftData.canvas_width,
-				canvas_height: draftData.canvas_height,
-				background_color: draftData.background_color,
-				background_image: draftData.background_image,
-				background_image_id: draftData.background_image_id,
-				background_image_fit: draftData.background_image_fit,
-				background_image_align: draftData.background_image_align,
-				colors: JSON.stringify(draftData.colors),
-				seats: JSON.stringify(seatsData)
-			},
-			success: function(response) {
-				if (response.success) {
-					self.hasUnsavedChanges = false;
-					// Reset sync checkbox after save
-					$(self.config.container).find('.saso-sync-to-pub-checkbox').prop('checked', false);
-					self.showNotice('success', self.config.i18n.draftSaved || 'Draft saved successfully');
-					// Show unpublished banner if not already visible
-					if (response.data && response.data.has_unpublished_changes) {
-						var $existing = $(self.config.container).find('.saso-unpublished-banner');
-						if ($existing.length === 0) {
-							self.showUnpublishedBanner(response.data.publish_info);
+				url: this.config.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: this.config.ajaxAction,
+					a: 'saveDraft',
+					plan_id: this.config.planId,
+					nonce: this.config.nonce,
+					decorations: JSON.stringify(draftData.decorations),
+					lines: JSON.stringify(draftData.lines),
+					labels: JSON.stringify(draftData.labels),
+					canvas_width: draftData.canvas_width,
+					canvas_height: draftData.canvas_height,
+					background_color: draftData.background_color,
+					background_image: draftData.background_image,
+					background_image_id: draftData.background_image_id,
+					background_image_fit: draftData.background_image_fit,
+					background_image_align: draftData.background_image_align,
+					colors: JSON.stringify(draftData.colors),
+					seats: JSON.stringify(seatsData),
+					// Fix for support #014864 — list of dbIds of seats deleted
+					// client-side. Server soft-deletes them on success; blocked
+					// seats (with confirmed bookings) are returned in `blocked`.
+					deleted_seat_ids: JSON.stringify(this.deletedSeatIds ? Array.from(this.deletedSeatIds) : [])
+				},
+				success: function(response) {
+								if (response.success) {
+									self.hasUnsavedChanges = false;
+									self.showNotice('success', self.config.i18n.draftSaved || 'Draft saved successfully');
+						// Show unpublished banner if not already visible
+						if (response.data && response.data.has_unpublished_changes) {
+							var $existing = $(self.config.container).find('.saso-unpublished-banner');
+							if ($existing.length === 0) {
+								self.showUnpublishedBanner(response.data.publish_info);
+							}
 						}
-					}
-					// Update header badges
-					self.updateHeaderBadges(response.data);
-				} else {
+						// Fix for #014864 — surface blocked-seat notice to the user.
+						var blocked = (response.data && response.data.blocked) || [];
+						if (blocked.length > 0) {
+							self.showNotice(
+								'warning',
+								(self.config.i18n.deletionsBlocked ||
+									'%d seat(s) could not be deleted because they have active bookings — cancel or refund the order first.').replace('%d', blocked.length)
+							);
+						}
+						// Clear the deleted-seat set after a successful save roundtrip.
+						self.deletedSeatIds = new Set();
+						// Update header badges
+						self.updateHeaderBadges(response.data);
+					} else {
 					self.showNotice('error', response.data.error || 'Save failed');
 				}
 			},

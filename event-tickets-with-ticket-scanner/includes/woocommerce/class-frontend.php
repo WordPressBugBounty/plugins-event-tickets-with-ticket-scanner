@@ -205,6 +205,13 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		/**
 		 * Check if cart contains products with purchase restrictions
 		 *
+		 * Honors the is_ticket flag on the parent product: a stale `_saso_eventticket_list_sale_restriction`
+		 * post_meta entry on a non-ticket product (common after a staging→live migration or after a
+		 * product is reconfigured from "ticket with code" to "regular product") must NOT trigger the
+		 * restriction-code UI or validation. This is the cart/checkout analogue of the
+		 * 3.1.8 ticket-specific-UI gate — without it the customer sees a code field on a product that
+		 * has none in the admin.
+		 *
 		 * @return bool True if cart contains products with restrictions
 		 */
 		public function containsProductsWithRestrictions(): bool {
@@ -222,14 +229,46 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 					return false;
 				}
 				foreach (WC()->cart->get_cart() as $cart_item) {
-					$saso_eventtickets_list = get_post_meta($cart_item['product_id'], self::META_KEY_CODELIST_RESTRICTION, true);
-					if (!empty($saso_eventtickets_list)) {
+					if ($this->getEffectiveRestrictionListId($cart_item['product_id']) !== '') {
 						$this->_containsProductsWithRestrictions = true;
 						break;
 					}
 				}
 			}
 			return $this->_containsProductsWithRestrictions;
+		}
+
+		/**
+		 * Effective restriction-code list id for a cart item, with stale post_meta stripped.
+		 *
+		 * Returns the `_saso_eventticket_list_sale_restriction` value for products that are
+		 * (still) ticket products, and an empty string for everything else. The empty return
+		 * value means "no restriction applies" for every caller — `containsProductsWithRestrictions`,
+		 * `woocommerce_after_cart_item_name_handler` (cart input) and `check_code_for_cartitem`
+		 * (checkout validation) all branch on this same helper, so the gate is enforced in one place.
+		 *
+		 * Without this helper, a non-ticket product with stale post_meta from a previous
+		 * configuration (very common after staging→live DB migrations) keeps demanding a code
+		 * the customer cannot supply.
+		 *
+		 * For variable products the cart passes the variation id as `$product_id`. The ticket
+		 * meta (`is_ticket`, `_saso_eventticket_list_sale_restriction`) lives on the parent, so
+		 * we resolve to the parent before deciding whether the product is a ticket. Without
+		 * this step every variation of a ticket parent would be treated as "not a ticket" and
+		 * the restriction code would silently disappear for variable products.
+		 *
+		 * @param int $product_id Product id (variation or parent).
+		 * @return string Empty string = no restriction; otherwise the restriction-code list id.
+		 */
+		public function getEffectiveRestrictionListId(int $product_id): string {
+			if ($product_id < 1) return '';
+			$parent_id = wp_get_post_parent_id($product_id);
+			$effective_id = $parent_id > 0 ? $parent_id : $product_id;
+			if (!$this->MAIN->getWC()->getProductManager()->isTicketByProductId($effective_id)) {
+				return '';
+			}
+			$value = get_post_meta($effective_id, self::META_KEY_CODELIST_RESTRICTION, true);
+			return is_string($value) ? $value : (string) $value;
 		}
 
 		/**
@@ -459,7 +498,9 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		public function check_code_for_cartitem(array $cart_item, string $code): int {
 			$ret = 0; // empty
 			if (!empty($code)) {
-				$saso_eventtickets_list_id = get_post_meta($cart_item['product_id'], self::META_KEY_CODELIST_RESTRICTION, true);
+				// Gate by is_ticket via the shared helper: a stale restriction post_meta on a
+				// non-ticket product must not turn a customer-typed code into a rejection.
+				$saso_eventtickets_list_id = $this->getEffectiveRestrictionListId(intval($cart_item['product_id']));
 				if (!empty($saso_eventtickets_list_id)) {
 					try {
 						$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($code);
@@ -688,7 +729,9 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		public function woocommerce_after_cart_item_name_handler(array $cart_item, string $cart_item_key): void {
 			// Show input for purchase restriction code (separate feature — works on
 			// any product type, ticket or not).
-			$saso_eventtickets_list = get_post_meta($cart_item['product_id'], self::META_KEY_CODELIST_RESTRICTION, true);
+			// go through getEffectiveRestrictionListId() so stale post_meta on a non-ticket
+			// product (common after a staging→live migration) does not trigger the field.
+			$saso_eventtickets_list = $this->getEffectiveRestrictionListId(intval($cart_item['product_id']));
 			if (!empty($saso_eventtickets_list) && $this->MAIN->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
 				$code = isset($cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM]) ? $cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM] : '';
 				$infoLabel = $this->MAIN->getOptions()->getOptionValue('wcRestrictCartInfo');

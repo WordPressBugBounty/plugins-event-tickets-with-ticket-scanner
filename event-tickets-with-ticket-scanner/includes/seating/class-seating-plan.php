@@ -861,6 +861,67 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 	}
 
 	/**
+	 * Soft-delete seats from the Visual Designer save path.
+	 *
+	 * The Designer sends a list of seat dbIds it deleted client-side; this
+	 * method applies the soft-delete (is_deleted = 1) for each id, after
+	 * checking that the seat has no confirmed bookings. Seats with active
+	 * tickets are reported in the `blocked` list so the JS side can show a
+	 * "could not delete — cancel/refund first" notice and put the seat back
+   * on the canvas.
+	 *
+	 * The fix for support ticket #014864 — previously the designer delete
+	 * path did not exist at all (syncSeatsOnPublish was a placeholder since
+	 * the ur-commit), so deleted seats reverted on reload.
+	 *
+	 * @param int   $planId  Plan ID
+	 * @param array $seatIds Seat dbIds to soft-delete
+	 * @return array{deleted: int[], blocked: int[], unknown: int[]}
+	 *               deleted = ids that were soft-deleted
+	 *               blocked  = ids with active tickets (skipped)
+	 *               unknown  = ids that don't exist in the DB (skipped)
+	 */
+	public function softDeleteSeatsFromDesigner(int $planId, array $seatIds): array {
+		$seatManager = $this->MAIN->getSeating()->getSeatManager();
+
+		$deleted = [];
+		$blocked  = [];
+		$unknown  = [];
+
+		foreach ($seatIds as $rawId) {
+			$seatId = (int) $rawId;
+			if ($seatId <= 0) {
+				continue;
+			}
+
+			$row = $seatManager->getById($seatId);
+			if (!$row) {
+				$unknown[] = $seatId;
+				continue;
+			}
+
+			// Skip already-soft-deleted seats (idempotent save).
+			if ((int) ($row['is_deleted'] ?? 0) === 1) {
+				continue;
+			}
+
+			if ($this->countActiveTicketsForSeat($planId, $seatId) > 0) {
+				$blocked[] = $seatId;
+				continue;
+			}
+
+			$seatManager->softDelete([$seatId]);
+			$deleted[] = $seatId;
+		}
+
+		return [
+			'deleted' => $deleted,
+			'blocked' => $blocked,
+			'unknown' => $unknown,
+		];
+	}
+
+	/**
 	 * Sync seats table after publishing
 	 * Creates new seats, soft-deletes removed seats
 	 *

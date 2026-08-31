@@ -283,11 +283,19 @@ class sasoEventtickets_Core {
 		// Authtoken-Name live-Lookup mit Cache (mirrors getCustomerName pattern).
 		// We store only the ID in the JSON; the name is fetched on each render so a
 		// renamed token shows the current name everywhere — backend table, detail
-		// view and CSV export.
+		// view and CSV export. getAuthtoken() throws #505 if the token was deleted
+		// (common after a DB migration, an admin delete, or a stale import); we
+		// fall back to "AUTHTOKEN DELETED" instead of breaking the surrounding render.
 		if (isset($metaObj['wc_ticket']['redeemed_via_authtoken_id']) && $metaObj['wc_ticket']['redeemed_via_authtoken_id'] > 0) {
 			$_t_id = (int) $metaObj['wc_ticket']['redeemed_via_authtoken_id'];
 			if (!isset($this->_CACHE_authtokenNames[$_t_id])) {
-				$tokenObj = $this->MAIN->getAuthtokenHandler()->getAuthtoken(['id' => $_t_id]);
+				$tokenObj = null;
+				try {
+					$tokenObj = $this->MAIN->getAuthtokenHandler()->getAuthtoken(['id' => $_t_id]);
+				} catch (Exception $e) {
+					// Token gone (deleted, never migrated, or DB-truncated ID).
+					// Cache the placeholder so we don't re-query on every render.
+				}
 				$this->_CACHE_authtokenNames[$_t_id] = ($tokenObj && !empty($tokenObj['name']))
 					? $tokenObj['name']
 					: esc_html__("AUTHTOKEN DELETED", 'event-tickets-with-ticket-scanner');
