@@ -1906,6 +1906,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			// Die gewaehlte Variante entscheidet, gegen welchen Plan geprueft wird.
 			$plan = $frontendManager->getPlanForProductFrontend($product_id, $variationIdOfRequest > 0 ? $variationIdOfRequest : null);
 			$planIsAvailable = !empty($plan);
+			$planId = $planIsAvailable ? (int) $plan['id'] : 0;
 
 			// Only validate if plan is published and visible to customer
 			if ($planIsAvailable) {

@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.10
+Stable tag: 3.1.11
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -243,6 +243,9 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.11 - 2026-09-01 =
+* Fix: Adding a ticket with a chosen seat to the cart failed with "Invalid seat selection" on every attempt since 3.1.8. The seat check compared the chosen seat against a value that the variation-plan rework had left behind, so no seat could ever pass - on products with and without variations. Valid seats are accepted again.
 
 = 3.1.10 - 2026-08-31 =
 * Fix: Two errors that blocked a shop after a staging-to-live database migration. (1) The Event Tickets admin page stayed on the loading spinner and showed "#505 auth token not found" as soon as a ticket in the list referenced a scanner token that no longer existed in the new database - the audit column tried to read the token's name and the missing-row error crashed the whole page. (2) Membership products that were never ticket products suddenly demanded a "ticket or access code" in the cart and at checkout, even though their product settings showed no restriction. Both came from values that the database carried over from staging. (1) is caught and falls back to "AUTHTOKEN DELETED" in the audit column; the migration artefact no longer breaks the page. (2) sits behind the same is_ticket gate that already protects the other ticket-specific cart fields (added in 3.1.8): a stale restriction on a non-ticket product is now ignored, both for the input field and for the checkout validation. The restriction still works as before for real ticket products, including variations, where the parent is walked up first.
