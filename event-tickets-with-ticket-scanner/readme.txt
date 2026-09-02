@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.11
+Stable tag: 3.1.12
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -243,6 +243,14 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.12 - 2026-09-02 =
+* Tweak: The premium wizard now says exactly what the "Enable Recommended Settings" button does before you click it: attach tickets as PDF to the purchase email, merge all tickets of an order into one PDF, and raise the attachment limit to 21. Previously the popup only vaguely asked to "enable PDF ticket attachment" and revealed the actual settings only after they had already been changed.
+* Tweak: "Skip" in the premium wizard closes the popup instantly instead of waiting for the server. The "don't show again" marker is written exactly once per installation - the first time the wizard is skipped while it is still unset; re-opening the wizard later sends no request at all.
+* Fix: In multilingual shops (WPML), the seat check on "add to cart" was silently skipped when the customer bought in a secondary language. The check read the seat settings from the translated product, where they do not exist - a shop could sell numbered-seat tickets without a chosen seat. The check now reads the settings from the original product, like the cart display already did.
+* New: A safety net at checkout. If a product with required seat selection reaches the cart or checkout without a seat on its line - possible when the seating plan was still unpublished at add-to-cart, when a seat reservation expired and was removed, or when another plugin rewrote the cart - the order is now blocked with a clear message until a seat is selected. Products with optional seats are unaffected.
+
+
 
 = 3.1.11 - 2026-09-01 =
 * Fix: Adding a ticket with a chosen seat to the cart failed with "Invalid seat selection" on every attempt since 3.1.8. The seat check compared the chosen seat against a value that the variation-plan rework had left behind, so no seat could ever pass - on products with and without variations. Valid seats are accepted again.

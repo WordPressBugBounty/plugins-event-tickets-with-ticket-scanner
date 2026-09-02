@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Serial Codes Generator and Validator 2.9.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/event-tickets-"
 "with-ticket-scanner\n"
-"POT-Creation-Date: 2026-08-26T07:30:15+00:00\n"
+"POT-Creation-Date: 2026-09-02T14:57:24+00:00\n"
 "PO-Revision-Date: 2026-03-24 18:00+0100\n"
 "Last-Translator: \n"
 "Language-Team: Danish\n"
@@ -80,19 +80,19 @@ msgid "Loading…"
 msgstr "Indlæser…"
 
 #: includes/seating/class-seating-admin.php:388
-#: includes/seating/class-seating-admin.php:1035
+#: includes/seating/class-seating-admin.php:1060
 #: sasoEventtickets_Seating.php:455 js/seating_admin.js:21
 msgid "Seating plan created successfully"
 msgstr "Sædeplan oprettet"
 
 #: includes/seating/class-seating-admin.php:413
-#: includes/seating/class-seating-admin.php:1036
+#: includes/seating/class-seating-admin.php:1061
 #: sasoEventtickets_Seating.php:447 js/seating_admin.js:22
 msgid "Seating plan updated successfully"
 msgstr "Sædeplan opdateret"
 
 #: includes/seating/class-seating-admin.php:436
-#: includes/seating/class-seating-admin.php:1037
+#: includes/seating/class-seating-admin.php:1062
 #: sasoEventtickets_Seating.php:472 js/seating_admin.js:23
 msgid "Seating plan deleted successfully"
 msgstr "Sædeplan slettet"
@@ -102,7 +102,7 @@ msgid "Seating plan cloned successfully"
 msgstr "Sædeplan kopieret"
 
 #: includes/seating/class-seating-admin.php:513
-#: includes/seating/class-seating-admin.php:1038
+#: includes/seating/class-seating-admin.php:1063
 #: sasoEventtickets_Seating.php:519 js/seating_admin.js:25
 msgid "Seat created successfully"
 msgstr "Plads oprettet"
@@ -114,7 +114,7 @@ msgid "%d seats created successfully"
 msgstr "%d pladser oprettet"
 
 #: includes/seating/class-seating-admin.php:595
-#: includes/seating/class-seating-admin.php:1040
+#: includes/seating/class-seating-admin.php:1065
 #: sasoEventtickets_Seating.php:508 js/seating_admin.js:27
 msgid "Seat updated successfully"
 msgstr "Plads opdateret"
@@ -125,7 +125,7 @@ msgid "%d seats updated successfully"
 msgstr "%d pladser opdateret"
 
 #: includes/seating/class-seating-admin.php:660
-#: includes/seating/class-seating-admin.php:1041
+#: includes/seating/class-seating-admin.php:1066
 #: sasoEventtickets_Seating.php:615 js/seating_admin.js:28
 msgid "Seat deleted successfully"
 msgstr "Plads slettet"
@@ -135,59 +135,59 @@ msgstr "Plads slettet"
 msgid "%d seats deleted successfully"
 msgstr "%d pladser slettet"
 
-#: includes/seating/class-seating-admin.php:796
-#: includes/seating/class-seating-admin.php:1052
+#: includes/seating/class-seating-admin.php:815
+#: includes/seating/class-seating-admin.php:1077
 msgid "Draft saved successfully"
 msgstr "Kladde gemt"
 
-#: includes/seating/class-seating-admin.php:866
-#: includes/seating/class-seating-admin.php:1054
+#: includes/seating/class-seating-admin.php:891
+#: includes/seating/class-seating-admin.php:1079
 msgid "Seating plan published successfully"
 msgstr "Sædeplan udgivet"
 
-#: includes/seating/class-seating-admin.php:889
-#: includes/seating/class-seating-admin.php:1053
+#: includes/seating/class-seating-admin.php:914
+#: includes/seating/class-seating-admin.php:1078
 msgid "Draft changes discarded"
 msgstr "Kladdeændringer kasseret"
 
-#: includes/seating/class-seating-admin.php:1033 js/seating_admin.js:19
+#: includes/seating/class-seating-admin.php:1058 js/seating_admin.js:19
 msgid "Are you sure you want to delete this?"
 msgstr "Er du sikker på, at du vil slette dette?"
 
-#: includes/seating/class-seating-admin.php:1034 js/seating_admin.js:20
+#: includes/seating/class-seating-admin.php:1059 js/seating_admin.js:20
 msgid "This plan has seats. Delete plan and all seats?"
 msgstr "Denne plan har pladser. Slet plan og alle pladser?"
 
-#: includes/seating/class-seating-admin.php:1039 js/seating_admin.js:26
+#: includes/seating/class-seating-admin.php:1064 js/seating_admin.js:26
 msgid "Seats created successfully"
 msgstr "Pladser oprettet"
 
-#: includes/seating/class-seating-admin.php:1042 js/seating_admin.js:29
+#: includes/seating/class-seating-admin.php:1067 js/seating_admin.js:29
 msgid "Limit reached. Upgrade to Premium for unlimited access."
 msgstr "Grænse nået. Opgrader til Premium for ubegrænset adgang."
 
-#: includes/seating/class-seating-admin.php:1043 js/seating_admin.js:30
+#: includes/seating/class-seating-admin.php:1068 js/seating_admin.js:30
 msgid "An error occurred. Please try again."
 msgstr "Der opstod en fejl. Prøv venligst igen."
 
-#: includes/seating/class-seating-admin.php:1044 js/seating_admin.js:31
+#: includes/seating/class-seating-admin.php:1069 js/seating_admin.js:31
 #: js/seating_frontend.js:1160 js/seating_frontend.js:1251
 msgid "Loading..."
 msgstr "Indlæser..."
 
-#: includes/seating/class-seating-admin.php:1045 js/seating_admin.js:32
+#: includes/seating/class-seating-admin.php:1070 js/seating_admin.js:32
 msgid "No seating plans found. Create your first plan!"
 msgstr "Ingen siddeplaner fundet. Opret din første plan!"
 
-#: includes/seating/class-seating-admin.php:1046 js/seating_admin.js:33
+#: includes/seating/class-seating-admin.php:1071 js/seating_admin.js:33
 msgid "No seats in this plan. Add seats below."
 msgstr "Ingen pladser i denne plan. Tilføj pladser nedenfor."
 
-#: includes/seating/class-seating-admin.php:1047 js/seating_admin.js:34
+#: includes/seating/class-seating-admin.php:1072 js/seating_admin.js:34
 msgid "Simple Layout (Dropdown)"
 msgstr "Simpelt layout (dropdown)"
 
-#: includes/seating/class-seating-admin.php:1048 js/seating_admin.js:35
+#: includes/seating/class-seating-admin.php:1073 js/seating_admin.js:35
 msgid ""
 "Customers will see a dropdown menu to select their seat. Available seats are "
 "shown in a list sorted by identifier. This is ideal for smaller venues or "
@@ -197,11 +197,11 @@ msgstr ""
 "i en liste sorteret efter identifikator. Dette er ideelt til mindre "
 "spillesteder, eller når visuel sædevalg ikke er nødvendigt."
 
-#: includes/seating/class-seating-admin.php:1049 js/seating_admin.js:36
+#: includes/seating/class-seating-admin.php:1074 js/seating_admin.js:36
 msgid "Visual Layout (Seat Map)"
 msgstr "Visuelt layout (sædekort)"
 
-#: includes/seating/class-seating-admin.php:1050 js/seating_admin.js:37
+#: includes/seating/class-seating-admin.php:1075 js/seating_admin.js:37
 msgid ""
 "Customers will see an interactive seat map where they can click on available "
 "seats. Occupied seats are shown in a different color. This provides a visual "
@@ -211,35 +211,35 @@ msgstr ""
 "Optagede sæder vises i en anden farve. Dette giver et visuelt overblik over "
 "spillestedet. (Premium-funktion)"
 
-#: includes/seating/class-seating-admin.php:1055
+#: includes/seating/class-seating-admin.php:1080
 msgid "You have unpublished changes"
 msgstr "Du har upublicerede ændringer"
 
-#: includes/seating/class-seating-admin.php:1056
+#: includes/seating/class-seating-admin.php:1081
 msgid "Last published:"
 msgstr "Senest udgivet:"
 
-#: includes/seating/class-seating-admin.php:1057
+#: includes/seating/class-seating-admin.php:1082
 msgid "Never published"
 msgstr "Aldrig udgivet"
 
-#: includes/seating/class-seating-admin.php:1058
+#: includes/seating/class-seating-admin.php:1083
 msgid "Discard all unsaved changes and revert to published version?"
 msgstr ""
 "Kassér alle ikke-gemte ændringer og vend tilbage til den offentliggjorte "
 "version?"
 
-#: includes/seating/class-seating-admin.php:1059
+#: includes/seating/class-seating-admin.php:1084
 msgid "Publish changes? This will make them visible to customers."
 msgstr "Udgiv ændringer? Dette gør dem synlige for kunderne."
 
-#: includes/seating/class-seating-admin.php:1060
+#: includes/seating/class-seating-admin.php:1085
 msgid ""
 "Cannot publish: The following seats have sold tickets and cannot be deleted:"
 msgstr ""
 "Kan ikke udgive: Følgende pladser har solgte billetter og kan ikke slettes:"
 
-#: includes/seating/class-seating-admin.php:1061
+#: includes/seating/class-seating-admin.php:1086
 msgid ""
 "Warning: This seating plan has active ticket sales. Changes will only be "
 "visible after publishing."
@@ -247,13 +247,13 @@ msgstr ""
 "Advarsel: Denne sædeplan har aktive billetsalg. Ændringer vil først være "
 "synlige efter publicering."
 
-#: includes/seating/class-seating-admin.php:1062
+#: includes/seating/class-seating-admin.php:1087
 #, php-format
 msgid "%d tickets sold"
 msgstr "%d billetter solgt"
 
 #: includes/seating/class-seating-frontend.php:415
-#: includes/woocommerce/class-frontend.php:308
+#: includes/woocommerce/class-frontend.php:347
 #: sasoEventtickets_AdminSettings.php:271 sasoEventtickets_Frontend.php:26
 #: sasoEventtickets_Seating.php:391
 #, php-format
@@ -330,11 +330,11 @@ msgstr "Sædeplan udgivet."
 msgid "Unknown"
 msgstr "Ukendt"
 
-#: includes/seating/class-seating-plan.php:982
+#: includes/seating/class-seating-plan.php:1043
 msgid "Source seating plan not found."
 msgstr "Kilde-sædeplan ikke fundet."
 
-#: includes/seating/class-seating-plan.php:1004
+#: includes/seating/class-seating-plan.php:1065
 msgid "Failed to create cloned seating plan."
 msgstr "Kunne ikke oprette klonet sædeplan."
 
@@ -394,60 +394,60 @@ msgstr "Åbn %s"
 msgid "Open your congress page"
 msgstr "Åbn din arrangementsside"
 
-#: includes/woocommerce/class-frontend.php:763
+#: includes/woocommerce/class-frontend.php:806
 msgid ""
 "Date locked: Seats are selected for this date. Remove item to change date."
 msgstr ""
 "Dato låst: Sæder er valgt til denne dato. Fjern varen for at ændre dato."
 
-#: includes/woocommerce/class-frontend.php:790
+#: includes/woocommerce/class-frontend.php:833
 msgid "Note:"
 msgstr "Bemærk:"
 
-#: includes/woocommerce/class-frontend.php:791
+#: includes/woocommerce/class-frontend.php:834
 msgid "Please select your seats on the product page before checkout."
 msgstr "Vælg venligst dine pladser på produktsiden før checkout."
 
-#: includes/woocommerce/class-frontend.php:822
+#: includes/woocommerce/class-frontend.php:865
 msgid "Seats:"
 msgstr "Pladser:"
 
-#: includes/woocommerce/class-frontend.php:823
+#: includes/woocommerce/class-frontend.php:866
 msgid "Seat:"
 msgstr "Plads:"
 
 #. translators: %s: name of product
-#: includes/woocommerce/class-frontend.php:1023
+#: includes/woocommerce/class-frontend.php:1066
 #, php-format
 msgid "The product \"%s\" requires a restriction code for checkout."
 msgstr "Produktet \"%s\" kræver en begrænsningskode ved kassen."
 
 #. translators: 1: restriction code number 2: name of product
-#: includes/woocommerce/class-frontend.php:1036
+#: includes/woocommerce/class-frontend.php:1079
 #, php-format
 msgid "The restriction code \"%1$s\" for product \"%2$s\" is already used."
 msgstr "Begrænsningskoden \"%1$s\" for produktet \"%2$s\" er allerede brugt."
 
 #. translators: 1: restriction code number 2: name of product
-#: includes/woocommerce/class-frontend.php:1050
+#: includes/woocommerce/class-frontend.php:1093
 #, php-format
 msgid "The restriction code \"%1$s\" for product \"%2$s\" is not valid."
 msgstr "Begrænsningskoden \"%1$s\" for produktet \"%2$s\" er ikke gyldig."
 
 #. translators: %s: product name
-#: includes/woocommerce/class-frontend.php:1258
+#: includes/woocommerce/class-frontend.php:1301
 #, php-format
 msgid "Online sales for \"%s\" have closed."
 msgstr ""
 
 #. translators: %s: product name
-#: includes/woocommerce/class-frontend.php:1307
+#: includes/woocommerce/class-frontend.php:1350
 #, php-format
 msgid "Online sales for \"%s\" have closed, so it was removed from your cart."
 msgstr ""
 
 #. translators: 1: product name 2: seat labels
-#: includes/woocommerce/class-frontend.php:1512
+#: includes/woocommerce/class-frontend.php:1555
 #, php-format
 msgid ""
 "\"%1$s\" was removed from your cart because the seat reservation expired: "
@@ -456,7 +456,7 @@ msgstr ""
 "\"%1$s\" blev fjernet fra din indkøbskurv, da sædereservationen udløb: %2$s"
 
 #. translators: 1: product name 2: seat labels
-#: includes/woocommerce/class-frontend.php:1523
+#: includes/woocommerce/class-frontend.php:1566
 #, php-format
 msgid ""
 "The seat reservation for \"%1$s\" has expired: %2$s. Please select your "
@@ -465,38 +465,47 @@ msgstr ""
 "Sædereservationen for \"%1$s\" er udløbet: %2$s. Vælg venligst dine sæder "
 "igen."
 
-#: includes/woocommerce/class-frontend.php:1820
+#. translators: 1: product name
+#: includes/woocommerce/class-frontend.php:1664
+#, php-format
+msgid ""
+"\"%1$s\" requires a seat selection. Please go back to the product page and "
+"select your seat."
+msgstr "\"%1$s\" kræver valg af sæde. Gå tilbage til produktsiden og vælg"
+"dit sæde."
+
+#: includes/woocommerce/class-frontend.php:1930
 msgid "Security check failed. Please reload page."
 msgstr "Sikkerhedstjek mislykkedes. Genindlæs siden."
 
-#: includes/woocommerce/class-frontend.php:1889
+#: includes/woocommerce/class-frontend.php:2005
 #, php-format
 msgid "Please select %d seat(s) before adding to cart."
 msgstr "Vælg venligst %d plads(er), før du tilføjer til kurven."
 
-#: includes/woocommerce/class-frontend.php:1901
+#: includes/woocommerce/class-frontend.php:2017
 #, php-format
 msgid "Please select exactly %d seat(s). You have selected %d."
 msgstr "Vælg venligst præcis %d plads(er). Du har valgt %d."
 
-#: includes/woocommerce/class-frontend.php:1928
+#: includes/woocommerce/class-frontend.php:2044
 msgid "Invalid seat selection. Please reload the page and try again."
 msgstr "Ugyldigt sædevalg. Genindlæs venligst siden og prøv igen."
 
-#: includes/woocommerce/class-frontend.php:1942
-#: includes/woocommerce/class-frontend.php:1964
+#: includes/woocommerce/class-frontend.php:2058
+#: includes/woocommerce/class-frontend.php:2080
 #, php-format
 msgid "Seat \"%s\" is no longer available. Please choose another seat."
 msgstr ""
 "Plads \"%s\" er ikke længere tilgængelig. Vælg venligst en anden plads."
 
-#: includes/woocommerce/class-frontend.php:1965
+#: includes/woocommerce/class-frontend.php:2081
 #, php-format
 msgid "Invalid seat selection: %s. Please try again."
 msgstr "Ugyldigt sædevalg: %s. Prøv venligst igen."
 
 #. translators: 1: product name 2: seat count
-#: includes/woocommerce/class-frontend.php:2329
+#: includes/woocommerce/class-frontend.php:2445
 #, php-format
 msgid ""
 "Cannot change quantity for \"%1$s\": %2$d seat(s) are selected. Remove the "
@@ -506,7 +515,7 @@ msgstr ""
 "tilføj igen for at ændre antal."
 
 #. translators: 1: product name 2: seat count
-#: includes/woocommerce/class-frontend.php:2345
+#: includes/woocommerce/class-frontend.php:2461
 #, php-format
 msgid ""
 "Cannot increase quantity for \"%1$s\" beyond %2$d: you have selected %2$d "
@@ -554,7 +563,7 @@ msgstr "Dag(e) pr. billet"
 #: includes/woocommerce/class-order.php:864
 #: includes/woocommerce/class-order.php:870
 #: includes/woocommerce/class-order.php:1115 sasoEventtickets_Options.php:657
-#: sasoEventtickets_Ticket.php:1073 backend.js:6369 js/seating_admin.js:1481
+#: sasoEventtickets_Ticket.php:1073 backend.js:6395 js/seating_admin.js:1481
 msgid "Seat"
 msgstr "Plads"
 
@@ -605,7 +614,7 @@ msgid "Event Tickets"
 msgstr "Event Tickets"
 
 #: includes/woocommerce/class-product.php:81 woocommerce-hooks.php:229
-#: woocommerce-hooks.php:238 backend.js:4819 backend.js:5599 backend.js:5600
+#: woocommerce-hooks.php:238 backend.js:4845 backend.js:5625 backend.js:5626
 msgctxt "title"
 msgid "Event Tickets"
 msgstr "Event Tickets"
@@ -1110,7 +1119,7 @@ msgstr "Anmod om navn pr. billet"
 #: includes/woocommerce/class-product.php:876
 #: includes/woocommerce/class-product.php:894
 #: includes/woocommerce/class-product.php:908
-#: includes/woocommerce/class-product.php:942 backend.js:1328
+#: includes/woocommerce/class-product.php:942 backend.js:1334
 msgid "Yes"
 msgstr "Ja"
 
@@ -1214,7 +1223,7 @@ msgstr "ugyldigt produkt-id"
 msgid "invalid date format — expected Y-m-d"
 msgstr "ugyldigt datoformat — forventet Y-m-d"
 
-#: index.php:142 backend.js:5891
+#: index.php:142 backend.js:5917
 msgid "is active"
 msgstr "er aktiv"
 
@@ -1770,7 +1779,7 @@ msgid ""
 "takes to sell tickets."
 msgstr ""
 
-#: sasoEventtickets_AdminSettings.php:1085 backend.js:4625
+#: sasoEventtickets_AdminSettings.php:1085 backend.js:4631
 msgid "Open products"
 msgstr ""
 
@@ -1949,55 +1958,55 @@ msgstr "Kunne ikke oprette auth-token. Auth-token-koden findes allerede."
 
 #: sasoEventtickets_Core.php:246 sasoEventtickets_Core.php:256
 #: sasoEventtickets_Core.php:266 sasoEventtickets_Core.php:276
-#: sasoEventtickets_Core.php:302
+#: sasoEventtickets_Core.php:310
 msgid "USERID DO NOT EXISTS"
 msgstr "BRUGER-ID FINDES IKKE"
 
-#: sasoEventtickets_Core.php:293
+#: sasoEventtickets_Core.php:301
 msgid "AUTHTOKEN DELETED"
 msgstr "AUTHTOKEN SLETTET"
 
-#: sasoEventtickets_Core.php:357
+#: sasoEventtickets_Core.php:365
 msgid "Value given by the user during the code registration."
 msgstr "Værdi givet af brugeren under koderegistreringen."
 
-#: sasoEventtickets_Core.php:358
+#: sasoEventtickets_Core.php:366
 msgid "IP address of the user, register to a code."
 msgstr "IP-adresse på brugeren, registreret på en kode."
 
-#: sasoEventtickets_Core.php:359
+#: sasoEventtickets_Core.php:367
 msgid "User id of the registered user to a code. Default will be 0."
 msgstr "Bruger-id for den registrerede bruger til en kode. Standard er 0."
 
-#: sasoEventtickets_Core.php:360
+#: sasoEventtickets_Core.php:368
 msgid "IP addres of the user that used the code."
 msgstr "IP-adresse på brugeren der brugte koden."
 
-#: sasoEventtickets_Core.php:361
+#: sasoEventtickets_Core.php:369
 msgid "Amount of how many times the code was validated successfully."
 msgstr "Antal gange koden er blevet valideret korrekt."
 
-#: sasoEventtickets_Core.php:362
+#: sasoEventtickets_Core.php:370
 msgid "WooCommerce order id assigned to the code."
 msgstr "WooCommerce-ordre-id tildelt koden."
 
-#: sasoEventtickets_Core.php:363
+#: sasoEventtickets_Core.php:371
 msgid "WooCommerce product id assigned to the code."
 msgstr "WooCommerce-produkt-id tildelt koden."
 
-#: sasoEventtickets_Core.php:364
+#: sasoEventtickets_Core.php:372
 msgid "Creation date of the WooCommerce sales date."
 msgstr "Oprettelsesdato for WooCommerce-salgsdatoen."
 
-#: sasoEventtickets_Core.php:365
+#: sasoEventtickets_Core.php:373
 msgid "Creation date of the WooCommerce sales date timezone."
 msgstr "Oprettelsesdato for WooCommerce-salgsdatoens tidszone."
 
-#: sasoEventtickets_Core.php:366
+#: sasoEventtickets_Core.php:374
 msgid "User id of the WooCommerce sales."
 msgstr "Bruger-id for WooCommerce-salg."
 
-#: sasoEventtickets_Core.php:367
+#: sasoEventtickets_Core.php:375
 msgid ""
 "WooCommerce order id, that was purchases using this code as an allowance to "
 "purchase a restricted product."
@@ -2005,32 +2014,32 @@ msgstr ""
 "WooCommerce-ordre-id, der blev købt ved hjælp af denne kode som tilladelse "
 "til at købe et begrænset produkt."
 
-#: sasoEventtickets_Core.php:368
+#: sasoEventtickets_Core.php:376
 msgid "WooCommerce product id that was restricted with this code."
 msgstr "WooCommerce-produkt-id, der var begrænset med denne kode."
 
-#: sasoEventtickets_Core.php:369
+#: sasoEventtickets_Core.php:377
 msgid "Creation date of the WooCommerce purchase using the allowance code."
 msgstr "Oprettelsesdato for WooCommerce-købet ved brug af godkendelseskoden."
 
-#: sasoEventtickets_Core.php:370
+#: sasoEventtickets_Core.php:378
 msgid ""
 "Creation date timezone of the WooCommerce purchase using the allowance code."
 msgstr ""
 "Oprettelsesdatotidzone for WooCommerce-købet ved brug af godkendelseskoden."
 
-#: sasoEventtickets_Core.php:371
+#: sasoEventtickets_Core.php:379
 msgid "The public ticket number"
 msgstr "Det offentlige billetnummer"
 
-#: sasoEventtickets_Core.php:1401
+#: sasoEventtickets_Core.php:1409
 msgid ""
 "No writable temporary directory is available for the ticket PDF. Please "
 "define WP_TEMP_DIR in wp-config.php or ask your host to make the temporary "
 "directory writable."
 msgstr ""
 
-#: sasoEventtickets_Core.php:1419
+#: sasoEventtickets_Core.php:1427
 msgid "PDF file was not created and is skipped in the merge."
 msgstr ""
 
@@ -2049,11 +2058,11 @@ msgstr ""
 msgid "All settings (no filter)"
 msgstr ""
 
-#: sasoEventtickets_Options.php:204 backend.js:4449
+#: sasoEventtickets_Options.php:204 backend.js:4455
 msgid "Event tickets"
 msgstr "Eventbilletter"
 
-#: sasoEventtickets_Options.php:205 backend.js:4450
+#: sasoEventtickets_Options.php:205 backend.js:4456
 msgid "Day passes"
 msgstr "Dagsbilletter"
 
@@ -3883,7 +3892,7 @@ msgstr ""
 "documentation/option-wcticketdesignertemplate/\" "
 "target=\"_blank\">Indstillinger-dokumentation</a>"
 
-#: sasoEventtickets_Options.php:635 backend.js:1869
+#: sasoEventtickets_Options.php:635 backend.js:1875
 msgid ""
 "Fields that another plugin collects at checkout can be printed on the "
 "ticket. Use them in the ticket template like this:"
@@ -3891,7 +3900,7 @@ msgstr ""
 "Felter, som et andet plugin indsamler i kassen, kan printes på billetten. I "
 "billetskabelonen sådan:"
 
-#: sasoEventtickets_Options.php:635 backend.js:1868
+#: sasoEventtickets_Options.php:635 backend.js:1874
 msgctxt "title"
 msgid "Checkout fields of other plugins"
 msgstr "Kassefelter fra andre plugins"
@@ -3996,7 +4005,7 @@ msgstr "Billettitel"
 msgid "This is the title of the ticket"
 msgstr "Dette er titlen på billetten"
 
-#: sasoEventtickets_Options.php:654 backend.js:3229 wc_backend.js:384
+#: sasoEventtickets_Options.php:654 backend.js:3235 wc_backend.js:384
 #: wc_backend.js:581
 msgid "Ticket"
 msgstr "Billet"
@@ -5535,7 +5544,7 @@ msgstr ""
 "Indtast din Premium-licensnøgle. Når Premium-pluginet er opdateret til "
 "version 1.6.0+, gendannes alle Premium-funktioner."
 
-#: sasoEventtickets_Options.php:964 backend.js:389
+#: sasoEventtickets_Options.php:964 backend.js:426
 msgid "Premium License Key"
 msgstr "Premium-licensnøgle"
 
@@ -5579,7 +5588,7 @@ msgid "#232 original product of the order and ticket not found!"
 msgstr "#232 oprindeligt produkt for ordren og billet ikke fundet!"
 
 #: sasoEventtickets_Ticket.php:1702 sasoEventtickets_Ticket.php:1724
-#: sasoEventtickets_Ticket.php:3673 ticket_scanner.js:1673
+#: sasoEventtickets_Ticket.php:3723 ticket_scanner.js:1673
 msgid "Ticket Info"
 msgstr "Billetinfo"
 
@@ -5653,38 +5662,38 @@ msgstr ""
 msgid "Order item not found for the PDF ticket"
 msgstr "Ordrelinje ikke fundet til PDF-billetten"
 
-#: sasoEventtickets_Ticket.php:2602
+#: sasoEventtickets_Ticket.php:2628
 msgid "Product not found for the PDF ticket"
 msgstr "Produkt ikke fundet til PDF-billetten"
 
-#: sasoEventtickets_Ticket.php:2858
+#: sasoEventtickets_Ticket.php:2884
 msgid "The ticket PDF could not be written to the temporary directory."
 msgstr ""
 
-#: sasoEventtickets_Ticket.php:2906
+#: sasoEventtickets_Ticket.php:2932
 msgid "Product ID not valid for ticket date string"
 msgstr "Produkt-id er ikke gyldigt for billetdatostrengen"
 
-#: sasoEventtickets_Ticket.php:3394 sasoEventtickets_Ticket.php:3409
-#: sasoEventtickets_Ticket.php:3424
+#: sasoEventtickets_Ticket.php:3444 sasoEventtickets_Ticket.php:3459
+#: sasoEventtickets_Ticket.php:3474
 msgid "Can not find the product for this ticket."
 msgstr "Kan ikke finde produktet for denne billet."
 
-#: sasoEventtickets_Ticket.php:3476 sasoEventtickets_Ticket.php:3482
+#: sasoEventtickets_Ticket.php:3526 sasoEventtickets_Ticket.php:3532
 msgid "Too early. Ticket cannot be redeemed yet."
 msgstr "For tidligt. Billetten kan ikke indløses endnu."
 
-#: sasoEventtickets_Ticket.php:3491 sasoEventtickets_Ticket.php:3501
+#: sasoEventtickets_Ticket.php:3541 sasoEventtickets_Ticket.php:3551
 msgid "Too late, event finished. Ticket cannot be redeemed anymore."
 msgstr ""
 "For sent, arrangementet er afsluttet. Billetten kan ikke længere indløses."
 
-#: sasoEventtickets_Ticket.php:3495 sasoEventtickets_Ticket.php:3506
+#: sasoEventtickets_Ticket.php:3545 sasoEventtickets_Ticket.php:3556
 msgid "Too late, event started. Ticket cannot be redeemed anymore."
 msgstr ""
 "For sent, arrangementet er startet. Billetten kan ikke længere indløses."
 
-#: sasoEventtickets_Ticket.php:3551
+#: sasoEventtickets_Ticket.php:3601
 msgid ""
 "Order is not paid. And the option is active to allow only paid ticket to be "
 "redeemed is active."
@@ -5692,38 +5701,38 @@ msgstr ""
 "Ordren er ikke betalt. Og indstillingen for kun at tillade indløsning af "
 "betalte billetter er aktiv."
 
-#: sasoEventtickets_Ticket.php:3580
+#: sasoEventtickets_Ticket.php:3630
 msgid "Ticket number to redeem is missing"
 msgstr "Billetnummer til indløsning mangler"
 
-#: sasoEventtickets_Ticket.php:3609
+#: sasoEventtickets_Ticket.php:3659
 msgid "Redeem operation not yet possible."
 msgstr "Indløsning er endnu ikke mulig."
 
-#: sasoEventtickets_Ticket.php:3615
+#: sasoEventtickets_Ticket.php:3665
 msgid "Redeem operation not possible. Too late."
 msgstr "Indløsning ikke mulig. For sent."
 
-#: sasoEventtickets_Ticket.php:3644
+#: sasoEventtickets_Ticket.php:3694
 msgid "Order not marked as paid. Ticket not redeemed."
 msgstr "Ordre ikke markeret som betalt. Billet ikke indløst."
 
-#: sasoEventtickets_Ticket.php:3705
+#: sasoEventtickets_Ticket.php:3755
 msgid "This view has been deactivated."
 msgstr ""
 
-#: sasoEventtickets_Ticket.php:3806 sasoEventtickets_Ticket.php:3979
+#: sasoEventtickets_Ticket.php:3856 sasoEventtickets_Ticket.php:4029
 msgid "No WooCommerce Support Found"
 msgstr "Ingen WooCommerce-support fundet"
 
-#: sasoEventtickets_Ticket.php:3841 sasoEventtickets_Ticket.php:3843
-#: sasoEventtickets_Ticket.php:3906 sasoEventtickets_Ticket.php:3908
-#: sasoEventtickets_Ticket.php:3963 js/congress-admin.js:33
+#: sasoEventtickets_Ticket.php:3891 sasoEventtickets_Ticket.php:3893
+#: sasoEventtickets_Ticket.php:3956 sasoEventtickets_Ticket.php:3958
+#: sasoEventtickets_Ticket.php:4013 js/congress-admin.js:33
 #: js/congress-admin.js:34 ticket_scanner.js:1034
 msgid "Error"
 msgstr "Fejl"
 
-#: sasoEventtickets_Ticket.php:3980
+#: sasoEventtickets_Ticket.php:4030
 msgid "Please contact us for a solution."
 msgstr "Kontakt os for at få en løsning."
 
@@ -5733,7 +5742,7 @@ msgstr "Kontakt os for at få en løsning."
 msgid "function \"%s\" in wc backend not implemented"
 msgstr "Funktion \"%s\" i WC-backend ikke implementeret"
 
-#: backend.js:273 backend.js:2779
+#: backend.js:273 backend.js:2785
 msgid "Preview Test Template Code as PDF"
 msgstr "Forhåndsvis testskabelonkode som PDF"
 
@@ -5741,169 +5750,169 @@ msgstr "Forhåndsvis testskabelonkode som PDF"
 msgid "saving..."
 msgstr "gemmer..."
 
-#: backend.js:382
-msgid "Thank you for using the Premium version!"
-msgstr "Tak fordi du bruger Premium-versionen!"
-
-#: backend.js:383
-msgid "Please enter your license key to activate updates and premium features."
-msgstr ""
-"Indtast venligst din licensnøgle for at aktivere opdateringer og premium-"
-"funktioner."
-
-#: backend.js:396 backend.js:457 js/seating_admin.js:47
-msgid "Activate"
-msgstr "Aktivér"
-
-#: backend.js:402
-msgid "Please enter a license key."
-msgstr "Indtast venligst en licensnøgle."
-
-#: backend.js:407 backend.js:1391 backend.js:2676
-msgid "Checking..."
-msgstr "Tjekker..."
-
-#: backend.js:412
-msgid "Validating license — please wait…"
-msgstr "Validerer licens — vent venligst…"
-
-#: backend.js:418
-msgid "License key saved. Reloading…"
-msgstr "Licensnøgle gemt. Genindlæser…"
-
-#: backend.js:433
+#: backend.js:335
 msgid "Checking license..."
 msgstr "Tjekker licens..."
 
-#: backend.js:436 backend.js:1297 backend.js:1300 backend.js:1303
-#: backend.js:3239 js/congress-admin.js:91 js/seating_admin.js:165
+#: backend.js:338 backend.js:1303 backend.js:1306 backend.js:1309
+#: backend.js:3245 js/congress-admin.js:91 js/seating_admin.js:165
 #: js/seating_admin.js:471 js/seating_admin.js:805 js/seating_admin.js:1453
 #: js/seating_admin.js:1503 wc_backend.js:393 wc_backend.js:606
 msgid "Active"
 msgstr "Aktiv"
 
-#: backend.js:440 backend.js:446
+#: backend.js:342 backend.js:348
 msgid "failures"
 msgstr "fejl"
 
-#: backend.js:443 backend.js:1297 js/seating_admin.js:166
+#: backend.js:345 backend.js:1303 js/seating_admin.js:166
 #: js/seating_admin.js:471 js/seating_admin.js:806
 msgid "Inactive"
 msgstr "Inaktiv"
 
-#: backend.js:449
+#: backend.js:351
 msgid "Check failed"
 msgstr "Tjek mislykkedes"
 
-#: backend.js:459
+#: backend.js:419
+msgid "Thank you for using the Premium version!"
+msgstr "Tak fordi du bruger Premium-versionen!"
+
+#: backend.js:420
+msgid "Please enter your license key to activate updates and premium features."
+msgstr ""
+"Indtast venligst din licensnøgle for at aktivere opdateringer og premium-"
+"funktioner."
+
+#: backend.js:433 backend.js:463 js/seating_admin.js:47
+msgid "Activate"
+msgstr "Aktivér"
+
+#: backend.js:439
+msgid "Please enter a license key."
+msgstr "Indtast venligst en licensnøgle."
+
+#: backend.js:444 backend.js:1397 backend.js:2682
+msgid "Checking..."
+msgstr "Tjekker..."
+
+#: backend.js:449
+msgid "Validating license — please wait…"
+msgstr "Validerer licens — vent venligst…"
+
+#: backend.js:455
+msgid "License key saved. Reloading…"
+msgstr "Licensnøgle gemt. Genindlæser…"
+
+#: backend.js:465
 msgid "Error:"
 msgstr "Fejl:"
 
-#: backend.js:464 backend.js:4624
+#: backend.js:470 backend.js:4630
 msgid "Later"
 msgstr "Senere"
 
-#: backend.js:677 ticket_events.js:220 ticket_scanner.js:757
+#: backend.js:683 ticket_events.js:220 ticket_scanner.js:757
 msgctxt "cal"
 msgid "Sun"
 msgstr "Søn"
 
-#: backend.js:678 ticket_events.js:221 ticket_scanner.js:758
+#: backend.js:684 ticket_events.js:221 ticket_scanner.js:758
 msgctxt "cal"
 msgid "Mon"
 msgstr "Man"
 
-#: backend.js:679 ticket_events.js:222 ticket_scanner.js:759
+#: backend.js:685 ticket_events.js:222 ticket_scanner.js:759
 msgctxt "cal"
 msgid "Tue"
 msgstr "Tir"
 
-#: backend.js:680 ticket_events.js:223 ticket_scanner.js:760
+#: backend.js:686 ticket_events.js:223 ticket_scanner.js:760
 msgctxt "cal"
 msgid "Wed"
 msgstr "Ons"
 
-#: backend.js:681 ticket_events.js:224 ticket_scanner.js:761
+#: backend.js:687 ticket_events.js:224 ticket_scanner.js:761
 msgctxt "cal"
 msgid "Thu"
 msgstr "Tor"
 
-#: backend.js:682 ticket_events.js:225 ticket_scanner.js:762
+#: backend.js:688 ticket_events.js:225 ticket_scanner.js:762
 msgctxt "cal"
 msgid "Fri"
 msgstr "Fre"
 
-#: backend.js:683 ticket_events.js:226 ticket_scanner.js:763
+#: backend.js:689 ticket_events.js:226 ticket_scanner.js:763
 msgctxt "cal"
 msgid "Sat"
 msgstr "Lør"
 
-#: backend.js:686 ticket_events.js:229 ticket_scanner.js:766
+#: backend.js:692 ticket_events.js:229 ticket_scanner.js:766
 msgctxt "cal"
 msgid "Jan"
 msgstr "Jan"
 
-#: backend.js:687 ticket_events.js:230 ticket_scanner.js:767
+#: backend.js:693 ticket_events.js:230 ticket_scanner.js:767
 msgctxt "cal"
 msgid "Feb"
 msgstr "Feb"
 
-#: backend.js:688 ticket_events.js:231 ticket_scanner.js:768
+#: backend.js:694 ticket_events.js:231 ticket_scanner.js:768
 msgctxt "cal"
 msgid "Mar"
 msgstr "Mar"
 
-#: backend.js:689 ticket_events.js:232 ticket_scanner.js:769
+#: backend.js:695 ticket_events.js:232 ticket_scanner.js:769
 msgctxt "cal"
 msgid "Apr"
 msgstr "Apr"
 
-#: backend.js:690 ticket_events.js:233 ticket_scanner.js:770
+#: backend.js:696 ticket_events.js:233 ticket_scanner.js:770
 msgctxt "cal"
 msgid "May"
 msgstr "Maj"
 
-#: backend.js:691 ticket_events.js:234 ticket_scanner.js:771
+#: backend.js:697 ticket_events.js:234 ticket_scanner.js:771
 msgctxt "cal"
 msgid "Jun"
 msgstr "Jun"
 
-#: backend.js:692 ticket_events.js:235 ticket_scanner.js:772
+#: backend.js:698 ticket_events.js:235 ticket_scanner.js:772
 msgctxt "cal"
 msgid "Jul"
 msgstr "Jul"
 
-#: backend.js:693 ticket_events.js:236 ticket_scanner.js:773
+#: backend.js:699 ticket_events.js:236 ticket_scanner.js:773
 msgctxt "cal"
 msgid "Aug"
 msgstr "Aug"
 
-#: backend.js:694 ticket_events.js:237 ticket_scanner.js:774
+#: backend.js:700 ticket_events.js:237 ticket_scanner.js:774
 msgctxt "cal"
 msgid "Sep"
 msgstr "Sep"
 
-#: backend.js:695 ticket_events.js:238 ticket_scanner.js:775
+#: backend.js:701 ticket_events.js:238 ticket_scanner.js:775
 msgctxt "cal"
 msgid "Oct"
 msgstr "Okt"
 
-#: backend.js:696 ticket_events.js:239 ticket_scanner.js:776
+#: backend.js:702 ticket_events.js:239 ticket_scanner.js:776
 msgctxt "cal"
 msgid "Nov"
 msgstr "Nov"
 
-#: backend.js:697 ticket_events.js:240 ticket_scanner.js:777
+#: backend.js:703 ticket_events.js:240 ticket_scanner.js:777
 msgctxt "cal"
 msgid "Dec"
 msgstr "Dec"
 
-#: backend.js:897 backend.js:3630
+#: backend.js:903 backend.js:3636
 msgctxt "label"
 msgid "Auth Token"
 msgstr "Auth-token"
 
-#: backend.js:898
+#: backend.js:904
 msgid ""
 "You can add auth tokens, that can be used to access your ticket scanner. "
 "Create an auth token and pass the QR code to the user or let the user scan "
@@ -5916,7 +5925,7 @@ msgstr ""
 "godkendelsestoken tilsidesætter eventuelle adgangsbegrænsninger for "
 "billetscanneren, der er angivet i indstillingerne."
 
-#: backend.js:899
+#: backend.js:905
 msgid ""
 "The user scan the QR code for the auth token with the ticket scanner. Just "
 "like a normal ticket. The system will store the auth token to the browser."
@@ -5924,49 +5933,49 @@ msgstr ""
 "Brugeren scanner QR-koden for godkendelsestoken med billet-scanneren. "
 "Ligesom en normal billet. Systemet gemmer godkendelsestoken i browseren."
 
-#: backend.js:906 backend.js:5537 backend.js:5587
+#: backend.js:912 backend.js:5563 backend.js:5613
 msgctxt "label"
 msgid "Add"
 msgstr "Tilføj"
 
-#: backend.js:916
+#: backend.js:922
 msgctxt "title"
 msgid "Edit Auth Token"
 msgstr "Rediger auth-token"
 
-#: backend.js:916
+#: backend.js:922
 msgctxt "title"
 msgid "Add Auth Token"
 msgstr "Tilføj godkendelsestoken"
 
-#: backend.js:922 backend.js:1619 backend.js:4987 backend.js:5008
-#: backend.js:5011 backend.js:5037 backend.js:5127 backend.js:5291
-#: backend.js:6017 ticket_events.js:261 ticket_scanner.js:798
+#: backend.js:928 backend.js:1625 backend.js:5013 backend.js:5034
+#: backend.js:5037 backend.js:5063 backend.js:5153 backend.js:5317
+#: backend.js:6043 ticket_events.js:261 ticket_scanner.js:798
 msgctxt "label"
 msgid "Ok"
 msgstr "Ok"
 
-#: backend.js:928 backend.js:5065 backend.js:5133 backend.js:5297
+#: backend.js:934 backend.js:5091 backend.js:5159 backend.js:5323
 msgctxt "label"
 msgid "Cancel"
 msgstr "Annullér"
 
-#: backend.js:935 backend.js:1014 backend.js:5140 backend.js:5369
+#: backend.js:941 backend.js:1020 backend.js:5166 backend.js:5395
 msgctxt "label"
 msgid "Name"
 msgstr "Navn"
 
-#: backend.js:938
+#: backend.js:944
 msgctxt "label"
 msgid "Bound to product(s)"
 msgstr "Bundet til produkt(er)"
 
-#: backend.js:938
+#: backend.js:944
 msgctxt "label"
 msgid "all products allowed to be redeemed"
 msgstr "alle produkter tilladt til indløsning"
 
-#: backend.js:938
+#: backend.js:944
 msgid ""
 "You can add comma separated \",\" product ids. This will limit the user to "
 "redeem tickets only of products listed here. If left empty, all are allowed."
@@ -5975,17 +5984,17 @@ msgstr ""
 "til kun at indløse billetter for produkter, der er angivet her. Hvis tomt, "
 "er alle tilladt."
 
-#: backend.js:939
+#: backend.js:945
 msgctxt "label"
 msgid "Bound to ticket list(s)"
 msgstr ""
 
-#: backend.js:939
+#: backend.js:945
 msgctxt "label"
 msgid "all ticket lists allowed to be redeemed"
 msgstr ""
 
-#: backend.js:939
+#: backend.js:945
 msgid ""
 "You can add comma separated \",\" ticket list ids. This will limit the user "
 "to redeem tickets of these lists only. If left empty, all are allowed. This "
@@ -5993,52 +6002,52 @@ msgid ""
 "those have no product."
 msgstr ""
 
-#: backend.js:942 backend.js:5143
+#: backend.js:948 backend.js:5169
 msgctxt "label"
 msgid "Description"
 msgstr "Beskrivelse"
 
-#: backend.js:944
+#: backend.js:950
 msgctxt "label"
 msgid "is active"
 msgstr "er aktiv"
 
-#: backend.js:1014 backend.js:1638 backend.js:5369 backend.js:5570
-#: backend.js:5891 ticket_scanner.js:1422
+#: backend.js:1020 backend.js:1644 backend.js:5395 backend.js:5596
+#: backend.js:5917 ticket_scanner.js:1422
 msgctxt "label"
 msgid "Created"
 msgstr "Oprettet"
 
-#: backend.js:1014
+#: backend.js:1020
 msgctxt "label"
 msgid "Area"
 msgstr "Område"
 
-#: backend.js:1014 backend.js:5573
+#: backend.js:1020 backend.js:5599
 msgctxt "label"
 msgid "Status"
 msgstr "Status"
 
-#: backend.js:1047 backend.js:5396 backend.js:5730
+#: backend.js:1053 backend.js:5422 backend.js:5756
 msgctxt "label"
 msgid "Edit"
 msgstr "Rediger"
 
-#: backend.js:1047 backend.js:5396 backend.js:5730 backend.js:6752
+#: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:6778
 msgctxt "label"
 msgid "Delete"
 msgstr "Slet"
 
-#: backend.js:1059 backend.js:5424 backend.js:5831
+#: backend.js:1065 backend.js:5450 backend.js:5857
 msgctxt "title"
 msgid "Do you want to delete?"
 msgstr "Vil du slette?"
 
-#: backend.js:1059
+#: backend.js:1065
 msgid "Are you sure, you want to delete this auth token?"
 msgstr "Er du sikker på, at du vil slette denne godkendelsestoken?"
 
-#: backend.js:1059
+#: backend.js:1065
 msgid ""
 "The user with this auth token will not be able to use the server anymore. "
 "The user will need to add a new auth token from you.<p>The effect will be "
@@ -6048,67 +6057,67 @@ msgstr ""
 "Brugeren skal have en ny godkendelsestoken fra dig.<p>Effekten er "
 "øjeblikkelig.</p>"
 
-#: backend.js:1095
+#: backend.js:1101
 msgctxt "label"
 msgid "Bound to ticket list"
 msgstr ""
 
-#: backend.js:1095
+#: backend.js:1101
 msgctxt "label"
 msgid "all ticket lists"
 msgstr ""
 
-#: backend.js:1292 backend.js:1312 backend.js:3231 js/congress-admin.js:63
+#: backend.js:1298 backend.js:1318 backend.js:3237 js/congress-admin.js:63
 #: js/seating_admin.js:118 js/seating_admin.js:759 wc_backend.js:386
 #: wc_backend.js:583
 msgid "Status"
 msgstr "Status"
 
-#: backend.js:1292 backend.js:1309
+#: backend.js:1298 backend.js:1315
 msgid "Not checked yet"
 msgstr "Ikke kontrolleret endnu"
 
-#: backend.js:1306 js/congress-admin.js:91
+#: backend.js:1312 js/congress-admin.js:91
 msgid "Expired"
 msgstr "Udløbet"
 
-#: backend.js:1315
+#: backend.js:1321
 msgid "Last successful check"
 msgstr "Sidste vellykkede kontrol"
 
-#: backend.js:1318
+#: backend.js:1324
 msgid "Expiration date"
 msgstr "Udløbsdato"
 
-#: backend.js:1321
+#: backend.js:1327
 msgid "Subscription type"
 msgstr "Abonnementstype"
 
-#: backend.js:1325
+#: backend.js:1331
 msgid "Consecutive failures"
 msgstr "Fortløbende fejl"
 
-#: backend.js:1328
+#: backend.js:1334
 msgid "Server flagged as not valid"
 msgstr "Serveren er markeret som ugyldig"
 
-#: backend.js:1361
+#: backend.js:1367
 msgid "Visit the full plugin docs"
 msgstr "Besøg den fulde plugin-dokumentation"
 
-#: backend.js:1365
+#: backend.js:1371
 msgid "See latest updates"
 msgstr "Se de seneste opdateringer"
 
-#: backend.js:1367
+#: backend.js:1373
 msgid "Help us with a 5-star review on WordPress.org"
 msgstr ""
 
-#: backend.js:1378
+#: backend.js:1384
 msgid "Support Context Information"
 msgstr "Supportkontekst-information"
 
-#: backend.js:1379
+#: backend.js:1385
 msgid ""
 "Please copy the following information, so that we can support you better and "
 "faster. Remove any critical information if needed."
@@ -6116,57 +6125,57 @@ msgstr ""
 "Kopiér venligst følgende oplysninger, så vi kan hjælpe dig bedre og "
 "hurtigere. Fjern eventuelle følsomme oplysninger, hvis det er nødvendigt."
 
-#: backend.js:1385
+#: backend.js:1391
 msgid "License Status"
 msgstr "Licensstatus"
 
-#: backend.js:1389 backend.js:1393 backend.js:1396
+#: backend.js:1395 backend.js:1399 backend.js:1402
 msgid "Refresh Status"
 msgstr ""
 
-#: backend.js:1479
+#: backend.js:1485
 msgid "Copy to clipboard"
 msgstr "Kopiér til udklipsholder"
 
-#: backend.js:1530 backend.js:1531
+#: backend.js:1536 backend.js:1537
 msgid ""
 "(not set — \"Ticket detail URL path\" option is empty, compatibility mode "
 "off)"
 msgstr ""
 
-#: backend.js:1537
+#: backend.js:1543
 msgid "congress page disabled in options"
 msgstr "kongres-siden deaktiveret i indstillinger"
 
-#: backend.js:1547 backend.js:2849 backend.js:5607
+#: backend.js:1553 backend.js:2855 backend.js:5633
 msgid "Refresh table"
 msgstr "Opdater tabel"
 
-#: backend.js:1550 js/seating_admin.js:1393
+#: backend.js:1556 js/seating_admin.js:1393
 msgid "Export CSV"
 msgstr "Eksportér CSV"
 
-#: backend.js:1554 backend.js:1555 backend.js:5527 backend.js:5528
-#: backend.js:5598 backend.js:5599
+#: backend.js:1560 backend.js:1561 backend.js:5553 backend.js:5554
+#: backend.js:5624 backend.js:5625
 msgid "Empty table"
 msgstr "Tom tabel"
 
 #. translators: %s: name of ticket table
-#: backend.js:1555 backend.js:5599
+#: backend.js:1561 backend.js:5625
 msgid "Do you want to empty the \"%s\" table? All data will be lost."
 msgstr "Vil du tømme \"%s\"-tabellen? Alle data går tabt."
 
-#: backend.js:1555 backend.js:1556
+#: backend.js:1561 backend.js:1562
 msgctxt "title"
 msgid "Error Logs"
 msgstr "Fejllogfiler"
 
-#: backend.js:1556 backend.js:5529 backend.js:5600
+#: backend.js:1562 backend.js:5555 backend.js:5626
 msgid "Empty table - last chance"
 msgstr "Tom tabel - sidste chance"
 
 #. translators: %s: name of ticket table
-#: backend.js:1556 backend.js:5600
+#: backend.js:1562 backend.js:5626
 msgid ""
 "Are you sure? You will not be able to restore the data, except you have a "
 "backup of your database. All data will be lost."
@@ -6174,25 +6183,25 @@ msgstr ""
 "Er du sikker? Du vil ikke kunne gendanne dataene, medmindre du har en "
 "sikkerhedskopi af din database. Alle data vil gå tabt."
 
-#: backend.js:1569
+#: backend.js:1575
 msgctxt "label"
 msgid "Version"
 msgstr "Version"
 
-#: backend.js:1590
+#: backend.js:1596
 msgid "Show all options"
 msgstr "Vis alle indstillinger"
 
-#: backend.js:1611
+#: backend.js:1617
 msgctxt "label"
 msgid "Repair tables"
 msgstr "Reparer tabeller"
 
-#: backend.js:1612
+#: backend.js:1618
 msgid "Repair database tables?"
 msgstr "Reparér databasetabeller?"
 
-#: backend.js:1612
+#: backend.js:1618
 msgid ""
 "Do you really want to try to repair your database table definitions for the "
 "plugin? It should be safe, but only needed in very rare cases. You might see "
@@ -6204,63 +6213,63 @@ msgstr ""
 "tilfælde. Du kan muligvis se fejlmeddelelser under sidegenindlæsningen - det "
 "er normalt. Hvorfor ikke spørge supporten, om du bør gøre det? ;)"
 
-#: backend.js:1615
+#: backend.js:1621
 msgctxt "title"
 msgid "Repaired"
 msgstr "Repareret"
 
-#: backend.js:1621 ticket_scanner.js:1974 ticket_scanner.js:2066
+#: backend.js:1627 ticket_scanner.js:1974 ticket_scanner.js:2066
 msgctxt "label"
 msgid "Close"
 msgstr "Luk"
 
-#: backend.js:1638
+#: backend.js:1644
 msgctxt "label"
 msgid "Exception"
 msgstr "Undtagelse"
 
-#: backend.js:1638
+#: backend.js:1644
 msgctxt "label"
 msgid "Function"
 msgstr "Funktion"
 
-#: backend.js:1731
+#: backend.js:1737
 msgid "Your setup is complete - you can sell and check tickets."
 msgstr ""
 
-#: backend.js:1732
+#: backend.js:1738
 msgid "Getting started - these steps make your installation ready to sell:"
 msgstr ""
 
-#: backend.js:1739 backend.js:1740
+#: backend.js:1745 backend.js:1746
 msgid "Hide this hint for good"
 msgstr ""
 
-#: backend.js:1827
+#: backend.js:1833
 msgctxt "label"
 msgid "Change History"
 msgstr "Ændringshistorik"
 
-#: backend.js:1848
+#: backend.js:1854
 msgctxt "label"
 msgid "Reset All Options"
 msgstr "Nulstil alle indstillinger"
 
-#: backend.js:1850
+#: backend.js:1856
 msgctxt "title"
 msgid "Reset All Options"
 msgstr "Nulstil alle indstillinger"
 
-#: backend.js:1850
+#: backend.js:1856
 msgid "Do you really want to reset all the option?"
 msgstr "Vil du virkelig nulstille alle indstillinger?"
 
-#: backend.js:1859
+#: backend.js:1865
 msgctxt "title"
 msgid "Replacement Tags"
 msgstr "Erstatningskoder"
 
-#: backend.js:1859
+#: backend.js:1865
 msgid ""
 "You can use these replacement tags in your text messages and URLs for the "
 "meta ticket values"
@@ -6268,15 +6277,15 @@ msgstr ""
 "Du kan bruge disse erstatnings-tags i dine tekstbeskeder og URL'er for meta-"
 "billetværdierne"
 
-#: backend.js:1880
+#: backend.js:1886
 msgid "Other plugins"
 msgstr "Andre plugins"
 
-#: backend.js:1898
+#: backend.js:1904
 msgid "No plugin has registered its fields here yet."
 msgstr "Endnu har intet plugin registreret sine felter her."
 
-#: backend.js:1900
+#: backend.js:1906
 msgid ""
 "We offer a filter hook so that other plugins can list their meta keys here. "
 "If your checkout plugin does not show up, ask its provider to support our "
@@ -6286,579 +6295,579 @@ msgstr ""
 "Mangler dit kasseplugin, så bed udbyderen om at understøtte vores hook — det "
 "er kun nogle få linjer kode."
 
-#: backend.js:1910
+#: backend.js:1916
 msgctxt "label"
 msgid "Export Options"
 msgstr "Eksportindstillinger"
 
-#: backend.js:1928
+#: backend.js:1934
 msgctxt "label"
 msgid "Import Options"
 msgstr "Importér indstillinger"
 
-#: backend.js:1933
+#: backend.js:1939
 msgctxt "label"
 msgid "Start Wizard"
 msgstr "Start guide"
 
-#: backend.js:1937
+#: backend.js:1943
 msgctxt "label"
 msgid "Premium Wizard"
 msgstr "Premium-guiden"
 
-#: backend.js:1950
+#: backend.js:1956
 msgid "Invalid JSON file."
 msgstr "Ugyldig JSON-fil."
 
-#: backend.js:1954
+#: backend.js:1960
 msgid "Invalid options file: missing options data."
 msgstr "Ugyldig indstillingsfil: indstillingsdata mangler."
 
-#: backend.js:1959
+#: backend.js:1965
 msgctxt "title"
 msgid "Import Options"
 msgstr "Importér indstillinger"
 
-#: backend.js:1960
+#: backend.js:1966
 msgid "Import %d options? This will overwrite current settings."
 msgstr ""
 "Importér %d indstillinger? Dette vil overskrive aktuelle indstillinger."
 
-#: backend.js:2006
+#: backend.js:2012
 msgid ""
 "Set, but it does not belong to this event type. It can make your shop behave "
 "unexpectedly."
 msgstr ""
 
-#: backend.js:2008
+#: backend.js:2014
 msgid "Reset to default"
 msgstr ""
 
-#: backend.js:2068
+#: backend.js:2074
 msgid "What do you use the plugin for?"
 msgstr ""
 
-#: backend.js:2070
+#: backend.js:2076
 msgid ""
 "The settings page then starts with the handful of settings that belong to "
 "your kind of sale. You can switch to all options at any time."
 msgstr ""
 
-#: backend.js:2080
+#: backend.js:2086
 msgid "Decide later - show me all options"
 msgstr ""
 
-#: backend.js:2102
+#: backend.js:2108
 msgctxt "label"
 msgid "All options"
 msgstr ""
 
-#: backend.js:2106
+#: backend.js:2112
 msgctxt "label"
 msgid "For your event type"
 msgstr ""
 
-#: backend.js:2142
+#: backend.js:2148
 msgid "Back to the essentials"
 msgstr ""
 
-#: backend.js:2159
+#: backend.js:2165
 msgid "Search all settings - name, description or key"
 msgstr ""
 
-#: backend.js:2280 backend.js:2300
+#: backend.js:2286 backend.js:2306
 msgctxt "title"
 msgid "Restore defaults"
 msgstr ""
 
-#: backend.js:2281
+#: backend.js:2287
 msgid "Everything in this view is already at its default value."
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2292
+#: backend.js:2298
 msgid ""
 "%d settings in this view differ from their default and would be restored:"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2295
+#: backend.js:2301
 msgid "... and %d more"
 msgstr ""
 
-#: backend.js:2297
+#: backend.js:2303
 msgid "Nothing outside this view is touched."
 msgstr ""
 
-#: backend.js:2313
+#: backend.js:2319
 msgid "Restore the defaults of this view"
 msgstr ""
 
-#: backend.js:2314
+#: backend.js:2320
 msgid "Restore all defaults"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2319
+#: backend.js:2325
 msgid "%d settings are set although they belong to another event type"
 msgstr ""
 
-#: backend.js:2325
+#: backend.js:2331
 msgid "No setting matches your search."
 msgstr ""
 
 #. translators: 1: total matches 2: matches outside the chosen event type
-#: backend.js:2327
+#: backend.js:2333
 msgid "%1$d matches, %2$d of them outside your event type"
 msgstr ""
 
 #. translators: %d: number of matching settings
-#: backend.js:2328
+#: backend.js:2334
 msgid "%d match"
 msgid_plural "%d matches"
 msgstr[0] ""
 msgstr[1] ""
 
-#: backend.js:2330
+#: backend.js:2336
 msgid "Show the matches outside your event type"
 msgstr ""
 
-#: backend.js:2340
+#: backend.js:2346
 msgid "Pick your event type to see only the settings that belong to it."
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2341
+#: backend.js:2347
 msgid "All %d settings"
 msgstr ""
 
 #. translators: 1: event type 2: shown settings 3: all settings
-#: backend.js:2349
+#: backend.js:2355
 msgid "%1$s - the essentials: %2$d of %3$d settings"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2351
+#: backend.js:2357
 msgid "Show everything for this event type (%d)"
 msgstr ""
 
 #. translators: 1: event type 2: shown settings 3: all settings
-#: backend.js:2358
+#: backend.js:2364
 msgid "%1$s: %2$d of %3$d settings"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2362
+#: backend.js:2368
 msgid "More settings (%d)"
 msgstr ""
 
-#: backend.js:2365
+#: backend.js:2371
 msgid "Hide the more settings again"
 msgstr ""
 
-#: backend.js:2449
+#: backend.js:2455
 msgid "Load template"
 msgstr "Indlæs skabelon"
 
-#: backend.js:2450
+#: backend.js:2456
 msgctxt "title"
 msgid "Load Template Ticket Code"
 msgstr "Indlæs skabelon-billetkode"
 
-#: backend.js:2451
+#: backend.js:2457
 msgid ""
 "Do you want to replace the test ticket template code with this template?"
 msgstr "Vil du erstatte testbillet-skabelonens kode med denne skabelon?"
 
-#: backend.js:2594
+#: backend.js:2600
 msgctxt "label"
 msgid "Remove file"
 msgstr "Fjern fil"
 
-#: backend.js:2596
+#: backend.js:2602
 msgctxt "title"
 msgid "Remove file"
 msgstr "Fjern fil"
 
-#: backend.js:2596
+#: backend.js:2602
 msgid "Do you really want to remove the file information from this option?"
 msgstr "Vil du virkelig fjerne filinformationen fra denne indstilling?"
 
-#: backend.js:2673 backend.js:2679 backend.js:2684
+#: backend.js:2679 backend.js:2685 backend.js:2690
 msgid "Check License"
 msgstr "Tjek licens"
 
-#: backend.js:2717
+#: backend.js:2723
 msgctxt "title"
 msgid "Ticket Default Template"
 msgstr "Standard billetkabelon"
 
-#: backend.js:2725
+#: backend.js:2731
 msgctxt "title"
 msgid "Save Template Code"
 msgstr "Gem skabelonkode"
 
-#: backend.js:2730
+#: backend.js:2736
 msgctxt "title"
 msgid "Copy Template Code To Live Code"
 msgstr "Kopiér skabelonkode til live-kode"
 
-#: backend.js:2731
+#: backend.js:2737
 msgctxt "title"
 msgid "Replace Live Template Code"
 msgstr "Erstat live skabelonkode"
 
-#: backend.js:2731
+#: backend.js:2737
 msgid ""
 "Do you want to replace the live template code with the template code from "
 "the test?"
 msgstr "Vil du erstatte live-skabelonens kode med skabelonens kode fra testen?"
 
-#: backend.js:2795
+#: backend.js:2801
 msgid "ticket cannot be used. Public Ticket Id missing."
 msgstr "billet kan ikke bruges. Offentligt billet-ID mangler."
 
-#: backend.js:2798
+#: backend.js:2804
 msgid "no ticket for preview available"
 msgstr "ingen billet tilgængelig til forhåndsvisning"
 
-#: backend.js:2858
+#: backend.js:2864
 msgctxt "label"
 msgid "Date"
 msgstr "Dato"
 
-#: backend.js:2859
+#: backend.js:2865
 msgctxt "label"
 msgid "Option"
 msgstr "Valgmulighed"
 
-#: backend.js:2860 backend.js:2912
+#: backend.js:2866 backend.js:2918
 msgctxt "label"
 msgid "Old Value"
 msgstr "Gammel værdi"
 
-#: backend.js:2861 backend.js:2913
+#: backend.js:2867 backend.js:2919
 msgctxt "label"
 msgid "New Value"
 msgstr "Ny værdi"
 
-#: backend.js:2862
+#: backend.js:2868
 msgctxt "label"
 msgid "Changed By"
 msgstr "Ændret af"
 
-#: backend.js:2895
+#: backend.js:2901
 msgctxt "label"
 msgid "Revert"
 msgstr "Gå tilbage"
 
-#: backend.js:2928
+#: backend.js:2934
 msgctxt "title"
 msgid "Revert Option"
 msgstr "Gå tilbage til indstilling"
 
-#: backend.js:2929
+#: backend.js:2935
 msgid "Revert option \"%s\" to its previous value?"
 msgstr "Gå tilbage til indstilling \"%s\" til dens tidligere værdi?"
 
-#: backend.js:2981
+#: backend.js:2987
 msgctxt "tab"
 msgid "Sold Tickets"
 msgstr "Solgte billetter"
 
-#: backend.js:2982
+#: backend.js:2988
 msgctxt "tab"
 msgid "Daily Redemption Summary"
 msgstr "Daglig indløsningsoversigt"
 
-#: backend.js:3020
+#: backend.js:3026
 msgid "Products:"
 msgstr "Produkter:"
 
-#: backend.js:3026
+#: backend.js:3032
 msgctxt "label"
 msgid "Export from"
 msgstr "Eksportér fra"
 
-#: backend.js:3028
+#: backend.js:3034
 msgctxt "label"
 msgid "Export to"
 msgstr "Eksportér til"
 
-#: backend.js:3030 backend.js:3289
+#: backend.js:3036 backend.js:3295
 msgctxt "button"
 msgid "Export CSV"
 msgstr "Eksportér CSV"
 
-#: backend.js:3049
+#: backend.js:3055
 msgid "Auto-refresh:"
 msgstr "Auto-opdater:"
 
-#: backend.js:3051
+#: backend.js:3057
 msgid "Off"
 msgstr "Fra"
 
-#: backend.js:3110
+#: backend.js:3116
 msgid "Error loading data."
 msgstr "Fejl ved indlæsning af data."
 
-#: backend.js:3143 wc_backend.js:451
+#: backend.js:3149 wc_backend.js:451
 msgid "January"
 msgstr "Januar"
 
-#: backend.js:3143 wc_backend.js:452
+#: backend.js:3149 wc_backend.js:452
 msgid "February"
 msgstr "Februar"
 
-#: backend.js:3144 wc_backend.js:453
+#: backend.js:3150 wc_backend.js:453
 msgid "March"
 msgstr "Marts"
 
-#: backend.js:3144 wc_backend.js:454
+#: backend.js:3150 wc_backend.js:454
 msgid "April"
 msgstr "April"
 
-#: backend.js:3145 wc_backend.js:455
+#: backend.js:3151 wc_backend.js:455
 msgid "May"
 msgstr "Maj"
 
-#: backend.js:3145 wc_backend.js:456
+#: backend.js:3151 wc_backend.js:456
 msgid "June"
 msgstr "Juni"
 
-#: backend.js:3146 wc_backend.js:457
+#: backend.js:3152 wc_backend.js:457
 msgid "July"
 msgstr "Juli"
 
-#: backend.js:3146 wc_backend.js:458
+#: backend.js:3152 wc_backend.js:458
 msgid "August"
 msgstr "August"
 
-#: backend.js:3147 wc_backend.js:459
+#: backend.js:3153 wc_backend.js:459
 msgid "September"
 msgstr "September"
 
-#: backend.js:3147 wc_backend.js:460
+#: backend.js:3153 wc_backend.js:460
 msgid "October"
 msgstr "Oktober"
 
-#: backend.js:3148 wc_backend.js:461
+#: backend.js:3154 wc_backend.js:461
 msgid "November"
 msgstr "November"
 
-#: backend.js:3148 wc_backend.js:462
+#: backend.js:3154 wc_backend.js:462
 msgid "December"
 msgstr "December"
 
-#: backend.js:3151 wc_backend.js:465
+#: backend.js:3157 wc_backend.js:465
 msgid "Mon"
 msgstr "Man"
 
-#: backend.js:3151 wc_backend.js:466
+#: backend.js:3157 wc_backend.js:466
 msgid "Tue"
 msgstr "Ti"
 
-#: backend.js:3152 wc_backend.js:467
+#: backend.js:3158 wc_backend.js:467
 msgid "Wed"
 msgstr "Ons"
 
-#: backend.js:3152 wc_backend.js:468
+#: backend.js:3158 wc_backend.js:468
 msgid "Thu"
 msgstr "Tor"
 
-#: backend.js:3153 wc_backend.js:469
+#: backend.js:3159 wc_backend.js:469
 msgid "Fri"
 msgstr "Fre"
 
-#: backend.js:3153 wc_backend.js:470
+#: backend.js:3159 wc_backend.js:470
 msgid "Sat"
 msgstr "Lør"
 
-#: backend.js:3154 wc_backend.js:471
+#: backend.js:3160 wc_backend.js:471
 msgid "Sun"
 msgstr "Søn"
 
 #. translators: %s: date string
-#: backend.js:3204 backend.js:3219 wc_backend.js:554
+#: backend.js:3210 backend.js:3225 wc_backend.js:554
 msgid "Tickets for %s"
 msgstr "Billetter til %s"
 
-#: backend.js:3224 wc_backend.js:377
+#: backend.js:3230 wc_backend.js:377
 msgid "No details available."
 msgstr "Ingen detaljer tilgængelige."
 
-#: backend.js:3230 wc_backend.js:385 wc_backend.js:582
+#: backend.js:3236 wc_backend.js:385 wc_backend.js:582
 msgid "Order"
 msgstr "Ordre"
 
-#: backend.js:3239 ticket_scanner.js:1308 wc_backend.js:392 wc_backend.js:605
+#: backend.js:3245 ticket_scanner.js:1308 wc_backend.js:392 wc_backend.js:605
 msgid "Redeemed"
 msgstr "Indløst"
 
 #. translators: %d: total number of sold tickets
-#: backend.js:3268 wc_backend.js:529
+#: backend.js:3274 wc_backend.js:529
 msgid "Total sold: %d tickets"
 msgstr "Solgt i alt: %d billetter"
 
-#: backend.js:3269
+#: backend.js:3275
 msgid "No tickets found for this month."
 msgstr "Ingen billetter fundet for denne måned."
 
-#: backend.js:3281 backend.js:5202
+#: backend.js:3287 backend.js:5228
 msgctxt "label"
 msgid "From"
 msgstr "Fra"
 
-#: backend.js:3284
+#: backend.js:3290
 msgctxt "label"
 msgid "To"
 msgstr "Til"
 
-#: backend.js:3287
+#: backend.js:3293
 msgctxt "button"
 msgid "Load"
 msgstr "Indlæs"
 
-#: backend.js:3322 backend.js:5571
+#: backend.js:3328 backend.js:5597
 msgctxt "label"
 msgid "Redeemed"
 msgstr "Indløst"
 
-#: backend.js:3326
+#: backend.js:3332
 msgctxt "label"
 msgid "Total Tickets"
 msgstr "Billetter i alt"
 
-#: backend.js:3330
+#: backend.js:3336
 msgctxt "label"
 msgid "No Show"
 msgstr "Udeblivet"
 
-#: backend.js:3339
+#: backend.js:3345
 msgctxt "column"
 msgid "Date"
 msgstr "Dato"
 
-#: backend.js:3340
+#: backend.js:3346
 msgctxt "column"
 msgid "Event / List"
 msgstr "Begivenhed / liste"
 
-#: backend.js:3341
+#: backend.js:3347
 msgctxt "column"
 msgid "Product"
 msgstr "Produkt"
 
-#: backend.js:3342
+#: backend.js:3348
 msgctxt "column"
 msgid "Redeemed"
 msgstr "Indløst"
 
-#: backend.js:3343
+#: backend.js:3349
 msgctxt "column"
 msgid "Total in List"
 msgstr "Total i liste"
 
-#: backend.js:3344
+#: backend.js:3350
 msgctxt "column"
 msgid "No Show"
 msgstr "Udeblivet"
 
-#: backend.js:3382
+#: backend.js:3388
 msgctxt "label"
 msgid "Total"
 msgstr "Total"
 
-#: backend.js:3407
+#: backend.js:3413
 msgctxt "label"
 msgid "No individual ticket data available."
 msgstr "Ingen individuelle billetdata tilgængelige."
 
-#: backend.js:3412
+#: backend.js:3418
 msgctxt "column"
 msgid "Ticket"
 msgstr "Billet"
 
-#: backend.js:3413
+#: backend.js:3419
 msgctxt "column"
 msgid "Order"
 msgstr "Ordre"
 
-#: backend.js:3414
+#: backend.js:3420
 msgctxt "column"
 msgid "Redeemed At"
 msgstr "Indløst den"
 
-#: backend.js:3419
+#: backend.js:3425
 msgctxt "label"
 msgid "View"
 msgstr "Vis"
 
-#: backend.js:3426
+#: backend.js:3432
 msgctxt "label"
 msgid "Error loading details."
 msgstr "Fejl ved indlæsning af detaljer."
 
-#: backend.js:3431
+#: backend.js:3437
 msgctxt "label"
 msgid "Error loading data."
 msgstr "Fejl ved indlæsning af data."
 
-#: backend.js:3453
+#: backend.js:3459
 msgctxt "title"
 msgid "Title"
 msgstr "Titel"
 
-#: backend.js:3513
+#: backend.js:3519
 msgid "Insert Tag"
 msgstr "Indsæt tag"
 
-#: backend.js:3534
+#: backend.js:3540
 msgctxt "title"
 msgid "Select Media"
 msgstr "Vælg medie"
 
-#: backend.js:3581
+#: backend.js:3587
 msgctxt "label"
 msgid "Back"
 msgstr "Tilbage"
 
-#: backend.js:3607
+#: backend.js:3613
 msgctxt "label"
 msgid "Support Info"
 msgstr "Supportinfo"
 
-#: backend.js:3615
+#: backend.js:3621
 msgctxt "label"
 msgid "FAQ"
 msgstr "OSS"
 
-#: backend.js:3620
+#: backend.js:3626
 msgctxt "label"
 msgid "Ticket Scanner"
 msgstr "Billettscanner"
 
-#: backend.js:3638
+#: backend.js:3644
 msgctxt "label"
 msgid "Attendance"
 msgstr "Fremmøde"
 
-#: backend.js:3646
+#: backend.js:3652
 msgctxt "label"
 msgid "Congresses"
 msgstr "Kongresser"
 
-#: backend.js:3654
+#: backend.js:3660
 msgctxt "label"
 msgid "Options"
 msgstr "Indstillinger"
 
-#: backend.js:3697
+#: backend.js:3703
 msgctxt "label"
 msgid "Enter a prefix (optional)"
 msgstr "Indtast et prefix (valgfrit)"
 
-#: backend.js:3699
+#: backend.js:3705
 msgid ""
 "You can use date placeholder to have the prefix filled with the date of the "
 "confirmed purchase."
@@ -6866,7 +6875,7 @@ msgstr ""
 "Du kan bruge datopladsholdere for at fylde præfikset med datoen for det "
 "bekræftede køb."
 
-#: backend.js:3699
+#: backend.js:3705
 msgid ""
 "You can use: {Y} = year, {m} = month, {d} = day, {H} = hour, {i} = minutes, "
 "{s} = seconds, {TIMESTAMP} = unix timestamp."
@@ -6874,130 +6883,130 @@ msgstr ""
 "Du kan bruge: {Y} = år, {m} = måned, {d} = dag, {H} = time, {i} = minutter, "
 "{s} = sekunder, {TIMESTAMP} = unix-tidsstempel."
 
-#: backend.js:3705
+#: backend.js:3711
 msgctxt "label"
 msgid "Choose type of ticket numbers"
 msgstr "Vælg type af billetnumre"
 
-#: backend.js:3706
+#: backend.js:3712
 msgctxt "option value"
 msgid "Serials"
 msgstr "Serienumre"
 
-#: backend.js:3706
+#: backend.js:3712
 msgctxt "option value"
 msgid "Numbers"
 msgstr "Tal"
 
-#: backend.js:3727
+#: backend.js:3733
 msgctxt "title"
 msgid "Serials options"
 msgstr "Serienummerindstillinger"
 
-#: backend.js:3729
+#: backend.js:3735
 msgctxt "label"
 msgid "Amount of letter needed"
 msgstr "Antal nødvendige tegn"
 
-#: backend.js:3737
+#: backend.js:3743
 msgctxt "label"
 msgid "Letter exclusion"
 msgstr "Bogstavudeladelse"
 
-#: backend.js:3738 backend.js:3759 backend.js:4935 backend.js:5305
-#: backend.js:6826
+#: backend.js:3744 backend.js:3765 backend.js:4961 backend.js:5331
+#: backend.js:6852
 msgctxt "option value"
 msgid "None"
 msgstr "Ingen"
 
-#: backend.js:3744
+#: backend.js:3750
 msgctxt "label"
 msgid "Letter style"
 msgstr "Bogstavstil"
 
-#: backend.js:3745
+#: backend.js:3751
 msgctxt "option value"
 msgid "Uppercase"
 msgstr "Store bogstaver"
 
-#: backend.js:3745
+#: backend.js:3751
 msgctxt "option value"
 msgid "Lowercase"
 msgstr "Små bogstaver"
 
-#: backend.js:3745
+#: backend.js:3751
 msgctxt "option value"
 msgid "Both"
 msgstr "Begge"
 
-#: backend.js:3751
+#: backend.js:3757
 msgctxt "label"
 msgid "Numbers needed?"
 msgstr "Tal nødvendige?"
 
-#: backend.js:3752 backend.js:6051
+#: backend.js:3758 backend.js:6077
 msgctxt "label"
 msgid "No"
 msgstr "Nej"
 
-#: backend.js:3752 backend.js:6047
+#: backend.js:3758 backend.js:6073
 msgctxt "label"
 msgid "Yes"
 msgstr "Ja"
 
-#: backend.js:3752
+#: backend.js:3758
 msgctxt "option value"
 msgid "Only numbers"
 msgstr "Kun tal"
 
-#: backend.js:3758
+#: backend.js:3764
 msgctxt "label"
 msgid "Delimiter?"
 msgstr "Skilletegn?"
 
-#: backend.js:3759
+#: backend.js:3765
 msgctxt "option value"
 msgid "Space"
 msgstr "Mellemrum"
 
-#: backend.js:3775
+#: backend.js:3781
 msgctxt "label"
 msgid "After how many letters?"
 msgstr "Efter hvor mange tegn?"
 
-#: backend.js:3786
+#: backend.js:3792
 msgctxt "title"
 msgid "Numbers options"
 msgstr "Talindstillinger"
 
-#: backend.js:3789
+#: backend.js:3795
 msgctxt "label"
 msgid "Start number"
 msgstr "Startnummer"
 
-#: backend.js:3796
+#: backend.js:3802
 msgctxt "label"
 msgid "Offset for each number"
 msgstr "Forskydning for hvert nummer"
 
-#: backend.js:3847
+#: backend.js:3853
 msgid "Amount of letters has to be higher"
 msgstr "Antallet af bogstaver skal være højere"
 
-#: backend.js:3874
+#: backend.js:3880
 msgid "Your start number is not correct. It has to be an integer bigger than 0"
 msgstr "Dit startnummer er ikke korrekt. Det skal være et heltal større end 0"
 
-#: backend.js:4101 backend.js:4105
+#: backend.js:4107 backend.js:4111
 msgid "You have PDF ticket attachment enabled for emails."
 msgstr "Du har PDF-billetvedhæftning aktiveret til e-mails."
 
-#: backend.js:4102
+#: backend.js:4108
 msgid ""
 "Do you also want to attach the ICS calendar file to the purchase emails?"
 msgstr "Vil du også vedhæfte ICS-kalenderfilen til købs-e-mails?"
 
-#: backend.js:4106
+#: backend.js:4112
 msgid ""
 "Do you also want to include a \"Download all tickets as one PDF\" link in "
 "the email?"
@@ -7005,81 +7014,81 @@ msgstr ""
 "Vil du også inkludere et link \"Download alle billetter som én PDF\" i e-"
 "mailen?"
 
-#: backend.js:4109
+#: backend.js:4115
 msgid "You show the badge download button on the ticket detail page."
 msgstr "Du viser badge-downloadknappen på billetdetaljesiden."
 
-#: backend.js:4110
+#: backend.js:4116
 msgid ""
 "Do you also want to include the badge download link in the purchase emails?"
 msgstr "Vil du også inkludere badge-downloadlinket i købs-e-mails?"
 
-#: backend.js:4113
+#: backend.js:4119
 msgid "You have hidden the PDF download button on purchase emails."
 msgstr "Du har skjult PDF-downloadknappen på købs-e-mails."
 
-#: backend.js:4114
+#: backend.js:4120
 msgid "Do you want to show the \"View all tickets\" link in the email instead?"
 msgstr "Vil du i stedet vise linket \"Se alle billetter\" i e-mailen?"
 
-#: backend.js:4117
+#: backend.js:4123
 msgid "You have auto-start camera enabled for the ticket scanner."
 msgstr "Du har auto-start kamera aktiveret for billetscanneren."
 
-#: backend.js:4118
+#: backend.js:4124
 msgid "Do you also want to enable automatic ticket redemption on scan?"
 msgstr "Vil du også aktivere automatisk billetindløsning ved scanning?"
 
-#: backend.js:4121
+#: backend.js:4127
 msgid "You have automatic scan-and-redeem enabled."
 msgstr "Du har automatisk scan-og-indløs aktiveret."
 
-#: backend.js:4122
+#: backend.js:4128
 msgid ""
 "Do you also want to enable haptic feedback (vibration) when a ticket is "
 "scanned?"
 msgstr ""
 "Vil du også aktivere haptisk feedback (vibration), når en billet scannes?"
 
-#: backend.js:4125
+#: backend.js:4131
 msgid "You allow tickets to be redeemed after the event end date."
 msgstr "Du tillader, at billetter indløses efter begivenhedens slutdato."
 
-#: backend.js:4126
+#: backend.js:4132
 msgid ""
 "Do you also want to display the confirmed scan count on the ticket scanner?"
 msgstr "Vil du også vise antallet af bekræftede scanninger i billetscanneren?"
 
-#: backend.js:4129
+#: backend.js:4135
 msgid "You show the event date on the purchase order email."
 msgstr "Du viser begivenhedsdatoen på ordrebekræftelsesmailen."
 
-#: backend.js:4130
+#: backend.js:4136
 msgid "Do you also want to show the event date on the product detail page?"
 msgstr "Vil du også vise arrangementsdatoen på produktdetaljesiden?"
 
-#: backend.js:4133
+#: backend.js:4139
 msgid "You show input fields on the checkout page."
 msgstr "Du viser inputfelter på kassesiden."
 
-#: backend.js:4134
+#: backend.js:4140
 msgid "Do you also want to display the customer note on the ticket PDF?"
 msgstr "Vil du også vise kundens bemærkning på billet-PDF'en?"
 
-#: backend.js:4137
+#: backend.js:4143
 msgid "You show the self-redeem button on the ticket detail page."
 msgstr "Du viser selv-indløs-knappen på billetdetaljesiden."
 
-#: backend.js:4138
+#: backend.js:4144
 msgid ""
 "Do you also want to redirect the customer after they redeem their ticket?"
 msgstr "Vil du også omdirigere kunden, efter de har indløst deres billet?"
 
-#: backend.js:4141 backend.js:4145
+#: backend.js:4147 backend.js:4151
 msgid "You have the premium plugin active."
 msgstr "Du har premium-pluginet aktiveret."
 
-#: backend.js:4142
+#: backend.js:4148
 msgid ""
 "Do you want to enable IP blocking to protect against brute-force ticket "
 "validation attempts?"
@@ -7087,17 +7096,17 @@ msgstr ""
 "Vil du aktivere IP-blokering for at beskytte mod brute-force-forsøg på "
 "billetvalidering?"
 
-#: backend.js:4146
+#: backend.js:4152
 msgid "Do you want to enable IP tracking for ticket validation requests?"
 msgstr "Vil du aktivere IP-sporing for billetvalideringsanmodninger?"
 
-#: backend.js:4149
+#: backend.js:4155
 msgid ""
 "Your customers can collect their tickets in the free Vollstart Wallet app."
 msgstr ""
 "Dine kunder kan samle deres billetter i den gratis Vollstart Wallet-app."
 
-#: backend.js:4150
+#: backend.js:4156
 msgid ""
 "Do you want to enable the \"Add to Vollstart Wallet\" button on ticket pages "
 "and in emails?"
@@ -7105,7 +7114,7 @@ msgstr ""
 "Vil du aktivere knappen \"Føj til Vollstart Wallet\" på billetsider og i e-"
 "mails?"
 
-#: backend.js:4153
+#: backend.js:4159
 msgid ""
 "Eventado.com is a free public event calendar — Premium customers can list "
 "their ticket events automatically."
@@ -7113,7 +7122,7 @@ msgstr ""
 "Eventado.com er en gratis offentlig begivenhedskalender — Premium-kunder kan "
 "automatisk liste deres billet-begivenheder."
 
-#: backend.js:4154
+#: backend.js:4160
 msgid ""
 "Do you want to publish your ticket events to Eventado.com for more reach and "
 "SEO?"
@@ -7121,57 +7130,57 @@ msgstr ""
 "Vil du udgive dine billet-begivenheder på Eventado.com for mere rækkevidde "
 "og SEO?"
 
-#: backend.js:4193
+#: backend.js:4199
 msgid "Yes, enable"
 msgstr "Ja, aktiver"
 
-#: backend.js:4213
+#: backend.js:4219
 msgid "No thanks"
 msgstr "Nej tak"
 
-#: backend.js:4220
+#: backend.js:4226
 msgid "Don't ask again"
 msgstr "Spørg ikke igen"
 
-#: backend.js:4275
+#: backend.js:4281
 msgid "Dismiss"
 msgstr "Afvis"
 
-#: backend.js:4321
+#: backend.js:4327
 msgid "Assign list to a WooCommerce product"
 msgstr "Tildel listen til et WooCommerce-produkt"
 
-#: backend.js:4321
+#: backend.js:4327
 msgid "Open a product, go to the Event Ticket tab, and enable ticketing."
 msgstr "Åbn et produkt, gå til fanen Event Ticket, og aktivér billetsalg."
 
-#: backend.js:4325
+#: backend.js:4331
 msgid "Process a test order"
 msgstr "Behandl en testordre"
 
-#: backend.js:4325
+#: backend.js:4331
 msgid "Place an order and complete it to generate tickets."
 msgstr "Opret en ordre og gennemfør den for at generere billetter."
 
-#: backend.js:4326
+#: backend.js:4332
 msgid "Scan a ticket at the entrance"
 msgstr "Scan en billet ved indgangen"
 
-#: backend.js:4326
+#: backend.js:4332
 msgid "Use the browser-based QR scanner to redeem tickets."
 msgstr "Brug den browserbaserede QR-scanner til at indløse billetter."
 
-#: backend.js:4326
+#: backend.js:4332
 msgctxt "label"
 msgid "Open Scanner"
 msgstr "Åbn scanner"
 
-#: backend.js:4335
+#: backend.js:4341
 msgctxt "title"
 msgid "Getting Started"
 msgstr "Kom godt i gang"
 
-#: backend.js:4371
+#: backend.js:4377
 msgid ""
 "If you need help, please contact us via email. The information is in "
 "\"Support Info\" area - button above."
@@ -7179,20 +7188,20 @@ msgstr ""
 "Hvis du har brug for hjælp, bedes du kontakte os via e-mail. Oplysningerne "
 "findes i området \"Supportinfo\" - knappen ovenfor."
 
-#: backend.js:4372
+#: backend.js:4378
 msgctxt "label"
 msgid "Don't show this again"
 msgstr "Vis ikke dette igen"
 
-#: backend.js:4418
+#: backend.js:4424
 msgid "Lock ticket redemption until event starts?"
 msgstr "Lås billetindløsning indtil begivenheden starter?"
 
-#: backend.js:4419 backend.js:4427 backend.js:4441
+#: backend.js:4425 backend.js:4433 backend.js:4447
 msgid "Auto-redeem when scanned?"
 msgstr "Auto-indløs ved scanning?"
 
-#: backend.js:4420
+#: backend.js:4426
 msgid ""
 "Show \"Open Tickets\" link in email? All QR codes on one page — ideal for "
 "groups."
@@ -7200,7 +7209,7 @@ msgstr ""
 "Vis \"Åbn billetter\"-link i e-mail? Alle QR-koder på én side — ideelt til "
 "grupper."
 
-#: backend.js:4421 backend.js:4429
+#: backend.js:4427 backend.js:4435
 msgid ""
 "Auto-complete orders when all items are tickets? Tickets are generated "
 "immediately."
@@ -7208,25 +7217,25 @@ msgstr ""
 "Auto-gennemfør ordrer, når alle varer er billetter? Billetter genereres med "
 "det samme."
 
-#: backend.js:4422 backend.js:4430 backend.js:4437 backend.js:4443
+#: backend.js:4428 backend.js:4436 backend.js:4443 backend.js:4449
 msgid ""
 "Enable Vollstart Wallet? Customers can collect tickets in the free wallet "
 "app."
 msgstr ""
 "Aktivér Vollstart Wallet? Kunder kan samle billetter i den gratis wallet-app."
 
-#: backend.js:4423 backend.js:4431 backend.js:4438 backend.js:4444
+#: backend.js:4429 backend.js:4437 backend.js:4444 backend.js:4450
 msgid ""
 "Do you also hand out tickets that were not bought in the shop? For example "
 "printed cards. They can then be redeemed without an order — the check "
 "against a paid order does not apply to them."
 msgstr ""
 
-#: backend.js:4426
+#: backend.js:4432
 msgid "Allow redemption after closing time?"
 msgstr "Tillad indløsning efter lukketid?"
 
-#: backend.js:4428
+#: backend.js:4434
 msgid ""
 "Show \"Open Tickets\" link in email? All QR codes on one page — ideal for "
 "families."
@@ -7234,79 +7243,79 @@ msgstr ""
 "Vis \"Åbn billetter\"-link i e-mail? Alle QR-koder på én side — ideelt til "
 "familier."
 
-#: backend.js:4434
+#: backend.js:4440
 msgid "Show redemption counter to customer? E.g. \"15 of 30 visits used\""
 msgstr "Vis indløsningstæller for kunden? F.eks. \"15 af 30 besøg brugt\""
 
-#: backend.js:4435
+#: backend.js:4441
 msgid "Show self-redeem button on ticket page? For self-service access."
 msgstr "Vis selvindløsningsknap på billetsiden? Til selvbetjening."
 
-#: backend.js:4436
+#: backend.js:4442
 msgid "Auto-redeem when scanned? Disable to verify identity first."
 msgstr "Auto-indløs ved scanning? Deaktiver for først at bekræfte identitet."
 
-#: backend.js:4442
+#: backend.js:4448
 msgid "Show self-redeem button? Customer redeems the voucher themselves."
 msgstr "Vis selvindløsningsknap? Kunden indløser selv kuponerne."
 
-#: backend.js:4449
+#: backend.js:4455
 msgid "Concerts, shows, festivals"
 msgstr "Koncerter, shows, festivaler"
 
-#: backend.js:4450
+#: backend.js:4456
 msgid "Theme park, zoo, spa"
 msgstr "Forlystelsespark, zoo, spa"
 
-#: backend.js:4451
+#: backend.js:4457
 msgid "Memberships / Season passes"
 msgstr "Medlemskaber / Sæsonkort"
 
-#: backend.js:4451
+#: backend.js:4457
 msgid "Recurring access"
 msgstr "Gentagen adgang"
 
-#: backend.js:4452
+#: backend.js:4458
 msgid "Vouchers / Simple codes"
 msgstr "Vouchere / enkle koder"
 
-#: backend.js:4452
+#: backend.js:4458
 msgid "Gift cards, promo codes"
 msgstr "Gavekort, kampagnekoder"
 
-#: backend.js:4487
+#: backend.js:4493
 msgid "Welcome to Event Tickets!"
 msgstr "Velkommen til Event Tickets!"
 
-#: backend.js:4488
+#: backend.js:4494
 msgid "Let's configure your ticketing system."
 msgstr "Lad os konfigurere dit billetsystem."
 
-#: backend.js:4489
+#: backend.js:4495
 msgid "This takes less than 2 minutes."
 msgstr "Dette tager mindre end 2 minutter."
 
-#: backend.js:4493
+#: backend.js:4499
 msgid "Skip, I'll configure manually"
 msgstr "Spring over, jeg konfigurerer manuelt"
 
-#: backend.js:4494
+#: backend.js:4500
 msgid "Start Setup"
 msgstr "Start opsætning"
 
-#: backend.js:4518 backend.js:4588
+#: backend.js:4524 backend.js:4594
 msgid "Back"
 msgstr "Tilbage"
 
-#: backend.js:4519
+#: backend.js:4525
 msgid "Next"
 msgstr "Næste"
 
-#: backend.js:4555
+#: backend.js:4561
 msgid "Tip: PDF attachment to email"
 msgstr "Tip: PDF-vedhæftning til e-mail"
 
-#: backend.js:4556
+#: backend.js:4562
 msgid ""
 "With the Premium version you can attach PDF tickets directly to the order "
 "email — as individual files or merged into one PDF."
@@ -7314,144 +7323,152 @@ msgstr ""
 "Med Premium-versionen kan du vedhæfte PDF-billetter direkte til ordremailen "
 "— som individuelle filer eller samlet i én PDF."
 
-#: backend.js:4561
+#: backend.js:4567
 msgid "Attach all tickets as one PDF to the order email?"
 msgstr "Vil du vedhæfte alle billetter som én PDF til ordremailen?"
 
-#: backend.js:4563
+#: backend.js:4569
 msgid "Attach PDF ticket to the order email?"
 msgstr "Vil du vedhæfte PDF-billet til ordremailen?"
 
-#: backend.js:4566
+#: backend.js:4572
 msgid "Premium"
 msgstr "Premium"
 
-#: backend.js:4589
+#: backend.js:4595
 msgid "Apply & Finish"
 msgstr "Anvend og afslut"
 
-#: backend.js:4595
+#: backend.js:4601
 msgid "You're all set!"
 msgstr "Du er klar!"
 
-#: backend.js:4599
+#: backend.js:4605
 msgid "Your settings have been configured for %s."
 msgstr "Dine indstillinger er blevet konfigureret til %s."
 
-#: backend.js:4610
+#: backend.js:4616
 msgid "These settings are now active - you can change every one of them later:"
 msgstr ""
 
-#: backend.js:4619
+#: backend.js:4625
 msgid ""
 "One thing is still missing: a WooCommerce product that sells your tickets."
 msgstr ""
 
-#: backend.js:4658
+#: backend.js:4664
 msgid "Applying settings..."
 msgstr "Anvender indstillinger..."
 
-#: backend.js:4665
+#: backend.js:4671
 msgid "Error applying settings. Please try again."
 msgstr "Fejl ved anvendelse af indstillinger. Prøv igen."
 
-#: backend.js:4670
+#: backend.js:4676
 msgid "Setup Wizard"
 msgstr "Opsætningsguide"
 
-#: backend.js:4702
+#: backend.js:4708
 msgid "Premium Activated!"
 msgstr "Premium aktiveret!"
 
-#: backend.js:4703
+#: backend.js:4709
 msgid "You now have access to these features:"
 msgstr "Du har nu adgang til disse funktioner:"
 
-#: backend.js:4706
+#: backend.js:4712
 msgid "PDF ticket attachment in emails"
 msgstr "PDF-billetbilag i e-mails"
 
-#: backend.js:4707
+#: backend.js:4713
 msgid "Ticket Designer (custom PDF templates)"
 msgstr "Billetdesigner (tilpassede PDF-skabeloner)"
 
-#: backend.js:4708
+#: backend.js:4714
 msgid "Badge printing"
 msgstr "Badge-udskrivning"
 
-#: backend.js:4709
+#: backend.js:4715
 msgid "Seating plans"
 msgstr "Sædeplaner"
 
-#: backend.js:4712
+#: backend.js:4718
 msgid "Recommended:"
 msgstr "Anbefalet:"
 
-#: backend.js:4713
-msgid ""
-"Enable PDF ticket attachment in emails? Customers receive their tickets as "
-"PDF directly in the order confirmation email."
-msgstr ""
-"Aktivér PDF-billevedhæng i e-mails? Kunder modtager deres billetter som PDF "
-"direkte i ordrebekræftelsen."
+#: backend.js:4719
+msgid "The button below switches these three settings on:"
+msgstr "Knappen nedenfor aktiverer disse tre indstillinger:"
 
-#: backend.js:4718
+#: backend.js:4721
+msgid "Attach the tickets as PDF files to the purchase email"
+msgstr "Vedhæft billetterne som PDF-filer til købs-e-mailen"
+
+#: backend.js:4722
+msgid "Merge all tickets of an order into one PDF"
+msgstr "Saml alle billetter i en ordre i én PDF"
+
+#: backend.js:4723
+msgid "Up to 21 PDF attachments per email"
+msgstr "Op til 21 PDF-vedhæftninger pr. e-mail"
+
+#: backend.js:4725 backend.js:4780
+msgid "You can change these anytime in Options."
+msgstr "Du kan til enhver tid ændre disse i Indstillinger."
+
+#: backend.js:4730
 msgid "Enable Recommended Settings"
 msgstr "Aktivér anbefalede indstillinger"
 
-#: backend.js:4731
+#: backend.js:4743
 msgctxt "button"
 msgid "Skip"
 msgstr "Spring over"
 
-#: backend.js:4747
+#: backend.js:4773
 msgid "Premium settings applied!"
 msgstr "Premium-indstillinger anvendt!"
 
-#: backend.js:4750
+#: backend.js:4776
 msgid "PDF attachment in emails: enabled"
 msgstr "PDF-bilag i e-mails: aktiveret"
 
-#: backend.js:4751
+#: backend.js:4777
 msgid "Merge into one PDF: enabled"
 msgstr "Saml i én PDF: aktiveret"
 
-#: backend.js:4752
+#: backend.js:4778
 msgid "Max attachments: 21"
 msgstr "Maks. vedhæftede filer: 21"
 
-#: backend.js:4754
-msgid "You can change these anytime in Options."
-msgstr "Du kan til enhver tid ændre disse i Indstillinger."
-
-#: backend.js:4758
+#: backend.js:4784
 msgid "Close"
 msgstr "Luk"
 
-#: backend.js:4771
+#: backend.js:4797
 msgid "Premium Features"
 msgstr "Premium-funktioner"
 
-#: backend.js:4799
+#: backend.js:4825
 msgctxt "label"
 msgid "Upgrade"
 msgstr "Opgrader"
 
-#: backend.js:4831
+#: backend.js:4857
 msgctxt "title"
 msgid "Enter an amount of how many ticket numbers you need"
 msgstr "Indtast antal billetnumre, du har brug for"
 
-#: backend.js:4868
+#: backend.js:4894
 msgctxt "title"
 msgid "1. Ticket number generator (optional step)"
 msgstr "1. Billetnummergenerator (valgfrit trin)"
 
-#: backend.js:4869
+#: backend.js:4895
 msgid "You can generate ticket numbers."
 msgstr "Du kan generere billetnumre."
 
-#: backend.js:4870
+#: backend.js:4896
 msgid ""
 "Up 100.000 tickets generation per run. The limit is to prevent performance "
 "issues."
@@ -7459,22 +7476,22 @@ msgstr ""
 "Op til 100.000 billetter genereret pr. kørsel. Grænsen er for at forhindre "
 "ydelsesproblemer."
 
-#: backend.js:4870
+#: backend.js:4896
 msgid "You can repeat the \"store tickets\" operations as often as needed."
 msgstr ""
 "Du kan gentage \"gem billetter\"-handlingerne så ofte, det er nødvendigt."
 
-#: backend.js:4872
+#: backend.js:4898
 msgctxt "label"
 msgid "Enter amount of needed ticket numbers"
 msgstr "Indtast antal nødvendige billetnumre"
 
 #. translators: 1: amount of possible codes 2: premium info
-#: backend.js:4874
+#: backend.js:4900
 msgid "%1$d max. %2$s up to 100.000 for each run"
 msgstr "%1$d maks. %2$s op til 100.000 pr. kørsel"
 
-#: backend.js:4884
+#: backend.js:4910
 msgctxt "label"
 msgid ""
 "Clear the ticket numbers list textarea field below to add fill in the new "
@@ -7483,18 +7500,18 @@ msgstr ""
 "Ryd tekstfeltet med billetnumre nedenfor for at tilføje de nye genererede "
 "billetnumre"
 
-#: backend.js:4890
+#: backend.js:4916
 msgctxt "label"
 msgid "Generate Code Verification Value (CVV) for each ticket number"
 msgstr "Generer kodeverifikationsværdi (CVV) for hvert billetnummer"
 
-#: backend.js:4894
+#: backend.js:4920
 msgctxt "label"
 msgid "Generate ticket numbers"
 msgstr "Generér billetnumre"
 
 #. translators: 1: amount of created tickets 2: seconds 3: amount of runs
-#: backend.js:4914
+#: backend.js:4940
 msgid ""
 "Created %1$d tickets. In %2$s seconds, with %3$d runs to find unique ticket "
 "numbers."
@@ -7503,16 +7520,16 @@ msgstr ""
 "unikke billetnumre."
 
 #. translators: %d: amout of ticket numbers
-#: backend.js:4925
+#: backend.js:4951
 msgid "contains %d tickets"
 msgstr "indeholder %d billetter"
 
-#: backend.js:4927
+#: backend.js:4953
 msgctxt "title"
 msgid "2. Ticket numbers to store on the server"
 msgstr "2. Billetnumre, der skal gemmes på serveren"
 
-#: backend.js:4927
+#: backend.js:4953
 msgid ""
 "One number per line and/or comma-separated (,). <br>If you want to add the "
 "CVV number then separate your ticket number with (;) and append your CVV "
@@ -7524,22 +7541,22 @@ msgstr ""
 "nummer.<br>Når numrene gemmes på serveren, kontrolleres det, om "
 "billetnummeret er unikt, og dem der ikke er, markeres."
 
-#: backend.js:4934
+#: backend.js:4960
 msgctxt "label"
 msgid "Assign to this ticket list"
 msgstr "Tildel til denne billetliste"
 
 #. translators: 1: max amout of ticket numbers 2: premium info
-#: backend.js:4947
+#: backend.js:4973
 msgid "You can store up to %1$d. %2$s unlimited"
 msgstr "Du kan gemme op til %1$d. %2$s ubegrænset"
 
-#: backend.js:4949
+#: backend.js:4975
 msgctxt "label"
 msgid "Store ticket numbers"
 msgstr "Gem billetnumre"
 
-#: backend.js:4966
+#: backend.js:4992
 msgid ""
 "Each entry will turn green (successful stored) or red (NOT OK - duplicate "
 "entry on the server).<br>Scroll down and wait for all to finish.<br>In the "
@@ -7549,22 +7566,22 @@ msgstr ""
 "<br>Scroll ned og vent til alle er færdige.<br>I tekstfeltet nedenfor finder "
 "du alle de gemte billetter."
 
-#: backend.js:4968
+#: backend.js:4994
 msgctxt "title"
 msgid "Successful stored ticket numbers"
 msgstr "Billetnumre gemt korrekt"
 
-#: backend.js:4975
+#: backend.js:5001
 msgctxt "title"
 msgid "Importing"
 msgstr "Importerer"
 
-#: backend.js:4986
+#: backend.js:5012
 msgid "Import process finished"
 msgstr "Importproces afsluttet"
 
 #. translators: %d: total ticket count
-#: backend.js:5004
+#: backend.js:5030
 msgctxt "title"
 msgid ""
 "Your Limit of %d tickets is reached. Use the premium version to have "
@@ -7573,115 +7590,115 @@ msgstr ""
 "Din grænse på %d billetter er nået. Brug premium-versionen for at få "
 "ubegrænsede billetter"
 
-#: backend.js:5008
+#: backend.js:5034
 msgctxt "title"
 msgid "Amount"
 msgstr "Beløb"
 
-#: backend.js:5008 backend.js:5015
+#: backend.js:5034 backend.js:5041
 msgctxt "label"
 msgid "Not Ok"
 msgstr "Ikke ok"
 
-#: backend.js:5053
+#: backend.js:5079
 msgctxt "title"
 msgid "Export tickets"
 msgstr "Eksportér billetter"
 
-#: backend.js:5059
+#: backend.js:5085
 msgctxt "label"
 msgid "Export"
 msgstr "Eksportér"
 
-#: backend.js:5072
+#: backend.js:5098
 msgctxt "title"
 msgid "Choose your export settings"
 msgstr "Vælg dine eksportindstillinger"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "label"
 msgid "Choose the delimiter for the column values"
 msgstr "Vælg skilletegn for kolonneværdierne"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "option value"
 msgid "Comma"
 msgstr "Komma"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "option value"
 msgid "Semicolon"
 msgstr "Semikolon"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "option value"
 msgid "Pipe"
 msgstr "Pipe"
 
-#: backend.js:5074
+#: backend.js:5100
 msgctxt "label"
 msgid "Choose a file suffix"
 msgstr "Vælg et filsuffiks"
 
-#: backend.js:5076
+#: backend.js:5102
 msgctxt "option value"
 msgid "All"
 msgstr "Alle"
 
-#: backend.js:5080
+#: backend.js:5106
 msgctxt "label"
 msgid "Limit export to ticket list"
 msgstr "Begræns eksport til billetliste"
 
-#: backend.js:5082
+#: backend.js:5108
 msgctxt "label"
 msgid "Choose a sorting field"
 msgstr "Vælg et sorteringsfelt"
 
-#: backend.js:5082
+#: backend.js:5108
 msgctxt "option value"
 msgid "Creation date"
 msgstr "Oprettelsesdato"
 
-#: backend.js:5082 backend.js:5891
+#: backend.js:5108 backend.js:5917
 msgid "Ticket number"
 msgstr "Billetnummer"
 
-#: backend.js:5082 backend.js:5891
+#: backend.js:5108 backend.js:5917
 msgid "Ticket display number"
 msgstr "Billetvisningsnummer"
 
-#: backend.js:5082
+#: backend.js:5108
 msgctxt "option value"
 msgid "List name"
 msgstr "Listenavn"
 
-#: backend.js:5083
+#: backend.js:5109
 msgctxt "label"
 msgid "Choose a sorting direction"
 msgstr "Vælg en sorteringsretning"
 
-#: backend.js:5083
+#: backend.js:5109
 msgctxt "option value"
 msgid "Ascending"
 msgstr "Stigende"
 
-#: backend.js:5083
+#: backend.js:5109
 msgctxt "option value"
 msgid "Descending"
 msgstr "Faldende"
 
-#: backend.js:5084
+#: backend.js:5110
 msgctxt "label"
 msgid "Set a range"
 msgstr "Angiv et interval"
 
 #. translators: %d: total record count
-#: backend.js:5084
+#: backend.js:5110
 msgid "You have %d tickets stored."
 msgstr "Du har %d billetter gemt."
 
-#: backend.js:5084
+#: backend.js:5110
 msgid ""
 "Some systems are slow and the connection timeout interrupts the export, if "
 "you have too many tickets. In that case, you can export your tickets in "
@@ -7691,53 +7708,53 @@ msgstr ""
 "hvis du har for mange billetter. I så fald kan du eksportere dine billetter "
 "i flere trin. f.eks. 0 og 20000 antal og derefter 20001 og 20000 antal."
 
-#: backend.js:5084
+#: backend.js:5110
 msgid "Enter your row start (0 = from the first)"
 msgstr "Indtast din startrække (0 = fra den første)"
 
-#: backend.js:5084
+#: backend.js:5110
 msgctxt "label"
 msgid "Enter amount of tickets"
 msgstr "Indtast antal billetter"
 
-#: backend.js:5118
+#: backend.js:5144
 msgctxt "title"
 msgid "Edit List"
 msgstr "Rediger liste"
 
-#: backend.js:5118
+#: backend.js:5144
 msgctxt "title"
 msgid "Add List"
 msgstr "Tilføj liste"
 
 #. translators: %s: h4 option name
-#: backend.js:5148
+#: backend.js:5174
 msgid "Overrule %s per Ticket list"
 msgstr "Tilsidesæt %s pr. billetliste"
 
-#: backend.js:5163
+#: backend.js:5189
 msgctxt "label"
 msgid "Overrule the ticket format settings"
 msgstr "Tilsidesæt indstillingerne for billetformat"
 
-#: backend.js:5165
+#: backend.js:5191
 msgctxt "label"
 msgid "Note"
 msgstr "Bemærk"
 
-#: backend.js:5165
+#: backend.js:5191
 msgid ""
 "Will be overridden if you set the ticket number format settings on the "
 "product!"
 msgstr ""
 "Vil blive tilsidesat, hvis du indstiller billetnummerformatet på produktet!"
 
-#: backend.js:5179
+#: backend.js:5205
 msgctxt "heading"
 msgid "Webhook"
 msgstr "Webhook"
 
-#: backend.js:5181
+#: backend.js:5207
 msgctxt "label"
 msgid ""
 "The webhook need to be activated first in the options to be executed, even "
@@ -7746,22 +7763,22 @@ msgstr ""
 "Webhooken skal først aktiveres i indstillingerne for at blive udført, selvom "
 "URL'en er angivet her."
 
-#: backend.js:5183
+#: backend.js:5209
 msgctxt "label"
 msgid "URL to your service if the WooCommerce ticket is sold"
 msgstr "URL til din tjeneste, hvis WooCommerce-billetten er solgt"
 
-#: backend.js:5187
+#: backend.js:5213
 msgctxt "heading"
 msgid "Tickets without a WooCommerce order"
 msgstr ""
 
-#: backend.js:5190
+#: backend.js:5216
 msgctxt "label"
 msgid "Tickets of this list may exist without an order"
 msgstr ""
 
-#: backend.js:5191
+#: backend.js:5217
 msgctxt "label"
 msgid ""
 "For numbers you generated yourself, for example printed cards. Those tickets "
@@ -7770,7 +7787,7 @@ msgid ""
 "WooCommerce keep the full check."
 msgstr ""
 
-#: backend.js:5194
+#: backend.js:5220
 msgctxt "label"
 msgid ""
 "Event window for these tickets (optional). Only used for tickets without an "
@@ -7778,32 +7795,32 @@ msgid ""
 "governed by the existing scanner options."
 msgstr ""
 
-#: backend.js:5203
+#: backend.js:5229
 msgctxt "label"
 msgid "Until"
 msgstr ""
 
-#: backend.js:5285
+#: backend.js:5311
 msgctxt "title"
 msgid "Edit Ticket"
 msgstr "Rediger billet"
 
-#: backend.js:5285
+#: backend.js:5311
 msgctxt "title"
 msgid "Add Ticket"
 msgstr "Tilføj billet"
 
-#: backend.js:5305 backend.js:5569
+#: backend.js:5331 backend.js:5595
 msgctxt "label"
 msgid "List"
 msgstr "Liste"
 
-#: backend.js:5312
+#: backend.js:5338
 msgctxt "label"
 msgid "CVV - use 4 digits for best results"
 msgstr "CVV - brug 4 cifre for det bedste resultat"
 
-#: backend.js:5314
+#: backend.js:5340
 msgid ""
 "If CVV is set, then your user will be asked to enter also the CVV to check "
 "the ticket number."
@@ -7811,103 +7828,103 @@ msgstr ""
 "Hvis CVV er angivet, vil din bruger blive bedt om også at indtaste CVV for "
 "at tjekke billetnummeret."
 
-#: backend.js:5320
+#: backend.js:5346
 msgctxt "option value"
 msgid "is activ"
 msgstr "er aktiv"
 
-#: backend.js:5321
+#: backend.js:5347
 msgctxt "option value"
 msgid "is inactiv"
 msgstr "er inaktiv"
 
-#: backend.js:5322
+#: backend.js:5348
 msgctxt "label"
 msgid "is stolen"
 msgstr "er stjålet"
 
-#: backend.js:5354
+#: backend.js:5380
 msgid "Use the add option"
 msgstr "Brug tilføj-indstillingen"
 
-#: backend.js:5396
+#: backend.js:5422
 msgctxt "label"
 msgid "Tickets"
 msgstr "Billetter"
 
-#: backend.js:5396 backend.js:5485
+#: backend.js:5422 backend.js:5511
 msgctxt "label"
 msgid "Delete All Tickets"
 msgstr "Slet alle billetter"
 
-#: backend.js:5413
+#: backend.js:5439
 msgid "Are you sure, you want to delete this list?"
 msgstr "Er du sikker på, at du vil slette denne liste?"
 
-#: backend.js:5415
+#: backend.js:5441
 msgid "No ticket will be deleted. Just the list."
 msgstr "Ingen billet slettes. Kun listen."
 
-#: backend.js:5421
+#: backend.js:5447
 msgid "Check if list is used by products"
 msgstr "Tjek om listen bruges af produkter"
 
-#: backend.js:5432
+#: backend.js:5458
 msgid "This list is still assigned to products:"
 msgstr "Denne liste er stadig tilknyttet produkter:"
 
-#: backend.js:5444
+#: backend.js:5470
 msgid ""
 "Please reassign these products first, or uncheck the product check option."
 msgstr ""
 "Tildel venligst disse produkter igen først, eller fjern markeringen i "
 "produktindstillingen."
 
-#: backend.js:5445
+#: backend.js:5471
 msgid "Cannot delete list"
 msgstr "Kan ikke slette liste"
 
-#: backend.js:5456
+#: backend.js:5482
 msgctxt "title"
 msgid "Delete all tickets?"
 msgstr "Slet alle billetter?"
 
-#: backend.js:5457
+#: backend.js:5483
 msgid "Are you sure you want to delete ALL tickets from the list \"%s\"?"
 msgstr "Er du sikker på, at du vil slette ALLE billetter fra listen \"%s\"?"
 
-#: backend.js:5457
+#: backend.js:5483
 msgid "This action cannot be undone!"
 msgstr "Denne handling kan ikke fortrydes!"
 
-#: backend.js:5460
+#: backend.js:5486
 msgid "To confirm deletion, type DELETE in the field below:"
 msgstr "For at bekræfte sletning skal du skrive DELETE i feltet nedenfor:"
 
-#: backend.js:5464
+#: backend.js:5490
 msgctxt "title"
 msgid "Final confirmation"
 msgstr "Endelig bekræftelse"
 
-#: backend.js:5468
+#: backend.js:5494
 msgid "You must type DELETE to confirm."
 msgstr "Du skal skrive DELETE for at bekræfte."
 
-#: backend.js:5472
+#: backend.js:5498
 msgid "Deleting..."
 msgstr "Sletter..."
 
-#: backend.js:5490
+#: backend.js:5516
 msgid "%d tickets have been deleted."
 msgstr "%d billetter er blevet slettet."
 
 #. translators: 1: deleted tickets, 2: total tickets
-#: backend.js:5498
+#: backend.js:5524
 msgid "%1$d of %2$d"
 msgstr ""
 
 #. translators: %s: title list of tickets
-#: backend.js:5528
+#: backend.js:5554
 msgid ""
 "Do you want to empty the \"%s\" table? All data will be lost. No ticket will "
 "be deleted. Just the lists."
@@ -7915,13 +7932,13 @@ msgstr ""
 "Vil du tømme \"%s\"-tabellen? Alle data går tabt. Ingen billetter slettes. "
 "Kun listerne."
 
-#: backend.js:5528 backend.js:5529
+#: backend.js:5554 backend.js:5555
 msgctxt "title"
 msgid "List of tickets"
 msgstr "Billetsortiment"
 
 #. translators: %s: title list of tickets
-#: backend.js:5529
+#: backend.js:5555
 msgid ""
 "Are you sure? You will not be able to restore the data, except you have a "
 "backup of your database. All data will be lost. No ticket will be deleted. "
@@ -7931,56 +7948,56 @@ msgstr ""
 "sikkerhedskopi af din database. Alle data vil gå tabt. Ingen billetter "
 "slettes. Kun listerne."
 
-#: backend.js:5541
+#: backend.js:5567
 msgid "Organize your tickets in lists. You can assign tickets to a list."
 msgstr ""
 "Organisér dine billetter i lister. Du kan tildele billetter til en liste."
 
 #. translators: 1: max possible lists amount 2: link to premium
-#: backend.js:5542
+#: backend.js:5568
 msgid "Max. %1$d list. Unlimited with %2$s"
 msgstr "Maks. %1$d liste. Ubegrænset med %2$s"
 
-#: backend.js:5550
+#: backend.js:5576
 msgctxt "label"
 msgid "Confirmed Count"
 msgstr "Bekræftet antal"
 
-#: backend.js:5553
+#: backend.js:5579
 msgctxt "label"
 msgid "Customer"
 msgstr "Kunde"
 
-#: backend.js:5557
+#: backend.js:5583
 msgctxt "label"
 msgid "Company"
 msgstr "Virksomhed"
 
-#: backend.js:5561
+#: backend.js:5587
 msgctxt "label"
 msgid "Redeem Amount"
 msgstr "Indløs beløb"
 
-#: backend.js:5564
+#: backend.js:5590
 msgctxt "label"
 msgid "Order line details"
 msgstr ""
 
-#: backend.js:5568 ticket_scanner.js:1461
+#: backend.js:5594 ticket_scanner.js:1461
 msgctxt "label"
 msgid "Ticket"
 msgstr "Billet"
 
-#: backend.js:5572 backend.js:5915
+#: backend.js:5598 backend.js:5941
 msgctxt "label"
 msgid "OrderId"
 msgstr "Ordre-id"
 
-#: backend.js:5589
+#: backend.js:5615
 msgid "You need to create a ticket list first before you can add tickets."
 msgstr "Du skal oprette en billetliste, før du kan tilføje billetter."
 
-#: backend.js:5592
+#: backend.js:5618
 msgid ""
 "You reached maximum amount of tickets. You need to delete tickets before you "
 "can add more new tickets or buy the premium version to have unlimited "
@@ -7990,258 +8007,258 @@ msgstr ""
 "kan tilføje flere nye billetter, eller købe premium-versionen for at få "
 "ubegrænsede billetter."
 
-#: backend.js:5612
+#: backend.js:5638
 msgctxt "label"
 msgid "Export tickets"
 msgstr "Eksportér billetter"
 
-#: backend.js:5619
+#: backend.js:5645
 msgctxt "option value"
 msgid "Bulk Action"
 msgstr "Massehandling"
 
-#: backend.js:5641
+#: backend.js:5667
 msgctxt "title"
 msgid "Bulk Action"
 msgstr "Massehandling"
 
-#: backend.js:5641
+#: backend.js:5667
 msgid "Please select at least one ticket first."
 msgstr "Vælg venligst mindst én billet først."
 
-#: backend.js:5647
+#: backend.js:5673
 msgctxt "option value"
 msgid "Default search filter"
 msgstr "Standard søgefilter"
 
-#: backend.js:5648
+#: backend.js:5674
 msgctxt "option value"
 msgid "Filter for list id"
 msgstr "Filtrer efter liste-id"
 
-#: backend.js:5649
+#: backend.js:5675
 msgctxt "option value"
 msgid "Filter for order id"
 msgstr "Filtrer efter ordre-id"
 
-#: backend.js:5650
+#: backend.js:5676
 msgctxt "option value"
 msgid "Filter for cvv value"
 msgstr "Filtrer efter cvv-værdi"
 
-#: backend.js:5651
+#: backend.js:5677
 msgctxt "option value"
 msgid "Filter for status (1:active, 0:inactive, 2:stolen)"
 msgstr "Filtrer efter status (1:aktiv, 0:inaktiv, 2:stjålet)"
 
-#: backend.js:5652
+#: backend.js:5678
 msgctxt "option value"
 msgid "Filter for redeemed status (0:not redeemed yet, 1:redeemed)"
 msgstr "Filtrer efter indløst status (0:ikke indløst endnu, 1:indløst)"
 
-#: backend.js:5653
+#: backend.js:5679
 msgctxt "option value"
 msgid "Filter for registered user id"
 msgstr "Filtrer efter registreret bruger-id"
 
-#: backend.js:5654
+#: backend.js:5680
 msgctxt "option value"
 msgid "Filter for customer name in billing first and last name"
 msgstr "Filtrer efter kundens navn i fakturerings for- og efternavn"
 
-#: backend.js:5655
+#: backend.js:5681
 msgctxt "option value"
 msgid "Filter for product id"
 msgstr "Filtrer efter produkt-id"
 
-#: backend.js:5656
+#: backend.js:5682
 msgctxt "option value"
 msgid "Filter for chosen date (enter YYYY-MM-DD)"
 msgstr "Filter for valgt dato (indtast ÅÅÅÅ-MM-DD)"
 
 #. translators: 1: max amount tickets 2: premium link
-#: backend.js:5673
+#: backend.js:5699
 msgid "Max. %1$d tickets. Unlimited with %2$s"
 msgstr "Maks. %1$d billetter. Ubegrænset med %2$s"
 
-#: backend.js:5717
+#: backend.js:5743
 msgctxt "label"
 msgid "stolen"
 msgstr "stjålet"
 
-#: backend.js:5721
+#: backend.js:5747
 msgid "used"
 msgstr "brugt"
 
-#: backend.js:5721
+#: backend.js:5747
 msgid "active"
 msgstr "aktiv"
 
-#: backend.js:5724
+#: backend.js:5750
 msgctxt "label"
 msgid "is inactiv"
 msgstr "er inaktiv"
 
-#: backend.js:5793
+#: backend.js:5819
 msgid "You have no tickets yet."
 msgstr "Du har ingen billetter endnu."
 
-#: backend.js:5797
+#: backend.js:5823
 msgid ""
 "Or add ticket numbers to a ticket list yourself - with the \"Add\" button "
 "above. Useful for printed cards you hand out at the door."
 msgstr ""
 
 #. translators: 1: amount tickets 2: total amount tickets
-#: backend.js:5806
+#: backend.js:5832
 msgid "Redeemed tickets: %1$d (filtered) of %2$d (total redeemed tickets)"
 msgstr ""
 "Indløste billetter: %1$d (filtreret) af %2$d (indløste billetter i alt)"
 
-#: backend.js:5831
+#: backend.js:5857
 msgid "Are you sure, you want to delete this ticket?"
 msgstr "Er du sikker på, at du vil slette denne billet?"
 
-#: backend.js:5861
+#: backend.js:5887
 msgctxt "label"
 msgid "Display QR with ticket number"
 msgstr "Vis QR med billetnummer"
 
-#: backend.js:5863 backend.js:5869 backend.js:5876 backend.js:5884
+#: backend.js:5889 backend.js:5895 backend.js:5902 backend.js:5910
 msgctxt "label"
 msgid "This QR image contains"
 msgstr "Dette QR-billede indeholder"
 
-#: backend.js:5864 backend.js:5870 backend.js:5877
+#: backend.js:5890 backend.js:5896 backend.js:5903
 msgctxt "title"
 msgid "QR with ticket number"
 msgstr "QR med billetnummer"
 
-#: backend.js:5867
+#: backend.js:5893
 msgctxt "label"
 msgid "Display QR with PUBLIC ticket number"
 msgstr "Vis QR med OFFENTLIG billetnummer"
 
-#: backend.js:5869 backend.js:5876
+#: backend.js:5895 backend.js:5902
 msgctxt "label"
 msgid "Can be used with the ticket scanner"
 msgstr "Kan bruges med billetscanneren"
 
-#: backend.js:5874
+#: backend.js:5900
 msgctxt "label"
 msgid "Display QR with your own QR content"
 msgstr "Vis QR med dit eget QR-indhold"
 
-#: backend.js:5881
+#: backend.js:5907
 msgctxt "label"
 msgid "Display QR with URL"
 msgstr "Vis QR med URL"
 
-#: backend.js:5885
+#: backend.js:5911
 msgctxt "title"
 msgid "QR with URL and code"
 msgstr "QR med URL og kode"
 
-#: backend.js:5891
+#: backend.js:5917
 msgctxt "label"
 msgid "Code Verification Value (CVV)"
 msgstr "Kodeverifikationsværdi (CVV)"
 
-#: backend.js:5894
+#: backend.js:5920
 msgid "CVV attempts:"
 msgstr "CVV-forsøg:"
 
-#: backend.js:5895
+#: backend.js:5921
 msgid "Last attempt:"
 msgstr "Sidste forsøg:"
 
-#: backend.js:5897
+#: backend.js:5923
 msgid "LOCKED — too many wrong attempts"
 msgstr "SPÆRRET — for mange forkerte forsøg"
 
-#: backend.js:5899
+#: backend.js:5925
 msgid "Reset CVV attempts"
 msgstr "Nulstil CVV-forsøg"
 
-#: backend.js:5901
+#: backend.js:5927
 msgid "Reset CVV attempt counter and unlock this ticket?"
 msgstr "Nulstil CVV-forsøgstæller og lås denne billet op?"
 
-#: backend.js:5911
+#: backend.js:5937
 msgctxt "title"
 msgid "WooCommerce Order"
 msgstr "WooCommerce-ordre"
 
-#: backend.js:5913
+#: backend.js:5939
 msgid "WooCommerce not found"
 msgstr "WooCommerce ikke fundet"
 
-#: backend.js:5915
+#: backend.js:5941
 msgctxt "label"
 msgid "Show in WooCommerce Orders"
 msgstr "Vis i WooCommerce-ordrer"
 
-#: backend.js:5918 backend.js:5958
+#: backend.js:5944 backend.js:5984
 msgctxt "label"
 msgid "Order from"
 msgstr "Ordre fra"
 
-#: backend.js:5920
+#: backend.js:5946
 msgctxt "label"
 msgid "Order Status"
 msgstr "Ordrestatus"
 
-#: backend.js:5923
+#: backend.js:5949
 msgctxt "label"
 msgid "Billing Email"
 msgstr "Fakturerings-email"
 
-#: backend.js:5925 backend.js:5959
+#: backend.js:5951 backend.js:5985
 msgctxt "label"
 msgid "Product Id"
 msgstr "Produkt-id"
 
-#: backend.js:5925 backend.js:5959
+#: backend.js:5951 backend.js:5985
 msgctxt "label"
 msgid "Show Product"
 msgstr "Vis produkt"
 
-#: backend.js:5927
+#: backend.js:5953
 msgctxt "label"
 msgid "Product"
 msgstr "Produkt"
 
-#: backend.js:5930
+#: backend.js:5956
 msgctxt "label"
 msgid "Variation"
 msgstr "Variation"
 
-#: backend.js:5935
+#: backend.js:5961
 msgid "Related Subscriptions"
 msgstr "Relaterede abonnementer"
 
-#: backend.js:5937
+#: backend.js:5963
 msgctxt "label"
 msgid "Subscription Id"
 msgstr "Abonnements-id"
 
-#: backend.js:5937
+#: backend.js:5963
 msgctxt "label"
 msgid "Show Subscription"
 msgstr "Vis abonnement"
 
-#: backend.js:5941
+#: backend.js:5967
 msgctxt "label"
 msgid "Delete WooCommerce order info for this ticket"
 msgstr "Slet WooCommerce-ordreinfo for denne billet"
 
-#: backend.js:5942
+#: backend.js:5968
 msgctxt "title"
 msgid "Remove order"
 msgstr "Fjern ordre"
 
 #. translators: %s: ticket number
-#: backend.js:5942
+#: backend.js:5968
 msgid ""
 "Do you really want to remove your order information of this ticket \"%s\"? "
 "This will also remove the ticket number from the order! For the PREMIUM "
@@ -8258,30 +8275,30 @@ msgstr ""
 "ordren. For BASIC-PLUGIN fjernes alle billetter fra alle varer på denne "
 "ordre. Klik på OK for at fortsætte fjernelsen."
 
-#: backend.js:5951
+#: backend.js:5977
 msgid "WooCommerce ticket sale"
 msgstr "WooCommerce-billetsalg"
 
-#: backend.js:5954
+#: backend.js:5980
 msgid "WooCommerce Purchase Restriction"
 msgstr "WooCommerce-købsbegrænsning"
 
-#: backend.js:5957 backend.js:5969
+#: backend.js:5983 backend.js:5995
 msgctxt "label"
 msgid "Used for Order ID"
 msgstr "Bruges til ordrenummer"
 
-#: backend.js:5957
+#: backend.js:5983
 msgctxt "label"
 msgid "Open WooCommerce Order"
 msgstr "Åbn WooCommerce-ordre"
 
-#: backend.js:5960 backend.js:5961
+#: backend.js:5986 backend.js:5987
 msgid "Remove purchase ticket information"
 msgstr "Fjern købsbilletinformation"
 
 #. translators: %s: ticket nummer
-#: backend.js:5961
+#: backend.js:5987
 msgid ""
 "Do you really want to remove the purchase ticket information from the order "
 "of this ticket \"%s\"? This will remove the also the ticket(s) from the "
@@ -8293,69 +8310,69 @@ msgstr ""
 "billet kan derefter genbruges til køb. Klik på OK for at fortsætte "
 "fjernelsen."
 
-#: backend.js:5973
+#: backend.js:5999
 msgctxt "title"
 msgid "Registered user"
 msgstr "Registreret bruger"
 
-#: backend.js:5979
+#: backend.js:6005
 msgctxt "title"
 msgid "IP list checked for this ticket"
 msgstr "IP-liste tjekket for denne billet"
 
-#: backend.js:6039
+#: backend.js:6065
 msgctxt "title"
 msgid "Error"
 msgstr "Fejl"
 
-#: backend.js:6385
+#: backend.js:6411
 msgid "Redeemed via authtoken:"
 msgstr "Indløst via authtoken:"
 
-#: backend.js:6405
+#: backend.js:6431
 msgctxt "label"
 msgid "Congress"
 msgstr "Kongres"
 
-#: backend.js:6405
+#: backend.js:6431
 msgctxt "label"
 msgid "Open congress page"
 msgstr "Åbn kongres-side"
 
-#: backend.js:6408
+#: backend.js:6434
 msgid "Wallet Test"
 msgstr "Wallet-test"
 
-#: backend.js:6408
+#: backend.js:6434
 msgid "Import ticket to Vollstart Wallet for testing"
 msgstr "Importér billet til Vollstart Wallet til test"
 
-#: backend.js:6766
+#: backend.js:6792
 msgctxt "option"
 msgid "Remove marked as used"
 msgstr "Fjern markering som brugt"
 
-#: backend.js:6781
+#: backend.js:6807
 msgctxt "option"
 msgid "Delete Redeem Information"
 msgstr "Slet indløsningsinformation"
 
-#: backend.js:6796
+#: backend.js:6822
 msgctxt "option"
 msgid "Generate ticket PDF"
 msgstr "Generér billet-PDF"
 
-#: backend.js:6809
+#: backend.js:6835
 msgctxt "option"
 msgid "Generate badge ticket"
 msgstr "Generér badge-billet"
 
-#: backend.js:6822
+#: backend.js:6848
 msgctxt "option"
 msgid "Move to ticket list"
 msgstr "Flyt til billettoversigt"
 
-#: backend.js:6825
+#: backend.js:6851
 msgctxt "label"
 msgid "Assign selected tickets to this ticket list"
 msgstr "Tildel valgte billetter til denne billetliste"
@@ -9737,6 +9754,13 @@ msgstr ""
 #: wc_frontend.js:176
 msgid "This code is not valid for this product."
 msgstr ""
+
+#~ msgid ""
+#~ "Enable PDF ticket attachment in emails? Customers receive their tickets "
+#~ "as PDF directly in the order confirmation email."
+#~ msgstr ""
+#~ "Aktivér PDF-billevedhæng i e-mails? Kunder modtager deres billetter som "
+#~ "PDF direkte i ordrebekræftelsen."
 
 #~ msgid "A new premium version is available!"
 #~ msgstr "En ny premium-version er tilgængelig!"

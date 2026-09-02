@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Event Tickets with Ticket Scanner 1.2.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/event-tickets-"
 "with-ticket-scanner\n"
-"POT-Creation-Date: 2026-08-26T07:30:15+00:00\n"
+"POT-Creation-Date: 2026-09-02T14:57:24+00:00\n"
 "PO-Revision-Date: 2023-02-09 14:09+01:00\n"
 "Last-Translator: Saso Nikolov <support@vollstart.com>\n"
 "Language-Team: Saso Nikolov <support@vollstart.com>\n"
@@ -77,19 +77,19 @@ msgid "Loading…"
 msgstr "加载中…"
 
 #: includes/seating/class-seating-admin.php:388
-#: includes/seating/class-seating-admin.php:1035
+#: includes/seating/class-seating-admin.php:1060
 #: sasoEventtickets_Seating.php:455 js/seating_admin.js:21
 msgid "Seating plan created successfully"
 msgstr "座席计划已成功创建"
 
 #: includes/seating/class-seating-admin.php:413
-#: includes/seating/class-seating-admin.php:1036
+#: includes/seating/class-seating-admin.php:1061
 #: sasoEventtickets_Seating.php:447 js/seating_admin.js:22
 msgid "Seating plan updated successfully"
 msgstr "座位图更新成功"
 
 #: includes/seating/class-seating-admin.php:436
-#: includes/seating/class-seating-admin.php:1037
+#: includes/seating/class-seating-admin.php:1062
 #: sasoEventtickets_Seating.php:472 js/seating_admin.js:23
 msgid "Seating plan deleted successfully"
 msgstr "座席计划已成功删除"
@@ -99,7 +99,7 @@ msgid "Seating plan cloned successfully"
 msgstr "座位安排已成功克隆"
 
 #: includes/seating/class-seating-admin.php:513
-#: includes/seating/class-seating-admin.php:1038
+#: includes/seating/class-seating-admin.php:1063
 #: sasoEventtickets_Seating.php:519 js/seating_admin.js:25
 msgid "Seat created successfully"
 msgstr "座席已成功创建"
@@ -111,7 +111,7 @@ msgid "%d seats created successfully"
 msgstr "%d 个座位已成功创建"
 
 #: includes/seating/class-seating-admin.php:595
-#: includes/seating/class-seating-admin.php:1040
+#: includes/seating/class-seating-admin.php:1065
 #: sasoEventtickets_Seating.php:508 js/seating_admin.js:27
 msgid "Seat updated successfully"
 msgstr "座席已成功更新"
@@ -122,7 +122,7 @@ msgid "%d seats updated successfully"
 msgstr "%d 个座位已成功更新"
 
 #: includes/seating/class-seating-admin.php:660
-#: includes/seating/class-seating-admin.php:1041
+#: includes/seating/class-seating-admin.php:1066
 #: sasoEventtickets_Seating.php:615 js/seating_admin.js:28
 msgid "Seat deleted successfully"
 msgstr "座席已成功删除"
@@ -132,59 +132,59 @@ msgstr "座席已成功删除"
 msgid "%d seats deleted successfully"
 msgstr "%d 个座位已成功删除"
 
-#: includes/seating/class-seating-admin.php:796
-#: includes/seating/class-seating-admin.php:1052
+#: includes/seating/class-seating-admin.php:815
+#: includes/seating/class-seating-admin.php:1077
 msgid "Draft saved successfully"
 msgstr "草稿已成功保存"
 
-#: includes/seating/class-seating-admin.php:866
-#: includes/seating/class-seating-admin.php:1054
+#: includes/seating/class-seating-admin.php:891
+#: includes/seating/class-seating-admin.php:1079
 msgid "Seating plan published successfully"
 msgstr "座位安排已成功发布"
 
-#: includes/seating/class-seating-admin.php:889
-#: includes/seating/class-seating-admin.php:1053
+#: includes/seating/class-seating-admin.php:914
+#: includes/seating/class-seating-admin.php:1078
 msgid "Draft changes discarded"
 msgstr "草稿更改已放弃"
 
-#: includes/seating/class-seating-admin.php:1033 js/seating_admin.js:19
+#: includes/seating/class-seating-admin.php:1058 js/seating_admin.js:19
 msgid "Are you sure you want to delete this?"
 msgstr "您确定要删除此项吗？"
 
-#: includes/seating/class-seating-admin.php:1034 js/seating_admin.js:20
+#: includes/seating/class-seating-admin.php:1059 js/seating_admin.js:20
 msgid "This plan has seats. Delete plan and all seats?"
 msgstr "此计划有座位。删除计划和所有座位？"
 
-#: includes/seating/class-seating-admin.php:1039 js/seating_admin.js:26
+#: includes/seating/class-seating-admin.php:1064 js/seating_admin.js:26
 msgid "Seats created successfully"
 msgstr "座位已成功创建"
 
-#: includes/seating/class-seating-admin.php:1042 js/seating_admin.js:29
+#: includes/seating/class-seating-admin.php:1067 js/seating_admin.js:29
 msgid "Limit reached. Upgrade to Premium for unlimited access."
 msgstr "已达到限制。升级到高级版以获得无限制访问。"
 
-#: includes/seating/class-seating-admin.php:1043 js/seating_admin.js:30
+#: includes/seating/class-seating-admin.php:1068 js/seating_admin.js:30
 msgid "An error occurred. Please try again."
 msgstr "发生错误。请重试。"
 
-#: includes/seating/class-seating-admin.php:1044 js/seating_admin.js:31
+#: includes/seating/class-seating-admin.php:1069 js/seating_admin.js:31
 #: js/seating_frontend.js:1160 js/seating_frontend.js:1251
 msgid "Loading..."
 msgstr "加载中..."
 
-#: includes/seating/class-seating-admin.php:1045 js/seating_admin.js:32
+#: includes/seating/class-seating-admin.php:1070 js/seating_admin.js:32
 msgid "No seating plans found. Create your first plan!"
 msgstr "找不到座位安排。创建您的第一个计划！"
 
-#: includes/seating/class-seating-admin.php:1046 js/seating_admin.js:33
+#: includes/seating/class-seating-admin.php:1071 js/seating_admin.js:33
 msgid "No seats in this plan. Add seats below."
 msgstr "此计划中没有座位。在下面添加座位。"
 
-#: includes/seating/class-seating-admin.php:1047 js/seating_admin.js:34
+#: includes/seating/class-seating-admin.php:1072 js/seating_admin.js:34
 msgid "Simple Layout (Dropdown)"
 msgstr "简单布局 (下拉列表)"
 
-#: includes/seating/class-seating-admin.php:1048 js/seating_admin.js:35
+#: includes/seating/class-seating-admin.php:1073 js/seating_admin.js:35
 msgid ""
 "Customers will see a dropdown menu to select their seat. Available seats are "
 "shown in a list sorted by identifier. This is ideal for smaller venues or "
@@ -193,11 +193,11 @@ msgstr ""
 "客户将看到一个下拉菜单来选择他们的座位。可用座位以按标识符排序的列表显示。这"
 "对于较小的场所或不需要视觉座位选择的场合是理想的。"
 
-#: includes/seating/class-seating-admin.php:1049 js/seating_admin.js:36
+#: includes/seating/class-seating-admin.php:1074 js/seating_admin.js:36
 msgid "Visual Layout (Seat Map)"
 msgstr "视觉布局 (座位地图)"
 
-#: includes/seating/class-seating-admin.php:1050 js/seating_admin.js:37
+#: includes/seating/class-seating-admin.php:1075 js/seating_admin.js:37
 msgid ""
 "Customers will see an interactive seat map where they can click on available "
 "seats. Occupied seats are shown in a different color. This provides a visual "
@@ -206,44 +206,44 @@ msgstr ""
 "客户将看到一个交互式座位地图，其中他们可以点击可用座位。已占用的座位以不同的"
 "颜色显示。这提供了会场的视觉概览。(高级功能)"
 
-#: includes/seating/class-seating-admin.php:1055
+#: includes/seating/class-seating-admin.php:1080
 msgid "You have unpublished changes"
 msgstr "您有未发布的更改"
 
-#: includes/seating/class-seating-admin.php:1056
+#: includes/seating/class-seating-admin.php:1081
 msgid "Last published:"
 msgstr "最后发布:"
 
-#: includes/seating/class-seating-admin.php:1057
+#: includes/seating/class-seating-admin.php:1082
 msgid "Never published"
 msgstr "从未发布"
 
-#: includes/seating/class-seating-admin.php:1058
+#: includes/seating/class-seating-admin.php:1083
 msgid "Discard all unsaved changes and revert to published version?"
 msgstr "放弃所有未保存的更改并还原到已发布的版本？"
 
-#: includes/seating/class-seating-admin.php:1059
+#: includes/seating/class-seating-admin.php:1084
 msgid "Publish changes? This will make them visible to customers."
 msgstr "发布更改？这将使他们对客户可见。"
 
-#: includes/seating/class-seating-admin.php:1060
+#: includes/seating/class-seating-admin.php:1085
 msgid ""
 "Cannot publish: The following seats have sold tickets and cannot be deleted:"
 msgstr "无法发布: 以下座位有已销售票券，无法删除:"
 
-#: includes/seating/class-seating-admin.php:1061
+#: includes/seating/class-seating-admin.php:1086
 msgid ""
 "Warning: This seating plan has active ticket sales. Changes will only be "
 "visible after publishing."
 msgstr "警告: 此座位安排有活跃的票券销售。更改仅在发布后可见。"
 
-#: includes/seating/class-seating-admin.php:1062
+#: includes/seating/class-seating-admin.php:1087
 #, php-format
 msgid "%d tickets sold"
 msgstr "%d 张票券已售出"
 
 #: includes/seating/class-seating-frontend.php:415
-#: includes/woocommerce/class-frontend.php:308
+#: includes/woocommerce/class-frontend.php:347
 #: sasoEventtickets_AdminSettings.php:271 sasoEventtickets_Frontend.php:26
 #: sasoEventtickets_Seating.php:391
 #, php-format
@@ -317,11 +317,11 @@ msgstr "座位安排已成功发布。"
 msgid "Unknown"
 msgstr "未知"
 
-#: includes/seating/class-seating-plan.php:982
+#: includes/seating/class-seating-plan.php:1043
 msgid "Source seating plan not found."
 msgstr "找不到源座位安排。"
 
-#: includes/seating/class-seating-plan.php:1004
+#: includes/seating/class-seating-plan.php:1065
 msgid "Failed to create cloned seating plan."
 msgstr "无法创建克隆的座位安排。"
 
@@ -376,59 +376,59 @@ msgstr ""
 msgid "Open your congress page"
 msgstr "打开您的大会页面"
 
-#: includes/woocommerce/class-frontend.php:763
+#: includes/woocommerce/class-frontend.php:806
 msgid ""
 "Date locked: Seats are selected for this date. Remove item to change date."
 msgstr "日期已锁定: 已为此日期选择座位。删除项目以更改日期。"
 
-#: includes/woocommerce/class-frontend.php:790
+#: includes/woocommerce/class-frontend.php:833
 msgid "Note:"
 msgstr "注:"
 
-#: includes/woocommerce/class-frontend.php:791
+#: includes/woocommerce/class-frontend.php:834
 msgid "Please select your seats on the product page before checkout."
 msgstr "请在结账前在产品页面上选择您的座位。"
 
-#: includes/woocommerce/class-frontend.php:822
+#: includes/woocommerce/class-frontend.php:865
 msgid "Seats:"
 msgstr "座位:"
 
-#: includes/woocommerce/class-frontend.php:823
+#: includes/woocommerce/class-frontend.php:866
 msgid "Seat:"
 msgstr "座位:"
 
 #. translators: %s: name of product
-#: includes/woocommerce/class-frontend.php:1023
+#: includes/woocommerce/class-frontend.php:1066
 #, php-format
 msgid "The product \"%s\" requires a restriction code for checkout."
 msgstr "产品「%s」需要限制码才能结账。"
 
 #. translators: 1: restriction code number 2: name of product
-#: includes/woocommerce/class-frontend.php:1036
+#: includes/woocommerce/class-frontend.php:1079
 #, php-format
 msgid "The restriction code \"%1$s\" for product \"%2$s\" is already used."
 msgstr "产品「%2$s」的限制码「%1$s」已被使用。"
 
 #. translators: 1: restriction code number 2: name of product
-#: includes/woocommerce/class-frontend.php:1050
+#: includes/woocommerce/class-frontend.php:1093
 #, php-format
 msgid "The restriction code \"%1$s\" for product \"%2$s\" is not valid."
 msgstr "产品「%2$s」的限制码「%1$s」无效。"
 
 #. translators: %s: product name
-#: includes/woocommerce/class-frontend.php:1258
+#: includes/woocommerce/class-frontend.php:1301
 #, php-format
 msgid "Online sales for \"%s\" have closed."
 msgstr ""
 
 #. translators: %s: product name
-#: includes/woocommerce/class-frontend.php:1307
+#: includes/woocommerce/class-frontend.php:1350
 #, php-format
 msgid "Online sales for \"%s\" have closed, so it was removed from your cart."
 msgstr ""
 
 #. translators: 1: product name 2: seat labels
-#: includes/woocommerce/class-frontend.php:1512
+#: includes/woocommerce/class-frontend.php:1555
 #, php-format
 msgid ""
 "\"%1$s\" was removed from your cart because the seat reservation expired: "
@@ -436,44 +436,52 @@ msgid ""
 msgstr "\"%1$s\" 已从您的购物车中移除，因为座位预订已过期：%2$s"
 
 #. translators: 1: product name 2: seat labels
-#: includes/woocommerce/class-frontend.php:1523
+#: includes/woocommerce/class-frontend.php:1566
 #, php-format
 msgid ""
 "The seat reservation for \"%1$s\" has expired: %2$s. Please select your "
 "seats again."
 msgstr "\"%1$s\" 的座位预订已过期：%2$s。请重新选择您的座位。"
 
-#: includes/woocommerce/class-frontend.php:1820
+#. translators: 1: product name
+#: includes/woocommerce/class-frontend.php:1664
+#, php-format
+msgid ""
+"\"%1$s\" requires a seat selection. Please go back to the product page and "
+"select your seat."
+msgstr "\"%1$s\"需要选择座位。请返回商品页面并选择您的座位。"
+
+#: includes/woocommerce/class-frontend.php:1930
 msgid "Security check failed. Please reload page."
 msgstr "安全检查失败。请重新加载页面。"
 
-#: includes/woocommerce/class-frontend.php:1889
+#: includes/woocommerce/class-frontend.php:2005
 #, php-format
 msgid "Please select %d seat(s) before adding to cart."
 msgstr "添加到购物车前请选择 %d 个座位。"
 
-#: includes/woocommerce/class-frontend.php:1901
+#: includes/woocommerce/class-frontend.php:2017
 #, php-format
 msgid "Please select exactly %d seat(s). You have selected %d."
 msgstr "请选择确切的 %d 个座位。您已选择 %d 个。"
 
-#: includes/woocommerce/class-frontend.php:1928
+#: includes/woocommerce/class-frontend.php:2044
 msgid "Invalid seat selection. Please reload the page and try again."
 msgstr "无效的座位选择。请重新加载页面并重试。"
 
-#: includes/woocommerce/class-frontend.php:1942
-#: includes/woocommerce/class-frontend.php:1964
+#: includes/woocommerce/class-frontend.php:2058
+#: includes/woocommerce/class-frontend.php:2080
 #, php-format
 msgid "Seat \"%s\" is no longer available. Please choose another seat."
 msgstr "座位 \"%s\" 已不可用。请选择其他座位。"
 
-#: includes/woocommerce/class-frontend.php:1965
+#: includes/woocommerce/class-frontend.php:2081
 #, php-format
 msgid "Invalid seat selection: %s. Please try again."
 msgstr "无效的座位选择: %s。请重试。"
 
 #. translators: 1: product name 2: seat count
-#: includes/woocommerce/class-frontend.php:2329
+#: includes/woocommerce/class-frontend.php:2445
 #, php-format
 msgid ""
 "Cannot change quantity for \"%1$s\": %2$d seat(s) are selected. Remove the "
@@ -483,7 +491,7 @@ msgstr ""
 "量。"
 
 #. translators: 1: product name 2: seat count
-#: includes/woocommerce/class-frontend.php:2345
+#: includes/woocommerce/class-frontend.php:2461
 #, php-format
 msgid ""
 "Cannot increase quantity for \"%1$s\" beyond %2$d: you have selected %2$d "
@@ -530,7 +538,7 @@ msgstr "每张票券的天数"
 #: includes/woocommerce/class-order.php:864
 #: includes/woocommerce/class-order.php:870
 #: includes/woocommerce/class-order.php:1115 sasoEventtickets_Options.php:657
-#: sasoEventtickets_Ticket.php:1073 backend.js:6369 js/seating_admin.js:1481
+#: sasoEventtickets_Ticket.php:1073 backend.js:6395 js/seating_admin.js:1481
 msgid "Seat"
 msgstr "座位"
 
@@ -581,7 +589,7 @@ msgid "Event Tickets"
 msgstr "活动门票"
 
 #: includes/woocommerce/class-product.php:81 woocommerce-hooks.php:229
-#: woocommerce-hooks.php:238 backend.js:4819 backend.js:5599 backend.js:5600
+#: woocommerce-hooks.php:238 backend.js:4845 backend.js:5625 backend.js:5626
 msgctxt "title"
 msgid "Event Tickets"
 msgstr "活动门票"
@@ -1046,7 +1054,7 @@ msgstr "为每张票请求姓名"
 #: includes/woocommerce/class-product.php:876
 #: includes/woocommerce/class-product.php:894
 #: includes/woocommerce/class-product.php:908
-#: includes/woocommerce/class-product.php:942 backend.js:1328
+#: includes/woocommerce/class-product.php:942 backend.js:1334
 msgid "Yes"
 msgstr "是"
 
@@ -1148,7 +1156,7 @@ msgstr "无效的 product_id"
 msgid "invalid date format — expected Y-m-d"
 msgstr "无效的日期格式 — 预期为 Y-m-d"
 
-#: index.php:142 backend.js:5891
+#: index.php:142 backend.js:5917
 msgid "is active"
 msgstr "已激活"
 
@@ -1672,7 +1680,7 @@ msgid ""
 "takes to sell tickets."
 msgstr ""
 
-#: sasoEventtickets_AdminSettings.php:1085 backend.js:4625
+#: sasoEventtickets_AdminSettings.php:1085 backend.js:4631
 msgid "Open products"
 msgstr ""
 
@@ -1848,85 +1856,85 @@ msgstr "无法创建授权令牌。授权令牌代码已存在。"
 
 #: sasoEventtickets_Core.php:246 sasoEventtickets_Core.php:256
 #: sasoEventtickets_Core.php:266 sasoEventtickets_Core.php:276
-#: sasoEventtickets_Core.php:302
+#: sasoEventtickets_Core.php:310
 msgid "USERID DO NOT EXISTS"
 msgstr "用户ID不存在"
 
-#: sasoEventtickets_Core.php:293
+#: sasoEventtickets_Core.php:301
 msgid "AUTHTOKEN DELETED"
 msgstr "authtoken 已删除"
 
-#: sasoEventtickets_Core.php:357
+#: sasoEventtickets_Core.php:365
 msgid "Value given by the user during the code registration."
 msgstr "用户在代码注册过程中输入的值。"
 
-#: sasoEventtickets_Core.php:358
+#: sasoEventtickets_Core.php:366
 msgid "IP address of the user, register to a code."
 msgstr "注册代码的用户的IP地址。"
 
-#: sasoEventtickets_Core.php:359
+#: sasoEventtickets_Core.php:367
 msgid "User id of the registered user to a code. Default will be 0."
 msgstr "注册用户的用户ID。默认值为0。"
 
-#: sasoEventtickets_Core.php:360
+#: sasoEventtickets_Core.php:368
 msgid "IP addres of the user that used the code."
 msgstr "使用该代码的用户的IP地址。"
 
-#: sasoEventtickets_Core.php:361
+#: sasoEventtickets_Core.php:369
 msgid "Amount of how many times the code was validated successfully."
 msgstr "代码被成功验证的次数。"
 
-#: sasoEventtickets_Core.php:362
+#: sasoEventtickets_Core.php:370
 msgid "WooCommerce order id assigned to the code."
 msgstr "分配给代码的 WooCommerce 订单号。"
 
-#: sasoEventtickets_Core.php:363
+#: sasoEventtickets_Core.php:371
 msgid "WooCommerce product id assigned to the code."
 msgstr "分配给代码的 WooCommerce 产品ID。"
 
-#: sasoEventtickets_Core.php:364
+#: sasoEventtickets_Core.php:372
 msgid "Creation date of the WooCommerce sales date."
 msgstr "WooCommerce 销售日期。"
 
-#: sasoEventtickets_Core.php:365
+#: sasoEventtickets_Core.php:373
 msgid "Creation date of the WooCommerce sales date timezone."
 msgstr "WooCommerce 销售日期时区的创建日期。"
 
-#: sasoEventtickets_Core.php:366
+#: sasoEventtickets_Core.php:374
 msgid "User id of the WooCommerce sales."
 msgstr "WooCommerce 销售的用户ID。"
 
-#: sasoEventtickets_Core.php:367
+#: sasoEventtickets_Core.php:375
 msgid ""
 "WooCommerce order id, that was purchases using this code as an allowance to "
 "purchase a restricted product."
 msgstr "使用此代码作为购买限制产品许可的 WooCommerce 订单号。"
 
-#: sasoEventtickets_Core.php:368
+#: sasoEventtickets_Core.php:376
 msgid "WooCommerce product id that was restricted with this code."
 msgstr "使用此代码进行限制的 WooCommerce 产品ID。"
 
-#: sasoEventtickets_Core.php:369
+#: sasoEventtickets_Core.php:377
 msgid "Creation date of the WooCommerce purchase using the allowance code."
 msgstr "使用许可代码的 WooCommerce 购买创建日期。"
 
-#: sasoEventtickets_Core.php:370
+#: sasoEventtickets_Core.php:378
 msgid ""
 "Creation date timezone of the WooCommerce purchase using the allowance code."
 msgstr "使用允许代码的 WooCommerce 购买的创建日期时区。"
 
-#: sasoEventtickets_Core.php:371
+#: sasoEventtickets_Core.php:379
 msgid "The public ticket number"
 msgstr "公开票号"
 
-#: sasoEventtickets_Core.php:1401
+#: sasoEventtickets_Core.php:1409
 msgid ""
 "No writable temporary directory is available for the ticket PDF. Please "
 "define WP_TEMP_DIR in wp-config.php or ask your host to make the temporary "
 "directory writable."
 msgstr ""
 
-#: sasoEventtickets_Core.php:1419
+#: sasoEventtickets_Core.php:1427
 msgid "PDF file was not created and is skipped in the merge."
 msgstr ""
 
@@ -1945,11 +1953,11 @@ msgstr ""
 msgid "All settings (no filter)"
 msgstr ""
 
-#: sasoEventtickets_Options.php:204 backend.js:4449
+#: sasoEventtickets_Options.php:204 backend.js:4455
 msgid "Event tickets"
 msgstr "活动门票"
 
-#: sasoEventtickets_Options.php:205 backend.js:4450
+#: sasoEventtickets_Options.php:205 backend.js:4456
 msgid "Day passes"
 msgstr "日票"
 
@@ -3650,13 +3658,13 @@ msgstr ""
 "vollstart.com/posts/events/documentation/option-wcticketdesignertemplate/\" "
 "target=\"_blank\">选项文档</a>"
 
-#: sasoEventtickets_Options.php:635 backend.js:1869
+#: sasoEventtickets_Options.php:635 backend.js:1875
 msgid ""
 "Fields that another plugin collects at checkout can be printed on the "
 "ticket. Use them in the ticket template like this:"
 msgstr "其他插件在结账时收集的字段可以打印在门票上。在门票模板中这样使用："
 
-#: sasoEventtickets_Options.php:635 backend.js:1868
+#: sasoEventtickets_Options.php:635 backend.js:1874
 msgctxt "title"
 msgid "Checkout fields of other plugins"
 msgstr "其他插件的结账字段"
@@ -3753,7 +3761,7 @@ msgstr "门票标题"
 msgid "This is the title of the ticket"
 msgstr "这是门票的标题"
 
-#: sasoEventtickets_Options.php:654 backend.js:3229 wc_backend.js:384
+#: sasoEventtickets_Options.php:654 backend.js:3235 wc_backend.js:384
 #: wc_backend.js:581
 msgid "Ticket"
 msgstr "门票"
@@ -5183,7 +5191,7 @@ msgstr ""
 "输入您的高级版许可证密钥。将高级版插件更新到1.6.0+版本后，所有高级功能将恢"
 "复。"
 
-#: sasoEventtickets_Options.php:964 backend.js:389
+#: sasoEventtickets_Options.php:964 backend.js:426
 msgid "Premium License Key"
 msgstr "高级版许可证密钥"
 
@@ -5227,7 +5235,7 @@ msgid "#232 original product of the order and ticket not found!"
 msgstr "#232 订单的原始产品和门票未找到！"
 
 #: sasoEventtickets_Ticket.php:1702 sasoEventtickets_Ticket.php:1724
-#: sasoEventtickets_Ticket.php:3673 ticket_scanner.js:1673
+#: sasoEventtickets_Ticket.php:3723 ticket_scanner.js:1673
 msgid "Ticket Info"
 msgstr "门票信息"
 
@@ -5299,73 +5307,73 @@ msgstr "您没有权限下载票务 PDF。请登录您的账户。"
 msgid "Order item not found for the PDF ticket"
 msgstr "未找到PDF门票的订单项目"
 
-#: sasoEventtickets_Ticket.php:2602
+#: sasoEventtickets_Ticket.php:2628
 msgid "Product not found for the PDF ticket"
 msgstr "未找到 PDF 门票的产品"
 
-#: sasoEventtickets_Ticket.php:2858
+#: sasoEventtickets_Ticket.php:2884
 msgid "The ticket PDF could not be written to the temporary directory."
 msgstr ""
 
-#: sasoEventtickets_Ticket.php:2906
+#: sasoEventtickets_Ticket.php:2932
 msgid "Product ID not valid for ticket date string"
 msgstr "产品 ID 对于票务日期字符串无效"
 
-#: sasoEventtickets_Ticket.php:3394 sasoEventtickets_Ticket.php:3409
-#: sasoEventtickets_Ticket.php:3424
+#: sasoEventtickets_Ticket.php:3444 sasoEventtickets_Ticket.php:3459
+#: sasoEventtickets_Ticket.php:3474
 msgid "Can not find the product for this ticket."
 msgstr "找不到此门票的产品。"
 
-#: sasoEventtickets_Ticket.php:3476 sasoEventtickets_Ticket.php:3482
+#: sasoEventtickets_Ticket.php:3526 sasoEventtickets_Ticket.php:3532
 msgid "Too early. Ticket cannot be redeemed yet."
 msgstr "太早了。门票尚不能兑换。"
 
-#: sasoEventtickets_Ticket.php:3491 sasoEventtickets_Ticket.php:3501
+#: sasoEventtickets_Ticket.php:3541 sasoEventtickets_Ticket.php:3551
 msgid "Too late, event finished. Ticket cannot be redeemed anymore."
 msgstr "太迟了，活动已结束。门票无法再兑换。"
 
-#: sasoEventtickets_Ticket.php:3495 sasoEventtickets_Ticket.php:3506
+#: sasoEventtickets_Ticket.php:3545 sasoEventtickets_Ticket.php:3556
 msgid "Too late, event started. Ticket cannot be redeemed anymore."
 msgstr "太迟了，活动已开始。门票无法再兑换。"
 
-#: sasoEventtickets_Ticket.php:3551
+#: sasoEventtickets_Ticket.php:3601
 msgid ""
 "Order is not paid. And the option is active to allow only paid ticket to be "
 "redeemed is active."
 msgstr "订单尚未付款。已启用仅允许核销已付款门票的选项。"
 
-#: sasoEventtickets_Ticket.php:3580
+#: sasoEventtickets_Ticket.php:3630
 msgid "Ticket number to redeem is missing"
 msgstr "缺少要核销的门票编号"
 
-#: sasoEventtickets_Ticket.php:3609
+#: sasoEventtickets_Ticket.php:3659
 msgid "Redeem operation not yet possible."
 msgstr "兑换操作尚不可执行。"
 
-#: sasoEventtickets_Ticket.php:3615
+#: sasoEventtickets_Ticket.php:3665
 msgid "Redeem operation not possible. Too late."
 msgstr "兑换操作不可执行。太迟了。"
 
-#: sasoEventtickets_Ticket.php:3644
+#: sasoEventtickets_Ticket.php:3694
 msgid "Order not marked as paid. Ticket not redeemed."
 msgstr "订单未标记为已付款。门票未核销。"
 
-#: sasoEventtickets_Ticket.php:3705
+#: sasoEventtickets_Ticket.php:3755
 msgid "This view has been deactivated."
 msgstr ""
 
-#: sasoEventtickets_Ticket.php:3806 sasoEventtickets_Ticket.php:3979
+#: sasoEventtickets_Ticket.php:3856 sasoEventtickets_Ticket.php:4029
 msgid "No WooCommerce Support Found"
 msgstr "未找到WooCommerce支持"
 
-#: sasoEventtickets_Ticket.php:3841 sasoEventtickets_Ticket.php:3843
-#: sasoEventtickets_Ticket.php:3906 sasoEventtickets_Ticket.php:3908
-#: sasoEventtickets_Ticket.php:3963 js/congress-admin.js:33
+#: sasoEventtickets_Ticket.php:3891 sasoEventtickets_Ticket.php:3893
+#: sasoEventtickets_Ticket.php:3956 sasoEventtickets_Ticket.php:3958
+#: sasoEventtickets_Ticket.php:4013 js/congress-admin.js:33
 #: js/congress-admin.js:34 ticket_scanner.js:1034
 msgid "Error"
 msgstr "错误"
 
-#: sasoEventtickets_Ticket.php:3980
+#: sasoEventtickets_Ticket.php:4030
 msgid "Please contact us for a solution."
 msgstr "请联系我们寻求解决方案。"
 
@@ -5375,7 +5383,7 @@ msgstr "请联系我们寻求解决方案。"
 msgid "function \"%s\" in wc backend not implemented"
 msgstr "WC后台中的函数「%s」未实现"
 
-#: backend.js:273 backend.js:2779
+#: backend.js:273 backend.js:2785
 msgid "Preview Test Template Code as PDF"
 msgstr "将测试模板代码预览为 PDF"
 
@@ -5383,167 +5391,167 @@ msgstr "将测试模板代码预览为 PDF"
 msgid "saving..."
 msgstr "保存中..."
 
-#: backend.js:382
-msgid "Thank you for using the Premium version!"
-msgstr "感谢您使用高级版！"
-
-#: backend.js:383
-msgid "Please enter your license key to activate updates and premium features."
-msgstr "请输入您的许可证密钥以激活更新和高级功能。"
-
-#: backend.js:396 backend.js:457 js/seating_admin.js:47
-msgid "Activate"
-msgstr "启用"
-
-#: backend.js:402
-msgid "Please enter a license key."
-msgstr "请输入许可证密钥。"
-
-#: backend.js:407 backend.js:1391 backend.js:2676
-msgid "Checking..."
-msgstr "检查中..."
-
-#: backend.js:412
-msgid "Validating license — please wait…"
-msgstr "正在验证许可证 — 请稍候…"
-
-#: backend.js:418
-msgid "License key saved. Reloading…"
-msgstr "许可证密钥已保存。正在重新加载…"
-
-#: backend.js:433
+#: backend.js:335
 msgid "Checking license..."
 msgstr "正在检查许可证..."
 
-#: backend.js:436 backend.js:1297 backend.js:1300 backend.js:1303
-#: backend.js:3239 js/congress-admin.js:91 js/seating_admin.js:165
+#: backend.js:338 backend.js:1303 backend.js:1306 backend.js:1309
+#: backend.js:3245 js/congress-admin.js:91 js/seating_admin.js:165
 #: js/seating_admin.js:471 js/seating_admin.js:805 js/seating_admin.js:1453
 #: js/seating_admin.js:1503 wc_backend.js:393 wc_backend.js:606
 msgid "Active"
 msgstr "有效"
 
-#: backend.js:440 backend.js:446
+#: backend.js:342 backend.js:348
 msgid "failures"
 msgstr "失败"
 
-#: backend.js:443 backend.js:1297 js/seating_admin.js:166
+#: backend.js:345 backend.js:1303 js/seating_admin.js:166
 #: js/seating_admin.js:471 js/seating_admin.js:806
 msgid "Inactive"
 msgstr "无效"
 
-#: backend.js:449
+#: backend.js:351
 msgid "Check failed"
 msgstr "检查失败"
 
-#: backend.js:459
+#: backend.js:419
+msgid "Thank you for using the Premium version!"
+msgstr "感谢您使用高级版！"
+
+#: backend.js:420
+msgid "Please enter your license key to activate updates and premium features."
+msgstr "请输入您的许可证密钥以激活更新和高级功能。"
+
+#: backend.js:433 backend.js:463 js/seating_admin.js:47
+msgid "Activate"
+msgstr "启用"
+
+#: backend.js:439
+msgid "Please enter a license key."
+msgstr "请输入许可证密钥。"
+
+#: backend.js:444 backend.js:1397 backend.js:2682
+msgid "Checking..."
+msgstr "检查中..."
+
+#: backend.js:449
+msgid "Validating license — please wait…"
+msgstr "正在验证许可证 — 请稍候…"
+
+#: backend.js:455
+msgid "License key saved. Reloading…"
+msgstr "许可证密钥已保存。正在重新加载…"
+
+#: backend.js:465
 msgid "Error:"
 msgstr "错误："
 
-#: backend.js:464 backend.js:4624
+#: backend.js:470 backend.js:4630
 msgid "Later"
 msgstr "稍后"
 
-#: backend.js:677 ticket_events.js:220 ticket_scanner.js:757
+#: backend.js:683 ticket_events.js:220 ticket_scanner.js:757
 msgctxt "cal"
 msgid "Sun"
 msgstr "日"
 
-#: backend.js:678 ticket_events.js:221 ticket_scanner.js:758
+#: backend.js:684 ticket_events.js:221 ticket_scanner.js:758
 msgctxt "cal"
 msgid "Mon"
 msgstr "一"
 
-#: backend.js:679 ticket_events.js:222 ticket_scanner.js:759
+#: backend.js:685 ticket_events.js:222 ticket_scanner.js:759
 msgctxt "cal"
 msgid "Tue"
 msgstr "二"
 
-#: backend.js:680 ticket_events.js:223 ticket_scanner.js:760
+#: backend.js:686 ticket_events.js:223 ticket_scanner.js:760
 msgctxt "cal"
 msgid "Wed"
 msgstr "三"
 
-#: backend.js:681 ticket_events.js:224 ticket_scanner.js:761
+#: backend.js:687 ticket_events.js:224 ticket_scanner.js:761
 msgctxt "cal"
 msgid "Thu"
 msgstr "四"
 
-#: backend.js:682 ticket_events.js:225 ticket_scanner.js:762
+#: backend.js:688 ticket_events.js:225 ticket_scanner.js:762
 msgctxt "cal"
 msgid "Fri"
 msgstr "五"
 
-#: backend.js:683 ticket_events.js:226 ticket_scanner.js:763
+#: backend.js:689 ticket_events.js:226 ticket_scanner.js:763
 msgctxt "cal"
 msgid "Sat"
 msgstr "六"
 
-#: backend.js:686 ticket_events.js:229 ticket_scanner.js:766
+#: backend.js:692 ticket_events.js:229 ticket_scanner.js:766
 msgctxt "cal"
 msgid "Jan"
 msgstr "1月"
 
-#: backend.js:687 ticket_events.js:230 ticket_scanner.js:767
+#: backend.js:693 ticket_events.js:230 ticket_scanner.js:767
 msgctxt "cal"
 msgid "Feb"
 msgstr "2月"
 
-#: backend.js:688 ticket_events.js:231 ticket_scanner.js:768
+#: backend.js:694 ticket_events.js:231 ticket_scanner.js:768
 msgctxt "cal"
 msgid "Mar"
 msgstr "3月"
 
-#: backend.js:689 ticket_events.js:232 ticket_scanner.js:769
+#: backend.js:695 ticket_events.js:232 ticket_scanner.js:769
 msgctxt "cal"
 msgid "Apr"
 msgstr "4月"
 
-#: backend.js:690 ticket_events.js:233 ticket_scanner.js:770
+#: backend.js:696 ticket_events.js:233 ticket_scanner.js:770
 msgctxt "cal"
 msgid "May"
 msgstr "5月"
 
-#: backend.js:691 ticket_events.js:234 ticket_scanner.js:771
+#: backend.js:697 ticket_events.js:234 ticket_scanner.js:771
 msgctxt "cal"
 msgid "Jun"
 msgstr "6月"
 
-#: backend.js:692 ticket_events.js:235 ticket_scanner.js:772
+#: backend.js:698 ticket_events.js:235 ticket_scanner.js:772
 msgctxt "cal"
 msgid "Jul"
 msgstr "7月"
 
-#: backend.js:693 ticket_events.js:236 ticket_scanner.js:773
+#: backend.js:699 ticket_events.js:236 ticket_scanner.js:773
 msgctxt "cal"
 msgid "Aug"
 msgstr "8月"
 
-#: backend.js:694 ticket_events.js:237 ticket_scanner.js:774
+#: backend.js:700 ticket_events.js:237 ticket_scanner.js:774
 msgctxt "cal"
 msgid "Sep"
 msgstr "9月"
 
-#: backend.js:695 ticket_events.js:238 ticket_scanner.js:775
+#: backend.js:701 ticket_events.js:238 ticket_scanner.js:775
 msgctxt "cal"
 msgid "Oct"
 msgstr "10月"
 
-#: backend.js:696 ticket_events.js:239 ticket_scanner.js:776
+#: backend.js:702 ticket_events.js:239 ticket_scanner.js:776
 msgctxt "cal"
 msgid "Nov"
 msgstr "11月"
 
-#: backend.js:697 ticket_events.js:240 ticket_scanner.js:777
+#: backend.js:703 ticket_events.js:240 ticket_scanner.js:777
 msgctxt "cal"
 msgid "Dec"
 msgstr "12月"
 
-#: backend.js:897 backend.js:3630
+#: backend.js:903 backend.js:3636
 msgctxt "label"
 msgid "Auth Token"
 msgstr "授权令牌"
 
-#: backend.js:898
+#: backend.js:904
 msgid ""
 "You can add auth tokens, that can be used to access your ticket scanner. "
 "Create an auth token and pass the QR code to the user or let the user scan "
@@ -5554,7 +5562,7 @@ msgstr ""
 "用户，或让用户从您的管理区域扫描。使用的身份验证令牌将绕过选项中为票券扫描器"
 "设置的所有访问限制。"
 
-#: backend.js:899
+#: backend.js:905
 msgid ""
 "The user scan the QR code for the auth token with the ticket scanner. Just "
 "like a normal ticket. The system will store the auth token to the browser."
@@ -5562,49 +5570,49 @@ msgstr ""
 "用户使用票务扫描器扫描授权令牌的 QR 码。就像普通门票一样。系统将把授权令牌存"
 "储到浏览器中。"
 
-#: backend.js:906 backend.js:5537 backend.js:5587
+#: backend.js:912 backend.js:5563 backend.js:5613
 msgctxt "label"
 msgid "Add"
 msgstr "添加"
 
-#: backend.js:916
+#: backend.js:922
 msgctxt "title"
 msgid "Edit Auth Token"
 msgstr "编辑授权令牌"
 
-#: backend.js:916
+#: backend.js:922
 msgctxt "title"
 msgid "Add Auth Token"
 msgstr "添加授权令牌"
 
-#: backend.js:922 backend.js:1619 backend.js:4987 backend.js:5008
-#: backend.js:5011 backend.js:5037 backend.js:5127 backend.js:5291
-#: backend.js:6017 ticket_events.js:261 ticket_scanner.js:798
+#: backend.js:928 backend.js:1625 backend.js:5013 backend.js:5034
+#: backend.js:5037 backend.js:5063 backend.js:5153 backend.js:5317
+#: backend.js:6043 ticket_events.js:261 ticket_scanner.js:798
 msgctxt "label"
 msgid "Ok"
 msgstr "Ok"
 
-#: backend.js:928 backend.js:5065 backend.js:5133 backend.js:5297
+#: backend.js:934 backend.js:5091 backend.js:5159 backend.js:5323
 msgctxt "label"
 msgid "Cancel"
 msgstr "取消"
 
-#: backend.js:935 backend.js:1014 backend.js:5140 backend.js:5369
+#: backend.js:941 backend.js:1020 backend.js:5166 backend.js:5395
 msgctxt "label"
 msgid "Name"
 msgstr "名称"
 
-#: backend.js:938
+#: backend.js:944
 msgctxt "label"
 msgid "Bound to product(s)"
 msgstr "绑定到产品"
 
-#: backend.js:938
+#: backend.js:944
 msgctxt "label"
 msgid "all products allowed to be redeemed"
 msgstr "所有产品均可兑换"
 
-#: backend.js:938
+#: backend.js:944
 msgid ""
 "You can add comma separated \",\" product ids. This will limit the user to "
 "redeem tickets only of products listed here. If left empty, all are allowed."
@@ -5612,17 +5620,17 @@ msgstr ""
 "您可以添加逗号分隔的 \",\" 产品ID。这将限制用户仅兑换此处列出的产品的票券。如"
 "果留空，则允许所有产品。"
 
-#: backend.js:939
+#: backend.js:945
 msgctxt "label"
 msgid "Bound to ticket list(s)"
 msgstr ""
 
-#: backend.js:939
+#: backend.js:945
 msgctxt "label"
 msgid "all ticket lists allowed to be redeemed"
 msgstr ""
 
-#: backend.js:939
+#: backend.js:945
 msgid ""
 "You can add comma separated \",\" ticket list ids. This will limit the user "
 "to redeem tickets of these lists only. If left empty, all are allowed. This "
@@ -5630,52 +5638,52 @@ msgid ""
 "those have no product."
 msgstr ""
 
-#: backend.js:942 backend.js:5143
+#: backend.js:948 backend.js:5169
 msgctxt "label"
 msgid "Description"
 msgstr "描述"
 
-#: backend.js:944
+#: backend.js:950
 msgctxt "label"
 msgid "is active"
 msgstr "有效"
 
-#: backend.js:1014 backend.js:1638 backend.js:5369 backend.js:5570
-#: backend.js:5891 ticket_scanner.js:1422
+#: backend.js:1020 backend.js:1644 backend.js:5395 backend.js:5596
+#: backend.js:5917 ticket_scanner.js:1422
 msgctxt "label"
 msgid "Created"
 msgstr "创建时间"
 
-#: backend.js:1014
+#: backend.js:1020
 msgctxt "label"
 msgid "Area"
 msgstr "区域"
 
-#: backend.js:1014 backend.js:5573
+#: backend.js:1020 backend.js:5599
 msgctxt "label"
 msgid "Status"
 msgstr "状态"
 
-#: backend.js:1047 backend.js:5396 backend.js:5730
+#: backend.js:1053 backend.js:5422 backend.js:5756
 msgctxt "label"
 msgid "Edit"
 msgstr "编辑"
 
-#: backend.js:1047 backend.js:5396 backend.js:5730 backend.js:6752
+#: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:6778
 msgctxt "label"
 msgid "Delete"
 msgstr "删除"
 
-#: backend.js:1059 backend.js:5424 backend.js:5831
+#: backend.js:1065 backend.js:5450 backend.js:5857
 msgctxt "title"
 msgid "Do you want to delete?"
 msgstr "您确定要删除吗？"
 
-#: backend.js:1059
+#: backend.js:1065
 msgid "Are you sure, you want to delete this auth token?"
 msgstr "您确定要删除此授权令牌吗？"
 
-#: backend.js:1059
+#: backend.js:1065
 msgid ""
 "The user with this auth token will not be able to use the server anymore. "
 "The user will need to add a new auth token from you.<p>The effect will be "
@@ -5684,148 +5692,148 @@ msgstr ""
 "拥有此授权令牌的用户将无法再使用服务器。用户需要从您这里获取新的授权令牌。<p>"
 "效果将立即生效。</p>"
 
-#: backend.js:1095
+#: backend.js:1101
 msgctxt "label"
 msgid "Bound to ticket list"
 msgstr ""
 
-#: backend.js:1095
+#: backend.js:1101
 msgctxt "label"
 msgid "all ticket lists"
 msgstr ""
 
-#: backend.js:1292 backend.js:1312 backend.js:3231 js/congress-admin.js:63
+#: backend.js:1298 backend.js:1318 backend.js:3237 js/congress-admin.js:63
 #: js/seating_admin.js:118 js/seating_admin.js:759 wc_backend.js:386
 #: wc_backend.js:583
 msgid "Status"
 msgstr "状态"
 
-#: backend.js:1292 backend.js:1309
+#: backend.js:1298 backend.js:1315
 msgid "Not checked yet"
 msgstr "尚未检查"
 
-#: backend.js:1306 js/congress-admin.js:91
+#: backend.js:1312 js/congress-admin.js:91
 msgid "Expired"
 msgstr "已过期"
 
-#: backend.js:1315
+#: backend.js:1321
 msgid "Last successful check"
 msgstr "上次成功检查"
 
-#: backend.js:1318
+#: backend.js:1324
 msgid "Expiration date"
 msgstr "到期日期"
 
-#: backend.js:1321
+#: backend.js:1327
 msgid "Subscription type"
 msgstr "订阅类型"
 
-#: backend.js:1325
+#: backend.js:1331
 msgid "Consecutive failures"
 msgstr "连续失败次数"
 
-#: backend.js:1328
+#: backend.js:1334
 msgid "Server flagged as not valid"
 msgstr "服务器被标记为无效"
 
-#: backend.js:1361
+#: backend.js:1367
 msgid "Visit the full plugin docs"
 msgstr "查看完整的插件文档"
 
-#: backend.js:1365
+#: backend.js:1371
 msgid "See latest updates"
 msgstr "查看最新更新"
 
-#: backend.js:1367
+#: backend.js:1373
 msgid "Help us with a 5-star review on WordPress.org"
 msgstr ""
 
-#: backend.js:1378
+#: backend.js:1384
 msgid "Support Context Information"
 msgstr "支持上下文信息"
 
-#: backend.js:1379
+#: backend.js:1385
 msgid ""
 "Please copy the following information, so that we can support you better and "
 "faster. Remove any critical information if needed."
 msgstr ""
 "请复制以下信息，以便我们更好更快地为您提供支持。如有需要，请移除敏感信息。"
 
-#: backend.js:1385
+#: backend.js:1391
 msgid "License Status"
 msgstr "许可证状态"
 
-#: backend.js:1389 backend.js:1393 backend.js:1396
+#: backend.js:1395 backend.js:1399 backend.js:1402
 msgid "Refresh Status"
 msgstr ""
 
-#: backend.js:1479
+#: backend.js:1485
 msgid "Copy to clipboard"
 msgstr "复制到剪贴板"
 
-#: backend.js:1530 backend.js:1531
+#: backend.js:1536 backend.js:1537
 msgid ""
 "(not set — \"Ticket detail URL path\" option is empty, compatibility mode "
 "off)"
 msgstr "(未设置 — “票券详情 URL 路径”选项为空，兼容模式已关闭)"
 
-#: backend.js:1537
+#: backend.js:1543
 msgid "congress page disabled in options"
 msgstr "大会页面已在选项中禁用"
 
-#: backend.js:1547 backend.js:2849 backend.js:5607
+#: backend.js:1553 backend.js:2855 backend.js:5633
 msgid "Refresh table"
 msgstr "刷新表格"
 
-#: backend.js:1550 js/seating_admin.js:1393
+#: backend.js:1556 js/seating_admin.js:1393
 msgid "Export CSV"
 msgstr "导出 CSV"
 
-#: backend.js:1554 backend.js:1555 backend.js:5527 backend.js:5528
-#: backend.js:5598 backend.js:5599
+#: backend.js:1560 backend.js:1561 backend.js:5553 backend.js:5554
+#: backend.js:5624 backend.js:5625
 msgid "Empty table"
 msgstr "清空表"
 
 #. translators: %s: name of ticket table
-#: backend.js:1555 backend.js:5599
+#: backend.js:1561 backend.js:5625
 msgid "Do you want to empty the \"%s\" table? All data will be lost."
 msgstr "您要清空表\"%s\"吗？所有数据将丢失。"
 
-#: backend.js:1555 backend.js:1556
+#: backend.js:1561 backend.js:1562
 msgctxt "title"
 msgid "Error Logs"
 msgstr "错误日志"
 
-#: backend.js:1556 backend.js:5529 backend.js:5600
+#: backend.js:1562 backend.js:5555 backend.js:5626
 msgid "Empty table - last chance"
 msgstr "清空表格 - 最后机会"
 
 #. translators: %s: name of ticket table
-#: backend.js:1556 backend.js:5600
+#: backend.js:1562 backend.js:5626
 msgid ""
 "Are you sure? You will not be able to restore the data, except you have a "
 "backup of your database. All data will be lost."
 msgstr "您确定吗？除非您有数据库备份，否则将无法恢复数据。所有数据将丢失。"
 
-#: backend.js:1569
+#: backend.js:1575
 msgctxt "label"
 msgid "Version"
 msgstr "版本"
 
-#: backend.js:1590
+#: backend.js:1596
 msgid "Show all options"
 msgstr "显示所有选项"
 
-#: backend.js:1611
+#: backend.js:1617
 msgctxt "label"
 msgid "Repair tables"
 msgstr "修复表"
 
-#: backend.js:1612
+#: backend.js:1618
 msgid "Repair database tables?"
 msgstr "修复数据库表？"
 
-#: backend.js:1612
+#: backend.js:1618
 msgid ""
 "Do you really want to try to repair your database table definitions for the "
 "plugin? It should be safe, but only needed in very rare cases. You might see "
@@ -5836,77 +5844,77 @@ msgstr ""
 "要。页面重新加载期间可能会出现错误消息——这是正常的。为什么不问问客服是否应该"
 "这样做呢？;)"
 
-#: backend.js:1615
+#: backend.js:1621
 msgctxt "title"
 msgid "Repaired"
 msgstr "已修复"
 
-#: backend.js:1621 ticket_scanner.js:1974 ticket_scanner.js:2066
+#: backend.js:1627 ticket_scanner.js:1974 ticket_scanner.js:2066
 msgctxt "label"
 msgid "Close"
 msgstr "关闭"
 
-#: backend.js:1638
+#: backend.js:1644
 msgctxt "label"
 msgid "Exception"
 msgstr "异常"
 
-#: backend.js:1638
+#: backend.js:1644
 msgctxt "label"
 msgid "Function"
 msgstr "函数"
 
-#: backend.js:1731
+#: backend.js:1737
 msgid "Your setup is complete - you can sell and check tickets."
 msgstr ""
 
-#: backend.js:1732
+#: backend.js:1738
 msgid "Getting started - these steps make your installation ready to sell:"
 msgstr ""
 
-#: backend.js:1739 backend.js:1740
+#: backend.js:1745 backend.js:1746
 msgid "Hide this hint for good"
 msgstr ""
 
-#: backend.js:1827
+#: backend.js:1833
 msgctxt "label"
 msgid "Change History"
 msgstr "更改历史"
 
-#: backend.js:1848
+#: backend.js:1854
 msgctxt "label"
 msgid "Reset All Options"
 msgstr "重置所有选项"
 
-#: backend.js:1850
+#: backend.js:1856
 msgctxt "title"
 msgid "Reset All Options"
 msgstr "重置所有选项"
 
-#: backend.js:1850
+#: backend.js:1856
 msgid "Do you really want to reset all the option?"
 msgstr "您确定要重置所有选项吗？"
 
-#: backend.js:1859
+#: backend.js:1865
 msgctxt "title"
 msgid "Replacement Tags"
 msgstr "替换标签"
 
-#: backend.js:1859
+#: backend.js:1865
 msgid ""
 "You can use these replacement tags in your text messages and URLs for the "
 "meta ticket values"
 msgstr "您可以在文本消息和URL中使用这些替换标签来引用门票元数据的值"
 
-#: backend.js:1880
+#: backend.js:1886
 msgid "Other plugins"
 msgstr "其他插件"
 
-#: backend.js:1898
+#: backend.js:1904
 msgid "No plugin has registered its fields here yet."
 msgstr "还没有插件在此登记字段。"
 
-#: backend.js:1900
+#: backend.js:1906
 msgid ""
 "We offer a filter hook so that other plugins can list their meta keys here. "
 "If your checkout plugin does not show up, ask its provider to support our "
@@ -5915,584 +5923,584 @@ msgstr ""
 "我们提供一个过滤钩子，供其他插件在此列出各自的 meta 键。如果您的结账字段插件"
 "没有出现，请联系其开发方支持我们的钩子——只需几行代码。"
 
-#: backend.js:1910
+#: backend.js:1916
 msgctxt "label"
 msgid "Export Options"
 msgstr "导出选项"
 
-#: backend.js:1928
+#: backend.js:1934
 msgctxt "label"
 msgid "Import Options"
 msgstr "导入选项"
 
-#: backend.js:1933
+#: backend.js:1939
 msgctxt "label"
 msgid "Start Wizard"
 msgstr "启动向导"
 
-#: backend.js:1937
+#: backend.js:1943
 msgctxt "label"
 msgid "Premium Wizard"
 msgstr "高级版向导"
 
-#: backend.js:1950
+#: backend.js:1956
 msgid "Invalid JSON file."
 msgstr "无效的 JSON 文件。"
 
-#: backend.js:1954
+#: backend.js:1960
 msgid "Invalid options file: missing options data."
 msgstr "无效的选项文件：缺少选项数据。"
 
-#: backend.js:1959
+#: backend.js:1965
 msgctxt "title"
 msgid "Import Options"
 msgstr "导入选项"
 
-#: backend.js:1960
+#: backend.js:1966
 msgid "Import %d options? This will overwrite current settings."
 msgstr "导入 %d 个选项？这将覆盖当前设置。"
 
-#: backend.js:2006
+#: backend.js:2012
 msgid ""
 "Set, but it does not belong to this event type. It can make your shop behave "
 "unexpectedly."
 msgstr ""
 
-#: backend.js:2008
+#: backend.js:2014
 msgid "Reset to default"
 msgstr ""
 
-#: backend.js:2068
+#: backend.js:2074
 msgid "What do you use the plugin for?"
 msgstr ""
 
-#: backend.js:2070
+#: backend.js:2076
 msgid ""
 "The settings page then starts with the handful of settings that belong to "
 "your kind of sale. You can switch to all options at any time."
 msgstr ""
 
-#: backend.js:2080
+#: backend.js:2086
 msgid "Decide later - show me all options"
 msgstr ""
 
-#: backend.js:2102
+#: backend.js:2108
 msgctxt "label"
 msgid "All options"
 msgstr ""
 
-#: backend.js:2106
+#: backend.js:2112
 msgctxt "label"
 msgid "For your event type"
 msgstr ""
 
-#: backend.js:2142
+#: backend.js:2148
 msgid "Back to the essentials"
 msgstr ""
 
-#: backend.js:2159
+#: backend.js:2165
 msgid "Search all settings - name, description or key"
 msgstr ""
 
-#: backend.js:2280 backend.js:2300
+#: backend.js:2286 backend.js:2306
 msgctxt "title"
 msgid "Restore defaults"
 msgstr ""
 
-#: backend.js:2281
+#: backend.js:2287
 msgid "Everything in this view is already at its default value."
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2292
+#: backend.js:2298
 msgid ""
 "%d settings in this view differ from their default and would be restored:"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2295
+#: backend.js:2301
 msgid "... and %d more"
 msgstr ""
 
-#: backend.js:2297
+#: backend.js:2303
 msgid "Nothing outside this view is touched."
 msgstr ""
 
-#: backend.js:2313
+#: backend.js:2319
 msgid "Restore the defaults of this view"
 msgstr ""
 
-#: backend.js:2314
+#: backend.js:2320
 msgid "Restore all defaults"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2319
+#: backend.js:2325
 msgid "%d settings are set although they belong to another event type"
 msgstr ""
 
-#: backend.js:2325
+#: backend.js:2331
 msgid "No setting matches your search."
 msgstr ""
 
 #. translators: 1: total matches 2: matches outside the chosen event type
-#: backend.js:2327
+#: backend.js:2333
 msgid "%1$d matches, %2$d of them outside your event type"
 msgstr ""
 
 #. translators: %d: number of matching settings
-#: backend.js:2328
+#: backend.js:2334
 msgid "%d match"
 msgid_plural "%d matches"
 msgstr[0] ""
 msgstr[1] ""
 
-#: backend.js:2330
+#: backend.js:2336
 msgid "Show the matches outside your event type"
 msgstr ""
 
-#: backend.js:2340
+#: backend.js:2346
 msgid "Pick your event type to see only the settings that belong to it."
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2341
+#: backend.js:2347
 msgid "All %d settings"
 msgstr ""
 
 #. translators: 1: event type 2: shown settings 3: all settings
-#: backend.js:2349
+#: backend.js:2355
 msgid "%1$s - the essentials: %2$d of %3$d settings"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2351
+#: backend.js:2357
 msgid "Show everything for this event type (%d)"
 msgstr ""
 
 #. translators: 1: event type 2: shown settings 3: all settings
-#: backend.js:2358
+#: backend.js:2364
 msgid "%1$s: %2$d of %3$d settings"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2362
+#: backend.js:2368
 msgid "More settings (%d)"
 msgstr ""
 
-#: backend.js:2365
+#: backend.js:2371
 msgid "Hide the more settings again"
 msgstr ""
 
-#: backend.js:2449
+#: backend.js:2455
 msgid "Load template"
 msgstr "加载模板"
 
-#: backend.js:2450
+#: backend.js:2456
 msgctxt "title"
 msgid "Load Template Ticket Code"
 msgstr "加载模板票务代码"
 
-#: backend.js:2451
+#: backend.js:2457
 msgid ""
 "Do you want to replace the test ticket template code with this template?"
 msgstr "您是否要用此模板替换测试票务模板代码？"
 
-#: backend.js:2594
+#: backend.js:2600
 msgctxt "label"
 msgid "Remove file"
 msgstr "移除文件"
 
-#: backend.js:2596
+#: backend.js:2602
 msgctxt "title"
 msgid "Remove file"
 msgstr "移除文件"
 
-#: backend.js:2596
+#: backend.js:2602
 msgid "Do you really want to remove the file information from this option?"
 msgstr "您确定要从此选项中移除文件信息吗？"
 
-#: backend.js:2673 backend.js:2679 backend.js:2684
+#: backend.js:2679 backend.js:2685 backend.js:2690
 msgid "Check License"
 msgstr "检查许可证"
 
-#: backend.js:2717
+#: backend.js:2723
 msgctxt "title"
 msgid "Ticket Default Template"
 msgstr "票务默认模板"
 
-#: backend.js:2725
+#: backend.js:2731
 msgctxt "title"
 msgid "Save Template Code"
 msgstr "保存模板代码"
 
-#: backend.js:2730
+#: backend.js:2736
 msgctxt "title"
 msgid "Copy Template Code To Live Code"
 msgstr "将模板代码复制到正式代码"
 
-#: backend.js:2731
+#: backend.js:2737
 msgctxt "title"
 msgid "Replace Live Template Code"
 msgstr "替换正式模板代码"
 
-#: backend.js:2731
+#: backend.js:2737
 msgid ""
 "Do you want to replace the live template code with the template code from "
 "the test?"
 msgstr "您是否要用测试中的模板代码替换正式模板代码？"
 
-#: backend.js:2795
+#: backend.js:2801
 msgid "ticket cannot be used. Public Ticket Id missing."
 msgstr "门票无法使用。缺少公开票 ID。"
 
-#: backend.js:2798
+#: backend.js:2804
 msgid "no ticket for preview available"
 msgstr "没有可预览的门票"
 
-#: backend.js:2858
+#: backend.js:2864
 msgctxt "label"
 msgid "Date"
 msgstr "日期"
 
-#: backend.js:2859
+#: backend.js:2865
 msgctxt "label"
 msgid "Option"
 msgstr "选项"
 
-#: backend.js:2860 backend.js:2912
+#: backend.js:2866 backend.js:2918
 msgctxt "label"
 msgid "Old Value"
 msgstr "旧值"
 
-#: backend.js:2861 backend.js:2913
+#: backend.js:2867 backend.js:2919
 msgctxt "label"
 msgid "New Value"
 msgstr "新值"
 
-#: backend.js:2862
+#: backend.js:2868
 msgctxt "label"
 msgid "Changed By"
 msgstr "更改者"
 
-#: backend.js:2895
+#: backend.js:2901
 msgctxt "label"
 msgid "Revert"
 msgstr "还原"
 
-#: backend.js:2928
+#: backend.js:2934
 msgctxt "title"
 msgid "Revert Option"
 msgstr "还原选项"
 
-#: backend.js:2929
+#: backend.js:2935
 msgid "Revert option \"%s\" to its previous value?"
 msgstr "将选项 \"%s\" 还原为之前的值？"
 
-#: backend.js:2981
+#: backend.js:2987
 msgctxt "tab"
 msgid "Sold Tickets"
 msgstr ""
 
-#: backend.js:2982
+#: backend.js:2988
 msgctxt "tab"
 msgid "Daily Redemption Summary"
 msgstr ""
 
-#: backend.js:3020
+#: backend.js:3026
 msgid "Products:"
 msgstr "产品："
 
-#: backend.js:3026
+#: backend.js:3032
 msgctxt "label"
 msgid "Export from"
 msgstr "导出开始日期"
 
-#: backend.js:3028
+#: backend.js:3034
 msgctxt "label"
 msgid "Export to"
 msgstr "导出结束日期"
 
-#: backend.js:3030 backend.js:3289
+#: backend.js:3036 backend.js:3295
 msgctxt "button"
 msgid "Export CSV"
 msgstr "导出 CSV"
 
-#: backend.js:3049
+#: backend.js:3055
 msgid "Auto-refresh:"
 msgstr "自动刷新："
 
-#: backend.js:3051
+#: backend.js:3057
 msgid "Off"
 msgstr "关闭"
 
-#: backend.js:3110
+#: backend.js:3116
 msgid "Error loading data."
 msgstr ""
 
-#: backend.js:3143 wc_backend.js:451
+#: backend.js:3149 wc_backend.js:451
 msgid "January"
 msgstr "一月"
 
-#: backend.js:3143 wc_backend.js:452
+#: backend.js:3149 wc_backend.js:452
 msgid "February"
 msgstr "二月"
 
-#: backend.js:3144 wc_backend.js:453
+#: backend.js:3150 wc_backend.js:453
 msgid "March"
 msgstr "三月"
 
-#: backend.js:3144 wc_backend.js:454
+#: backend.js:3150 wc_backend.js:454
 msgid "April"
 msgstr "四月"
 
-#: backend.js:3145 wc_backend.js:455
+#: backend.js:3151 wc_backend.js:455
 msgid "May"
 msgstr "五月"
 
-#: backend.js:3145 wc_backend.js:456
+#: backend.js:3151 wc_backend.js:456
 msgid "June"
 msgstr "六月"
 
-#: backend.js:3146 wc_backend.js:457
+#: backend.js:3152 wc_backend.js:457
 msgid "July"
 msgstr "七月"
 
-#: backend.js:3146 wc_backend.js:458
+#: backend.js:3152 wc_backend.js:458
 msgid "August"
 msgstr "八月"
 
-#: backend.js:3147 wc_backend.js:459
+#: backend.js:3153 wc_backend.js:459
 msgid "September"
 msgstr "九月"
 
-#: backend.js:3147 wc_backend.js:460
+#: backend.js:3153 wc_backend.js:460
 msgid "October"
 msgstr "十月"
 
-#: backend.js:3148 wc_backend.js:461
+#: backend.js:3154 wc_backend.js:461
 msgid "November"
 msgstr "十一月"
 
-#: backend.js:3148 wc_backend.js:462
+#: backend.js:3154 wc_backend.js:462
 msgid "December"
 msgstr "十二月"
 
-#: backend.js:3151 wc_backend.js:465
+#: backend.js:3157 wc_backend.js:465
 msgid "Mon"
 msgstr "周一"
 
-#: backend.js:3151 wc_backend.js:466
+#: backend.js:3157 wc_backend.js:466
 msgid "Tue"
 msgstr "周二"
 
-#: backend.js:3152 wc_backend.js:467
+#: backend.js:3158 wc_backend.js:467
 msgid "Wed"
 msgstr "周三"
 
-#: backend.js:3152 wc_backend.js:468
+#: backend.js:3158 wc_backend.js:468
 msgid "Thu"
 msgstr "周四"
 
-#: backend.js:3153 wc_backend.js:469
+#: backend.js:3159 wc_backend.js:469
 msgid "Fri"
 msgstr "周五"
 
-#: backend.js:3153 wc_backend.js:470
+#: backend.js:3159 wc_backend.js:470
 msgid "Sat"
 msgstr "周六"
 
-#: backend.js:3154 wc_backend.js:471
+#: backend.js:3160 wc_backend.js:471
 msgid "Sun"
 msgstr "周日"
 
 #. translators: %s: date string
-#: backend.js:3204 backend.js:3219 wc_backend.js:554
+#: backend.js:3210 backend.js:3225 wc_backend.js:554
 msgid "Tickets for %s"
 msgstr "%s 的门票"
 
-#: backend.js:3224 wc_backend.js:377
+#: backend.js:3230 wc_backend.js:377
 msgid "No details available."
 msgstr "无可用详情。"
 
-#: backend.js:3230 wc_backend.js:385 wc_backend.js:582
+#: backend.js:3236 wc_backend.js:385 wc_backend.js:582
 msgid "Order"
 msgstr "订单"
 
-#: backend.js:3239 ticket_scanner.js:1308 wc_backend.js:392 wc_backend.js:605
+#: backend.js:3245 ticket_scanner.js:1308 wc_backend.js:392 wc_backend.js:605
 msgid "Redeemed"
 msgstr "已兑换"
 
 #. translators: %d: total number of sold tickets
-#: backend.js:3268 wc_backend.js:529
+#: backend.js:3274 wc_backend.js:529
 msgid "Total sold: %d tickets"
 msgstr "总售出：%d 张门票"
 
-#: backend.js:3269
+#: backend.js:3275
 msgid "No tickets found for this month."
 msgstr "本月未找到门票。"
 
-#: backend.js:3281 backend.js:5202
+#: backend.js:3287 backend.js:5228
 msgctxt "label"
 msgid "From"
 msgstr "从"
 
-#: backend.js:3284
+#: backend.js:3290
 msgctxt "label"
 msgid "To"
 msgstr "到"
 
-#: backend.js:3287
+#: backend.js:3293
 msgctxt "button"
 msgid "Load"
 msgstr "加载"
 
-#: backend.js:3322 backend.js:5571
+#: backend.js:3328 backend.js:5597
 msgctxt "label"
 msgid "Redeemed"
 msgstr "已核销"
 
-#: backend.js:3326
+#: backend.js:3332
 msgctxt "label"
 msgid "Total Tickets"
 msgstr "总票数"
 
-#: backend.js:3330
+#: backend.js:3336
 msgctxt "label"
 msgid "No Show"
 msgstr "未出席"
 
-#: backend.js:3339
+#: backend.js:3345
 msgctxt "column"
 msgid "Date"
 msgstr "日期"
 
-#: backend.js:3340
+#: backend.js:3346
 msgctxt "column"
 msgid "Event / List"
 msgstr "活动 / 列表"
 
-#: backend.js:3341
+#: backend.js:3347
 msgctxt "column"
 msgid "Product"
 msgstr "产品"
 
-#: backend.js:3342
+#: backend.js:3348
 msgctxt "column"
 msgid "Redeemed"
 msgstr "已兑换"
 
-#: backend.js:3343
+#: backend.js:3349
 msgctxt "column"
 msgid "Total in List"
 msgstr "列表总数"
 
-#: backend.js:3344
+#: backend.js:3350
 msgctxt "column"
 msgid "No Show"
 msgstr "未出席"
 
-#: backend.js:3382
+#: backend.js:3388
 msgctxt "label"
 msgid "Total"
 msgstr "合计"
 
-#: backend.js:3407
+#: backend.js:3413
 msgctxt "label"
 msgid "No individual ticket data available."
 msgstr "没有可用的个人门票数据。"
 
-#: backend.js:3412
+#: backend.js:3418
 msgctxt "column"
 msgid "Ticket"
 msgstr "门票"
 
-#: backend.js:3413
+#: backend.js:3419
 msgctxt "column"
 msgid "Order"
 msgstr "订单"
 
-#: backend.js:3414
+#: backend.js:3420
 msgctxt "column"
 msgid "Redeemed At"
 msgstr "兑换时间"
 
-#: backend.js:3419
+#: backend.js:3425
 msgctxt "label"
 msgid "View"
 msgstr "查看"
 
-#: backend.js:3426
+#: backend.js:3432
 msgctxt "label"
 msgid "Error loading details."
 msgstr "加载详情时出错。"
 
-#: backend.js:3431
+#: backend.js:3437
 msgctxt "label"
 msgid "Error loading data."
 msgstr "加载数据时出错。"
 
-#: backend.js:3453
+#: backend.js:3459
 msgctxt "title"
 msgid "Title"
 msgstr "标题"
 
-#: backend.js:3513
+#: backend.js:3519
 msgid "Insert Tag"
 msgstr "插入标签"
 
-#: backend.js:3534
+#: backend.js:3540
 msgctxt "title"
 msgid "Select Media"
 msgstr "选择媒体文件"
 
-#: backend.js:3581
+#: backend.js:3587
 msgctxt "label"
 msgid "Back"
 msgstr "返回"
 
-#: backend.js:3607
+#: backend.js:3613
 msgctxt "label"
 msgid "Support Info"
 msgstr "支持信息"
 
-#: backend.js:3615
+#: backend.js:3621
 msgctxt "label"
 msgid "FAQ"
 msgstr "常见问题"
 
-#: backend.js:3620
+#: backend.js:3626
 msgctxt "label"
 msgid "Ticket Scanner"
 msgstr "票务扫描器"
 
-#: backend.js:3638
+#: backend.js:3644
 msgctxt "label"
 msgid "Attendance"
 msgstr "出勤"
 
-#: backend.js:3646
+#: backend.js:3652
 msgctxt "label"
 msgid "Congresses"
 msgstr ""
 
-#: backend.js:3654
+#: backend.js:3660
 msgctxt "label"
 msgid "Options"
 msgstr "选项"
 
-#: backend.js:3697
+#: backend.js:3703
 msgctxt "label"
 msgid "Enter a prefix (optional)"
 msgstr "输入前缀（可选）"
 
-#: backend.js:3699
+#: backend.js:3705
 msgid ""
 "You can use date placeholder to have the prefix filled with the date of the "
 "confirmed purchase."
 msgstr "您可以使用日期占位符，将前缀填充为确认购买的日期。"
 
-#: backend.js:3699
+#: backend.js:3705
 msgid ""
 "You can use: {Y} = year, {m} = month, {d} = day, {H} = hour, {i} = minutes, "
 "{s} = seconds, {TIMESTAMP} = unix timestamp."
@@ -6500,419 +6508,419 @@ msgstr ""
 "您可以使用：{Y} = 年，{m} = 月，{d} = 日，{H} = 时，{i} = 分，{s} = 秒，"
 "{TIMESTAMP} = Unix 时间戳。"
 
-#: backend.js:3705
+#: backend.js:3711
 msgctxt "label"
 msgid "Choose type of ticket numbers"
 msgstr "选择票号类型"
 
-#: backend.js:3706
+#: backend.js:3712
 msgctxt "option value"
 msgid "Serials"
 msgstr "序列号"
 
-#: backend.js:3706
+#: backend.js:3712
 msgctxt "option value"
 msgid "Numbers"
 msgstr "数字"
 
-#: backend.js:3727
+#: backend.js:3733
 msgctxt "title"
 msgid "Serials options"
 msgstr "序列号设置"
 
-#: backend.js:3729
+#: backend.js:3735
 msgctxt "label"
 msgid "Amount of letter needed"
 msgstr "所需位数"
 
-#: backend.js:3737
+#: backend.js:3743
 msgctxt "label"
 msgid "Letter exclusion"
 msgstr "排除字符"
 
-#: backend.js:3738 backend.js:3759 backend.js:4935 backend.js:5305
-#: backend.js:6826
+#: backend.js:3744 backend.js:3765 backend.js:4961 backend.js:5331
+#: backend.js:6852
 msgctxt "option value"
 msgid "None"
 msgstr "无"
 
-#: backend.js:3744
+#: backend.js:3750
 msgctxt "label"
 msgid "Letter style"
 msgstr "显示样式"
 
-#: backend.js:3745
+#: backend.js:3751
 msgctxt "option value"
 msgid "Uppercase"
 msgstr "大写字母"
 
-#: backend.js:3745
+#: backend.js:3751
 msgctxt "option value"
 msgid "Lowercase"
 msgstr "小写字母"
 
-#: backend.js:3745
+#: backend.js:3751
 msgctxt "option value"
 msgid "Both"
 msgstr "两者"
 
-#: backend.js:3751
+#: backend.js:3757
 msgctxt "label"
 msgid "Numbers needed?"
 msgstr "需要数字？"
 
-#: backend.js:3752 backend.js:6051
+#: backend.js:3758 backend.js:6077
 msgctxt "label"
 msgid "No"
 msgstr "否"
 
-#: backend.js:3752 backend.js:6047
+#: backend.js:3758 backend.js:6073
 msgctxt "label"
 msgid "Yes"
 msgstr "是"
 
-#: backend.js:3752
+#: backend.js:3758
 msgctxt "option value"
 msgid "Only numbers"
 msgstr "仅数字"
 
-#: backend.js:3758
+#: backend.js:3764
 msgctxt "label"
 msgid "Delimiter?"
 msgstr "分隔符"
 
-#: backend.js:3759
+#: backend.js:3765
 msgctxt "option value"
 msgid "Space"
 msgstr "空格"
 
-#: backend.js:3775
+#: backend.js:3781
 msgctxt "label"
 msgid "After how many letters?"
 msgstr "每隔多少个字符？"
 
-#: backend.js:3786
+#: backend.js:3792
 msgctxt "title"
 msgid "Numbers options"
 msgstr "数字选项"
 
-#: backend.js:3789
+#: backend.js:3795
 msgctxt "label"
 msgid "Start number"
 msgstr "起始编号"
 
-#: backend.js:3796
+#: backend.js:3802
 msgctxt "label"
 msgid "Offset for each number"
 msgstr "每个编号的偏移量"
 
-#: backend.js:3847
+#: backend.js:3853
 msgid "Amount of letters has to be higher"
 msgstr "字母数量需要更多"
 
-#: backend.js:3874
+#: backend.js:3880
 msgid "Your start number is not correct. It has to be an integer bigger than 0"
 msgstr "您的起始编号不正确。必须是大于0的整数"
 
-#: backend.js:4101 backend.js:4105
+#: backend.js:4107 backend.js:4111
 msgid "You have PDF ticket attachment enabled for emails."
 msgstr "您已启用邮件的 PDF 门票附件。"
 
-#: backend.js:4102
+#: backend.js:4108
 msgid ""
 "Do you also want to attach the ICS calendar file to the purchase emails?"
 msgstr "您是否也想将 ICS 日历文件附加到购买邮件中？"
 
-#: backend.js:4106
+#: backend.js:4112
 msgid ""
 "Do you also want to include a \"Download all tickets as one PDF\" link in "
 "the email?"
 msgstr "您是否也想在邮件中包含\"将所有门票下载为一个 PDF\"链接？"
 
-#: backend.js:4109
+#: backend.js:4115
 msgid "You show the badge download button on the ticket detail page."
 msgstr "您在票务详情页面上显示徽章下载按钮。"
 
-#: backend.js:4110
+#: backend.js:4116
 msgid ""
 "Do you also want to include the badge download link in the purchase emails?"
 msgstr "您是否也想在购买邮件中包含徽章下载链接？"
 
-#: backend.js:4113
+#: backend.js:4119
 msgid "You have hidden the PDF download button on purchase emails."
 msgstr "您已在购买邮件中隐藏了 PDF 下载按钮。"
 
-#: backend.js:4114
+#: backend.js:4120
 msgid "Do you want to show the \"View all tickets\" link in the email instead?"
 msgstr "您是否想在邮件中改为显示\"查看所有门票\"链接？"
 
-#: backend.js:4117
+#: backend.js:4123
 msgid "You have auto-start camera enabled for the ticket scanner."
 msgstr "您已为票务扫描器启用了自动启动摄像头。"
 
-#: backend.js:4118
+#: backend.js:4124
 msgid "Do you also want to enable automatic ticket redemption on scan?"
 msgstr "您是否也想启用扫描时自动兑换门票？"
 
-#: backend.js:4121
+#: backend.js:4127
 msgid "You have automatic scan-and-redeem enabled."
 msgstr "您已启用自动扫描兑换。"
 
-#: backend.js:4122
+#: backend.js:4128
 msgid ""
 "Do you also want to enable haptic feedback (vibration) when a ticket is "
 "scanned?"
 msgstr "您是否也想在扫描门票时启用触觉反馈（振动）？"
 
-#: backend.js:4125
+#: backend.js:4131
 msgid "You allow tickets to be redeemed after the event end date."
 msgstr "您允许在活动结束日期之后兑换门票。"
 
-#: backend.js:4126
+#: backend.js:4132
 msgid ""
 "Do you also want to display the confirmed scan count on the ticket scanner?"
 msgstr "您是否也想在票务扫描器上显示已确认的扫描次数？"
 
-#: backend.js:4129
+#: backend.js:4135
 msgid "You show the event date on the purchase order email."
 msgstr "您在购买订单邮件中显示活动日期。"
 
-#: backend.js:4130
+#: backend.js:4136
 msgid "Do you also want to show the event date on the product detail page?"
 msgstr "您是否也想在产品详情页面上显示活动日期？"
 
-#: backend.js:4133
+#: backend.js:4139
 msgid "You show input fields on the checkout page."
 msgstr "您在结账页面上显示输入字段。"
 
-#: backend.js:4134
+#: backend.js:4140
 msgid "Do you also want to display the customer note on the ticket PDF?"
 msgstr "您是否也想在票务 PDF 上显示客户备注？"
 
-#: backend.js:4137
+#: backend.js:4143
 msgid "You show the self-redeem button on the ticket detail page."
 msgstr "您在票务详情页面上显示自助兑换按钮。"
 
-#: backend.js:4138
+#: backend.js:4144
 msgid ""
 "Do you also want to redirect the customer after they redeem their ticket?"
 msgstr "您是否也想在客户兑换门票后重定向客户？"
 
-#: backend.js:4141 backend.js:4145
+#: backend.js:4147 backend.js:4151
 msgid "You have the premium plugin active."
 msgstr "您已激活高级版插件。"
 
-#: backend.js:4142
+#: backend.js:4148
 msgid ""
 "Do you want to enable IP blocking to protect against brute-force ticket "
 "validation attempts?"
 msgstr "您是否想启用 IP 阻止以防止暴力票务验证尝试？"
 
-#: backend.js:4146
+#: backend.js:4152
 msgid "Do you want to enable IP tracking for ticket validation requests?"
 msgstr "您是否想启用票务验证请求的 IP 跟踪？"
 
-#: backend.js:4149
+#: backend.js:4155
 msgid ""
 "Your customers can collect their tickets in the free Vollstart Wallet app."
 msgstr "您的客户可以在免费的 Vollstart Wallet 应用中收集他们的票据。"
 
-#: backend.js:4150
+#: backend.js:4156
 msgid ""
 "Do you want to enable the \"Add to Vollstart Wallet\" button on ticket pages "
 "and in emails?"
 msgstr "您想在票据页面和电子邮件中启用\"添加到 Vollstart Wallet\"按钮吗？"
 
-#: backend.js:4153
+#: backend.js:4159
 msgid ""
 "Eventado.com is a free public event calendar — Premium customers can list "
 "their ticket events automatically."
 msgstr ""
 
-#: backend.js:4154
+#: backend.js:4160
 msgid ""
 "Do you want to publish your ticket events to Eventado.com for more reach and "
 "SEO?"
 msgstr ""
 
-#: backend.js:4193
+#: backend.js:4199
 msgid "Yes, enable"
 msgstr "是，启用"
 
-#: backend.js:4213
+#: backend.js:4219
 msgid "No thanks"
 msgstr "不了，谢谢"
 
-#: backend.js:4220
+#: backend.js:4226
 msgid "Don't ask again"
 msgstr "不再询问"
 
-#: backend.js:4275
+#: backend.js:4281
 msgid "Dismiss"
 msgstr "关闭"
 
-#: backend.js:4321
+#: backend.js:4327
 msgid "Assign list to a WooCommerce product"
 msgstr "将列表分配给 WooCommerce 产品"
 
-#: backend.js:4321
+#: backend.js:4327
 msgid "Open a product, go to the Event Ticket tab, and enable ticketing."
 msgstr "打开产品，转到活动门票标签，然后启用票务功能。"
 
-#: backend.js:4325
+#: backend.js:4331
 msgid "Process a test order"
 msgstr "处理测试订单"
 
-#: backend.js:4325
+#: backend.js:4331
 msgid "Place an order and complete it to generate tickets."
 msgstr "下订单并完成以生成门票。"
 
-#: backend.js:4326
+#: backend.js:4332
 msgid "Scan a ticket at the entrance"
 msgstr "在入口处扫描门票"
 
-#: backend.js:4326
+#: backend.js:4332
 msgid "Use the browser-based QR scanner to redeem tickets."
 msgstr "使用基于浏览器的 QR 扫描器兑换门票。"
 
-#: backend.js:4326
+#: backend.js:4332
 msgctxt "label"
 msgid "Open Scanner"
 msgstr "打开扫描器"
 
-#: backend.js:4335
+#: backend.js:4341
 msgctxt "title"
 msgid "Getting Started"
 msgstr "入门指南"
 
-#: backend.js:4371
+#: backend.js:4377
 msgid ""
 "If you need help, please contact us via email. The information is in "
 "\"Support Info\" area - button above."
 msgstr ""
 "如果您需要帮助，请通过电子邮件联系我们。信息在\"支持信息\"区域 - 上方按钮。"
 
-#: backend.js:4372
+#: backend.js:4378
 msgctxt "label"
 msgid "Don't show this again"
 msgstr "不再显示"
 
-#: backend.js:4418
+#: backend.js:4424
 msgid "Lock ticket redemption until event starts?"
 msgstr "在活动开始前锁定门票兑换？"
 
-#: backend.js:4419 backend.js:4427 backend.js:4441
+#: backend.js:4425 backend.js:4433 backend.js:4447
 msgid "Auto-redeem when scanned?"
 msgstr "扫描时自动兑换？"
 
-#: backend.js:4420
+#: backend.js:4426
 msgid ""
 "Show \"Open Tickets\" link in email? All QR codes on one page — ideal for "
 "groups."
 msgstr "在邮件中显示\"打开门票\"链接？所有 QR 码在一页上 — 适合团体。"
 
-#: backend.js:4421 backend.js:4429
+#: backend.js:4427 backend.js:4435
 msgid ""
 "Auto-complete orders when all items are tickets? Tickets are generated "
 "immediately."
 msgstr "当所有项目都是门票时自动完成订单？门票将立即生成。"
 
-#: backend.js:4422 backend.js:4430 backend.js:4437 backend.js:4443
+#: backend.js:4428 backend.js:4436 backend.js:4443 backend.js:4449
 msgid ""
 "Enable Vollstart Wallet? Customers can collect tickets in the free wallet "
 "app."
 msgstr "启用 Vollstart Wallet？客户可以在免费的钱包应用中收集票据。"
 
-#: backend.js:4423 backend.js:4431 backend.js:4438 backend.js:4444
+#: backend.js:4429 backend.js:4437 backend.js:4444 backend.js:4450
 msgid ""
 "Do you also hand out tickets that were not bought in the shop? For example "
 "printed cards. They can then be redeemed without an order — the check "
 "against a paid order does not apply to them."
 msgstr ""
 
-#: backend.js:4426
+#: backend.js:4432
 msgid "Allow redemption after closing time?"
 msgstr "允许在关闭时间后兑换？"
 
-#: backend.js:4428
+#: backend.js:4434
 msgid ""
 "Show \"Open Tickets\" link in email? All QR codes on one page — ideal for "
 "families."
 msgstr "在邮件中显示\"打开门票\"链接？所有 QR 码在一页上 — 适合家庭。"
 
-#: backend.js:4434
+#: backend.js:4440
 msgid "Show redemption counter to customer? E.g. \"15 of 30 visits used\""
 msgstr "向客户显示兑换计数器？例如\"已使用 30 次中的 15 次\""
 
-#: backend.js:4435
+#: backend.js:4441
 msgid "Show self-redeem button on ticket page? For self-service access."
 msgstr "在门票页面上显示自助兑换按钮？用于自助访问。"
 
-#: backend.js:4436
+#: backend.js:4442
 msgid "Auto-redeem when scanned? Disable to verify identity first."
 msgstr "扫描时自动兑换？禁用以先验证身份。"
 
-#: backend.js:4442
+#: backend.js:4448
 msgid "Show self-redeem button? Customer redeems the voucher themselves."
 msgstr "显示自助兑换按钮？客户自行兑换优惠券。"
 
-#: backend.js:4449
+#: backend.js:4455
 msgid "Concerts, shows, festivals"
 msgstr "音乐会、演出、节日"
 
-#: backend.js:4450
+#: backend.js:4456
 msgid "Theme park, zoo, spa"
 msgstr "主题公园、动物园、水疗"
 
-#: backend.js:4451
+#: backend.js:4457
 msgid "Memberships / Season passes"
 msgstr "会员卡 / 季票"
 
-#: backend.js:4451
+#: backend.js:4457
 msgid "Recurring access"
 msgstr "重复访问"
 
-#: backend.js:4452
+#: backend.js:4458
 msgid "Vouchers / Simple codes"
 msgstr "优惠券 / 简单代码"
 
-#: backend.js:4452
+#: backend.js:4458
 msgid "Gift cards, promo codes"
 msgstr "礼品卡、促销代码"
 
-#: backend.js:4487
+#: backend.js:4493
 msgid "Welcome to Event Tickets!"
 msgstr "欢迎使用活动门票！"
 
-#: backend.js:4488
+#: backend.js:4494
 msgid "Let's configure your ticketing system."
 msgstr "让我们配置您的票务系统。"
 
-#: backend.js:4489
+#: backend.js:4495
 msgid "This takes less than 2 minutes."
 msgstr "这不到 2 分钟。"
 
-#: backend.js:4493
+#: backend.js:4499
 msgid "Skip, I'll configure manually"
 msgstr "跳过，我将手动配置"
 
-#: backend.js:4494
+#: backend.js:4500
 msgid "Start Setup"
 msgstr "开始设置"
 
-#: backend.js:4518 backend.js:4588
+#: backend.js:4524 backend.js:4594
 msgid "Back"
 msgstr "返回"
 
-#: backend.js:4519
+#: backend.js:4525
 msgid "Next"
 msgstr "下一步"
 
-#: backend.js:4555
+#: backend.js:4561
 msgid "Tip: PDF attachment to email"
 msgstr "提示：PDF 附加到邮件"
 
-#: backend.js:4556
+#: backend.js:4562
 msgid ""
 "With the Premium version you can attach PDF tickets directly to the order "
 "email — as individual files or merged into one PDF."
@@ -6920,197 +6928,206 @@ msgstr ""
 "使用高级版，您可以将 PDF 门票直接附加到订单邮件中 — 作为单独文件或合并为一个 "
 "PDF。"
 
-#: backend.js:4561
+#: backend.js:4567
 msgid "Attach all tickets as one PDF to the order email?"
 msgstr "将所有门票作为一个 PDF 附加到订单邮件？"
 
-#: backend.js:4563
+#: backend.js:4569
 msgid "Attach PDF ticket to the order email?"
 msgstr "将 PDF 门票附加到订单邮件？"
 
-#: backend.js:4566
+#: backend.js:4572
 msgid "Premium"
 msgstr "高级版"
 
-#: backend.js:4589
+#: backend.js:4595
 msgid "Apply & Finish"
 msgstr "应用并完成"
 
-#: backend.js:4595
+#: backend.js:4601
 msgid "You're all set!"
 msgstr "一切就绪！"
 
-#: backend.js:4599
+#: backend.js:4605
 msgid "Your settings have been configured for %s."
 msgstr "您的设置已为 %s 配置。"
 
-#: backend.js:4610
+#: backend.js:4616
 msgid "These settings are now active - you can change every one of them later:"
 msgstr ""
 
-#: backend.js:4619
+#: backend.js:4625
 msgid ""
 "One thing is still missing: a WooCommerce product that sells your tickets."
 msgstr ""
 
-#: backend.js:4658
+#: backend.js:4664
 msgid "Applying settings..."
 msgstr "正在应用设置..."
 
-#: backend.js:4665
+#: backend.js:4671
 msgid "Error applying settings. Please try again."
 msgstr "应用设置时出错。请重试。"
 
-#: backend.js:4670
+#: backend.js:4676
 msgid "Setup Wizard"
 msgstr "设置向导"
 
-#: backend.js:4702
+#: backend.js:4708
 msgid "Premium Activated!"
 msgstr "高级版已激活！"
 
-#: backend.js:4703
+#: backend.js:4709
 msgid "You now have access to these features:"
 msgstr "您现在可以访问以下功能："
 
-#: backend.js:4706
+#: backend.js:4712
 msgid "PDF ticket attachment in emails"
 msgstr "邮件中的 PDF 门票附件"
 
-#: backend.js:4707
+#: backend.js:4713
 msgid "Ticket Designer (custom PDF templates)"
 msgstr "票务设计器（自定义 PDF 模板）"
 
-#: backend.js:4708
+#: backend.js:4714
 msgid "Badge printing"
 msgstr "徽章打印"
 
-#: backend.js:4709
+#: backend.js:4715
 msgid "Seating plans"
 msgstr "座位图"
 
-#: backend.js:4712
+#: backend.js:4718
 msgid "Recommended:"
 msgstr "推荐："
 
-#: backend.js:4713
-msgid ""
-"Enable PDF ticket attachment in emails? Customers receive their tickets as "
-"PDF directly in the order confirmation email."
-msgstr ""
-"在邮件中启用 PDF 门票附件？客户将在订单确认邮件中直接收到 PDF 格式的门票。"
+#: backend.js:4719
+msgid "The button below switches these three settings on:"
+msgstr "下方按钮将启用这三项设置："
 
-#: backend.js:4718
+#: backend.js:4721
+msgid "Attach the tickets as PDF files to the purchase email"
+msgstr "将票券作为PDF文件附加到购买邮件中"
+
+#: backend.js:4722
+msgid "Merge all tickets of an order into one PDF"
+msgstr "将订单中的所有票券合并为一个PDF"
+
+#: backend.js:4723
+msgid "Up to 21 PDF attachments per email"
+msgstr "每封邮件最多21个PDF附件"
+
+#: backend.js:4725 backend.js:4780
+msgid "You can change these anytime in Options."
+msgstr "您可以随时在选项中更改这些设置。"
+
+#: backend.js:4730
 msgid "Enable Recommended Settings"
 msgstr "启用推荐设置"
 
-#: backend.js:4731
+#: backend.js:4743
 msgctxt "button"
 msgid "Skip"
 msgstr "跳过"
 
-#: backend.js:4747
+#: backend.js:4773
 msgid "Premium settings applied!"
 msgstr "高级版设置已应用！"
 
-#: backend.js:4750
+#: backend.js:4776
 msgid "PDF attachment in emails: enabled"
 msgstr "邮件中的 PDF 附件：已启用"
 
-#: backend.js:4751
+#: backend.js:4777
 msgid "Merge into one PDF: enabled"
 msgstr "合并为一个 PDF：已启用"
 
-#: backend.js:4752
+#: backend.js:4778
 msgid "Max attachments: 21"
 msgstr "最大附件数：21"
 
-#: backend.js:4754
-msgid "You can change these anytime in Options."
-msgstr "您可以随时在选项中更改这些设置。"
-
-#: backend.js:4758
+#: backend.js:4784
 msgid "Close"
 msgstr "关闭"
 
-#: backend.js:4771
+#: backend.js:4797
 msgid "Premium Features"
 msgstr "高级版功能"
 
-#: backend.js:4799
+#: backend.js:4825
 msgctxt "label"
 msgid "Upgrade"
 msgstr "升级"
 
-#: backend.js:4831
+#: backend.js:4857
 msgctxt "title"
 msgid "Enter an amount of how many ticket numbers you need"
 msgstr "输入您需要的票号数量"
 
-#: backend.js:4868
+#: backend.js:4894
 msgctxt "title"
 msgid "1. Ticket number generator (optional step)"
 msgstr "1. 生成票号（可选步骤）"
 
-#: backend.js:4869
+#: backend.js:4895
 msgid "You can generate ticket numbers."
 msgstr "您可以生成票号。"
 
-#: backend.js:4870
+#: backend.js:4896
 msgid ""
 "Up 100.000 tickets generation per run. The limit is to prevent performance "
 "issues."
 msgstr "每次运行最多可生成100,000张门票。此限制是为了防止性能问题。"
 
-#: backend.js:4870
+#: backend.js:4896
 msgid "You can repeat the \"store tickets\" operations as often as needed."
 msgstr "您可以根据需要多次执行\"保存门票\"操作"
 
-#: backend.js:4872
+#: backend.js:4898
 msgctxt "label"
 msgid "Enter amount of needed ticket numbers"
 msgstr "输入所需的票号数量"
 
 #. translators: 1: amount of possible codes 2: premium info
-#: backend.js:4874
+#: backend.js:4900
 msgid "%1$d max. %2$s up to 100.000 for each run"
 msgstr "%1$d 最大值。%2$s 每次运行最多100,000"
 
-#: backend.js:4884
+#: backend.js:4910
 msgctxt "label"
 msgid ""
 "Clear the ticket numbers list textarea field below to add fill in the new "
 "generated ticket numbers"
 msgstr "清空下方的票号列表文本区域，以填入新生成的票号"
 
-#: backend.js:4890
+#: backend.js:4916
 msgctxt "label"
 msgid "Generate Code Verification Value (CVV) for each ticket number"
 msgstr "为每个票号生成代码验证值（CVV）"
 
-#: backend.js:4894
+#: backend.js:4920
 msgctxt "label"
 msgid "Generate ticket numbers"
 msgstr "生成票号"
 
 #. translators: 1: amount of created tickets 2: seconds 3: amount of runs
-#: backend.js:4914
+#: backend.js:4940
 msgid ""
 "Created %1$d tickets. In %2$s seconds, with %3$d runs to find unique ticket "
 "numbers."
 msgstr "已创建 %1$d 个票号。用时 %2$s 秒，经过 %3$d 次运行以查找唯一的票号。"
 
 #. translators: %d: amout of ticket numbers
-#: backend.js:4925
+#: backend.js:4951
 msgid "contains %d tickets"
 msgstr "包含 %d 个票号"
 
-#: backend.js:4927
+#: backend.js:4953
 msgctxt "title"
 msgid "2. Ticket numbers to store on the server"
 msgstr "2. 将票号存储到服务器"
 
-#: backend.js:4927
+#: backend.js:4953
 msgid ""
 "One number per line and/or comma-separated (,). <br>If you want to add the "
 "CVV number then separate your ticket number with (;) and append your CVV "
@@ -7121,22 +7138,22 @@ msgstr ""
 "号和CVV分隔。<br>将票号存储到服务器时，系统会检查票号是否唯一，并标记已存在的"
 "票号。"
 
-#: backend.js:4934
+#: backend.js:4960
 msgctxt "label"
 msgid "Assign to this ticket list"
 msgstr "分配到此票务列表"
 
 #. translators: 1: max amout of ticket numbers 2: premium info
-#: backend.js:4947
+#: backend.js:4973
 msgid "You can store up to %1$d. %2$s unlimited"
 msgstr "您最多可以存储 %1$d 个票号。%2$s 无限制。"
 
-#: backend.js:4949
+#: backend.js:4975
 msgctxt "label"
 msgid "Store ticket numbers"
 msgstr "存储票号"
 
-#: backend.js:4966
+#: backend.js:4992
 msgid ""
 "Each entry will turn green (successful stored) or red (NOT OK - duplicate "
 "entry on the server).<br>Scroll down and wait for all to finish.<br>In the "
@@ -7145,137 +7162,137 @@ msgstr ""
 "每个条目将变为绿色（成功保存）或红色（失败 - 服务器上的重复条目）。<br>向下滚"
 "动并等待全部完成。<br>在下面的文本框中，您将找到所有成功保存的票券。"
 
-#: backend.js:4968
+#: backend.js:4994
 msgctxt "title"
 msgid "Successful stored ticket numbers"
 msgstr "成功保存的票券编号"
 
-#: backend.js:4975
+#: backend.js:5001
 msgctxt "title"
 msgid "Importing"
 msgstr "导入中"
 
-#: backend.js:4986
+#: backend.js:5012
 msgid "Import process finished"
 msgstr "导入过程已完成"
 
 #. translators: %d: total ticket count
-#: backend.js:5004
+#: backend.js:5030
 msgctxt "title"
 msgid ""
 "Your Limit of %d tickets is reached. Use the premium version to have "
 "unlimited tickets"
 msgstr "您已达到 %d 个票号的限制。使用高级版可创建无限量的票号"
 
-#: backend.js:5008
+#: backend.js:5034
 msgctxt "title"
 msgid "Amount"
 msgstr "数量"
 
-#: backend.js:5008 backend.js:5015
+#: backend.js:5034 backend.js:5041
 msgctxt "label"
 msgid "Not Ok"
 msgstr "失败"
 
-#: backend.js:5053
+#: backend.js:5079
 msgctxt "title"
 msgid "Export tickets"
 msgstr "导出门票"
 
-#: backend.js:5059
+#: backend.js:5085
 msgctxt "label"
 msgid "Export"
 msgstr "导出"
 
-#: backend.js:5072
+#: backend.js:5098
 msgctxt "title"
 msgid "Choose your export settings"
 msgstr "选择您的导出设置"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "label"
 msgid "Choose the delimiter for the column values"
 msgstr "选择列值的分隔符"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "option value"
 msgid "Comma"
 msgstr "逗号"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "option value"
 msgid "Semicolon"
 msgstr "分号"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "option value"
 msgid "Pipe"
 msgstr "竖线"
 
-#: backend.js:5074
+#: backend.js:5100
 msgctxt "label"
 msgid "Choose a file suffix"
 msgstr "选择文件后缀"
 
-#: backend.js:5076
+#: backend.js:5102
 msgctxt "option value"
 msgid "All"
 msgstr "全部"
 
-#: backend.js:5080
+#: backend.js:5106
 msgctxt "label"
 msgid "Limit export to ticket list"
 msgstr "将导出限制在某个门票列表"
 
-#: backend.js:5082
+#: backend.js:5108
 msgctxt "label"
 msgid "Choose a sorting field"
 msgstr "选择排序字段"
 
-#: backend.js:5082
+#: backend.js:5108
 msgctxt "option value"
 msgid "Creation date"
 msgstr "创建日期"
 
-#: backend.js:5082 backend.js:5891
+#: backend.js:5108 backend.js:5917
 msgid "Ticket number"
 msgstr "门票编号"
 
-#: backend.js:5082 backend.js:5891
+#: backend.js:5108 backend.js:5917
 msgid "Ticket display number"
 msgstr "格式化票号"
 
-#: backend.js:5082
+#: backend.js:5108
 msgctxt "option value"
 msgid "List name"
 msgstr "列表名称"
 
-#: backend.js:5083
+#: backend.js:5109
 msgctxt "label"
 msgid "Choose a sorting direction"
 msgstr "选择排序方向"
 
-#: backend.js:5083
+#: backend.js:5109
 msgctxt "option value"
 msgid "Ascending"
 msgstr "升序"
 
-#: backend.js:5083
+#: backend.js:5109
 msgctxt "option value"
 msgid "Descending"
 msgstr "降序"
 
-#: backend.js:5084
+#: backend.js:5110
 msgctxt "label"
 msgid "Set a range"
 msgstr "设置范围"
 
 #. translators: %d: total record count
-#: backend.js:5084
+#: backend.js:5110
 msgid "You have %d tickets stored."
 msgstr "您已存储了 %d 个票号。"
 
-#: backend.js:5084
+#: backend.js:5110
 msgid ""
 "Some systems are slow and the connection timeout interrupts the export, if "
 "you have too many tickets. In that case, you can export your tickets in "
@@ -7284,74 +7301,74 @@ msgstr ""
 "某些系统速度较慢，如果票券太多，连接超时会中断导出。在这种情况下，您可以分多"
 "步导出票券。例如：起始 0，数量 20000，然后起始 20001，数量 20000。"
 
-#: backend.js:5084
+#: backend.js:5110
 msgid "Enter your row start (0 = from the first)"
 msgstr "输入起始行（0 = 从第一条开始）"
 
-#: backend.js:5084
+#: backend.js:5110
 msgctxt "label"
 msgid "Enter amount of tickets"
 msgstr "输入门票数量"
 
-#: backend.js:5118
+#: backend.js:5144
 msgctxt "title"
 msgid "Edit List"
 msgstr "编辑列表"
 
-#: backend.js:5118
+#: backend.js:5144
 msgctxt "title"
 msgid "Add List"
 msgstr "添加列表"
 
 #. translators: %s: h4 option name
-#: backend.js:5148
+#: backend.js:5174
 msgid "Overrule %s per Ticket list"
 msgstr "使用此门票列表覆盖 %s"
 
-#: backend.js:5163
+#: backend.js:5189
 msgctxt "label"
 msgid "Overrule the ticket format settings"
 msgstr "覆盖票号格式设置"
 
-#: backend.js:5165
+#: backend.js:5191
 msgctxt "label"
 msgid "Note"
 msgstr "注意"
 
-#: backend.js:5165
+#: backend.js:5191
 msgid ""
 "Will be overridden if you set the ticket number format settings on the "
 "product!"
 msgstr "如果您在产品上设置了票券编号格式设置，此设置将被覆盖！"
 
-#: backend.js:5179
+#: backend.js:5205
 msgctxt "heading"
 msgid "Webhook"
 msgstr "Webhook"
 
-#: backend.js:5181
+#: backend.js:5207
 msgctxt "label"
 msgid ""
 "The webhook need to be activated first in the options to be executed, even "
 "if the URL is set here."
 msgstr "即使在此处设置了 URL，也需要先在选项中激活 Webhook 才能执行。"
 
-#: backend.js:5183
+#: backend.js:5209
 msgctxt "label"
 msgid "URL to your service if the WooCommerce ticket is sold"
 msgstr "WooCommerce 门票售出时指向您服务的 URL"
 
-#: backend.js:5187
+#: backend.js:5213
 msgctxt "heading"
 msgid "Tickets without a WooCommerce order"
 msgstr ""
 
-#: backend.js:5190
+#: backend.js:5216
 msgctxt "label"
 msgid "Tickets of this list may exist without an order"
 msgstr ""
 
-#: backend.js:5191
+#: backend.js:5217
 msgctxt "label"
 msgid ""
 "For numbers you generated yourself, for example printed cards. Those tickets "
@@ -7360,7 +7377,7 @@ msgid ""
 "WooCommerce keep the full check."
 msgstr ""
 
-#: backend.js:5194
+#: backend.js:5220
 msgctxt "label"
 msgid ""
 "Event window for these tickets (optional). Only used for tickets without an "
@@ -7368,144 +7385,144 @@ msgid ""
 "governed by the existing scanner options."
 msgstr ""
 
-#: backend.js:5203
+#: backend.js:5229
 msgctxt "label"
 msgid "Until"
 msgstr ""
 
-#: backend.js:5285
+#: backend.js:5311
 msgctxt "title"
 msgid "Edit Ticket"
 msgstr "编辑门票"
 
-#: backend.js:5285
+#: backend.js:5311
 msgctxt "title"
 msgid "Add Ticket"
 msgstr "添加门票"
 
-#: backend.js:5305 backend.js:5569
+#: backend.js:5331 backend.js:5595
 msgctxt "label"
 msgid "List"
 msgstr "列表"
 
-#: backend.js:5312
+#: backend.js:5338
 msgctxt "label"
 msgid "CVV - use 4 digits for best results"
 msgstr "CVV - 使用4位数字以获得最佳效果"
 
-#: backend.js:5314
+#: backend.js:5340
 msgid ""
 "If CVV is set, then your user will be asked to enter also the CVV to check "
 "the ticket number."
 msgstr "如果设置了CVV，用户在验证票号时还需要输入CVV。"
 
-#: backend.js:5320
+#: backend.js:5346
 msgctxt "option value"
 msgid "is activ"
 msgstr "有效"
 
-#: backend.js:5321
+#: backend.js:5347
 msgctxt "option value"
 msgid "is inactiv"
 msgstr "无效"
 
-#: backend.js:5322
+#: backend.js:5348
 msgctxt "label"
 msgid "is stolen"
 msgstr "已报失"
 
-#: backend.js:5354
+#: backend.js:5380
 msgid "Use the add option"
 msgstr "使用添加选项"
 
-#: backend.js:5396
+#: backend.js:5422
 msgctxt "label"
 msgid "Tickets"
 msgstr "门票"
 
-#: backend.js:5396 backend.js:5485
+#: backend.js:5422 backend.js:5511
 msgctxt "label"
 msgid "Delete All Tickets"
 msgstr "删除所有门票"
 
-#: backend.js:5413
+#: backend.js:5439
 msgid "Are you sure, you want to delete this list?"
 msgstr "您确定要删除此列表吗？"
 
-#: backend.js:5415
+#: backend.js:5441
 msgid "No ticket will be deleted. Just the list."
 msgstr "不会删除任何门票。只删除列表。"
 
-#: backend.js:5421
+#: backend.js:5447
 msgid "Check if list is used by products"
 msgstr "检查列表是否被产品使用"
 
-#: backend.js:5432
+#: backend.js:5458
 msgid "This list is still assigned to products:"
 msgstr "此列表仍分配给以下产品："
 
-#: backend.js:5444
+#: backend.js:5470
 msgid ""
 "Please reassign these products first, or uncheck the product check option."
 msgstr "请先重新分配这些产品，或取消选中产品检查选项。"
 
-#: backend.js:5445
+#: backend.js:5471
 msgid "Cannot delete list"
 msgstr "无法删除列表"
 
-#: backend.js:5456
+#: backend.js:5482
 msgctxt "title"
 msgid "Delete all tickets?"
 msgstr "删除所有门票？"
 
-#: backend.js:5457
+#: backend.js:5483
 msgid "Are you sure you want to delete ALL tickets from the list \"%s\"?"
 msgstr "您确定要从列表 \"%s\" 中删除所有门票吗？"
 
-#: backend.js:5457
+#: backend.js:5483
 msgid "This action cannot be undone!"
 msgstr "此操作无法撤销！"
 
-#: backend.js:5460
+#: backend.js:5486
 msgid "To confirm deletion, type DELETE in the field below:"
 msgstr "要确认删除，请在下方字段中输入 DELETE："
 
-#: backend.js:5464
+#: backend.js:5490
 msgctxt "title"
 msgid "Final confirmation"
 msgstr "最终确认"
 
-#: backend.js:5468
+#: backend.js:5494
 msgid "You must type DELETE to confirm."
 msgstr "您必须输入 DELETE 以确认。"
 
-#: backend.js:5472
+#: backend.js:5498
 msgid "Deleting..."
 msgstr "删除中..."
 
-#: backend.js:5490
+#: backend.js:5516
 msgid "%d tickets have been deleted."
 msgstr "%d 张门票已被删除。"
 
 #. translators: 1: deleted tickets, 2: total tickets
-#: backend.js:5498
+#: backend.js:5524
 msgid "%1$d of %2$d"
 msgstr ""
 
 #. translators: %s: title list of tickets
-#: backend.js:5528
+#: backend.js:5554
 msgid ""
 "Do you want to empty the \"%s\" table? All data will be lost. No ticket will "
 "be deleted. Just the lists."
 msgstr "您是否要清空 \"%s\" 表？所有数据将丢失。不会删除门票。仅清除列表。"
 
-#: backend.js:5528 backend.js:5529
+#: backend.js:5554 backend.js:5555
 msgctxt "title"
 msgid "List of tickets"
 msgstr "门票列表"
 
 #. translators: %s: title list of tickets
-#: backend.js:5529
+#: backend.js:5555
 msgid ""
 "Are you sure? You will not be able to restore the data, except you have a "
 "backup of your database. All data will be lost. No ticket will be deleted. "
@@ -7514,55 +7531,55 @@ msgstr ""
 "您确定吗？除非您有数据库备份，否则将无法恢复数据。所有数据将丢失。不会删除门"
 "票。仅清除列表。"
 
-#: backend.js:5541
+#: backend.js:5567
 msgid "Organize your tickets in lists. You can assign tickets to a list."
 msgstr "将门票整理到列表中。您可以将门票分配到列表中。"
 
 #. translators: 1: max possible lists amount 2: link to premium
-#: backend.js:5542
+#: backend.js:5568
 msgid "Max. %1$d list. Unlimited with %2$s"
 msgstr "最多 %1$d 个列表。使用 %2$s 可无限制"
 
-#: backend.js:5550
+#: backend.js:5576
 msgctxt "label"
 msgid "Confirmed Count"
 msgstr "确认次数"
 
-#: backend.js:5553
+#: backend.js:5579
 msgctxt "label"
 msgid "Customer"
 msgstr "客户"
 
-#: backend.js:5557
+#: backend.js:5583
 msgctxt "label"
 msgid "Company"
 msgstr "公司"
 
-#: backend.js:5561
+#: backend.js:5587
 msgctxt "label"
 msgid "Redeem Amount"
 msgstr "核销次数"
 
-#: backend.js:5564
+#: backend.js:5590
 msgctxt "label"
 msgid "Order line details"
 msgstr ""
 
-#: backend.js:5568 ticket_scanner.js:1461
+#: backend.js:5594 ticket_scanner.js:1461
 msgctxt "label"
 msgid "Ticket"
 msgstr "门票"
 
-#: backend.js:5572 backend.js:5915
+#: backend.js:5598 backend.js:5941
 msgctxt "label"
 msgid "OrderId"
 msgstr "订单号"
 
-#: backend.js:5589
+#: backend.js:5615
 msgid "You need to create a ticket list first before you can add tickets."
 msgstr "您需要先创建票务列表，然后才能添加门票。"
 
-#: backend.js:5592
+#: backend.js:5618
 msgid ""
 "You reached maximum amount of tickets. You need to delete tickets before you "
 "can add more new tickets or buy the premium version to have unlimited "
@@ -7571,257 +7588,257 @@ msgstr ""
 "您已达到门票数量上限。您需要删除门票才能添加更多门票，或购买高级版以获得无限"
 "量的门票。"
 
-#: backend.js:5612
+#: backend.js:5638
 msgctxt "label"
 msgid "Export tickets"
 msgstr "导出门票"
 
-#: backend.js:5619
+#: backend.js:5645
 msgctxt "option value"
 msgid "Bulk Action"
 msgstr "批量操作"
 
-#: backend.js:5641
+#: backend.js:5667
 msgctxt "title"
 msgid "Bulk Action"
 msgstr "批量操作"
 
-#: backend.js:5641
+#: backend.js:5667
 msgid "Please select at least one ticket first."
 msgstr "请先至少选择一张票。"
 
-#: backend.js:5647
+#: backend.js:5673
 msgctxt "option value"
 msgid "Default search filter"
 msgstr "默认搜索筛选"
 
-#: backend.js:5648
+#: backend.js:5674
 msgctxt "option value"
 msgid "Filter for list id"
 msgstr "按列表 ID 筛选"
 
-#: backend.js:5649
+#: backend.js:5675
 msgctxt "option value"
 msgid "Filter for order id"
 msgstr "按订单 ID 筛选"
 
-#: backend.js:5650
+#: backend.js:5676
 msgctxt "option value"
 msgid "Filter for cvv value"
 msgstr "按 CVV 值筛选"
 
-#: backend.js:5651
+#: backend.js:5677
 msgctxt "option value"
 msgid "Filter for status (1:active, 0:inactive, 2:stolen)"
 msgstr "按状态筛选（1:有效, 0:无效, 2:被盗）"
 
-#: backend.js:5652
+#: backend.js:5678
 msgctxt "option value"
 msgid "Filter for redeemed status (0:not redeemed yet, 1:redeemed)"
 msgstr "按兑换状态筛选（0:尚未兑换, 1:已兑换）"
 
-#: backend.js:5653
+#: backend.js:5679
 msgctxt "option value"
 msgid "Filter for registered user id"
 msgstr "按注册用户 ID 筛选"
 
-#: backend.js:5654
+#: backend.js:5680
 msgctxt "option value"
 msgid "Filter for customer name in billing first and last name"
 msgstr "按账单姓名筛选客户"
 
-#: backend.js:5655
+#: backend.js:5681
 msgctxt "option value"
 msgid "Filter for product id"
 msgstr "按产品 ID 筛选"
 
-#: backend.js:5656
+#: backend.js:5682
 msgctxt "option value"
 msgid "Filter for chosen date (enter YYYY-MM-DD)"
 msgstr "按选定日期筛选（输入 YYYY-MM-DD）"
 
 #. translators: 1: max amount tickets 2: premium link
-#: backend.js:5673
+#: backend.js:5699
 msgid "Max. %1$d tickets. Unlimited with %2$s"
 msgstr "最多 %1$d 张门票。使用 %2$s 可无限制"
 
-#: backend.js:5717
+#: backend.js:5743
 msgctxt "label"
 msgid "stolen"
 msgstr "被盗"
 
-#: backend.js:5721
+#: backend.js:5747
 msgid "used"
 msgstr ""
 
-#: backend.js:5721
+#: backend.js:5747
 msgid "active"
 msgstr "有效"
 
-#: backend.js:5724
+#: backend.js:5750
 msgctxt "label"
 msgid "is inactiv"
 msgstr "已停用"
 
-#: backend.js:5793
+#: backend.js:5819
 msgid "You have no tickets yet."
 msgstr "您还没有门票。"
 
-#: backend.js:5797
+#: backend.js:5823
 msgid ""
 "Or add ticket numbers to a ticket list yourself - with the \"Add\" button "
 "above. Useful for printed cards you hand out at the door."
 msgstr ""
 
 #. translators: 1: amount tickets 2: total amount tickets
-#: backend.js:5806
+#: backend.js:5832
 msgid "Redeemed tickets: %1$d (filtered) of %2$d (total redeemed tickets)"
 msgstr "已核销门票：%1$d（已筛选）/ %2$d（总核销数）"
 
-#: backend.js:5831
+#: backend.js:5857
 msgid "Are you sure, you want to delete this ticket?"
 msgstr "您确定要删除此门票吗？"
 
-#: backend.js:5861
+#: backend.js:5887
 msgctxt "label"
 msgid "Display QR with ticket number"
 msgstr "显示含票号的QR码"
 
-#: backend.js:5863 backend.js:5869 backend.js:5876 backend.js:5884
+#: backend.js:5889 backend.js:5895 backend.js:5902 backend.js:5910
 msgctxt "label"
 msgid "This QR image contains"
 msgstr "此QR图片包含"
 
-#: backend.js:5864 backend.js:5870 backend.js:5877
+#: backend.js:5890 backend.js:5896 backend.js:5903
 msgctxt "title"
 msgid "QR with ticket number"
 msgstr "QR码包含票号"
 
-#: backend.js:5867
+#: backend.js:5893
 msgctxt "label"
 msgid "Display QR with PUBLIC ticket number"
 msgstr "使用公开票号显示 QR"
 
-#: backend.js:5869 backend.js:5876
+#: backend.js:5895 backend.js:5902
 msgctxt "label"
 msgid "Can be used with the ticket scanner"
 msgstr "可与票务扫描器配合使用"
 
-#: backend.js:5874
+#: backend.js:5900
 msgctxt "label"
 msgid "Display QR with your own QR content"
 msgstr "使用您自己的 QR 内容显示 QR"
 
-#: backend.js:5881
+#: backend.js:5907
 msgctxt "label"
 msgid "Display QR with URL"
 msgstr "显示含URL的QR码"
 
-#: backend.js:5885
+#: backend.js:5911
 msgctxt "title"
 msgid "QR with URL and code"
 msgstr "带 URL 和代码的 QR"
 
-#: backend.js:5891
+#: backend.js:5917
 msgctxt "label"
 msgid "Code Verification Value (CVV)"
 msgstr "代码验证值（CVV）"
 
-#: backend.js:5894
+#: backend.js:5920
 msgid "CVV attempts:"
 msgstr "CVV 尝试次数："
 
-#: backend.js:5895
+#: backend.js:5921
 msgid "Last attempt:"
 msgstr "最后一次尝试："
 
-#: backend.js:5897
+#: backend.js:5923
 msgid "LOCKED — too many wrong attempts"
 msgstr "已锁定 — 错误尝试次数过多"
 
-#: backend.js:5899
+#: backend.js:5925
 msgid "Reset CVV attempts"
 msgstr "重置 CVV 尝试次数"
 
-#: backend.js:5901
+#: backend.js:5927
 msgid "Reset CVV attempt counter and unlock this ticket?"
 msgstr "重置 CVV 尝试计数器并解锁此门票？"
 
-#: backend.js:5911
+#: backend.js:5937
 msgctxt "title"
 msgid "WooCommerce Order"
 msgstr "WooCommerce 订单"
 
-#: backend.js:5913
+#: backend.js:5939
 msgid "WooCommerce not found"
 msgstr "未找到 WooCommerce"
 
-#: backend.js:5915
+#: backend.js:5941
 msgctxt "label"
 msgid "Show in WooCommerce Orders"
 msgstr "在 WooCommerce 订单中显示"
 
-#: backend.js:5918 backend.js:5958
+#: backend.js:5944 backend.js:5984
 msgctxt "label"
 msgid "Order from"
 msgstr "订单日期"
 
-#: backend.js:5920
+#: backend.js:5946
 msgctxt "label"
 msgid "Order Status"
 msgstr "订单状态"
 
-#: backend.js:5923
+#: backend.js:5949
 msgctxt "label"
 msgid "Billing Email"
 msgstr "账单电子邮件"
 
-#: backend.js:5925 backend.js:5959
+#: backend.js:5951 backend.js:5985
 msgctxt "label"
 msgid "Product Id"
 msgstr "产品ID"
 
-#: backend.js:5925 backend.js:5959
+#: backend.js:5951 backend.js:5985
 msgctxt "label"
 msgid "Show Product"
 msgstr "查看产品"
 
-#: backend.js:5927
+#: backend.js:5953
 msgctxt "label"
 msgid "Product"
 msgstr "产品"
 
-#: backend.js:5930
+#: backend.js:5956
 msgctxt "label"
 msgid "Variation"
 msgstr "变体"
 
-#: backend.js:5935
+#: backend.js:5961
 msgid "Related Subscriptions"
 msgstr "相关订阅"
 
-#: backend.js:5937
+#: backend.js:5963
 msgctxt "label"
 msgid "Subscription Id"
 msgstr "订阅 ID"
 
-#: backend.js:5937
+#: backend.js:5963
 msgctxt "label"
 msgid "Show Subscription"
 msgstr "显示订阅"
 
-#: backend.js:5941
+#: backend.js:5967
 msgctxt "label"
 msgid "Delete WooCommerce order info for this ticket"
 msgstr "删除此门票的 WooCommerce 订单信息"
 
-#: backend.js:5942
+#: backend.js:5968
 msgctxt "title"
 msgid "Remove order"
 msgstr "移除订单"
 
 #. translators: %s: ticket number
-#: backend.js:5942
+#: backend.js:5968
 msgid ""
 "Do you really want to remove your order information of this ticket \"%s\"? "
 "This will also remove the ticket number from the order! For the PREMIUM "
@@ -7836,30 +7853,30 @@ msgstr ""
 "移除票号。对于基础版插件：将从订单中所有项目移除所有票号。点击OK继续移除操"
 "作。"
 
-#: backend.js:5951
+#: backend.js:5977
 msgid "WooCommerce ticket sale"
 msgstr "WooCommerce 门票销售"
 
-#: backend.js:5954
+#: backend.js:5980
 msgid "WooCommerce Purchase Restriction"
 msgstr "WooCommerce 购买限制码"
 
-#: backend.js:5957 backend.js:5969
+#: backend.js:5983 backend.js:5995
 msgctxt "label"
 msgid "Used for Order ID"
 msgstr "用于订单号"
 
-#: backend.js:5957
+#: backend.js:5983
 msgctxt "label"
 msgid "Open WooCommerce Order"
 msgstr "打开 WooCommerce 订单"
 
-#: backend.js:5960 backend.js:5961
+#: backend.js:5986 backend.js:5987
 msgid "Remove purchase ticket information"
 msgstr "移除购买门票信息"
 
 #. translators: %s: ticket nummer
-#: backend.js:5961
+#: backend.js:5987
 msgid ""
 "Do you really want to remove the purchase ticket information from the order "
 "of this ticket \"%s\"? This will remove the also the ticket(s) from the "
@@ -7869,69 +7886,69 @@ msgstr ""
 "您确定要从订单中移除票号\"%s\"的购买门票信息吗？这也会从订单项目中移除票号！"
 "之后该票号可以重新用于购买。点击Ok继续移除操作。"
 
-#: backend.js:5973
+#: backend.js:5999
 msgctxt "title"
 msgid "Registered user"
 msgstr "已注册用户"
 
-#: backend.js:5979
+#: backend.js:6005
 msgctxt "title"
 msgid "IP list checked for this ticket"
 msgstr "查验过此门票的IP列表"
 
-#: backend.js:6039
+#: backend.js:6065
 msgctxt "title"
 msgid "Error"
 msgstr "错误"
 
-#: backend.js:6385
+#: backend.js:6411
 msgid "Redeemed via authtoken:"
 msgstr "通过 authtoken 核销："
 
-#: backend.js:6405
+#: backend.js:6431
 msgctxt "label"
 msgid "Congress"
 msgstr ""
 
-#: backend.js:6405
+#: backend.js:6431
 msgctxt "label"
 msgid "Open congress page"
 msgstr ""
 
-#: backend.js:6408
+#: backend.js:6434
 msgid "Wallet Test"
 msgstr "钱包测试"
 
-#: backend.js:6408
+#: backend.js:6434
 msgid "Import ticket to Vollstart Wallet for testing"
 msgstr "将门票导入 Vollstart Wallet 进行测试"
 
-#: backend.js:6766
+#: backend.js:6792
 msgctxt "option"
 msgid "Remove marked as used"
 msgstr "移除已使用标记"
 
-#: backend.js:6781
+#: backend.js:6807
 msgctxt "option"
 msgid "Delete Redeem Information"
 msgstr "删除兑换信息"
 
-#: backend.js:6796
+#: backend.js:6822
 msgctxt "option"
 msgid "Generate ticket PDF"
 msgstr "生成门票 PDF"
 
-#: backend.js:6809
+#: backend.js:6835
 msgctxt "option"
 msgid "Generate badge ticket"
 msgstr "生成徽章门票"
 
-#: backend.js:6822
+#: backend.js:6848
 msgctxt "option"
 msgid "Move to ticket list"
 msgstr "移动到票务列表"
 
-#: backend.js:6825
+#: backend.js:6851
 msgctxt "label"
 msgid "Assign selected tickets to this ticket list"
 msgstr "将选中的门票分配到此票务列表"
@@ -9275,6 +9292,12 @@ msgstr ""
 #: wc_frontend.js:176
 msgid "This code is not valid for this product."
 msgstr ""
+
+#~ msgid ""
+#~ "Enable PDF ticket attachment in emails? Customers receive their tickets "
+#~ "as PDF directly in the order confirmation email."
+#~ msgstr ""
+#~ "在邮件中启用 PDF 门票附件？客户将在订单确认邮件中直接收到 PDF 格式的门票。"
 
 #~ msgid "A new premium version is available!"
 #~ msgstr "有新的高级版本可用！"

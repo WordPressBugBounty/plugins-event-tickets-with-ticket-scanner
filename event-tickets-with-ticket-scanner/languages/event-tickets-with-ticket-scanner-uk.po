@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Serial Codes Generator and Validator 2.9.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/event-tickets-"
 "with-ticket-scanner\n"
-"POT-Creation-Date: 2026-08-26T07:30:15+00:00\n"
+"POT-Creation-Date: 2026-09-02T14:57:24+00:00\n"
 "PO-Revision-Date: 2026-03-24 18:00+0100\n"
 "Last-Translator: \n"
 "Language-Team: Hungarian\n"
@@ -81,19 +81,19 @@ msgid "Loading…"
 msgstr "Завантаження…"
 
 #: includes/seating/class-seating-admin.php:388
-#: includes/seating/class-seating-admin.php:1035
+#: includes/seating/class-seating-admin.php:1060
 #: sasoEventtickets_Seating.php:455 js/seating_admin.js:21
 msgid "Seating plan created successfully"
 msgstr "Схему розсадки успішно створено"
 
 #: includes/seating/class-seating-admin.php:413
-#: includes/seating/class-seating-admin.php:1036
+#: includes/seating/class-seating-admin.php:1061
 #: sasoEventtickets_Seating.php:447 js/seating_admin.js:22
 msgid "Seating plan updated successfully"
 msgstr "Схему розсадки успішно оновлено"
 
 #: includes/seating/class-seating-admin.php:436
-#: includes/seating/class-seating-admin.php:1037
+#: includes/seating/class-seating-admin.php:1062
 #: sasoEventtickets_Seating.php:472 js/seating_admin.js:23
 msgid "Seating plan deleted successfully"
 msgstr "Схему розсадки успішно видалено"
@@ -103,7 +103,7 @@ msgid "Seating plan cloned successfully"
 msgstr "Схему розсадки успішно клоновано"
 
 #: includes/seating/class-seating-admin.php:513
-#: includes/seating/class-seating-admin.php:1038
+#: includes/seating/class-seating-admin.php:1063
 #: sasoEventtickets_Seating.php:519 js/seating_admin.js:25
 msgid "Seat created successfully"
 msgstr "Місце успішно створено"
@@ -115,7 +115,7 @@ msgid "%d seats created successfully"
 msgstr "%d місць успішно створено"
 
 #: includes/seating/class-seating-admin.php:595
-#: includes/seating/class-seating-admin.php:1040
+#: includes/seating/class-seating-admin.php:1065
 #: sasoEventtickets_Seating.php:508 js/seating_admin.js:27
 msgid "Seat updated successfully"
 msgstr "Місце оновлено успішно"
@@ -126,7 +126,7 @@ msgid "%d seats updated successfully"
 msgstr "%d місць успішно оновлено"
 
 #: includes/seating/class-seating-admin.php:660
-#: includes/seating/class-seating-admin.php:1041
+#: includes/seating/class-seating-admin.php:1066
 #: sasoEventtickets_Seating.php:615 js/seating_admin.js:28
 msgid "Seat deleted successfully"
 msgstr "Місце успішно видалено"
@@ -136,59 +136,59 @@ msgstr "Місце успішно видалено"
 msgid "%d seats deleted successfully"
 msgstr "%d місць успішно видалено"
 
-#: includes/seating/class-seating-admin.php:796
-#: includes/seating/class-seating-admin.php:1052
+#: includes/seating/class-seating-admin.php:815
+#: includes/seating/class-seating-admin.php:1077
 msgid "Draft saved successfully"
 msgstr "Чернетку успішно збережено"
 
-#: includes/seating/class-seating-admin.php:866
-#: includes/seating/class-seating-admin.php:1054
+#: includes/seating/class-seating-admin.php:891
+#: includes/seating/class-seating-admin.php:1079
 msgid "Seating plan published successfully"
 msgstr "Схему розсадки успішно опубліковано"
 
-#: includes/seating/class-seating-admin.php:889
-#: includes/seating/class-seating-admin.php:1053
+#: includes/seating/class-seating-admin.php:914
+#: includes/seating/class-seating-admin.php:1078
 msgid "Draft changes discarded"
 msgstr "Зміни чернетки скасовано"
 
-#: includes/seating/class-seating-admin.php:1033 js/seating_admin.js:19
+#: includes/seating/class-seating-admin.php:1058 js/seating_admin.js:19
 msgid "Are you sure you want to delete this?"
 msgstr "Ви впевнені, що хочете це видалити?"
 
-#: includes/seating/class-seating-admin.php:1034 js/seating_admin.js:20
+#: includes/seating/class-seating-admin.php:1059 js/seating_admin.js:20
 msgid "This plan has seats. Delete plan and all seats?"
 msgstr "Цей план має місця. Видалити план і всі місця?"
 
-#: includes/seating/class-seating-admin.php:1039 js/seating_admin.js:26
+#: includes/seating/class-seating-admin.php:1064 js/seating_admin.js:26
 msgid "Seats created successfully"
 msgstr "Місця успішно створено"
 
-#: includes/seating/class-seating-admin.php:1042 js/seating_admin.js:29
+#: includes/seating/class-seating-admin.php:1067 js/seating_admin.js:29
 msgid "Limit reached. Upgrade to Premium for unlimited access."
 msgstr "Досягнуто ліміту. Перейдіть на Premium для необмеженого доступу."
 
-#: includes/seating/class-seating-admin.php:1043 js/seating_admin.js:30
+#: includes/seating/class-seating-admin.php:1068 js/seating_admin.js:30
 msgid "An error occurred. Please try again."
 msgstr "Сталася помилка. Будь ласка, спробуйте ще раз."
 
-#: includes/seating/class-seating-admin.php:1044 js/seating_admin.js:31
+#: includes/seating/class-seating-admin.php:1069 js/seating_admin.js:31
 #: js/seating_frontend.js:1160 js/seating_frontend.js:1251
 msgid "Loading..."
 msgstr "Завантаження..."
 
-#: includes/seating/class-seating-admin.php:1045 js/seating_admin.js:32
+#: includes/seating/class-seating-admin.php:1070 js/seating_admin.js:32
 msgid "No seating plans found. Create your first plan!"
 msgstr "Планів розміщення не знайдено. Створіть свій перший план!"
 
-#: includes/seating/class-seating-admin.php:1046 js/seating_admin.js:33
+#: includes/seating/class-seating-admin.php:1071 js/seating_admin.js:33
 msgid "No seats in this plan. Add seats below."
 msgstr "У цьому плані немає місць. Додайте місця нижче."
 
-#: includes/seating/class-seating-admin.php:1047 js/seating_admin.js:34
+#: includes/seating/class-seating-admin.php:1072 js/seating_admin.js:34
 msgid "Simple Layout (Dropdown)"
 msgstr "Простий макет (випадний список)"
 
-#: includes/seating/class-seating-admin.php:1048 js/seating_admin.js:35
+#: includes/seating/class-seating-admin.php:1073 js/seating_admin.js:35
 msgid ""
 "Customers will see a dropdown menu to select their seat. Available seats are "
 "shown in a list sorted by identifier. This is ideal for smaller venues or "
@@ -199,11 +199,11 @@ msgstr ""
 "підходить для невеликих місць проведення або коли візуальний вибір місць не "
 "потрібен."
 
-#: includes/seating/class-seating-admin.php:1049 js/seating_admin.js:36
+#: includes/seating/class-seating-admin.php:1074 js/seating_admin.js:36
 msgid "Visual Layout (Seat Map)"
 msgstr "Візуальне компонування (карта місць)"
 
-#: includes/seating/class-seating-admin.php:1050 js/seating_admin.js:37
+#: includes/seating/class-seating-admin.php:1075 js/seating_admin.js:37
 msgid ""
 "Customers will see an interactive seat map where they can click on available "
 "seats. Occupied seats are shown in a different color. This provides a visual "
@@ -213,35 +213,35 @@ msgstr ""
 "місця. Зайняті місця відображаються іншим кольором. Це дає візуальний огляд "
 "місця проведення. (Преміум-функція)"
 
-#: includes/seating/class-seating-admin.php:1055
+#: includes/seating/class-seating-admin.php:1080
 msgid "You have unpublished changes"
 msgstr "У вас є неопубліковані зміни"
 
-#: includes/seating/class-seating-admin.php:1056
+#: includes/seating/class-seating-admin.php:1081
 msgid "Last published:"
 msgstr "Востаннє опубліковано:"
 
-#: includes/seating/class-seating-admin.php:1057
+#: includes/seating/class-seating-admin.php:1082
 msgid "Never published"
 msgstr "Ніколи не публікувалось"
 
-#: includes/seating/class-seating-admin.php:1058
+#: includes/seating/class-seating-admin.php:1083
 msgid "Discard all unsaved changes and revert to published version?"
 msgstr ""
 "Скасувати всі незбережені зміни та повернутися до опублікованої версії?"
 
-#: includes/seating/class-seating-admin.php:1059
+#: includes/seating/class-seating-admin.php:1084
 msgid "Publish changes? This will make them visible to customers."
 msgstr "Опублікувати зміни? Це зробить їх видимими для клієнтів."
 
-#: includes/seating/class-seating-admin.php:1060
+#: includes/seating/class-seating-admin.php:1085
 msgid ""
 "Cannot publish: The following seats have sold tickets and cannot be deleted:"
 msgstr ""
 "Не вдається опублікувати: наступні місця мають продані квитки і не можуть "
 "бути видалені:"
 
-#: includes/seating/class-seating-admin.php:1061
+#: includes/seating/class-seating-admin.php:1086
 msgid ""
 "Warning: This seating plan has active ticket sales. Changes will only be "
 "visible after publishing."
@@ -249,13 +249,13 @@ msgstr ""
 "Попередження: Цей план розсадки має активні продажі квитків. Зміни будуть "
 "видимі лише після публікації."
 
-#: includes/seating/class-seating-admin.php:1062
+#: includes/seating/class-seating-admin.php:1087
 #, php-format
 msgid "%d tickets sold"
 msgstr "%d квитків продано"
 
 #: includes/seating/class-seating-frontend.php:415
-#: includes/woocommerce/class-frontend.php:308
+#: includes/woocommerce/class-frontend.php:347
 #: sasoEventtickets_AdminSettings.php:271 sasoEventtickets_Frontend.php:26
 #: sasoEventtickets_Seating.php:391
 #, php-format
@@ -333,11 +333,11 @@ msgstr "Схему розсадки успішно опубліковано."
 msgid "Unknown"
 msgstr "Невідомо"
 
-#: includes/seating/class-seating-plan.php:982
+#: includes/seating/class-seating-plan.php:1043
 msgid "Source seating plan not found."
 msgstr "Вихідний план розсадження не знайдено."
 
-#: includes/seating/class-seating-plan.php:1004
+#: includes/seating/class-seating-plan.php:1065
 msgid "Failed to create cloned seating plan."
 msgstr "Не вдалося створити клоновану схему розсадки."
 
@@ -396,63 +396,63 @@ msgstr "Відкрити %s"
 msgid "Open your congress page"
 msgstr "Відкрити сторінку вашого конгресу"
 
-#: includes/woocommerce/class-frontend.php:763
+#: includes/woocommerce/class-frontend.php:806
 msgid ""
 "Date locked: Seats are selected for this date. Remove item to change date."
 msgstr ""
 "Дату заблоковано: Місця вибрано на цю дату. Видаліть позицію, щоб змінити "
 "дату."
 
-#: includes/woocommerce/class-frontend.php:790
+#: includes/woocommerce/class-frontend.php:833
 msgid "Note:"
 msgstr "Megjegyzés:"
 
-#: includes/woocommerce/class-frontend.php:791
+#: includes/woocommerce/class-frontend.php:834
 msgid "Please select your seats on the product page before checkout."
 msgstr ""
 "Будь ласка, виберіть ваші місця на сторінці товару перед оформленням "
 "замовлення."
 
-#: includes/woocommerce/class-frontend.php:822
+#: includes/woocommerce/class-frontend.php:865
 msgid "Seats:"
 msgstr "Місця:"
 
-#: includes/woocommerce/class-frontend.php:823
+#: includes/woocommerce/class-frontend.php:866
 msgid "Seat:"
 msgstr "Місце:"
 
 #. translators: %s: name of product
-#: includes/woocommerce/class-frontend.php:1023
+#: includes/woocommerce/class-frontend.php:1066
 #, php-format
 msgid "The product \"%s\" requires a restriction code for checkout."
 msgstr "Товар \"%s\" потребує код обмеження для оформлення замовлення."
 
 #. translators: 1: restriction code number 2: name of product
-#: includes/woocommerce/class-frontend.php:1036
+#: includes/woocommerce/class-frontend.php:1079
 #, php-format
 msgid "The restriction code \"%1$s\" for product \"%2$s\" is already used."
 msgstr "Код обмеження \"%1$s\" для товару \"%2$s\" вже використано."
 
 #. translators: 1: restriction code number 2: name of product
-#: includes/woocommerce/class-frontend.php:1050
+#: includes/woocommerce/class-frontend.php:1093
 #, php-format
 msgid "The restriction code \"%1$s\" for product \"%2$s\" is not valid."
 msgstr "Код обмеження \"%1$s\" для товару \"%2$s\" недійсний."
 
 #. translators: %s: product name
-#: includes/woocommerce/class-frontend.php:1258
+#: includes/woocommerce/class-frontend.php:1301
 #, php-format
 msgid "Online sales for \"%s\" have closed."
 msgstr ""
 
 #. translators: %s: product name
-#: includes/woocommerce/class-frontend.php:1307
+#: includes/woocommerce/class-frontend.php:1350
 #, php-format
 msgid "Online sales for \"%s\" have closed, so it was removed from your cart."
 msgstr ""
 
 #. translators: 1: product name 2: seat labels
-#: includes/woocommerce/class-frontend.php:1512
+#: includes/woocommerce/class-frontend.php:1555
 #, php-format
 msgid ""
 "\"%1$s\" was removed from your cart because the seat reservation expired: "
@@ -462,7 +462,7 @@ msgstr ""
 "закінчився: %2$s"
 
 #. translators: 1: product name 2: seat labels
-#: includes/woocommerce/class-frontend.php:1523
+#: includes/woocommerce/class-frontend.php:1566
 #, php-format
 msgid ""
 "The seat reservation for \"%1$s\" has expired: %2$s. Please select your "
@@ -471,39 +471,48 @@ msgstr ""
 "Бронювання місць для \"%1$s\" закінчилося: %2$s. Будь ласка, оберіть місця "
 "знову."
 
-#: includes/woocommerce/class-frontend.php:1820
+#. translators: 1: product name
+#: includes/woocommerce/class-frontend.php:1664
+#, php-format
+msgid ""
+"\"%1$s\" requires a seat selection. Please go back to the product page and "
+"select your seat."
+msgstr "«%1$s» потребує вибору місця. Будь ласка, поверніться на сторінку"
+"товару та виберіть своє місце."
+
+#: includes/woocommerce/class-frontend.php:1930
 msgid "Security check failed. Please reload page."
 msgstr "Перевірка безпеки не пройдена. Перезавантажте сторінку."
 
-#: includes/woocommerce/class-frontend.php:1889
+#: includes/woocommerce/class-frontend.php:2005
 #, php-format
 msgid "Please select %d seat(s) before adding to cart."
 msgstr "Будь ласка, виберіть %d місце(ць) перед додаванням у кошик."
 
-#: includes/woocommerce/class-frontend.php:1901
+#: includes/woocommerce/class-frontend.php:2017
 #, php-format
 msgid "Please select exactly %d seat(s). You have selected %d."
 msgstr "Будь ласка, виберіть рівно %d місце(ць). Ви вибрали %d."
 
-#: includes/woocommerce/class-frontend.php:1928
+#: includes/woocommerce/class-frontend.php:2044
 msgid "Invalid seat selection. Please reload the page and try again."
 msgstr ""
 "Недійсний вибір місця. Будь ласка, перезавантажте сторінку та спробуйте ще "
 "раз."
 
-#: includes/woocommerce/class-frontend.php:1942
-#: includes/woocommerce/class-frontend.php:1964
+#: includes/woocommerce/class-frontend.php:2058
+#: includes/woocommerce/class-frontend.php:2080
 #, php-format
 msgid "Seat \"%s\" is no longer available. Please choose another seat."
 msgstr "Місце «%s» більше недоступне. Будь ласка, виберіть інше."
 
-#: includes/woocommerce/class-frontend.php:1965
+#: includes/woocommerce/class-frontend.php:2081
 #, php-format
 msgid "Invalid seat selection: %s. Please try again."
 msgstr "Недійсний вибір місця: %s. Будь ласка, спробуйте ще раз."
 
 #. translators: 1: product name 2: seat count
-#: includes/woocommerce/class-frontend.php:2329
+#: includes/woocommerce/class-frontend.php:2445
 #, php-format
 msgid ""
 "Cannot change quantity for \"%1$s\": %2$d seat(s) are selected. Remove the "
@@ -513,7 +522,7 @@ msgstr ""
 "товар і додайте знову, щоб змінити кількість."
 
 #. translators: 1: product name 2: seat count
-#: includes/woocommerce/class-frontend.php:2345
+#: includes/woocommerce/class-frontend.php:2461
 #, php-format
 msgid ""
 "Cannot increase quantity for \"%1$s\" beyond %2$d: you have selected %2$d "
@@ -562,7 +571,7 @@ msgstr "День(ів) на квиток"
 #: includes/woocommerce/class-order.php:864
 #: includes/woocommerce/class-order.php:870
 #: includes/woocommerce/class-order.php:1115 sasoEventtickets_Options.php:657
-#: sasoEventtickets_Ticket.php:1073 backend.js:6369 js/seating_admin.js:1481
+#: sasoEventtickets_Ticket.php:1073 backend.js:6395 js/seating_admin.js:1481
 msgid "Seat"
 msgstr "Місце"
 
@@ -617,7 +626,7 @@ msgid "Event Tickets"
 msgstr "Event Tickets"
 
 #: includes/woocommerce/class-product.php:81 woocommerce-hooks.php:229
-#: woocommerce-hooks.php:238 backend.js:4819 backend.js:5599 backend.js:5600
+#: woocommerce-hooks.php:238 backend.js:4845 backend.js:5625 backend.js:5626
 msgctxt "title"
 msgid "Event Tickets"
 msgstr "Event Tickets"
@@ -1125,7 +1134,7 @@ msgstr "Запитувати ім'я для кожного квитка"
 #: includes/woocommerce/class-product.php:876
 #: includes/woocommerce/class-product.php:894
 #: includes/woocommerce/class-product.php:908
-#: includes/woocommerce/class-product.php:942 backend.js:1328
+#: includes/woocommerce/class-product.php:942 backend.js:1334
 msgid "Yes"
 msgstr "Igen"
 
@@ -1233,7 +1242,7 @@ msgstr "неприпустимий product_id"
 msgid "invalid date format — expected Y-m-d"
 msgstr "неправильний формат дати — очікується Y-m-d"
 
-#: index.php:142 backend.js:5891
+#: index.php:142 backend.js:5917
 msgid "is active"
 msgstr "активний"
 
@@ -1786,7 +1795,7 @@ msgid ""
 "takes to sell tickets."
 msgstr ""
 
-#: sasoEventtickets_AdminSettings.php:1085 backend.js:4625
+#: sasoEventtickets_AdminSettings.php:1085 backend.js:4631
 msgid "Open products"
 msgstr ""
 
@@ -1966,55 +1975,55 @@ msgstr ""
 
 #: sasoEventtickets_Core.php:246 sasoEventtickets_Core.php:256
 #: sasoEventtickets_Core.php:266 sasoEventtickets_Core.php:276
-#: sasoEventtickets_Core.php:302
+#: sasoEventtickets_Core.php:310
 msgid "USERID DO NOT EXISTS"
 msgstr "USERID НЕ ІСНУЄ"
 
-#: sasoEventtickets_Core.php:293
+#: sasoEventtickets_Core.php:301
 msgid "AUTHTOKEN DELETED"
 msgstr "ТОКЕН АВТОРИЗАЦІЇ ВИДАЛЕНО"
 
-#: sasoEventtickets_Core.php:357
+#: sasoEventtickets_Core.php:365
 msgid "Value given by the user during the code registration."
 msgstr "Значення, надане користувачем під час реєстрації коду."
 
-#: sasoEventtickets_Core.php:358
+#: sasoEventtickets_Core.php:366
 msgid "IP address of the user, register to a code."
 msgstr "IP-адреса користувача, зареєстрована на код."
 
-#: sasoEventtickets_Core.php:359
+#: sasoEventtickets_Core.php:367
 msgid "User id of the registered user to a code. Default will be 0."
 msgstr "ID користувача, зареєстрованого на код. За замовчуванням буде 0."
 
-#: sasoEventtickets_Core.php:360
+#: sasoEventtickets_Core.php:368
 msgid "IP addres of the user that used the code."
 msgstr "IP-адреса користувача, який використав код."
 
-#: sasoEventtickets_Core.php:361
+#: sasoEventtickets_Core.php:369
 msgid "Amount of how many times the code was validated successfully."
 msgstr "Кількість успішних перевірок коду."
 
-#: sasoEventtickets_Core.php:362
+#: sasoEventtickets_Core.php:370
 msgid "WooCommerce order id assigned to the code."
 msgstr "ID замовлення WooCommerce, призначений коду."
 
-#: sasoEventtickets_Core.php:363
+#: sasoEventtickets_Core.php:371
 msgid "WooCommerce product id assigned to the code."
 msgstr "ID продукту WooCommerce, призначений коду."
 
-#: sasoEventtickets_Core.php:364
+#: sasoEventtickets_Core.php:372
 msgid "Creation date of the WooCommerce sales date."
 msgstr "Дата створення дати продажу WooCommerce."
 
-#: sasoEventtickets_Core.php:365
+#: sasoEventtickets_Core.php:373
 msgid "Creation date of the WooCommerce sales date timezone."
 msgstr "Дата створення в часовому поясі дати продажу WooCommerce."
 
-#: sasoEventtickets_Core.php:366
+#: sasoEventtickets_Core.php:374
 msgid "User id of the WooCommerce sales."
 msgstr "ID користувача продажів WooCommerce."
 
-#: sasoEventtickets_Core.php:367
+#: sasoEventtickets_Core.php:375
 msgid ""
 "WooCommerce order id, that was purchases using this code as an allowance to "
 "purchase a restricted product."
@@ -2022,32 +2031,32 @@ msgstr ""
 "ID замовлення WooCommerce, яке було придбано з використанням цього коду як "
 "дозволу на покупку обмеженого продукту."
 
-#: sasoEventtickets_Core.php:368
+#: sasoEventtickets_Core.php:376
 msgid "WooCommerce product id that was restricted with this code."
 msgstr "ID продукту WooCommerce, який був обмежений цим кодом."
 
-#: sasoEventtickets_Core.php:369
+#: sasoEventtickets_Core.php:377
 msgid "Creation date of the WooCommerce purchase using the allowance code."
 msgstr "Дата створення покупки WooCommerce з використанням коду допуску."
 
-#: sasoEventtickets_Core.php:370
+#: sasoEventtickets_Core.php:378
 msgid ""
 "Creation date timezone of the WooCommerce purchase using the allowance code."
 msgstr ""
 "Часовий пояс дати створення покупки WooCommerce з використанням коду допуску."
 
-#: sasoEventtickets_Core.php:371
+#: sasoEventtickets_Core.php:379
 msgid "The public ticket number"
 msgstr "Публічний номер квитка"
 
-#: sasoEventtickets_Core.php:1401
+#: sasoEventtickets_Core.php:1409
 msgid ""
 "No writable temporary directory is available for the ticket PDF. Please "
 "define WP_TEMP_DIR in wp-config.php or ask your host to make the temporary "
 "directory writable."
 msgstr ""
 
-#: sasoEventtickets_Core.php:1419
+#: sasoEventtickets_Core.php:1427
 msgid "PDF file was not created and is skipped in the merge."
 msgstr ""
 
@@ -2066,11 +2075,11 @@ msgstr ""
 msgid "All settings (no filter)"
 msgstr ""
 
-#: sasoEventtickets_Options.php:204 backend.js:4449
+#: sasoEventtickets_Options.php:204 backend.js:4455
 msgid "Event tickets"
 msgstr "Квитки на подію"
 
-#: sasoEventtickets_Options.php:205 backend.js:4450
+#: sasoEventtickets_Options.php:205 backend.js:4456
 msgid "Day passes"
 msgstr "Денні абонементи"
 
@@ -3935,7 +3944,7 @@ msgstr ""
 "vollstart.com/posts/events/documentation/option-wcticketdesignertemplate/\" "
 "target=\"_blank\">Документація опції</a>"
 
-#: sasoEventtickets_Options.php:635 backend.js:1869
+#: sasoEventtickets_Options.php:635 backend.js:1875
 msgid ""
 "Fields that another plugin collects at checkout can be printed on the "
 "ticket. Use them in the ticket template like this:"
@@ -3943,7 +3952,7 @@ msgstr ""
 "Поля, які інший плагін збирає під час оформлення замовлення, можна "
 "надрукувати на квитку. У шаблоні квитка так:"
 
-#: sasoEventtickets_Options.php:635 backend.js:1868
+#: sasoEventtickets_Options.php:635 backend.js:1874
 msgctxt "title"
 msgid "Checkout fields of other plugins"
 msgstr "Поля оформлення замовлення з інших плагінів"
@@ -4049,7 +4058,7 @@ msgstr "Назва квитка"
 msgid "This is the title of the ticket"
 msgstr "Це назва квитка"
 
-#: sasoEventtickets_Options.php:654 backend.js:3229 wc_backend.js:384
+#: sasoEventtickets_Options.php:654 backend.js:3235 wc_backend.js:384
 #: wc_backend.js:581
 msgid "Ticket"
 msgstr "Квиток"
@@ -5615,7 +5624,7 @@ msgstr ""
 "Введіть ваш Premium ліцензійний ключ. Після оновлення Premium-плагіну до "
 "версії 1.6.0+ всі premium-функції буде відновлено."
 
-#: sasoEventtickets_Options.php:964 backend.js:389
+#: sasoEventtickets_Options.php:964 backend.js:426
 msgid "Premium License Key"
 msgstr "Ліцензійний ключ преміум"
 
@@ -5659,7 +5668,7 @@ msgid "#232 original product of the order and ticket not found!"
 msgstr "#232 оригінальний товар замовлення та квиток не знайдено!"
 
 #: sasoEventtickets_Ticket.php:1702 sasoEventtickets_Ticket.php:1724
-#: sasoEventtickets_Ticket.php:3673 ticket_scanner.js:1673
+#: sasoEventtickets_Ticket.php:3723 ticket_scanner.js:1673
 msgid "Ticket Info"
 msgstr "Jegy információ"
 
@@ -5733,39 +5742,39 @@ msgstr ""
 msgid "Order item not found for the PDF ticket"
 msgstr "Елемент замовлення для PDF-квитка не знайдено"
 
-#: sasoEventtickets_Ticket.php:2602
+#: sasoEventtickets_Ticket.php:2628
 msgid "Product not found for the PDF ticket"
 msgstr "Товар для PDF-квитка не знайдено"
 
-#: sasoEventtickets_Ticket.php:2858
+#: sasoEventtickets_Ticket.php:2884
 msgid "The ticket PDF could not be written to the temporary directory."
 msgstr ""
 
-#: sasoEventtickets_Ticket.php:2906
+#: sasoEventtickets_Ticket.php:2932
 msgid "Product ID not valid for ticket date string"
 msgstr "ID товару некоректний для рядка дати квитка"
 
-#: sasoEventtickets_Ticket.php:3394 sasoEventtickets_Ticket.php:3409
-#: sasoEventtickets_Ticket.php:3424
+#: sasoEventtickets_Ticket.php:3444 sasoEventtickets_Ticket.php:3459
+#: sasoEventtickets_Ticket.php:3474
 msgid "Can not find the product for this ticket."
 msgstr "Не вдалося знайти продукт для цього квитка."
 
-#: sasoEventtickets_Ticket.php:3476 sasoEventtickets_Ticket.php:3482
+#: sasoEventtickets_Ticket.php:3526 sasoEventtickets_Ticket.php:3532
 msgid "Too early. Ticket cannot be redeemed yet."
 msgstr "Занадто рано. Квиток ще не може бути використаний."
 
-#: sasoEventtickets_Ticket.php:3491 sasoEventtickets_Ticket.php:3501
+#: sasoEventtickets_Ticket.php:3541 sasoEventtickets_Ticket.php:3551
 msgid "Too late, event finished. Ticket cannot be redeemed anymore."
 msgstr ""
 "Занадто пізно, подія завершилася. Квиток більше не може бути використаний."
 
-#: sasoEventtickets_Ticket.php:3495 sasoEventtickets_Ticket.php:3506
+#: sasoEventtickets_Ticket.php:3545 sasoEventtickets_Ticket.php:3556
 msgid "Too late, event started. Ticket cannot be redeemed anymore."
 msgstr ""
 "Занадто пізно, подія вже розпочалася. Квиток більше не може бути "
 "використаний."
 
-#: sasoEventtickets_Ticket.php:3551
+#: sasoEventtickets_Ticket.php:3601
 msgid ""
 "Order is not paid. And the option is active to allow only paid ticket to be "
 "redeemed is active."
@@ -5773,38 +5782,38 @@ msgstr ""
 "Замовлення не оплачено. Активовано опцію, що дозволяє використовувати лише "
 "оплачені квитки."
 
-#: sasoEventtickets_Ticket.php:3580
+#: sasoEventtickets_Ticket.php:3630
 msgid "Ticket number to redeem is missing"
 msgstr "Номер квитка для погашення відсутній"
 
-#: sasoEventtickets_Ticket.php:3609
+#: sasoEventtickets_Ticket.php:3659
 msgid "Redeem operation not yet possible."
 msgstr "Операція погашення ще неможлива."
 
-#: sasoEventtickets_Ticket.php:3615
+#: sasoEventtickets_Ticket.php:3665
 msgid "Redeem operation not possible. Too late."
 msgstr "Операція погашення неможлива. Занадто пізно."
 
-#: sasoEventtickets_Ticket.php:3644
+#: sasoEventtickets_Ticket.php:3694
 msgid "Order not marked as paid. Ticket not redeemed."
 msgstr "Замовлення не позначено як оплачене. Квиток не активовано."
 
-#: sasoEventtickets_Ticket.php:3705
+#: sasoEventtickets_Ticket.php:3755
 msgid "This view has been deactivated."
 msgstr ""
 
-#: sasoEventtickets_Ticket.php:3806 sasoEventtickets_Ticket.php:3979
+#: sasoEventtickets_Ticket.php:3856 sasoEventtickets_Ticket.php:4029
 msgid "No WooCommerce Support Found"
 msgstr "Підтримку WooCommerce не знайдено"
 
-#: sasoEventtickets_Ticket.php:3841 sasoEventtickets_Ticket.php:3843
-#: sasoEventtickets_Ticket.php:3906 sasoEventtickets_Ticket.php:3908
-#: sasoEventtickets_Ticket.php:3963 js/congress-admin.js:33
+#: sasoEventtickets_Ticket.php:3891 sasoEventtickets_Ticket.php:3893
+#: sasoEventtickets_Ticket.php:3956 sasoEventtickets_Ticket.php:3958
+#: sasoEventtickets_Ticket.php:4013 js/congress-admin.js:33
 #: js/congress-admin.js:34 ticket_scanner.js:1034
 msgid "Error"
 msgstr "Hiba"
 
-#: sasoEventtickets_Ticket.php:3980
+#: sasoEventtickets_Ticket.php:4030
 msgid "Please contact us for a solution."
 msgstr "Будь ласка, зв'яжіться з нами для вирішення."
 
@@ -5814,7 +5823,7 @@ msgstr "Будь ласка, зв'яжіться з нами для виріше
 msgid "function \"%s\" in wc backend not implemented"
 msgstr "A \"%s\" funkció a WC háttérrendszerben nincs implementálva"
 
-#: backend.js:273 backend.js:2779
+#: backend.js:273 backend.js:2785
 msgid "Preview Test Template Code as PDF"
 msgstr "Переглянути тестовий код шаблону як PDF"
 
@@ -5822,169 +5831,169 @@ msgstr "Переглянути тестовий код шаблону як PDF"
 msgid "saving..."
 msgstr "збереження..."
 
-#: backend.js:382
-msgid "Thank you for using the Premium version!"
-msgstr "Дякуємо за використання Преміум-версії!"
-
-#: backend.js:383
-msgid "Please enter your license key to activate updates and premium features."
-msgstr ""
-"Будь ласка, введіть ваш ліцензійний ключ, щоб активувати оновлення та "
-"преміум-функції."
-
-#: backend.js:396 backend.js:457 js/seating_admin.js:47
-msgid "Activate"
-msgstr "Активувати"
-
-#: backend.js:402
-msgid "Please enter a license key."
-msgstr "Будь ласка, введіть ліцензійний ключ."
-
-#: backend.js:407 backend.js:1391 backend.js:2676
-msgid "Checking..."
-msgstr "Перевірка..."
-
-#: backend.js:412
-msgid "Validating license — please wait…"
-msgstr "Перевірка ліцензії — зачекайте…"
-
-#: backend.js:418
-msgid "License key saved. Reloading…"
-msgstr "Ліцензійний ключ збережено. Перезавантаження…"
-
-#: backend.js:433
+#: backend.js:335
 msgid "Checking license..."
 msgstr "Перевірка ліцензії..."
 
-#: backend.js:436 backend.js:1297 backend.js:1300 backend.js:1303
-#: backend.js:3239 js/congress-admin.js:91 js/seating_admin.js:165
+#: backend.js:338 backend.js:1303 backend.js:1306 backend.js:1309
+#: backend.js:3245 js/congress-admin.js:91 js/seating_admin.js:165
 #: js/seating_admin.js:471 js/seating_admin.js:805 js/seating_admin.js:1453
 #: js/seating_admin.js:1503 wc_backend.js:393 wc_backend.js:606
 msgid "Active"
 msgstr "Активний"
 
-#: backend.js:440 backend.js:446
+#: backend.js:342 backend.js:348
 msgid "failures"
 msgstr "помилок"
 
-#: backend.js:443 backend.js:1297 js/seating_admin.js:166
+#: backend.js:345 backend.js:1303 js/seating_admin.js:166
 #: js/seating_admin.js:471 js/seating_admin.js:806
 msgid "Inactive"
 msgstr "Неактивно"
 
-#: backend.js:449
+#: backend.js:351
 msgid "Check failed"
 msgstr "Перевірка не вдалася"
 
-#: backend.js:459
+#: backend.js:419
+msgid "Thank you for using the Premium version!"
+msgstr "Дякуємо за використання Преміум-версії!"
+
+#: backend.js:420
+msgid "Please enter your license key to activate updates and premium features."
+msgstr ""
+"Будь ласка, введіть ваш ліцензійний ключ, щоб активувати оновлення та "
+"преміум-функції."
+
+#: backend.js:433 backend.js:463 js/seating_admin.js:47
+msgid "Activate"
+msgstr "Активувати"
+
+#: backend.js:439
+msgid "Please enter a license key."
+msgstr "Будь ласка, введіть ліцензійний ключ."
+
+#: backend.js:444 backend.js:1397 backend.js:2682
+msgid "Checking..."
+msgstr "Перевірка..."
+
+#: backend.js:449
+msgid "Validating license — please wait…"
+msgstr "Перевірка ліцензії — зачекайте…"
+
+#: backend.js:455
+msgid "License key saved. Reloading…"
+msgstr "Ліцензійний ключ збережено. Перезавантаження…"
+
+#: backend.js:465
 msgid "Error:"
 msgstr "Помилка:"
 
-#: backend.js:464 backend.js:4624
+#: backend.js:470 backend.js:4630
 msgid "Later"
 msgstr "Пізніше"
 
-#: backend.js:677 ticket_events.js:220 ticket_scanner.js:757
+#: backend.js:683 ticket_events.js:220 ticket_scanner.js:757
 msgctxt "cal"
 msgid "Sun"
 msgstr "Нд"
 
-#: backend.js:678 ticket_events.js:221 ticket_scanner.js:758
+#: backend.js:684 ticket_events.js:221 ticket_scanner.js:758
 msgctxt "cal"
 msgid "Mon"
 msgstr "Пн"
 
-#: backend.js:679 ticket_events.js:222 ticket_scanner.js:759
+#: backend.js:685 ticket_events.js:222 ticket_scanner.js:759
 msgctxt "cal"
 msgid "Tue"
 msgstr "Вт"
 
-#: backend.js:680 ticket_events.js:223 ticket_scanner.js:760
+#: backend.js:686 ticket_events.js:223 ticket_scanner.js:760
 msgctxt "cal"
 msgid "Wed"
 msgstr "Ср"
 
-#: backend.js:681 ticket_events.js:224 ticket_scanner.js:761
+#: backend.js:687 ticket_events.js:224 ticket_scanner.js:761
 msgctxt "cal"
 msgid "Thu"
 msgstr "Чт"
 
-#: backend.js:682 ticket_events.js:225 ticket_scanner.js:762
+#: backend.js:688 ticket_events.js:225 ticket_scanner.js:762
 msgctxt "cal"
 msgid "Fri"
 msgstr "Пт"
 
-#: backend.js:683 ticket_events.js:226 ticket_scanner.js:763
+#: backend.js:689 ticket_events.js:226 ticket_scanner.js:763
 msgctxt "cal"
 msgid "Sat"
 msgstr "Сб"
 
-#: backend.js:686 ticket_events.js:229 ticket_scanner.js:766
+#: backend.js:692 ticket_events.js:229 ticket_scanner.js:766
 msgctxt "cal"
 msgid "Jan"
 msgstr "Січ"
 
-#: backend.js:687 ticket_events.js:230 ticket_scanner.js:767
+#: backend.js:693 ticket_events.js:230 ticket_scanner.js:767
 msgctxt "cal"
 msgid "Feb"
 msgstr "Лют"
 
-#: backend.js:688 ticket_events.js:231 ticket_scanner.js:768
+#: backend.js:694 ticket_events.js:231 ticket_scanner.js:768
 msgctxt "cal"
 msgid "Mar"
 msgstr "Бер"
 
-#: backend.js:689 ticket_events.js:232 ticket_scanner.js:769
+#: backend.js:695 ticket_events.js:232 ticket_scanner.js:769
 msgctxt "cal"
 msgid "Apr"
 msgstr "Кві"
 
-#: backend.js:690 ticket_events.js:233 ticket_scanner.js:770
+#: backend.js:696 ticket_events.js:233 ticket_scanner.js:770
 msgctxt "cal"
 msgid "May"
 msgstr "Травень"
 
-#: backend.js:691 ticket_events.js:234 ticket_scanner.js:771
+#: backend.js:697 ticket_events.js:234 ticket_scanner.js:771
 msgctxt "cal"
 msgid "Jun"
 msgstr "Чер"
 
-#: backend.js:692 ticket_events.js:235 ticket_scanner.js:772
+#: backend.js:698 ticket_events.js:235 ticket_scanner.js:772
 msgctxt "cal"
 msgid "Jul"
 msgstr "Лип"
 
-#: backend.js:693 ticket_events.js:236 ticket_scanner.js:773
+#: backend.js:699 ticket_events.js:236 ticket_scanner.js:773
 msgctxt "cal"
 msgid "Aug"
 msgstr "Серп"
 
-#: backend.js:694 ticket_events.js:237 ticket_scanner.js:774
+#: backend.js:700 ticket_events.js:237 ticket_scanner.js:774
 msgctxt "cal"
 msgid "Sep"
 msgstr "Вер"
 
-#: backend.js:695 ticket_events.js:238 ticket_scanner.js:775
+#: backend.js:701 ticket_events.js:238 ticket_scanner.js:775
 msgctxt "cal"
 msgid "Oct"
 msgstr "Жов"
 
-#: backend.js:696 ticket_events.js:239 ticket_scanner.js:776
+#: backend.js:702 ticket_events.js:239 ticket_scanner.js:776
 msgctxt "cal"
 msgid "Nov"
 msgstr "Лис"
 
-#: backend.js:697 ticket_events.js:240 ticket_scanner.js:777
+#: backend.js:703 ticket_events.js:240 ticket_scanner.js:777
 msgctxt "cal"
 msgid "Dec"
 msgstr "Гру"
 
-#: backend.js:897 backend.js:3630
+#: backend.js:903 backend.js:3636
 msgctxt "label"
 msgid "Auth Token"
 msgstr "Токен авторизації"
 
-#: backend.js:898
+#: backend.js:904
 msgid ""
 "You can add auth tokens, that can be used to access your ticket scanner. "
 "Create an auth token and pass the QR code to the user or let the user scan "
@@ -5997,7 +6006,7 @@ msgstr ""
 "Використаний токен авторизації обійде будь-які налаштування обмеження "
 "доступу для сканера квитків, встановлені в параметрах."
 
-#: backend.js:899
+#: backend.js:905
 msgid ""
 "The user scan the QR code for the auth token with the ticket scanner. Just "
 "like a normal ticket. The system will store the auth token to the browser."
@@ -6005,49 +6014,49 @@ msgstr ""
 "Користувач сканує QR-код для токена авторизації за допомогою сканера "
 "квитків. Як звичайний квиток. Система збереже токен авторизації у браузері."
 
-#: backend.js:906 backend.js:5537 backend.js:5587
+#: backend.js:912 backend.js:5563 backend.js:5613
 msgctxt "label"
 msgid "Add"
 msgstr "Додати"
 
-#: backend.js:916
+#: backend.js:922
 msgctxt "title"
 msgid "Edit Auth Token"
 msgstr "Редагувати токен авторизації"
 
-#: backend.js:916
+#: backend.js:922
 msgctxt "title"
 msgid "Add Auth Token"
 msgstr "Додати токен авторизації"
 
-#: backend.js:922 backend.js:1619 backend.js:4987 backend.js:5008
-#: backend.js:5011 backend.js:5037 backend.js:5127 backend.js:5291
-#: backend.js:6017 ticket_events.js:261 ticket_scanner.js:798
+#: backend.js:928 backend.js:1625 backend.js:5013 backend.js:5034
+#: backend.js:5037 backend.js:5063 backend.js:5153 backend.js:5317
+#: backend.js:6043 ticket_events.js:261 ticket_scanner.js:798
 msgctxt "label"
 msgid "Ok"
 msgstr "Ок"
 
-#: backend.js:928 backend.js:5065 backend.js:5133 backend.js:5297
+#: backend.js:934 backend.js:5091 backend.js:5159 backend.js:5323
 msgctxt "label"
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: backend.js:935 backend.js:1014 backend.js:5140 backend.js:5369
+#: backend.js:941 backend.js:1020 backend.js:5166 backend.js:5395
 msgctxt "label"
 msgid "Name"
 msgstr "Ім'я"
 
-#: backend.js:938
+#: backend.js:944
 msgctxt "label"
 msgid "Bound to product(s)"
 msgstr "Прив'язано до продукту(ів)"
 
-#: backend.js:938
+#: backend.js:944
 msgctxt "label"
 msgid "all products allowed to be redeemed"
 msgstr "усі товари дозволені для погашення"
 
-#: backend.js:938
+#: backend.js:944
 msgid ""
 "You can add comma separated \",\" product ids. This will limit the user to "
 "redeem tickets only of products listed here. If left empty, all are allowed."
@@ -6056,17 +6065,17 @@ msgstr ""
 "використанням квитків лише для продуктів, перелічених тут. Якщо залишити "
 "порожнім, дозволено всі."
 
-#: backend.js:939
+#: backend.js:945
 msgctxt "label"
 msgid "Bound to ticket list(s)"
 msgstr ""
 
-#: backend.js:939
+#: backend.js:945
 msgctxt "label"
 msgid "all ticket lists allowed to be redeemed"
 msgstr ""
 
-#: backend.js:939
+#: backend.js:945
 msgid ""
 "You can add comma separated \",\" ticket list ids. This will limit the user "
 "to redeem tickets of these lists only. If left empty, all are allowed. This "
@@ -6074,52 +6083,52 @@ msgid ""
 "those have no product."
 msgstr ""
 
-#: backend.js:942 backend.js:5143
+#: backend.js:948 backend.js:5169
 msgctxt "label"
 msgid "Description"
 msgstr "Опис"
 
-#: backend.js:944
+#: backend.js:950
 msgctxt "label"
 msgid "is active"
 msgstr "активний"
 
-#: backend.js:1014 backend.js:1638 backend.js:5369 backend.js:5570
-#: backend.js:5891 ticket_scanner.js:1422
+#: backend.js:1020 backend.js:1644 backend.js:5395 backend.js:5596
+#: backend.js:5917 ticket_scanner.js:1422
 msgctxt "label"
 msgid "Created"
 msgstr "Створено"
 
-#: backend.js:1014
+#: backend.js:1020
 msgctxt "label"
 msgid "Area"
 msgstr "Зона"
 
-#: backend.js:1014 backend.js:5573
+#: backend.js:1020 backend.js:5599
 msgctxt "label"
 msgid "Status"
 msgstr "Статус"
 
-#: backend.js:1047 backend.js:5396 backend.js:5730
+#: backend.js:1053 backend.js:5422 backend.js:5756
 msgctxt "label"
 msgid "Edit"
 msgstr "Редагувати"
 
-#: backend.js:1047 backend.js:5396 backend.js:5730 backend.js:6752
+#: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:6778
 msgctxt "label"
 msgid "Delete"
 msgstr "Видалити"
 
-#: backend.js:1059 backend.js:5424 backend.js:5831
+#: backend.js:1065 backend.js:5450 backend.js:5857
 msgctxt "title"
 msgid "Do you want to delete?"
 msgstr "Видалити?"
 
-#: backend.js:1059
+#: backend.js:1065
 msgid "Are you sure, you want to delete this auth token?"
 msgstr "Ви впевнені, що хочете видалити цей токен авторизації?"
 
-#: backend.js:1059
+#: backend.js:1065
 msgid ""
 "The user with this auth token will not be able to use the server anymore. "
 "The user will need to add a new auth token from you.<p>The effect will be "
@@ -6129,67 +6138,67 @@ msgstr ""
 "Користувачу потрібно буде додати новий токен авторизації від вас.<p>Ефект "
 "буде миттєвим.</p>"
 
-#: backend.js:1095
+#: backend.js:1101
 msgctxt "label"
 msgid "Bound to ticket list"
 msgstr ""
 
-#: backend.js:1095
+#: backend.js:1101
 msgctxt "label"
 msgid "all ticket lists"
 msgstr ""
 
-#: backend.js:1292 backend.js:1312 backend.js:3231 js/congress-admin.js:63
+#: backend.js:1298 backend.js:1318 backend.js:3237 js/congress-admin.js:63
 #: js/seating_admin.js:118 js/seating_admin.js:759 wc_backend.js:386
 #: wc_backend.js:583
 msgid "Status"
 msgstr "Állapot"
 
-#: backend.js:1292 backend.js:1309
+#: backend.js:1298 backend.js:1315
 msgid "Not checked yet"
 msgstr "Ще не перевірено"
 
-#: backend.js:1306 js/congress-admin.js:91
+#: backend.js:1312 js/congress-admin.js:91
 msgid "Expired"
 msgstr "Термін минув"
 
-#: backend.js:1315
+#: backend.js:1321
 msgid "Last successful check"
 msgstr "Остання успішна перевірка"
 
-#: backend.js:1318
+#: backend.js:1324
 msgid "Expiration date"
 msgstr "Дата закінчення терміну дії"
 
-#: backend.js:1321
+#: backend.js:1327
 msgid "Subscription type"
 msgstr "Тип підписки"
 
-#: backend.js:1325
+#: backend.js:1331
 msgid "Consecutive failures"
 msgstr "Послідовні збої"
 
-#: backend.js:1328
+#: backend.js:1334
 msgid "Server flagged as not valid"
 msgstr "Сервер позначено як недійсний"
 
-#: backend.js:1361
+#: backend.js:1367
 msgid "Visit the full plugin docs"
 msgstr "Переглянути повну документацію плагіна"
 
-#: backend.js:1365
+#: backend.js:1371
 msgid "See latest updates"
 msgstr "Показати останні оновлення"
 
-#: backend.js:1367
+#: backend.js:1373
 msgid "Help us with a 5-star review on WordPress.org"
 msgstr ""
 
-#: backend.js:1378
+#: backend.js:1384
 msgid "Support Context Information"
 msgstr "Контекстна інформація для підтримки"
 
-#: backend.js:1379
+#: backend.js:1385
 msgid ""
 "Please copy the following information, so that we can support you better and "
 "faster. Remove any critical information if needed."
@@ -6197,57 +6206,57 @@ msgstr ""
 "Будь ласка, скопіюйте наступну інформацію, щоб ми могли допомогти вам швидше "
 "та краще. За потреби видаліть конфіденційні дані."
 
-#: backend.js:1385
+#: backend.js:1391
 msgid "License Status"
 msgstr "Статус ліцензії"
 
-#: backend.js:1389 backend.js:1393 backend.js:1396
+#: backend.js:1395 backend.js:1399 backend.js:1402
 msgid "Refresh Status"
 msgstr ""
 
-#: backend.js:1479
+#: backend.js:1485
 msgid "Copy to clipboard"
 msgstr "Копіювати в буфер обміну"
 
-#: backend.js:1530 backend.js:1531
+#: backend.js:1536 backend.js:1537
 msgid ""
 "(not set — \"Ticket detail URL path\" option is empty, compatibility mode "
 "off)"
 msgstr ""
 
-#: backend.js:1537
+#: backend.js:1543
 msgid "congress page disabled in options"
 msgstr "сторінка конгресу вимкнена в налаштуваннях"
 
-#: backend.js:1547 backend.js:2849 backend.js:5607
+#: backend.js:1553 backend.js:2855 backend.js:5633
 msgid "Refresh table"
 msgstr "Оновити таблицю"
 
-#: backend.js:1550 js/seating_admin.js:1393
+#: backend.js:1556 js/seating_admin.js:1393
 msgid "Export CSV"
 msgstr "Експорт CSV"
 
-#: backend.js:1554 backend.js:1555 backend.js:5527 backend.js:5528
-#: backend.js:5598 backend.js:5599
+#: backend.js:1560 backend.js:1561 backend.js:5553 backend.js:5554
+#: backend.js:5624 backend.js:5625
 msgid "Empty table"
 msgstr "Üres tábla"
 
 #. translators: %s: name of ticket table
-#: backend.js:1555 backend.js:5599
+#: backend.js:1561 backend.js:5625
 msgid "Do you want to empty the \"%s\" table? All data will be lost."
 msgstr "Бажаєте очистити таблицю \"%s\"? Усі дані буде втрачено."
 
-#: backend.js:1555 backend.js:1556
+#: backend.js:1561 backend.js:1562
 msgctxt "title"
 msgid "Error Logs"
 msgstr "Журнали помилок"
 
-#: backend.js:1556 backend.js:5529 backend.js:5600
+#: backend.js:1562 backend.js:5555 backend.js:5626
 msgid "Empty table - last chance"
 msgstr "Порожня таблиця - останній шанс"
 
 #. translators: %s: name of ticket table
-#: backend.js:1556 backend.js:5600
+#: backend.js:1562 backend.js:5626
 msgid ""
 "Are you sure? You will not be able to restore the data, except you have a "
 "backup of your database. All data will be lost."
@@ -6255,25 +6264,25 @@ msgstr ""
 "Ви впевнені? Ви не зможете відновити дані, якщо не маєте резервної копії "
 "бази даних. Усі дані буде втрачено."
 
-#: backend.js:1569
+#: backend.js:1575
 msgctxt "label"
 msgid "Version"
 msgstr "Версія"
 
-#: backend.js:1590
+#: backend.js:1596
 msgid "Show all options"
 msgstr "Показати всі опції"
 
-#: backend.js:1611
+#: backend.js:1617
 msgctxt "label"
 msgid "Repair tables"
 msgstr "Відновити таблиці"
 
-#: backend.js:1612
+#: backend.js:1618
 msgid "Repair database tables?"
 msgstr "Adatbázis-táblák javítása?"
 
-#: backend.js:1612
+#: backend.js:1618
 msgid ""
 "Do you really want to try to repair your database table definitions for the "
 "plugin? It should be safe, but only needed in very rare cases. You might see "
@@ -6285,63 +6294,63 @@ msgstr ""
 "Під час перезавантаження сторінки можуть з'являтися повідомлення про помилки "
 "- це нормально. Чому б не запитати підтримку, чи варто це робити? ;)"
 
-#: backend.js:1615
+#: backend.js:1621
 msgctxt "title"
 msgid "Repaired"
 msgstr "Відновлено"
 
-#: backend.js:1621 ticket_scanner.js:1974 ticket_scanner.js:2066
+#: backend.js:1627 ticket_scanner.js:1974 ticket_scanner.js:2066
 msgctxt "label"
 msgid "Close"
 msgstr "Закрити"
 
-#: backend.js:1638
+#: backend.js:1644
 msgctxt "label"
 msgid "Exception"
 msgstr "Виняток"
 
-#: backend.js:1638
+#: backend.js:1644
 msgctxt "label"
 msgid "Function"
 msgstr "Функція"
 
-#: backend.js:1731
+#: backend.js:1737
 msgid "Your setup is complete - you can sell and check tickets."
 msgstr ""
 
-#: backend.js:1732
+#: backend.js:1738
 msgid "Getting started - these steps make your installation ready to sell:"
 msgstr ""
 
-#: backend.js:1739 backend.js:1740
+#: backend.js:1745 backend.js:1746
 msgid "Hide this hint for good"
 msgstr ""
 
-#: backend.js:1827
+#: backend.js:1833
 msgctxt "label"
 msgid "Change History"
 msgstr "Історія змін"
 
-#: backend.js:1848
+#: backend.js:1854
 msgctxt "label"
 msgid "Reset All Options"
 msgstr "Скинути всі параметри"
 
-#: backend.js:1850
+#: backend.js:1856
 msgctxt "title"
 msgid "Reset All Options"
 msgstr "Скинути всі параметри"
 
-#: backend.js:1850
+#: backend.js:1856
 msgid "Do you really want to reset all the option?"
 msgstr "Ви дійсно бажаєте скинути всі параметри?"
 
-#: backend.js:1859
+#: backend.js:1865
 msgctxt "title"
 msgid "Replacement Tags"
 msgstr "Теги заміни"
 
-#: backend.js:1859
+#: backend.js:1865
 msgid ""
 "You can use these replacement tags in your text messages and URLs for the "
 "meta ticket values"
@@ -6349,15 +6358,15 @@ msgstr ""
 "Ви можете використовувати ці теги заміни у ваших текстових повідомленнях та "
 "URL-адресах для значень мета-квитків"
 
-#: backend.js:1880
+#: backend.js:1886
 msgid "Other plugins"
 msgstr "Інші плагіни"
 
-#: backend.js:1898
+#: backend.js:1904
 msgid "No plugin has registered its fields here yet."
 msgstr "Поки жоден плагін не зареєстрував тут своїх полів."
 
-#: backend.js:1900
+#: backend.js:1906
 msgid ""
 "We offer a filter hook so that other plugins can list their meta keys here. "
 "If your checkout plugin does not show up, ask its provider to support our "
@@ -6367,579 +6376,579 @@ msgstr ""
 "мета-ключі. Якщо вашого плагіна немає, попросіть його розробника підтримати "
 "наш хук — це лише кілька рядків коду."
 
-#: backend.js:1910
+#: backend.js:1916
 msgctxt "label"
 msgid "Export Options"
 msgstr "Параметри експорту"
 
-#: backend.js:1928
+#: backend.js:1934
 msgctxt "label"
 msgid "Import Options"
 msgstr "Імпорт опцій"
 
-#: backend.js:1933
+#: backend.js:1939
 msgctxt "label"
 msgid "Start Wizard"
 msgstr "Запустити майстер"
 
-#: backend.js:1937
+#: backend.js:1943
 msgctxt "label"
 msgid "Premium Wizard"
 msgstr "Майстер преміум"
 
-#: backend.js:1950
+#: backend.js:1956
 msgid "Invalid JSON file."
 msgstr "Érvénytelen JSON fájl."
 
-#: backend.js:1954
+#: backend.js:1960
 msgid "Invalid options file: missing options data."
 msgstr "Érvénytelen beállításfájl: hiányzó beállítási adatok."
 
-#: backend.js:1959
+#: backend.js:1965
 msgctxt "title"
 msgid "Import Options"
 msgstr "Імпорт опцій"
 
-#: backend.js:1960
+#: backend.js:1966
 msgid "Import %d options? This will overwrite current settings."
 msgstr "Імпортувати %d опцій? Це перезапише поточні налаштування."
 
-#: backend.js:2006
+#: backend.js:2012
 msgid ""
 "Set, but it does not belong to this event type. It can make your shop behave "
 "unexpectedly."
 msgstr ""
 
-#: backend.js:2008
+#: backend.js:2014
 msgid "Reset to default"
 msgstr ""
 
-#: backend.js:2068
+#: backend.js:2074
 msgid "What do you use the plugin for?"
 msgstr ""
 
-#: backend.js:2070
+#: backend.js:2076
 msgid ""
 "The settings page then starts with the handful of settings that belong to "
 "your kind of sale. You can switch to all options at any time."
 msgstr ""
 
-#: backend.js:2080
+#: backend.js:2086
 msgid "Decide later - show me all options"
 msgstr ""
 
-#: backend.js:2102
+#: backend.js:2108
 msgctxt "label"
 msgid "All options"
 msgstr ""
 
-#: backend.js:2106
+#: backend.js:2112
 msgctxt "label"
 msgid "For your event type"
 msgstr ""
 
-#: backend.js:2142
+#: backend.js:2148
 msgid "Back to the essentials"
 msgstr ""
 
-#: backend.js:2159
+#: backend.js:2165
 msgid "Search all settings - name, description or key"
 msgstr ""
 
-#: backend.js:2280 backend.js:2300
+#: backend.js:2286 backend.js:2306
 msgctxt "title"
 msgid "Restore defaults"
 msgstr ""
 
-#: backend.js:2281
+#: backend.js:2287
 msgid "Everything in this view is already at its default value."
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2292
+#: backend.js:2298
 msgid ""
 "%d settings in this view differ from their default and would be restored:"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2295
+#: backend.js:2301
 msgid "... and %d more"
 msgstr ""
 
-#: backend.js:2297
+#: backend.js:2303
 msgid "Nothing outside this view is touched."
 msgstr ""
 
-#: backend.js:2313
+#: backend.js:2319
 msgid "Restore the defaults of this view"
 msgstr ""
 
-#: backend.js:2314
+#: backend.js:2320
 msgid "Restore all defaults"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2319
+#: backend.js:2325
 msgid "%d settings are set although they belong to another event type"
 msgstr ""
 
-#: backend.js:2325
+#: backend.js:2331
 msgid "No setting matches your search."
 msgstr ""
 
 #. translators: 1: total matches 2: matches outside the chosen event type
-#: backend.js:2327
+#: backend.js:2333
 msgid "%1$d matches, %2$d of them outside your event type"
 msgstr ""
 
 #. translators: %d: number of matching settings
-#: backend.js:2328
+#: backend.js:2334
 msgid "%d match"
 msgid_plural "%d matches"
 msgstr[0] ""
 msgstr[1] ""
 
-#: backend.js:2330
+#: backend.js:2336
 msgid "Show the matches outside your event type"
 msgstr ""
 
-#: backend.js:2340
+#: backend.js:2346
 msgid "Pick your event type to see only the settings that belong to it."
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2341
+#: backend.js:2347
 msgid "All %d settings"
 msgstr ""
 
 #. translators: 1: event type 2: shown settings 3: all settings
-#: backend.js:2349
+#: backend.js:2355
 msgid "%1$s - the essentials: %2$d of %3$d settings"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2351
+#: backend.js:2357
 msgid "Show everything for this event type (%d)"
 msgstr ""
 
 #. translators: 1: event type 2: shown settings 3: all settings
-#: backend.js:2358
+#: backend.js:2364
 msgid "%1$s: %2$d of %3$d settings"
 msgstr ""
 
 #. translators: %d: number of settings
-#: backend.js:2362
+#: backend.js:2368
 msgid "More settings (%d)"
 msgstr ""
 
-#: backend.js:2365
+#: backend.js:2371
 msgid "Hide the more settings again"
 msgstr ""
 
-#: backend.js:2449
+#: backend.js:2455
 msgid "Load template"
 msgstr "Завантажити шаблон"
 
-#: backend.js:2450
+#: backend.js:2456
 msgctxt "title"
 msgid "Load Template Ticket Code"
 msgstr "Завантажити шаблон коду квитка"
 
-#: backend.js:2451
+#: backend.js:2457
 msgid ""
 "Do you want to replace the test ticket template code with this template?"
 msgstr "Бажаєте замінити код шаблону тестового квитка на цей шаблон?"
 
-#: backend.js:2594
+#: backend.js:2600
 msgctxt "label"
 msgid "Remove file"
 msgstr "Видалити файл"
 
-#: backend.js:2596
+#: backend.js:2602
 msgctxt "title"
 msgid "Remove file"
 msgstr "Видалити файл"
 
-#: backend.js:2596
+#: backend.js:2602
 msgid "Do you really want to remove the file information from this option?"
 msgstr "Ви дійсно бажаєте видалити інформацію про файл із цієї опції?"
 
-#: backend.js:2673 backend.js:2679 backend.js:2684
+#: backend.js:2679 backend.js:2685 backend.js:2690
 msgid "Check License"
 msgstr "Перевірити ліцензію"
 
-#: backend.js:2717
+#: backend.js:2723
 msgctxt "title"
 msgid "Ticket Default Template"
 msgstr "Стандартний шаблон квитка"
 
-#: backend.js:2725
+#: backend.js:2731
 msgctxt "title"
 msgid "Save Template Code"
 msgstr "Зберегти код шаблону"
 
-#: backend.js:2730
+#: backend.js:2736
 msgctxt "title"
 msgid "Copy Template Code To Live Code"
 msgstr "Копіювати код шаблону до робочого коду"
 
-#: backend.js:2731
+#: backend.js:2737
 msgctxt "title"
 msgid "Replace Live Template Code"
 msgstr "Замінити код живого шаблону"
 
-#: backend.js:2731
+#: backend.js:2737
 msgid ""
 "Do you want to replace the live template code with the template code from "
 "the test?"
 msgstr "Бажаєте замінити код робочого шаблону на код шаблону з тесту?"
 
-#: backend.js:2795
+#: backend.js:2801
 msgid "ticket cannot be used. Public Ticket Id missing."
 msgstr ""
 "квиток не може бути використаний. Відсутній публічний ідентифікатор квитка."
 
-#: backend.js:2798
+#: backend.js:2804
 msgid "no ticket for preview available"
 msgstr "немає квитка для попереднього перегляду"
 
-#: backend.js:2858
+#: backend.js:2864
 msgctxt "label"
 msgid "Date"
 msgstr "Дата"
 
-#: backend.js:2859
+#: backend.js:2865
 msgctxt "label"
 msgid "Option"
 msgstr "Опція"
 
-#: backend.js:2860 backend.js:2912
+#: backend.js:2866 backend.js:2918
 msgctxt "label"
 msgid "Old Value"
 msgstr "Старе значення"
 
-#: backend.js:2861 backend.js:2913
+#: backend.js:2867 backend.js:2919
 msgctxt "label"
 msgid "New Value"
 msgstr "Нове значення"
 
-#: backend.js:2862
+#: backend.js:2868
 msgctxt "label"
 msgid "Changed By"
 msgstr "Змінено"
 
-#: backend.js:2895
+#: backend.js:2901
 msgctxt "label"
 msgid "Revert"
 msgstr "Відкотити"
 
-#: backend.js:2928
+#: backend.js:2934
 msgctxt "title"
 msgid "Revert Option"
 msgstr "Відкотити параметр"
 
-#: backend.js:2929
+#: backend.js:2935
 msgid "Revert option \"%s\" to its previous value?"
 msgstr "Відкотити параметр «%s» до попереднього значення?"
 
-#: backend.js:2981
+#: backend.js:2987
 msgctxt "tab"
 msgid "Sold Tickets"
 msgstr "Продані квитки"
 
-#: backend.js:2982
+#: backend.js:2988
 msgctxt "tab"
 msgid "Daily Redemption Summary"
 msgstr "Щоденний звіт активацій"
 
-#: backend.js:3020
+#: backend.js:3026
 msgid "Products:"
 msgstr "Продукти:"
 
-#: backend.js:3026
+#: backend.js:3032
 msgctxt "label"
 msgid "Export from"
 msgstr "Експортувати з"
 
-#: backend.js:3028
+#: backend.js:3034
 msgctxt "label"
 msgid "Export to"
 msgstr "Експортувати в"
 
-#: backend.js:3030 backend.js:3289
+#: backend.js:3036 backend.js:3295
 msgctxt "button"
 msgid "Export CSV"
 msgstr "Експорт CSV"
 
-#: backend.js:3049
+#: backend.js:3055
 msgid "Auto-refresh:"
 msgstr "Автооновлення:"
 
-#: backend.js:3051
+#: backend.js:3057
 msgid "Off"
 msgstr "Вимкнено"
 
-#: backend.js:3110
+#: backend.js:3116
 msgid "Error loading data."
 msgstr "Помилка завантаження даних."
 
-#: backend.js:3143 wc_backend.js:451
+#: backend.js:3149 wc_backend.js:451
 msgid "January"
 msgstr "Січень"
 
-#: backend.js:3143 wc_backend.js:452
+#: backend.js:3149 wc_backend.js:452
 msgid "February"
 msgstr "Лютий"
 
-#: backend.js:3144 wc_backend.js:453
+#: backend.js:3150 wc_backend.js:453
 msgid "March"
 msgstr "Березень"
 
-#: backend.js:3144 wc_backend.js:454
+#: backend.js:3150 wc_backend.js:454
 msgid "April"
 msgstr "Квітень"
 
-#: backend.js:3145 wc_backend.js:455
+#: backend.js:3151 wc_backend.js:455
 msgid "May"
 msgstr "Тра"
 
-#: backend.js:3145 wc_backend.js:456
+#: backend.js:3151 wc_backend.js:456
 msgid "June"
 msgstr "Червень"
 
-#: backend.js:3146 wc_backend.js:457
+#: backend.js:3152 wc_backend.js:457
 msgid "July"
 msgstr "Липень"
 
-#: backend.js:3146 wc_backend.js:458
+#: backend.js:3152 wc_backend.js:458
 msgid "August"
 msgstr "Серпень"
 
-#: backend.js:3147 wc_backend.js:459
+#: backend.js:3153 wc_backend.js:459
 msgid "September"
 msgstr "Вересень"
 
-#: backend.js:3147 wc_backend.js:460
+#: backend.js:3153 wc_backend.js:460
 msgid "October"
 msgstr "Жовтень"
 
-#: backend.js:3148 wc_backend.js:461
+#: backend.js:3154 wc_backend.js:461
 msgid "November"
 msgstr "Листопад"
 
-#: backend.js:3148 wc_backend.js:462
+#: backend.js:3154 wc_backend.js:462
 msgid "December"
 msgstr "Грудень"
 
-#: backend.js:3151 wc_backend.js:465
+#: backend.js:3157 wc_backend.js:465
 msgid "Mon"
 msgstr "Пн"
 
-#: backend.js:3151 wc_backend.js:466
+#: backend.js:3157 wc_backend.js:466
 msgid "Tue"
 msgstr "Вт"
 
-#: backend.js:3152 wc_backend.js:467
+#: backend.js:3158 wc_backend.js:467
 msgid "Wed"
 msgstr "Ср"
 
-#: backend.js:3152 wc_backend.js:468
+#: backend.js:3158 wc_backend.js:468
 msgid "Thu"
 msgstr "Чт"
 
-#: backend.js:3153 wc_backend.js:469
+#: backend.js:3159 wc_backend.js:469
 msgid "Fri"
 msgstr "Пт"
 
-#: backend.js:3153 wc_backend.js:470
+#: backend.js:3159 wc_backend.js:470
 msgid "Sat"
 msgstr "Сб"
 
-#: backend.js:3154 wc_backend.js:471
+#: backend.js:3160 wc_backend.js:471
 msgid "Sun"
 msgstr "Нд"
 
 #. translators: %s: date string
-#: backend.js:3204 backend.js:3219 wc_backend.js:554
+#: backend.js:3210 backend.js:3225 wc_backend.js:554
 msgid "Tickets for %s"
 msgstr "Квитки для %s"
 
-#: backend.js:3224 wc_backend.js:377
+#: backend.js:3230 wc_backend.js:377
 msgid "No details available."
 msgstr "Деталі відсутні."
 
-#: backend.js:3230 wc_backend.js:385 wc_backend.js:582
+#: backend.js:3236 wc_backend.js:385 wc_backend.js:582
 msgid "Order"
 msgstr "Замовлення"
 
-#: backend.js:3239 ticket_scanner.js:1308 wc_backend.js:392 wc_backend.js:605
+#: backend.js:3245 ticket_scanner.js:1308 wc_backend.js:392 wc_backend.js:605
 msgid "Redeemed"
 msgstr "Погашено"
 
 #. translators: %d: total number of sold tickets
-#: backend.js:3268 wc_backend.js:529
+#: backend.js:3274 wc_backend.js:529
 msgid "Total sold: %d tickets"
 msgstr "Усього продано: %d квитків"
 
-#: backend.js:3269
+#: backend.js:3275
 msgid "No tickets found for this month."
 msgstr "Квитків за цей місяць не знайдено."
 
-#: backend.js:3281 backend.js:5202
+#: backend.js:3287 backend.js:5228
 msgctxt "label"
 msgid "From"
 msgstr "Від"
 
-#: backend.js:3284
+#: backend.js:3290
 msgctxt "label"
 msgid "To"
 msgstr "Кому"
 
-#: backend.js:3287
+#: backend.js:3293
 msgctxt "button"
 msgid "Load"
 msgstr "Завантажити"
 
-#: backend.js:3322 backend.js:5571
+#: backend.js:3328 backend.js:5597
 msgctxt "label"
 msgid "Redeemed"
 msgstr "Погашено"
 
-#: backend.js:3326
+#: backend.js:3332
 msgctxt "label"
 msgid "Total Tickets"
 msgstr "Усього квитків"
 
-#: backend.js:3330
+#: backend.js:3336
 msgctxt "label"
 msgid "No Show"
 msgstr "Не з'явився"
 
-#: backend.js:3339
+#: backend.js:3345
 msgctxt "column"
 msgid "Date"
 msgstr "Дата"
 
-#: backend.js:3340
+#: backend.js:3346
 msgctxt "column"
 msgid "Event / List"
 msgstr "Подія / Список"
 
-#: backend.js:3341
+#: backend.js:3347
 msgctxt "column"
 msgid "Product"
 msgstr "Товар"
 
-#: backend.js:3342
+#: backend.js:3348
 msgctxt "column"
 msgid "Redeemed"
 msgstr "Погашено"
 
-#: backend.js:3343
+#: backend.js:3349
 msgctxt "column"
 msgid "Total in List"
 msgstr "Усього у списку"
 
-#: backend.js:3344
+#: backend.js:3350
 msgctxt "column"
 msgid "No Show"
 msgstr "Не з'явився"
 
-#: backend.js:3382
+#: backend.js:3388
 msgctxt "label"
 msgid "Total"
 msgstr "Усього"
 
-#: backend.js:3407
+#: backend.js:3413
 msgctxt "label"
 msgid "No individual ticket data available."
 msgstr "Дані окремих квитків відсутні."
 
-#: backend.js:3412
+#: backend.js:3418
 msgctxt "column"
 msgid "Ticket"
 msgstr "Квиток"
 
-#: backend.js:3413
+#: backend.js:3419
 msgctxt "column"
 msgid "Order"
 msgstr "Замовлення"
 
-#: backend.js:3414
+#: backend.js:3420
 msgctxt "column"
 msgid "Redeemed At"
 msgstr "Погашено о"
 
-#: backend.js:3419
+#: backend.js:3425
 msgctxt "label"
 msgid "View"
 msgstr "Переглянути"
 
-#: backend.js:3426
+#: backend.js:3432
 msgctxt "label"
 msgid "Error loading details."
 msgstr "Помилка завантаження деталей."
 
-#: backend.js:3431
+#: backend.js:3437
 msgctxt "label"
 msgid "Error loading data."
 msgstr "Помилка завантаження даних."
 
-#: backend.js:3453
+#: backend.js:3459
 msgctxt "title"
 msgid "Title"
 msgstr "Назва"
 
-#: backend.js:3513
+#: backend.js:3519
 msgid "Insert Tag"
 msgstr "Вставити тег"
 
-#: backend.js:3534
+#: backend.js:3540
 msgctxt "title"
 msgid "Select Media"
 msgstr "Вибрати медіа"
 
-#: backend.js:3581
+#: backend.js:3587
 msgctxt "label"
 msgid "Back"
 msgstr "Назад"
 
-#: backend.js:3607
+#: backend.js:3613
 msgctxt "label"
 msgid "Support Info"
 msgstr "Інформація для підтримки"
 
-#: backend.js:3615
+#: backend.js:3621
 msgctxt "label"
 msgid "FAQ"
 msgstr "FAQ"
 
-#: backend.js:3620
+#: backend.js:3626
 msgctxt "label"
 msgid "Ticket Scanner"
 msgstr "Сканер квитків"
 
-#: backend.js:3638
+#: backend.js:3644
 msgctxt "label"
 msgid "Attendance"
 msgstr "Відвідуваність"
 
-#: backend.js:3646
+#: backend.js:3652
 msgctxt "label"
 msgid "Congresses"
 msgstr "Конгреси"
 
-#: backend.js:3654
+#: backend.js:3660
 msgctxt "label"
 msgid "Options"
 msgstr "Параметри"
 
-#: backend.js:3697
+#: backend.js:3703
 msgctxt "label"
 msgid "Enter a prefix (optional)"
 msgstr "Введіть префікс (необов'язково)"
 
-#: backend.js:3699
+#: backend.js:3705
 msgid ""
 "You can use date placeholder to have the prefix filled with the date of the "
 "confirmed purchase."
@@ -6947,7 +6956,7 @@ msgstr ""
 "Dátum helyőrzőt használhat, hogy az előtag a megerősített vásárlás dátumával "
 "legyen kitöltve."
 
-#: backend.js:3699
+#: backend.js:3705
 msgid ""
 "You can use: {Y} = year, {m} = month, {d} = day, {H} = hour, {i} = minutes, "
 "{s} = seconds, {TIMESTAMP} = unix timestamp."
@@ -6955,131 +6964,131 @@ msgstr ""
 "Ви можете використовувати: {Y} = рік, {m} = місяць, {d} = день, {H} = "
 "година, {i} = хвилини, {s} = секунди, {TIMESTAMP} = unix timestamp."
 
-#: backend.js:3705
+#: backend.js:3711
 msgctxt "label"
 msgid "Choose type of ticket numbers"
 msgstr "Виберіть тип номерів квитків"
 
-#: backend.js:3706
+#: backend.js:3712
 msgctxt "option value"
 msgid "Serials"
 msgstr "Серійні номери"
 
-#: backend.js:3706
+#: backend.js:3712
 msgctxt "option value"
 msgid "Numbers"
 msgstr "Числа"
 
-#: backend.js:3727
+#: backend.js:3733
 msgctxt "title"
 msgid "Serials options"
 msgstr "Опції серійних номерів"
 
-#: backend.js:3729
+#: backend.js:3735
 msgctxt "label"
 msgid "Amount of letter needed"
 msgstr "Необхідна кількість літер"
 
-#: backend.js:3737
+#: backend.js:3743
 msgctxt "label"
 msgid "Letter exclusion"
 msgstr "Виключення літер"
 
-#: backend.js:3738 backend.js:3759 backend.js:4935 backend.js:5305
-#: backend.js:6826
+#: backend.js:3744 backend.js:3765 backend.js:4961 backend.js:5331
+#: backend.js:6852
 msgctxt "option value"
 msgid "None"
 msgstr "Жодного"
 
-#: backend.js:3744
+#: backend.js:3750
 msgctxt "label"
 msgid "Letter style"
 msgstr "Стиль літер"
 
-#: backend.js:3745
+#: backend.js:3751
 msgctxt "option value"
 msgid "Uppercase"
 msgstr "Верхній регістр"
 
-#: backend.js:3745
+#: backend.js:3751
 msgctxt "option value"
 msgid "Lowercase"
 msgstr "Нижній регістр"
 
-#: backend.js:3745
+#: backend.js:3751
 msgctxt "option value"
 msgid "Both"
 msgstr "Обидва"
 
-#: backend.js:3751
+#: backend.js:3757
 msgctxt "label"
 msgid "Numbers needed?"
 msgstr "Потрібні числа?"
 
-#: backend.js:3752 backend.js:6051
+#: backend.js:3758 backend.js:6077
 msgctxt "label"
 msgid "No"
 msgstr "Ні"
 
-#: backend.js:3752 backend.js:6047
+#: backend.js:3758 backend.js:6073
 msgctxt "label"
 msgid "Yes"
 msgstr "Так"
 
-#: backend.js:3752
+#: backend.js:3758
 msgctxt "option value"
 msgid "Only numbers"
 msgstr "Тільки числа"
 
-#: backend.js:3758
+#: backend.js:3764
 msgctxt "label"
 msgid "Delimiter?"
 msgstr "Роздільник?"
 
-#: backend.js:3759
+#: backend.js:3765
 msgctxt "option value"
 msgid "Space"
 msgstr "Місце"
 
-#: backend.js:3775
+#: backend.js:3781
 msgctxt "label"
 msgid "After how many letters?"
 msgstr "Після скількох літер?"
 
-#: backend.js:3786
+#: backend.js:3792
 msgctxt "title"
 msgid "Numbers options"
 msgstr "Параметри чисел"
 
-#: backend.js:3789
+#: backend.js:3795
 msgctxt "label"
 msgid "Start number"
 msgstr "Початковий номер"
 
-#: backend.js:3796
+#: backend.js:3802
 msgctxt "label"
 msgid "Offset for each number"
 msgstr "Зміщення для кожного числа"
 
-#: backend.js:3847
+#: backend.js:3853
 msgid "Amount of letters has to be higher"
 msgstr "A betűk számának magasabbnak kell lennie"
 
-#: backend.js:3874
+#: backend.js:3880
 msgid "Your start number is not correct. It has to be an integer bigger than 0"
 msgstr "Початковий номер некоректний. Він має бути цілим числом більшим за 0"
 
-#: backend.js:4101 backend.js:4105
+#: backend.js:4107 backend.js:4111
 msgid "You have PDF ticket attachment enabled for emails."
 msgstr "Ви маєте вкладення PDF-квитків ввімкненим для email."
 
-#: backend.js:4102
+#: backend.js:4108
 msgid ""
 "Do you also want to attach the ICS calendar file to the purchase emails?"
 msgstr ""
 "Чи бажаєте ви також прикріпити файл календаря ICS до листів про покупку?"
 
-#: backend.js:4106
+#: backend.js:4112
 msgid ""
 "Do you also want to include a \"Download all tickets as one PDF\" link in "
 "the email?"
@@ -7087,42 +7096,42 @@ msgstr ""
 "Чи бажаєте ви також додати посилання \"Завантажити всі квитки одним PDF\" у "
 "електронний лист?"
 
-#: backend.js:4109
+#: backend.js:4115
 msgid "You show the badge download button on the ticket detail page."
 msgstr "Показувати кнопку завантаження бейджа на сторінці деталей квитка."
 
-#: backend.js:4110
+#: backend.js:4116
 msgid ""
 "Do you also want to include the badge download link in the purchase emails?"
 msgstr ""
 "Чи бажаєте ви також додати посилання на завантаження бейджа у листи про "
 "покупку?"
 
-#: backend.js:4113
+#: backend.js:4119
 msgid "You have hidden the PDF download button on purchase emails."
 msgstr "Ви приховали кнопку завантаження PDF в email-ах про покупку."
 
-#: backend.js:4114
+#: backend.js:4120
 msgid "Do you want to show the \"View all tickets\" link in the email instead?"
 msgstr ""
 "Бажаєте натомість показати посилання \"Переглянути всі квитки\" у "
 "електронному листі?"
 
-#: backend.js:4117
+#: backend.js:4123
 msgid "You have auto-start camera enabled for the ticket scanner."
 msgstr "Ви маєте автозапуск камери ввімкненим для сканера квитків."
 
-#: backend.js:4118
+#: backend.js:4124
 msgid "Do you also want to enable automatic ticket redemption on scan?"
 msgstr ""
 "Чи бажаєте ви також увімкнути автоматичне використання квитка під час "
 "сканування?"
 
-#: backend.js:4121
+#: backend.js:4127
 msgid "You have automatic scan-and-redeem enabled."
 msgstr "Ви маєте ввімкнене автоматичне сканування-та-використання."
 
-#: backend.js:4122
+#: backend.js:4128
 msgid ""
 "Do you also want to enable haptic feedback (vibration) when a ticket is "
 "scanned?"
@@ -7130,47 +7139,47 @@ msgstr ""
 "Чи бажаєте ви також увімкнути тактильний відгук (вібрацію) під час "
 "сканування квитка?"
 
-#: backend.js:4125
+#: backend.js:4131
 msgid "You allow tickets to be redeemed after the event end date."
 msgstr "Ви дозволяєте використовувати квитки після дати завершення події."
 
-#: backend.js:4126
+#: backend.js:4132
 msgid ""
 "Do you also want to display the confirmed scan count on the ticket scanner?"
 msgstr ""
 "Чи бажаєте ви також показувати кількість підтверджених сканувань у сканері "
 "квитків?"
 
-#: backend.js:4129
+#: backend.js:4135
 msgid "You show the event date on the purchase order email."
 msgstr "Показувати дату події в email-повідомленні про замовлення."
 
-#: backend.js:4130
+#: backend.js:4136
 msgid "Do you also want to show the event date on the product detail page?"
 msgstr "Чи бажаєте ви також показувати дату заходу на сторінці товару?"
 
-#: backend.js:4133
+#: backend.js:4139
 msgid "You show input fields on the checkout page."
 msgstr "Показувати поля вводу на сторінці оформлення замовлення."
 
-#: backend.js:4134
+#: backend.js:4140
 msgid "Do you also want to display the customer note on the ticket PDF?"
 msgstr "Чи бажаєте ви також показувати примітку клієнта у PDF квитка?"
 
-#: backend.js:4137
+#: backend.js:4143
 msgid "You show the self-redeem button on the ticket detail page."
 msgstr "Показувати кнопку самостійного погашення на сторінці деталей квитка."
 
-#: backend.js:4138
+#: backend.js:4144
 msgid ""
 "Do you also want to redirect the customer after they redeem their ticket?"
 msgstr "Чи бажаєте ви також перенаправляти клієнта після використання квитка?"
 
-#: backend.js:4141 backend.js:4145
+#: backend.js:4147 backend.js:4151
 msgid "You have the premium plugin active."
 msgstr "У вас активовано преміум-плагін."
 
-#: backend.js:4142
+#: backend.js:4148
 msgid ""
 "Do you want to enable IP blocking to protect against brute-force ticket "
 "validation attempts?"
@@ -7178,18 +7187,18 @@ msgstr ""
 "Бажаєте увімкнути блокування IP для захисту від спроб перебору під час "
 "перевірки квитків?"
 
-#: backend.js:4146
+#: backend.js:4152
 msgid "Do you want to enable IP tracking for ticket validation requests?"
 msgstr "Бажаєте увімкнути відстеження IP для запитів перевірки квитків?"
 
-#: backend.js:4149
+#: backend.js:4155
 msgid ""
 "Your customers can collect their tickets in the free Vollstart Wallet app."
 msgstr ""
 "Ваші клієнти можуть зберігати свої квитки у безкоштовному додатку Vollstart "
 "Wallet."
 
-#: backend.js:4150
+#: backend.js:4156
 msgid ""
 "Do you want to enable the \"Add to Vollstart Wallet\" button on ticket pages "
 "and in emails?"
@@ -7197,7 +7206,7 @@ msgstr ""
 "Увімкнути кнопку «Додати до Vollstart Wallet» на сторінках квитків та в "
 "листах?"
 
-#: backend.js:4153
+#: backend.js:4159
 msgid ""
 "Eventado.com is a free public event calendar — Premium customers can list "
 "their ticket events automatically."
@@ -7205,7 +7214,7 @@ msgstr ""
 "Eventado.com — це безкоштовний публічний календар подій — клієнти Premium "
 "можуть автоматично публікувати свої квиткові події."
 
-#: backend.js:4154
+#: backend.js:4160
 msgid ""
 "Do you want to publish your ticket events to Eventado.com for more reach and "
 "SEO?"
@@ -7213,58 +7222,58 @@ msgstr ""
 "Бажаєте опублікувати свої квиткові події на Eventado.com для більшого "
 "охоплення та SEO?"
 
-#: backend.js:4193
+#: backend.js:4199
 msgid "Yes, enable"
 msgstr "Так, увімкнути"
 
-#: backend.js:4213
+#: backend.js:4219
 msgid "No thanks"
 msgstr "Ні, дякую"
 
-#: backend.js:4220
+#: backend.js:4226
 msgid "Don't ask again"
 msgstr "Більше не запитувати"
 
-#: backend.js:4275
+#: backend.js:4281
 msgid "Dismiss"
 msgstr "Відхилити"
 
-#: backend.js:4321
+#: backend.js:4327
 msgid "Assign list to a WooCommerce product"
 msgstr "Призначити список продукту WooCommerce"
 
-#: backend.js:4321
+#: backend.js:4327
 msgid "Open a product, go to the Event Ticket tab, and enable ticketing."
 msgstr ""
 "Відкрийте товар, перейдіть на вкладку Event Ticket та увімкніть квитки."
 
-#: backend.js:4325
+#: backend.js:4331
 msgid "Process a test order"
 msgstr "Обробити тестове замовлення"
 
-#: backend.js:4325
+#: backend.js:4331
 msgid "Place an order and complete it to generate tickets."
 msgstr "Оформіть замовлення та завершіть його, щоб згенерувати квитки."
 
-#: backend.js:4326
+#: backend.js:4332
 msgid "Scan a ticket at the entrance"
 msgstr "Сканувати квиток на вході"
 
-#: backend.js:4326
+#: backend.js:4332
 msgid "Use the browser-based QR scanner to redeem tickets."
 msgstr "Використовуйте браузерний QR-сканер для використання квитків."
 
-#: backend.js:4326
+#: backend.js:4332
 msgctxt "label"
 msgid "Open Scanner"
 msgstr "Відкрити сканер"
 
-#: backend.js:4335
+#: backend.js:4341
 msgctxt "title"
 msgid "Getting Started"
 msgstr "Початок роботи"
 
-#: backend.js:4371
+#: backend.js:4377
 msgid ""
 "If you need help, please contact us via email. The information is in "
 "\"Support Info\" area - button above."
@@ -7272,20 +7281,20 @@ msgstr ""
 "Якщо потрібна допомога, зв'яжіться з нами електронною поштою. Інформація "
 "знаходиться в розділі \"Інформація про підтримку\" — кнопка вище."
 
-#: backend.js:4372
+#: backend.js:4378
 msgctxt "label"
 msgid "Don't show this again"
 msgstr "Більше не показувати це"
 
-#: backend.js:4418
+#: backend.js:4424
 msgid "Lock ticket redemption until event starts?"
 msgstr "Блокувати використання квитка до початку події?"
 
-#: backend.js:4419 backend.js:4427 backend.js:4441
+#: backend.js:4425 backend.js:4433 backend.js:4447
 msgid "Auto-redeem when scanned?"
 msgstr "Автоматично активувати під час сканування?"
 
-#: backend.js:4420
+#: backend.js:4426
 msgid ""
 "Show \"Open Tickets\" link in email? All QR codes on one page — ideal for "
 "groups."
@@ -7293,7 +7302,7 @@ msgstr ""
 "Показувати посилання \"Відкриті квитки\" в листі? Усі QR-коди на одній "
 "сторінці — ідеально для груп."
 
-#: backend.js:4421 backend.js:4429
+#: backend.js:4427 backend.js:4435
 msgid ""
 "Auto-complete orders when all items are tickets? Tickets are generated "
 "immediately."
@@ -7301,7 +7310,7 @@ msgstr ""
 "Автозавершувати замовлення, коли всі товари — квитки? Квитки генеруються "
 "одразу."
 
-#: backend.js:4422 backend.js:4430 backend.js:4437 backend.js:4443
+#: backend.js:4428 backend.js:4436 backend.js:4443 backend.js:4449
 msgid ""
 "Enable Vollstart Wallet? Customers can collect tickets in the free wallet "
 "app."
@@ -7309,18 +7318,18 @@ msgstr ""
 "Увімкнути Vollstart Wallet? Клієнти можуть зберігати квитки у безкоштовному "
 "додатку гаманця."
 
-#: backend.js:4423 backend.js:4431 backend.js:4438 backend.js:4444
+#: backend.js:4429 backend.js:4437 backend.js:4444 backend.js:4450
 msgid ""
 "Do you also hand out tickets that were not bought in the shop? For example "
 "printed cards. They can then be redeemed without an order — the check "
 "against a paid order does not apply to them."
 msgstr ""
 
-#: backend.js:4426
+#: backend.js:4432
 msgid "Allow redemption after closing time?"
 msgstr "Дозволити погашення після часу закриття?"
 
-#: backend.js:4428
+#: backend.js:4434
 msgid ""
 "Show \"Open Tickets\" link in email? All QR codes on one page — ideal for "
 "families."
@@ -7328,87 +7337,87 @@ msgstr ""
 "Показувати посилання \"Відкриті квитки\" в листі? Усі QR-коди на одній "
 "сторінці — ідеально для родин."
 
-#: backend.js:4434
+#: backend.js:4440
 msgid "Show redemption counter to customer? E.g. \"15 of 30 visits used\""
 msgstr ""
 "Показувати клієнту лічильник використань? Наприклад: \"Використано 15 з 30 "
 "візитів\""
 
-#: backend.js:4435
+#: backend.js:4441
 msgid "Show self-redeem button on ticket page? For self-service access."
 msgstr ""
 "Показувати кнопку самостійного використання на сторінці квитка? Для "
 "самостійного доступу."
 
-#: backend.js:4436
+#: backend.js:4442
 msgid "Auto-redeem when scanned? Disable to verify identity first."
 msgstr ""
 "Автоматично активувати під час сканування? Вимкніть, щоб спочатку перевірити "
 "особу."
 
-#: backend.js:4442
+#: backend.js:4448
 msgid "Show self-redeem button? Customer redeems the voucher themselves."
 msgstr ""
 "Показувати кнопку самостійного використання? Клієнт активує ваучер "
 "самостійно."
 
-#: backend.js:4449
+#: backend.js:4455
 msgid "Concerts, shows, festivals"
 msgstr "Концерти, шоу, фестивалі"
 
-#: backend.js:4450
+#: backend.js:4456
 msgid "Theme park, zoo, spa"
 msgstr "Парк атракціонів, зоопарк, спа"
 
-#: backend.js:4451
+#: backend.js:4457
 msgid "Memberships / Season passes"
 msgstr "Членства / сезонні абонементи"
 
-#: backend.js:4451
+#: backend.js:4457
 msgid "Recurring access"
 msgstr "Повторюваний доступ"
 
-#: backend.js:4452
+#: backend.js:4458
 msgid "Vouchers / Simple codes"
 msgstr "Ваучери / Прості коди"
 
-#: backend.js:4452
+#: backend.js:4458
 msgid "Gift cards, promo codes"
 msgstr "Подарункові картки, промо-коди"
 
-#: backend.js:4487
+#: backend.js:4493
 msgid "Welcome to Event Tickets!"
 msgstr "Ласкаво просимо до Event Tickets!"
 
-#: backend.js:4488
+#: backend.js:4494
 msgid "Let's configure your ticketing system."
 msgstr "Давайте налаштуємо вашу систему продажу квитків."
 
-#: backend.js:4489
+#: backend.js:4495
 msgid "This takes less than 2 minutes."
 msgstr "Це займає менше 2 хвилин."
 
-#: backend.js:4493
+#: backend.js:4499
 msgid "Skip, I'll configure manually"
 msgstr "Пропустити, я налаштую вручну"
 
-#: backend.js:4494
+#: backend.js:4500
 msgid "Start Setup"
 msgstr "Почати налаштування"
 
-#: backend.js:4518 backend.js:4588
+#: backend.js:4524 backend.js:4594
 msgid "Back"
 msgstr "Назад"
 
-#: backend.js:4519
+#: backend.js:4525
 msgid "Next"
 msgstr "Далі"
 
-#: backend.js:4555
+#: backend.js:4561
 msgid "Tip: PDF attachment to email"
 msgstr "Підказка: PDF вкладення до листа"
 
-#: backend.js:4556
+#: backend.js:4562
 msgid ""
 "With the Premium version you can attach PDF tickets directly to the order "
 "email — as individual files or merged into one PDF."
@@ -7416,144 +7425,152 @@ msgstr ""
 "З Преміум-версією ви можете прикріплювати PDF-квитки безпосередньо до email "
 "замовлення — як окремі файли або об'єднані в один PDF."
 
-#: backend.js:4561
+#: backend.js:4567
 msgid "Attach all tickets as one PDF to the order email?"
 msgstr "Додати всі квитки одним PDF до листа про замовлення?"
 
-#: backend.js:4563
+#: backend.js:4569
 msgid "Attach PDF ticket to the order email?"
 msgstr "Додати PDF-квиток до листа про замовлення?"
 
-#: backend.js:4566
+#: backend.js:4572
 msgid "Premium"
 msgstr "Преміум"
 
-#: backend.js:4589
+#: backend.js:4595
 msgid "Apply & Finish"
 msgstr "Застосувати та завершити"
 
-#: backend.js:4595
+#: backend.js:4601
 msgid "You're all set!"
 msgstr "Готово!"
 
-#: backend.js:4599
+#: backend.js:4605
 msgid "Your settings have been configured for %s."
 msgstr "Ваші налаштування сконфігуровано для %s."
 
-#: backend.js:4610
+#: backend.js:4616
 msgid "These settings are now active - you can change every one of them later:"
 msgstr ""
 
-#: backend.js:4619
+#: backend.js:4625
 msgid ""
 "One thing is still missing: a WooCommerce product that sells your tickets."
 msgstr ""
 
-#: backend.js:4658
+#: backend.js:4664
 msgid "Applying settings..."
 msgstr "Застосування налаштувань..."
 
-#: backend.js:4665
+#: backend.js:4671
 msgid "Error applying settings. Please try again."
 msgstr "Не вдалося застосувати налаштування. Спробуйте ще раз."
 
-#: backend.js:4670
+#: backend.js:4676
 msgid "Setup Wizard"
 msgstr "Майстер налаштування"
 
-#: backend.js:4702
+#: backend.js:4708
 msgid "Premium Activated!"
 msgstr "Преміум активовано!"
 
-#: backend.js:4703
+#: backend.js:4709
 msgid "You now have access to these features:"
 msgstr "Тепер вам доступні ці функції:"
 
-#: backend.js:4706
+#: backend.js:4712
 msgid "PDF ticket attachment in emails"
 msgstr "PDF-вкладення квитка в листах"
 
-#: backend.js:4707
+#: backend.js:4713
 msgid "Ticket Designer (custom PDF templates)"
 msgstr "Дизайнер квитків (власні PDF-шаблони)"
 
-#: backend.js:4708
+#: backend.js:4714
 msgid "Badge printing"
 msgstr "Друк бейджів"
 
-#: backend.js:4709
+#: backend.js:4715
 msgid "Seating plans"
 msgstr "Схеми розсадки"
 
-#: backend.js:4712
+#: backend.js:4718
 msgid "Recommended:"
 msgstr "Рекомендовано:"
 
-#: backend.js:4713
-msgid ""
-"Enable PDF ticket attachment in emails? Customers receive their tickets as "
-"PDF directly in the order confirmation email."
-msgstr ""
-"Увімкнути вкладення PDF квитка в листи? Клієнти отримують свої квитки як PDF "
-"одразу в листі з підтвердженням замовлення."
+#: backend.js:4719
+msgid "The button below switches these three settings on:"
+msgstr "Кнопка нижче вмикає ці три налаштування:"
 
-#: backend.js:4718
+#: backend.js:4721
+msgid "Attach the tickets as PDF files to the purchase email"
+msgstr "Додавати квитки як PDF-файли до листа про покупку"
+
+#: backend.js:4722
+msgid "Merge all tickets of an order into one PDF"
+msgstr "Об'єднати всі квитки замовлення в один PDF"
+
+#: backend.js:4723
+msgid "Up to 21 PDF attachments per email"
+msgstr "До 21 вкладень PDF на лист"
+
+#: backend.js:4725 backend.js:4780
+msgid "You can change these anytime in Options."
+msgstr "Ви можете будь-коли змінити їх у Параметрах."
+
+#: backend.js:4730
 msgid "Enable Recommended Settings"
 msgstr "Увімкнути рекомендовані налаштування"
 
-#: backend.js:4731
+#: backend.js:4743
 msgctxt "button"
 msgid "Skip"
 msgstr "Пропустити"
 
-#: backend.js:4747
+#: backend.js:4773
 msgid "Premium settings applied!"
 msgstr "Налаштування преміум застосовано!"
 
-#: backend.js:4750
+#: backend.js:4776
 msgid "PDF attachment in emails: enabled"
 msgstr "PDF-вкладення в листах: увімкнено"
 
-#: backend.js:4751
+#: backend.js:4777
 msgid "Merge into one PDF: enabled"
 msgstr "Об'єднати в один PDF: увімкнено"
 
-#: backend.js:4752
+#: backend.js:4778
 msgid "Max attachments: 21"
 msgstr "Макс. вкладень: 21"
 
-#: backend.js:4754
-msgid "You can change these anytime in Options."
-msgstr "Ви можете будь-коли змінити їх у Параметрах."
-
-#: backend.js:4758
+#: backend.js:4784
 msgid "Close"
 msgstr "Закрити"
 
-#: backend.js:4771
+#: backend.js:4797
 msgid "Premium Features"
 msgstr "Преміум-функції"
 
-#: backend.js:4799
+#: backend.js:4825
 msgctxt "label"
 msgid "Upgrade"
 msgstr "Оновити"
 
-#: backend.js:4831
+#: backend.js:4857
 msgctxt "title"
 msgid "Enter an amount of how many ticket numbers you need"
 msgstr "Введіть кількість потрібних вам номерів квитків"
 
-#: backend.js:4868
+#: backend.js:4894
 msgctxt "title"
 msgid "1. Ticket number generator (optional step)"
 msgstr "1. Генератор номерів квитків (необов'язковий крок)"
 
-#: backend.js:4869
+#: backend.js:4895
 msgid "You can generate ticket numbers."
 msgstr "Ви можете генерувати номери квитків."
 
-#: backend.js:4870
+#: backend.js:4896
 msgid ""
 "Up 100.000 tickets generation per run. The limit is to prevent performance "
 "issues."
@@ -7561,23 +7578,23 @@ msgstr ""
 "До 100 000 квитків за одне генерування. Ліміт встановлено для запобігання "
 "проблемам з продуктивністю."
 
-#: backend.js:4870
+#: backend.js:4896
 msgid "You can repeat the \"store tickets\" operations as often as needed."
 msgstr ""
 "Ви можете повторювати операції \"зберегти квитки\" стільки разів, скільки "
 "потрібно."
 
-#: backend.js:4872
+#: backend.js:4898
 msgctxt "label"
 msgid "Enter amount of needed ticket numbers"
 msgstr "Введіть кількість потрібних номерів квитків"
 
 #. translators: 1: amount of possible codes 2: premium info
-#: backend.js:4874
+#: backend.js:4900
 msgid "%1$d max. %2$s up to 100.000 for each run"
 msgstr "%1$d макс. %2$s до 100 000 за один запуск"
 
-#: backend.js:4884
+#: backend.js:4910
 msgctxt "label"
 msgid ""
 "Clear the ticket numbers list textarea field below to add fill in the new "
@@ -7586,18 +7603,18 @@ msgstr ""
 "Очистіть поле списку номерів квитків нижче, щоб додати нові згенеровані "
 "номери квитків"
 
-#: backend.js:4890
+#: backend.js:4916
 msgctxt "label"
 msgid "Generate Code Verification Value (CVV) for each ticket number"
 msgstr "Генерувати значення перевірки коду (CVV) для кожного номера квитка"
 
-#: backend.js:4894
+#: backend.js:4920
 msgctxt "label"
 msgid "Generate ticket numbers"
 msgstr "Згенерувати номери квитків"
 
 #. translators: 1: amount of created tickets 2: seconds 3: amount of runs
-#: backend.js:4914
+#: backend.js:4940
 msgid ""
 "Created %1$d tickets. In %2$s seconds, with %3$d runs to find unique ticket "
 "numbers."
@@ -7606,16 +7623,16 @@ msgstr ""
 "номерів квитків."
 
 #. translators: %d: amout of ticket numbers
-#: backend.js:4925
+#: backend.js:4951
 msgid "contains %d tickets"
 msgstr "містить %d квитків"
 
-#: backend.js:4927
+#: backend.js:4953
 msgctxt "title"
 msgid "2. Ticket numbers to store on the server"
 msgstr "2. Номери квитків для збереження на сервері"
 
-#: backend.js:4927
+#: backend.js:4953
 msgid ""
 "One number per line and/or comma-separated (,). <br>If you want to add the "
 "CVV number then separate your ticket number with (;) and append your CVV "
@@ -7627,22 +7644,22 @@ msgstr ""
 "збереження чисел на сервері буде перевірено унікальність номера квитка, а "
 "ті, що не є унікальними, буде позначено."
 
-#: backend.js:4934
+#: backend.js:4960
 msgctxt "label"
 msgid "Assign to this ticket list"
 msgstr "Призначити цьому списку квитків"
 
 #. translators: 1: max amout of ticket numbers 2: premium info
-#: backend.js:4947
+#: backend.js:4973
 msgid "You can store up to %1$d. %2$s unlimited"
 msgstr "Ви можете зберегти до %1$d. %2$s необмежено"
 
-#: backend.js:4949
+#: backend.js:4975
 msgctxt "label"
 msgid "Store ticket numbers"
 msgstr "Зберегти номери квитків"
 
-#: backend.js:4966
+#: backend.js:4992
 msgid ""
 "Each entry will turn green (successful stored) or red (NOT OK - duplicate "
 "entry on the server).<br>Scroll down and wait for all to finish.<br>In the "
@@ -7652,22 +7669,22 @@ msgstr ""
 "на сервері).<br>Прокрутіть униз і дочекайтеся завершення.<br>У текстовому "
 "полі нижче ви знайдете всі успішно збережені квитки."
 
-#: backend.js:4968
+#: backend.js:4994
 msgctxt "title"
 msgid "Successful stored ticket numbers"
 msgstr "Номери квитків успішно збережено"
 
-#: backend.js:4975
+#: backend.js:5001
 msgctxt "title"
 msgid "Importing"
 msgstr "Імпортування"
 
-#: backend.js:4986
+#: backend.js:5012
 msgid "Import process finished"
 msgstr "Importálási folyamat befejezve"
 
 #. translators: %d: total ticket count
-#: backend.js:5004
+#: backend.js:5030
 msgctxt "title"
 msgid ""
 "Your Limit of %d tickets is reached. Use the premium version to have "
@@ -7676,115 +7693,115 @@ msgstr ""
 "Ваш ліміт у %d квитків вичерпано. Використовуйте преміум-версію для "
 "необмеженої кількості квитків"
 
-#: backend.js:5008
+#: backend.js:5034
 msgctxt "title"
 msgid "Amount"
 msgstr "Кількість"
 
-#: backend.js:5008 backend.js:5015
+#: backend.js:5034 backend.js:5041
 msgctxt "label"
 msgid "Not Ok"
 msgstr "Не ок"
 
-#: backend.js:5053
+#: backend.js:5079
 msgctxt "title"
 msgid "Export tickets"
 msgstr "Експортувати квитки"
 
-#: backend.js:5059
+#: backend.js:5085
 msgctxt "label"
 msgid "Export"
 msgstr "Експорт"
 
-#: backend.js:5072
+#: backend.js:5098
 msgctxt "title"
 msgid "Choose your export settings"
 msgstr "Виберіть налаштування експорту"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "label"
 msgid "Choose the delimiter for the column values"
 msgstr "Виберіть роздільник для значень стовпців"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "option value"
 msgid "Comma"
 msgstr "Кома"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "option value"
 msgid "Semicolon"
 msgstr "Крапка з комою"
 
-#: backend.js:5073
+#: backend.js:5099
 msgctxt "option value"
 msgid "Pipe"
 msgstr "Вертикальна риска"
 
-#: backend.js:5074
+#: backend.js:5100
 msgctxt "label"
 msgid "Choose a file suffix"
 msgstr "Виберіть суфікс файлу"
 
-#: backend.js:5076
+#: backend.js:5102
 msgctxt "option value"
 msgid "All"
 msgstr "Всі"
 
-#: backend.js:5080
+#: backend.js:5106
 msgctxt "label"
 msgid "Limit export to ticket list"
 msgstr "Обмежити експорт списком квитків"
 
-#: backend.js:5082
+#: backend.js:5108
 msgctxt "label"
 msgid "Choose a sorting field"
 msgstr "Виберіть поле сортування"
 
-#: backend.js:5082
+#: backend.js:5108
 msgctxt "option value"
 msgid "Creation date"
 msgstr "Дата створення"
 
-#: backend.js:5082 backend.js:5891
+#: backend.js:5108 backend.js:5917
 msgid "Ticket number"
 msgstr "Номер квитка"
 
-#: backend.js:5082 backend.js:5891
+#: backend.js:5108 backend.js:5917
 msgid "Ticket display number"
 msgstr "Номер відображення квитка"
 
-#: backend.js:5082
+#: backend.js:5108
 msgctxt "option value"
 msgid "List name"
 msgstr "Назва списку"
 
-#: backend.js:5083
+#: backend.js:5109
 msgctxt "label"
 msgid "Choose a sorting direction"
 msgstr "Виберіть напрямок сортування"
 
-#: backend.js:5083
+#: backend.js:5109
 msgctxt "option value"
 msgid "Ascending"
 msgstr "За зростанням"
 
-#: backend.js:5083
+#: backend.js:5109
 msgctxt "option value"
 msgid "Descending"
 msgstr "За спаданням"
 
-#: backend.js:5084
+#: backend.js:5110
 msgctxt "label"
 msgid "Set a range"
 msgstr "Встановити діапазон"
 
 #. translators: %d: total record count
-#: backend.js:5084
+#: backend.js:5110
 msgid "You have %d tickets stored."
 msgstr "У вас %d збережених квитків."
 
-#: backend.js:5084
+#: backend.js:5110
 msgid ""
 "Some systems are slow and the connection timeout interrupts the export, if "
 "you have too many tickets. In that case, you can export your tickets in "
@@ -7794,41 +7811,41 @@ msgstr ""
 "забагато квитків. У такому випадку ви можете експортувати квитки кількома "
 "кроками, наприклад, 0 і 20000, а потім 20001 і 20000."
 
-#: backend.js:5084
+#: backend.js:5110
 msgid "Enter your row start (0 = from the first)"
 msgstr "Adja meg a sor kezdetét (0 = az elsőtől)"
 
-#: backend.js:5084
+#: backend.js:5110
 msgctxt "label"
 msgid "Enter amount of tickets"
 msgstr "Введіть кількість квитків"
 
-#: backend.js:5118
+#: backend.js:5144
 msgctxt "title"
 msgid "Edit List"
 msgstr "Редагувати список"
 
-#: backend.js:5118
+#: backend.js:5144
 msgctxt "title"
 msgid "Add List"
 msgstr "Додати список"
 
 #. translators: %s: h4 option name
-#: backend.js:5148
+#: backend.js:5174
 msgid "Overrule %s per Ticket list"
 msgstr "Перевизначити %s для списку квитків"
 
-#: backend.js:5163
+#: backend.js:5189
 msgctxt "label"
 msgid "Overrule the ticket format settings"
 msgstr "Перевизначити налаштування формату квитка"
 
-#: backend.js:5165
+#: backend.js:5191
 msgctxt "label"
 msgid "Note"
 msgstr "Примітка"
 
-#: backend.js:5165
+#: backend.js:5191
 msgid ""
 "Will be overridden if you set the ticket number format settings on the "
 "product!"
@@ -7836,12 +7853,12 @@ msgstr ""
 "Буде перевизначено, якщо ви встановите налаштування формату номера квитка на "
 "продукті!"
 
-#: backend.js:5179
+#: backend.js:5205
 msgctxt "heading"
 msgid "Webhook"
 msgstr "Вебхук"
 
-#: backend.js:5181
+#: backend.js:5207
 msgctxt "label"
 msgid ""
 "The webhook need to be activated first in the options to be executed, even "
@@ -7850,22 +7867,22 @@ msgstr ""
 "Вебхук потрібно спочатку активувати в опціях, щоб він виконувався, навіть "
 "якщо URL тут встановлено."
 
-#: backend.js:5183
+#: backend.js:5209
 msgctxt "label"
 msgid "URL to your service if the WooCommerce ticket is sold"
 msgstr "URL вашого сервісу, якщо квиток WooCommerce продано"
 
-#: backend.js:5187
+#: backend.js:5213
 msgctxt "heading"
 msgid "Tickets without a WooCommerce order"
 msgstr ""
 
-#: backend.js:5190
+#: backend.js:5216
 msgctxt "label"
 msgid "Tickets of this list may exist without an order"
 msgstr ""
 
-#: backend.js:5191
+#: backend.js:5217
 msgctxt "label"
 msgid ""
 "For numbers you generated yourself, for example printed cards. Those tickets "
@@ -7874,7 +7891,7 @@ msgid ""
 "WooCommerce keep the full check."
 msgstr ""
 
-#: backend.js:5194
+#: backend.js:5220
 msgctxt "label"
 msgid ""
 "Event window for these tickets (optional). Only used for tickets without an "
@@ -7882,32 +7899,32 @@ msgid ""
 "governed by the existing scanner options."
 msgstr ""
 
-#: backend.js:5203
+#: backend.js:5229
 msgctxt "label"
 msgid "Until"
 msgstr ""
 
-#: backend.js:5285
+#: backend.js:5311
 msgctxt "title"
 msgid "Edit Ticket"
 msgstr "Редагувати квиток"
 
-#: backend.js:5285
+#: backend.js:5311
 msgctxt "title"
 msgid "Add Ticket"
 msgstr "Додати квиток"
 
-#: backend.js:5305 backend.js:5569
+#: backend.js:5331 backend.js:5595
 msgctxt "label"
 msgid "List"
 msgstr "Список"
 
-#: backend.js:5312
+#: backend.js:5338
 msgctxt "label"
 msgid "CVV - use 4 digits for best results"
 msgstr "CVV - для найкращих результатів використовуйте 4 цифри"
 
-#: backend.js:5314
+#: backend.js:5340
 msgid ""
 "If CVV is set, then your user will be asked to enter also the CVV to check "
 "the ticket number."
@@ -7915,103 +7932,103 @@ msgstr ""
 "Якщо CVV встановлено, вашого користувача буде також попросено ввести CVV для "
 "перевірки номера квитка."
 
-#: backend.js:5320
+#: backend.js:5346
 msgctxt "option value"
 msgid "is activ"
 msgstr "активний"
 
-#: backend.js:5321
+#: backend.js:5347
 msgctxt "option value"
 msgid "is inactiv"
 msgstr "неактивний"
 
-#: backend.js:5322
+#: backend.js:5348
 msgctxt "label"
 msgid "is stolen"
 msgstr "викрадено"
 
-#: backend.js:5354
+#: backend.js:5380
 msgid "Use the add option"
 msgstr "Використовуйте опцію додавання"
 
-#: backend.js:5396
+#: backend.js:5422
 msgctxt "label"
 msgid "Tickets"
 msgstr "Квитки"
 
-#: backend.js:5396 backend.js:5485
+#: backend.js:5422 backend.js:5511
 msgctxt "label"
 msgid "Delete All Tickets"
 msgstr "Видалити всі квитки"
 
-#: backend.js:5413
+#: backend.js:5439
 msgid "Are you sure, you want to delete this list?"
 msgstr "Biztosan törölni szeretné ezt a listát?"
 
-#: backend.js:5415
+#: backend.js:5441
 msgid "No ticket will be deleted. Just the list."
 msgstr "Жоден квиток не буде видалено. Лише список."
 
-#: backend.js:5421
+#: backend.js:5447
 msgid "Check if list is used by products"
 msgstr "Перевірити, чи використовується список продуктами"
 
-#: backend.js:5432
+#: backend.js:5458
 msgid "This list is still assigned to products:"
 msgstr "Цей список все ще призначено до товарів:"
 
-#: backend.js:5444
+#: backend.js:5470
 msgid ""
 "Please reassign these products first, or uncheck the product check option."
 msgstr ""
 "Будь ласка, спочатку перепризначте ці товари або зніміть прапорець з опції "
 "товару."
 
-#: backend.js:5445
+#: backend.js:5471
 msgid "Cannot delete list"
 msgstr "Не вдається видалити список"
 
-#: backend.js:5456
+#: backend.js:5482
 msgctxt "title"
 msgid "Delete all tickets?"
 msgstr "Видалити всі квитки?"
 
-#: backend.js:5457
+#: backend.js:5483
 msgid "Are you sure you want to delete ALL tickets from the list \"%s\"?"
 msgstr "Ви впевнені, що хочете видалити ВСІ квитки зі списку \"%s\"?"
 
-#: backend.js:5457
+#: backend.js:5483
 msgid "This action cannot be undone!"
 msgstr "Цю дію не можна скасувати!"
 
-#: backend.js:5460
+#: backend.js:5486
 msgid "To confirm deletion, type DELETE in the field below:"
 msgstr "Для підтвердження видалення введіть DELETE у поле нижче:"
 
-#: backend.js:5464
+#: backend.js:5490
 msgctxt "title"
 msgid "Final confirmation"
 msgstr "Остаточне підтвердження"
 
-#: backend.js:5468
+#: backend.js:5494
 msgid "You must type DELETE to confirm."
 msgstr "Введіть DELETE для підтвердження."
 
-#: backend.js:5472
+#: backend.js:5498
 msgid "Deleting..."
 msgstr "Видалення..."
 
-#: backend.js:5490
+#: backend.js:5516
 msgid "%d tickets have been deleted."
 msgstr "%d квитків було видалено."
 
 #. translators: 1: deleted tickets, 2: total tickets
-#: backend.js:5498
+#: backend.js:5524
 msgid "%1$d of %2$d"
 msgstr ""
 
 #. translators: %s: title list of tickets
-#: backend.js:5528
+#: backend.js:5554
 msgid ""
 "Do you want to empty the \"%s\" table? All data will be lost. No ticket will "
 "be deleted. Just the lists."
@@ -8019,13 +8036,13 @@ msgstr ""
 "Бажаєте очистити таблицю \"%s\"? Усі дані буде втрачено. Жоден квиток не "
 "буде видалено. Лише списки."
 
-#: backend.js:5528 backend.js:5529
+#: backend.js:5554 backend.js:5555
 msgctxt "title"
 msgid "List of tickets"
 msgstr "Список квитків"
 
 #. translators: %s: title list of tickets
-#: backend.js:5529
+#: backend.js:5555
 msgid ""
 "Are you sure? You will not be able to restore the data, except you have a "
 "backup of your database. All data will be lost. No ticket will be deleted. "
@@ -8034,58 +8051,58 @@ msgstr ""
 "Ви впевнені? Ви не зможете відновити дані, якщо не маєте резервної копії "
 "бази даних. Усі дані буде втрачено. Квитки не буде видалено. Лише списки."
 
-#: backend.js:5541
+#: backend.js:5567
 msgid "Organize your tickets in lists. You can assign tickets to a list."
 msgstr ""
 "Організовуйте свої квитки у списках. Ви можете призначати квитки до списку."
 
 #. translators: 1: max possible lists amount 2: link to premium
-#: backend.js:5542
+#: backend.js:5568
 msgid "Max. %1$d list. Unlimited with %2$s"
 msgstr "Макс. %1$d список. Без обмежень з %2$s"
 
-#: backend.js:5550
+#: backend.js:5576
 msgctxt "label"
 msgid "Confirmed Count"
 msgstr "Кількість підтверджених"
 
-#: backend.js:5553
+#: backend.js:5579
 msgctxt "label"
 msgid "Customer"
 msgstr "Клієнт"
 
-#: backend.js:5557
+#: backend.js:5583
 msgctxt "label"
 msgid "Company"
 msgstr "Компанія"
 
-#: backend.js:5561
+#: backend.js:5587
 msgctxt "label"
 msgid "Redeem Amount"
 msgstr "Сума погашення"
 
-#: backend.js:5564
+#: backend.js:5590
 msgctxt "label"
 msgid "Order line details"
 msgstr ""
 
-#: backend.js:5568 ticket_scanner.js:1461
+#: backend.js:5594 ticket_scanner.js:1461
 msgctxt "label"
 msgid "Ticket"
 msgstr "Квиток"
 
-#: backend.js:5572 backend.js:5915
+#: backend.js:5598 backend.js:5941
 msgctxt "label"
 msgid "OrderId"
 msgstr "Id замовлення"
 
-#: backend.js:5589
+#: backend.js:5615
 msgid "You need to create a ticket list first before you can add tickets."
 msgstr ""
 "Спочатку потрібно створити список квитків, перш ніж можна буде додавати "
 "квитки."
 
-#: backend.js:5592
+#: backend.js:5618
 msgid ""
 "You reached maximum amount of tickets. You need to delete tickets before you "
 "can add more new tickets or buy the premium version to have unlimited "
@@ -8095,258 +8112,258 @@ msgstr ""
 "ніж можна буде додати нові, або придбайте преміум-версію для необмеженої "
 "кількості квитків."
 
-#: backend.js:5612
+#: backend.js:5638
 msgctxt "label"
 msgid "Export tickets"
 msgstr "Експортувати квитки"
 
-#: backend.js:5619
+#: backend.js:5645
 msgctxt "option value"
 msgid "Bulk Action"
 msgstr "Масова дія"
 
-#: backend.js:5641
+#: backend.js:5667
 msgctxt "title"
 msgid "Bulk Action"
 msgstr "Масова дія"
 
-#: backend.js:5641
+#: backend.js:5667
 msgid "Please select at least one ticket first."
 msgstr "Будь ласка, спочатку виберіть хоча б один квиток."
 
-#: backend.js:5647
+#: backend.js:5673
 msgctxt "option value"
 msgid "Default search filter"
 msgstr "Фільтр пошуку за замовчуванням"
 
-#: backend.js:5648
+#: backend.js:5674
 msgctxt "option value"
 msgid "Filter for list id"
 msgstr "Фільтр за ID списку"
 
-#: backend.js:5649
+#: backend.js:5675
 msgctxt "option value"
 msgid "Filter for order id"
 msgstr "Фільтр за ID замовлення"
 
-#: backend.js:5650
+#: backend.js:5676
 msgctxt "option value"
 msgid "Filter for cvv value"
 msgstr "Фільтр за значенням CVV"
 
-#: backend.js:5651
+#: backend.js:5677
 msgctxt "option value"
 msgid "Filter for status (1:active, 0:inactive, 2:stolen)"
 msgstr "Фільтр за статусом (1:активний, 0:неактивний, 2:вкрадений)"
 
-#: backend.js:5652
+#: backend.js:5678
 msgctxt "option value"
 msgid "Filter for redeemed status (0:not redeemed yet, 1:redeemed)"
 msgstr "Фільтр за статусом активації (0:ще не активовано, 1:активовано)"
 
-#: backend.js:5653
+#: backend.js:5679
 msgctxt "option value"
 msgid "Filter for registered user id"
 msgstr "Фільтр за ID зареєстрованого користувача"
 
-#: backend.js:5654
+#: backend.js:5680
 msgctxt "option value"
 msgid "Filter for customer name in billing first and last name"
 msgstr "Фільтр за ім'ям клієнта в платіжних імені та прізвищі"
 
-#: backend.js:5655
+#: backend.js:5681
 msgctxt "option value"
 msgid "Filter for product id"
 msgstr "Фільтр за ID товару"
 
-#: backend.js:5656
+#: backend.js:5682
 msgctxt "option value"
 msgid "Filter for chosen date (enter YYYY-MM-DD)"
 msgstr "Фільтр за обраною датою (введіть РРРР-ММ-ДД)"
 
 #. translators: 1: max amount tickets 2: premium link
-#: backend.js:5673
+#: backend.js:5699
 msgid "Max. %1$d tickets. Unlimited with %2$s"
 msgstr "Макс. %1$d квитків. Без обмежень з %2$s"
 
-#: backend.js:5717
+#: backend.js:5743
 msgctxt "label"
 msgid "stolen"
 msgstr "викрадено"
 
-#: backend.js:5721
+#: backend.js:5747
 msgid "used"
 msgstr "használt"
 
-#: backend.js:5721
+#: backend.js:5747
 msgid "active"
 msgstr "aktív"
 
-#: backend.js:5724
+#: backend.js:5750
 msgctxt "label"
 msgid "is inactiv"
 msgstr "неактивний"
 
-#: backend.js:5793
+#: backend.js:5819
 msgid "You have no tickets yet."
 msgstr "У вас ще немає квитків."
 
-#: backend.js:5797
+#: backend.js:5823
 msgid ""
 "Or add ticket numbers to a ticket list yourself - with the \"Add\" button "
 "above. Useful for printed cards you hand out at the door."
 msgstr ""
 
 #. translators: 1: amount tickets 2: total amount tickets
-#: backend.js:5806
+#: backend.js:5832
 msgid "Redeemed tickets: %1$d (filtered) of %2$d (total redeemed tickets)"
 msgstr ""
 "Погашених квитків: %1$d (відфільтровано) з %2$d (усього погашених квитків)"
 
-#: backend.js:5831
+#: backend.js:5857
 msgid "Are you sure, you want to delete this ticket?"
 msgstr "Ви впевнені, що хочете видалити цей квиток?"
 
-#: backend.js:5861
+#: backend.js:5887
 msgctxt "label"
 msgid "Display QR with ticket number"
 msgstr "Показувати QR із номером квитка"
 
-#: backend.js:5863 backend.js:5869 backend.js:5876 backend.js:5884
+#: backend.js:5889 backend.js:5895 backend.js:5902 backend.js:5910
 msgctxt "label"
 msgid "This QR image contains"
 msgstr "Це QR-зображення містить"
 
-#: backend.js:5864 backend.js:5870 backend.js:5877
+#: backend.js:5890 backend.js:5896 backend.js:5903
 msgctxt "title"
 msgid "QR with ticket number"
 msgstr "QR з номером квитка"
 
-#: backend.js:5867
+#: backend.js:5893
 msgctxt "label"
 msgid "Display QR with PUBLIC ticket number"
 msgstr "Показувати QR із ПУБЛІЧНИМ номером квитка"
 
-#: backend.js:5869 backend.js:5876
+#: backend.js:5895 backend.js:5902
 msgctxt "label"
 msgid "Can be used with the ticket scanner"
 msgstr "Може використовуватися зі сканером квитків"
 
-#: backend.js:5874
+#: backend.js:5900
 msgctxt "label"
 msgid "Display QR with your own QR content"
 msgstr "Показувати QR з власним вмістом QR"
 
-#: backend.js:5881
+#: backend.js:5907
 msgctxt "label"
 msgid "Display QR with URL"
 msgstr "Показувати QR з URL"
 
-#: backend.js:5885
+#: backend.js:5911
 msgctxt "title"
 msgid "QR with URL and code"
 msgstr "QR з URL і кодом"
 
-#: backend.js:5891
+#: backend.js:5917
 msgctxt "label"
 msgid "Code Verification Value (CVV)"
 msgstr "Значення перевірки коду (CVV)"
 
-#: backend.js:5894
+#: backend.js:5920
 msgid "CVV attempts:"
 msgstr "Спроб CVV:"
 
-#: backend.js:5895
+#: backend.js:5921
 msgid "Last attempt:"
 msgstr "Остання спроба:"
 
-#: backend.js:5897
+#: backend.js:5923
 msgid "LOCKED — too many wrong attempts"
 msgstr "ЗАБЛОКОВАНО — забагато неправильних спроб"
 
-#: backend.js:5899
+#: backend.js:5925
 msgid "Reset CVV attempts"
 msgstr "Скинути спроби CVV"
 
-#: backend.js:5901
+#: backend.js:5927
 msgid "Reset CVV attempt counter and unlock this ticket?"
 msgstr "Скинути лічильник спроб CVV та розблокувати цей квиток?"
 
-#: backend.js:5911
+#: backend.js:5937
 msgctxt "title"
 msgid "WooCommerce Order"
 msgstr "Замовлення WooCommerce"
 
-#: backend.js:5913
+#: backend.js:5939
 msgid "WooCommerce not found"
 msgstr "WooCommerce nem található"
 
-#: backend.js:5915
+#: backend.js:5941
 msgctxt "label"
 msgid "Show in WooCommerce Orders"
 msgstr "Показувати в замовленнях WooCommerce"
 
-#: backend.js:5918 backend.js:5958
+#: backend.js:5944 backend.js:5984
 msgctxt "label"
 msgid "Order from"
 msgstr "Замовлення від"
 
-#: backend.js:5920
+#: backend.js:5946
 msgctxt "label"
 msgid "Order Status"
 msgstr "Статус замовлення"
 
-#: backend.js:5923
+#: backend.js:5949
 msgctxt "label"
 msgid "Billing Email"
 msgstr "Email для рахунку"
 
-#: backend.js:5925 backend.js:5959
+#: backend.js:5951 backend.js:5985
 msgctxt "label"
 msgid "Product Id"
 msgstr "Id товару"
 
-#: backend.js:5925 backend.js:5959
+#: backend.js:5951 backend.js:5985
 msgctxt "label"
 msgid "Show Product"
 msgstr "Показати товар"
 
-#: backend.js:5927
+#: backend.js:5953
 msgctxt "label"
 msgid "Product"
 msgstr "Товар"
 
-#: backend.js:5930
+#: backend.js:5956
 msgctxt "label"
 msgid "Variation"
 msgstr "Варіація"
 
-#: backend.js:5935
+#: backend.js:5961
 msgid "Related Subscriptions"
 msgstr "Пов'язані підписки"
 
-#: backend.js:5937
+#: backend.js:5963
 msgctxt "label"
 msgid "Subscription Id"
 msgstr "ID підписки"
 
-#: backend.js:5937
+#: backend.js:5963
 msgctxt "label"
 msgid "Show Subscription"
 msgstr "Показати підписку"
 
-#: backend.js:5941
+#: backend.js:5967
 msgctxt "label"
 msgid "Delete WooCommerce order info for this ticket"
 msgstr "Видалити інформацію про замовлення WooCommerce для цього квитка"
 
-#: backend.js:5942
+#: backend.js:5968
 msgctxt "title"
 msgid "Remove order"
 msgstr "Видалити замовлення"
 
 #. translators: %s: ticket number
-#: backend.js:5942
+#: backend.js:5968
 msgid ""
 "Do you really want to remove your order information of this ticket \"%s\"? "
 "This will also remove the ticket number from the order! For the PREMIUM "
@@ -8363,30 +8380,30 @@ msgstr ""
 "лише з цієї позиції замовлення. Для БАЗОВОГО ПЛАГІНА він видалить усі квитки "
 "з усіх позицій цього замовлення. Натисніть OK, щоб продовжити видалення."
 
-#: backend.js:5951
+#: backend.js:5977
 msgid "WooCommerce ticket sale"
 msgstr "Продаж квитків WooCommerce"
 
-#: backend.js:5954
+#: backend.js:5980
 msgid "WooCommerce Purchase Restriction"
 msgstr "WooCommerce vásárlási korlátozás"
 
-#: backend.js:5957 backend.js:5969
+#: backend.js:5983 backend.js:5995
 msgctxt "label"
 msgid "Used for Order ID"
 msgstr "Використовується для ID замовлення"
 
-#: backend.js:5957
+#: backend.js:5983
 msgctxt "label"
 msgid "Open WooCommerce Order"
 msgstr "Відкрити замовлення WooCommerce"
 
-#: backend.js:5960 backend.js:5961
+#: backend.js:5986 backend.js:5987
 msgid "Remove purchase ticket information"
 msgstr "Видалити інформацію про придбаний квиток"
 
 #. translators: %s: ticket nummer
-#: backend.js:5961
+#: backend.js:5987
 msgid ""
 "Do you really want to remove the purchase ticket information from the order "
 "of this ticket \"%s\"? This will remove the also the ticket(s) from the "
@@ -8398,69 +8415,69 @@ msgstr ""
 "квиток згодом можна буде використати повторно для покупок. Натисніть OK, щоб "
 "продовжити видалення."
 
-#: backend.js:5973
+#: backend.js:5999
 msgctxt "title"
 msgid "Registered user"
 msgstr "Зареєстрований користувач"
 
-#: backend.js:5979
+#: backend.js:6005
 msgctxt "title"
 msgid "IP list checked for this ticket"
 msgstr "Список IP перевірено для цього квитка"
 
-#: backend.js:6039
+#: backend.js:6065
 msgctxt "title"
 msgid "Error"
 msgstr "Помилка"
 
-#: backend.js:6385
+#: backend.js:6411
 msgid "Redeemed via authtoken:"
 msgstr "Активовано через токен авторизації:"
 
-#: backend.js:6405
+#: backend.js:6431
 msgctxt "label"
 msgid "Congress"
 msgstr "Конгрес"
 
-#: backend.js:6405
+#: backend.js:6431
 msgctxt "label"
 msgid "Open congress page"
 msgstr "Відкрити сторінку конгресу"
 
-#: backend.js:6408
+#: backend.js:6434
 msgid "Wallet Test"
 msgstr "Тест Wallet"
 
-#: backend.js:6408
+#: backend.js:6434
 msgid "Import ticket to Vollstart Wallet for testing"
 msgstr "Імпортувати квиток до Vollstart Wallet для тестування"
 
-#: backend.js:6766
+#: backend.js:6792
 msgctxt "option"
 msgid "Remove marked as used"
 msgstr "Зняти позначку «використано»"
 
-#: backend.js:6781
+#: backend.js:6807
 msgctxt "option"
 msgid "Delete Redeem Information"
 msgstr "Видалити інформацію про погашення"
 
-#: backend.js:6796
+#: backend.js:6822
 msgctxt "option"
 msgid "Generate ticket PDF"
 msgstr "Згенерувати PDF квитка"
 
-#: backend.js:6809
+#: backend.js:6835
 msgctxt "option"
 msgid "Generate badge ticket"
 msgstr "Згенерувати квиток-бейдж"
 
-#: backend.js:6822
+#: backend.js:6848
 msgctxt "option"
 msgid "Move to ticket list"
 msgstr "Перейти до списку квитків"
 
-#: backend.js:6825
+#: backend.js:6851
 msgctxt "label"
 msgid "Assign selected tickets to this ticket list"
 msgstr "Призначити вибрані квитки цьому списку квитків"
@@ -9846,6 +9863,13 @@ msgstr ""
 #: wc_frontend.js:176
 msgid "This code is not valid for this product."
 msgstr ""
+
+#~ msgid ""
+#~ "Enable PDF ticket attachment in emails? Customers receive their tickets "
+#~ "as PDF directly in the order confirmation email."
+#~ msgstr ""
+#~ "Увімкнути вкладення PDF квитка в листи? Клієнти отримують свої квитки як "
+#~ "PDF одразу в листі з підтвердженням замовлення."
 
 #~ msgid "A new premium version is available!"
 #~ msgstr "Доступна нова преміум-версія!"

@@ -4715,9 +4715,15 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						'<li>' + __('Seating plans', 'event-tickets-with-ticket-scanner') + '</li>' +
 					'</ul>' +
 					'<div style="background:#f0f6fc;border:1px solid #c3d9ed;border-radius:6px;padding:12px;margin:10px 0;">' +
-						'<strong>' + __('Recommended:', 'event-tickets-with-ticket-scanner') + '</strong> ' +
-						__('Enable PDF ticket attachment in emails? Customers receive their tickets as PDF directly in the order confirmation email.', 'event-tickets-with-ticket-scanner') +
-					'</div>'
+					'<strong>' + __('Recommended:', 'event-tickets-with-ticket-scanner') + '</strong> ' +
+						__('The button below switches these three settings on:', 'event-tickets-with-ticket-scanner') +
+						'<ul style="margin:8px 0 8px 20px;line-height:1.8;">' +
+							'<li>' + __('Attach the tickets as PDF files to the purchase email', 'event-tickets-with-ticket-scanner') + '</li>' +
+							'<li>' + __('Merge all tickets of an order into one PDF', 'event-tickets-with-ticket-scanner') + '</li>' +
+							'<li>' + __('Up to 21 PDF attachments per email', 'event-tickets-with-ticket-scanner') + '</li>' +
+						'</ul>' +
+						__('You can change these anytime in Options.', 'event-tickets-with-ticket-scanner') +
+						'</div>'
 				);
 				dlg.dialog('option', 'buttons', [
 					{
@@ -4737,12 +4743,26 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						text: _x('Skip', 'button', 'event-tickets-with-ticket-scanner'),
 						class: 'button',
 						click: function() {
-							_saveOptionValue('premiumWizardCompleted', '1', function() {
-								if (OPTIONS.mapKeys['premiumWizardCompleted']) OPTIONS.mapKeys['premiumWizardCompleted'].value = '1';
-								dlg.dialog('close');
-								dlg.dialog('destroy');
-								dlg.remove();
-							});
+							// Close immediately. The marker only has to be written
+							// ONCE per install: the popup appears while
+							// premiumWizardCompleted is still empty (default null).
+							// Once set - by Skip or by "Enable Recommended" - it is
+							// never empty again, so a re-opened wizard (header
+							// button) skips the server write entirely.
+							let alreadySet = _getOptions_getValByKey('premiumWizardCompleted') !== '';
+							if (OPTIONS.mapKeys['premiumWizardCompleted']) OPTIONS.mapKeys['premiumWizardCompleted'].value = '1';
+							dlg.dialog('close');
+							dlg.dialog('destroy');
+							dlg.remove();
+							if (!alreadySet) {
+								// First skip ever: persist the marker in the
+								// background. Errors are swallowed on purpose -
+								// the dialog is gone, a fatal overlay would land
+								// on a screen that no longer mentions the wizard.
+								// Worst case on failure: the popup returns on the
+								// next page load and can be skipped again.
+								_makePost('changeOption', {'key': 'premiumWizardCompleted', 'value': '1'}, null, function() {});
+							}
 						}
 					}
 				]);

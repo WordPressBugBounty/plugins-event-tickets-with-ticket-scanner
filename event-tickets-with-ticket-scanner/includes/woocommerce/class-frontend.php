@@ -1605,7 +1605,69 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			// Validate seat reservations - block checkout if any seats expired
 			$this->validateSeatReservations(WC()->cart->get_cart());
 
+			// Backstop: a product with "Seat Selection Required" must never reach the
+			// payment with no seat on its cart line. The add-to-cart gate is the front
+			// door, but the cart can lose its seat data (expired blocks removed,
+			// third-party cart edits, a plan that was still a draft at add time) - the
+			// customer would pay for a ticket that never gets a seat.
+			$this->validateRequiredSeatsPresent(WC()->cart->get_cart());
+
 			$this->check_cart_item_and_add_warnings();
+		}
+
+		/**
+		 * Block checkout while a cart line of a seat-required product carries no seat.
+		 *
+		 * Runs on checkout validation AND woocommerce_check_cart_items (cart page,
+		 * block checkout) so every path to payment passes it. Products whose plan is
+		 * not (yet) published are skipped: without a visible seat map the customer
+		 * cannot pick a seat, and the add-to-cart gate is silent for them too.
+		 *
+		 * @param array $cart_items Cart items
+		 * @return void
+		 */
+		private function validateRequiredSeatsPresent(array $cart_items): void {
+			$seating = $this->MAIN->getSeating();
+			$seatMetaKey = $seating->getMetaCartItemSeat();
+
+			foreach ($cart_items as $cart_item) {
+				$product_id = intval($cart_item['product_id'] ?? 0);
+				if ($product_id < 1) {
+					continue;
+				}
+
+				// WPML: seat/plan meta lives on the original product
+				$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
+
+				$seatingRequired = get_post_meta($product_id_orig, $seating->getMetaProductSeatingRequired(), true) === 'yes';
+				if (!$seatingRequired) {
+					continue;
+				}
+
+				// Only enforce when the plan is live for the customer - same
+				// availability rule as the add-to-cart gate.
+				$variationIdOfItem = isset($cart_item['variation_id']) ? intval($cart_item['variation_id']) : 0;
+				$planOfItem = $seating->getFrontendManager()->getPlanForProductFrontend($product_id_orig, $variationIdOfItem > 0 ? $variationIdOfItem : null);
+				if ($planOfItem === null) {
+					continue;
+				}
+
+				$seatsData = $cart_item[$seatMetaKey] ?? null;
+				$hasSeat = is_array($seatsData)
+					&& (isset($seatsData['seat_id']) || (isset($seatsData[0]) && is_array($seatsData[0]) && isset($seatsData[0]['seat_id'])));
+
+				if (!$hasSeat) {
+					$productName = $cart_item['data']->get_name();
+					wc_add_notice(
+						sprintf(
+							/* translators: 1: product name */
+							__('"%1$s" requires a seat selection. Please go back to the product page and select your seat.', 'event-tickets-with-ticket-scanner'),
+							esc_html($productName)
+						),
+						'error'
+					);
+				}
+			}
 		}
 
 		/**
@@ -1616,6 +1678,11 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 		public function woocommerce_check_cart_items(): void {
 			// Seat reservation check must ALWAYS run (independent of wcTicketShowInputFieldsOnCheckoutPage)
 			$this->validateSeatReservations(WC()->cart->get_cart());
+
+			// Same backstop as at checkout: a seat-required line without a seat must
+			// not pass the cart page either (also covers the block checkout, which
+			// never fires woocommerce_checkout_process).
+			$this->validateRequiredSeatsPresent(WC()->cart->get_cart());
 
 			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketShowInputFieldsOnCheckoutPage')) {
 				// Skip the input field validations on the cart page when the checkout-only
@@ -1897,14 +1964,19 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			$variationIdOfRequest = isset($_REQUEST['variation_id']) ? intval($_REQUEST['variation_id']) : 0;
 			$frontendManager = $seating->getFrontendManager();
 			$fieldName = $seating->getFieldSeatSelection();
-			$seatingRequired = get_post_meta($product_id, $seating->getMetaProductSeatingRequired(), true) === 'yes';
+			// WPML: the request carries the product the browser shows - in a secondary
+			// language that is the translated product, whose postmeta does not hold our
+			// seating keys. Normalize to the original before every meta lookup, same as
+			// the cart display and the quantity lock already do.
+			$product_id_for_meta = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
+			$seatingRequired = get_post_meta($product_id_for_meta, $seating->getMetaProductSeatingRequired(), true) === 'yes';
 			// wp_unslash is required because WordPress adds slashes to all $_REQUEST data
 			// sanitize_text_field is not suitable for JSON - validation is done via json_decode
 			$seatSelection = isset($_REQUEST[$fieldName]) ? wp_unslash($_REQUEST[$fieldName]) : '';
 
 			// Check if plan is actually available to customers (published).
 			// Die gewaehlte Variante entscheidet, gegen welchen Plan geprueft wird.
-			$plan = $frontendManager->getPlanForProductFrontend($product_id, $variationIdOfRequest > 0 ? $variationIdOfRequest : null);
+			$plan = $frontendManager->getPlanForProductFrontend($product_id_for_meta, $variationIdOfRequest > 0 ? $variationIdOfRequest : null);
 			$planIsAvailable = !empty($plan);
 			$planId = $planIsAvailable ? (int) $plan['id'] : 0;
 
