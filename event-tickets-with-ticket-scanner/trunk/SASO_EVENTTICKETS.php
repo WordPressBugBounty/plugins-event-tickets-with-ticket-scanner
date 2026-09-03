@@ -45,7 +45,7 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 		public static function getRequest() {
 			if (self::$REQUEST_DATA == null) {
 				$ret = null;
-				switch ($_SERVER['REQUEST_METHOD']) {
+				switch ($_SERVER['REQUEST_METHOD'] ?? 'GET') {
 					case 'POST':
 						$ret = $_POST;
 						if (empty($ret)) {
@@ -68,12 +68,13 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 		}
 		// use SASO_EVENTTICKETS::issetRPara(
 		public static function issetRPara($name) {
-			if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			$method = $_SERVER['REQUEST_METHOD'] ?? '';
+			if ($method === 'POST') {
 				if (isset($_POST[$name])) return true;
 				if (isset($_GET[$name])) return true;
 				return false;
 			}
-			if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+			if ($method === 'GET') {
 				if (isset($_GET[$name])) return true;
 				return false;
 			}

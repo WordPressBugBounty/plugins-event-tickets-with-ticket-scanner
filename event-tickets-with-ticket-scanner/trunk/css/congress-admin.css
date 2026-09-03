@@ -1,0 +1,525 @@
+#saso-et-congress-app { margin-top: 20px; }
+
+/* ── Badges ── */
+.congress-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .03em;
+}
+.congress-badge-active  { background: #dcfce7; color: #166534; }
+.congress-badge-expired { background: #fef2f2; color: #991b1b; }
+
+/* ── Editor layout ── */
+.ce-editor {
+    width: 100%;
+}
+
+.ce-editor-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.ce-editor-heading h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Two-column form grid */
+.ce-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.ce-form-grid .ce-field--full {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+    .ce-form-grid { grid-template-columns: 1fr; }
+    .ce-form-grid .ce-field--full { grid-column: 1; }
+}
+
+/* Field */
+.ce-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.ce-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--et-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+.ce-label .ce-required {
+    color: var(--et-danger);
+    margin-left: 2px;
+}
+.ce-input {
+    width: 100%;
+    padding: 7px 10px !important;
+    font-size: 13px !important;
+    border: 1px solid var(--et-border) !important;
+    border-radius: 6px !important;
+    transition: border-color .15s, box-shadow .15s;
+    box-sizing: border-box;
+}
+.ce-input:focus {
+    border-color: var(--et-primary) !important;
+    box-shadow: 0 0 0 2px rgba(147,51,234,.15) !important;
+    outline: none;
+}
+.ce-hint {
+    font-size: 12px;
+    color: var(--et-text-muted);
+}
+
+/* Slug row with auto-gen indicator */
+.ce-slug-wrap {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.ce-slug-wrap .ce-input { flex: 1; }
+.ce-slug-auto {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    color: var(--et-text-muted);
+    white-space: nowrap;
+    padding: 2px 7px;
+    background: var(--et-border-light);
+    border-radius: 4px;
+}
+.ce-slug-auto.active { color: var(--et-primary); background: var(--et-primary-light); }
+
+/* Products info row */
+.ce-products-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--et-bg);
+    border: 1px solid var(--et-border-light);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--et-text-secondary);
+}
+.ce-products-count {
+    font-weight: 600;
+    color: var(--et-text);
+}
+
+/* ── Sections ── */
+.ce-sections-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.ce-sections-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--et-text);
+}
+
+.ce-sections-add {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ce-sections-add select {
+    font-size: 12px;
+    padding: 4px 20px 4px 8px;
+    border: 1px solid var(--et-border);
+    border-radius: 5px;
+}
+
+.ce-sections-empty {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--et-text-muted);
+    font-size: 13px;
+    border: 2px dashed var(--et-border);
+    border-radius: 8px;
+}
+
+/* Disabled sections card (new congress, not saved yet) */
+.ce-card-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+    user-select: none;
+    position: relative;
+}
+.ce-card-disabled-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding: 7px 12px;
+    background: var(--et-border-light);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--et-text-secondary);
+    font-style: italic;
+}
+
+.congress-section-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    background: var(--et-card-bg);
+    border: 1px solid var(--et-border);
+    border-radius: 8px;
+    transition: box-shadow .15s, border-color .15s;
+}
+.congress-section-row:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.section-handle {
+    cursor: grab;
+    color: var(--et-text-muted);
+    flex-shrink: 0;
+    font-size: 16px;
+}
+.section-handle:active { cursor: grabbing; }
+.section-title {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--et-text);
+}
+.section-pw-icon {
+    font-size: 13px;
+    color: var(--et-text-muted);
+    margin-left: 4px;
+}
+.section-type-badge {
+    background: var(--et-primary-light);
+    color: var(--et-primary);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    flex-shrink: 0;
+}
+.section-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+/* ── Pages (group of sections) ── */
+.ce-page-block {
+    border: 1px solid var(--et-border);
+    border-radius: 10px;
+    padding: 12px 14px 14px;
+    margin-bottom: 14px;
+    background: var(--et-border-light, #f7f8fa);
+}
+.ce-page-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+.ce-page-handle {
+    cursor: grab;
+    color: var(--et-text-muted);
+    flex-shrink: 0;
+    font-size: 16px;
+}
+.ce-page-handle:active { cursor: grabbing; }
+.ce-page-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--et-text);
+}
+.ce-page-start-badge {
+    background: var(--et-primary);
+    color: #fff;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    flex-shrink: 0;
+}
+.ce-page-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+.ce-page-sections .congress-section-row {
+    background: var(--et-card-bg, #fff);
+}
+.ce-page-empty {
+    text-align: center;
+    padding: 14px 0;
+    color: var(--et-text-muted);
+    font-size: 12px;
+    border: 2px dashed var(--et-border);
+    border-radius: 8px;
+}
+
+/* ── Editor action bar ── */
+.ce-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--et-border-light);
+}
+.ce-actions-right {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+}
+
+/* ── Section editor dialog fields ── */
+.ce-dialog-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 14px;
+}
+.ce-dialog-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--et-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+.ce-dialog-input,
+.ce-section-dialog select,
+.ce-dialog-textarea {
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 13px;
+    border: 1px solid var(--et-border);
+    border-radius: 6px;
+    transition: border-color .15s, box-shadow .15s;
+    box-sizing: border-box;
+}
+.ce-dialog-input:focus,
+.ce-dialog-textarea:focus {
+    border-color: var(--et-primary);
+    box-shadow: 0 0 0 2px rgba(147,51,234,.15);
+    outline: none;
+}
+.ce-dialog-textarea {
+    min-height: 140px;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 12px;
+}
+.ce-dialog-hint {
+    font-size: 11px;
+    color: var(--et-text-muted);
+    margin: 3px 0 6px;
+}
+
+/* TinyMCE inside dialog */
+.ce-section-dialog .wp-editor-wrap {
+    border: 1px solid var(--et-border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.ce-section-dialog .wp-editor-tabs { border-bottom: 1px solid var(--et-border); }
+.ce-section-dialog .mce-tinymce { box-shadow: none !important; }
+
+/* Type + Title side by side */
+.ce-dialog-row2 {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+/* Type select: match the text input box model so both align (WP core sets
+   min-height:40px + line-height:35px on admin selects → override those). */
+.ce-section-dialog select.ce-sec-type {
+    min-height: 40px !important;  /* match WP min-height on the text input next to it */
+    height: 40px !important;
+    line-height: 1.5 !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+/* Drag handle for reorderable list rows */
+.ce-list-handle {
+    cursor: grab;
+    color: var(--et-text-muted);
+    flex-shrink: 0;
+    font-size: 16px;
+    line-height: 1;
+}
+.ce-list-handle:active { cursor: grabbing; }
+.ce-list-rows .ui-sortable-helper {
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.ce-list-rows .ui-sortable-placeholder {
+    visibility: visible !important;
+    background: var(--et-border-light);
+    border: 1px dashed var(--et-border);
+    border-radius: 6px;
+}
+
+/* Dynamic content area */
+.ce-sec-content-area {
+    margin-top: 4px;
+}
+
+/* Generic list editor (download / media) */
+.ce-list-editor { display: flex; flex-direction: column; gap: 6px; }
+.ce-list-rows   { display: flex; flex-direction: column; gap: 6px; }
+
+.ce-list-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.ce-list-row .ce-dialog-input {
+    margin-bottom: 0;
+}
+.ce-list-remove {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--et-border-light);
+    border: 1px solid var(--et-border);
+    border-radius: 4px;
+    color: var(--et-danger);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: background .15s;
+}
+.ce-list-remove:hover { background: #fef2f2; border-color: #fecaca; }
+
+.ce-list-add {
+    margin-top: 4px;
+    font-size: 12px !important;
+    padding: 3px 10px !important;
+}
+
+/* Download row */
+.ce-download-row { flex-wrap: wrap; gap: 6px; }
+.ce-download-pick-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex: 0 0 auto;
+}
+.ce-file-name {
+    font-size: 12px;
+    color: var(--et-text-secondary);
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ce-file-pick { font-size: 11px !important; padding: 2px 8px !important; }
+
+/* URL row */
+.ce-url-row { align-items: center; }
+.ce-url-internal-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--et-text-secondary);
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.ce-url-internal-label input[type="checkbox"] {
+    accent-color: var(--et-primary);
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+/* Program editor */
+.ce-program-editor { display: flex; flex-direction: column; gap: 10px; }
+
+.ce-program-day {
+    border: 1px solid var(--et-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.ce-program-day-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--et-bg);
+    border-bottom: 1px solid var(--et-border);
+}
+.ce-program-day-header .ce-dialog-input {
+    flex: 1;
+    margin-bottom: 0;
+}
+.ce-program-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+}
+.ce-program-slot {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.ce-program-slot .ce-dialog-input { margin-bottom: 0; }
+
+.ce-slot-add {
+    margin: 6px 12px 8px;
+    font-size: 11px !important;
+    padding: 2px 8px !important;
+}
+
+.ce-dialog-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 14px;
+    padding: 8px 12px;
+    background: var(--et-bg);
+    border: 1px solid var(--et-border-light);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--et-text-secondary);
+}
+.ce-dialog-meta b {
+    color: var(--et-text);
+}
+
+.ce-icon-grid { display:flex; flex-wrap:wrap; gap:6px; }
+.ce-icon-pick { width:38px; height:38px; border:1px solid var(--et-border,#ccc); border-radius:6px; background:#fff; cursor:pointer; }
+.ce-icon-pick.selected { border-color:var(--et-primary,#2271b1); box-shadow:0 0 0 2px rgba(34,113,177,.25); }
+.ce-img-row { display:flex; align-items:center; gap:10px; }
+.ce-page-img-preview { width:54px; height:54px; border:1px solid var(--et-border,#ccc); border-radius:6px; background-size:cover; background-position:center; display:inline-block; }
+.ce-icon-pick.ce-icon-none .dashicons { color:var(--et-text-muted,#9ca3af); }
+.ce-page-color { width:48px; height:32px; padding:0; border:1px solid var(--et-border,#ccc); border-radius:6px; background:#fff; cursor:pointer; }

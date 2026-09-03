@@ -147,10 +147,6 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 
 			echo '<div id="saso_eventtickets_wc_product_data" class="panel woocommerce_options_panel hidden">';
 
-			if (!$this->MAIN->isPremium()) {
-				$mv = $this->MAIN->getMV();
-				echo '<p style="color:red;">'.sprintf(/* translators: %d: amount of maximum ticket that can be created */__('With the free basic plugin, you can only <b>create up to %d tickets!</b><br>Make sure your are not selling more tickets :)', 'event-tickets-with-ticket-scanner'), intval($mv['codes_total'])).'<br>'.sprintf(/* translators: 1: start of a-tag 2: end of a-tag */__('Here you can purchase the %1$spremium plugin%2$s for unlimited tickets.', 'event-tickets-with-ticket-scanner'), '<a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/">', '</a>').'</p>';
-			}
 
 			$is_ticket_activated = get_post_meta( get_the_ID(), self::META_PRODUCT_IS_TICKET, true );
 			echo '<div class="options_group">';
@@ -177,6 +173,75 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'desc_tip'    => true,
 				'options'     => $ticket_lists
 			) );
+			// Der Hinweis auf das Ticket-Limit stand frueher als erste Zeile im
+			// Reiter - vor dem Schalter, um den es geht, und in Rot wie ein Fehler.
+			// Er gehoert hinter die Aktion und sieht jetzt aus wie ein Hinweis.
+			if (!$this->MAIN->isPremium()) {
+				$mv = $this->MAIN->getMV();
+				echo '<p style="color:#8a5700;background:#fffaeb;border-left:4px solid #dba617;padding:10px 12px;margin:0 12px 10px;">'.sprintf(/* translators: %d: amount of maximum ticket that can be created */__('With the free basic plugin, you can only <b>create up to %d tickets!</b><br>Make sure you are not selling more tickets :)', 'event-tickets-with-ticket-scanner'), intval($mv['codes_total'])).'<br>'.sprintf(/* translators: 1: start of a-tag 2: end of a-tag */__('Here you can purchase the %1$spremium plugin%2$s for unlimited tickets.', 'event-tickets-with-ticket-scanner'), '<a target="_blank" href="https://vollstart.com/event-tickets-with-ticket-scanner/">', '</a>').'</p>';
+			}
+			echo '</div>';
+
+			// Purchase restriction: buyers must enter a valid code/ticket number
+			// from a chosen list before they can buy. The whole block only exists
+			// when the master option is on, so shops that do not use it never see it.
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcRestrictPurchase')) {
+				$restriction_lists = ['' => esc_attr__('— No restriction —', 'event-tickets-with-ticket-scanner')];
+				foreach ($this->MAIN->getAdmin()->getLists() as $list) {
+					$restriction_lists[$list['id']] = $list['name'];
+				}
+				echo '<div class="options_group">';
+				woocommerce_wp_select([
+					'id'          => self::META_PRODUCT_RESTRICTION,
+					'value'       => get_post_meta(get_the_ID(), self::META_PRODUCT_RESTRICTION, true),
+					'label'       => __('Required ticket / access code', 'event-tickets-with-ticket-scanner'),
+					'description' => __('Buyers must enter a valid, unused code or ticket number from this list before they can buy this product. Use it for presale/access codes, or to require a ticket from an earlier event.', 'event-tickets-with-ticket-scanner'),
+					'desc_tip'    => true,
+					'options'     => $restriction_lists
+				]);
+				woocommerce_wp_checkbox([
+					'id'          => 'saso_eventtickets_restriction_allow_multiuse',
+					'value'       => get_post_meta(get_the_ID(), 'saso_eventtickets_restriction_allow_multiuse', true),
+					'label'       => __('Allow the same code for several purchases', 'event-tickets-with-ticket-scanner'),
+					'description' => __('If off (default), each code unlocks exactly one purchase. If on, the same code stays valid for further purchases.', 'event-tickets-with-ticket-scanner'),
+					'desc_tip'    => true
+				]);
+				echo '</div>';
+			}
+
+			// Congress assignment (only when the congress module is present and at least one congress exists)
+			if (file_exists(plugin_dir_path(dirname(__FILE__)) . 'congress/class-congress-repository.php')) {
+				$congresses = $this->MAIN->getCongressRepository()->getAll();
+				if (!empty($congresses)) {
+					$congress_options = ['0' => __('— None —', 'event-tickets-with-ticket-scanner')];
+					foreach ($congresses as $c) {
+						$label = $c['title'];
+						$date  = !empty($c['event_start_at']) ? $c['event_start_at'] : ($c['access_expires_at'] ?? '');
+						if (!empty($date)) {
+							$label .= ' (' . date_i18n(get_option('date_format'), strtotime($date)) . ')';
+						}
+						$congress_options[(string)(int)$c['id']] = $label;
+					}
+					echo '<div class="options_group">';
+					woocommerce_wp_select([
+						'id'          => 'saso_et_congress_id',
+						'value'       => (string)(int)get_post_meta(get_the_ID(), '_saso_et_congress_id', true),
+						'label'       => __('Assign congress', 'event-tickets-with-ticket-scanner'),
+						'description' => __('Ticket holders of this product will get access to the assigned congress page.', 'event-tickets-with-ticket-scanner'),
+						'desc_tip'    => true,
+						'options'     => $congress_options,
+					]);
+					echo '</div>';
+				}
+			}
+
+			echo '<div class="options_group">';
+			woocommerce_wp_checkbox([
+				'id'          => 'saso_eventtickets_require_cvv_at_scanner',
+				'value'       => get_post_meta(get_the_ID(), 'saso_eventtickets_require_cvv_at_scanner', true),
+				'label'       => __('Require CVV at the ticket scanner', 'event-tickets-with-ticket-scanner'),
+				'description' => __('If active, a CVV is auto-generated for every new ticket on this product, and the ticket scanner asks the customer to enter the CVV before redeem. The CVV is delivered via the order email and customer profile, never embedded in the QR code. Best for private/exclusive events where a lost ticket card alone must not grant entry.', 'event-tickets-with-ticket-scanner'),
+			]);
 			echo '</div>';
 
 			// Seating Plan Section
@@ -217,7 +282,7 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				echo '<p class="form-field saso-seating-draft-warning" style="' . ($showWarning ? '' : 'display:none;') . '">';
 				echo '<span class="description" style="color: #d63638; font-weight: bold;">';
 				echo '⚠️ ' . esc_html__('This seating plan has not been published yet. Customers will not see a seat selection until you publish the plan.', 'event-tickets-with-ticket-scanner');
-				echo ' <a href="' . esc_url(admin_url('admin.php?page=sasoEventTickets&tab=seating')) . '">' . esc_html__('Go to Seating Plans', 'event-tickets-with-ticket-scanner') . '</a>';
+				echo ' <a href="' . esc_url(admin_url('admin.php?page=event-tickets-with-ticket-scanner&tab=seating')) . '">' . esc_html__('Go to Seating Plans', 'event-tickets-with-ticket-scanner') . '</a>';
 				echo '</span></p>';
 
 				// JavaScript for toggling warning
@@ -250,7 +315,7 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				echo '<p class="form-field">';
 				echo '<label>' . esc_html__('Seating Plan', 'event-tickets-with-ticket-scanner') . '</label>';
 				echo '<span class="description">' . esc_html__('No seating plans available.', 'event-tickets-with-ticket-scanner') . ' ';
-				echo '<a href="' . esc_url(admin_url('admin.php?page=sasoEventTickets&tab=seating')) . '">';
+				echo '<a href="' . esc_url(admin_url('admin.php?page=event-tickets-with-ticket-scanner&tab=seating')) . '">';
 				echo esc_html__('Create one first', 'event-tickets-with-ticket-scanner') . '</a></span>';
 				echo '</p>';
 			}
@@ -363,6 +428,15 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'custom_attributes'	=> ['step'=>'1', 'min'=>'0'],
 				'description' 		=> __('This will set how many days in the future do you allow your customer to choose a date. 0 unlimited into the future, 1 means until tomorrow on and so on. If a end date is set, then this option is ignored and the end date is used.', 'event-tickets-with-ticket-scanner'),
 				'desc_tip'    		=> true
+			]);
+			woocommerce_wp_text_input([
+				'id'				=> 'saso_eventtickets_daychooser_cutoff_time',
+				'value'       		=> get_post_meta( get_the_ID(), 'saso_eventtickets_daychooser_cutoff_time', true ),
+				'label'       		=> __('Same-day cutoff time', 'event-tickets-with-ticket-scanner'),
+				'type'				=> 'time',
+				'description' 		=> __('If the current time is past this value, today will no longer be selectable. Only applies when "Offset days for start date" is 0. Leave empty to disable.', 'event-tickets-with-ticket-scanner'),
+				'desc_tip'    		=> true,
+				'placeholder'		=> '19:00',
 			]);
 			woocommerce_wp_text_input([
 				'id'          => 'saso_eventtickets_request_daychooser_per_ticket_label',
@@ -556,10 +630,17 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'saso_eventtickets_request_value_per_ticket_mandatory',
 				'saso_eventtickets_ticket_is_RTL',
 				'saso_eventtickets_list_formatter',
-				$seating->getMetaProductSeatingRequired()
+				$seating->getMetaProductSeatingRequired(),
+				'saso_eventtickets_require_cvv_at_scanner',  // NEW
+				'saso_eventtickets_restriction_allow_multiuse',
 			];
 			foreach($keys_checkbox as $key) {
-				if( isset( $R[$key] ) ) {
+				// Variation rows render <select name="<key>[<i>]"> for some of these
+				// keys, so on a variable product save $_POST[<key>] arrives as an
+				// array even when the parent's own checkbox is unchecked. Treat
+				// any array value as "parent did not submit a checkbox value" so
+				// the parent meta is not silently flipped to "yes".
+				if( isset( $R[$key] ) && !is_array($R[$key]) ) {
 					update_post_meta( $id, $key, 'yes' );
 				} else {
 					delete_post_meta( $id, $key );
@@ -576,11 +657,15 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'saso_eventtickets_request_value_per_ticket_label',
 				'saso_eventtickets_request_value_per_ticket_def',
 				'saso_eventtickets_list_formatter_values',
-				'saso_eventtickets_request_daychooser_per_ticket_label'
+				'saso_eventtickets_request_daychooser_per_ticket_label',
+				'saso_eventtickets_daychooser_cutoff_time'
 			];
 
 			foreach($keys_inputfields as $key) {
-				if( isset($R[$key]) && !empty( $R[$key] ) ) {
+				// Same variation-collision guard as above — variation rows submit
+				// arrays under these names, sanitize_text_field() on an array
+				// would corrupt the parent value (or warn on PHP 8+).
+				if( isset($R[$key]) && !is_array($R[$key]) && !empty( $R[$key] ) ) {
 					update_post_meta( $id, $key, sanitize_text_field($R[$key]) );
 				} else {
 					delete_post_meta( $id, $key );
@@ -607,7 +692,10 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				'saso_eventtickets_daychooser_offset_end'
 			];
 			foreach($keys_number as $key) {
-				if( isset($R[$key]) && (!empty($R[$key]) || $R[$key] == "0") ) {
+				// Variation collision guard: saso_eventtickets_ticket_amount_per_item
+				// is also rendered per variation as "<key>[<i>]". intval() on an
+				// array returns 1, which would silently set the parent to 1.
+				if( isset($R[$key]) && !is_array($R[$key]) && (!empty($R[$key]) || $R[$key] == "0") ) {
 					$value = intval($R[$key]);
 					if ($value < 0) $value = 1;
 					update_post_meta( $id, $key, $value );
@@ -652,6 +740,30 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 			if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'saso_eventtickets_wc_save_fields')) {
 				$this->MAIN->getPremiumFunctions()->saso_eventtickets_wc_save_fields($id, $post);
 			}
+
+			// Save congress assignment
+			if (file_exists(plugin_dir_path(dirname(__FILE__)) . 'congress/class-congress-repository.php')) {
+				$congress_id     = (int)($_POST['saso_et_congress_id'] ?? 0);
+				$old_congress_id = (int)get_post_meta($id, '_saso_et_congress_id', true);
+				$repo            = $this->MAIN->getCongressRepository();
+
+				// Remove product from old congress when switching
+				if ($old_congress_id > 0 && $old_congress_id !== $congress_id) {
+					$old_ids = array_values(array_diff(array_map('intval', $repo->getProductIds($old_congress_id)), [$id]));
+					$repo->setProducts($old_congress_id, $old_ids);
+				}
+
+				if ($congress_id > 0) {
+					update_post_meta($id, '_saso_et_congress_id', $congress_id);
+					$current_ids = array_map('intval', $repo->getProductIds($congress_id));
+					if (!in_array($id, $current_ids, true)) {
+						$current_ids[] = $id;
+						$repo->setProducts($congress_id, $current_ids);
+					}
+				} else {
+					delete_post_meta($id, '_saso_et_congress_id');
+				}
+			}
 		}
 
 		/**
@@ -664,11 +776,18 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 		 */
 		public function woocommerce_product_after_variable_attributes($loop, array $variation_data, $variation): void {
 		$loop = intval($loop);
+			// Render ticket fields only when the parent variable product is a ticket.
+			$parent_id = isset($variation->post_parent) ? (int) $variation->post_parent : 0;
+			if ($parent_id < 1 || !$this->isTicketByProductId($parent_id)) {
+				return;
+			}
 			echo '<div class="form-row form-row-full form-field">';
 			woocommerce_wp_checkbox(
 				array(
 					'id'          => '_saso_eventtickets_is_not_ticket[' . $loop . ']',
-					'label'       => __('This variation is NOT a ticket product', 'event-tickets-with-ticket-scanner'),
+					// Das Label steht direkt neben der Checkbox. Ein normales
+					// Leerzeichen faellt beim Rendern weg, deshalb ein geschuetztes.
+					'label'       => '&nbsp;' . __('This variation is NOT a ticket product', 'event-tickets-with-ticket-scanner'),
 					'desc_tip'    => 'true',
 					'description' => __('This allows you to exclude a variation to be a ticket', 'event-tickets-with-ticket-scanner'),
 					'value'       => get_post_meta($variation->ID, self::META_VARIATION_NOT_TICKET, true)
@@ -744,6 +863,88 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 			]);
 			echo '</div>';
 
+			// Name per ticket override for variation
+			echo '<hr style="margin:12px 0">';
+			echo '<div class="options_group">';
+			echo '<p style="padding:0 12px;font-weight:600;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px">' . esc_html__('Name per ticket (text input)', 'event-tickets-with-ticket-scanner') . '</p>';
+			$inherit_label = __('-- Inherit from parent product --', 'event-tickets-with-ticket-scanner');
+			woocommerce_wp_select([
+				'id'            => 'saso_eventtickets_request_name_per_ticket[' . $loop . ']',
+				'name'          => 'saso_eventtickets_request_name_per_ticket[' . $loop . ']',
+				'value'         => get_post_meta($variation->ID, 'saso_eventtickets_request_name_per_ticket', true) ?: '',
+				'label'         => __('Request name per ticket', 'event-tickets-with-ticket-scanner'),
+				'options'       => ['' => $inherit_label, 'yes' => __('Yes', 'event-tickets-with-ticket-scanner'), 'no' => __('No', 'event-tickets-with-ticket-scanner')],
+				'desc_tip'      => true,
+				'description'   => __('Override: Ask for a name/text input per ticket.', 'event-tickets-with-ticket-scanner'),
+				'wrapper_class' => 'form-row form-row-full'
+			]);
+			woocommerce_wp_text_input([
+				'id'            => 'saso_eventtickets_request_name_per_ticket_label[' . $loop . ']',
+				'value'         => get_post_meta($variation->ID, 'saso_eventtickets_request_name_per_ticket_label', true),
+				'label'         => __('Name field label', 'event-tickets-with-ticket-scanner'),
+				'description'   => __('Override label. Leave empty to inherit from parent.', 'event-tickets-with-ticket-scanner'),
+				'desc_tip'      => true,
+				'wrapper_class' => 'form-row form-row-full'
+			]);
+			woocommerce_wp_select([
+				'id'            => 'saso_eventtickets_request_name_per_ticket_mandatory[' . $loop . ']',
+				'name'          => 'saso_eventtickets_request_name_per_ticket_mandatory[' . $loop . ']',
+				'value'         => get_post_meta($variation->ID, 'saso_eventtickets_request_name_per_ticket_mandatory', true) ?: '',
+				'label'         => __('Name field mandatory', 'event-tickets-with-ticket-scanner'),
+				'options'       => ['' => $inherit_label, 'yes' => __('Yes', 'event-tickets-with-ticket-scanner'), 'no' => __('No', 'event-tickets-with-ticket-scanner')],
+				'wrapper_class' => 'form-row form-row-full'
+			]);
+			echo '</div>';
+
+			// Value per ticket (dropdown) override for variation
+			echo '<hr style="margin:12px 0">';
+			echo '<div class="options_group">';
+			echo '<p style="padding:0 12px;font-weight:600;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px">' . esc_html__('Value per ticket (dropdown)', 'event-tickets-with-ticket-scanner') . '</p>';
+			woocommerce_wp_select([
+				'id'            => 'saso_eventtickets_request_value_per_ticket[' . $loop . ']',
+				'name'          => 'saso_eventtickets_request_value_per_ticket[' . $loop . ']',
+				'value'         => get_post_meta($variation->ID, 'saso_eventtickets_request_value_per_ticket', true) ?: '',
+				'label'         => __('Request dropdown per ticket', 'event-tickets-with-ticket-scanner'),
+				'options'       => ['' => $inherit_label, 'yes' => __('Yes', 'event-tickets-with-ticket-scanner'), 'no' => __('No', 'event-tickets-with-ticket-scanner')],
+				'desc_tip'      => true,
+				'description'   => __('Override: Ask for a dropdown selection per ticket.', 'event-tickets-with-ticket-scanner'),
+				'wrapper_class' => 'form-row form-row-full'
+			]);
+			woocommerce_wp_text_input([
+				'id'            => 'saso_eventtickets_request_value_per_ticket_label[' . $loop . ']',
+				'value'         => get_post_meta($variation->ID, 'saso_eventtickets_request_value_per_ticket_label', true),
+				'label'         => __('Dropdown label', 'event-tickets-with-ticket-scanner'),
+				'description'   => __('Override label. Leave empty to inherit from parent.', 'event-tickets-with-ticket-scanner'),
+				'desc_tip'      => true,
+				'wrapper_class' => 'form-row form-row-full'
+			]);
+			woocommerce_wp_textarea_input([
+				'id'            => 'saso_eventtickets_request_value_per_ticket_values[' . $loop . ']',
+				'value'         => get_post_meta($variation->ID, 'saso_eventtickets_request_value_per_ticket_values', true),
+				'label'         => __('Dropdown values', 'event-tickets-with-ticket-scanner'),
+				'description'   => __('One value per line. Leave empty to inherit from parent.', 'event-tickets-with-ticket-scanner'),
+				'desc_tip'      => true,
+				'wrapper_class' => 'form-row form-row-full'
+			]);
+			woocommerce_wp_text_input([
+				'id'            => 'saso_eventtickets_request_value_per_ticket_def[' . $loop . ']',
+				'value'         => get_post_meta($variation->ID, 'saso_eventtickets_request_value_per_ticket_def', true),
+				'label'         => __('Dropdown default value', 'event-tickets-with-ticket-scanner'),
+				'description'   => __('Override default. Leave empty to inherit from parent.', 'event-tickets-with-ticket-scanner'),
+				'desc_tip'      => true,
+				'wrapper_class' => 'form-row form-row-full'
+			]);
+			woocommerce_wp_select([
+				'id'            => 'saso_eventtickets_request_value_per_ticket_mandatory[' . $loop . ']',
+				'name'          => 'saso_eventtickets_request_value_per_ticket_mandatory[' . $loop . ']',
+				'value'         => get_post_meta($variation->ID, 'saso_eventtickets_request_value_per_ticket_mandatory', true) ?: '',
+				'label'         => __('Dropdown mandatory', 'event-tickets-with-ticket-scanner'),
+				'options'       => ['' => $inherit_label, 'yes' => __('Yes', 'event-tickets-with-ticket-scanner'), 'no' => __('No', 'event-tickets-with-ticket-scanner')],
+				'wrapper_class' => 'form-row form-row-full'
+			]);
+			echo '</div>';
+			echo '<hr style="margin:12px 0">';
+
 			if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'woocommerce_product_after_variable_attributes')) {
 				$this->MAIN->getPremiumFunctions()->woocommerce_product_after_variable_attributes($loop, $variation_data, $variation);
 			}
@@ -806,6 +1007,35 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 				}
 			} else {
 				delete_post_meta($variation_id, $seating_key);
+			}
+
+			// Name/value per ticket overrides (select: yes/no/empty=inherit)
+			$select_keys = [
+				'saso_eventtickets_request_name_per_ticket',
+				'saso_eventtickets_request_name_per_ticket_mandatory',
+				'saso_eventtickets_request_value_per_ticket',
+				'saso_eventtickets_request_value_per_ticket_mandatory'
+			];
+			foreach ($select_keys as $key) {
+				if (isset($_POST[$key]) && isset($_POST[$key][$i]) && !empty($_POST[$key][$i])) {
+					update_post_meta($variation_id, $key, sanitize_text_field($_POST[$key][$i]));
+				} else {
+					delete_post_meta($variation_id, $key);
+				}
+			}
+			// Text/textarea overrides (empty = inherit from parent)
+			$text_keys = [
+				'saso_eventtickets_request_name_per_ticket_label',
+				'saso_eventtickets_request_value_per_ticket_label',
+				'saso_eventtickets_request_value_per_ticket_values',
+				'saso_eventtickets_request_value_per_ticket_def'
+			];
+			foreach ($text_keys as $key) {
+				if (isset($_POST[$key]) && isset($_POST[$key][$i]) && trim($_POST[$key][$i]) !== '') {
+					update_post_meta($variation_id, $key, sanitize_textarea_field($_POST[$key][$i]));
+				} else {
+					delete_post_meta($variation_id, $key);
+				}
 			}
 
 			// Premium extension point
@@ -881,15 +1111,19 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 			<p>Display all Tickets Infos</p>
 			<button disabled data-id="<?php echo esc_attr($this->MAIN->getPrefix()."btn_download_ticket_infos"); ?>" class="button button-primary">Print Ticket Infos</button>
 			<?php
-			// Calendar button — only for daychooser products (#191)
+			// Calendar button — show for all ticket products, but only enable for daychooser
 			$product_id = isset($_GET['post']) ? intval($_GET['post']) : 0;
-			if ($product_id > 0 && get_post_meta($product_id, self::META_PRODUCT_IS_DAYCHOOSER, true) === 'yes') {
-				?>
-				<p><?php esc_html_e('Sold Tickets Calendar', 'event-tickets-with-ticket-scanner'); ?></p>
+			$is_daychooser = $product_id > 0 && get_post_meta($product_id, self::META_PRODUCT_IS_DAYCHOOSER, true) === 'yes';
+			?>
+			<p><?php esc_html_e('Sold Tickets Calendar', 'event-tickets-with-ticket-scanner'); ?></p>
+			<?php if ($is_daychooser) : ?>
 				<button disabled data-id="<?php echo esc_attr($this->MAIN->getPrefix()."btn_product_calendar"); ?>" class="button button-primary"><?php esc_html_e('View Calendar', 'event-tickets-with-ticket-scanner'); ?></button>
 				<button disabled data-id="<?php echo esc_attr($this->MAIN->getPrefix()."btn_product_calendar_print"); ?>" class="button"><?php esc_html_e('Print List', 'event-tickets-with-ticket-scanner'); ?></button>
-				<?php
-			}
+			<?php else : ?>
+				<button disabled class="button" style="opacity:0.5;cursor:default;"><?php esc_html_e('View Calendar', 'event-tickets-with-ticket-scanner'); ?></button>
+				<button disabled class="button" style="opacity:0.5;cursor:default;"><?php esc_html_e('Print List', 'event-tickets-with-ticket-scanner'); ?></button>
+				<p><small style="color:#999;"><?php esc_html_e('Calendar is available for date picker products. For all products use the Attendance tab.', 'event-tickets-with-ticket-scanner'); ?></small></p>
+			<?php endif;
 			do_action( $this->MAIN->_do_action_prefix.'wc_product_display_side_box', [] );
 		}
 
@@ -1156,6 +1390,88 @@ if (!class_exists('sasoEventtickets_WC_Product')) {
 		 * @return array{dates: array<string,int>, product_id: int, is_daychooser: bool}
 		 * @throws Exception If product_id is invalid (#7001)
 		 */
+		/**
+		 * Get all daychooser products and their sold ticket counts grouped by date.
+		 * Used by the Attendance → Sold Tickets tab.
+		 *
+		 * @param array $data {date_from: string, date_to: string, exclude_products: string (comma-separated IDs)}
+		 * @return array {products: [...], dates: {date => [{product_id, product_name, count}]}}
+		 */
+		public function getAllDaychooserCalendarData(array $data): array {
+			$dateFrom = isset($data['date_from']) ? sanitize_text_field($data['date_from']) : wp_date('Y-m-d');
+			$dateTo = isset($data['date_to']) ? sanitize_text_field($data['date_to']) : wp_date('Y-m-d');
+			$excludeIds = [];
+			if (!empty($data['exclude_products'])) {
+				$excludeIds = array_map('intval', explode(',', sanitize_text_field($data['exclude_products'])));
+			}
+
+			// Get all daychooser products
+			$args = [
+				'post_type' => 'product',
+				'posts_per_page' => -1,
+				'post_status' => 'publish',
+				'meta_query' => [
+					['key' => self::META_PRODUCT_IS_DAYCHOOSER, 'value' => 'yes'],
+					['key' => self::META_PRODUCT_IS_TICKET, 'value' => 'yes'],
+				],
+				'fields' => 'ids',
+			];
+			$product_ids = get_posts($args);
+
+			$products = [];
+			foreach ($product_ids as $pid) {
+				$products[] = [
+					'id' => $pid,
+					'name' => get_the_title($pid),
+					'excluded' => in_array($pid, $excludeIds),
+				];
+			}
+
+			// Filter out excluded
+			$activeIds = array_diff($product_ids, $excludeIds);
+			if (empty($activeIds)) {
+				return ['products' => $products, 'dates' => []];
+			}
+
+			$db = $this->MAIN->getDB();
+			$codes_table = $db->getTabelle('codes');
+			$idList = implode(',', array_map('intval', $activeIds));
+
+			$rows = $db->_db_datenholen(
+				"SELECT JSON_UNQUOTE(JSON_EXTRACT(meta, '$.wc_ticket.day_per_ticket')) AS ticket_date,
+				        JSON_UNQUOTE(JSON_EXTRACT(meta, '$.woocommerce.product_id')) AS product_id,
+				        COUNT(*) AS ticket_count
+				 FROM {$codes_table}
+				 WHERE aktiv = 1
+				   AND JSON_EXTRACT(meta, '$.wc_ticket.is_daychooser') = 1
+				   AND JSON_EXTRACT(meta, '$.woocommerce.product_id') IN ({$idList})
+				   AND JSON_UNQUOTE(JSON_EXTRACT(meta, '$.wc_ticket.day_per_ticket')) BETWEEN '" . esc_sql($dateFrom) . "' AND '" . esc_sql($dateTo) . "'
+				 GROUP BY ticket_date, product_id
+				 ORDER BY ticket_date"
+			);
+
+			$dates = [];
+			foreach ($rows as $row) {
+				if (!empty($row['ticket_date']) && $row['ticket_date'] !== 'null') {
+					$d = $row['ticket_date'];
+					if (!isset($dates[$d])) $dates[$d] = [];
+					$pid = (int)$row['product_id'];
+					$dates[$d][] = [
+						'product_id' => $pid,
+						'product_name' => get_the_title($pid),
+						'count' => (int)$row['ticket_count'],
+					];
+				}
+			}
+
+			return [
+				'products' => $products,
+				'dates' => $dates,
+				'date_from' => $dateFrom,
+				'date_to' => $dateTo,
+			];
+		}
+
 		public function getProductCalendarData(array $data): array {
 			$product_id = isset($data['product_id']) ? (int)$data['product_id'] : 0;
 			if ($product_id <= 0) {

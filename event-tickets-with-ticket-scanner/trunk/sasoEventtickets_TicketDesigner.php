@@ -14,10 +14,77 @@ class sasoEventtickets_TicketDesigner {
         if ($inst === null) {
             $inst = new self($main, $html);
             if (function_exists("twig_cycle") == false) {
-                require_once __DIR__.'/vendors/twig/autoload.php';
+                // Polyfill: other plugins bundling Twig may mark the deprecation-contracts
+                // file as loaded in $GLOBALS['__composer_autoload_files'] without defining
+                // the function — e.g. older Twig versions or namespace conflicts on PHP 8.2+.
+                if (!function_exists('trigger_deprecation')) {
+                    function trigger_deprecation(string $package, string $version, string $message, mixed ...$args): void {
+                        @trigger_error(($package || $version ? "Since $package $version: " : '') . ($args ? vsprintf($message, $args) : $message), \E_USER_DEPRECATED);
+                    }
+                }
+                // Guard: the bundled Twig 3.22 requires PHP 8.1+. In the WEB context
+                // the guard turns a raw Composer platform_check 500 into a catchable,
+                // actionable Exception. In the CLI context (WP-CLI, cron over CLI,
+                // cache builds) Twig is never used to render, so the guard would only
+                // trigger a Fatal on split-PHP hosts (IONOS: site=8.3, CLI=8.0) that
+                // some host-monitoring then misreads as a broken plugin and
+                // auto-deactivates it. Skip the guard in CLI; the autoload is
+                // best-effort there (a local CLI Fatal has no effect on the active
+                // web plugin, unlike a web-request Exception caught by output()).
+                if (self::isCliContext()) {
+                    @include_once __DIR__.'/vendors/twig/autoload.php';
+                } else {
+                    self::assertPhpSupportsTwig();
+                    require_once __DIR__.'/vendors/twig/autoload.php';
+                }
             }
         }
         return $inst;
+	}
+
+	/**
+	 * Whether the current request runs in a CLI/non-web SAPI context.
+	 *
+	 * Used to decide whether the Twig PHP-8.1 guard should fire. In a CLI process
+	 * (WP-CLI, cron-over-CLI, composer scripts) no ticket/scanner page is ever
+	 * rendered, so the guard only risks a Fatal that split-PHP hosts (IONOS,
+	 * cPanel PHP-Selector) then misread as a broken plugin and auto-deactivate.
+	 * Only real `cli` / `phpdbg` SAPIs count; cgi/cgi-fcgi/fpm-fcgi are web.
+	 *
+	 * @param string|null $sapi Defaults to PHP_SAPI; injectable for testing.
+	 */
+	public static function isCliContext(?string $sapi = null): bool {
+		$sapi = $sapi ?? PHP_SAPI;
+		return in_array($sapi, ['cli', 'phpdbg'], true);
+	}
+
+	/**
+	 * The bundled Twig engine (3.22) requires PHP 8.1+. When the ticket / scanner page is
+	 * opened as a direct plugin-folder file, some hosts execute it under an older PHP than
+	 * the main site, so Composer's platform_check.php aborts with a raw, uncatchable 500.
+	 * This guard runs BEFORE the Twig autoload and turns that into a catchable, actionable
+	 * Exception (caught by sasoEventtickets_Ticket::output() and shown as a readable page).
+	 *
+	 * Only invoked in the WEB context (see isCliContext()). In the CLI context Twig is never
+	 * rendered and the guard is skipped to avoid a Fatal on split-PHP hosts.
+	 *
+	 * Threshold mirrors platform_check exactly: PHP_VERSION_ID >= 80100 (8.1.0) passes.
+	 *
+	 * @param int|null $versionId Defaults to PHP_VERSION_ID; injectable for testing.
+	 * @throws Exception when the running PHP is below 8.1.
+	 */
+	public static function assertPhpSupportsTwig(?int $versionId = null): void {
+		$versionId = $versionId ?? PHP_VERSION_ID;
+		if ($versionId < 80100) {
+			throw new Exception(
+				'Event Tickets: rendering the ticket / scanner page requires PHP 8.1 or higher, '
+				.'but this request is running PHP '.PHP_VERSION.'. This typically happens when the '
+				.'page is opened directly from the plugin folder while your host uses an older PHP '
+				.'there than on your main site. To fix it, set the "Ticket detail URL path" option '
+				.'so the scanner runs through WordPress, or ask your host to enable PHP 8.1+ for the '
+				.'whole hosting account.'
+			);
+		}
 	}
 
     public function __construct($main=null, $html="") {
@@ -40,6 +107,17 @@ class sasoEventtickets_TicketDesigner {
     }
 
     public function renderHTML($codeObj, $forPDFOutput=false) {
+        $this->variables = $this->buildVariables($codeObj, $forPDFOutput);
+        $timezone_id = $this->variables['TICKET']['timezone_id'] ?? wp_timezone_string();
+        $html = $this->getTemplate();
+        $loader = new \Twig\Loader\ArrayLoader(['index' => $html]);
+        $twig = new \Twig\Environment($loader);
+        $this->configureTwigEnvironment($twig, $timezone_id);
+        $output = $twig->render('index', $this->variables);
+        return $output;
+    }
+
+    public function buildVariables($codeObj, $forPDFOutput=false): array {
         $codeObj = $this->MAIN->getCore()->setMetaObj($codeObj);
 		$metaObj = $codeObj['metaObj'];
         $order_id = intval($codeObj['order_id']);
@@ -98,7 +176,13 @@ class sasoEventtickets_TicketDesigner {
         $ticket["start_time"] = $ticket_times["ticket_start_time"];
         $ticket['start_date_timestamp'] = $ticket_times["ticket_start_date_timestamp"];
         $ticket["end_date"] = $ticket_times["ticket_end_date"];
+        // end_date is never empty: without an entry it carries the start date so
+        // the ticket stays valid until the end of the event day. A template that
+        // wants to know whether an end was actually entered has to ask this flag
+        // instead of testing end_date for emptiness (#014841).
+        $ticket["is_end_date_set"] = $ticket_times["is_end_date_set"];
         $ticket["end_time"] = $ticket_times["ticket_end_time"];
+        $ticket["is_end_time_set"] = $ticket_times["is_end_time_set"];
         $ticket["end_date_timestamp"] = $ticket_times["ticket_end_date_timestamp"];
         $ticket["redeem_allowed_from"] = $ticket_times["redeem_allowed_from"];
         $ticket["redeem_allowed_from_timestamp"] = $ticket_times["redeem_allowed_from_timestamp"];
@@ -178,88 +262,11 @@ class sasoEventtickets_TicketDesigner {
             $options[$key] = $this->MAIN->getOptions()->getOptionValue($key);
         }
 
-        $html = $this->getTemplate();
-
-        $loader = new \Twig\Loader\ArrayLoader(['index' => $html]);
-        $twig = new \Twig\Environment($loader);
-        $twig->getExtension(\Twig\Extension\CoreExtension::class)->setTimezone($ticket['timezone_id']);
-
-        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('wp_kses_post', function($twig_env, $value, $charset) {
-            return wp_kses_post($value);
-        });
-        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('wp_filter_nohtml_kses', function ($twig_env, $value, $charset) {
-            return wp_filter_nohtml_kses($value);
-        });
-        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('stripslashes', function ($twig_env, $value, $charset) {
-            return stripslashes($value);
-        });
-        $filter_format_datetime = new \Twig\TwigFilter('format_datetime', function ($date, $pattern="", $timezone="") {
-            if (empty($pattern)) {
-                $pattern = $this->MAIN->getOptions()->getOptionDateTimeFormat();
-            }
-            if (is_object($date)) {
-                if (!empty($timezone)) {
-                    $date->setTimezone($timezone);
-                }
-                return $date->format($pattern);
-            } else if (is_int($date)) {
-                // Use date_i18n with gmt=true - prevents timezone conversion but translates month/day names
-                return date_i18n($pattern, $date, true);
-            }
-            return date_i18n($pattern, strtotime($date), true);
-        });
-        $twig->addFilter($filter_format_datetime);
-        $filter_stripslashes = new \Twig\TwigFilter('stripslashes', function ($text) {
-            return stripslashes($text);
-        });
-        $twig->addFilter($filter_stripslashes);
-
-        $filter_wc_price = new \Twig\TwigFunction('wc_price', function ($value) {
-            return wc_price($value, ['decimals'=>2]);
-        });
-        $twig->addFunction($filter_wc_price);
-        $filter_getMediaData = new \Twig\TwigFunction('getMediaData', function ($media_id) {
-            return SASO_EVENTTICKETS::getMediaData($media_id);
-        });
-        $twig->addFunction($filter_getMediaData);
-
-        // hmm. oder get_product_addons auf dem Produkt. - no clue which plugin is extending the wc product to have add ons
-        if (function_exists("wc_product_addons_get_product_addons")) {
-            $filter_wc_product_addons_get_product_addons = new \Twig\TwigFunction('wc_product_addons_get_product_addons', function ($product) {
-                return wc_product_addons_get_product_addons($product); // wc plugin spezifisch
-            });
-            $twig->addFunction($filter_wc_product_addons_get_product_addons);
-        } else {
-            $filter_wc_product_addons_get_product_addons = new \Twig\TwigFunction('wc_product_addons_get_product_addons', function ($product) {
-                return [];
-            });
-            $twig->addFunction($filter_wc_product_addons_get_product_addons);
-        }
-        if (function_exists("get_field")) { // ACF support
-            $filter_get_field = new \Twig\TwigFunction('get_field', function ($field_name, $product_id, array $options = []) {
-                return get_field($field_name, $product_id, ...$options);
-            }, ['is_variadic' => true]);
-            $twig->addFunction($filter_get_field);
-        }
-
-        //$twig->addTest(new \Twig\TwigTest('object', [$this, 'isObject'])); // make inline
-        $twig->addTest(new \Twig\TwigTest('object', function ($object){
-            return is_object($object);
-        }));
-        $twig->addTest(new \Twig\TwigTest('array', function ($value) {
-            return is_array($value);
-        }));
-        $twig->addTest(new \Twig\TwigTest('numeric', function ($value) {
-            return is_numeric($value);
-        }));
-        $twig->addTest(new \Twig\TwigTest('string', function ($value) {
-            return is_string($value);
-        }));
         global $wpdb;
 
         $list_metaObj["desc"] = stripslashes($list_metaObj["desc"]);
 
-        $this->variables = [
+        return [
             'PRODUCT' => $product,
             'PRODUCT_PARENT' => $product_parent,
             'PRODUCT_ORIGINAL' => $product_original,
@@ -283,9 +290,63 @@ class sasoEventtickets_TicketDesigner {
             ],
             'WPDB' => $wpdb
         ];
-        $output = $twig->render('index', $this->variables);
+    }
 
-        return $output;
+    /**
+     * Configure a Twig environment with the plugin's escapers, filters, functions and tests.
+     * Shared by the ticket-PDF template render and the inline (congress section) render so
+     * both expose exactly the same capabilities.
+     */
+    private function configureTwigEnvironment(\Twig\Environment $twig, string $timezone_id): void {
+        $twig->getExtension(\Twig\Extension\CoreExtension::class)->setTimezone($timezone_id);
+
+        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('wp_kses_post', function($twig_env, $value, $charset) {
+            return wp_kses_post($value);
+        });
+        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('wp_filter_nohtml_kses', function ($twig_env, $value, $charset) {
+            return wp_filter_nohtml_kses($value);
+        });
+        $twig->getExtension(\Twig\Extension\EscaperExtension::class)->setEscaper('stripslashes', function ($twig_env, $value, $charset) {
+            return stripslashes($value);
+        });
+        $twig->addFilter(new \Twig\TwigFilter('format_datetime', function ($date, $pattern="", $timezone="") {
+            if (empty($pattern)) { $pattern = $this->MAIN->getOptions()->getOptionDateTimeFormat(); }
+            if (is_object($date)) {
+                if (!empty($timezone)) { $date->setTimezone($timezone); }
+                return $date->format($pattern);
+            } else if (is_int($date)) {
+                return date_i18n($pattern, $date, true);
+            }
+            return date_i18n($pattern, strtotime($date), true);
+        }));
+        $twig->addFilter(new \Twig\TwigFilter('stripslashes', function ($text) { return stripslashes($text); }));
+        $twig->addFunction(new \Twig\TwigFunction('wc_price', function ($value) { return wc_price($value, ['decimals'=>2]); }));
+        $twig->addFunction(new \Twig\TwigFunction('getMediaData', function ($media_id) { return SASO_EVENTTICKETS::getMediaData($media_id); }));
+        if (function_exists("wc_product_addons_get_product_addons")) {
+            $twig->addFunction(new \Twig\TwigFunction('wc_product_addons_get_product_addons', function ($product) { return wc_product_addons_get_product_addons($product); }));
+        } else {
+            $twig->addFunction(new \Twig\TwigFunction('wc_product_addons_get_product_addons', function ($product) { return []; }));
+        }
+        if (function_exists("get_field")) {
+            $twig->addFunction(new \Twig\TwigFunction('get_field', function ($field_name, $product_id, array $options = []) { return get_field($field_name, $product_id, ...$options); }, ['is_variadic' => true]));
+        }
+        $twig->addTest(new \Twig\TwigTest('object',  function ($object){ return is_object($object); }));
+        $twig->addTest(new \Twig\TwigTest('array',   function ($value){ return is_array($value); }));
+        $twig->addTest(new \Twig\TwigTest('numeric', function ($value){ return is_numeric($value); }));
+        $twig->addTest(new \Twig\TwigTest('string',  function ($value){ return is_string($value); }));
+    }
+
+    /**
+     * Render an arbitrary Twig string with the plugin's full filter/function set.
+     * Used for congress section text (info/custom). $vars is the variable map
+     * (e.g. from buildVariables()). $timezone_id falls back to the site timezone.
+     */
+    public function renderInlineString(string $source, array $vars, string $timezone_id = ''): string {
+        if ($timezone_id === '') { $timezone_id = wp_timezone_string(); }
+        $loader = new \Twig\Loader\ArrayLoader(['index' => $source]);
+        $twig   = new \Twig\Environment($loader);
+        $this->configureTwigEnvironment($twig, $timezone_id);
+        return $twig->render('index', $vars);
     }
 
     public function getTemplate() {

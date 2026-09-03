@@ -1,0 +1,16 @@
+- generic [ref=f11e2]:
+  - heading "VOLLSTART Control" [level=1] [ref=f11e3]
+  - paragraph [ref=f11e4]: Business-OS Executive Dashboard
+  - generic [ref=f11e6]:
+    - generic [ref=f11e7]: Benutzer
+    - textbox [active] [ref=f11e8]
+  - generic [ref=f11e9]:
+    - generic [ref=f11e10]: Passwort
+    - textbox [ref=f11e11]
+  - generic [ref=f11e12]:
+    - generic [ref=f11e13]: Code
+    - textbox [ref=f11e14]
+  - generic [ref=f11e15]:
+    - checkbox "Angemeldet bleiben" [ref=f11e16] [cursor=pointer]
+    - generic [ref=f11e17] [cursor=pointer]: Angemeldet bleiben
+  - button "Einloggen" [ref=f11e18] [cursor=pointer]

@@ -206,3 +206,16 @@
         max-width: 100%;
     }
 }
+
+/* CVV locked screen — warning aesthetic, distinct from normal ticket screens */
+.saso-cvv-locked {
+    border: 2px solid #d63638;
+    border-radius: .25rem;
+    background-color: #fff5f5;
+    padding: 1rem 1.25rem;
+    margin: .5rem 0;
+}
+.saso-cvv-locked__heading {
+    color: #d63638;
+    margin-top: 0;
+}

@@ -98,17 +98,41 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			});
 		}
 
-		// shop page
-		$(document.body).on('click', '.add_to_cart_button', function(e){
+		// shop/archive page: intercept ANY add-to-cart link with data-product_id
+		// Works with both WC Classic (ajax_add_to_cart) and WC Blocks (plain <a> link)
+		$(document.body).on('click', 'a[data-product_id]', function(e){
 			var btn = $(this);
-			if (!btn.hasClass('ajax_add_to_cart')) return; // nur AJAX-Buttons
+			var pid = getPidFromAddToCartButton(btn);
+			if (!pid) return;
 
-			if (!checkDate(btn)) {
+			var $input = findDateForPid(pid, btn);
+			if (!$input || !$input.length) return; // not a daychooser product — let WC handle normally
+
+			var val = ($input.val() || '').trim();
+			if (!val) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				alert(phpObject.daychooser_warning ? phpObject.daychooser_warning : __('Please choose a valid date.', 'event-tickets-with-ticket-scanner'));
 				return false;
 			}
+
+			// For AJAX buttons (classic WC): let the adding_to_cart handler below add data
+			if (btn.hasClass('ajax_add_to_cart')) return;
+
+			// For non-AJAX buttons (WC Blocks / plain links): append date to URL
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			var url = btn.attr('href');
+			if (!url) return;
+			url += (url.indexOf('?') > -1 ? '&' : '?');
+			url += encodeURIComponent(phpObject.fieldKey) + '=' + encodeURIComponent(val);
+			url += '&' + encodeURIComponent(phpObject.fieldDayChooserIndicator) + '=1';
+			var nonce = document.querySelector('input[name="'+phpObject.nonceKey+'"]');
+			if (nonce) url += '&' + encodeURIComponent(phpObject.nonceKey) + '=' + encodeURIComponent(nonce.value);
+			window.location.href = url;
 		});
 
-		// shop page with AJAX add to cart
+		// shop page with AJAX add to cart (classic WC)
 		$(document.body).on('adding_to_cart', function(e, $button, data){
 			var pid = getPidFromAddToCartButton($button);
 			if (!pid) return;
@@ -132,7 +156,45 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		let waitingTimeout = null;
 		let isChanged = false;
 
-		function sendCode(elem, code, type) {
+		// Immediate feedback under the purchase-restriction input. The endpoint
+		// already returns check_values, so the buyer learns about a wrong or
+		// already-used code right in the cart instead of only at checkout.
+		function renderRestrictionFeedback(elem, check_values) {
+			let itemId = elem.attr('data-cart-item-id') || '';
+			$('.saso-eventtickets-restriction-feedback[data-cart-item-id="' + itemId + '"]').remove();
+
+			if (!check_values) return;
+
+			let message = '';
+			let isError = true;
+			if (check_values.isValid) {
+				message = __('Code accepted.', 'event-tickets-with-ticket-scanner');
+				isError = false;
+			} else if (check_values.isUsed) {
+				message = __('This code has already been used.', 'event-tickets-with-ticket-scanner');
+			} else if (check_values.notValid) {
+				message = __('This code is not valid for this product.', 'event-tickets-with-ticket-scanner');
+			} else {
+				return; // empty input or missing item - nothing to say yet
+			}
+
+			let note = document.createElement('span');
+			note.className = 'saso-eventtickets-restriction-feedback';
+			note.setAttribute('data-cart-item-id', itemId);
+			note.setAttribute('role', 'status');
+			note.style.display = 'block';
+			note.style.marginTop = '4px';
+			note.style.color = isError ? '#b32d2e' : '#1e7e34';
+			note.appendChild(document.createTextNode(message));
+			elem.after(note);
+		}
+
+		// action defaults to the per-ticket meta endpoint; the purchase-restriction
+		// input needs its own endpoint, which stores the code on the cart item and
+		// validates it against the required list.
+		function sendCode(elem, code, type, action) {
+			action = action || 'updateSerialCodeToCartItem';
+			let isRestriction = action === 'updateSerialCodeToCartItemRestriction';
 			//clearWaitingTimeout();
 			if (!isStoring) {
 				$('div[class="woocommerce"]').block({
@@ -153,7 +215,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		 				url: phpObject.ajaxurl,
 		 				data: {
 		 					action: phpObject.action,
-		 					a: 'updateSerialCodeToCartItem',
+		 					a: action,
 		 					security: nonce,
 		 					cart_item_id: cart_item_id,
 							cart_item_count: cart_item_count,
@@ -165,6 +227,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 		 					$('.cart_totals').unblock();
 		 					if (response.success) {
 			 					elem.val(response.code);
+								if (isRestriction) renderRestrictionFeedback(elem, response.check_values);
 		 					} else {
 		 						if (response.msg) alert(response.msg);
 		 					}
@@ -189,15 +252,18 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			}, 2500);
 		}
 
-		// finde die code text inputs
-		// eventcoderrestriction is no longer used, but still in the code
+		// Purchase-restriction code input ("enter a valid ticket/access code to buy").
+		// It must post to updateSerialCodeToCartItemRestriction — the per-ticket
+		// endpoint would store the value as a name and never reach the required-list
+		// check, so the code never arrived on the cart item and checkout always blocked.
+		var RESTRICTION_ACTION = 'updateSerialCodeToCartItemRestriction';
 		$('body').find('input[data-input-type="eventcoderestriction"][data-plugin="event"]')
 			.on('keydown',function(e){
 				if (e.which === 13) {
 					e.preventDefault();
 					let elem = $(this);
 					isChanged = true;
-					sendCode(elem, elem.val().trim(), "saso_eventtickets_request_name_per_ticket");
+					sendCode(elem, elem.val().trim(), null, RESTRICTION_ACTION);
 				}
 			})
 			.on('paste', event=>{
@@ -207,16 +273,14 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				if (typeof code == "string") {
 					code = code.trim();
 					isChanged = true;
-					sendCode(elem, code, "saso_eventtickets_request_name_per_ticket");
+					sendCode(elem, code, null, RESTRICTION_ACTION);
 				} else { alert("no text"); }
 			})
 			.on('change',function(){
 				let elem = $(this);
 				let code = elem.val().trim();
-				//let cart_item_id = elem.data('cart-item-id');
-				//let d = document.querySelector('input[data-cart-item-id="'+cart_item_id+'"]').value
 				isChanged = true;
-				sendCode(elem, code, "saso_eventtickets_request_name_per_ticket");
+				sendCode(elem, code, null, RESTRICTION_ACTION);
 			})
 			/*
 			.on('blur',function(){
@@ -267,7 +331,66 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 			})
 			.removeAttr('disabled');
 
+		// Resolve a min/max value (number-of-days, YYYY-MM-DD, or empty) → JS Date or null.
+		function _sasoResolveLimitDate(opt) {
+			if (opt == null || opt === '') return null;
+			if (typeof opt === 'number' && !isNaN(opt)) {
+				let d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + opt);
+				return d;
+			}
+			let s = String(opt).trim();
+			let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+			if (m) return new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10));
+			let n = parseInt(s, 10);
+			if (!isNaN(n)) {
+				let d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + n);
+				return d;
+			}
+			return null;
+		}
+
+		// Selectability rules — kept in sync with beforeShowDay below intentionally.
+		function _sasoIsDateSelectable(date, attrs) {
+			if (attrs.excludeWdays) {
+				let excludedDays = attrs.excludeWdays.split(',');
+				if (excludedDays.indexOf(date.getDay().toString()) !== -1) return false;
+			}
+			let today = new Date(); today.setHours(0, 0, 0, 0);
+			let chk = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+			if (chk < today) return false;
+			if (attrs.excludeDates) {
+				let excludedDates = attrs.excludeDates.split(',');
+				let m = date.getMonth() + 1;
+				let d = date.getDate();
+				let dateStr = date.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (d < 10 ? '0' : '') + d;
+				if (excludedDates.indexOf(dateStr) !== -1) return false;
+			}
+			return true;
+		}
+
+		// Scan up to 24 months forward from `from` for the first selectable day.
+		// Used as datepicker.defaultDate so the picker opens on the first month
+		// that actually has free slots — instead of an all-grey current month.
+		function _sasoFindFirstSelectableDate(attrs, from, until) {
+			let cap = 24;
+			let start = from ? new Date(from.getFullYear(), from.getMonth(), from.getDate())
+				: (function () { let t = new Date(); t.setHours(0, 0, 0, 0); return t; })();
+			let scanFrom = new Date(start);
+			for (let i = 0; i < cap; i++) {
+				let monthEnd = new Date(scanFrom.getFullYear(), scanFrom.getMonth() + 1, 0);
+				let lastDay = (until && monthEnd > until) ? until : monthEnd;
+				for (let d = new Date(scanFrom); d <= lastDay; d.setDate(d.getDate() + 1)) {
+					if (_sasoIsDateSelectable(d, attrs)) return new Date(d);
+				}
+				scanFrom = new Date(scanFrom.getFullYear(), scanFrom.getMonth() + 1, 1);
+				if (until && scanFrom > until) return null;
+			}
+			return null;
+		}
+
 		$('body').find('input[data-input-type="daychooser"][data-plugin="event"]')
+			.on('keydown', function(e) { e.preventDefault(); })
+			.on('paste', function(e) { e.preventDefault(); })
 			.each((idx, input) => {
 				let elem_intern = $(input);
 				let dateFormat = elem_intern.attr('placeholder');
@@ -285,6 +408,21 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				if (elem_intern.attr('min') && elem_intern.attr('min').length > 0) {
 					data_offset_start = elem_intern.attr('min');
 				}
+				// Same-day cutoff: runs after min-attribute override so absolute start dates
+				// (ticket_start_date) cannot silently undo the cutoff effect.
+				// If current time >= cutoff and the resolved minDate still includes today, shift to tomorrow.
+				// The cutoff arrives as an absolute moment in shop time, so a buyer in
+				// another timezone gets the same cutoff the server enforces.
+				let _saso_cutoff = parseInt(elem_intern.attr('data-cutoff-ts'), 10);
+				if (_saso_cutoff > 0) {
+					if (Date.now() / 1000 >= _saso_cutoff) {
+						let _todayMidnight = new Date(); _todayMidnight.setHours(0, 0, 0, 0);
+						let _resolvedMin = _sasoResolveLimitDate(data_offset_start);
+						if (_resolvedMin === null || _resolvedMin <= _todayMidnight) {
+							data_offset_start = 1;
+						}
+					}
+				}
 				try {
 					data_offset_end = parseInt(elem_intern.attr('data-offset-end'));
 				} catch (error) {
@@ -297,6 +435,14 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 				//let start = new Date(today.getFullYear(), today.getMonth(), today.getDate() + data_offset_start);
 				//let end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + data_offset_end);
 
+				let _saso_attrs = {
+					excludeWdays: elem_intern.attr('data-exclude-wdays') || '',
+					excludeDates: elem_intern.attr('data-exclude-dates') || ''
+				};
+				let _saso_minAbs = _sasoResolveLimitDate(data_offset_start);
+				let _saso_maxAbs = _sasoResolveLimitDate(data_offset_end);
+				let _saso_default = _sasoFindFirstSelectableDate(_saso_attrs, _saso_minAbs, _saso_maxAbs);
+
 				elem_intern.datepicker({
 					dateFormat: 'yy-mm-dd',
 					//dateFormat: dateFormat,
@@ -305,6 +451,7 @@ function SasoEventticketsValidator_WC_frontend($, phpObject) {
 					hideIfNoPrevNext : true,
 					minDate: data_offset_start,
 					maxDate: data_offset_end,
+					defaultDate: _saso_default,
 					beforeShow: function(input, options) {
 						this._sasoevent_input_field = $(input);
 					},

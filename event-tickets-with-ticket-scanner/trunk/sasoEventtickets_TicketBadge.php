@@ -51,89 +51,76 @@ class sasoEventtickets_TicketBadge {
         return $html;
     }
 
-    public function getReplacementTagsExplanation() {
-        $text = "Values from the <b>option</b> area can be referenced with the mentioned tag next to the label of the option.<br>
-        {QRCODE_INLINE} = add the public ticket number as a QR Code.<br>
-        <b>TICKET</b><ul>
-        <li>{TICKET.id}</li>
-        <li>{TICKET.time}</li>
-        <li>{TICKET.code}</li>
-        <li>{TICKET.code_display}</li>
-        <li>{TICKET.cvv}</li>
-        </ul>
-        <b>TICKET meta</b>
-        <ul>";
-        $metaObj = $this->MAIN->getCore()->getMetaObject();
-        foreach($metaObj as $key => $value) {
-            $name = "TICKET.meta.".$key;
+    /**
+     * Single source of truth for the available replacement tags, grouped.
+     * Used both for the help text (getReplacementTagsExplanation) and the
+     * visual editor tag picker (vtext option type).
+     *
+     * @return array<int, array{group:string, tags:array<int,string>}>
+     */
+    public function getReplacementTags(): array {
+        $groups = [];
+        $groups[] = ['group' => 'Special', 'tags' => ['{QRCODE_INLINE}']];
+        $groups[] = ['group' => 'TICKET', 'tags' => [
+            '{TICKET.id}', '{TICKET.time}', '{TICKET.code}', '{TICKET.code_display}', '{TICKET.cvv}',
+        ]];
+
+        $metaTags = [];
+        $metaObj  = $this->MAIN->getCore()->getMetaObject();
+        foreach ($metaObj as $key => $value) {
+            $name = 'TICKET.meta.' . $key;
             if (is_array($value)) {
-                foreach($value as $k => $v) {
-                    $text .= '<li>{'.$name.".".$k."}</li>";
+                foreach ($value as $k => $v) {
+                    $metaTags[] = '{' . $name . '.' . $k . '}';
                 }
             }
         }
-        $text .= "
-        <b>Order</b>
-        <ul>
-        <li>{ORDER.id}</li>
-        <li>{ORDER.formatted_order_total}</li>
-        <li>{ORDER.cart_tax}</li>
-        <li>{ORDER.currency}</li>
-        <li>{ORDER.item_count}</li>
-        <li>{ORDER.item_total}</li>
-        <li>{ORDER.items}<br>Use the loop to access the items. e.g. '&lt;ul>{{LOOP ORDER.items AS item}} &lt;li>{item.quantity} x {item.name}&lt;/li> {{LOOPEND}}&lt;/ul>'</li>
-        <li>{ORDER.coupon_codes}</li>
-        <li>{ORDER.shipping_method}</li>
-        <li>{ORDER.shipping_to_display}</li>
-        <li>{ORDER.date.created}</li>
-        <li>{ORDER.date.paid}</li>
-        <li>{ORDER.date.completed}</li>
-        <li>{ORDER.customer_id}</li>
-        <li>{ORDER.user_id}</li>
-        <li>{ORDER.customer_ip_address}</li>
-        <li>{ORDER.customer_note}</li>
-        <li>{ORDER.billing.first_name}</li>
-        <li>{ORDER.billing.last_name}</li>
-        <li>{ORDER.billing.company}</li>
-        <li>{ORDER.billing.address_1}</li>
-        <li>{ORDER.billing.address_2}</li>
-        <li>{ORDER.billing.city}</li>
-        <li>{ORDER.billing.state}</li>
-        <li>{ORDER.billing.postcode}</li>
-        <li>{ORDER.billing.country}</li>
-        <li>{ORDER.billing.email}</li>
-        <li>{ORDER.billing.phone}</li>
-        <li>{ORDER.shipping_address}</li>
-        <li>{ORDER.formatted_billing_full_name</li>
-        <li>{ORDER.formatted_shipping_full_name}</li>
-        <li>{ORDER.formatted_billing_address}</li>
-        <li>{ORDER.formatted_shipping_address}</li>
-        <li>{ORDER.payment_method}</li>
-        <li>{ORDER.payment_method_title}</li>
-        <li>{ORDER.transaction_id}</li>
-        <li>{ORDER.status}</li>
-        </ul>
-        <p>If you need a meta value of the order, like an additional field. Get the field name and create the code like this: {ORDER.get_meta.YOURFIELDNAME}.<br>
-        This will call the get_meta('YOURFIELDNAME').</p>
-        <b>Product</b>
-        <ul>
-        <li>{PRODUCT.id}</li>
-        <li>{PRODUCT.name}</li>
-        <li>{PRODUCT.slug}</li>
-        <li>{PRODUCT.date.created}</li>
-        <li>{PRODUCT.date.modified}</li>
-        <li>{PRODUCT.status}</li>
-        <li>{PRODUCT.description}</li>
-        <li>{PRODUCT.short_description}</li>
-        <li>{PRODUCT.sku}</li>
-        <li>{PRODUCT.price}</li>
-        <li>{PRODUCT.regular_price}</li>
-        <li>{PRODUCT.sale_price}</li>
-        <li>{PRODUCT.stock_quantity}</li>
-        <li>{PRODUCT.categories}</li>
-        <li>{PRODUCT.average_rating}</li>
-        </ul>
-        ";
+        if ($metaTags) {
+            $groups[] = ['group' => 'TICKET meta', 'tags' => $metaTags];
+        }
+
+        $groups[] = ['group' => 'Order', 'tags' => [
+            '{ORDER.id}', '{ORDER.formatted_order_total}', '{ORDER.cart_tax}', '{ORDER.currency}',
+            '{ORDER.item_count}', '{ORDER.item_total}', '{ORDER.items}', '{ORDER.coupon_codes}',
+            '{ORDER.shipping_method}', '{ORDER.shipping_to_display}', '{ORDER.date.created}',
+            '{ORDER.date.paid}', '{ORDER.date.completed}', '{ORDER.customer_id}', '{ORDER.user_id}',
+            '{ORDER.customer_ip_address}', '{ORDER.customer_note}', '{ORDER.billing.first_name}',
+            '{ORDER.billing.last_name}', '{ORDER.billing.company}', '{ORDER.billing.address_1}',
+            '{ORDER.billing.address_2}', '{ORDER.billing.city}', '{ORDER.billing.state}',
+            '{ORDER.billing.postcode}', '{ORDER.billing.country}', '{ORDER.billing.email}',
+            '{ORDER.billing.phone}', '{ORDER.shipping_address}', '{ORDER.formatted_billing_full_name}',
+            '{ORDER.formatted_shipping_full_name}', '{ORDER.formatted_billing_address}',
+            '{ORDER.formatted_shipping_address}', '{ORDER.payment_method}', '{ORDER.payment_method_title}',
+            '{ORDER.transaction_id}', '{ORDER.status}',
+        ]];
+
+        $groups[] = ['group' => 'Product', 'tags' => [
+            '{PRODUCT.id}', '{PRODUCT.name}', '{PRODUCT.slug}', '{PRODUCT.date.created}',
+            '{PRODUCT.date.modified}', '{PRODUCT.status}', '{PRODUCT.description}',
+            '{PRODUCT.short_description}', '{PRODUCT.sku}', '{PRODUCT.price}', '{PRODUCT.regular_price}',
+            '{PRODUCT.sale_price}', '{PRODUCT.stock_quantity}', '{PRODUCT.categories}', '{PRODUCT.average_rating}',
+        ]];
+
+        return $groups;
+    }
+
+    public function getReplacementTagsExplanation() {
+        $text  = "Values from the <b>option</b> area can be referenced with the mentioned tag next to the label of the option.<br>";
+        $text .= "{QRCODE_INLINE} = add the public ticket number as a QR Code.<br>";
+        foreach ($this->getReplacementTags() as $g) {
+            if ($g['group'] === 'Special') continue; // QRCODE_INLINE already explained above
+            $text .= '<b>' . esc_html($g['group']) . '</b><ul>';
+            foreach ($g['tags'] as $tag) {
+                $text .= '<li>' . esc_html($tag) . '</li>';
+                if ($tag === '{ORDER.items}') {
+                    $text .= "<li><i>Use the loop to access the items. e.g. '&lt;ul>{{LOOP ORDER.items AS item}} &lt;li>{item.quantity} x {item.name}&lt;/li> {{LOOPEND}}&lt;/ul>'</i></li>";
+                }
+            }
+            $text .= '</ul>';
+            if ($g['group'] === 'Order') {
+                $text .= "<p>If you need a meta value of the order, like an additional field. Get the field name and create the code like this: {ORDER.get_meta.YOURFIELDNAME}.<br>This will call the get_meta('YOURFIELDNAME').</p>";
+            }
+        }
         return $text;
     }
 

@@ -4,6 +4,7 @@ class sasoEventtickets_Core {
 	private $MAIN;
 
 	private $_CACHE_list = [];
+	private $_CACHE_authtokenNames = [];
 
 	public $ticket_url_path_part = "ticket";
 
@@ -59,6 +60,68 @@ class sasoEventtickets_Core {
 		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
 		if (count($ret) == 0) throw new Exception("#204 ticket with ".$code." not found");
 		return $ret[0];
+	}
+
+	/**
+	 * Look up a single ticket row by its plain printed ticket number, matching
+	 * either the internal `code` or the human `code_display`. Used only by the
+	 * opt-in "redeem by plain ticket number" path. Throws when nothing matches,
+	 * and — deliberately — when more than one row matches (ambiguous, e.g. a
+	 * recycled number under the reuse option): we never guess which ticket.
+	 */
+	public function retrieveCodeByTicketNumber($number) {
+		$number = $this->clearCode($number);
+		$number = $this->MAIN->getDB()->reinigen_in($number);
+		if (empty($number)) throw new Exception("#260 ticket number empty");
+		$table = $this->MAIN->getDB()->getTabelle("codes");
+		$sql = "select * from ".$table." where code = '".$number."' or code_display = '".$number."'";
+		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
+		if (count($ret) == 0) throw new Exception("#261 ticket number ".$number." not found");
+		if (count($ret) > 1) throw new Exception("#262 ticket number ".$number." is ambiguous");
+		return $ret[0];
+	}
+
+	/**
+	 * Rebuild the full public ticket id ({idcode}-{order_id}-{code}) from a plain
+	 * ticket number. Returns '' if it cannot be resolved to exactly one ticket.
+	 * Because the rebuilt id carries the real stored idcode/order_id, every
+	 * downstream copy-protection check passes unchanged.
+	 */
+	public function reconstructPublicTicketIdFromNumber($number) {
+		$codeObj = $this->retrieveCodeByTicketNumber($number);
+		$metaObj = $this->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		return $this->getTicketId($codeObj, $metaObj);
+	}
+
+	/**
+	 * If the opt-in option is active and $foundcode is a bare ticket number
+	 * (not already a 3-part public id and not an order-ticket id), expand it to
+	 * the full public ticket id. Any "?request" suffix is preserved. On any
+	 * failure the original value is returned untouched, so the normal flow (and
+	 * its existing #9303 error) is never disturbed.
+	 */
+	public function maybeExpandPlainTicketNumber($foundcode) {
+		if (empty($foundcode)) return $foundcode;
+		// Wer Karten ohne Bestellung ausgibt, tippt an der Tuer die aufgedruckte
+		// Nummer ein - einen QR mit voller Ticket-Id gibt es dort nicht. Ohne
+		// diese Zeile scheiterte genau der vorgesehene Weg mit "#9302", solange
+		// nicht zusaetzlich das Entwerten per Ticketnummer eingeschaltet war.
+		$allowedByOrderless = $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowTicketsWithoutOrder');
+		if (!$allowedByOrderless && !$this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemByTicketNumber')) return $foundcode;
+		$fc = trim($foundcode);
+		$core = explode('?', $fc)[0];
+		if (substr($core, 0, 13) === 'ordertickets-') return $foundcode; // order ticket, not in scope
+		if (count(explode('-', $core)) >= 3) return $foundcode;           // already a full public id
+		try {
+			$full = $this->reconstructPublicTicketIdFromNumber($core);
+			if (!empty($full)) {
+				$suffix = (strpos($fc, '?') !== false) ? substr($fc, strpos($fc, '?')) : '';
+				return $full . $suffix;
+			}
+		} catch (Exception $e) {
+			// not resolvable → leave untouched; normal parsing throws #9303 as before
+		}
+		return $foundcode;
 	}
 
 	public function checkCodesSize() {
@@ -139,6 +202,7 @@ class sasoEventtickets_Core {
 				'redeemed_date'=>'',
 				'redeemed_date_tz'=>'',
 				'redeemed_by_admin'=>0,
+				'redeemed_via_authtoken_id'=>0,
 				'set_by_admin'=>0,
 				'set_by_admin_date'=>'',
 				'set_by_admin_date_tz'=>'',
@@ -154,6 +218,11 @@ class sasoEventtickets_Core {
 				'subs'=>$this->getDefaultMetaValueOfSubs(),
 				'_qr_content'=>''
 				] // ticket purchase ; stats_redeemed is only used if the ticket can be redeemed more than once
+			,'cvv_attempts'=>[
+				'count'   => 0,
+				'last_at' => '',
+				'locked'  => false,
+				] // rate-limiting state for CVV verification at the ticket scanner; locked=true after 5 wrong attempts
 			];
 
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getMetaObject')) {
@@ -210,6 +279,30 @@ class sasoEventtickets_Core {
 			}
 		} else {
 			$metaObj['wc_ticket']['_redeemed_by_admin_username'] = "";
+		}
+		// Authtoken-Name live-Lookup mit Cache (mirrors getCustomerName pattern).
+		// We store only the ID in the JSON; the name is fetched on each render so a
+		// renamed token shows the current name everywhere — backend table, detail
+		// view and CSV export. getAuthtoken() throws #505 if the token was deleted
+		// (common after a DB migration, an admin delete, or a stale import); we
+		// fall back to "AUTHTOKEN DELETED" instead of breaking the surrounding render.
+		if (isset($metaObj['wc_ticket']['redeemed_via_authtoken_id']) && $metaObj['wc_ticket']['redeemed_via_authtoken_id'] > 0) {
+			$_t_id = (int) $metaObj['wc_ticket']['redeemed_via_authtoken_id'];
+			if (!isset($this->_CACHE_authtokenNames[$_t_id])) {
+				$tokenObj = null;
+				try {
+					$tokenObj = $this->MAIN->getAuthtokenHandler()->getAuthtoken(['id' => $_t_id]);
+				} catch (Exception $e) {
+					// Token gone (deleted, never migrated, or DB-truncated ID).
+					// Cache the placeholder so we don't re-query on every render.
+				}
+				$this->_CACHE_authtokenNames[$_t_id] = ($tokenObj && !empty($tokenObj['name']))
+					? $tokenObj['name']
+					: esc_html__("AUTHTOKEN DELETED", 'event-tickets-with-ticket-scanner');
+			}
+			$metaObj['wc_ticket']['_redeemed_via_authtoken_name'] = $this->_CACHE_authtokenNames[$_t_id];
+		} else {
+			$metaObj['wc_ticket']['_redeemed_via_authtoken_name'] = "";
 		}
 		if (isset($metaObj['wc_ticket']['set_by_admin']) && $metaObj['wc_ticket']['set_by_admin'] > 0) {
 			$u = get_userdata($metaObj['wc_ticket']['set_by_admin']);
@@ -295,6 +388,14 @@ class sasoEventtickets_Core {
 	public function getMetaObjectList() {
 		$metaObj = [
 			'desc'=>'',
+			'orderless'=>0, // tickets of this list may exist without a WooCommerce order
+			'idcode'=>'',   // shared idcode of the list, used by order-less ticket ids
+			// Event window for order-less tickets — they have no product to take it from
+			'event_start_date'=>'',
+			'event_start_time'=>'',
+			'event_end_date'=>'',
+			'event_end_time'=>'',
+
 			'redirect'=>['url'=>''],
 			'formatter'=>[
 				'active'=>1,
@@ -332,6 +433,257 @@ class sasoEventtickets_Core {
 		return $codeObj;
 	}
 
+	/**
+	 * Generate a random 4-character CVV.
+	 * Uppercase alphanumeric, excludes ambiguous characters (O, 0, I, 1).
+	 *
+	 * @return string 4-char CVV
+	 */
+	public function generateCVV(): string {
+		$charset = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no O, 0, I, 1
+		$cvv = '';
+		$max = strlen($charset) - 1;
+		for ($i = 0; $i < 4; $i++) {
+			$cvv .= $charset[random_int(0, $max)];
+		}
+		return $cvv;
+	}
+
+	/**
+	 * Returns true if the product behind this code has the per-product
+	 * "Require CVV at scanner" option active. Honors variation fallback.
+	 *
+	 * @param array $codeObj Code with materialized metaObj
+	 * @return bool
+	 */
+	public function isCVVRequiredForScanner(array $codeObj): bool {
+		$metaObj = $codeObj['metaObj'] ?? null;
+		if (!is_array($metaObj)) return false;
+
+		// product_id is persisted by addWoocommerceInfoToCode at metaObj.woocommerce.product_id
+		// (NOT wc_ticket). Variation_id is not persisted in meta — pass 0 so
+		// getMetaWithVariationFallback reads parent-level meta only.
+		$product_id   = (int) ($metaObj['woocommerce']['product_id'] ?? 0);
+		$variation_id = 0;
+		if ($product_id < 1) return false;
+
+		$th = $this->MAIN->getTicketHandler();
+		$value = $th->getMetaWithVariationFallback($product_id, $variation_id, 'saso_eventtickets_require_cvv_at_scanner');
+		return $value === 'yes';
+	}
+
+	/**
+	 * Verify a CVV input against a code. Tracks attempts in meta and locks
+	 * the code (aktiv=0, cvv_attempts.locked=true) after 5 wrong attempts.
+	 *
+	 * @param array  $codeObj    Code with materialized metaObj
+	 * @param string $cvvInput   Input from scanner (case-insensitive match)
+	 * @return array ['ok'=>bool, 'attempts_remaining'=>int, 'locked'=>bool]
+	 */
+	public function verifyCVV(array $codeObj, string $cvvInput): array {
+		$codeId = (int) ($codeObj['id'] ?? 0);
+		$stored = (string) ($codeObj['cvv'] ?? '');
+		$metaObj = $codeObj['metaObj'] ?? [];
+
+		// No CVV configured on this code (e.g. legacy ticket created before the
+		// per-product option existed, or an admin cleared the CVV). Caller already
+		// verified isCVVRequiredForScanner is true for the product. Rather than
+		// silently locking out the customer by failing every comparison against
+		// an empty string, treat as "nothing to verify — pass through" so the
+		// legitimate customer can still redeem. The configuration inconsistency
+		// (option=yes but cvv='') is recoverable by the admin and must not be
+		// grounds for destroying a valid ticket.
+		if ($stored === '') {
+			return ['ok' => true, 'attempts_remaining' => 5, 'locked' => false];
+		}
+
+		$attempts = $metaObj['cvv_attempts'] ?? ['count' => 0, 'last_at' => '', 'locked' => false];
+		$count = (int) ($attempts['count'] ?? 0);
+		$locked = (bool) ($attempts['locked'] ?? false);
+
+		if ($locked) {
+			return ['ok' => false, 'attempts_remaining' => 0, 'locked' => true];
+		}
+
+		if (strtoupper($cvvInput) === strtoupper($stored)) {
+			return ['ok' => true, 'attempts_remaining' => max(0, 5 - $count), 'locked' => false];
+		}
+
+		// Wrong — increment, persist, possibly lock
+		$count++;
+		$attempts['count'] = $count;
+		$attempts['last_at'] = current_time('mysql');
+		$attempts['locked'] = ($count >= 5);
+
+		$metaObj['cvv_attempts'] = $attempts;
+		$this->persistCVVAttempts($codeId, $metaObj, $attempts['locked']);
+
+		return [
+			'ok' => false,
+			'attempts_remaining' => max(0, 5 - $count),
+			'locked' => $attempts['locked'],
+		];
+	}
+
+	/**
+	 * Reset the CVV attempt counter on a code. If the code was
+	 * specifically CVV-locked (cvv_attempts.locked=true), reactivate it.
+	 * Does NOT reactivate codes that were made inactive for other reasons.
+	 *
+	 * @param int $codeId Code id
+	 */
+	public function resetCVVAttempts(int $codeId): void {
+		if ($codeId < 1) return;
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('codes');
+		$row = $this->MAIN->getDB()->_db_datenholen($wpdb->prepare("SELECT meta, aktiv FROM $table WHERE id = %d", $codeId));
+		if (empty($row)) return;
+		$row = $row[0];
+
+		$metaObj = $this->encodeMetaValuesAndFillObject($row['meta'], $row);
+		$wasCVVLocked = !empty($metaObj['cvv_attempts']['locked']);
+
+		$metaObj['cvv_attempts'] = [
+			'count'   => 0,
+			'last_at' => '',
+			'locked'  => false,
+		];
+
+		$updates = ['meta' => $this->json_encode_with_error_handling($metaObj)];
+		$formats = ['%s'];
+		if ($wasCVVLocked && (int)$row['aktiv'] === 0) {
+			$updates['aktiv'] = 1;
+			$formats[] = '%d';
+		}
+		$wpdb->update($table, $updates, ['id' => $codeId], $formats, ['%d']);
+	}
+
+	/**
+	 * If the product has the "Require CVV at scanner" option active and the
+	 * given code does not yet have a CVV, generate one and persist to codes.cvv.
+	 *
+	 * Called from addCodeFromListForOrder during WC-order code creation.
+	 * Applies to both newly generated and reused codes — the reuse path
+	 * (wcassignmentReuseNotusedCodes option) hits the same call site.
+	 * Variation-aware via getMetaWithVariationFallback (variation_id=0 reads
+	 * parent-product meta).
+	 *
+	 * @param int $codeId    Code row id (just inserted/resolved)
+	 * @param int $productId Product id (parent product for variable products)
+	 */
+	public function maybeGenerateCVVForCode(int $codeId, int $productId): void {
+		if ($codeId < 1 || $productId < 1) return;
+
+		$requireCVV = $this->MAIN->getTicketHandler()->getMetaWithVariationFallback(
+			$productId, 0, 'saso_eventtickets_require_cvv_at_scanner'
+		) === 'yes';
+		if (!$requireCVV) return;
+
+		global $wpdb;
+		$table = $this->MAIN->getDB()->getTabelle('codes');
+		$existingCVV = $wpdb->get_var($wpdb->prepare("SELECT cvv FROM $table WHERE id = %d", $codeId));
+		if (!empty($existingCVV)) return;
+
+		$wpdb->update(
+			$table,
+			['cvv' => $this->generateCVV()],
+			['id' => $codeId],
+			['%s'],
+			['%d']
+		);
+	}
+
+	/**
+	 * Internal: persist cvv_attempts meta to DB, and set aktiv=0 if just locked.
+	 */
+	private function persistCVVAttempts(int $codeId, array $metaObj, bool $lockNow): void {
+		if ($codeId < 1) return;
+		global $wpdb;
+		$updates = ['meta' => $this->json_encode_with_error_handling($metaObj)];
+		$formats = ['%s'];
+		if ($lockNow) {
+			$updates['aktiv'] = 0;
+			$formats[] = '%d';
+		}
+		$wpdb->update($this->MAIN->getDB()->getTabelle('codes'), $updates, ['id' => $codeId], $formats, ['%d']);
+	}
+
+	/**
+	 * Timestamp at which online sales for a product close
+	 *
+	 * Single source for the "stop selling X hours before the event starts" rule.
+	 * Returns null whenever the rule cannot apply: option off, product without an
+	 * event date, or a day chooser product without a picked date.
+	 *
+	 * A product with a date but without a start time counts as starting at the
+	 * end of that day (23:59:59).
+	 *
+	 * @param int $productId Product ID
+	 * @param string|null $selectedDate Date picked by the customer (day chooser), Y-m-d
+	 * @param int $variationId Variation ID, if the customer picked one
+	 * @return int|null Cutoff timestamp or null if there is none
+	 */
+	public function getSalesCutoffTimestamp(int $productId, ?string $selectedDate = null, int $variationId = 0): ?int {
+		$cutoff = null;
+		$options = $this->MAIN->getOptions();
+		$ticketHandler = $this->MAIN->getTicketHandler();
+
+		if ($options->isOptionCheckboxActive('wcTicketSalesCutoffActive')) {
+			// Resolve against the variation when it carries its own event date
+			$dates = $ticketHandler->getCalcDateStringAllowedRedeemFromCorrectProduct($variationId > 0 ? $variationId : $productId);
+			$date = null;
+
+			if (!empty($dates['is_daychooser'])) {
+				// Without a picked date there is no event start to count back from
+				$date = !empty($selectedDate) ? $selectedDate : null;
+			} elseif (!empty($dates['is_start_date_set'])) {
+				// A start time alone must not create a cutoff that repeats every day
+				$date = $dates['ticket_start_date'];
+			}
+
+			if ($date !== null) {
+				$time = !empty($dates['is_start_time_set']) ? $dates['ticket_start_time'] : '23:59:59';
+				$startTs = $ticketHandler->localDateToTimestamp($date, $time);
+				if (!empty($startTs)) {
+					$hours = max(0, intval(apply_filters(
+						$this->MAIN->_add_filter_prefix.'core_getSalesCutoffHours',
+						$options->getOptionValue('wcTicketSalesCutoffHours'),
+						$productId,
+						$variationId,
+						$selectedDate
+					)));
+					$cutoff = $startTs - ($hours * 3600);
+				}
+			}
+		}
+
+		// Fired on the null path as well, so premium can set a per product cutoff
+		// even while the global rule is switched off
+		$cutoff = apply_filters(
+			$this->MAIN->_add_filter_prefix.'core_getSalesCutoffTimestamp',
+			$cutoff,
+			$productId,
+			$variationId,
+			$selectedDate
+		);
+
+		return $cutoff === null ? null : (int) $cutoff;
+	}
+
+	/**
+	 * Whether online sales for a product are closed by now
+	 *
+	 * @param int $productId Product ID
+	 * @param string|null $selectedDate Date picked by the customer (day chooser), Y-m-d
+	 * @param int $variationId Variation ID, if the customer picked one
+	 * @return bool True if the product must not be sold anymore
+	 */
+	public function isSalesCutoffReached(int $productId, ?string $selectedDate = null, int $variationId = 0): bool {
+		$cutoff = $this->getSalesCutoffTimestamp($productId, $selectedDate, $variationId);
+
+		return $cutoff !== null && time() >= $cutoff;
+	}
+
 	public function getQRCodeContent($codeObj, $metaObj=null) {
 		if (!isset($codeObj['metaObj']) || $codeObj['metaObj'] == null) {
 			if ($metaObj != null) {
@@ -359,7 +711,7 @@ class sasoEventtickets_Core {
 	public function getMetaObjectAuthtoken() {
 		$metaObj = [
 			'desc'=>'',
-			'ticketscanner'=>["bound_to_products"=>""]
+			'ticketscanner'=>["bound_to_products"=>"", "bound_to_lists"=>""]
 		];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getMetaObjectAuthtoken')) {
 			$metaObj = $this->MAIN->getPremiumFunctions()->getMetaObjectAuthtoken($metaObj);
@@ -753,8 +1105,133 @@ class sasoEventtickets_Core {
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'core_getTicketURLBase', $ret );
 		return $ret;
 	}
+	/**
+	 * Whether a ticket may exist without a WooCommerce order
+	 *
+	 * Single source for both switches: the global option and the per-list flag.
+	 * Only ever true for tickets that really have no order.
+	 *
+	 * @param array|null $codeObj Ticket row
+	 * @return bool
+	 */
+	public function isOrderlessTicketAllowed($codeObj = null): bool {
+		if (!is_array($codeObj) || intval($codeObj['order_id'] ?? 0) !== 0) {
+			return false;
+		}
+
+		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowTicketsWithoutOrder')) {
+			return true;
+		}
+
+		$listId = intval($codeObj['list_id'] ?? 0);
+		if ($listId < 1) {
+			return false;
+		}
+
+		$listObj = $this->getListById($listId);
+		if (empty($listObj) || empty($listObj['meta'])) {
+			return false;
+		}
+
+		$listMeta = $this->encodeMetaValuesAndFillObjectList($listObj['meta']);
+
+		return intval($listMeta['orderless'] ?? 0) === 1;
+	}
+
+	/**
+	 * Shared idcode of a ticket list, generated on first use
+	 *
+	 * Order-less tickets have no order to take an idcode from; the list provides
+	 * one instead, so the scanner keeps its idcode check (Ticket.php #8006).
+	 *
+	 * @param int $listId Ticket list ID
+	 * @return string Idcode or empty string if the list is unknown
+	 */
+	public function getListTicketIDCode(int $listId): string {
+		if ($listId < 1) {
+			return '';
+		}
+
+		$listObj = $this->getListById($listId);
+		if (empty($listObj)) {
+			return '';
+		}
+
+		$listMeta = $this->encodeMetaValuesAndFillObjectList($listObj['meta'] ?? '');
+		$idcode = trim((string) ($listMeta['idcode'] ?? ''));
+		if ($idcode !== '') {
+			return $idcode;
+		}
+
+		$idcode = strtoupper(md5($listId . '-' . time() . '-' . uniqid()));
+		$listMeta['idcode'] = $idcode;
+		$this->MAIN->getDB()->update(
+			'lists',
+			['meta' => $this->json_encode_with_error_handling($listMeta)],
+			['id' => $listId]
+		);
+
+		return $idcode;
+	}
+
+	/**
+	 * Event window of an order-less ticket, taken from its ticket list
+	 *
+	 * A ticket sold through WooCommerce takes its event times from the ordered
+	 * product; a printed card has none, so the list carries them. Returns null
+	 * whenever the rule cannot apply.
+	 *
+	 * @param array $codeObj Ticket row
+	 * @return array{start: int|null, end: int|null}|null
+	 */
+	public function getOrderlessEventWindow($codeObj): ?array {
+		if (!$this->isOrderlessTicketAllowed($codeObj)) {
+			return null;
+		}
+
+		$listObj = $this->getListById(intval($codeObj['list_id'] ?? 0));
+		if (empty($listObj) || empty($listObj['meta'])) {
+			return null;
+		}
+
+		$listMeta = $this->encodeMetaValuesAndFillObjectList($listObj['meta']);
+		$startDate = trim((string) ($listMeta['event_start_date'] ?? ''));
+		$endDate = trim((string) ($listMeta['event_end_date'] ?? ''));
+		if ($startDate === '' && $endDate === '') {
+			return null;
+		}
+
+		$ticketHandler = $this->MAIN->getTicketHandler();
+		$start = $startDate !== ''
+			? $ticketHandler->localDateToTimestamp($startDate, trim((string) ($listMeta['event_start_time'] ?? '')))
+			: null;
+		// An end date without a time means the whole day counts
+		$end = $endDate !== ''
+			? $ticketHandler->localDateToTimestamp($endDate, trim((string) ($listMeta['event_end_time'] ?? '')) ?: '23:59:59')
+			: null;
+
+		return ['start' => $start ?: null, 'end' => $end ?: null];
+	}
+
 	public function getTicketId($codeObj, $metaObj) {
 		$ret = "";
+
+		// Order-less ticket: take the idcode from its list and remember it on the
+		// ticket, together with the ticket marker itself — a hand created number
+		// carries neither. Both are what every downstream check reads, so nothing
+		// else has to learn about order-less tickets.
+		if ($this->isOrderlessTicketAllowed($codeObj)
+			&& (empty($metaObj['wc_ticket']['idcode']) || intval($metaObj['wc_ticket']['is_ticket'] ?? 0) !== 1)) {
+			$idcode = !empty($metaObj['wc_ticket']['idcode'])
+				? $metaObj['wc_ticket']['idcode']
+				: $this->getListTicketIDCode(intval($codeObj['list_id'] ?? 0));
+			if ($idcode !== '') {
+				$metaObj['wc_ticket']['idcode'] = $idcode;
+				$metaObj['wc_ticket']['is_ticket'] = 1;
+				$this->saveMetaObject($codeObj, $metaObj);
+			}
+		}
+
 		if (isset($codeObj['code']) && isset($codeObj['order_id']) && isset($metaObj['wc_ticket']['idcode'])) {
 			$ret = $metaObj['wc_ticket']['idcode']."-".$codeObj['order_id']."-".$codeObj['code'];
 		}
@@ -825,6 +1302,7 @@ class sasoEventtickets_Core {
 		$is_pdf_request = false;
 		$is_ics_request = false;
 		$is_badge_request = false;
+		$is_congress_request = false;
 		$foundcode = "";
 		foreach($teile as $teil) {
 			$teil = trim($teil);
@@ -837,6 +1315,7 @@ class sasoEventtickets_Core {
 		}
 		if (SASO_EVENTTICKETS::issetRPara('code')) { // overwrites any found code, if parameter is available
 			$foundcode = trim(SASO_EVENTTICKETS::getRequestPara('code'));
+			$foundcode = $this->maybeExpandPlainTicketNumber($foundcode); // opt-in: bare ticket number → full public id
 			if (strpos($foundcode, "'") === false) {
 				$parts = explode("-", $foundcode);
 			} else {
@@ -856,8 +1335,10 @@ class sasoEventtickets_Core {
 			$is_pdf_request = in_array("pdf", $t);
 			$is_ics_request = in_array("ics", $t);
 			$is_badge_request = in_array("badge", $t);
+			$is_congress_request = in_array("congress", $t);
 		} else {
 			if (empty($foundcode)) throw new Exception("#9301 ticket id not found from ticket url");
+			$foundcode = $this->maybeExpandPlainTicketNumber($foundcode); // opt-in: bare ticket number → full public id
 			$parts = explode("-", $foundcode);
 			if (count($parts) < 3) throw new Exception("#9303 ticket id is wrong");
 			$t = explode("?", $parts[2]);
@@ -869,10 +1350,12 @@ class sasoEventtickets_Core {
 			$is_pdf_request = in_array("pdf", $t) || SASO_EVENTTICKETS::issetRPara('pdf');
 			$is_ics_request = in_array("ics", $t) || SASO_EVENTTICKETS::issetRPara('ics');
 			$is_badge_request = in_array("badge", $t) || SASO_EVENTTICKETS::issetRPara('badge');
+			$is_congress_request = in_array("congress", $t) || SASO_EVENTTICKETS::issetRPara('congress');
 		}
 		if (count($parts) != 3) throw new Exception("#9302 ticket id not correct - cannot create ticket url components");
 		$parts[2] = str_replace("?pdf", "", $parts[2]);
 		$parts[2] = str_replace("?ics", "", $parts[2]);
+		$parts[2] = str_replace("?congress", "", $parts[2]);
 		$parts_assoc = [
 			"foundcode"=>$foundcode,
 			"idcode"=>$parts[0],
@@ -881,14 +1364,74 @@ class sasoEventtickets_Core {
 			"_request"=>$request,
 			"_isPDFRequest"=>$is_pdf_request,
 			"_isICSRequest"=>$is_ics_request,
-			"_isBadgeRequest"=>$is_badge_request
+			"_isBadgeRequest"=>$is_badge_request,
+			"_isCongressRequest"=>$is_congress_request
 		];
 		$parts_assoc = apply_filters( $this->MAIN->_add_filter_prefix.'core_getTicketURLComponents', $parts_assoc, $url );
 		return $parts_assoc;
 	}
 
+	/**
+	 * Returns a writable directory for the plugin's temporary PDF files.
+	 *
+	 * WordPress' get_temp_dir() returns '/tmp/' as a last resort even when
+	 * nothing there is writable — common on Plesk hosts and with open_basedir
+	 * or PHP-FPM PrivateTmp. Writing the ticket PDF then failed silently while
+	 * a path was still handed on, so the merge step aborted with FPDI's
+	 * "No stream given." and the customer received an email without a ticket.
+	 *
+	 * The uploads directory is used as a fallback because it must be writable
+	 * for WordPress to work at all.
+	 *
+	 * @return string Writable directory, with a trailing slash.
+	 * @throws Exception When neither candidate is writable.
+	 */
+	public function getWritableTempDir(): string {
+		$subdir = trailingslashit($this->MAIN->getPrefix());
+
+		$system_temp = apply_filters( $this->MAIN->_add_filter_prefix.'core_system_temp_dir', get_temp_dir() );
+
+		$candidates = [trailingslashit($system_temp).$subdir];
+		$uploads = wp_upload_dir();
+		if (empty($uploads['error']) && !empty($uploads['basedir'])) {
+			$candidates[] = trailingslashit($uploads['basedir']).$subdir;
+		}
+
+		foreach($candidates as $dir) {
+			if (!file_exists($dir)) {
+				wp_mkdir_p($dir); // return value is unreliable across hosts - verify below
+			}
+			if (is_dir($dir) && wp_is_writable($dir)) {
+				return $dir;
+			}
+		}
+
+		throw new Exception("#8022 ".esc_html__("No writable temporary directory is available for the ticket PDF. Please define WP_TEMP_DIR in wp-config.php or ask your host to make the temporary directory writable.", 'event-tickets-with-ticket-scanner'));
+	}
+
 	public function mergePDFs($filepaths, $filename, $filemode="I", $deleteFilesAfterMerge=true) {
 		if (count($filepaths) > 0) {
+			// Drop sources that were never written - FPDI would abort the whole
+			// merge with "No stream given." and take the readable tickets with it.
+			$readable = [];
+			$skipped = [];
+			foreach($filepaths as $filepath) {
+				if (!empty($filepath) && is_readable($filepath) && filesize($filepath) > 0) {
+					$readable[] = $filepath;
+				} else {
+					$skipped[] = $filepath;
+				}
+			}
+			if (count($skipped) > 0) {
+				$this->MAIN->getAdmin()->logErrorToDB(
+					new Exception("#8023 ".esc_html__("PDF file was not created and is skipped in the merge.", 'event-tickets-with-ticket-scanner')),
+					null,
+					"skipped unreadable PDFs while merging. Filepaths: (".join(", ", $skipped).")"
+				);
+			}
+			if (count($readable) == 0) return null;
+			$filepaths = $readable;
+
 			$pdf = $this->MAIN->getNewPDFObject();
 			$pdf->setFilemode($filemode);
 			$pdf->setFilename($filename);

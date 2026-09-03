@@ -1,11 +1,11 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventticketsDB extends sasoEventtickets_DB {
-	public $dbversion = '1.13';
+	public $dbversion = '1.19';
 	public function __construct($MAIN) {
 		$this->MAIN = $MAIN;
 		parent::$dbprefix = "saso_eventtickets_";
-		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks', 'options', 'options_history'];
+		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks', 'options', 'options_history', 'congresses', 'congress_pages', 'congress_sections', 'congress_products'];
 		$this->init();
 	}
 
@@ -203,6 +203,73 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				KEY option_key_changed_at (option_key, changed_at),
 				KEY changed_at (changed_at)) ".$this->getCharsetCollate().";",
 			"additional"=>[]
+		];
+		// Congress tables - v1.14
+		$tabellen[] = [
+			"sql" =>
+				"CREATE TABLE ".$this->getTabelle('congresses')." (
+				id int(32) unsigned NOT NULL AUTO_INCREMENT,
+				slug varchar(200) NOT NULL DEFAULT '',
+				title varchar(500) NOT NULL DEFAULT '',
+				updated_at datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+				access_expires_at datetime DEFAULT NULL,
+				event_start_at datetime DEFAULT NULL,
+				event_end_at datetime DEFAULT NULL,
+				is_active tinyint(1) NOT NULL DEFAULT 1,
+				label varchar(191) NOT NULL DEFAULT '',
+				meta longtext NOT NULL DEFAULT '',
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional" => [
+				"CREATE UNIQUE INDEX idx1 ON ".$this->getTabelle('congresses')." (slug)"
+			]
+		];
+		$tabellen[] = [
+			"sql" =>
+				"CREATE TABLE ".$this->getTabelle('congress_pages')." (
+				id int(32) unsigned NOT NULL AUTO_INCREMENT,
+				congress_id int(32) unsigned NOT NULL DEFAULT 0,
+				title varchar(500) NOT NULL DEFAULT '',
+				sort_order int(11) unsigned NOT NULL DEFAULT 0,
+				created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				created_by_user_id int(11) unsigned NOT NULL DEFAULT 0,
+				updated_by_user_id int(11) unsigned NOT NULL DEFAULT 0,
+				meta longtext NOT NULL DEFAULT '',
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional" => [
+				"CREATE INDEX idx1 ON ".$this->getTabelle('congress_pages')." (congress_id, sort_order)"
+			]
+		];
+		$tabellen[] = [
+			"sql" =>
+				"CREATE TABLE ".$this->getTabelle('congress_sections')." (
+				id int(32) unsigned NOT NULL AUTO_INCREMENT,
+				congress_id int(32) unsigned NOT NULL DEFAULT 0,
+				page_id int(32) unsigned NOT NULL DEFAULT 0,
+				type varchar(20) NOT NULL DEFAULT 'info',
+				title varchar(500) NOT NULL DEFAULT '',
+				password_hash varchar(255) DEFAULT NULL,
+				sort_order int(11) unsigned NOT NULL DEFAULT 0,
+				content longtext NOT NULL DEFAULT '',
+				created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				created_by_user_id int(11) unsigned NOT NULL DEFAULT 0,
+				updated_by_user_id int(11) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional" => [
+				"CREATE INDEX idx1 ON ".$this->getTabelle('congress_sections')." (congress_id, sort_order)",
+				"CREATE INDEX idx2 ON ".$this->getTabelle('congress_sections')." (page_id, sort_order)"
+			]
+		];
+		$tabellen[] = [
+			"sql" =>
+				"CREATE TABLE ".$this->getTabelle('congress_products')." (
+				congress_id int(32) unsigned NOT NULL DEFAULT 0,
+				product_id int(32) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY (congress_id, product_id)) ".$this->getCharsetCollate().";",
+			"additional" => [
+				"CREATE INDEX idx1 ON ".$this->getTabelle('congress_products')." (product_id)"
+			]
 		];
 		$tabellen = apply_filters( $this->MAIN->_add_filter_prefix.'db_system_installiereTabellen', $tabellen );
 		do_action( $this->MAIN->_do_action_prefix.'db_system_installiereTabellen', $tabellen );

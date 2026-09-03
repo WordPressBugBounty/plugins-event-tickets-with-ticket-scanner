@@ -198,6 +198,9 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 				case 'deleteSeat':
 					$ret = $this->handleDeleteSeat($data);
 					break;
+				case 'reorderSeats':
+					$ret = $this->handleReorderSeats($data);
+					break;
 
 				// Statistics
 				case 'getStats':
@@ -602,6 +605,20 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 	}
 
 	/**
+	 * Handle: Persist a custom seat order for a plan
+	 *
+	 * Seat CRUD lives in sasoEventtickets_Seating — this endpoint only forwards,
+	 * so both routers share one implementation.
+	 *
+	 * @param array $data Request data
+	 * @return array Number of reordered seats
+	 * @throws Exception On failure
+	 */
+	private function handleReorderSeats(array $data): array {
+		return $this->MAIN->getSeating()->handleReorderSeats($data);
+	}
+
+	/**
 	 * Handle: Delete one or multiple seats
 	 *
 	 * Accepts:
@@ -770,6 +787,25 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 			}
 		}
 
+		// Handle deleted_seat_ids from the Visual Designer (fix for #014864).
+		// The designer deletes seats client-side (splice the seats array)
+		// and sends the removed dbIds alongside the post-deletion seats
+		// list so the server can soft-delete them. Seats with confirmed
+		// bookings are reported back in the `blocked` list so the JS can
+		// show a notice and put the seats back on the canvas.
+		$deletedResult = ['deleted' => [], 'blocked' => [], 'unknown' => []];
+		if (!empty($data['deleted_seat_ids'])) {
+			$rawDeleted = $data['deleted_seat_ids'];
+			if (is_string($rawDeleted)) {
+				$rawDeleted = json_decode(wp_unslash($rawDeleted), true);
+			}
+			if (is_array($rawDeleted) && !empty($rawDeleted)) {
+				$deletedResult = $this->MAIN->getSeating()
+					->getPlanManager()
+					->softDeleteSeatsFromDesigner($planId, array_map('intval', $rawDeleted));
+			}
+		}
+
 		// Get updated info for badges
 		$planManager = $this->MAIN->getSeating()->getPlanManager();
 		$auditInfo = $planManager->getAuditInfo($planId);
@@ -779,7 +815,13 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 			'message' => __('Draft saved successfully', 'event-tickets-with-ticket-scanner'),
 			'has_unpublished_changes' => true,
 			'audit_info' => $auditInfo,
-			'publish_info' => $publishInfo
+			'publish_info' => $publishInfo,
+			// Fix for support #014864 — surface deleted-seat outcome to JS
+			// so the designer can render the "could not delete X" notice
+			// and put blocked seats back on the canvas.
+			'deleted_count' => count($deletedResult['deleted'] ?? []),
+			'blocked'       => $deletedResult['blocked'] ?? [],
+			'unknown'       => $deletedResult['unknown'] ?? [],
 		];
 	}
 

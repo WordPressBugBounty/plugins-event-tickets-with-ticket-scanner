@@ -1,0 +1,558 @@
+/**
+ * Event Tickets with Ticket Scanner — Frontend Design System
+ *
+ * Wird nur geladen wenn frontendLayoutVersion = 'modern'.
+ * Kunden können CSS Custom Properties überschreiben.
+ *
+ * @since 3.x
+ */
+
+/* ================================================
+   DESIGN SYSTEM — CSS Custom Properties (öffentliche API)
+   ================================================ */
+:root {
+	--saso-primary: #2563eb;
+	--saso-primary-hover: #1d4ed8;
+	--saso-success: #16a34a;
+	--saso-success-bg: #f0fdf4;
+	--saso-success-border: #16a34a;
+	--saso-danger: #dc2626;
+	--saso-danger-bg: #fef2f2;
+	--saso-danger-border: #dc2626;
+	--saso-warning: #f59e0b;
+	--saso-warning-bg: #fffbeb;
+	--saso-warning-border: #f59e0b;
+	--saso-neutral: #6b7280;
+	--saso-neutral-bg: #f9fafb;
+	--saso-surface: #ffffff;
+	--saso-surface-alt: #f8fafc;
+	--saso-text: #111827;
+	--saso-text-muted: #6b7280;
+	--saso-border: #e5e7eb;
+	--saso-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	--saso-font-size-base: 16px;
+	--saso-font-size-sm: 0.875rem;
+	--saso-font-size-lg: 1.125rem;
+	--saso-font-size-xl: 1.25rem;
+	--saso-space-xs: 0.25rem;
+	--saso-space-sm: 0.5rem;
+	--saso-space-md: 1rem;
+	--saso-space-lg: 1.5rem;
+	--saso-space-xl: 2rem;
+	--saso-radius: 0.5rem;
+	--saso-radius-sm: 0.25rem;
+	--saso-radius-lg: 0.75rem;
+	--saso-shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+	--saso-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+	--saso-transition: 150ms ease-in-out;
+}
+
+/* ================================================
+   BUTTONS
+   ================================================ */
+.saso-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--saso-space-sm);
+	/* Tall enough to tap with gloves — at least 48px hit area */
+	padding: 0.875rem 1.25rem;
+	min-height: 48px;
+	font-size: var(--saso-font-size-base);
+	font-weight: 600;
+	font-family: inherit;
+	border: 1px solid transparent;
+	border-radius: var(--saso-radius-sm);
+	cursor: pointer;
+	text-decoration: none;
+	transition: all var(--saso-transition);
+	line-height: 1.5;
+}
+.saso-btn:focus-visible {
+	outline: 2px solid var(--saso-primary);
+	outline-offset: 2px;
+}
+.saso-btn--primary {
+	background: var(--saso-primary);
+	color: #fff;
+}
+.saso-btn--primary:hover {
+	background: var(--saso-primary-hover);
+}
+.saso-btn--success {
+	background: var(--saso-success);
+	color: #fff;
+}
+.saso-btn--success:hover {
+	filter: brightness(0.95);
+}
+.saso-btn--outline {
+	background: transparent;
+	border-color: var(--saso-border);
+	color: var(--saso-text);
+}
+.saso-btn--outline:hover {
+	background: var(--saso-surface-alt);
+	border-color: var(--saso-text-muted);
+}
+.saso-btn--lg {
+	/* Primary action buttons (Redeem, Nächster Scan) — even taller */
+	padding: 1.125rem 1.5rem;
+	min-height: 56px;
+	font-size: var(--saso-font-size-lg);
+}
+
+/* ================================================
+   STATUS BANNER
+   ================================================ */
+.saso-status {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--saso-space-md);
+	padding: var(--saso-space-md) var(--saso-space-lg);
+	border-radius: var(--saso-radius);
+	border: 1px solid;
+	margin-bottom: var(--saso-space-md);
+	font-weight: 500;
+}
+.saso-status__icon {
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	font-size: 14px;
+}
+.saso-status__body { flex: 1; }
+.saso-status__title { font-weight: 700; margin-bottom: 2px; }
+.saso-status__detail { font-size: var(--saso-font-size-sm); color: var(--saso-text-muted); }
+
+.saso-status--success { background: var(--saso-success-bg); border-color: var(--saso-success-border); color: #14532d; }
+.saso-status--success .saso-status__icon { background: var(--saso-success); color: #fff; }
+.saso-status--error { background: var(--saso-danger-bg); border-color: var(--saso-danger-border); color: #7f1d1d; }
+.saso-status--error .saso-status__icon { background: var(--saso-danger); color: #fff; }
+.saso-status--warning { background: var(--saso-warning-bg); border-color: var(--saso-warning-border); color: #78350f; }
+.saso-status--warning .saso-status__icon { background: var(--saso-warning); color: #fff; }
+.saso-status--info { background: var(--saso-neutral-bg); border-color: var(--saso-border); color: var(--saso-text); }
+.saso-status--info .saso-status__icon { background: var(--saso-neutral); color: #fff; }
+
+/* ================================================
+   SCANNER
+   ================================================ */
+.saso-scanner {
+	max-width: 640px;
+	margin: 0 auto;
+	font-family: var(--saso-font-family);
+}
+.saso-scanner__header {
+	text-align: center;
+	margin-bottom: var(--saso-space-lg);
+}
+.saso-scanner__title {
+	font-size: var(--saso-font-size-xl);
+	font-weight: 700;
+	margin: 0;
+}
+.saso-scanner__status { min-height: 0; }
+
+.saso-scanner__reader {
+	width: 100%;
+	max-width: 500px;
+	margin: 0 auto;
+	aspect-ratio: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--saso-surface-alt);
+	border-radius: var(--saso-radius);
+	border: 2px dashed var(--saso-border);
+	position: relative;
+	overflow: hidden;
+}
+.saso-scanner__reader--active {
+	border-style: solid;
+	border-color: var(--saso-primary);
+}
+
+.saso-scanner__result { margin-top: var(--saso-space-lg); }
+
+.saso-scanner__ticket-card {
+	border: 2px solid;
+	border-radius: var(--saso-radius);
+	padding: var(--saso-space-lg);
+	margin-bottom: var(--saso-space-md);
+	background: var(--saso-surface);
+}
+.saso-scanner__ticket-card[data-state="valid"] {
+	border-color: var(--saso-success);
+	background: var(--saso-success-bg);
+}
+.saso-scanner__ticket-card[data-state="redeemed"] {
+	border-color: var(--saso-danger);
+	background: var(--saso-danger-bg);
+}
+.saso-scanner__ticket-card[data-state="expired"] {
+	border-color: var(--saso-warning);
+	background: var(--saso-warning-bg);
+}
+
+.saso-scanner__ticket-code {
+	font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
+	font-size: var(--saso-font-size-base);
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	margin-bottom: var(--saso-space-sm);
+	word-break: break-all;
+}
+.saso-scanner__ticket-info {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: var(--saso-space-sm) var(--saso-space-lg);
+	font-size: var(--saso-font-size-sm);
+	margin: 0;
+}
+.saso-scanner__ticket-info dt { font-weight: 600; color: var(--saso-text-muted); }
+.saso-scanner__ticket-info dd { font-weight: 500; margin: 0; }
+
+.saso-scanner__actions {
+	display: flex;
+	gap: var(--saso-space-sm);
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-top: var(--saso-space-md);
+}
+
+.saso-scanner__options {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--saso-space-sm);
+	margin-top: var(--saso-space-md);
+	font-size: var(--saso-font-size-sm);
+	color: var(--saso-text-muted);
+}
+
+.saso-scanner__toggle {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	height: 22px;
+}
+.saso-scanner__toggle input { opacity: 0; width: 0; height: 0; }
+.saso-scanner__toggle-slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background: var(--saso-border);
+	border-radius: 22px;
+	transition: var(--saso-transition);
+}
+.saso-scanner__toggle-slider:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 3px;
+	bottom: 3px;
+	background: #fff;
+	border-radius: 50%;
+	transition: var(--saso-transition);
+	box-shadow: var(--saso-shadow-sm);
+}
+.saso-scanner__toggle input:checked + .saso-scanner__toggle-slider {
+	background: var(--saso-primary);
+}
+.saso-scanner__toggle input:checked + .saso-scanner__toggle-slider:before {
+	transform: translateX(18px);
+}
+
+.saso-scanner__counter {
+	text-align: center;
+	font-size: var(--saso-font-size-sm);
+	color: var(--saso-text-muted);
+	margin-top: var(--saso-space-md);
+	padding: var(--saso-space-sm) var(--saso-space-md);
+	background: var(--saso-surface-alt);
+	border-radius: var(--saso-radius-sm);
+}
+.saso-scanner__counter strong { color: var(--saso-text); }
+
+.saso-scanner__admin-switch {
+	text-align: center;
+	margin-top: var(--saso-space-lg);
+	padding-top: var(--saso-space-md);
+	border-top: 1px solid var(--saso-border);
+}
+.saso-scanner__admin-switch a {
+	font-size: var(--saso-font-size-sm);
+	color: var(--saso-text-muted);
+	text-decoration: none;
+}
+.saso-scanner__admin-switch a:hover {
+	color: var(--saso-primary);
+}
+
+/* ================================================
+   TICKET VIEW
+   ================================================ */
+.saso-ticket {
+	background: var(--saso-surface);
+	color: var(--saso-text);
+	padding: var(--saso-space-xl);
+	max-width: 640px;
+	margin: 0 auto;
+	border: 1px solid var(--saso-border);
+	border-radius: var(--saso-radius-lg);
+	box-shadow: var(--saso-shadow);
+	font-family: var(--saso-font-family);
+	position: relative;
+}
+.saso-ticket__status { margin-bottom: var(--saso-space-lg); }
+.saso-ticket__body { position: relative; }
+.saso-ticket__actions {
+	display: flex;
+	gap: var(--saso-space-sm);
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-top: var(--saso-space-lg);
+	padding-top: var(--saso-space-lg);
+	border-top: 1px solid var(--saso-border);
+}
+.saso-ticket__share {
+	text-align: center;
+	margin-top: var(--saso-space-lg);
+	padding-top: var(--saso-space-lg);
+	border-top: 1px solid var(--saso-border);
+}
+.saso-ticket__share-title {
+	font-size: var(--saso-font-size-sm);
+	font-weight: 600;
+	color: var(--saso-text-muted);
+	margin-bottom: var(--saso-space-sm);
+}
+.saso-ticket__share-links {
+	display: flex;
+	gap: var(--saso-space-sm);
+	justify-content: center;
+}
+.saso-ticket__share-hint {
+	font-size: 0.75rem;
+	color: var(--saso-text-muted);
+	margin-top: var(--saso-space-sm);
+}
+
+/* ================================================
+   SPINNER
+   ================================================ */
+.saso-spinner {
+	display: inline-block;
+	width: 48px;
+	height: 48px;
+}
+.saso-spinner::after {
+	content: " ";
+	display: block;
+	width: 36px;
+	height: 36px;
+	margin: 2px;
+	border-radius: 50%;
+	border: 4px solid var(--saso-primary);
+	border-color: var(--saso-primary) transparent var(--saso-primary) transparent;
+	animation: saso-spin 0.6s linear infinite;
+}
+@keyframes saso-spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+/* ================================================
+   SCANNER BUTTONS — unified style for ticket_scanner.js buttons
+   ================================================ */
+.button-ticket-options {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--saso-space-sm);
+	padding: var(--saso-space-sm) var(--saso-space-lg);
+	font-size: var(--saso-font-size-base);
+	font-weight: 600;
+	font-family: inherit;
+	border: 1px solid var(--saso-border);
+	border-radius: var(--saso-radius-sm);
+	background: var(--saso-surface);
+	color: var(--saso-text);
+	cursor: pointer;
+	text-decoration: none;
+	transition: all var(--saso-transition);
+	line-height: 1.5;
+	margin: var(--saso-space-xs);
+}
+.button-ticket-options:hover {
+	background: var(--saso-surface-alt);
+	border-color: var(--saso-text-muted);
+}
+.button-ticket-options.button-primary {
+	background: var(--saso-primary);
+	border-color: var(--saso-primary);
+	color: #fff;
+}
+.button-ticket-options.button-primary:hover {
+	background: var(--saso-primary-hover);
+	border-color: var(--saso-primary-hover);
+}
+.button-ticket-options:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Inline spinner for buttons (small, sits inside button label) */
+.saso-btn-spinner {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin-left: var(--saso-space-xs);
+	border: 2px solid currentColor;
+	border-right-color: transparent;
+	border-radius: 50%;
+	vertical-align: middle;
+	animation: saso-btn-spin 0.7s linear infinite;
+}
+@keyframes saso-btn-spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+/* ================================================
+   SPINNER — .lds-dual-ring (used by ticket_scanner.js _getSpinnerHTML)
+   Original was in inline <style> in legacy standalone. Must exist in modern too.
+   ================================================ */
+.lds-dual-ring {
+	display: inline-block;
+	width: 64px;
+	height: 64px;
+}
+.lds-dual-ring:after {
+	content: " ";
+	display: block;
+	width: 46px;
+	height: 46px;
+	margin: 1px;
+	border-radius: 50%;
+	border: 5px solid var(--saso-surface);
+	border-color: var(--saso-primary) transparent var(--saso-primary) transparent;
+	animation: lds-dual-ring 0.6s linear infinite;
+}
+@keyframes lds-dual-ring {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+/* ================================================
+   TICKET INFO OVERLAY — fullscreen modal for scanner
+   ================================================ */
+.saso-ticket-overlay {
+	display: none;
+	position: fixed;
+	top: 0; left: 0; right: 0; bottom: 0;
+	z-index: 99999;
+	background: var(--saso-surface);
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+.saso-ticket-overlay--open {
+	display: block;
+}
+.saso-ticket-overlay__header {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--saso-space-md) var(--saso-space-lg);
+	background: var(--saso-surface);
+	border-bottom: 1px solid var(--saso-border);
+	box-shadow: var(--saso-shadow-sm);
+}
+.saso-ticket-overlay__title {
+	font-size: var(--saso-font-size-lg);
+	font-weight: 700;
+	margin: 0;
+}
+.saso-ticket-overlay__close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border: none;
+	background: transparent;
+	font-size: 24px;
+	color: var(--saso-text-muted);
+	cursor: pointer;
+	border-radius: var(--saso-radius-sm);
+	transition: all var(--saso-transition);
+}
+.saso-ticket-overlay__close:hover {
+	background: var(--saso-surface-alt);
+	color: var(--saso-text);
+}
+.saso-ticket-overlay__body {
+	padding: var(--saso-space-lg);
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+/* ================================================
+   STANDALONE PWA SCANNER — body overrides
+   ================================================ */
+body.saso-scanner-standalone {
+	font-family: var(--saso-font-family);
+	font-size: var(--saso-font-size-base);
+	color: var(--saso-text);
+	background: var(--saso-surface-alt);
+	line-height: 1.6;
+	padding: var(--saso-space-lg);
+}
+body.saso-scanner-standalone h3,
+body.saso-scanner-standalone h4,
+body.saso-scanner-standalone h5 {
+	padding-bottom: 0.5em;
+	margin-bottom: 0;
+}
+body.saso-scanner-standalone p {
+	padding: 0;
+	margin: 0;
+	margin-bottom: 1em;
+}
+body.saso-scanner-standalone .saso-ticket p {
+	font-size: initial !important;
+	margin-bottom: 1em !important;
+}
+body.saso-scanner-standalone button {
+	padding: var(--saso-space-sm) var(--saso-space-md);
+	font-size: var(--saso-font-size-base);
+}
+
+/* Scanner wrapper inside standalone */
+.saso-scanner__wrapper {
+	width: 100%;
+	max-width: 640px;
+	margin: 0 auto;
+}
+
+/* Scanner inside standalone — flatten the ticket box: no border/shadow/padding */
+body.saso-scanner-standalone .saso-ticket {
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	padding: 0;
+}
+
+/* Scanner inside standalone — spacing to viewport bottom */
+body.saso-scanner-standalone .saso-scanner {
+	margin-bottom: var(--saso-space-xl);
+}

@@ -354,11 +354,18 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 	/**
 	 * Confirm a seat block (order completed)
 	 *
+	 * Returns false when the hold row is gone. That is the normal case whenever
+	 * payment arrives after the hold expired (cash voucher, bank transfer): the
+	 * row was already removed and there is nothing left to update. `wpdb->update`
+	 * answers such a miss with 0, not with false — reporting that as success is
+	 * what let seats stay green after a paid order (#014837). Callers must treat
+	 * false as "write the sold entry yourself" (see confirmSeatForOrder()).
+	 *
 	 * @param int $blockId Block ID
 	 * @param int $orderId WooCommerce order ID
 	 * @param int $orderItemId Order item ID
 	 * @param int $codeId Ticket code ID
-	 * @return bool Success
+	 * @return bool True when exactly this hold was turned into a sale
 	 */
 	public function confirmBlock(int $blockId, int $orderId, int $orderItemId, int $codeId): bool {
 		global $wpdb;
@@ -381,7 +388,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 			['%d']
 		);
 
-		return $result !== false;
+		return $result !== false && (int) $result > 0;
 	}
 
 	/**
@@ -394,27 +401,53 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 	 * @param int $orderItemId Order item ID
 	 * @param int $codeId Code ID
 	 * @param string|null $eventDate Event date
-	 * @return bool Success
+	 * @return bool True when the seat is sold afterwards — including the case
+	 *              where it already was
 	 */
 	public function confirmSeatForOrder(int $seatId, int $productId, string $sessionId, int $orderId, int $orderItemId, int $codeId, ?string $eventDate = null): bool {
 		global $wpdb;
 
-		$block = $wpdb->get_row(
+		// Every row this seat still has for this product/date, own session first.
+		// The cart session is not a reliable key at completion time: an order set
+		// to completed in wp-admin days later has no session at all, and a hold
+		// that expired in between may have been taken over. What decides is the
+		// seat, not who once held it.
+		$blocks = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$this->getTable($this->table)}
 				WHERE seat_id = %d
 				AND product_id = %d
-				AND session_id = %s
 				AND (event_date = %s OR event_date IS NULL)
-				AND status = %s",
+				AND status IN (%s, %s)
+				ORDER BY (session_id = %s) DESC, id ASC",
 				$seatId,
 				$productId,
-				$sessionId,
 				$eventDate,
-				self::STATUS_BLOCKED
+				self::STATUS_CONFIRMED,
+				self::STATUS_BLOCKED,
+				$sessionId
 			),
 			ARRAY_A
 		);
+
+		$block = null;
+		foreach ($blocks as $row) {
+			// Already sold. Inserting again would put the same seat into the table
+			// twice and break every count built on it. One thing may still be
+			// missing though: the seat can have been sold before the ticket
+			// existed (option seatingConfirmSeatsOnOrderStatus), and without the
+			// ticket number a later cancellation would not find the seat.
+			if ($row['status'] === self::STATUS_CONFIRMED) {
+				$belongsToThisOrder = (int) $row['order_id'] === $orderId || (int) $row['order_id'] === 0;
+				if ($codeId > 0 && (int) $row['code_id'] !== $codeId && $belongsToThisOrder) {
+					return $this->confirmBlock((int) $row['id'], $orderId, $orderItemId, $codeId);
+				}
+				return true;
+			}
+			if ($block === null) {
+				$block = $row;
+			}
+		}
 
 		if (!$block) {
 			// Create confirmed block directly if session block doesn't exist

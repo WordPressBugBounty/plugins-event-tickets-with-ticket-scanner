@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.12
+Stable tag: 3.1.13
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -243,6 +243,10 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.13 - 2026-09-03 =
+* Tweak: Products with variations no longer show the seat selector on the shop overview page. In the overview no variation is chosen, so the selector could not work there anyway - it only pushed the product image out of its card. The "Select options" link leads to the product page, where the full seat selection (and its validation) lives. Simple products keep the quick selector in the overview.
+
 
 = 3.1.12 - 2026-09-02 =
 * Tweak: The premium wizard now says exactly what the "Enable Recommended Settings" button does before you click it: attach tickets as PDF to the purchase email, merge all tickets of an order into one PDF, and raise the attachment limit to 21. Previously the popup only vaguely asked to "enable PDF ticket attachment" and revealed the actual settings only after they had already been changed.

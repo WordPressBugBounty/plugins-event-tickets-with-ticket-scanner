@@ -796,3 +796,49 @@
 		flex-wrap: wrap;
 	}
 }
+
+/* Seat Order dialog (#212) */
+.saso-seat-order-list {
+	margin: 10px 0 0;
+	max-height: 50vh;
+	overflow-y: auto;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+}
+
+.saso-seat-order-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 8px 10px;
+	background: #fff;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.saso-seat-order-item:last-child {
+	border-bottom: none;
+}
+
+.saso-seat-order-item.ui-sortable-helper {
+	border: 1px solid #2271b1;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+}
+
+.saso-seat-order-handle {
+	cursor: move;
+	color: #8c8f94;
+}
+
+.saso-seat-order-label {
+	color: #646970;
+}
+
+/* Action column: keep all icon buttons on one line */
+.saso-actions-col {
+	white-space: nowrap;
+}
+
+.saso-actions-col .button-small {
+	margin-bottom: 0;
+}

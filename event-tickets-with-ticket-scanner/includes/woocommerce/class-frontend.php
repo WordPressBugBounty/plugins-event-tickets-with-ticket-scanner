@@ -1775,6 +1775,15 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			$seating = $this->MAIN->getSeating();
 			$frontendManager = $seating->getFrontendManager();
 
+			// Variable Produkte: In der Shop-Uebersicht steht keine Variante fest,
+			// der "Select options"-Link fuehrt ohnehin auf die Produktseite - und
+			// der Selector hier verdraengt nur das Produktbild aus der Karte
+			// (Ticket 014894). Das Seat-Gate laeuft unabhaengig davon auf der
+			// Produktseite. Nur einfache Produkte bekommen den Loop-Selector.
+			if ($product->is_type('variable')) {
+				return;
+			}
+
 			// Welcher Plan gilt, sagt eine Stelle: der Resolver. In der Shop-Uebersicht
 			// steht keine Variante fest, hier gilt der Plan des Produkts.
 			$plan = $frontendManager->getPlanForProductFrontend($product_id_orig);

@@ -1,0 +1,897 @@
+- generic [ref=f8e1]:
+  - generic [ref=f8e2]:
+    - navigation "Main menu":
+      - link "Skip to main content" [ref=f8e3] [cursor=pointer]:
+        - /url: "#wpbody-content"
+      - link "Skip to toolbar" [ref=f8e4] [cursor=pointer]:
+        - /url: "#wp-toolbar"
+      - list [ref=f8e7]:
+        - listitem [ref=f8e8]:
+          - link "Dashboard" [ref=f8e9] [cursor=pointer]:
+            - /url: index.php
+            - generic [ref=f8e10]: 
+          - list [ref=f8e12]:
+            - listitem [ref=f8e13]:
+              - link "Home" [ref=f8e14] [cursor=pointer]:
+                - /url: index.php
+            - listitem [ref=f8e15]:
+              - link "Updates 4" [ref=f8e16] [cursor=pointer]:
+                - /url: update-core.php
+                - text: Updates
+                - generic [ref=f8e17]: "4"
+        - listitem [ref=f8e18]
+        - listitem [ref=f8e20]:
+          - link "Posts" [ref=f8e21] [cursor=pointer]:
+            - /url: edit.php
+            - generic [ref=f8e22]: 
+          - list [ref=f8e24]:
+            - listitem [ref=f8e25]:
+              - link "All Posts" [ref=f8e26] [cursor=pointer]:
+                - /url: edit.php
+            - listitem [ref=f8e27]:
+              - link "Add Post" [ref=f8e28] [cursor=pointer]:
+                - /url: post-new.php
+            - listitem [ref=f8e29]:
+              - link "Categories" [ref=f8e30] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=category
+            - listitem [ref=f8e31]:
+              - link "Tags" [ref=f8e32] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=post_tag
+        - listitem [ref=f8e33]:
+          - link "Media" [ref=f8e34] [cursor=pointer]:
+            - /url: upload.php
+            - generic [ref=f8e35]: 
+          - list [ref=f8e37]:
+            - listitem [ref=f8e38]:
+              - link "Library" [ref=f8e39] [cursor=pointer]:
+                - /url: upload.php
+            - listitem [ref=f8e40]:
+              - link "Add Media File" [ref=f8e41] [cursor=pointer]:
+                - /url: media-new.php
+        - listitem [ref=f8e42]:
+          - link "Pages" [ref=f8e43] [cursor=pointer]:
+            - /url: edit.php?post_type=page
+            - generic [ref=f8e44]: 
+          - list [ref=f8e46]:
+            - listitem [ref=f8e47]:
+              - link "All Pages" [ref=f8e48] [cursor=pointer]:
+                - /url: edit.php?post_type=page
+            - listitem [ref=f8e49]:
+              - link "Add Page" [ref=f8e50] [cursor=pointer]:
+                - /url: post-new.php?post_type=page
+        - listitem [ref=f8e51]:
+          - link "Comments" [ref=f8e52] [cursor=pointer]:
+            - /url: edit-comments.php
+            - generic [ref=f8e53]: 
+        - listitem [ref=f8e55]:
+          - link "Repair Desk" [ref=f8e56] [cursor=pointer]:
+            - /url: admin.php?page=vollstart-repair-desk
+            - generic [ref=f8e57]: 
+        - listitem [ref=f8e59]
+        - listitem [ref=f8e61]:
+          - link "WooCommerce" [ref=f8e62] [cursor=pointer]:
+            - /url: admin.php?page=wc-admin
+          - list [ref=f8e65]:
+            - listitem [ref=f8e66]:
+              - link "Home 3" [ref=f8e67] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin
+                - text: Home
+                - generic [ref=f8e68]: "3"
+            - listitem [ref=f8e69]:
+              - link "Orders" [ref=f8e70] [cursor=pointer]:
+                - /url: admin.php?page=wc-orders
+            - listitem [ref=f8e71]:
+              - link "Subscriptions" [ref=f8e72] [cursor=pointer]:
+                - /url: admin.php?page=wc-orders--shop_subscription
+            - listitem [ref=f8e73]:
+              - link "Customers" [ref=f8e74] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/customers
+            - listitem [ref=f8e75]:
+              - link "Coupons" [ref=f8e76] [cursor=pointer]:
+                - /url: admin.php?page=coupons-moved
+            - listitem [ref=f8e77]:
+              - link "Geo-Tier Pricing" [ref=f8e78] [cursor=pointer]:
+                - /url: admin.php?page=vollstart-geo-pricing
+            - listitem [ref=f8e79]:
+              - link "Reports" [ref=f8e80] [cursor=pointer]:
+                - /url: admin.php?page=wc-reports
+            - listitem [ref=f8e81]:
+              - link "Settings" [ref=f8e82] [cursor=pointer]:
+                - /url: admin.php?page=wc-settings
+            - listitem [ref=f8e83]:
+              - link "Status" [ref=f8e84] [cursor=pointer]:
+                - /url: admin.php?page=wc-status
+            - listitem [ref=f8e85]:
+              - link "Extensions" [ref=f8e86] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/extensions
+        - listitem [ref=f8e87]:
+          - link "Products" [ref=f8e88] [cursor=pointer]:
+            - /url: edit.php?post_type=product
+            - generic [ref=f8e89]: 
+          - list [ref=f8e91]:
+            - listitem [ref=f8e92]:
+              - link "All Products" [ref=f8e93] [cursor=pointer]:
+                - /url: edit.php?post_type=product
+            - listitem [ref=f8e94]:
+              - link "Add new product" [ref=f8e95] [cursor=pointer]:
+                - /url: post-new.php?post_type=product
+            - listitem [ref=f8e96]:
+              - link "Brands" [ref=f8e97] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=product_brand&post_type=product
+            - listitem [ref=f8e98]:
+              - link "Categories" [ref=f8e99] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=product_cat&post_type=product
+            - listitem [ref=f8e100]:
+              - link "Tags" [ref=f8e101] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=product_tag&post_type=product
+            - listitem [ref=f8e102]:
+              - link "Attributes" [ref=f8e103] [cursor=pointer]:
+                - /url: edit.php?post_type=product&page=product_attributes
+            - listitem [ref=f8e104]:
+              - link "Reviews" [ref=f8e105] [cursor=pointer]:
+                - /url: edit.php?post_type=product&page=product-reviews
+        - listitem [ref=f8e106]:
+          - link "Payments" [ref=f8e107] [cursor=pointer]:
+            - /url: admin.php?page=wc-settings&tab=checkout&from=PAYMENTS_MENU_ITEM
+        - listitem [ref=f8e110]:
+          - link "Analytics" [ref=f8e111] [cursor=pointer]:
+            - /url: admin.php?page=wc-admin&path=/analytics/overview
+            - generic [ref=f8e112]: 
+          - list [ref=f8e114]:
+            - listitem [ref=f8e115]:
+              - link "Overview" [ref=f8e116] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/overview
+            - listitem [ref=f8e117]:
+              - link "Products" [ref=f8e118] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/products
+            - listitem [ref=f8e119]:
+              - link "Revenue" [ref=f8e120] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/revenue
+            - listitem [ref=f8e121]:
+              - link "Orders" [ref=f8e122] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/orders
+            - listitem [ref=f8e123]:
+              - link "Variations" [ref=f8e124] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/variations
+            - listitem [ref=f8e125]:
+              - link "Categories" [ref=f8e126] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/categories
+            - listitem [ref=f8e127]:
+              - link "Coupons" [ref=f8e128] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/coupons
+            - listitem [ref=f8e129]:
+              - link "Taxes" [ref=f8e130] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/taxes
+            - listitem [ref=f8e131]:
+              - link "Downloads" [ref=f8e132] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/downloads
+            - listitem [ref=f8e133]:
+              - link "Stock" [ref=f8e134] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/stock
+            - listitem [ref=f8e135]:
+              - link "Settings" [ref=f8e136] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/settings
+        - listitem [ref=f8e137]:
+          - link "Marketing" [ref=f8e138] [cursor=pointer]:
+            - /url: admin.php?page=wc-admin&path=/marketing
+            - generic [ref=f8e139]: 
+          - list [ref=f8e141]:
+            - listitem [ref=f8e142]:
+              - link "Overview" [ref=f8e143] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/marketing
+            - listitem [ref=f8e144]:
+              - link "Coupons" [ref=f8e145] [cursor=pointer]:
+                - /url: edit.php?post_type=shop_coupon
+        - listitem [ref=f8e146]
+        - listitem [ref=f8e148]:
+          - link "Appearance" [ref=f8e149] [cursor=pointer]:
+            - /url: themes.php
+            - generic [ref=f8e150]: 
+          - list [ref=f8e152]:
+            - listitem [ref=f8e153]:
+              - link "Themes" [ref=f8e154] [cursor=pointer]:
+                - /url: themes.php
+            - listitem [ref=f8e155]:
+              - link "Editor" [ref=f8e156] [cursor=pointer]:
+                - /url: site-editor.php
+            - listitem [ref=f8e157]:
+              - link "Fonts" [ref=f8e158] [cursor=pointer]:
+                - /url: font-library.php
+        - listitem [ref=f8e159]:
+          - link "Plugins 3" [ref=f8e160] [cursor=pointer]:
+            - /url: plugins.php
+            - generic [ref=f8e161]: 
+            - generic [ref=f8e162]:
+              - text: Plugins
+              - generic [ref=f8e163]: "3"
+          - list [ref=f8e164]:
+            - listitem [ref=f8e165]:
+              - link "Installed Plugins" [ref=f8e166] [cursor=pointer]:
+                - /url: plugins.php
+            - listitem [ref=f8e167]:
+              - link "Add Plugin" [ref=f8e168] [cursor=pointer]:
+                - /url: plugin-install.php
+        - listitem [ref=f8e169]:
+          - link "Users" [ref=f8e170] [cursor=pointer]:
+            - /url: users.php
+            - generic [ref=f8e171]: 
+          - list [ref=f8e173]:
+            - listitem [ref=f8e174]:
+              - link "All Users" [ref=f8e175] [cursor=pointer]:
+                - /url: users.php
+            - listitem [ref=f8e176]:
+              - link "Add User" [ref=f8e177] [cursor=pointer]:
+                - /url: user-new.php
+            - listitem [ref=f8e178]:
+              - link "Profile" [ref=f8e179] [cursor=pointer]:
+                - /url: profile.php
+        - listitem [ref=f8e180]:
+          - link "Tools" [ref=f8e181] [cursor=pointer]:
+            - /url: tools.php
+            - generic [ref=f8e182]: 
+          - list [ref=f8e184]:
+            - listitem [ref=f8e185]:
+              - link "Available Tools" [ref=f8e186] [cursor=pointer]:
+                - /url: tools.php
+            - listitem [ref=f8e187]:
+              - link "Import" [ref=f8e188] [cursor=pointer]:
+                - /url: import.php
+            - listitem [ref=f8e189]:
+              - link "Export" [ref=f8e190] [cursor=pointer]:
+                - /url: export.php
+            - listitem [ref=f8e191]:
+              - link "Site Health" [ref=f8e192] [cursor=pointer]:
+                - /url: site-health.php
+            - listitem [ref=f8e193]:
+              - link "Export Personal Data" [ref=f8e194] [cursor=pointer]:
+                - /url: export-personal-data.php
+            - listitem [ref=f8e195]:
+              - link "Erase Personal Data" [ref=f8e196] [cursor=pointer]:
+                - /url: erase-personal-data.php
+            - listitem [ref=f8e197]:
+              - link "Scheduled Actions" [ref=f8e198] [cursor=pointer]:
+                - /url: tools.php?page=action-scheduler
+            - listitem [ref=f8e199]:
+              - link "Theme File Editor" [ref=f8e200] [cursor=pointer]:
+                - /url: theme-editor.php
+            - listitem [ref=f8e201]:
+              - link "Plugin File Editor" [ref=f8e202] [cursor=pointer]:
+                - /url: plugin-editor.php
+        - listitem [ref=f8e203]:
+          - link "Settings" [ref=f8e204] [cursor=pointer]:
+            - /url: options-general.php
+            - generic [ref=f8e205]: 
+          - list [ref=f8e207]:
+            - listitem [ref=f8e208]:
+              - link "General" [ref=f8e209] [cursor=pointer]:
+                - /url: options-general.php
+            - listitem [ref=f8e210]:
+              - link "Connectors" [ref=f8e211] [cursor=pointer]:
+                - /url: options-connectors.php
+            - listitem [ref=f8e212]:
+              - link "Writing" [ref=f8e213] [cursor=pointer]:
+                - /url: options-writing.php
+            - listitem [ref=f8e214]:
+              - link "Reading" [ref=f8e215] [cursor=pointer]:
+                - /url: options-reading.php
+            - listitem [ref=f8e216]:
+              - link "Discussion" [ref=f8e217] [cursor=pointer]:
+                - /url: options-discussion.php
+            - listitem [ref=f8e218]:
+              - link "Media" [ref=f8e219] [cursor=pointer]:
+                - /url: options-media.php
+            - listitem [ref=f8e220]:
+              - link "Permalinks" [ref=f8e221] [cursor=pointer]:
+                - /url: options-permalink.php
+            - listitem [ref=f8e222]:
+              - link "Privacy" [ref=f8e223] [cursor=pointer]:
+                - /url: options-privacy.php
+        - listitem [ref=f8e224]
+        - listitem [ref=f8e226]:
+          - link "Event Tickets" [ref=f8e227] [cursor=pointer]:
+            - /url: admin.php?page=event-tickets-with-ticket-scanner
+          - list [ref=f8e230]:
+            - listitem [ref=f8e231]:
+              - link "Event Tickets" [ref=f8e232] [cursor=pointer]:
+                - /url: admin.php?page=event-tickets-with-ticket-scanner
+            - listitem [ref=f8e233]:
+              - link "★ More Plugins" [ref=f8e234] [cursor=pointer]:
+                - /url: admin.php?page=event-tickets-with-ticket-scanner-more-plugins
+        - listitem [ref=f8e235]:
+          - link "Serial Codes Validator" [ref=f8e236] [cursor=pointer]:
+            - /url: admin.php?page=sngmbh-serialcodes-validator
+            - generic [ref=f8e237]: 
+          - list [ref=f8e239]:
+            - listitem [ref=f8e240]:
+              - link "Serial Codes Validator" [ref=f8e241] [cursor=pointer]:
+                - /url: admin.php?page=sngmbh-serialcodes-validator
+            - listitem [ref=f8e242]:
+              - link "★ More Plugins" [ref=f8e243] [cursor=pointer]:
+                - /url: admin.php?page=sngmbh-serialcodes-validator-more-plugins
+        - listitem [ref=f8e244]:
+          - button "Collapse Main menu" [expanded] [ref=f8e245] [cursor=pointer]:
+            - generic [ref=f8e247]: Collapse Menu
+    - generic [ref=f8e248]:
+      - generic [ref=f8e249]:
+        - navigation "Toolbar":
+          - menu:
+            - group [ref=f8e250]:
+              - menuitem "About WordPress" [ref=f8e251] [cursor=pointer]
+            - group [ref=f8e254]:
+              - menuitem "Agent Test WP" [ref=f8e255] [cursor=pointer]
+            - group [ref=f8e256]:
+              - menuitem "Live" [ref=f8e257] [cursor=pointer]
+            - group [ref=f8e258]:
+              - menuitem "4 updates available" [ref=f8e259] [cursor=pointer]:
+                - generic [ref=f8e261]: "4"
+            - group [ref=f8e263]:
+              - menuitem "Ctrl+K Open command palette" [ref=f8e264] [cursor=pointer]:
+                - generic [ref=f8e266]:
+                  - text: Ctrl+K
+                  - generic [ref=f8e267]: Open command palette
+            - group [ref=f8e268]:
+              - menuitem "0 Comments in moderation" [ref=f8e269] [cursor=pointer]:
+                - generic [ref=f8e271]: "0"
+            - group [ref=f8e273]:
+              - menuitem "New" [ref=f8e274] [cursor=pointer]
+            - group [ref=f8e277]:
+              - menuitem "View product" [ref=f8e278] [cursor=pointer]
+          - menu [ref=f8e279]:
+            - group [ref=f8e280]:
+              - menuitem "Howdy, agent" [ref=f8e281] [cursor=pointer]
+      - generic [ref=f8e283]:
+        - generic [ref=f8e284]:
+          - heading "Store Activity" [level=2] [ref=f8e285]
+          - complementary "Store Activity" [ref=f8e286]:
+            - tablist [ref=f8e287]:
+              - tab "Activity" [ref=f8e288] [cursor=pointer]:
+                - generic [ref=f8e615]: unread activity
+              - tab "Finish setup" [ref=f8e616] [cursor=pointer]
+        - button "Screen options" [ref=f8e292] [cursor=pointer]
+        - button "Help" [ref=f8e295] [cursor=pointer]
+      - main [ref=f8e299]:
+        - generic [ref=f8e300]:
+          - generic:
+            - button "Screen Options" [ref=f8e302] [cursor=pointer]
+            - button "Help" [ref=f8e304] [cursor=pointer]
+          - generic [ref=f8e307]:
+            - heading "Edit product" [level=1] [ref=f8e308]
+            - link "Add new product" [ref=f8e309] [cursor=pointer]:
+              - /url: https://verwicklung.de/testing/wordpress/wp-admin/post-new.php?post_type=product
+            - paragraph [ref=f8e311]:
+              - strong [ref=f8e312]: "Action Scheduler:"
+              - text: "30"
+              - link "past-due actions" [ref=f8e313] [cursor=pointer]:
+                - /url: https://verwicklung.de/testing/wordpress/wp-admin/tools.php?page=action-scheduler&status=past-due&order=asc
+              - text: found; something may be wrong.
+              - link "Read documentation »" [ref=f8e314] [cursor=pointer]:
+                - /url: https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do
+            - generic [ref=f8e316]:
+              - generic:
+                - generic [ref=f8e317]:
+                  - generic [ref=f8e318]:
+                    - generic [ref=f8e319]:
+                      - generic: Product name
+                      - textbox "Product name" [ref=f8e320]: Ticket Scanner (Hardware)
+                      - link "Skip to Editor" [ref=f8e321] [cursor=pointer]:
+                        - /url: "#content"
+                    - generic [ref=f8e323]:
+                      - strong [ref=f8e324]: "Permalink:"
+                      - link "https://verwicklung.de/testing/wordpress/?product=ticket-scanner-hardware" [ref=f8e325] [cursor=pointer]:
+                        - /url: https://verwicklung.de/testing/wordpress/?product=ticket-scanner-hardware
+                      - link "Change Permalink Structure" [ref=f8e327] [cursor=pointer]:
+                        - /url: options-permalink.php
+                  - generic [ref=f8e328]:
+                    - heading "Product description" [level=2] [ref=f8e329]
+                    - generic [ref=f8e331]:
+                      - generic [ref=f8e332]:
+                        - generic [ref=f8e333]:
+                          - button "Add Media" [ref=f8e334] [cursor=pointer]
+                          - generic "Describe this product. What makes it unique? What are its most important features?" [ref=f8e336]: 
+                        - generic [ref=f8e337]:
+                          - button "Visual" [pressed] [ref=f8e338] [cursor=pointer]
+                          - button "Code" [ref=f8e339] [cursor=pointer]
+                      - application [ref=f8e619]:
+                        - generic [ref=f8e620]:
+                          - group [ref=f8e621]:
+                            - toolbar [ref=f8e623]:
+                              - group [ref=f8e625]:
+                                - generic [ref=f8e626]:
+                                  - button [ref=f8e627] [cursor=pointer]:
+                                    - button "Paragraph" [ref=f8e628]
+                                  - button "Bold (Ctrl+B)" [ref=f8e631] [cursor=pointer]:
+                                    - button [ref=f8e632]
+                                  - button "Italic (Ctrl+I)" [ref=f8e634] [cursor=pointer]:
+                                    - button [ref=f8e635]
+                                  - button "Bulleted list (Shift+Alt+U)" [ref=f8e637] [cursor=pointer]:
+                                    - button [ref=f8e638]
+                                  - button "Numbered list (Shift+Alt+O)" [ref=f8e640] [cursor=pointer]:
+                                    - button [ref=f8e641]
+                                  - button "Blockquote (Shift+Alt+Q)" [ref=f8e643] [cursor=pointer]:
+                                    - button [ref=f8e644]
+                                  - button "Align left (Shift+Alt+L)" [ref=f8e646] [cursor=pointer]:
+                                    - button [ref=f8e647]
+                                  - button "Align center (Shift+Alt+C)" [ref=f8e649] [cursor=pointer]:
+                                    - button [ref=f8e650]
+                                  - button "Align right (Shift+Alt+R)" [ref=f8e652] [cursor=pointer]:
+                                    - button [ref=f8e653]
+                                  - button "Insert/edit link (Ctrl+K)" [ref=f8e655] [cursor=pointer]:
+                                    - button [ref=f8e656]
+                                  - button "Insert Read More tag (Shift+Alt+T)" [ref=f8e658] [cursor=pointer]:
+                                    - button [ref=f8e659]
+                                  - button "Toolbar Toggle (Shift+Alt+Z)" [ref=f8e661] [cursor=pointer]:
+                                    - button [ref=f8e662]
+                                  - button "Distraction-free writing mode (Shift+Alt+W)" [ref=f8e664] [cursor=pointer]:
+                                    - button [ref=f8e665]
+                          - group [ref=f8e667]:
+                            - iframe [ref=f8e668]:
+                              - paragraph [ref=f9e2]
+                    - text: "Word count: 0 Last edited on July 13, 2026 at 9:38 am"
+                - generic [ref=f8e342]:
+                  - generic [ref=f8e343]:
+                    - generic [ref=f8e344]:
+                      - heading "Serial Code Basic" [level=2] [ref=f8e345]
+                      - generic [ref=f8e346]:
+                        - button "Move up" [disabled] [ref=f8e347]
+                        - button "Move down" [ref=f8e350] [cursor=pointer]
+                        - 'button "Toggle panel: Serial Code Basic" [expanded] [ref=f8e353] [cursor=pointer]'
+                    - generic [ref=f8e356]:
+                      - paragraph [ref=f8e357]: Display all Serial Infos
+                      - button "Print Serial Infos" [disabled] [ref=f8e358]
+                  - generic [ref=f8e359]:
+                    - generic [ref=f8e360]:
+                      - heading "Publish" [level=2] [ref=f8e361]
+                      - generic [ref=f8e362]:
+                        - button "Move up" [ref=f8e363] [cursor=pointer]
+                        - button "Move down" [ref=f8e366] [cursor=pointer]
+                        - 'button "Toggle panel: Publish" [expanded] [ref=f8e369] [cursor=pointer]'
+                    - generic [ref=f8e373]:
+                      - generic [ref=f8e374]:
+                        - link "Preview Changes (opens in a new tab)" [ref=f8e376] [cursor=pointer]:
+                          - /url: https://verwicklung.de/testing/wordpress/?product=ticket-scanner-hardware&preview=true
+                          - text: Preview Changes
+                          - generic [ref=f8e377]: (opens in a new tab)
+                        - generic [ref=f8e378]:
+                          - generic [ref=f8e379]:
+                            - text: "Status: Published"
+                            - button "Edit status" [ref=f8e380] [cursor=pointer]: Edit
+                          - generic [ref=f8e382]:
+                            - text: "Visibility: Public"
+                            - button "Edit visibility" [ref=f8e383] [cursor=pointer]: Edit
+                          - generic [ref=f8e385]:
+                            - generic [ref=f8e386]: "Published on: Jul 13, 2026 at 09:38"
+                            - button "Edit date and time" [ref=f8e387] [cursor=pointer]: Edit
+                          - generic [ref=f8e389]:
+                            - text: "Catalog visibility:"
+                            - strong [ref=f8e390]: Shop and search results
+                            - link "Edit" [ref=f8e391] [cursor=pointer]:
+                              - /url: "#catalog-visibility"
+                      - generic [ref=f8e392]:
+                        - link "Copy to a new draft" [ref=f8e394] [cursor=pointer]:
+                          - /url: https://verwicklung.de/testing/wordpress/wp-admin/edit.php?post_type=product&action=duplicate_product&post=16&_wpnonce=c922833307
+                        - link "Move to Trash" [ref=f8e396] [cursor=pointer]:
+                          - /url: https://verwicklung.de/testing/wordpress/wp-admin/post.php?post=16&action=trash&_wpnonce=2d5d10b7d6
+                        - button "Update" [ref=f8e398] [cursor=pointer]
+                  - generic [ref=f8e399]:
+                    - generic [ref=f8e400]:
+                      - heading "Product image" [level=2] [ref=f8e401]
+                      - generic [ref=f8e402]:
+                        - button "Move up" [ref=f8e403] [cursor=pointer]
+                        - button "Move down" [ref=f8e406] [cursor=pointer]
+                        - 'button "Toggle panel: Product image" [expanded] [ref=f8e409] [cursor=pointer]'
+                    - paragraph [ref=f8e413]:
+                      - button "Set product image" [ref=f8e414] [cursor=pointer]
+                      - 'generic "For best results, upload JPEG or PNG files that are 1000 by 1000 pixels or larger. Maximum upload file size: 8 MB." [ref=f8e415]': 
+                  - generic [ref=f8e416]:
+                    - generic [ref=f8e417]:
+                      - heading "Product gallery" [level=2] [ref=f8e418]
+                      - generic [ref=f8e419]:
+                        - button "Move up" [ref=f8e420] [cursor=pointer]
+                        - button "Move down" [ref=f8e423] [cursor=pointer]
+                        - 'button "Toggle panel: Product gallery" [expanded] [ref=f8e426] [cursor=pointer]'
+                    - generic [ref=f8e429]:
+                      - generic:
+                        - list
+                      - paragraph [ref=f8e430]:
+                        - link "Add product gallery images" [ref=f8e431] [cursor=pointer]:
+                          - /url: "#"
+                        - 'generic "For best results, upload JPEG or PNG files that are 1000 by 1000 pixels or larger. Maximum upload file size: 8 MB." [ref=f8e432]': 
+                  - generic [ref=f8e433]:
+                    - generic [ref=f8e434]:
+                      - heading "Product categories" [level=2] [ref=f8e435]
+                      - generic [ref=f8e436]:
+                        - button "Move up" [ref=f8e437] [cursor=pointer]
+                        - button "Move down" [ref=f8e440] [cursor=pointer]
+                        - 'button "Toggle panel: Product categories" [expanded] [ref=f8e443] [cursor=pointer]'
+                    - generic [ref=f8e447]:
+                      - tablist [ref=f8e448]:
+                        - listitem [ref=f8e449]:
+                          - tab "All categories" [selected] [ref=f8e450] [cursor=pointer]
+                        - listitem [ref=f8e451]:
+                          - tab "Most Used" [ref=f8e452] [cursor=pointer]
+                      - tabpanel [ref=f8e453]:
+                        - list [ref=f8e454]:
+                          - listitem [ref=f8e455]:
+                            - generic [ref=f8e456]:
+                              - checkbox "Hardware" [checked] [ref=f8e457] [cursor=pointer]
+                              - text: Hardware
+                          - listitem [ref=f8e458]:
+                            - generic [ref=f8e459]:
+                              - checkbox "Uncategorized" [ref=f8e460] [cursor=pointer]
+                              - text: Uncategorized
+                      - link "+ Add new category" [ref=f8e462] [cursor=pointer]:
+                        - /url: "#product_cat-add"
+                  - generic [ref=f8e463]:
+                    - generic [ref=f8e464]:
+                      - heading "Product tags" [level=2] [ref=f8e465]
+                      - generic [ref=f8e466]:
+                        - button "Move up" [ref=f8e467] [cursor=pointer]
+                        - button "Move down" [ref=f8e470] [cursor=pointer]
+                        - 'button "Toggle panel: Product tags" [expanded] [ref=f8e473] [cursor=pointer]'
+                    - generic [ref=f8e476]:
+                      - generic [ref=f8e477]:
+                        - generic [ref=f8e478]:
+                          - generic [ref=f8e479]:
+                            - generic [ref=f8e480]: Add new tag
+                            - combobox "Add new tag" [ref=f8e481]
+                            - button "Add" [ref=f8e482] [cursor=pointer]
+                          - paragraph [ref=f8e483]: Separate tags with commas
+                        - list
+                      - paragraph [ref=f8e484]:
+                        - button "Choose from the most used tags" [ref=f8e485] [cursor=pointer]
+                  - generic [ref=f8e486]:
+                    - generic [ref=f8e487]:
+                      - heading "Brands" [level=2] [ref=f8e488]
+                      - generic [ref=f8e489]:
+                        - button "Move up" [ref=f8e490] [cursor=pointer]
+                        - button "Move down" [ref=f8e493] [cursor=pointer]
+                        - 'button "Toggle panel: Brands" [expanded] [ref=f8e496] [cursor=pointer]'
+                    - generic [ref=f8e500]:
+                      - tablist [ref=f8e501]:
+                        - listitem [ref=f8e502]:
+                          - tab "All Brands" [selected] [ref=f8e503] [cursor=pointer]
+                        - listitem [ref=f8e504]:
+                          - tab "Most Used" [ref=f8e505] [cursor=pointer]
+                      - tabpanel [ref=f8e506]:
+                        - list
+                      - link "+ Add New Brand" [ref=f8e508] [cursor=pointer]:
+                        - /url: "#product_brand-add"
+                - generic [ref=f8e510]:
+                  - generic [ref=f8e511]:
+                    - generic [ref=f8e512]:
+                      - heading "Product data — Simple product Simple – covers the vast majority of any products you may sell. Simple products are shipped and have no options. For example, a book. Virtual Downloadable" [level=2] [ref=f8e513]:
+                        - text: Product data
+                        - generic [ref=f8e514]:
+                          - text: —
+                          - generic [ref=f8e515]:
+                            - combobox "Simple – covers the vast majority of any products you may sell. Simple products are shipped and have no options. For example, a book." [ref=f8e516] [cursor=pointer]:
+                              - option "Simple product" [selected]
+                              - option "Grouped product"
+                              - option "External/Affiliate product"
+                              - option "Variable product"
+                            - generic "Simple – covers the vast majority of any products you may sell. Simple products are shipped and have no options. For example, a book." [ref=f8e517]: 
+                          - generic [ref=f8e518]:
+                            - checkbox "Virtual" [ref=f8e519] [cursor=pointer]
+                            - text: Virtual
+                          - generic [ref=f8e520]:
+                            - checkbox "Downloadable" [ref=f8e521] [cursor=pointer]
+                            - text: Downloadable
+                      - generic [ref=f8e522]:
+                        - button "Move up" [ref=f8e523] [cursor=pointer]
+                        - button "Move down" [ref=f8e526] [cursor=pointer]
+                        - 'button "Toggle panel: Product data" [expanded] [ref=f8e529] [cursor=pointer]'
+                    - generic [ref=f8e533]:
+                      - list [ref=f8e534]:
+                        - listitem [ref=f8e535]:
+                          - link "General" [ref=f8e536] [cursor=pointer]:
+                            - /url: "#general_product_data"
+                        - listitem [ref=f8e537]:
+                          - link "Inventory" [ref=f8e538] [cursor=pointer]:
+                            - /url: "#inventory_product_data"
+                        - listitem [ref=f8e539]:
+                          - link "Shipping" [ref=f8e540] [cursor=pointer]:
+                            - /url: "#shipping_product_data"
+                        - listitem [ref=f8e541]:
+                          - link "Linked Products" [ref=f8e542] [cursor=pointer]:
+                            - /url: "#linked_product_data"
+                        - listitem [ref=f8e543]:
+                          - link "Attributes" [ref=f8e544] [cursor=pointer]:
+                            - /url: "#product_attributes"
+                        - text: 
+                        - listitem [ref=f8e545]:
+                          - link "Advanced" [ref=f8e546] [cursor=pointer]:
+                            - /url: "#advanced_product_data"
+                        - listitem [ref=f8e547]:
+                          - link "Subscriptions" [ref=f8e548] [cursor=pointer]:
+                            - /url: "#wcsatt_data"
+                        - listitem [ref=f8e549]:
+                          - link "Get more options" [ref=f8e550] [cursor=pointer]:
+                            - /url: "#marketplace_suggestions"
+                        - listitem [ref=f8e551]:
+                          - link "Serial Codes" [ref=f8e552] [cursor=pointer]:
+                            - /url: "#sngmbh_woo_product_data"
+                        - listitem [ref=f8e553]:
+                          - link "Event Tickets" [active] [ref=f8e554] [cursor=pointer]:
+                            - /url: "#saso_eventtickets_wc_product_data"
+                      - text:                            
+                      - generic [ref=f8e669]:
+                        - paragraph [ref=f8e670]:
+                          - text: With the free basic plugin, you can only create up to 50 tickets!Make sure your are not selling more tickets :)Here you can purchase the
+                          - link "premium plugin" [ref=f8e671] [cursor=pointer]:
+                            - /url: https://vollstart.com/event-tickets-with-ticket-scanner/
+                          - text: for unlimited tickets.
+                        - generic [ref=f8e672]:
+                          - paragraph [ref=f8e673]:
+                            - generic [ref=f8e674]: Is a ticket sales
+                            - checkbox "Is a ticket sales" [ref=f8e675] [cursor=pointer]
+                            - text: Activate this, to generate a ticket number
+                          - paragraph [ref=f8e676]: "Important: You need to choose a list below, to activate the ticket sale for this product."
+                          - paragraph [ref=f8e677]:
+                            - generic [ref=f8e678]: List
+                            - generic "Choose a list to activate auto-generating ticket numbers/codes for each sold item" [ref=f8e679]: 
+                            - combobox "List" [ref=f8e680] [cursor=pointer]:
+                              - option "Deactivate auto-generating ticket"
+                              - option "Ticket list" [selected]
+                        - generic [ref=f8e681]:
+                          - paragraph [ref=f8e682]:
+                            - generic [ref=f8e683]: Required ticket / access code
+                            - generic "Buyers must enter a valid, unused code or ticket number from this list before they can buy this product. Use it for presale/access codes, or to require a ticket from an earlier event." [ref=f8e684]: 
+                            - combobox "Required ticket / access code" [ref=f8e685] [cursor=pointer]:
+                              - option "— No restriction —" [selected]
+                              - option "Ticket list"
+                          - paragraph [ref=f8e686]:
+                            - generic [ref=f8e687]: Allow the same code for several purchases
+                            - generic "If off (default), each code unlocks exactly one purchase. If on, the same code stays valid for further purchases." [ref=f8e688]: 
+                            - checkbox "Allow the same code for several purchases" [ref=f8e689] [cursor=pointer]
+                        - paragraph [ref=f8e691]:
+                          - generic [ref=f8e692]: Require CVV at the ticket scanner
+                          - checkbox "Require CVV at the ticket scanner" [ref=f8e693] [cursor=pointer]
+                          - text: If active, a CVV is auto-generated for every new ticket on this product, and the ticket scanner asks the customer to enter the CVV before redeem. The CVV is delivered via the order email and customer profile, never embedded in the QR code. Best for private/exclusive events where a lost ticket card alone must not grant entry.
+                        - paragraph [ref=f8e695]:
+                          - generic [ref=f8e696]: Seating Plan
+                          - generic [ref=f8e697]:
+                            - text: No seating plans available.
+                            - link "Create one first" [ref=f8e698] [cursor=pointer]:
+                              - /url: https://verwicklung.de/testing/wordpress/wp-admin/admin.php?page=event-tickets-with-ticket-scanner&tab=seating
+                        - generic [ref=f8e699]:
+                          - paragraph [ref=f8e700]:
+                            - generic [ref=f8e701]: Location
+                            - generic "This will be also in the cal entry file." [ref=f8e702]: 
+                            - textbox "Location" [ref=f8e703]:
+                              - /placeholder: ""
+                          - paragraph [ref=f8e704]:
+                            - generic [ref=f8e705]: Start date event
+                            - generic "Set this to have this printed on the ticket and prevent too early redeemed tickets. Tickets can be redeemed from that day on." [ref=f8e706]: 
+                            - textbox "Start date event" [ref=f8e707]:
+                              - /placeholder: ""
+                          - paragraph [ref=f8e708]:
+                            - generic [ref=f8e709]: Start time
+                            - generic "Set this to have this printed on the ticket." [ref=f8e710]: 
+                            - textbox "Start time" [ref=f8e711]:
+                              - /placeholder: ""
+                          - paragraph [ref=f8e712]:
+                            - generic [ref=f8e713]: End date event
+                            - generic "Set this to have this printed on the ticket and prevent later the ticket to be still valid. Tickets cannot be redeemed after that day." [ref=f8e714]: 
+                            - textbox "End date event" [ref=f8e715]:
+                              - /placeholder: ""
+                          - paragraph [ref=f8e716]:
+                            - generic [ref=f8e717]: End time
+                            - generic "Set this to have this printed on the ticket." [ref=f8e718]: 
+                            - textbox "End time" [ref=f8e719]:
+                              - /placeholder: ""
+                          - paragraph [ref=f8e720]:
+                            - generic [ref=f8e721]: Date is for all variants
+                            - checkbox "Date is for all variants" [ref=f8e722] [cursor=pointer]
+                            - text: Activate this, to have the entered date printed on all product variants. No effect on simple products.
+                        - generic [ref=f8e723]:
+                          - paragraph [ref=f8e724]:
+                            - generic [ref=f8e725]: Customer can choose the day
+                            - checkbox "Customer can choose the day" [ref=f8e726] [cursor=pointer]
+                            - text: Activate this, to allow your customer to choose a date. If this option is active it will use the start and end date as limits, if provided. And use only the start and end time setting. If the start and end time is not set, then the entrance is allowed from 00:00 till 23:59.
+                          - paragraph [ref=f8e727]:
+                            - generic [ref=f8e728]: Only one date picker
+                            - checkbox "Only one date picker" [ref=f8e729] [cursor=pointer]
+                            - text: If this option is active, then only one date is allowed per purchase of this product. If your customer buys 2 or more of this ticket, than only one date picker will be shown for all the tickets. The default is to display for each product in the cart one separated date picker.
+                          - paragraph [ref=f8e730]:
+                            - generic [ref=f8e731]: Choose which days to exclude
+                            - generic "To select more than one, hold down the CTRL key. The selected days cannot be choosen by your customer in date chooser." [ref=f8e732]: 
+                            - listbox "Choose which days to exclude" [ref=f8e733] [cursor=pointer]:
+                              - option "Monday" [ref=f8e734]
+                              - option "Tuesday" [ref=f8e735]
+                              - option "Wednesday" [ref=f8e736]
+                              - option "Thursday" [ref=f8e737]
+                              - option "Friday" [ref=f8e738]
+                              - option "Saturday" [ref=f8e739]
+                              - option "Sunday" [ref=f8e740]
+                          - paragraph [ref=f8e741]:
+                            - generic [ref=f8e742]: Offset days for start date
+                            - generic "This will set how many days to skip before you allow your customer to choose a date. 0 means starting from the same day, 1 means from tomorrow on and so on. If you set a start date, the the start date will be considered as a minimum starting date." [ref=f8e743]: 
+                            - spinbutton "Offset days for start date" [ref=f8e744]: "0"
+                          - paragraph [ref=f8e745]:
+                            - generic [ref=f8e746]: Offset days for end date
+                            - generic "This will set how many days in the future do you allow your customer to choose a date. 0 unlimited into the future, 1 means until tomorrow on and so on. If a end date is set, then this option is ignored and the end date is used." [ref=f8e747]: 
+                            - spinbutton "Offset days for end date" [ref=f8e748]: "0"
+                          - paragraph [ref=f8e749]:
+                            - generic [ref=f8e750]: Same-day cutoff time
+                            - generic "If the current time is past this value, today will no longer be selectable. Only applies when \"Offset days for start date\" is 0. Leave empty to disable." [ref=f8e751]: 
+                            - textbox "Same-day cutoff time" [ref=f8e752]:
+                              - /placeholder: 19:00
+                          - paragraph [ref=f8e753]:
+                            - generic [ref=f8e754]: Label for the date picker
+                            - generic "This is how your customer understand what value should be choosen." [ref=f8e755]: 
+                            - textbox "Label for the date picker" [ref=f8e756]:
+                              - /placeholder: "Please choose a day #{count}:"
+                        - generic [ref=f8e757]:
+                          - paragraph [ref=f8e758]:
+                            - generic [ref=f8e759]: Max. redeem operations
+                            - generic "How often do you allow to redeem the ticket? If you set it to 0, you can redeem the ticket unlimited." [ref=f8e760]: 
+                            - spinbutton "Max. redeem operations" [ref=f8e761]: "1"
+                          - paragraph [ref=f8e762]:
+                            - generic [ref=f8e763]: Max. redeems per day
+                            - generic "How often can the ticket be redeemed per day? 0 = unlimited (only total max applies)." [ref=f8e764]: 
+                            - spinbutton "Max. redeems per day" [ref=f8e765]: "0"
+                          - paragraph [ref=f8e766]:
+                            - generic [ref=f8e767]: Print this on the ticket
+                            - generic "This optional information will be displayed on the ticket detail page." [ref=f8e768]: 
+                            - textbox "Print this on the ticket" [ref=f8e769]:
+                              - /placeholder: ""
+                        - paragraph [ref=f8e771]:
+                          - generic [ref=f8e772]: Amount of ticket numbers per item sale
+                          - generic "How many ticket number to assign if one product is sold?" [ref=f8e773]: 
+                          - spinbutton "Amount of ticket numbers per item sale" [ref=f8e774]: "1"
+                        - generic [ref=f8e775]:
+                          - paragraph [ref=f8e776]:
+                            - generic [ref=f8e777]: Request a value for each ticket
+                            - checkbox "Request a value for each ticket" [ref=f8e778] [cursor=pointer]
+                            - text: Activate this, so that your customer can add a value for each ticket. This could be the name or any other value, defined by you. This value will be printed on the ticket. The value is limited to max 140 letters.
+                          - paragraph [ref=f8e779]:
+                            - generic [ref=f8e780]: Label for the value
+                            - generic "This is how your customer understand what value should be entered." [ref=f8e781]: 
+                            - textbox "Label for the value" [ref=f8e782]:
+                              - /placeholder: "Name for the ticket #{count}:"
+                          - paragraph [ref=f8e783]:
+                            - generic [ref=f8e784]: The value for each ticket is mandatory
+                            - checkbox "The value for each ticket is mandatory" [ref=f8e785] [cursor=pointer]
+                            - text: Activate this, so that your customer has to enter a value.
+                          - separator [ref=f8e786]
+                          - paragraph [ref=f8e787]:
+                            - generic [ref=f8e788]: Request a value for each ticket from dropdown
+                            - checkbox "Request a value for each ticket from dropdown" [ref=f8e789] [cursor=pointer]
+                            - text: Activate this, so that your customer can choose a value for each ticket.
+                          - paragraph [ref=f8e790]:
+                            - generic [ref=f8e791]: Label for the value
+                            - generic "This is how your customer understand what value should be choosen." [ref=f8e792]: 
+                            - textbox "Label for the value" [ref=f8e793]:
+                              - /placeholder: "Please choose a value #{count}:"
+                          - paragraph [ref=f8e794]:
+                            - generic [ref=f8e795]: Values for the dropdown
+                            - generic "Enter per line a key value pair like key|value1. If only key is given per line, then the key will be also the value." [ref=f8e796]: 
+                            - textbox "Values for the dropdown" [ref=f8e797]:
+                              - /placeholder: "|Please choose\nkey1|value1\nkey2|value2\nvalue3"
+                          - paragraph [ref=f8e798]:
+                            - generic [ref=f8e799]: Enter default key for the dropdown (optional)
+                            - generic "If not empty, the system will add the value with this key as the default chosen value." [ref=f8e800]: 
+                            - textbox "Enter default key for the dropdown (optional)" [ref=f8e801]:
+                              - /placeholder: key1
+                          - paragraph [ref=f8e802]:
+                            - generic [ref=f8e803]: The value for each ticket is mandatory
+                            - checkbox "The value for each ticket is mandatory" [ref=f8e804] [cursor=pointer]
+                            - text: Activate this, so that your customer has to choose a value.
+                        - generic [ref=f8e805]:
+                          - paragraph [ref=f8e806]:
+                            - generic [ref=f8e807]: Use format settings
+                            - checkbox "Use format settings" [ref=f8e808] [cursor=pointer]
+                            - text: If active, then the format below will be used to generate ticket numbers during a purchase of this product.
+                          - generic [ref=f8e809]:
+                            - text: The ticket number format settings.This will override an existing and active global "serial code formatter pattern for new sales" and also any format settings from the group.
+                            - generic [ref=f8e810]:
+                              - generic [ref=f8e811]:
+                                - text: Enter a prefix (optional)
+                                - textbox [ref=f8e812]
+                                - generic [ref=f8e813]: "You can use date placeholder to have the prefix filled with the date of the confirmed purchase.You can use: {Y} = year, {m} = month, {d} = day, {H} = hour, {i} = minutes, {s} = seconds, {TIMESTAMP} = unix timestamp."
+                              - generic [ref=f8e814]:
+                                - text: Choose type of ticket numbers
+                                - combobox [disabled] [ref=f8e815]:
+                                  - option "Serials" [selected]
+                                  - option "Numbers"
+                              - generic [ref=f8e816]:
+                                - heading "Serials options" [level=4] [ref=f8e817]
+                                - generic [ref=f8e818]:
+                                  - text: Amount of letter needed
+                                  - spinbutton [ref=f8e819]: "21"
+                                - generic [ref=f8e820]:
+                                  - text: Letter exclusion
+                                  - combobox [ref=f8e821] [cursor=pointer]:
+                                    - option "None"
+                                    - option "i,l,o,p,q" [selected]
+                                - generic [ref=f8e822]:
+                                  - text: Letter style
+                                  - combobox [ref=f8e823] [cursor=pointer]:
+                                    - option "Uppercase" [selected]
+                                    - option "Lowercase"
+                                    - option "Both"
+                                - generic [ref=f8e824]:
+                                  - text: Numbers needed?
+                                  - combobox [ref=f8e825] [cursor=pointer]:
+                                    - option "No"
+                                    - option "Yes" [selected]
+                                    - option "Only numbers"
+                                - generic [ref=f8e826]:
+                                  - text: Delimiter?
+                                  - combobox [ref=f8e827] [cursor=pointer]:
+                                    - option "None"
+                                    - option "-" [selected]
+                                    - option ":"
+                                    - option "Space"
+                                - generic [ref=f8e828]:
+                                  - text: After how many letters?
+                                  - combobox [ref=f8e829] [cursor=pointer]
+                  - generic [ref=f8e568]:
+                    - generic [ref=f8e569]:
+                      - heading "Product short description Summarize this product in 1-2 short sentences. We’ll show it at the top of the page." [level=2] [ref=f8e570]:
+                        - text: Product short description
+                        - generic "Summarize this product in 1-2 short sentences. We’ll show it at the top of the page." [ref=f8e571]: 
+                      - generic [ref=f8e572]:
+                        - button "Move up" [ref=f8e573] [cursor=pointer]
+                        - button "Move down" [ref=f8e576] [cursor=pointer]
+                        - 'button "Toggle panel: Product short description" [expanded] [ref=f8e579] [cursor=pointer]'
+                    - generic [ref=f8e583]:
+                      - generic [ref=f8e584]:
+                        - button "Add Media" [ref=f8e586] [cursor=pointer]
+                        - generic [ref=f8e588]:
+                          - button "Visual" [pressed] [ref=f8e589] [cursor=pointer]
+                          - button "Code" [ref=f8e590] [cursor=pointer]
+                      - application [ref=f8e830]:
+                        - generic [ref=f8e831]:
+                          - group [ref=f8e834]:
+                            - toolbar [ref=f8e836]:
+                              - group [ref=f8e838]:
+                                - generic [ref=f8e839]:
+                                  - button [ref=f8e840] [cursor=pointer]:
+                                    - button "Paragraph" [ref=f8e841]
+                                  - button "Bold (Ctrl+B)" [ref=f8e844] [cursor=pointer]:
+                                    - button [ref=f8e845]
+                                  - button "Italic (Ctrl+I)" [ref=f8e847] [cursor=pointer]:
+                                    - button [ref=f8e848]
+                                  - button "Bulleted list (Shift+Alt+U)" [ref=f8e850] [cursor=pointer]:
+                                    - button [ref=f8e851]
+                                  - button "Numbered list (Shift+Alt+O)" [ref=f8e853] [cursor=pointer]:
+                                    - button [ref=f8e854]
+                                  - button "Blockquote (Shift+Alt+Q)" [ref=f8e856] [cursor=pointer]:
+                                    - button [ref=f8e857]
+                                  - button "Align left (Shift+Alt+L)" [ref=f8e859] [cursor=pointer]:
+                                    - button [ref=f8e860]
+                                  - button "Align center (Shift+Alt+C)" [ref=f8e862] [cursor=pointer]:
+                                    - button [ref=f8e863]
+                                  - button "Align right (Shift+Alt+R)" [ref=f8e865] [cursor=pointer]:
+                                    - button [ref=f8e866]
+                                  - button "Insert/edit link (Ctrl+K)" [ref=f8e868] [cursor=pointer]:
+                                    - button [ref=f8e869]
+                                  - button "Insert Read More tag (Shift+Alt+T)" [ref=f8e871] [cursor=pointer]:
+                                    - button [ref=f8e872]
+                                  - button "Fullscreen" [ref=f8e874] [cursor=pointer]:
+                                    - button [ref=f8e875]
+                                  - button "Toolbar Toggle (Shift+Alt+Z)" [ref=f8e877] [cursor=pointer]:
+                                    - button [ref=f8e878]
+                          - group [ref=f8e880]:
+                            - iframe [ref=f8e881]:
+                              - paragraph [ref=f10e2]
+                          - group [ref=f8e882]:
+                            - generic [ref=f8e883]: 
+                  - generic [ref=f8e593]:
+                    - generic [ref=f8e594]:
+                      - heading "Reviews" [level=2] [ref=f8e595]
+                      - generic [ref=f8e596]:
+                        - button "Move up" [ref=f8e597] [cursor=pointer]
+                        - button "Move down" [ref=f8e600] [cursor=pointer]
+                        - 'button "Toggle panel: Reviews" [expanded] [ref=f8e603] [cursor=pointer]'
+                    - generic [ref=f8e606]:
+                      - paragraph [ref=f8e607]:
+                        - button "Add Comment" [ref=f8e608] [cursor=pointer]
+                      - paragraph [ref=f8e609]: No comments yet.
+  - status [ref=f8e613]
+  - text:          
+  - status [ref=f8e888]
+  - text:            
+  - status [ref=f8e889]
+  - text:  

@@ -1,0 +1,654 @@
+- generic [active] [ref=f36e1]:
+  - generic [ref=f36e2]:
+    - navigation "Main menu":
+      - link "Skip to main content" [ref=f36e3] [cursor=pointer]:
+        - /url: "#wpbody-content"
+      - link "Skip to toolbar" [ref=f36e4] [cursor=pointer]:
+        - /url: "#wp-toolbar"
+      - list [ref=f36e7]:
+        - listitem [ref=f36e8]:
+          - link "Dashboard" [ref=f36e9] [cursor=pointer]:
+            - /url: index.php
+            - generic [ref=f36e10]: 
+          - list [ref=f36e12]:
+            - listitem [ref=f36e13]:
+              - link "Home" [ref=f36e14] [cursor=pointer]:
+                - /url: index.php
+            - listitem [ref=f36e15]:
+              - link "Updates 4" [ref=f36e16] [cursor=pointer]:
+                - /url: update-core.php
+                - text: Updates
+                - generic [ref=f36e17]: "4"
+        - listitem [ref=f36e18]
+        - listitem [ref=f36e20]:
+          - link "Posts" [ref=f36e21] [cursor=pointer]:
+            - /url: edit.php
+            - generic [ref=f36e22]: 
+          - list [ref=f36e24]:
+            - listitem [ref=f36e25]:
+              - link "All Posts" [ref=f36e26] [cursor=pointer]:
+                - /url: edit.php
+            - listitem [ref=f36e27]:
+              - link "Add Post" [ref=f36e28] [cursor=pointer]:
+                - /url: post-new.php
+            - listitem [ref=f36e29]:
+              - link "Categories" [ref=f36e30] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=category
+            - listitem [ref=f36e31]:
+              - link "Tags" [ref=f36e32] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=post_tag
+        - listitem [ref=f36e33]:
+          - link "Media" [ref=f36e34] [cursor=pointer]:
+            - /url: upload.php
+            - generic [ref=f36e35]: 
+          - list [ref=f36e37]:
+            - listitem [ref=f36e38]:
+              - link "Library" [ref=f36e39] [cursor=pointer]:
+                - /url: upload.php
+            - listitem [ref=f36e40]:
+              - link "Add Media File" [ref=f36e41] [cursor=pointer]:
+                - /url: media-new.php
+        - listitem [ref=f36e42]:
+          - link "Pages" [ref=f36e43] [cursor=pointer]:
+            - /url: edit.php?post_type=page
+            - generic [ref=f36e44]: 
+          - list [ref=f36e46]:
+            - listitem [ref=f36e47]:
+              - link "All Pages" [ref=f36e48] [cursor=pointer]:
+                - /url: edit.php?post_type=page
+            - listitem [ref=f36e49]:
+              - link "Add Page" [ref=f36e50] [cursor=pointer]:
+                - /url: post-new.php?post_type=page
+        - listitem [ref=f36e51]:
+          - link "Comments" [ref=f36e52] [cursor=pointer]:
+            - /url: edit-comments.php
+            - generic [ref=f36e53]: 
+        - listitem [ref=f36e55]:
+          - link "Repair Desk" [ref=f36e56] [cursor=pointer]:
+            - /url: admin.php?page=vollstart-repair-desk
+            - generic [ref=f36e57]: 
+        - listitem [ref=f36e59]
+        - listitem [ref=f36e61]:
+          - link "WooCommerce" [ref=f36e62] [cursor=pointer]:
+            - /url: admin.php?page=wc-admin
+          - list [ref=f36e65]:
+            - listitem [ref=f36e66]:
+              - link "Home 3" [ref=f36e67] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin
+                - text: Home
+                - generic [ref=f36e68]: "3"
+            - listitem [ref=f36e69]:
+              - link "Orders" [ref=f36e70] [cursor=pointer]:
+                - /url: admin.php?page=wc-orders
+            - listitem [ref=f36e71]:
+              - link "Subscriptions" [ref=f36e72] [cursor=pointer]:
+                - /url: admin.php?page=wc-orders--shop_subscription
+            - listitem [ref=f36e73]:
+              - link "Customers" [ref=f36e74] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/customers
+            - listitem [ref=f36e75]:
+              - link "Coupons" [ref=f36e76] [cursor=pointer]:
+                - /url: admin.php?page=coupons-moved
+            - listitem [ref=f36e77]:
+              - link "Geo-Tier Pricing" [ref=f36e78] [cursor=pointer]:
+                - /url: admin.php?page=vollstart-geo-pricing
+            - listitem [ref=f36e79]:
+              - link "Reports" [ref=f36e80] [cursor=pointer]:
+                - /url: admin.php?page=wc-reports
+            - listitem [ref=f36e81]:
+              - link "Settings" [ref=f36e82] [cursor=pointer]:
+                - /url: admin.php?page=wc-settings
+            - listitem [ref=f36e83]:
+              - link "Status" [ref=f36e84] [cursor=pointer]:
+                - /url: admin.php?page=wc-status
+            - listitem [ref=f36e85]:
+              - link "Extensions" [ref=f36e86] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/extensions
+        - listitem [ref=f36e87]:
+          - link "Products" [ref=f36e88] [cursor=pointer]:
+            - /url: edit.php?post_type=product
+            - generic [ref=f36e89]: 
+          - list [ref=f36e91]:
+            - listitem [ref=f36e92]:
+              - link "All Products" [ref=f36e93] [cursor=pointer]:
+                - /url: edit.php?post_type=product
+            - listitem [ref=f36e94]:
+              - link "Add new product" [ref=f36e95] [cursor=pointer]:
+                - /url: post-new.php?post_type=product
+            - listitem [ref=f36e96]:
+              - link "Brands" [ref=f36e97] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=product_brand&post_type=product
+            - listitem [ref=f36e98]:
+              - link "Categories" [ref=f36e99] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=product_cat&post_type=product
+            - listitem [ref=f36e100]:
+              - link "Tags" [ref=f36e101] [cursor=pointer]:
+                - /url: edit-tags.php?taxonomy=product_tag&post_type=product
+            - listitem [ref=f36e102]:
+              - link "Attributes" [ref=f36e103] [cursor=pointer]:
+                - /url: edit.php?post_type=product&page=product_attributes
+            - listitem [ref=f36e104]:
+              - link "Reviews" [ref=f36e105] [cursor=pointer]:
+                - /url: edit.php?post_type=product&page=product-reviews
+        - listitem [ref=f36e106]:
+          - link "Payments" [ref=f36e107] [cursor=pointer]:
+            - /url: admin.php?page=wc-settings&tab=checkout&from=PAYMENTS_MENU_ITEM
+        - listitem [ref=f36e110]:
+          - link "Analytics" [ref=f36e111] [cursor=pointer]:
+            - /url: admin.php?page=wc-admin&path=/analytics/overview
+            - generic [ref=f36e112]: 
+          - list [ref=f36e114]:
+            - listitem [ref=f36e115]:
+              - link "Overview" [ref=f36e116] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/overview
+            - listitem [ref=f36e117]:
+              - link "Products" [ref=f36e118] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/products
+            - listitem [ref=f36e119]:
+              - link "Revenue" [ref=f36e120] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/revenue
+            - listitem [ref=f36e121]:
+              - link "Orders" [ref=f36e122] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/orders
+            - listitem [ref=f36e123]:
+              - link "Variations" [ref=f36e124] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/variations
+            - listitem [ref=f36e125]:
+              - link "Categories" [ref=f36e126] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/categories
+            - listitem [ref=f36e127]:
+              - link "Coupons" [ref=f36e128] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/coupons
+            - listitem [ref=f36e129]:
+              - link "Taxes" [ref=f36e130] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/taxes
+            - listitem [ref=f36e131]:
+              - link "Downloads" [ref=f36e132] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/downloads
+            - listitem [ref=f36e133]:
+              - link "Stock" [ref=f36e134] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/stock
+            - listitem [ref=f36e135]:
+              - link "Settings" [ref=f36e136] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/analytics/settings
+        - listitem [ref=f36e137]:
+          - link "Marketing" [ref=f36e138] [cursor=pointer]:
+            - /url: admin.php?page=wc-admin&path=/marketing
+            - generic [ref=f36e139]: 
+          - list [ref=f36e141]:
+            - listitem [ref=f36e142]:
+              - link "Overview" [ref=f36e143] [cursor=pointer]:
+                - /url: admin.php?page=wc-admin&path=/marketing
+            - listitem [ref=f36e144]:
+              - link "Coupons" [ref=f36e145] [cursor=pointer]:
+                - /url: edit.php?post_type=shop_coupon
+        - listitem [ref=f36e146]
+        - listitem [ref=f36e148]:
+          - link "Appearance" [ref=f36e149] [cursor=pointer]:
+            - /url: themes.php
+            - generic [ref=f36e150]: 
+          - list [ref=f36e152]:
+            - listitem [ref=f36e153]:
+              - link "Themes" [ref=f36e154] [cursor=pointer]:
+                - /url: themes.php
+            - listitem [ref=f36e155]:
+              - link "Editor" [ref=f36e156] [cursor=pointer]:
+                - /url: site-editor.php
+            - listitem [ref=f36e157]:
+              - link "Fonts" [ref=f36e158] [cursor=pointer]:
+                - /url: font-library.php
+        - listitem [ref=f36e159]:
+          - link "Plugins 3" [ref=f36e160] [cursor=pointer]:
+            - /url: plugins.php
+            - generic [ref=f36e161]: 
+            - generic [ref=f36e162]:
+              - text: Plugins
+              - generic [ref=f36e163]: "3"
+          - list [ref=f36e164]:
+            - listitem [ref=f36e165]:
+              - link "Installed Plugins" [ref=f36e166] [cursor=pointer]:
+                - /url: plugins.php
+            - listitem [ref=f36e167]:
+              - link "Add Plugin" [ref=f36e168] [cursor=pointer]:
+                - /url: plugin-install.php
+        - listitem [ref=f36e169]:
+          - link "Users" [ref=f36e170] [cursor=pointer]:
+            - /url: users.php
+            - generic [ref=f36e171]: 
+          - list [ref=f36e173]:
+            - listitem [ref=f36e174]:
+              - link "All Users" [ref=f36e175] [cursor=pointer]:
+                - /url: users.php
+            - listitem [ref=f36e176]:
+              - link "Add User" [ref=f36e177] [cursor=pointer]:
+                - /url: user-new.php
+            - listitem [ref=f36e178]:
+              - link "Profile" [ref=f36e179] [cursor=pointer]:
+                - /url: profile.php
+        - listitem [ref=f36e180]:
+          - link "Tools" [ref=f36e181] [cursor=pointer]:
+            - /url: tools.php
+            - generic [ref=f36e182]: 
+          - list [ref=f36e184]:
+            - listitem [ref=f36e185]:
+              - link "Available Tools" [ref=f36e186] [cursor=pointer]:
+                - /url: tools.php
+            - listitem [ref=f36e187]:
+              - link "Import" [ref=f36e188] [cursor=pointer]:
+                - /url: import.php
+            - listitem [ref=f36e189]:
+              - link "Export" [ref=f36e190] [cursor=pointer]:
+                - /url: export.php
+            - listitem [ref=f36e191]:
+              - link "Site Health" [ref=f36e192] [cursor=pointer]:
+                - /url: site-health.php
+            - listitem [ref=f36e193]:
+              - link "Export Personal Data" [ref=f36e194] [cursor=pointer]:
+                - /url: export-personal-data.php
+            - listitem [ref=f36e195]:
+              - link "Erase Personal Data" [ref=f36e196] [cursor=pointer]:
+                - /url: erase-personal-data.php
+            - listitem [ref=f36e197]:
+              - link "Scheduled Actions" [ref=f36e198] [cursor=pointer]:
+                - /url: tools.php?page=action-scheduler
+            - listitem [ref=f36e199]:
+              - link "Theme File Editor" [ref=f36e200] [cursor=pointer]:
+                - /url: theme-editor.php
+            - listitem [ref=f36e201]:
+              - link "Plugin File Editor" [ref=f36e202] [cursor=pointer]:
+                - /url: plugin-editor.php
+        - listitem [ref=f36e203]:
+          - link "Settings" [ref=f36e204] [cursor=pointer]:
+            - /url: options-general.php
+            - generic [ref=f36e205]: 
+          - list [ref=f36e207]:
+            - listitem [ref=f36e208]:
+              - link "General" [ref=f36e209] [cursor=pointer]:
+                - /url: options-general.php
+            - listitem [ref=f36e210]:
+              - link "Connectors" [ref=f36e211] [cursor=pointer]:
+                - /url: options-connectors.php
+            - listitem [ref=f36e212]:
+              - link "Writing" [ref=f36e213] [cursor=pointer]:
+                - /url: options-writing.php
+            - listitem [ref=f36e214]:
+              - link "Reading" [ref=f36e215] [cursor=pointer]:
+                - /url: options-reading.php
+            - listitem [ref=f36e216]:
+              - link "Discussion" [ref=f36e217] [cursor=pointer]:
+                - /url: options-discussion.php
+            - listitem [ref=f36e218]:
+              - link "Media" [ref=f36e219] [cursor=pointer]:
+                - /url: options-media.php
+            - listitem [ref=f36e220]:
+              - link "Permalinks" [ref=f36e221] [cursor=pointer]:
+                - /url: options-permalink.php
+            - listitem [ref=f36e222]:
+              - link "Privacy" [ref=f36e223] [cursor=pointer]:
+                - /url: options-privacy.php
+        - listitem [ref=f36e224]
+        - listitem [ref=f36e226]:
+          - link "Event Tickets" [ref=f36e227] [cursor=pointer]:
+            - /url: admin.php?page=event-tickets-with-ticket-scanner
+          - list [ref=f36e230]:
+            - listitem [ref=f36e231]:
+              - link "Event Tickets" [ref=f36e232] [cursor=pointer]:
+                - /url: admin.php?page=event-tickets-with-ticket-scanner
+            - listitem [ref=f36e233]:
+              - link "★ More Plugins" [ref=f36e234] [cursor=pointer]:
+                - /url: admin.php?page=event-tickets-with-ticket-scanner-more-plugins
+        - listitem [ref=f36e235]:
+          - link "Serial Codes Validator" [ref=f36e236] [cursor=pointer]:
+            - /url: admin.php?page=sngmbh-serialcodes-validator
+            - generic [ref=f36e237]: 
+          - list [ref=f36e239]:
+            - listitem [ref=f36e240]:
+              - link "Serial Codes Validator" [ref=f36e241] [cursor=pointer]:
+                - /url: admin.php?page=sngmbh-serialcodes-validator
+            - listitem [ref=f36e242]:
+              - link "★ More Plugins" [ref=f36e243] [cursor=pointer]:
+                - /url: admin.php?page=sngmbh-serialcodes-validator-more-plugins
+        - listitem [ref=f36e244]:
+          - button "Collapse Main menu" [expanded] [ref=f36e245] [cursor=pointer]:
+            - generic [ref=f36e247]: Collapse Menu
+    - generic [ref=f36e248]:
+      - generic [ref=f36e249]:
+        - navigation "Toolbar":
+          - menu:
+            - group [ref=f36e250]:
+              - menuitem "About WordPress" [ref=f36e251] [cursor=pointer]
+            - group [ref=f36e254]:
+              - menuitem "Agent Test WP" [ref=f36e255] [cursor=pointer]
+            - group [ref=f36e256]:
+              - menuitem "Live" [ref=f36e257] [cursor=pointer]
+            - group [ref=f36e258]:
+              - menuitem "4 updates available" [ref=f36e259] [cursor=pointer]:
+                - generic [ref=f36e261]: "4"
+            - group [ref=f36e263]:
+              - menuitem "Ctrl+K Open command palette" [ref=f36e264] [cursor=pointer]:
+                - generic [ref=f36e266]:
+                  - text: Ctrl+K
+                  - generic [ref=f36e267]: Open command palette
+            - group [ref=f36e268]:
+              - menuitem "0 Comments in moderation" [ref=f36e269] [cursor=pointer]:
+                - generic [ref=f36e271]: "0"
+            - group [ref=f36e273]:
+              - menuitem "New" [ref=f36e274] [cursor=pointer]
+            - group [ref=f36e277]:
+              - menuitem "View product" [ref=f36e278] [cursor=pointer]
+          - menu [ref=f36e279]:
+            - group [ref=f36e280]:
+              - menuitem "Howdy, agent" [ref=f36e281] [cursor=pointer]
+      - generic [ref=f36e283]:
+        - generic [ref=f36e284]:
+          - heading "Store Activity" [level=2] [ref=f36e285]
+          - complementary "Store Activity" [ref=f36e286]:
+            - tablist [ref=f36e287]:
+              - tab "Activity" [ref=f36e288] [cursor=pointer]
+        - button "Screen options" [ref=f36e292] [cursor=pointer]
+        - button "Help" [ref=f36e295] [cursor=pointer]
+      - main [ref=f36e299]:
+        - generic [ref=f36e300]:
+          - generic:
+            - button "Screen Options" [ref=f36e302] [cursor=pointer]
+            - button "Help" [ref=f36e304] [cursor=pointer]
+          - generic [ref=f36e307]:
+            - heading "Edit product" [level=1] [ref=f36e308]
+            - link "Add new product" [ref=f36e309] [cursor=pointer]:
+              - /url: https://verwicklung.de/testing/wordpress/wp-admin/post-new.php?post_type=product
+            - paragraph [ref=f36e311]:
+              - strong [ref=f36e312]: "Action Scheduler:"
+              - text: "30"
+              - link "past-due actions" [ref=f36e313] [cursor=pointer]:
+                - /url: https://verwicklung.de/testing/wordpress/wp-admin/tools.php?page=action-scheduler&status=past-due&order=asc
+              - text: found; something may be wrong.
+              - link "Read documentation »" [ref=f36e314] [cursor=pointer]:
+                - /url: https://actionscheduler.org/faq/#my-site-has-past-due-actions-what-can-i-do
+            - generic [ref=f36e316]:
+              - generic:
+                - generic [ref=f36e317]:
+                  - generic [ref=f36e318]:
+                    - generic [ref=f36e319]:
+                      - generic: Product name
+                      - textbox "Product name" [ref=f36e320]: Ticket Scanner (Hardware)
+                      - link "Skip to Editor" [ref=f36e321] [cursor=pointer]:
+                        - /url: "#content"
+                    - generic [ref=f36e323]:
+                      - strong [ref=f36e324]: "Permalink:"
+                      - link "https://verwicklung.de/testing/wordpress/product/ticket-scanner-hardware/" [ref=f36e326] [cursor=pointer]:
+                        - /url: https://verwicklung.de/testing/wordpress/product/ticket-scanner-hardware/
+                      - text: ‎
+                      - button "Edit permalink" [ref=f36e328] [cursor=pointer]: Edit
+                  - generic [ref=f36e329]:
+                    - heading "Product description" [level=2] [ref=f36e330]
+                    - generic [ref=f36e333]:
+                      - generic [ref=f36e334]:
+                        - button "Add Media" [ref=f36e335] [cursor=pointer]
+                        - generic "Describe this product. What makes it unique? What are its most important features?" [ref=f36e337]: 
+                      - generic [ref=f36e338]:
+                        - button "Visual" [pressed] [ref=f36e339] [cursor=pointer]
+                        - button "Code" [ref=f36e340] [cursor=pointer]
+                    - text: "Word count: 0 Last edited on July 13, 2026 at 9:38 am"
+                - generic [ref=f36e343]:
+                  - generic [ref=f36e344]:
+                    - generic [ref=f36e345]:
+                      - heading "Serial Code Basic" [level=2] [ref=f36e346]
+                      - generic [ref=f36e347]:
+                        - button "Move up" [disabled] [ref=f36e348]
+                        - button "Move down" [ref=f36e351] [cursor=pointer]
+                        - 'button "Toggle panel: Serial Code Basic" [expanded] [ref=f36e354] [cursor=pointer]'
+                    - generic [ref=f36e357]:
+                      - paragraph [ref=f36e358]: Display all Serial Infos
+                      - button "Print Serial Infos" [disabled] [ref=f36e359]
+                  - generic [ref=f36e360]:
+                    - generic [ref=f36e361]:
+                      - heading "Event Tickets" [level=2] [ref=f36e362]
+                      - generic [ref=f36e363]:
+                        - button "Move up" [ref=f36e364] [cursor=pointer]
+                        - button "Move down" [ref=f36e367] [cursor=pointer]
+                        - 'button "Toggle panel: Event Tickets" [expanded] [ref=f36e370] [cursor=pointer]'
+                    - generic [ref=f36e373]:
+                      - paragraph [ref=f36e374]: Download Event Flyer
+                      - button "Download Event Flyer" [disabled] [ref=f36e375]
+                      - paragraph [ref=f36e376]: Download ICS File (cal file)
+                      - button "Download ICS File" [disabled] [ref=f36e377]
+                      - paragraph [ref=f36e378]: Display all Tickets Infos
+                      - button "Print Ticket Infos" [disabled] [ref=f36e379]
+                      - paragraph [ref=f36e380]: Sold Tickets Calendar
+                      - button "View Calendar" [disabled] [ref=f36e381]
+                      - button "Print List" [disabled] [ref=f36e382]
+                      - paragraph [ref=f36e383]: Calendar is available for date picker products. For all products use the Attendance tab.
+                      - paragraph [ref=f36e384]: Entrance Statistics 0 tickets redeemed
+                      - button "View Entrance Logs" [ref=f36e385] [cursor=pointer]
+                      - button "View No Shows" [ref=f36e386] [cursor=pointer]
+                      - paragraph
+                      - paragraph [ref=f36e387]:
+                        - button "Download Logs" [ref=f36e388] [cursor=pointer]
+                        - button "Show Deeplink URL" [ref=f36e389] [cursor=pointer]
+                  - generic [ref=f36e390]:
+                    - generic [ref=f36e391]:
+                      - heading "Publish" [level=2] [ref=f36e392]
+                      - generic [ref=f36e393]:
+                        - button "Move up" [ref=f36e394] [cursor=pointer]
+                        - button "Move down" [ref=f36e397] [cursor=pointer]
+                        - 'button "Toggle panel: Publish" [expanded] [ref=f36e400] [cursor=pointer]'
+                    - generic [ref=f36e404]:
+                      - generic [ref=f36e405]:
+                        - link "Preview Changes (opens in a new tab)" [ref=f36e407] [cursor=pointer]:
+                          - /url: https://verwicklung.de/testing/wordpress/product/ticket-scanner-hardware/?preview=true
+                          - text: Preview Changes
+                          - generic [ref=f36e408]: (opens in a new tab)
+                        - generic [ref=f36e409]:
+                          - generic [ref=f36e410]:
+                            - text: "Status: Published"
+                            - button "Edit status" [ref=f36e411] [cursor=pointer]: Edit
+                          - generic [ref=f36e413]:
+                            - text: "Visibility: Public"
+                            - button "Edit visibility" [ref=f36e414] [cursor=pointer]: Edit
+                          - generic [ref=f36e416]:
+                            - generic [ref=f36e417]: "Published on: Jul 13, 2026 at 09:38"
+                            - button "Edit date and time" [ref=f36e418] [cursor=pointer]: Edit
+                          - generic [ref=f36e420]:
+                            - text: "Catalog visibility:"
+                            - strong [ref=f36e421]: Shop and search results
+                            - link "Edit" [ref=f36e422] [cursor=pointer]:
+                              - /url: "#catalog-visibility"
+                      - generic [ref=f36e423]:
+                        - link "Copy to a new draft" [ref=f36e425] [cursor=pointer]:
+                          - /url: https://verwicklung.de/testing/wordpress/wp-admin/edit.php?post_type=product&action=duplicate_product&post=16&_wpnonce=c922833307
+                        - link "Move to Trash" [ref=f36e427] [cursor=pointer]:
+                          - /url: https://verwicklung.de/testing/wordpress/wp-admin/post.php?post=16&action=trash&_wpnonce=2d5d10b7d6
+                        - button "Update" [ref=f36e429] [cursor=pointer]
+                  - generic [ref=f36e430]:
+                    - generic [ref=f36e431]:
+                      - heading "Product image" [level=2] [ref=f36e432]
+                      - generic [ref=f36e433]:
+                        - button "Move up" [ref=f36e434] [cursor=pointer]
+                        - button "Move down" [ref=f36e437] [cursor=pointer]
+                        - 'button "Toggle panel: Product image" [expanded] [ref=f36e440] [cursor=pointer]'
+                    - paragraph [ref=f36e444]:
+                      - button "Set product image" [ref=f36e445] [cursor=pointer]
+                      - 'generic "For best results, upload JPEG or PNG files that are 1000 by 1000 pixels or larger. Maximum upload file size: 8 MB." [ref=f36e446]': 
+                  - generic [ref=f36e447]:
+                    - generic [ref=f36e448]:
+                      - heading "Product gallery" [level=2] [ref=f36e449]
+                      - generic [ref=f36e450]:
+                        - button "Move up" [ref=f36e451] [cursor=pointer]
+                        - button "Move down" [ref=f36e454] [cursor=pointer]
+                        - 'button "Toggle panel: Product gallery" [expanded] [ref=f36e457] [cursor=pointer]'
+                    - generic [ref=f36e460]:
+                      - generic:
+                        - list
+                      - paragraph [ref=f36e461]:
+                        - link "Add product gallery images" [ref=f36e462] [cursor=pointer]:
+                          - /url: "#"
+                        - 'generic "For best results, upload JPEG or PNG files that are 1000 by 1000 pixels or larger. Maximum upload file size: 8 MB." [ref=f36e463]': 
+                  - generic [ref=f36e464]:
+                    - generic [ref=f36e465]:
+                      - heading "Product categories" [level=2] [ref=f36e466]
+                      - generic [ref=f36e467]:
+                        - button "Move up" [ref=f36e468] [cursor=pointer]
+                        - button "Move down" [ref=f36e471] [cursor=pointer]
+                        - 'button "Toggle panel: Product categories" [expanded] [ref=f36e474] [cursor=pointer]'
+                    - generic [ref=f36e478]:
+                      - tablist [ref=f36e479]:
+                        - listitem [ref=f36e480]:
+                          - tab "All categories" [selected] [ref=f36e481] [cursor=pointer]
+                        - listitem [ref=f36e482]:
+                          - tab "Most Used" [ref=f36e483] [cursor=pointer]
+                      - tabpanel [ref=f36e484]:
+                        - list [ref=f36e485]:
+                          - listitem [ref=f36e486]:
+                            - generic [ref=f36e487]:
+                              - checkbox "Hardware" [checked] [ref=f36e488] [cursor=pointer]
+                              - text: Hardware
+                          - listitem [ref=f36e489]:
+                            - generic [ref=f36e490]:
+                              - checkbox "Uncategorized" [ref=f36e491] [cursor=pointer]
+                              - text: Uncategorized
+                      - link "+ Add new category" [ref=f36e493] [cursor=pointer]:
+                        - /url: "#product_cat-add"
+                  - generic [ref=f36e494]:
+                    - generic [ref=f36e495]:
+                      - heading "Product tags" [level=2] [ref=f36e496]
+                      - generic [ref=f36e497]:
+                        - button "Move up" [ref=f36e498] [cursor=pointer]
+                        - button "Move down" [ref=f36e501] [cursor=pointer]
+                        - 'button "Toggle panel: Product tags" [expanded] [ref=f36e504] [cursor=pointer]'
+                    - generic [ref=f36e507]:
+                      - generic [ref=f36e508]:
+                        - generic [ref=f36e509]:
+                          - generic [ref=f36e510]:
+                            - generic [ref=f36e511]: Add new tag
+                            - combobox "Add new tag" [ref=f36e512]
+                            - button "Add" [ref=f36e513] [cursor=pointer]
+                          - paragraph [ref=f36e514]: Separate tags with commas
+                        - list
+                      - paragraph [ref=f36e515]:
+                        - button "Choose from the most used tags" [ref=f36e516] [cursor=pointer]
+                  - generic [ref=f36e517]:
+                    - generic [ref=f36e518]:
+                      - heading "Brands" [level=2] [ref=f36e519]
+                      - generic [ref=f36e520]:
+                        - button "Move up" [ref=f36e521] [cursor=pointer]
+                        - button "Move down" [ref=f36e524] [cursor=pointer]
+                        - 'button "Toggle panel: Brands" [expanded] [ref=f36e527] [cursor=pointer]'
+                    - generic [ref=f36e531]:
+                      - tablist [ref=f36e532]:
+                        - listitem [ref=f36e533]:
+                          - tab "All Brands" [selected] [ref=f36e534] [cursor=pointer]
+                        - listitem [ref=f36e535]:
+                          - tab "Most Used" [ref=f36e536] [cursor=pointer]
+                      - tabpanel [ref=f36e537]:
+                        - list
+                      - link "+ Add New Brand" [ref=f36e539] [cursor=pointer]:
+                        - /url: "#product_brand-add"
+                - generic [ref=f36e541]:
+                  - generic [ref=f36e542]:
+                    - generic [ref=f36e543]:
+                      - heading "Product data — Simple product Simple – covers the vast majority of any products you may sell. Simple products are shipped and have no options. For example, a book. Virtual Downloadable" [level=2] [ref=f36e544]:
+                        - text: Product data
+                        - generic [ref=f36e545]:
+                          - text: —
+                          - generic [ref=f36e546]:
+                            - combobox "Simple – covers the vast majority of any products you may sell. Simple products are shipped and have no options. For example, a book." [ref=f36e547] [cursor=pointer]:
+                              - option "Simple product" [selected]
+                              - option "Grouped product"
+                              - option "External/Affiliate product"
+                              - option "Variable product"
+                            - generic "Simple – covers the vast majority of any products you may sell. Simple products are shipped and have no options. For example, a book." [ref=f36e548]: 
+                          - generic [ref=f36e549]:
+                            - checkbox "Virtual" [ref=f36e550] [cursor=pointer]
+                            - text: Virtual
+                          - generic [ref=f36e551]:
+                            - checkbox "Downloadable" [ref=f36e552] [cursor=pointer]
+                            - text: Downloadable
+                      - generic [ref=f36e553]:
+                        - button "Move up" [ref=f36e554] [cursor=pointer]
+                        - button "Move down" [ref=f36e557] [cursor=pointer]
+                        - 'button "Toggle panel: Product data" [expanded] [ref=f36e560] [cursor=pointer]'
+                    - generic [ref=f36e564]:
+                      - list [ref=f36e565]:
+                        - listitem [ref=f36e566]:
+                          - link "General" [ref=f36e567] [cursor=pointer]:
+                            - /url: "#general_product_data"
+                        - listitem [ref=f36e568]:
+                          - link "Inventory" [ref=f36e569] [cursor=pointer]:
+                            - /url: "#inventory_product_data"
+                        - listitem [ref=f36e570]:
+                          - link "Shipping" [ref=f36e571] [cursor=pointer]:
+                            - /url: "#shipping_product_data"
+                        - listitem [ref=f36e572]:
+                          - link "Linked Products" [ref=f36e573] [cursor=pointer]:
+                            - /url: "#linked_product_data"
+                        - listitem [ref=f36e574]:
+                          - link "Attributes" [ref=f36e575] [cursor=pointer]:
+                            - /url: "#product_attributes"
+                        - text: 
+                        - listitem [ref=f36e576]:
+                          - link "Advanced" [ref=f36e577] [cursor=pointer]:
+                            - /url: "#advanced_product_data"
+                        - listitem [ref=f36e578]:
+                          - link "Subscriptions" [ref=f36e579] [cursor=pointer]:
+                            - /url: "#wcsatt_data"
+                        - listitem [ref=f36e580]:
+                          - link "Get more options" [ref=f36e581] [cursor=pointer]:
+                            - /url: "#marketplace_suggestions"
+                        - listitem [ref=f36e582]:
+                          - link "Serial Codes" [ref=f36e583] [cursor=pointer]:
+                            - /url: "#sngmbh_woo_product_data"
+                        - listitem [ref=f36e584]:
+                          - link "Event Tickets" [ref=f36e585] [cursor=pointer]:
+                            - /url: "#saso_eventtickets_wc_product_data"
+                      - generic [ref=f36e586]:
+                        - text:      
+                        - generic [ref=f36e587]:
+                          - paragraph [ref=f36e588]:
+                            - generic [ref=f36e589]: Regular price ($)
+                            - textbox "Regular price ($)" [ref=f36e590]:
+                              - /placeholder: ""
+                              - text: "199"
+                          - paragraph [ref=f36e591]:
+                            - generic [ref=f36e592]: Sale price ($)
+                            - textbox "Sale price ($)" [ref=f36e593]:
+                              - /placeholder: ""
+                            - link "Schedule" [ref=f36e595] [cursor=pointer]:
+                              - /url: "#"
+                          - text: 
+                          - paragraph [ref=f36e596]:
+                            - generic [ref=f36e597]: Geo pricing
+                            - combobox "Geo pricing" [ref=f36e598] [cursor=pointer]:
+                              - option "Default (follow category rule)" [selected]
+                              - option "Always included in geo pricing"
+                              - option "Always excluded from geo pricing"
+                            - text: "The plugin is in \"exclude\" mode: products marked excluded (or in an excluded category) keep their normal price. Everyone else follows purchasing power."
+                        - text:  
+                      - text:                                                   
+                  - generic [ref=f36e599]:
+                    - generic [ref=f36e600]:
+                      - heading "Product short description Summarize this product in 1-2 short sentences. We’ll show it at the top of the page." [level=2] [ref=f36e601]:
+                        - text: Product short description
+                        - generic "Summarize this product in 1-2 short sentences. We’ll show it at the top of the page." [ref=f36e602]: 
+                      - generic [ref=f36e603]:
+                        - button "Move up" [ref=f36e604] [cursor=pointer]
+                        - button "Move down" [ref=f36e607] [cursor=pointer]
+                        - 'button "Toggle panel: Product short description" [expanded] [ref=f36e610] [cursor=pointer]'
+                    - generic [ref=f36e614]:
+                      - generic [ref=f36e615]:
+                        - button "Add Media" [ref=f36e617] [cursor=pointer]
+                        - generic [ref=f36e619]:
+                          - button "Visual" [pressed] [ref=f36e620] [cursor=pointer]
+                          - button "Code" [ref=f36e621] [cursor=pointer]
+                      - textbox [ref=f36e623]
+                  - generic [ref=f36e624]:
+                    - generic [ref=f36e625]:
+                      - heading "Reviews" [level=2] [ref=f36e626]
+                      - generic [ref=f36e627]:
+                        - button "Move up" [ref=f36e628] [cursor=pointer]
+                        - button "Move down" [ref=f36e631] [cursor=pointer]
+                        - 'button "Toggle panel: Reviews" [expanded] [ref=f36e634] [cursor=pointer]'
+                    - generic [ref=f36e637]:
+                      - paragraph [ref=f36e638]:
+                        - button "Add Comment" [ref=f36e639] [cursor=pointer]
+                      - paragraph [ref=f36e640]: No comments yet.
+  - status [ref=f36e644]

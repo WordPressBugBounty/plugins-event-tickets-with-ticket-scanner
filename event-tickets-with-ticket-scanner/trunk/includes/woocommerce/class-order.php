@@ -71,12 +71,145 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * @param WC_Order $order Order object
 		 * @return bool True if order has ticket products
 		 */
+		/**
+		 * Decide whether one order line is a ticket line
+		 *
+		 * This is THE single place that answers "does this order line get a ticket?".
+		 * The answer comes from the product (and, for variations, from the variation's
+		 * exclusion switch) and can be overruled by the filter
+		 * `saso_eventtickets_wc_order_item_is_ticket`.
+		 *
+		 * The filter exists for plugins that split ONE product into several order lines -
+		 * split VAT / invoicing plugins, for example: only the original line should carry
+		 * the ticket, the other lines are bookkeeping. Without the filter every line of a
+		 * ticket product gets its own ticket, which stays the default.
+		 *
+		 * @param WC_Order_Item $item Order item
+		 * @param int $item_id Order item ID
+		 * @param WC_Order|null $order Order object
+		 * @return bool True if this order line gets ticket numbers
+		 */
+		/**
+		 * Die Zusatzfelder, die ein fremdes Plugin an die Bestellzeile gehaengt hat.
+		 *
+		 * Wer mehr als unsere zwei Fragen je Ticket braucht, nimmt ein Add-on-Plugin.
+		 * Dessen Antworten liegen als sichtbares Meta an der Bestellposition und waren
+		 * bisher nirgends im Plugin zu sehen - der Veranstalter musste in jede Bestellung
+		 * klicken. Diese Stelle beantwortet als einzige, welche Felder zu einem Ticket
+		 * gehoeren und gezeigt werden duerfen.
+		 *
+		 * Achtung auf die Zuordnung: die Felder haengen an der BESTELLZEILE, nicht am
+		 * einzelnen Ticket. Eine Zeile mit Menge 3 hat einen Satz Antworten fuer alle
+		 * drei Tickets. Wer je Person fragen will, nimmt unsere zwei Felder je Ticket.
+		 *
+		 * Was sichtbar ist, entscheidet WooCommerce selbst ueber get_formatted_meta_data():
+		 * Schluessel mit fuehrendem "_" fallen raus, Anzeigename und -wert laufen durch die
+		 * Filter, in die sich auch andere Plugins einhaengen. Kein zweiter Sichtbarkeitsbegriff.
+		 *
+		 * @param array $codeObj Ticket-Datensatz - mit 'metaObj' oder mit roher 'meta'-Spalte
+		 * @return array Liste aus ['key' => Anzeigename, 'value' => Anzeigewert, 'raw_key' => Meta-Key]
+		 */
+		public function getOrderItemExtraFields(array $codeObj): array {
+			$metaObj = null;
+			if (isset($codeObj['metaObj']) && is_array($codeObj['metaObj'])) {
+				$metaObj = $codeObj['metaObj'];
+			} elseif (!empty($codeObj['meta'])) {
+				$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta']);
+			}
+
+			$order_id = intval($metaObj['woocommerce']['order_id'] ?? 0);
+			$item_id = intval($metaObj['woocommerce']['item_id'] ?? 0);
+			if ($order_id < 1 || $item_id < 1) {
+				return [];
+			}
+
+			$order = wc_get_order($order_id);
+			if (!$order) {
+				return [];
+			}
+
+			$item = $order->get_item($item_id);
+			if (!$item) {
+				return [];
+			}
+
+			$excluded = $this->getOrderItemExtraFieldsExcludeList();
+			$fields = [];
+
+			foreach ($item->get_formatted_meta_data() as $meta) {
+				$raw_key = (string) $meta->key;
+
+				// Unsere eigenen Felder zeigen wir bereits selbst an
+				if (stripos($raw_key, 'saso_eventtickets') === 0 || stripos($raw_key, 'sasoEventtickets') === 0) {
+					continue;
+				}
+				if (in_array(strtolower($raw_key), $excluded, true)) {
+					continue;
+				}
+
+				$value = trim(wp_strip_all_tags((string) $meta->display_value));
+				if ($value === '') {
+					continue;
+				}
+
+				$fields[] = [
+					'key' => trim(wp_strip_all_tags((string) $meta->display_key)),
+					'value' => $value,
+					'raw_key' => $raw_key
+				];
+			}
+
+			return $fields;
+		}
+
+		/**
+		 * Feldnamen, die der Shop nie zeigen will - eine je Zeile in der Option.
+		 *
+		 * @return array Kleingeschriebene Namen
+		 */
+		private function getOrderItemExtraFieldsExcludeList(): array {
+			$raw = (string) $this->MAIN->getOptions()->getOptionValue('wcTicketOrderItemFieldsExclude');
+			if (trim($raw) === '') {
+				return [];
+			}
+
+			$list = [];
+			foreach (preg_split('/[\r\n]+/', $raw) as $entry) {
+				$entry = strtolower(trim($entry));
+				if ($entry !== '') {
+					$list[] = $entry;
+				}
+			}
+
+			return $list;
+		}
+
+		public function isTicketOrderItem($item, int $item_id = 0, $order = null): bool {
+			$isTicket = false;
+
+			if ($item != null && method_exists($item, 'get_product_id')) {
+				$product_id = $item->get_product_id();
+				if ($product_id) {
+					$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
+					$isTicket = get_post_meta($product_id_orig, self::META_PRODUCT_IS_TICKET, true) == "yes";
+
+					if ($isTicket && method_exists($item, 'get_variation_id')) {
+						$variation_id = $item->get_variation_id();
+						// check ob diese variation vom ticket ausgeschlossen ist
+						if ($variation_id > 0 && get_post_meta($variation_id, self::META_VARIATION_NOT_TICKET, true) == "yes") {
+							$isTicket = false;
+						}
+					}
+				}
+			}
+
+			return (bool) apply_filters($this->MAIN->_add_filter_prefix . 'wc_order_item_is_ticket', $isTicket, $item, $item_id, $order);
+		}
+
 		public function hasTicketsInOrder($order): bool {
 			$items = $order->get_items();
 			foreach ($items as $item_id => $item) {
-				$product_id = $item->get_product_id();
-				$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
-				if (get_post_meta($product_id_orig, self::META_PRODUCT_IS_TICKET, true) == "yes") {
+				if ($this->isTicketOrderItem($item, (int) $item_id, $order)) {
 					return true;
 				}
 			}
@@ -92,9 +225,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		public function hasTicketsInOrderWithTicketnumber($order): bool {
 			$items = $order->get_items();
 			foreach ($items as $item_id => $item) {
-				$product_id = $item->get_product_id();
-				$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
-				if (get_post_meta($product_id_orig, self::META_PRODUCT_IS_TICKET, true) == "yes") {
+				if ($this->isTicketOrderItem($item, (int) $item_id, $order)) {
 					$codes = wc_get_order_item_meta($item_id, self::META_ORDER_ITEM_CODES, true);
 					if (!empty($codes)) {
 						return true;
@@ -102,6 +233,92 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 				}
 			}
 			return false;
+		}
+
+		/**
+		 * How many ticket numbers one order line is supposed to carry
+		 *
+		 * This is THE single place that answers "how many numbers belong on this
+		 * line?". Ordered quantity, refunded quantity and the "tickets per item"
+		 * multiplier of the product (or of the variation, when the line is one)
+		 * all enter here, so ticket creation and the check for missing numbers
+		 * can never drift apart.
+		 *
+		 * @param WC_Order $order Order object
+		 * @param int $item_id Order item ID
+		 * @param WC_Order_Item $item Order item
+		 * @return int Number of ticket numbers this line should have
+		 */
+		public function getExpectedTicketAmountForItem($order, int $item_id, $item): int {
+			$product_original_id = $this->MAIN->getTicketHandler()->getWPMLProductId($item->get_product_id());
+			$variation_original_id = $this->MAIN->getTicketHandler()->getWPMLProductId($item->get_variation_id());
+
+			if ($item->get_variation_id() > 0) {
+				$amount_per_item = intval(get_post_meta($variation_original_id, self::META_PRODUCT_TICKETS_PER_ITEM, true));
+			} else {
+				$amount_per_item = intval(get_post_meta($product_original_id, self::META_PRODUCT_TICKETS_PER_ITEM, true));
+			}
+			if ($amount_per_item < 1) {
+				$amount_per_item = 1;
+			}
+
+			// get_qty_refunded_for_item() returns a negative number, so this
+			// lowers the amount for partly refunded lines.
+			$quantity = $item->get_quantity() + $order->get_qty_refunded_for_item($item_id);
+
+			return intval($quantity * $amount_per_item);
+		}
+
+		/**
+		 * Count order lines that are configured as tickets but still miss numbers
+		 *
+		 * Counted per LINE, never per order: an order where one line already has
+		 * its numbers and another one has none still has work to do. Lines whose
+		 * product has no ticket list assigned are left out - no number can ever
+		 * be drawn for them, so naming them "missing" would send a caller after
+		 * work it can never finish.
+		 *
+		 * @param WC_Order $order Order object
+		 * @return int Number of order lines that still need ticket numbers
+		 */
+		public function countOrderItemsWithMissingTicketnumbers($order): int {
+			$missing = 0;
+
+			foreach ($order->get_items() as $item_id => $item) {
+				if (!$this->isTicketOrderItem($item, (int) $item_id, $order)) {
+					continue;
+				}
+
+				$product_original_id = $this->MAIN->getTicketHandler()->getWPMLProductId($item->get_product_id());
+				$code_list_id = get_post_meta($product_original_id, self::META_PRODUCT_LIST, true);
+				if (empty($code_list_id)) {
+					continue;
+				}
+
+				$expected = $this->getExpectedTicketAmountForItem($order, (int) $item_id, $item);
+				if ($expected < 1) {
+					continue;
+				}
+
+				$existingCodes = wc_get_order_item_meta($item_id, self::META_ORDER_ITEM_CODES, true);
+				$have = empty($existingCodes) ? 0 : count(array_filter(explode(",", $existingCodes), 'strlen'));
+
+				if ($have < $expected) {
+					$missing++;
+				}
+			}
+
+			return $missing;
+		}
+
+		/**
+		 * Does this order still need ticket numbers?
+		 *
+		 * @param WC_Order $order Order object
+		 * @return bool True if at least one line still misses numbers
+		 */
+		public function orderNeedsTicketNumbers($order): bool {
+			return $this->countOrderItemsWithMissingTicketnumbers($order) > 0;
 		}
 
 		/**
@@ -120,7 +337,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 				$product_id = $item->get_product_id();
 				$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
 
-				if (get_post_meta($product_id_orig, self::META_PRODUCT_IS_TICKET, true) == "yes") {
+				if ($this->isTicketOrderItem($item, (int) $item_id, $order)) {
 					$codes = wc_get_order_item_meta($item_id, self::META_ORDER_ITEM_CODES, true);
 					$key = $product_id . "_" . $item_id;
 					$products[$key] = [
@@ -153,6 +370,19 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 				$this->add_serialcode_to_order($order_id); // Generate tickets - may have been manually added products
 			}
 
+			// Ein Platz gilt sonst erst als verkauft, wenn die Ticketnummer entsteht.
+			// Bei Zahlarten, die Tage brauchen, ist er bis dahin fuer alle anderen
+			// frei. Wer das nicht will, waehlt hier den Status, ab dem der Platz weg
+			// ist - die Ticketnummer kommt davon unabhaengig spaeter.
+			$confirmSeatsStatus = trim((string) $this->MAIN->getOptions()->getOptionValue('seatingConfirmSeatsOnOrderStatus'));
+			if ($confirmSeatsStatus !== '' && ltrim($new_status, 'wc-') === ltrim($confirmSeatsStatus, 'wc-')) {
+				try {
+					$this->confirmSeatsForOrder($order_id);
+				} catch (Exception $e) {
+					$this->MAIN->getAdmin()->logErrorToDB($e, "", "while confirming seats for order " . $order_id);
+				}
+			}
+
 			// Handle order cancellation/refund - free up codes if option is enabled
 			if ($new_status == "cancelled" || $new_status == "wc-cancelled" || $new_status == "wc-refunded" || $new_status == "refunded") {
 				// Always release seat blocks for cancelled/refunded orders
@@ -173,6 +403,64 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 			}
 
 			do_action($this->MAIN->_do_action_prefix . 'woocommerce-hooks_woocommerce_order_status_changed', $order_id, $old_status, $new_status);
+		}
+
+		/**
+		 * Mark every seat of an order as sold, without creating tickets.
+		 *
+		 * Used by the option seatingConfirmSeatsOnOrderStatus. The ticket numbers
+		 * follow later and are written onto the same rows then, so a cancellation
+		 * still finds the seat through its ticket.
+		 *
+		 * @param int $order_id Order ID
+		 * @return int Number of seats confirmed
+		 */
+		public function confirmSeatsForOrder(int $order_id): int {
+			$order = wc_get_order($order_id);
+			if (!$order) return 0;
+
+			$seating = $this->MAIN->getSeating();
+			$blockManager = $seating->getBlockManager();
+			$seatMetaKey = $seating->getMetaCartItemSeat();
+			$sessionId = WC()->session ? WC()->session->get_customer_id() : '';
+			$confirmed = 0;
+
+			foreach ($order->get_items() as $item_id => $item) {
+				$seatsData = wc_get_order_item_meta($item_id, $seatMetaKey, true);
+				if (empty($seatsData) || !is_array($seatsData)) continue;
+				if (isset($seatsData['seat_id'])) $seatsData = [$seatsData];
+
+				// Same source as the ticket creation, so a seat keeps the day it was
+				// booked for - a seat of a date picker product belongs to one day.
+				$daysPerTicket = wc_get_order_item_meta($item_id, self::SESSION_KEY_DAYCHOOSER, true);
+				if (!is_array($daysPerTicket)) $daysPerTicket = [];
+
+				$product_id = (int) $item->get_product_id();
+
+				foreach ($seatsData as $index => $seat) {
+					if (empty($seat['seat_id'])) continue;
+					$eventDate = !empty($daysPerTicket[$index]) ? $daysPerTicket[$index] : null;
+
+					$done = false;
+					if (!empty($seat['block_id'])) {
+						$done = $blockManager->confirmBlock((int) $seat['block_id'], $order_id, (int) $item_id, 0);
+					}
+					if (!$done) {
+						$done = $blockManager->confirmSeatForOrder(
+							(int) $seat['seat_id'],
+							$product_id,
+							$sessionId,
+							$order_id,
+							(int) $item_id,
+							0,
+							$eventDate
+						);
+					}
+					if ($done) $confirmed++;
+				}
+			}
+
+			return $confirmed;
 		}
 
 		/**
@@ -213,15 +501,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 						$product_id = $item->get_product_id();
 						if ($product_id) {
 							$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
-							$isTicket = get_post_meta($product_id_orig, self::META_PRODUCT_IS_TICKET, true) == "yes";
-							if ($isTicket) {
-								$variation_id = $item->get_variation_id();
-								if ($variation_id > 0) {
-									// check ob diese variation vom ticket ausgeschlossen ist
-									if (get_post_meta($variation_id, self::META_VARIATION_NOT_TICKET, true) == "yes") {
-										continue;
-									}
-								}
+							if ($this->isTicketOrderItem($item, (int) $item_id, $order)) {
 
 								// check if it is a daychooser
 								$isDaychooser = get_post_meta($product_id_orig, self::META_PRODUCT_IS_DAYCHOOSER, true) == "yes";
@@ -251,15 +531,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 					$product_id = $item->get_product_id();
 					if ($product_id) {
 						$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
-						$isTicket = get_post_meta($product_id_orig, self::META_PRODUCT_IS_TICKET, true) == "yes";
-						if ($isTicket) {
-							$variation_id = $item->get_variation_id();
-							if ($variation_id > 0) {
-								// check ob diese variation vom ticket ausgeschlossen ist
-								if (get_post_meta($variation_id, self::META_VARIATION_NOT_TICKET, true) == "yes") {
-									continue;
-								}
-							}
+						if ($this->isTicketOrderItem($item, (int) $item_id, $order)) {
 							$code_list_id = get_post_meta($product_id_orig, self::META_PRODUCT_LIST, true);
 							if (!empty($code_list_id)) {
 								$this->add_serialcode_to_order_forItem($order_id, $order, $item_id, $item, $code_list_id);
@@ -312,20 +584,17 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 			$item_variation_id = $item->get_variation_id();
 			$item_variation_original_id = $this->MAIN->getTicketHandler()->getWPMLProductId($item_variation_id);
 
+			// Schutzzaun: Diese Methode ist public und wird auch aus dem Premium bzw.
+			// von Fremdcode aufgerufen. Eine Bestellposition darf nur dann eine
+			// Ticketnummer bekommen, wenn ihr eigenes Produkt als Ticket konfiguriert
+			// ist - niemals allein deshalb, weil sie in derselben Bestellung liegt.
+			if ($this->isTicketOrderItem($item, $item_id, $order) == false) {
+				return $ret;
+			}
+
 			if ($saso_eventtickets_list) {
 
-				if ($item->get_variation_id() > 0) {
-					$saso_eventtickets_ticket_amount_per_item = intval(get_post_meta($item_variation_original_id, self::META_PRODUCT_TICKETS_PER_ITEM, true));
-				} else {
-					$saso_eventtickets_ticket_amount_per_item = intval(get_post_meta($product_original_id, self::META_PRODUCT_TICKETS_PER_ITEM, true));
-				}
-				if ($saso_eventtickets_ticket_amount_per_item < 1) {
-					$saso_eventtickets_ticket_amount_per_item = 1;
-				}
-
-				$item_qty_refunded = $order->get_qty_refunded_for_item($item_id);
-				$quantity = $item->get_quantity() + $item_qty_refunded;
-				$quantity *= $saso_eventtickets_ticket_amount_per_item;
+				$quantity = $this->getExpectedTicketAmountForItem($order, $item_id, $item);
 				$quantity_needed = $quantity;
 
 				$codes = [];
@@ -430,15 +699,23 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 									$blockManager = $this->MAIN->getSeating()->getBlockManager();
 									$sessionId = WC()->session ? WC()->session->get_customer_id() : '';
 
-									// Use block_id if available, otherwise find by seat/product/session
+									// Der gespeicherte Hold ist der schnelle Weg, aber kein
+									// verlaesslicher: liegt zwischen Sitzwahl und Abschluss
+									// mehr Zeit als die Reservierungsdauer (Barzahlung per
+									// Beleg, Ueberweisung, Freigabe von Hand), ist die Zeile
+									// weg und das Update trifft nichts. Dann muss der Verkauf
+									// selbst eingetragen werden - sonst bleibt der Platz auf
+									// der Karte frei, obwohl er bezahlt ist (#014837).
+									$confirmed = false;
 									if (!empty($seatPerTicket['block_id'])) {
-										$blockManager->confirmBlock(
+										$confirmed = $blockManager->confirmBlock(
 											(int) $seatPerTicket['block_id'],
 											$order_id,
 											$item_id,
 											(int) $codeObj['id']
 										);
-									} else {
+									}
+									if (!$confirmed) {
 										$blockManager->confirmSeatForOrder(
 											(int) $seatPerTicket['seat_id'],
 											$product_id,
@@ -485,15 +762,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 					$product_id = $item->get_product_id();
 					$product_id_orig = $this->MAIN->getTicketHandler()->getWPMLProductId($product_id);
 
-					$isTicket = get_post_meta($product_id_orig, self::META_PRODUCT_IS_TICKET, true) == "yes";
-					if ($isTicket == false) continue;
-					$variation_id = $item->get_variation_id();
-					if ($variation_id > 0) {
-						// check ob diese variation vom ticket ausgeschlossen ist
-						if (get_post_meta($variation_id, self::META_VARIATION_NOT_TICKET, true) == "yes") {
-							continue;
-						}
-					}
+					if ($this->isTicketOrderItem($item, (int) $item_id, $order) == false) continue;
 
 					$item_qty_refunded = $order->get_qty_refunded_for_item($item_id);
 					if ($item_qty_refunded >= 0) continue;

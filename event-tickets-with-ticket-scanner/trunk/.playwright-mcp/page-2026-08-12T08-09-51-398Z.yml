@@ -1,0 +1,586 @@
+- generic [active] [ref=f12e1]:
+  - generic [ref=f12e2]:
+    - banner [ref=f12e3]:
+      - generic [ref=f12e4]:
+        - generic [ref=f12e5]: VOLLSTART Control
+        - generic [ref=f12e6]: 2026-08-12
+        - generic [ref=f12e7]: Lade Umsatz…
+      - generic [ref=f12e8]:
+        - generic [ref=f12e9]: Aktualisiert 08:30
+        - combobox [ref=f12e13] [cursor=pointer]:
+          - option "2026-08-12" [selected]
+          - option "2026-08-11"
+          - option "2026-08-10"
+          - option "2026-08-09"
+          - option "2026-08-08"
+          - option "2026-08-07"
+          - option "2026-08-06"
+          - option "2026-08-05"
+          - option "2026-08-04"
+          - option "2026-08-03"
+          - option "2026-08-02"
+          - option "2026-08-01"
+          - option "2026-07-31"
+          - option "2026-07-30"
+          - option "2026-07-29"
+          - option "2026-07-28"
+          - option "2026-07-27"
+          - option "2026-07-26"
+          - option "2026-07-25"
+          - option "2026-07-24"
+          - option "2026-07-23"
+          - option "2026-07-22"
+          - option "2026-07-21"
+          - option "2026-07-20"
+          - option "2026-07-19"
+          - option "2026-07-18"
+          - option "2026-07-17"
+          - option "2026-07-16"
+          - option "2026-07-15"
+          - option "2026-07-14"
+          - option "2026-07-13"
+          - option "2026-07-12"
+          - option "2026-07-11"
+          - option "2026-07-10"
+          - option "2026-07-09"
+          - option "2026-07-08"
+          - option "2026-07-07"
+          - option "2026-07-06"
+          - option "2026-07-05"
+          - option "2026-07-04"
+          - option "2026-07-03"
+          - option "2026-07-02"
+          - option "2026-07-01"
+          - option "2026-06-30"
+          - option "2026-06-29"
+          - option "2026-06-28"
+          - option "2026-06-27"
+          - option "2026-06-26"
+          - option "2026-06-25"
+          - option "2026-06-24"
+          - option "2026-06-23"
+          - option "2026-06-22"
+          - option "2026-06-21"
+          - option "2026-06-20"
+          - option "2026-06-19"
+          - option "2026-06-18"
+          - option "2026-06-17"
+          - option "2026-06-16"
+          - option "2026-06-15"
+          - option "2026-06-14"
+          - option "2026-06-13"
+          - option "2026-06-12"
+          - option "2026-06-11"
+          - option "2026-06-10"
+          - option "2026-06-09"
+          - option "2026-06-08"
+          - option "2026-06-07"
+          - option "2026-06-06"
+          - option "2026-06-05"
+          - option "2026-06-04"
+          - option "2026-06-03"
+          - option "2026-06-02"
+          - option "2026-06-01"
+          - option "2026-05-31"
+          - option "2026-05-30"
+          - option "2026-05-29"
+          - option "2026-05-28"
+          - option "2026-05-27"
+          - option "2026-05-26"
+          - option "2026-05-25"
+          - option "2026-05-24"
+          - option "2026-05-23"
+          - option "2026-05-22"
+          - option "2026-05-21"
+          - option "2026-05-20"
+          - option "2026-05-19"
+          - option "2026-05-18"
+          - option "2026-05-17"
+          - option "2026-05-16"
+          - option "2026-05-15"
+          - option "2026-05-14"
+          - option "2026-05-13"
+          - option "2026-05-12"
+          - option "2026-05-11"
+          - option "2026-05-10"
+          - option "2026-05-09"
+          - option "2026-05-08"
+          - option "2026-05-07"
+          - option "2026-05-06"
+          - option "2026-05-05"
+          - option "2026-05-04"
+          - option "2026-05-03"
+          - option "2026-05-02"
+          - option "2026-05-01"
+          - option "2026-04-30"
+          - option "2026-04-29"
+          - option "2026-04-28"
+          - option "2026-04-27"
+          - option "2026-04-26"
+          - option "2026-04-25"
+          - option "2026-04-24"
+          - option "2026-04-23"
+          - option "2026-04-22"
+          - option "2026-04-21"
+          - option "2026-04-19"
+          - option "2026-04-18"
+          - option "2026-04-17"
+          - option "2026-04-16"
+          - option "2026-04-15"
+          - option "2026-04-14"
+          - option "2026-04-13"
+          - option "2026-04-12"
+          - option "2026-04-11"
+          - option "2026-04-10"
+          - option "2026-04-09"
+          - option "2026-04-08"
+          - option "2026-04-07"
+          - option "2026-04-06"
+          - option "2026-04-05"
+          - option "2026-04-04"
+          - option "2026-04-03"
+          - option "2026-04-02"
+          - option "2026-04-01"
+          - option "2026-03-31"
+          - option "2026-03-30"
+          - option "2026-03-29"
+          - option "2026-03-28"
+          - option "2026-03-27"
+          - option "2026-03-26"
+          - option "2026-03-25"
+          - option "2026-03-24"
+          - option "2026-03-23"
+          - option "2026-03-22"
+          - option "2026-03-21"
+          - option "2026-03-20"
+          - option "2026-03-19"
+          - option "2026-03-18"
+          - option "2026-03-17"
+          - option "2026-03-16"
+          - option "2026-03-15"
+          - option "2026-03-14"
+          - option "2026-03-13"
+          - option "2026-03-12"
+        - button "▶ Vorlesen" [ref=f12e14] [cursor=pointer]
+        - button "⚙" [ref=f12e15] [cursor=pointer]
+        - generic [ref=f12e16]:
+          - button "A-" [ref=f12e17] [cursor=pointer]
+          - button "100%" [ref=f12e18] [cursor=pointer]
+          - button "A+" [ref=f12e19] [cursor=pointer]
+        - combobox "Theme" [ref=f12e20] [cursor=pointer]:
+          - option "Default" [selected]
+          - option "Light"
+          - option "Elite"
+          - option "Abyss"
+          - option "Midnight"
+          - option "Nebula"
+          - option "Cockpit"
+          - option "Deep Space"
+          - option "Star Trek"
+          - option "Cyberpunk"
+          - option "Inferno"
+          - option "Neo Tokyo"
+          - option "Alien"
+        - button "🔔" [ref=f12e22] [cursor=pointer]
+        - link "→ Logout" [ref=f12e23] [cursor=pointer]:
+          - /url: "?logout"
+    - generic [ref=f12e24]:
+      - button "BUSINESS INTELLIGENCE" [ref=f12e25] [cursor=pointer]
+      - button "MARKETING" [ref=f12e26] [cursor=pointer]
+      - button "TEAM MEETING" [ref=f12e27] [cursor=pointer]
+      - button "DOWNLOADS" [ref=f12e28] [cursor=pointer]
+      - button "JOBS" [ref=f12e29] [cursor=pointer]
+      - button "INBOX" [ref=f12e30] [cursor=pointer]
+      - button "PROJEKTE" [ref=f12e31] [cursor=pointer]
+      - button "🛰 COCKPIT" [ref=f12e32] [cursor=pointer]
+      - button "🧠 EXPERT-GREMIUM" [ref=f12e33] [cursor=pointer]
+      - button "🎫 TASKS" [ref=f12e34] [cursor=pointer]
+      - button "📚 VAULT" [ref=f12e35] [cursor=pointer]
+      - button "🛡 MODERATION" [ref=f12e36] [cursor=pointer]
+      - button "🔌 MCP" [ref=f12e37] [cursor=pointer]
+  - main [ref=f12e38]:
+    - generic [ref=f12e39]:
+      - generic [ref=f12e40]:
+        - generic [ref=f12e43]:
+          - generic [ref=f12e44]: Kai
+          - generic [ref=f12e45]: Business Intelligence — bereit
+        - generic [ref=f12e46]:
+          - generic [ref=f12e47]:
+            - generic [ref=f12e48]: "🎯 Ziel: 10.000 EUR/Monat"
+            - generic [ref=f12e49]: —
+          - generic [ref=f12e50]:
+            - generic [ref=f12e51]: "-- aktuell 30d"
+            - generic [ref=f12e52]: "-- Gap"
+            - generic [ref=f12e53]: "-- Trend 7d"
+          - generic [ref=f12e55]: "--"
+      - generic [ref=f12e56]:
+        - generic [ref=f12e57]:
+          - generic [ref=f12e58]: Monat Aug
+          - generic [ref=f12e59]: "--"
+          - generic [ref=f12e60]: → 0 €
+        - generic [ref=f12e61]:
+          - generic [ref=f12e62]: Umsatz 30d
+          - generic [ref=f12e63]: 2.753 €
+          - generic [ref=f12e64]: ▼ -53,5 % vs. Vorwoche (7d)
+        - generic [ref=f12e66]:
+          - generic [ref=f12e67]: Umsatz 7d
+          - generic [ref=f12e68]: 392 €
+          - generic [ref=f12e69]: "Heute: 0 €"
+        - generic [ref=f12e70]:
+          - generic [ref=f12e71]: Orders 30d
+          - generic [ref=f12e72]: "54"
+          - generic [ref=f12e73]: Ø 51 € pro Bestellung
+        - generic [ref=f12e74]:
+          - generic [ref=f12e75]: Aktive Lizenzen
+          - generic [ref=f12e76]: "7.025"
+          - generic [ref=f12e77]: 2.083 verkauft / 874 Domains
+        - generic [ref=f12e78]:
+          - generic [ref=f12e79]: AngelReminder PROD User
+          - generic [ref=f12e80]: "9"
+          - generic [ref=f12e81]: 3 Premium · 6 Free · 5 nie eingeloggt
+        - generic [ref=f12e82]:
+          - generic [ref=f12e83]: Google Ads 7d
+          - generic [ref=f12e84]: 35 €
+          - generic [ref=f12e85]: 4.988 Klicks · 9.0% CTR · 1 aktiv · 0 Conv
+      - generic [ref=f12e86]:
+        - generic [ref=f12e87]:
+          - generic [ref=f12e88]:
+            - generic [ref=f12e89]:
+              - generic [ref=f12e90]: 📈 Kai's BI Briefing
+              - generic [ref=f12e91]:
+                - generic [ref=f12e92]: Daily Report
+                - button "⚡ Speed" [ref=f12e93] [cursor=pointer]
+                - button "▶" [ref=f12e94] [cursor=pointer]
+            - generic [ref=f12e95]:
+              - generic [ref=f12e96]:
+                - button "📈 Kai" [ref=f12e97] [cursor=pointer]
+                - button "🏭 Shay" [ref=f12e98] [cursor=pointer]
+                - button "🏭 Remy" [ref=f12e99] [cursor=pointer]
+              - generic [ref=f12e100]:
+                - heading "Business-OS Daily Report – 2026-08-12" [level=1] [ref=f12e101]
+                - heading "Kurzfassung (30 Sekunden lesen)" [level=2] [ref=f12e102]
+                - paragraph [ref=f12e103]: "Heute 0 EUR Umsatz, 7-Tage-Trend −53,5% (391,90 EUR vs. ~843 EUR Vorwoche) — das ist der zweite Halbierungs-Einbruch in vier Wochen. Gleichzeitig explodieren die Event-Tickets-Downloads auf WP.org: 973 in 7 Tagen, +234% zur Vorwoche, bei 0 EUR Ads-Kosten. Der Funnel oben füllt sich also rein organisch, unten kommt nichts an — die Free→Pro-Conversion ist der Engpass, nicht die Reichweite. Konkret: Warum 10 von 74 Bestellungen (13,5%) failed sind, ist die einzige Zahl mit direkt erreichbarem Geld dahinter."
+                - heading "Umsatz & Sales" [level=2] [ref=f12e104]
+                - list [ref=f12e105]:
+                  - listitem [ref=f12e106]: "Heute: 0,00 EUR"
+                  - listitem [ref=f12e107]: "7d: 391,90 EUR (−53,52% vs. Vorwoche)"
+                  - listitem [ref=f12e108]: "30d: 2.752,66 EUR, 54 completed Orders, AOV 50,98 EUR"
+                  - listitem [ref=f12e109]: "Produktmix 30d: Event Tickets 2.379,66 EUR (86,4%), Serial Codes 245 EUR (8,9%), Perfex-Module 116 EUR (4,2%)"
+                - paragraph [ref=f12e110]: Bei 10.000 EUR/Monat Ziel liegt der Ist-Stand bei 27,5%. Die Abhängigkeit von einem Produkt (86%) ist unverändert hoch.
+                - paragraph [ref=f12e111]: "Order-Status ist das Auffälligste: 10 failed + 5 pending + 4 cancelled = 19 von 74 Orders (25,7%) haben nicht abgeschlossen. Bei AOV 51 EUR sind das nominell ~970 EUR im Raum. Die Failed-Analyse vom 18.03. hat 67% Selbst-Recovery über Stripe-Retry gezeigt — bei 10 Failed in 30 Tagen wären das ~3 echte Verluste. Nicht dramatisch, aber die 5 pending sind unklar: pending heißt bei WooCommerce nicht bezahlt, aber auch nicht gescheitert. Die sollten mal einzeln angesehen werden."
+                - paragraph [ref=f12e112]: "Serial Codes: 6 Verkäufe/30d à ~41 EUR Durchschnitt. Die Preissenkung 80→50 EUR hält den Umsatz, aber die WP.org-Downloads sinken (−8,4% 7d). Kein Wachstum."
+                - heading "Piracy & Lizenzen" [level=2] [ref=f12e113]
+                - list [ref=f12e114]:
+                  - listitem [ref=f12e115]: 3.666 Checks, 1.669 erfolgreich (45,5% Erfolgsquote)
+                  - listitem [ref=f12e116]: Piracy-Rate 1,09% — unauffällig, System greift
+                  - listitem [ref=f12e117]: Domain-Mismatch 8,48% bei 874 unique Domains
+                  - listitem [ref=f12e118]: Support-expired 20,68% — jeder fünfte Check kommt von einer Lizenz ohne aktiven Support
+                  - listitem [ref=f12e119]: Aktive Lizenzen 7.025, davon nur 2.083 verkauft, 4.942 manuell
+                - paragraph [ref=f12e120]: "Die 20,68% expired-Rate ist die wichtigste Lizenz-Zahl. Bei 2.083 verkauften Lizenzen sind das grob 430 Kunden mit abgelaufenem Support, die das Plugin weiter aktiv nutzen. Die RENEW20-Mails laufen — aus dem Tracker: 52 expired-Lizenz-Mails, 0 Conversions nach 5 Tagen (Stand 12.08. früh). Das ist ein Signal: Rabatt-Mails an Expired funktionieren aktuell nicht. Das deckt sich mit dem Ergebnis vom 18.03. (\"Win-back erst bei Feature-Update sinnvoll, nicht mit Coupon\")."
+                - paragraph [ref=f12e121]: Das Verhältnis 4.942 manuell zu 2.083 verkauft bleibt schräg — 70% der aktiven Lizenzen sind nie durch die Kasse gegangen.
+                - heading "Support" [level=2] [ref=f12e122]
+                - paragraph [ref=f12e123]: "0 offene Tickets. 85 echte Tickets in 30 Tagen, 35 mit Reply. Durchschnittliche Erstantwort 495 Minuten (8,25 h), Maximum 5.294 Minuten (~3,7 Tage). Einziges erkanntes Top-Thema: AngelReminder (3). 41 Autoresponder-Tickets, 42 geschlossen."
+                - paragraph [ref=f12e124]: Die 8,25 h Schnitt sind für ein Ein-Mann-Produkt okay, der 3,7-Tage-Ausreißer nicht. Bei 0 offenen Tickets besteht aber kein akuter Handlungsdruck.
+                - heading "Empfehlungen (priorisiert)" [level=2] [ref=f12e125]
+                - paragraph [ref=f12e126]:
+                  - strong [ref=f12e127]: 1. Perfex-Modul-Statusliste aktualisieren (offener Task aus Tracker)
+                  - text: "Der einzige noch offene Tracker-Punkt. Die heutigen Daten belegen die Dringlichkeit: Purchase Pro macht 29 EUR/2 Stück Umsatz, ist also nachweislich live und verkauft — steht aber nicht als solches in der Liste. Inventory Pro 87 EUR/4 Stück, VAT Rates 1 Stück zu 0 EUR (Freebie? Bug?). Quelle: Lizenzserver + WooCommerce-Produkte. Der VAT-Rates-Verkauf mit 0,00 EUR Umsatz bei Quantity 1 gehört dabei mitgeprüft — entweder Test-Order oder ein Preisfehler im Produkt."
+                - paragraph [ref=f12e128]:
+                  - strong [ref=f12e129]: 2. Free→Pro-Conversion von Event Tickets messen, bevor irgendwas anderes passiert
+                  - text: "Neu aus heutigen Daten: 3.264 Downloads in 30 Tagen, 42 verkaufte Event-Tickets-Lizenzen. Das sind 1,3% — und die 42 sind größtenteils Renewals, nicht Neukunden. Bei 973 Downloads/7d und +234% Trend ist die Reichweite kein Problem mehr. Die Frage ist, was zwischen Free-Installation und Pro-Kauf passiert. Konkret messbar: Wie viele der Free-Installationen sehen überhaupt jemals einen Pro-Hinweis, und wo bricht es ab. Ohne diese Zahl ist jede weitere Marketing-Ausgabe blind."
+                - paragraph [ref=f12e130]:
+                  - strong [ref=f12e131]: 3. Die 5 pending Orders einzeln durchgehen
+                  - text: 25,7% nicht-abgeschlossene Orders. Failed ist analysiert (67% Selbst-Recovery), pending nicht. 5 Orders à ~51 EUR = ~255 EUR, die weder bezahlt noch gescheitert sind. Das ist ein 15-Minuten-Check im WooCommerce-Backend.
+                - paragraph [ref=f12e132]:
+                  - strong [ref=f12e133]: "4. Appointment Desk: Entscheidung fällig, nicht weiter beobachten"
+                  - text: 46 Downloads in 30 Tagen, 0 active_installs, 0 Ratings, 0 EUR Umsatz — vier Monate nach der Beta-Kampagne an 893 Bestandskunden. Die Re-Eval-Schwelle aus dem Pricing-Projekt (25 DLs/Tag oder 5+ Reviews) ist bei 1,5 DLs/Tag um Faktor 16 verfehlt. Das Produkt hat keinen Markt gefunden über den bestehenden Kanal. Entweder ein anderer Kanal wird getestet oder es wird auf Wartungsmodus gesetzt — weiteres passives Beobachten kostet nur Aufmerksamkeit.
+                - paragraph [ref=f12e134]: "Zu Google Ads: Alle 5 Kampagnen sind laut Funnel-Engine pausiert (26–48 Tage ohne Aktivität), Kosten 10d = 0 EUR. Der Revenue-Einbruch von −53% ist zeitlich kompatibel mit dem Pause-Zeitpunkt, aber die Kampagnen hatten bei 12,6x ROAS nur 211 EUR/30d Volumen — sie erklären den Einbruch nicht. Empfehlungen dazu stehen in der Funnel-Engine."
+                - heading "Auffälligkeiten" [level=2] [ref=f12e135]
+                - paragraph [ref=f12e136]:
+                  - strong [ref=f12e137]: Download-Explosion ohne Umsatzeffekt.
+                  - text: "Event Tickets +234% Downloads bei gleichzeitig −53% Umsatz und 0 EUR Ads-Ausgaben. Zwei mögliche Erklärungen: entweder ein echter organischer Schub (Version 3.1.5, Rating 94 bei 23 Bewertungen), oder Bot-/Mirror-Traffic. 139 Downloads/Tag bei nur 1.000 active_installs ist ein Verhältnis, das stutzig macht — die Installationsbasis wächst nicht mit. Das ist prüfbar über die Lizenz-Check-Zahlen: 874 unique Domains bei 3.666 Checks passt nicht zu 139 täglichen Neuinstallationen."
+                - paragraph [ref=f12e138]:
+                  - strong [ref=f12e139]: 45,5% Lizenz-Check-Erfolgsquote.
+                  - text: 1.997 von 3.666 Checks schlagen fehl, aber nur 1,09% davon sind Piracy und 8,48% Domain-Mismatch. Das erklärt zusammen knapp 10% — bleiben ~35% fehlgeschlagene Checks ohne benannten Grund. Entweder ein Kategorisierungs-Loch in der Statistik oder ein technisches Problem beim Lizenzserver. Bei 7.025 aktiven Lizenzen ist das die Zahl, hinter der am ehesten ein stiller Bug steckt.
+          - generic [ref=f12e140]:
+            - generic [ref=f12e141]:
+              - generic [ref=f12e142]: WP Plugin Portfolio
+              - generic [ref=f12e143]: "--"
+            - generic [ref=f12e145]: Lade
+          - generic [ref=f12e147]:
+            - generic [ref=f12e148]:
+              - generic [ref=f12e149]: Perfex Modul Portfolio
+              - generic [ref=f12e150]: "--"
+            - generic [ref=f12e152]: Lade
+          - generic [ref=f12e154]:
+            - generic [ref=f12e155]:
+              - generic [ref=f12e156]: Business Logbuch
+              - generic [ref=f12e157]: "--"
+            - generic [ref=f12e159]: Lade
+          - generic [ref=f12e161]:
+            - generic [ref=f12e162]:
+              - generic [ref=f12e163]: WP.org Downloads
+              - generic [ref=f12e164]: "--"
+            - generic [ref=f12e166]: Lade
+          - generic [ref=f12e168]:
+            - generic [ref=f12e169]:
+              - generic [ref=f12e170]: Eventado eventado.com
+              - generic [ref=f12e171]: "--"
+            - generic [ref=f12e173]: Lade
+          - generic [ref=f12e175]:
+            - generic [ref=f12e176]:
+              - generic [ref=f12e177]: Installs vs Premium
+              - generic [ref=f12e178]: "--"
+            - generic [ref=f12e180]: Lade
+        - generic [ref=f12e182]:
+          - generic [ref=f12e183]:
+            - generic [ref=f12e184]:
+              - generic [ref=f12e185]: Top Produkte
+              - generic [ref=f12e186]:
+                - generic [ref=f12e187]: nach Umsatz
+                - button "▶" [ref=f12e188] [cursor=pointer]
+            - generic [ref=f12e189]:
+              - generic [ref=f12e190]:
+                - generic "Event Tickets with Ticket Scanner License - 365 Days Abo" [ref=f12e191]: Event Tickets + Scanner Lic.
+                - generic [ref=f12e194]: 2.380 €
+              - generic [ref=f12e195]:
+                - generic "Serial Codes Generator and Validator License - 365 Days Abo" [ref=f12e196]: Serial Codes Gen+Val Lic.
+                - generic [ref=f12e199]: 245 €
+              - generic [ref=f12e200]:
+                - generic "Inventory Pro - Multi-Warehouse Inventory Management" [ref=f12e201]
+                - generic [ref=f12e204]: 87 €
+              - generic [ref=f12e205]:
+                - generic "Purchase Pro - Procurement Management &amp; Suppliers" [ref=f12e206]
+                - generic [ref=f12e209]: 29 €
+              - generic [ref=f12e210]:
+                - generic "Wordpress Plugin - Event Tickets with Ticket Scanner for WooCommerce Abo" [ref=f12e211]: Event Tickets + Scanner for WooCommerce Abo
+                - generic [ref=f12e214]: 12 €
+              - generic [ref=f12e215]:
+                - generic "VAT Rates - Tax Rate Import &amp; Sync" [ref=f12e216]
+                - generic [ref=f12e219]: 0 €
+          - generic [ref=f12e220]:
+            - generic [ref=f12e221]:
+              - generic [ref=f12e222]: Top Laender
+              - generic [ref=f12e223]:
+                - generic [ref=f12e224]: nach Umsatz
+                - button "▶" [ref=f12e225] [cursor=pointer]
+            - generic [ref=f12e226]:
+              - generic [ref=f12e227]:
+                - generic [ref=f12e228]: 🇩🇪 DE
+                - generic [ref=f12e231]: 401 €
+              - generic [ref=f12e232]:
+                - generic [ref=f12e233]: 🇺🇸 US
+                - generic [ref=f12e236]: 395 €
+              - generic [ref=f12e237]:
+                - generic [ref=f12e238]: 🇳🇱 NL
+                - generic [ref=f12e241]: 211 €
+              - generic [ref=f12e242]:
+                - generic [ref=f12e243]: 🇦🇹 AT
+                - generic [ref=f12e246]: 158 €
+              - generic [ref=f12e247]:
+                - generic [ref=f12e248]: 🇨🇿 CZ
+                - generic [ref=f12e251]: 147 €
+              - generic [ref=f12e252]:
+                - generic [ref=f12e253]: 🇬🇧 GB
+                - generic [ref=f12e256]: 128 €
+              - generic [ref=f12e257]:
+                - generic [ref=f12e258]: 🇪🇸 ES
+                - generic [ref=f12e261]: 128 €
+              - generic [ref=f12e262]:
+                - generic [ref=f12e263]: 🇬🇷 GR
+                - generic [ref=f12e266]: 98 €
+          - generic [ref=f12e267]:
+            - generic [ref=f12e268]:
+              - generic [ref=f12e269]: Lizenz-Status
+              - generic [ref=f12e270]:
+                - generic [ref=f12e271]: 3.666 Checks
+                - button "▶" [ref=f12e272] [cursor=pointer]
+            - generic [ref=f12e274]:
+              - generic [ref=f12e282]:
+                - generic [ref=f12e283]: "3.666"
+                - text: Checks
+              - generic [ref=f12e284]:
+                - generic [ref=f12e285]:
+                  - generic [ref=f12e287]: Erfolgreich
+                  - generic [ref=f12e288]: 45,5 %
+                - generic [ref=f12e289]:
+                  - generic [ref=f12e291]: Support abgelaufen
+                  - generic [ref=f12e292]: 20,7 %
+                - generic [ref=f12e293]:
+                  - generic [ref=f12e295]: Domain Mismatch
+                  - generic [ref=f12e296]: 8,5 %
+                - generic [ref=f12e297]:
+                  - generic [ref=f12e299]: Piracy
+                  - generic [ref=f12e300]: 1,1 %
+                - generic [ref=f12e301]:
+                  - generic [ref=f12e303]: Sonstige
+                  - generic [ref=f12e304]: 24,2 %
+          - generic [ref=f12e305]:
+            - generic [ref=f12e306]:
+              - generic [ref=f12e307]: Support Tickets
+              - generic [ref=f12e308]:
+                - generic [ref=f12e309]: 85 Tickets (30d)
+                - button "▶" [ref=f12e310] [cursor=pointer]
+            - generic [ref=f12e311]:
+              - generic [ref=f12e312]:
+                - generic [ref=f12e313]:
+                  - generic [ref=f12e314]: "0"
+                  - generic [ref=f12e315]: Offen
+                  - generic [ref=f12e316]: 8h 15min
+                  - generic [ref=f12e317]: ∅ Erste Antwort
+                - generic [ref=f12e318]:
+                  - generic [ref=f12e319]:
+                    - generic [ref=f12e321]: AR New Account
+                    - generic [ref=f12e322]: "2"
+                  - generic [ref=f12e323]:
+                    - generic [ref=f12e325]: Autoresponder
+                    - generic [ref=f12e326]: "41"
+                  - generic [ref=f12e327]:
+                    - generic [ref=f12e329]: Closed
+                    - generic [ref=f12e330]: "42"
+              - generic [ref=f12e331]:
+                - 'generic "KW 2026-07-13: 15" [ref=f12e332]'
+                - 'generic "KW 2026-07-20: 27" [ref=f12e333]'
+                - 'generic "KW 2026-07-27: 6" [ref=f12e334]'
+                - 'generic "KW 2026-08-03: 25" [ref=f12e335]'
+                - 'generic "KW 2026-08-10: 12" [ref=f12e336]'
+              - generic [ref=f12e337]: Wochen-Trend
+          - generic [ref=f12e338]:
+            - generic [ref=f12e339]:
+              - generic [ref=f12e340]: Lizenz-Mailer
+              - generic [ref=f12e341]: "--"
+            - generic [ref=f12e343]: Lade
+          - generic [ref=f12e345]:
+            - generic [ref=f12e346]:
+              - generic [ref=f12e347]: Ad Tracking
+              - generic [ref=f12e348]: 0 heute
+            - generic [ref=f12e350]:
+              - generic [ref=f12e351]:
+                - generic [ref=f12e352]:
+                  - generic [ref=f12e353]: "0"
+                  - generic [ref=f12e354]: Heute (0 unique)
+                - generic [ref=f12e355]:
+                  - generic [ref=f12e356]: "14"
+                  - generic [ref=f12e357]: Diese Woche
+                - generic [ref=f12e358]:
+                  - generic [ref=f12e359]: "66"
+                  - generic [ref=f12e360]: Gesamt (14d)
+              - generic [ref=f12e361]:
+                - generic [ref=f12e362]:
+                  - generic [ref=f12e363]: "5"
+                  - 'generic "2026-07-30: 5 Klicks" [ref=f12e364]'
+                  - generic [ref=f12e365]: "30"
+                - generic [ref=f12e366]:
+                  - generic [ref=f12e367]: "3"
+                  - 'generic "2026-07-31: 3 Klicks" [ref=f12e368]'
+                  - generic [ref=f12e369]: "31"
+                - generic [ref=f12e370]:
+                  - generic [ref=f12e371]: "3"
+                  - 'generic "2026-08-01: 3 Klicks" [ref=f12e372]'
+                  - generic [ref=f12e373]: "01"
+                - generic [ref=f12e374]:
+                  - generic [ref=f12e375]: "2"
+                  - 'generic "2026-08-02: 2 Klicks" [ref=f12e376]'
+                  - generic [ref=f12e377]: "02"
+                - generic [ref=f12e378]:
+                  - generic [ref=f12e379]: "7"
+                  - 'generic "2026-08-03: 7 Klicks" [ref=f12e380]'
+                  - generic [ref=f12e381]: "03"
+                - generic [ref=f12e382]:
+                  - generic [ref=f12e383]: "4"
+                  - 'generic "2026-08-04: 4 Klicks" [ref=f12e384]'
+                  - generic [ref=f12e385]: "04"
+                - generic [ref=f12e386]:
+                  - generic [ref=f12e387]: "2"
+                  - 'generic "2026-08-05: 2 Klicks" [ref=f12e388]'
+                  - generic [ref=f12e389]: "05"
+                - generic [ref=f12e390]:
+                  - generic [ref=f12e391]: "7"
+                  - 'generic "2026-08-06: 7 Klicks" [ref=f12e392]'
+                  - generic [ref=f12e393]: "06"
+                - generic [ref=f12e394]:
+                  - generic [ref=f12e395]: "1"
+                  - 'generic "2026-08-07: 1 Klicks" [ref=f12e396]'
+                  - generic [ref=f12e397]: "07"
+                - generic [ref=f12e398]:
+                  - generic [ref=f12e399]: "5"
+                  - 'generic "2026-08-08: 5 Klicks" [ref=f12e400]'
+                  - generic [ref=f12e401]: "08"
+                - generic [ref=f12e402]:
+                  - generic [ref=f12e403]: "13"
+                  - 'generic "2026-08-09: 13 Klicks" [ref=f12e404]'
+                  - generic [ref=f12e405]: "09"
+                - generic [ref=f12e406]:
+                  - generic [ref=f12e407]: "11"
+                  - 'generic "2026-08-10: 11 Klicks" [ref=f12e408]'
+                  - generic [ref=f12e409]: "10"
+                - generic [ref=f12e410]:
+                  - generic [ref=f12e411]: "3"
+                  - 'generic "2026-08-11: 3 Klicks" [ref=f12e412]'
+                  - generic [ref=f12e413]: "11"
+                - generic [ref=f12e414]:
+                  - 'generic "2026-08-12: 0 Klicks" [ref=f12e415]'
+                  - generic [ref=f12e416]: "12"
+              - generic [ref=f12e417]:
+                - generic [ref=f12e418]: Pro Produkt
+                - generic [ref=f12e419]:
+                  - generic [ref=f12e420]: event-tickets-premium
+                  - generic [ref=f12e421]: 0 heute · 6 total · 6 unique
+                - generic [ref=f12e422]:
+                  - generic [ref=f12e423]: event-tickets-free
+                  - generic [ref=f12e424]: 0 heute · 35 total · 29 unique
+                - generic [ref=f12e425]:
+                  - generic [ref=f12e426]: serial-codes-free
+                  - generic [ref=f12e427]: 0 heute · 24 total · 19 unique
+                - generic [ref=f12e428]:
+                  - generic [ref=f12e429]: serial-codes-premium
+                  - generic [ref=f12e430]: 0 heute · 1 total · 1 unique
+          - generic [ref=f12e431]:
+            - generic [ref=f12e432]:
+              - generic [ref=f12e433]: GAds Funnel
+              - generic [ref=f12e434]: "--"
+            - generic [ref=f12e436]: Lade
+          - generic [ref=f12e438]:
+            - generic [ref=f12e439]:
+              - generic [ref=f12e440]: Google Ads Analysen
+              - generic [ref=f12e441]: "3"
+            - list [ref=f12e444]:
+              - listitem [ref=f12e445] [cursor=pointer]:
+                - generic [ref=f12e446]: Do., 02.04.2026
+                - generic [ref=f12e447]: anzeigen →
+              - listitem [ref=f12e448] [cursor=pointer]:
+                - generic [ref=f12e449]: Do., 26.03.2026
+                - generic [ref=f12e450]: anzeigen →
+              - listitem [ref=f12e451] [cursor=pointer]:
+                - generic [ref=f12e452]: Mo., 23.03.2026
+                - generic [ref=f12e453]: anzeigen →
+        - generic [ref=f12e455]:
+          - generic [ref=f12e456]:
+            - generic [ref=f12e457]: "📈 Tages-Funnel: Ads → LP → WP → Orders"
+            - generic [ref=f12e458]: "--"
+          - generic [ref=f12e460]: Lade Funnel...
+        - generic [ref=f12e463]:
+          - generic [ref=f12e464]:
+            - generic [ref=f12e465]: GAds Empfehlungen
+            - generic [ref=f12e466]: "--"
+          - generic [ref=f12e468]: Lade
+      - generic [ref=f12e471]:
+        - generic [ref=f12e472]:
+          - generic [ref=f12e473]: Aufgaben
+          - generic [ref=f12e474]:
+            - generic [ref=f12e475]: "--"
+            - button "+ Neue Aufgabe" [ref=f12e476] [cursor=pointer]
+        - generic [ref=f12e477]: Lade Aufgaben
+    - text: Feed 1 · Kai Feed 2 · Maya Feed 3 · Tom Feed 4 · Lina Feed 5 · Adrian Feed 6 · Nadia Feed 7 · Felix
+  - button "Business-Berater" [ref=f12e480] [cursor=pointer]
+  - generic [ref=f12e484]:
+    - generic [ref=f12e485]:
+      - generic [ref=f12e486]: Business-Berater
+      - button "×" [ref=f12e488] [cursor=pointer]
+    - generic [ref=f12e490]:
+      - strong [ref=f12e491]: Business-Berater
+      - text: Frag mich zu Umsatz, Lizenzen, Marketing, Strategie oder zu deinen aktuellen Business-Daten.
+    - generic [ref=f12e492]:
+      - textbox "Nachricht schreiben..." [ref=f12e493]
+      - button "Senden" [ref=f12e494] [cursor=pointer]
+  - contentinfo [ref=f12e497]: VOLLSTART Control — Business OS Dashboard

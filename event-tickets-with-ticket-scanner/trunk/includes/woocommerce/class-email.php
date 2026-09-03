@@ -335,19 +335,16 @@ if (!class_exists('sasoEventtickets_WC_Email')) {
 		 * @return string|false Directory path or false if not writable
 		 */
 		private function getTempDirectory() {
-			$dirname = get_temp_dir();
-
-			if (!wp_is_writable($dirname)) {
+			// Single source of truth: sasoEventtickets_Core::getWritableTempDir().
+			// It throws when nothing is writable, but the callers here rely on a
+			// falsy return so that a failing attachment never aborts the whole
+			// WooCommerce email - so the exception is logged and swallowed.
+			try {
+				return $this->MAIN->getCore()->getWritableTempDir();
+			} catch (Exception $e) {
+				$this->MAIN->getAdmin()->logErrorToDB($e, null, "no writable directory for email attachments");
 				return false;
 			}
-
-			$dirname .= trailingslashit($this->MAIN->getPrefix());
-
-			if (!file_exists($dirname)) {
-				wp_mkdir_p($dirname);
-			}
-
-			return $dirname;
 		}
 
 		/**
@@ -361,7 +358,14 @@ if (!class_exists('sasoEventtickets_WC_Email')) {
 		 * @return void
 		 */
 		private function delete_specific_attachments(array $attachments): void {
-			$dirname = get_temp_dir() . $this->MAIN->getPrefix();
+			// Must resolve the directory the same way the files were written,
+			// otherwise the dirname() comparison below silently stops matching
+			// and temporary PDFs are never cleaned up again.
+			$dirname = $this->getTempDirectory();
+			if (!$dirname) {
+				return; // no temp directory means nothing of ours was written
+			}
+			$dirname = untrailingslashit($dirname);
 
 			foreach ($attachments as $item) {
 				try {
@@ -427,6 +431,30 @@ if (!class_exists('sasoEventtickets_WC_Email')) {
 						}
 					}
 					echo '<p><a target="_blank" href="' . esc_url($url) . '"><b>' . esc_html($dlnbtnlabel) . '</b></a></p>';
+				}
+			}
+
+			// Display congress page link(s) — one per ticket whose product has a congress assigned
+			if ($this->MAIN->getOptions()->isOptionCheckboxActive('congressEmailLinkActive')
+				&& file_exists(plugin_dir_path(dirname(__FILE__)) . 'congress/class-congress-repository.php')) {
+				$repo  = $this->MAIN->getCongressRepository();
+				$label = trim((string)$this->MAIN->getOptions()->getOptionValue('congressEmailLinkLabel'));
+				if ($label === '') {
+					$label = __('Open your congress page', 'event-tickets-with-ticket-scanner');
+				}
+				foreach ($order->get_items() as $item) {
+					$product_id = (int)$item->get_product_id();
+					if (!$product_id || !$repo->getForProduct($product_id)) {
+						continue;
+					}
+					$public_ids_value = (string)$item->get_meta(self::META_ORDER_ITEM_PUBLIC_IDS);
+					$public_ids = $public_ids_value !== '' ? explode(',', $public_ids_value) : [];
+					foreach ($public_ids as $pid) {
+						$pid = trim($pid);
+						if ($pid === '') continue;
+						$url = $repo->getUrl($pid);
+						echo '<p><a target="_blank" href="' . esc_url($url) . '"><b>' . esc_html($label) . '</b></a></p>';
+					}
 				}
 			}
 

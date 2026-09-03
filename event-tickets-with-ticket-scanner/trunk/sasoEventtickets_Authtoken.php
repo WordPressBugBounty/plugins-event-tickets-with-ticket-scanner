@@ -49,6 +49,41 @@ class sasoEventtickets_Authtoken {
 		return apply_filters( $this->MAIN->_add_filter_prefix.'authtoken_isProductAllowedByAuthToken', true, $authtoken, $product_ids );
 	}
 
+	/**
+	 * May this scanner token redeem tickets of these ticket lists?
+	 *
+	 * Mirror of isProductAllowedByAuthToken() for the list side — the only
+	 * restriction that can apply to tickets without an order, which have no
+	 * product to bind to.
+	 *
+	 * @param string $authtoken Token code
+	 * @param array|int $list_ids Ticket list ids of the scanned ticket
+	 * @return bool
+	 */
+	public function isListAllowedByAuthToken($authtoken, $list_ids=[]) {
+		if (!is_array($list_ids)) {
+			$list_ids = [$list_ids];
+		}
+
+		$list_ids = array_filter(array_map("intval", $list_ids));
+		if (count($list_ids) == 0) return true; // ticket without a list
+
+		$tokenObj = $this->getAuthtokenByCode($authtoken);
+		if (empty($tokenObj)) return true;
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectAuthtoken($tokenObj['meta']);
+
+		$bound = trim((string) ($metaObj["ticketscanner"]["bound_to_lists"] ?? ""));
+		if ($bound === "") return true; // no lists set up
+
+		$allowed_list_ids = array_filter(array_map("intval", array_map("trim", explode(",", $bound))));
+
+		foreach($list_ids as $list_id) {
+			if (!in_array($list_id, $allowed_list_ids, true)) return false;
+		}
+
+		return apply_filters( $this->MAIN->_add_filter_prefix.'authtoken_isListAllowedByAuthToken', true, $authtoken, $list_ids );
+	}
+
 	public function getAuthtokens() {
 		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("authtokens")." order by name asc";
 		$tokens = $this->MAIN->getDB()->_db_datenholen($sql);
@@ -151,6 +186,15 @@ class sasoEventtickets_Authtoken {
 		if (isset($data['meta'])) {
 			if (isset($data['meta']['desc'])) {
 				$metaObj['desc'] = strip_tags(trim($data['meta']['desc']));
+			}
+			if (isset($data['meta']['ticketscanner']) && isset($data['meta']['ticketscanner']['bound_to_lists'])) {
+				$_raw = strip_tags(trim((string) $data['meta']['ticketscanner']['bound_to_lists']));
+				$_lists = array_filter(array_map("intval", array_map("trim", explode(",", $_raw))));
+				// An entry that boils down to nothing must not silently clear the
+				// restriction — empty means "all lists", so that would widen access
+				if ($_raw === "" || count($_lists) > 0) {
+					$metaObj['ticketscanner']['bound_to_lists'] = implode(",", $_lists);
+				}
 			}
 			if (isset($data['meta']['ticketscanner']) && isset($data['meta']['ticketscanner']['bound_to_products'])) {
 				$metaObj['ticketscanner']['bound_to_products'] = strip_tags(trim($data['meta']['ticketscanner']['bound_to_products']));

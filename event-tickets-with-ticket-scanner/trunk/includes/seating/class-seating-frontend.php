@@ -214,22 +214,91 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 	 * @param string|null $eventDate Event date
 	 * @param string|null $cartItemKey Cart item key (for cart context)
 	 * @param array|null $currentSelection Current selected seat data
+	 * @param int $variationId Variation ID - its own plan wins over the parent product
 	 * @return string HTML output
 	 */
-	public function renderSeatSelector(int $productId, ?string $eventDate = null, ?string $cartItemKey = null, ?array $currentSelection = null): string {
+	public function renderSeatSelector(int $productId, ?string $eventDate = null, ?string $cartItemKey = null, ?array $currentSelection = null, int $variationId = 0): string {
+		$jsData = $this->buildSelectorData($productId, $eventDate, $currentSelection, $variationId);
+
+		if ($jsData === null) {
+			return '';
+		}
+
+		// Unique ID for this selector instance
+		$instanceId = 'saso-seating-' . $productId . '-' . uniqid();
+
+		ob_start();
+		?>
+		<div class="saso-seating-selector"
+			 id="<?php echo esc_attr($instanceId); ?>"
+			 data-product-id="<?php echo esc_attr($productId); ?>"
+			 data-variation-id="<?php echo esc_attr($variationId); ?>"
+			 data-event-date="<?php echo esc_attr($eventDate ?? ''); ?>"
+			 data-cart-item-key="<?php echo esc_attr($cartItemKey ?? ''); ?>">
+			<input type="hidden" name="<?php echo esc_attr($this->getFieldSeatSelection()); ?>" class="saso-seat-selection-input"
+				   value="<?php echo esc_attr($currentSelection ? json_encode($currentSelection) : ''); ?>">
+		</div>
+		<script type="application/json" id="<?php echo esc_attr($instanceId); ?>-data"><?php echo wp_json_encode($jsData); ?></script>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Hat wenigstens eine Variante einen eigenen Sitzplan?
+	 *
+	 * Auf der Produktseite steht die Variante noch nicht fest. Ohne diese Frage
+	 * wuerde ein Produkt ohne eigenen Plan gar keinen Platz fuer die Karte
+	 * rendern, und die Plaene seiner Varianten blieben unerreichbar.
+	 *
+	 * @param int $productId Parent product ID
+	 * @return bool
+	 */
+	public function hasVariationPlans(int $productId): bool {
+		if ($productId <= 0) {
+			return false;
+		}
+
+		global $wpdb;
+		$found = $wpdb->get_var($wpdb->prepare(
+			"SELECT pm.post_id FROM {$wpdb->postmeta} pm
+			 INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			 WHERE p.post_parent = %d AND p.post_type = 'product_variation'
+			   AND pm.meta_key = %s AND pm.meta_value > 0
+			 LIMIT 1",
+			$productId,
+			$this->MAIN->getSeating()->getMetaVariationSeatingplan()
+		));
+
+		return !empty($found);
+	}
+
+	/**
+	 * Alles, was das JS ueber den Sitzplan wissen muss.
+	 *
+	 * Eine Stelle baut diese Daten - der erste Seitenaufbau und der Wechsel der
+	 * Variante im Browser bekommen dadurch garantiert dasselbe Format.
+	 *
+	 * @param int $productId Product ID
+	 * @param string|null $eventDate Event date
+	 * @param array|null $currentSelection Current selected seat data
+	 * @param int $variationId Variation ID - its own plan wins over the parent product
+	 * @return array|null Data for the JS or null when no plan applies
+	 */
+	public function buildSelectorData(int $productId, ?string $eventDate = null, ?array $currentSelection = null, int $variationId = 0): ?array {
 		// Validate product ID
 		if ($productId <= 0) {
-			$this->MAIN->getDB()->logError('renderSeatSelector: Invalid product ID: ' . $productId);
-			return '';
+			$this->MAIN->getDB()->logError('buildSelectorData: Invalid product ID: ' . $productId);
+			return null;
 		}
 
 		$manager = $this->MAIN->getSeating();
 
-		// Use frontend method - only returns published plans (or draft for admin preview)
-		$plan = $this->getPlanForProductFrontend($productId);
+		// Use frontend method - only returns published plans (or draft for admin preview).
+		// A variation carries its own plan; without one it inherits the parent product's.
+		$plan = $this->getPlanForProductFrontend($productId, $variationId > 0 ? $variationId : null);
 
 		if (!$plan) {
-			return '';
+			return null;
 		}
 
 		// Check for user's existing blocks (not yet in cart) - restore on page reload
@@ -267,8 +336,19 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 		}
 		unset($block);
 
+		// A block belongs to the product, a seat to a plan. When the customer
+		// switches to a variation with a different plan, the blocks of the other
+		// plan must not show up as a selection here.
+		if (!empty($existingBlocks)) {
+			$seatIdsOfPlan = array_map(static function ($seat) { return (int) $seat['id']; }, $seats);
+			$existingBlocks = array_values(array_filter($existingBlocks, static function ($block) use ($seatIdsOfPlan) {
+				return in_array((int) $block['seat_id'], $seatIdsOfPlan, true);
+			}));
+		}
+
 		$jsData = [
 			'planId' => (int) $plan['id'],
+			'variationId' => $variationId,
 			'planName' => $plan['name'] ?? '',
 			'layoutType' => $plan['layout_type'] ?? self::LAYOUT_SIMPLE,
 			'isPreview' => !empty($plan['_is_preview']),
@@ -287,25 +367,10 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 				'lines' => $plan['meta']['lines'] ?? [],
 				'labels' => $plan['meta']['labels'] ?? [],
 			],
-			'adminUrl' => admin_url('admin.php?page=sasoEventTickets&tab=seating'),
+			'adminUrl' => admin_url('admin.php?page=event-tickets-with-ticket-scanner&tab=seating'),
 		];
 
-		// Unique ID for this selector instance
-		$instanceId = 'saso-seating-' . $productId . '-' . uniqid();
-
-		ob_start();
-		?>
-		<div class="saso-seating-selector"
-			 id="<?php echo esc_attr($instanceId); ?>"
-			 data-product-id="<?php echo esc_attr($productId); ?>"
-			 data-event-date="<?php echo esc_attr($eventDate ?? ''); ?>"
-			 data-cart-item-key="<?php echo esc_attr($cartItemKey ?? ''); ?>">
-			<input type="hidden" name="<?php echo esc_attr($this->getFieldSeatSelection()); ?>" class="saso-seat-selection-input"
-				   value="<?php echo esc_attr($currentSelection ? json_encode($currentSelection) : ''); ?>">
-		</div>
-		<script type="application/json" id="<?php echo esc_attr($instanceId); ?>-data"><?php echo wp_json_encode($jsData); ?></script>
-		<?php
-		return ob_get_clean();
+		return $jsData;
 	}
 
 	// =========================================================================
@@ -341,6 +406,9 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 					return;
 				case "getAvailableSeats":
 					$this->doGetAvailableSeats();
+					return;
+				case "getSelectorData":
+					$this->doGetSelectorData();
 					return;
 				default:
 					throw new Exception("#7001 " . sprintf(
@@ -412,6 +480,32 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 		} else {
 			wp_send_json_error(['error' => 'release_failed']);
 		}
+	}
+
+	/**
+	 * Internal: Sitzplan der gewaehlten Variante nachliefern.
+	 *
+	 * Der Kunde waehlt die Variante erst im Browser. Welcher Plan dazu gehoert,
+	 * entscheidet weiterhin der Server - das JS fragt nur nach.
+	 */
+	private function doGetSelectorData(): void {
+		$productIdRaw = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
+		$variationId = isset($_POST['variation_id']) ? (int) $_POST['variation_id'] : 0;
+		$eventDate = isset($_POST['event_date']) && $_POST['event_date'] !== ''
+			? sanitize_text_field($_POST['event_date'])
+			: null;
+
+		if (!$productIdRaw) {
+			wp_send_json_error(['error' => 'missing_params']);
+			return;
+		}
+
+		// WPML: Normalize to original product ID
+		$productId = $this->MAIN->getTicketHandler()->getWPMLProductId($productIdRaw);
+		$data = $this->buildSelectorData($productId, $eventDate, null, $variationId);
+
+		// Kein Plan ist eine gueltige Antwort: die Variante hat schlicht keinen.
+		wp_send_json_success(['selector' => $data]);
 	}
 
 	/**
