@@ -260,6 +260,7 @@ class sasoEventtickets_Options {
 		$this->_options[] = $this->getOptionsObject('adminAreaAllowedRoles', "Allow the specific role to access the backend of the event ticket", "If a role is chosen, then the user with this role is allowed to access the event ticket admin area. This will not exclude the 'administrator', if the option is activated.", "dropdown",	"-", $additional, false);
 		$this->_options[] = $this->getOptionsObject('wcTicketAllowOnlyLoggedinToDownload', "Allow only logged in users to download their tickets","If active, then only logged in users can download and see the ticket, calendar file and the bagde.","checkbox", false, [], true, '');
 		$this->_options[] = $this->getOptionsObject('wcTicketAllowOnlyLoggedinToDownloadRedirectURL', "URL where not logged in users should be redirected to","If option wcTicketAllowOnlyLoggedinToDownload is active, then the not logged in users will be redirected to this URL. If the URL is empty, then a message will be shown.","text", '', [], false, '');
+		$this->_options[] = $this->getOptionsObject('showSeatingPlanLinkInShopLoop', "Show seating plan link in shop overview", "If active, simple products with a seating plan show the seat selector (and 'open seating plan' link) directly in the shop overview. Deactivate to hide the selector there - customers then pick a quantity on the product page first, then choose a seat. (Ticket 014894 / Bemark16)", "checkbox", true, [], false, '');
 
 		$options = [];
 		$options[] = [

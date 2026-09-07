@@ -1285,7 +1285,6 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			console.log('Loading seating admin JS: ' + jsFile);
 			$.getScript(myAjax._plugin_home_url + '/' + jsFile, (data) => {
 				system.DYNJS[jsFile] = data;
-				eval(data);
 				sasoEventtickets_js_seating_admin(myAjax, getHelperFunktions()).initAdmin(div);
 			});
 		}

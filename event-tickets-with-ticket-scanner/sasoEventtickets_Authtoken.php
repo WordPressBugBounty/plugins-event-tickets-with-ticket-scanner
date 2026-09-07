@@ -118,7 +118,10 @@ class sasoEventtickets_Authtoken {
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectAuthtoken($tokenObj['meta']);
 
 		$felder = ["name"=>strip_tags($data['name']), "time"=>wp_date("Y-m-d H:i:s")];
-		$felder['code'] = strtoupper(base64_encode(get_site_url())."_".md5(time()."-".uniqid()));
+		// CWE-338 (DIG-1762): CSPRNG instead of a wall-clock/uniqid-seeded hash. This value
+		// is a bearer credential for the ticket-scanner API, so predictability was the
+		// highest-impact case in this class. random_bytes(16) keeps the same 32 hex chars.
+		$felder['code'] = strtoupper(base64_encode(get_site_url())."_".bin2hex(random_bytes(16)));
 		$felder['areacode'] = "ticketscanner";
 		$felder['aktiv'] = isset($data['aktiv']) ? intval($data['aktiv']) : 1;
 		$felder['time'] = wp_date("Y-m-d H:i:s");

@@ -136,6 +136,28 @@ class sasoEventtickets_WC {
 		$ret = "";
 		$justJSON = false;
 		try {
+			// Security: WooCommerce order/product data actions require a real
+			// Woo shop-management capability, not just the plugin-internal
+			// admin-area role check. Without this, a low-privilege role granted
+			// admin-area access via adminAreaAllowedRoles could read or delete
+			// every customer's ticket data (reported via osTicket 014902).
+			$_gatedWooActions = [
+				'downloadTicketInfosOfProduct',
+				'downloadAllTicketsAsOnePDF',
+				'removeAllTicketsFromOrder',
+				'removeAllNonTicketsFromOrder',
+				// Subagent-Review 2026-09-04 (Follow-up zu osTicket 014902):
+				// downloadPDFTicketBadge returns a PDF with attendee PII (name,
+				// email, order) for ANY code. Same Vector wie die anderen 4:
+				// ein Editor mit adminAreaAllowedRoles-Zugang könnte sonst jedes
+				// Badge ziehen.
+				'downloadPDFTicketBadge',
+			];
+			if (in_array(trim($a), $_gatedWooActions, true)
+				&& !current_user_can('manage_woocommerce')
+				&& !current_user_can('edit_shop_orders')) {
+				return wp_send_json_error("Access denied", 403);
+			}
 			switch (trim($a)) {
 				case "downloadFlyer":
 					$ret = $this->getProductManager()->downloadFlyer($data);

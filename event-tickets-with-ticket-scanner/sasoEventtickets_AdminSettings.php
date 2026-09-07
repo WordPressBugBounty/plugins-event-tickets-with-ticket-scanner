@@ -2234,7 +2234,10 @@ class sasoEventtickets_AdminSettings {
 		// check if option is activate to reuse not purchased codes from the code list assigned to the woocommerce product
 		if ($this->isOptionCheckboxActive('wcassignmentReuseNotusedCodes')) {
 			// semaphore to prevent stealing code on heavy loaded servers
-			$semaphorecode = md5(SASO_EVENTTICKETS::PasswortGenerieren() . microtime(). "_". rand());
+			// CWE-338 (DIG-1762): CSPRNG instead of md5(PasswortGenerieren() + microtime() + rand());
+			// PasswortGenerieren() itself uses rand()/shuffle(), so the whole expression was
+			// non-cryptographic. random_bytes(16) yields the same 32 hex chars (column is varchar(50)).
+			$semaphorecode = bin2hex(random_bytes(16));
 			$rescueCounter = 0;
 			while($rescueCounter < 50) {
 				// get a code from the list with order_id = 0
@@ -2347,7 +2350,10 @@ class sasoEventtickets_AdminSettings {
 	}
 	private function generateCode($formatterValues="") {
 		$datePrefix = $this->encodeDateToLetters();
-		$code = $datePrefix . '-' . implode('-', str_split(substr(strtoupper(md5(time()."_".rand())), 0, 10), 5));
+		// CWE-338 (DIG-1762): CSPRNG instead of md5(time()."_".rand()), which was
+		// predictable from wall-clock time + process ordering. random_bytes(5) yields
+		// the same 10 uppercase hex chars, so the printed code format stays identical.
+		$code = $datePrefix . '-' . implode('-', str_split(strtoupper(bin2hex(random_bytes(5))), 5));
 		if (!empty($formatterValues) || $this->isOptionCheckboxActive("wcassignmentUseGlobalSerialFormatter")) {
 			if (empty($formatterValues)) {
 				$codeFormatterJSON = $this->getOptionValue('wcassignmentUseGlobalSerialFormatter_values');

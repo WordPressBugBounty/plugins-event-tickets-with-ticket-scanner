@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.1.13
+Stable tag: 3.1.14
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -243,6 +243,12 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.1.14 - 2026-09-07 =
+* Security: Added nonce verification to the admin-area AJAX endpoint (executeWCBackend) to block cross-site request forgery. The frontend already shipped the nonce; the server now verifies it.
+* Security: Restricted WooCommerce order/product data actions (downloadTicketInfosOfProduct, downloadAllTicketsAsOnePDF, removeAllTicketsFromOrder, removeAllNonTicketsFromOrder, downloadPDFTicketBadge) to users with the manage_woocommerce or edit_shop_orders capability. Without this, a low-privilege role granted admin-area access via the "Allow only specific roles" setting could read or delete every customer's ticket data through the plugin-internal role check.
+* Security: Removed an `eval(data)` call after `$.getScript()` in the seating-admin loader (`backend.js`, _displaySeatingplanArea, line 1288). `$.getScript()` already executes the loaded script; the extra eval ran every byte of the response through the JS engine again. CWE-95 — a server-side change to `js/seating_admin.js` would have given code-injection on every admin page that opens the seating-plan area. No callers, no behaviour change beyond the redundant execute.
+* Security: Ticket codes, scanner auth tokens and ticket idcodes are now generated with a cryptographically secure random source (`random_bytes`) instead of a hash of the current time (`md5(time() ...)`). The old values were predictable: two codes created in the same second shared their time component, so anyone who knew roughly when a ticket was issued could narrow the guessing range dramatically. CWE-338. Five generators were changed — the ticket code and the code-list lock in the WooCommerce assignment path, the per-list and per-order idcode, and the ticket-scanner auth token. The printed format is unchanged (same length and character set), existing tickets and tokens keep working, and no migration is needed.
 
 = 3.1.13 - 2026-09-03 =
 * Tweak: Products with variations no longer show the seat selector on the shop overview page. In the overview no variation is chosen, so the selector could not work there anyway - it only pushed the product image out of its card. The "Select options" link leads to the product page, where the full seat selection (and its validation) lives. Simple products keep the quick selector in the overview.

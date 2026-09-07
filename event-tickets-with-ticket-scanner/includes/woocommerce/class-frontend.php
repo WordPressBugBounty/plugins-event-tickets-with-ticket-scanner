@@ -1788,6 +1788,14 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			// steht keine Variante fest, hier gilt der Plan des Produkts.
 			$plan = $frontendManager->getPlanForProductFrontend($product_id_orig);
 			if ($plan) {
+				// Option: bei simplen Produkten mit Plan kann der Selector (inkl.
+				// "Open seating plan"-Link) auch komplett ausgeblendet werden, damit
+				// der Kunde zuerst die Anzahl auf der Produktseite waehlt (Ticket 014894).
+				// Default ON = Status quo (kein Breaking Change fuer 3.1.x-Installationen).
+				if (!$this->MAIN->getOptions()->isOptionCheckboxActive('showSeatingPlanLinkInShopLoop')) {
+					return;
+				}
+
 				$frontendManager->enqueueScripts();
 
 				echo '<div class="saso-seating-wrapper" data-product-id="' . esc_attr($product_id) . '" data-requires-date="' . ($isDaychooser ? '1' : '0') . '">';
