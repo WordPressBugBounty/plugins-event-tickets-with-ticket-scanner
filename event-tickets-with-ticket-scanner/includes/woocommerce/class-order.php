@@ -817,6 +817,10 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 								$this->MAIN->getAdmin()->removeUsedInformationFromCode($data);
 								$this->MAIN->getAdmin()->removeWoocommerceOrderInfoFromCode($data);
 								$this->MAIN->getAdmin()->removeWoocommerceRstrPurchaseInfoFromCode($data);
+								// Remove user registration too — a registered buyer on a freed
+								// ticket must not survive into the ticket's next owner (same fix
+								// as Serial Codes, Saso 2026-09-10).
+								$this->MAIN->getAdmin()->removeUserRegistrationFromCode($data);
 								$order->add_order_note(sprintf(/* translators: %s: ticket number */esc_html__('Refunded ticket(s). Ticket number %s removed for order item id: %s.', 'event-tickets-with-ticket-scanner'), esc_attr($code), esc_attr($item_id)));
 							} catch (Exception $e) {
 								$this->MAIN->getAdmin()->logErrorToDB($e);
@@ -1423,6 +1427,10 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 								$this->MAIN->getAdmin()->removeUsedInformationFromCode($data);
 								$this->MAIN->getAdmin()->removeWoocommerceOrderInfoFromCode($data);
 								$this->MAIN->getAdmin()->removeWoocommerceRstrPurchaseInfoFromCode($data);
+								// Remove user registration too — a registered buyer on a freed
+								// ticket must not survive into the ticket's next owner (same fix
+								// as Serial Codes, Saso 2026-09-10).
+								$this->MAIN->getAdmin()->removeUserRegistrationFromCode($data);
 
 								// Release seat block if associated with this ticket
 								$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($code);

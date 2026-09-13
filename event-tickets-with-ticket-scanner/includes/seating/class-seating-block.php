@@ -439,7 +439,14 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 			// ticket number a later cancellation would not find the seat.
 			if ($row['status'] === self::STATUS_CONFIRMED) {
 				$belongsToThisOrder = (int) $row['order_id'] === $orderId || (int) $row['order_id'] === 0;
-				if ($codeId > 0 && (int) $row['code_id'] !== $codeId && $belongsToThisOrder) {
+				if (!$belongsToThisOrder) {
+					// The seat belongs to ANOTHER order: a second sale must never
+					// confirm here. Previously this returned true ("sold anyway"),
+					// which let a duplicate/late order create a second paid ticket
+					// for a seat it did not own (#014980: 377 tickets, 373 seats).
+					return false;
+				}
+				if ($codeId > 0 && (int) $row['code_id'] !== $codeId) {
 					return $this->confirmBlock((int) $row['id'], $orderId, $orderItemId, $codeId);
 				}
 				return true;

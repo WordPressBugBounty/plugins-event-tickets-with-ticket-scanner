@@ -3216,14 +3216,25 @@ msgstr ""
 #: sasoEventtickets_Options.php:416
 msgid ""
 "Off by default. If active, tickets that belong to no order — for example "
-"numbers you generated yourself for printed cards — can be opened, shown and "
-"redeemed at the scanner. <b>You give up the order check as copy protection "
-"for those tickets:</b> the plugin can no longer verify against a paid order, "
-"only that the number exists, is active, is not redeemed yet and belongs to "
-"its ticket list. Tickets sold through WooCommerce are unaffected and keep "
-"the full check. You can also switch this on for a single ticket list instead "
-"of the whole shop, in the list's settings."
+"numbers you generated yourself to sell at the door, by invoice or as "
+"printed cards — can be opened, shown and redeemed at the scanner. <b>You "
+"give up the order check as copy protection for those tickets:</b> the "
+"plugin can no longer verify against a paid order, only that the number "
+"exists, is active, is not redeemed yet and belongs to its ticket list. "
+"Tickets sold through WooCommerce are unaffected and keep the full check. "
+"You can also switch this on for a single ticket list instead of the whole "
+"shop, in the list's settings."
 msgstr ""
+"Standardmäßig aus. Wenn aktiv, können Tickets ohne Bestellung — zum "
+"Beispiel selbst generierte Nummern für den Direktverkauf an der Tür, auf "
+"Rechnung oder als gedruckte Karten — geöffnet, angezeigt und am Scanner "
+"entwertet werden. <b>Sie geben für diese Tickets die Bestellprüfung als "
+"Kopierschutz auf:</b> Das Plugin kann nicht mehr gegen eine bezahlte "
+"Bestellung prüfen, sondern nur, ob die Nummer existiert, aktiv, noch nicht "
+"entwertet und der richtigen Ticketliste zugeordnet ist. Über WooCommerce "
+"verkaufte Tickets sind nicht betroffen und behalten die volle Prüfung. Sie "
+"können die Option auch für eine einzelne Ticketliste statt für den ganzen "
+"Shop aktivieren, in den Einstellungen der Liste."
 
 #: sasoEventtickets_Options.php:417
 msgid "Message when a closed ticket is dropped from the cart"
@@ -7500,10 +7511,17 @@ msgstr ""
 
 #: backend.js:4429 backend.js:4437 backend.js:4444 backend.js:4450
 msgid ""
-"Do you also hand out tickets that were not bought in the shop? For example "
-"printed cards. They can then be redeemed without an order — the check "
-"against a paid order does not apply to them."
+"Will you sell or hand out tickets directly, without a WooCommerce order? "
+"For example at the door, by invoice or as printed cards. Create the ticket "
+"numbers in a ticket list, switch this on, and the scanner redeems them "
+"without an order — every check except the paid-order check stays on "
+"(active, not redeemed, time window, CVV)."
 msgstr ""
+"Verkaufen oder geben Sie Tickets direkt ab, ohne WooCommerce-Bestellung? "
+"Zum Beispiel an der Tür, auf Rechnung oder als gedruckte Karten. Legen Sie "
+"die Ticketnummern in einer Ticketliste an, aktivieren Sie diese Option, und "
+"der Scanner entwertet sie ohne Bestellung — jede Prüfung außer der "
+"Bezahlungsprüfung bleibt aktiv (aktiv, nicht entwertet, Zeitfenster, CVV)."
 
 #: backend.js:4432
 msgid "Allow redemption after closing time?"
@@ -10983,3 +11001,109 @@ msgstr ""
 #~ "Entdeckungsplattform, damit neue Kunden es finden und Tickets kaufen "
 #~ "können. Lass es deaktiviert, um das Event vom öffentlichen Kalender "
 #~ "fernzuhalten (z. B. interne, Mitarbeiter- oder private Events)."
+
+#: backend.js:3651
+msgctxt "label"
+msgid "Event App"
+msgstr "Event-App"
+
+#: js/congress-admin.js:51
+msgid "New event app"
+msgstr "Neue Event-App"
+
+#: js/congress-admin.js:188
+msgid "Edit event app"
+msgstr "Event-App bearbeiten"
+
+#: js/congress-admin.js:117
+msgid "Delete this event app?"
+msgstr "Diese Event-App löschen?"
+
+#: js/congress-admin.js:109
+msgid ""
+"An event app is the companion page your visitors open with their ticket: "
+"programme and schedule, speaker or artist info, venue maps, downloads, media "
+"and support pages — everything structured in one place. Perfect for a "
+"congress with multiple sessions, but just as much for a single event where "
+"ticket holders need extra info, a FAQ or contact options. Visitors do not "
+"need an account or an extra app: their ticket ID is the key, access opens "
+"with the ticket and can expire with it. Assign an event app to a product in "
+"the WooCommerce product settings — one app can serve multiple products, so "
+"an event series shares one app."
+msgstr ""
+"Eine Event-App ist die Begleitseite, die Ihre Besucher mit ihrem Ticket "
+"öffnen: Programm und Zeitplan, Informationen zu Speakern oder Künstlern, "
+"Saalpläne, Downloads, Medien und Support-Seiten — alles strukturiert an "
+"einem Ort. Ideal für einen Kongress mit vielen Sessions, aber genauso für "
+"eine einzelne Veranstaltung, bei der Ticketinhaber zusätzliche "
+"Informationen, eine FAQ oder Kontaktmöglichkeiten brauchen. Besucher "
+"benötigen weder ein Konto noch eine zusätzliche App: Ihre Ticket-ID ist der "
+"Schlüssel, der Zugang öffnet sich mit dem Ticket und kann mit ihm "
+"ablaufen. Ordnen Sie eine Event-App in den WooCommerce-"
+"Produkteinstellungen einem Produkt zu — eine App kann mehrere Produkte "
+"versorgen, so teilt sich eine Veranstaltungsreihe eine App."
+
+#: js/congress-admin.js:103
+msgid "Open example"
+msgstr "Beispiel öffnen"
+
+#: js/congress-admin.js:103
+msgid ""
+"Open the app page as a visitor sees it, in a new tab"
+msgstr ""
+"Die App-Seite so öffnen, wie Besucher sie sehen, in einem neuen Tab"
+
+#: backend.js:4457 backend.js:4507
+msgid "Direct sales — no WooCommerce"
+msgstr "Direktverkauf — ohne WooCommerce"
+
+#: backend.js:4458
+msgid "At the door, by invoice, printed cards"
+msgstr "An der Tür, auf Rechnung, gedruckte Karten"
+
+#: backend.js:4510
+msgid ""
+"WooCommerce was not found on this site — selling tickets directly without "
+"a shop is preselected. You can still pick another type if you plan to add "
+"WooCommerce later."
+msgstr ""
+"WooCommerce wurde auf dieser Seite nicht gefunden — der Direktverkauf von "
+"Tickets ohne Shop ist vorausgewählt. Sie können weiterhin einen anderen "
+"Typ wählen, falls Sie später WooCommerce ergänzen wollen."
+
+#: backend.js:4461
+msgid "Vibrate the scanner on result?"
+msgstr "Scanner bei Ergebnis vibrieren lassen?"
+
+#: backend.js:4463
+msgid ""
+"Lock redemption until the event starts? Uses the event window on the "
+"ticket list."
+msgstr ""
+"Einlösung bis zum Veranstaltungsstart sperren? Nutzt das Zeitfenster der "
+"Ticketliste."
+
+#: backend.js:4465
+msgid ""
+"Allow redemption after the event ended? Uses the event window on the "
+"ticket list."
+msgstr ""
+"Einlösung nach Veranstaltungsende erlauben? Nutzt das Zeitfenster der "
+"Ticketliste."
+
+#: sasoEventtickets_Options.php:382
+msgid "Direct sales (no WooCommerce order)"
+msgstr "Direktverkauf (ohne WooCommerce-Bestellung)"
+
+#: sasoEventtickets_Options.php:383
+msgid ""
+"For tickets you sell or hand out without a shop order — at the door, by "
+"invoice, or as printed cards. Create the numbers in a ticket list, switch "
+"this on, and the scanner redeems them without an order. The per-list "
+"switch in the list's settings does the same for a single list."
+msgstr ""
+"Für Tickets, die Sie ohne Shop-Bestellung verkaufen oder abgeben — an der "
+"Tür, auf Rechnung oder als gedruckte Karten. Legen Sie die Nummern in "
+"einer Ticketliste an, aktivieren Sie diese Option, und der Scanner "
+"entwertet sie ohne Bestellung. Der Schalter in den Einstellungen der "
+"Ticketliste bewirkt dasselbe für eine einzelne Liste."

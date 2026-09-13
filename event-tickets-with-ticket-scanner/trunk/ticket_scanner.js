@@ -65,6 +65,21 @@ jQuery(document).ready(()=>{
     };
 
     var loadingticket = false;
+    // Scans arriving while another scan is still being processed (slow network,
+    // staff scanning the next guest immediately) were silently dropped by the
+    // `if (loadingticket) return` guard — the main cause of "we scanned all
+    // tickets but the dashboard shows fewer" (#014976). Queued scans are now
+    // processed one after another instead of vanishing.
+    var pending_scans = [];
+    // Deliberate pause after a finished scan before the next one is processed,
+    // so the operator sees the result (green frame / redeemed state) before
+    // the next loading takes over (Saso 2026-09-11: "absichtlich eine
+    // Wartesekunde einbauen vor dem nächsten Scan").
+    var scan_hold_until = 0;
+    // Ticket codes this device redeemed itself in this session (scan & redeem).
+    // A re-scan of such a code is our own success echo, NOT a foreign
+    // "already used" — the red error screen scared operators (#014977).
+    var self_redeemed_this_session = {};
     var div_ticket_info_area = null;
     var div_order_info_area = null;
 
@@ -161,10 +176,63 @@ jQuery(document).ready(()=>{
         if (system.last_scanned_ticket.code == decodedText && system.last_scanned_ticket.timestamp + 10 > time()) {
             return;
         }
-        if (loadingticket) return;
+        if (loadingticket) {
+            // Another scan is still in flight. Queue this code (newest group
+            // members keep their order) and process it as soon as the current
+            // one finishes — instead of silently dropping it (#014976:
+            // "dashboard shows 2 of 3 scanned").
+            pending_scans.push(decodedText);
+            updateTicketScannerInfoArea("<center>"+__("Next ticket queued — finishing current scan…", 'event-tickets-with-ticket-scanner')+'</center>');
+            return;
+        }
+        // Route every scan through the queue so the deliberate hold after the
+        // previous result applies uniformly — direct scans and queued ones.
+        pending_scans.push(decodedText);
+        drainPendingScan();
+    }
+
+    function startScanProcessing(decodedText) {
+        // Same-code dedup (also guards the queue drain against a still-framed
+        // ticket being processed twice): skip if this exact code was just
+        // handled within 10 seconds.
+        if (system.last_scanned_ticket.code == decodedText && system.last_scanned_ticket.timestamp + 10 > time()) {
+            drainPendingScan();
+            return;
+        }
         loadingticket = true;
         system.last_scanned_ticket = {code: decodedText, timestamp: time()};
         updateLastScanTime();
+
+        // Make the successful READ unmistakable (Saso 2026-09-11): green frame
+        // like the Swiss card terminals + explicit "waiting for server" text.
+        // The operator sees: scan registered, now the server answer is pending.
+        clearScanSuccessFrame();
+        showScanSuccessFrame();
+        $("#reader_output").html('<div style="padding:6px;text-align:center;"><b style="color:#16a34a;">'+__('Code read', 'event-tickets-with-ticket-scanner')+'</b> — '+__('sending to server, please wait…', 'event-tickets-with-ticket-scanner')+'</div>');
+
+        // Self-redeem echo (#014977): this device redeemed this code earlier in
+        // the session (scan & redeem, camera kept framing the ticket). Show a
+        // calm confirmation instead of re-redeeming and scaring the operator
+        // with a red "already used".
+        if (self_redeemed_this_session[decodedText]) {
+            let _d = self_redeemed_this_session[decodedText];
+            let _ret = (_d && _d.data && _d.data._ret) ? _d.data._ret : null;
+            clearAreas();
+            $("#reader_output").html('');
+            let _echo = $('<div style="text-align:center;"><h3 style="color:green !important;">'+__('Redeemed', 'event-tickets-with-ticket-scanner')+'</h3><p>'+__('This ticket was already redeemed by this scanner a moment ago', 'event-tickets-with-ticket-scanner')+(_d && _d.date ? ' ('+_d.date+')' : '')+'.</p></div>');
+            updateTicketScannerInfoArea(_echo);
+            // Multi-redeem tickets (e.g. 10 redeems): allow deliberate further
+            // redeems of the SAME code without waiting for the dedup window —
+            // via the redeem button, not by re-scanning (Saso 2026-09-11).
+            if (_ret && _d && _d.data && typeof canTicketBeRedeemed === 'function' && canTicketBeRedeemed(_d.data)) {
+                let _btns = $('<div style="text-align:center;margin-top:8px;">').appendTo(_echo);
+                buildRedeemButton(_d.data, true).appendTo(_btns);
+            }
+            vibrateOnResult(true);
+            showScanNextTicketButton();
+            finishScanLifecycle();
+            return;
+        }
 
         if (qrScanner != null) {
             //qrScanner.stop(); // faster if not executed
@@ -245,12 +313,61 @@ jQuery(document).ready(()=>{
         if (!ticket_scanner_operating_option.redeem_auto) updateTicketScannerInfoArea("");
         $("#reader_output").html("");
         loadingticket = false;
+        clearScanSuccessFrame();
+        drainPendingScan();
 
         if (system.PARA.useoldticketscanner) {
             startScanner_html5QrcodeSCanner();
         } else {
             startScanner_QRScanner();
         }
+    }
+
+    /**
+     * Green success frame around the scan area — like the card terminals in
+     * Switzerland: the moment the code is read, the frame lights up so the
+     * operator KNOWS the scan was registered and only the server answer is
+     * pending (Saso 2026-09-11).
+     */
+    function showScanSuccessFrame() {
+        $('#reader').css({
+            'border': '10px solid #16a34a',
+            'border-radius': '12px',
+            'box-sizing': 'border-box',
+            'transition': 'border-color 0.15s ease'
+        });
+    }
+    function clearScanSuccessFrame() {
+        $('#reader').css('border', 'none');
+    }
+
+    /**
+     * Central end point of a scan lifecycle: releases the in-flight lock,
+     * starts the deliberate 1-second hold (operator sees the result), then
+     * drains the next queued scan — never losing it (#014976).
+     */
+    function finishScanLifecycle() {
+        loadingticket = false;
+        scan_hold_until = Date.now() + 1000;
+        drainPendingScan();
+    }
+
+    /**
+     * Processes the next queued scan (if any) after the previous one finished.
+     * Called from every end point of a scan lifecycle (scanner restart, retrieve
+     * done/error, redeem done/error) — a queued scan must never be lost, no
+     * matter which path the previous one took (#014976). Respects the
+     * deliberate hold: the next scan starts only after the operator had a
+     * second to see the previous result.
+     */
+    function drainPendingScan() {
+        if (loadingticket) return;
+        if (pending_scans.length === 0) return;
+        let next = pending_scans.shift();
+        let delay = Math.max(50, scan_hold_until - Date.now());
+        window.setTimeout(()=>{
+            startScanProcessing(next);
+        }, delay);
     }
     function startScanner_QRScanner() {
         let deviceId = _loadValue("ticketScannerCameraId");
@@ -909,6 +1026,11 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                     showCVVPrompt(data);
                 }
                 cbf && cbf();
+                clearScanSuccessFrame();
+                // The scan lifecycle ends at the hand-over screen — the CVV
+                // submit runs its own flow. Release the lock so the operator
+                // can scan the next guest if this customer walks away.
+                finishScanLifecycle();
                 return;
             }
 
@@ -942,12 +1064,16 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             }
 
             cbf && cbf();
+            clearScanSuccessFrame();
+            finishScanLifecycle();
         }, response=>{
             clearAreas();
             $("#reader_output").html('');
+            clearScanSuccessFrame();
             updateTicketScannerInfoArea('<h1 style="color:red !important;">'+response.data+'</h3>');
             showScanNextTicketButton();
             cbf && cbf();
+            drainPendingScan();
         });
     }
     // ── CVV prompt / hand-over / hand-back / locked ──────────────────────────
@@ -1290,6 +1416,19 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     function displayRedeemedInfo(code, data) {
         system.status = "redeemed";
         system.redeemed_successfully = data.redeem_successfully;
+        // Remember own successful redeems (manual button AND scan&redeem both
+        // end here) so a re-scan of the same code shows the calm self-echo
+        // screen instead of a red "already used" (#014977). Registered under
+        // both the (possibly URL-transformed) code and the raw scanned text —
+        // retrieveTicket() transforms URL codes internally, the re-scan
+        // lookup happens on the raw text.
+        if (data.redeem_successfully) {
+            var _rd = (data.metaObj && data.metaObj.wc_ticket && data.metaObj.wc_ticket.redeemed_date) ? data.metaObj.wc_ticket.redeemed_date : '';
+            self_redeemed_this_session[code] = {date: _rd, data: data};
+            if (system.last_scanned_ticket.code && system.last_scanned_ticket.code !== code) {
+                self_redeemed_this_session[system.last_scanned_ticket.code] = {date: _rd, data: data};
+            }
+        }
         vibrateOnResult(data.redeem_successfully);
         displayTicketRedeemedInfo(data);
         if(ticket_scanner_operating_option.redeem_auto) {

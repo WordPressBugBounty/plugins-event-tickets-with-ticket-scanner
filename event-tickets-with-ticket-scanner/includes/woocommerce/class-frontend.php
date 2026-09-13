@@ -2015,6 +2015,31 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 
 				$seatCount = count($seatsToValidate);
 
+				// Duplicate seat_ids within one selection (double tap on the seat map,
+				// stale page state): the count check below would pass (2 seats for
+				// quantity 2) and both tickets would be created for the SAME seat
+				// (#014980). Reject with a clear message before anything is blocked.
+				if ($seatCount > 1) {
+					$seen = [];
+					foreach ($seatsToValidate as $seat) {
+						if (!isset($seat['seat_id'])) continue;
+						$sid = (int) $seat['seat_id'];
+						if (isset($seen[$sid])) {
+							$seatLabel = $seat['seat_label'] ?? $seat['seat_id'];
+							wc_add_notice(
+								sprintf(
+									/* translators: %s: seat label */
+									__('Seat "%s" was selected more than once. Please deselect it and choose a different seat.', 'event-tickets-with-ticket-scanner'),
+									esc_html($seatLabel)
+								),
+								'error'
+							);
+							return false;
+						}
+						$seen[$sid] = true;
+					}
+				}
+
 				// Check if seats are required but missing
 				if ($seatingRequired && $seatCount === 0) {
 					wc_add_notice(

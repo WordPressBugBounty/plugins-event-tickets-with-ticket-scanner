@@ -1788,6 +1788,25 @@ final class sasoEventtickets_Ticket {
 		return $this->order;
 	}
 
+	/**
+	 * getOrder() for render paths that merely want to update the order status
+	 * after viewing a ticket: for an order-less ticket (switch active) there
+	 * is no order and nothing to update — return null instead of throwing
+	 * #8010, so the ticket detail page renders at all.
+	 *
+	 * @return WC_Order|null
+	 */
+	private function getOrderOrNullForOrderless() {
+		$codeObj = $this->getCodeObj();
+		if (intval($codeObj['order_id']) == 0) {
+			if ($this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) return null;
+			throw new Exception("#8010 Order not available");
+		}
+		if ($this->order != null) return $this->order;
+		$this->order = $this->getOrderById($codeObj['order_id']);
+		return $this->order;
+	}
+
 	public function get_product($product_id) {
 		$product = null;
 		if (function_exists("wc_get_product")) {
@@ -2586,12 +2605,27 @@ final class sasoEventtickets_Ticket {
 	public function outputPDF($filemode="I") {
 		$codeObj = $this->getCodeObj(true);
 		$metaObj = $codeObj['metaObj'];
-		$order = $this->getOrder();
-		$ticket_id = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
-		$order_item = $this->getOrderItem($order, $metaObj);
-		if ($order_item == null) throw new Exception("#8013 ".esc_html__("Order item not found for the PDF ticket", 'event-tickets-with-ticket-scanner'));
 
-		if ($filemode == "I") {
+		$isOrderless = $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj);
+		$order = null;
+		$order_item = null;
+		if ($isOrderless) {
+			// Same stand-ins as the scanner path: an empty order item and a
+			// simple product carrying the ticket list name. Every product-meta
+			// read below resolves to nothing, the ticket renders with its own
+			// state (number, list, QR, redeem info) instead of #8010/#8013.
+			$order_item = new WC_Order_Item_Product();
+			$product = new WC_Product_Simple();
+			$listObj = $this->MAIN->getCore()->getListById(intval($codeObj['list_id'] ?? 0));
+			$product->set_name(!empty($listObj['name']) ? $listObj['name'] : '');
+		} else {
+			$order = $this->getOrder();
+			$order_item = $this->getOrderItem($order, $metaObj);
+			if ($order_item == null) throw new Exception("#8013 ".esc_html__("Order item not found for the PDF ticket", 'event-tickets-with-ticket-scanner'));
+		}
+		$ticket_id = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
+
+		if ($filemode == "I" && $order != null) {
 			do_action( $this->MAIN->_do_action_prefix.'trackIPForPDFView', $codeObj );
 			$this->setOrderStatusAfterViewOperation($order);
 		}
@@ -2624,8 +2658,11 @@ final class sasoEventtickets_Ticket {
 
 		$ticket_template = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_outputTicketInfo_template', null, $codeObj );
 
-		$product = $order_item->get_product();
-		if ($product == null) throw new Exception("#8020 ".esc_html__("Product not found for the PDF ticket", 'event-tickets-with-ticket-scanner'));
+		if (!$isOrderless) {
+			$product = $order_item->get_product();
+			if ($product == null) throw new Exception("#8020 ".esc_html__("Product not found for the PDF ticket", 'event-tickets-with-ticket-scanner'));
+		}
+		// (order-less path: $product is the stand-in simple product set above)
 
 		$product_id = $product->get_id();
 		$product_parent_id = $product->get_parent_id();
@@ -2738,14 +2775,17 @@ final class sasoEventtickets_Ticket {
 		}
 
 		$pdf->setFilemode($filemode);
+		// Order-less tickets have no order id — the list id takes its place
+		// in the filename so PDFs stay uniquely named and sortable.
+		$order_id_for_filename = $order != null ? $order->get_id() : intval($codeObj['list_id'] ?? 0);
 		if ($pdf->getFilemode() == "F") {
 			// getWritableTempDir() throws when no directory is writable, so a
 			// broken path can no longer reach the merge step unnoticed.
 			$dirname = $this->MAIN->getCore()->getWritableTempDir();
-			$filename = "ticket_".$order->get_id()."_".$ticket_id.".pdf";
+			$filename = "ticket_".$order_id_for_filename."_".$ticket_id.".pdf";
 			$pdf->setFilepath($dirname);
 		} else {
-			$filename = "ticket_".$order->get_id()."_".$ticket_id.".pdf";
+			$filename = "ticket_".$order_id_for_filename."_".$ticket_id.".pdf";
 		}
 		$pdf->setFilename($filename);
 
@@ -3638,13 +3678,15 @@ final class sasoEventtickets_Ticket {
 		//if ($this->getParts()['_request'] == "action=redeem") {
 		if (SASO_EVENTTICKETS::issetRPara('action') && SASO_EVENTTICKETS::getRequestPara('action') == "redeem") {
 			// redeem ausführen
-			$order = $this->getOrder();
-			if ($this->isPaid($order)) {
+			$codeObjForOrderless = $this->getCodeObj(true, SASO_EVENTTICKETS::getRequestPara('code'));
+			$isOrderlessRedeem = $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObjForOrderless);
+			$order = $isOrderlessRedeem ? null : $this->getOrder();
+			if ($isOrderlessRedeem || $this->isPaid($order)) {
 				$codeObj = $this->getCodeObj();
 				$metaObj = $codeObj['metaObj'];
 
 					$user_id = get_current_user_id();
-					if (empty($user_id)) {
+					if (empty($user_id) && $order != null) {
 						$user_id = $order->get_user_id();
 					}
 					$user_id = intval($user_id);
@@ -3881,7 +3923,7 @@ final class sasoEventtickets_Ticket {
 				$this->outputOrderTicketsInfos();
 			} else {
 				$this->outputTicketInfo();
-				$order = $this->getOrder();
+				$order = $this->getOrderOrNullForOrderless();
 				if ($order != null) {
 					$this->setOrderStatusAfterViewOperation($order);
 				}
@@ -4002,7 +4044,7 @@ final class sasoEventtickets_Ticket {
 							$this->outputOrderTicketsInfos();
 						} else {
 							$this->outputTicketInfo();
-							$order = $this->getOrder();
+							$order = $this->getOrderOrNullForOrderless();
 							if ($order != null) {
 								$this->setOrderStatusAfterViewOperation($order);
 							}

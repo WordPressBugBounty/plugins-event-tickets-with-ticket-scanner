@@ -6,7 +6,7 @@ class sasoEventtickets_Options {
 	 * wizard asks about (AdminSettings::getWizardPresetDefaults) - one
 	 * vocabulary, so a shop that answered the wizard sees a matching view.
 	 */
-	public const USE_CASES = ['event', 'daypass', 'membership', 'voucher'];
+	public const USE_CASES = ['event', 'daypass', 'membership', 'voucher', 'direct'];
 
 	private $_options;
 	private $MAIN;
@@ -374,6 +374,18 @@ class sasoEventtickets_Options {
 				'usecases'=>self::USE_CASES
 			];
 
+		// ── Direct sales (no WooCommerce order) ─────────────────────────
+		// Eigene Sektion für den Direktverkaufsweg (3.2.0): die Option soll
+		// auffindbar sein, ohne dass man in der Woo-Verkaufssekion graben muss —
+		// gerade für Installationen ohne WooCommerce.
+		$options[] = [
+				'key'=>'hDirectSales',
+				'label'=>__("Direct sales (no WooCommerce order)", 'event-tickets-with-ticket-scanner'),
+				'desc'=>__("For tickets you sell or hand out without a shop order — at the door, by invoice, or as printed cards. Create the numbers in a ticket list, switch this on, and the scanner redeems them without an order. The per-list switch in the list's settings does the same for a single list.", 'event-tickets-with-ticket-scanner'),
+				'type'=>"heading"
+			];
+		$options[] = ['key'=>'wcTicketAllowTicketsWithoutOrder', 'label'=>__("Allow tickets without a WooCommerce order", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Off by default. If active, tickets that belong to no order — for example numbers you generated yourself to sell at the door, by invoice or as printed cards — can be opened, shown and redeemed at the scanner. <b>You give up the order check as copy protection for those tickets:</b> the plugin can no longer verify against a paid order, only that the number exists, is active, is not redeemed yet and belongs to its ticket list. Tickets sold through WooCommerce are unaffected and keep the full check. You can also switch this on for a single ticket list instead of the whole shop, in the list's settings.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>false];
+
 		$options[] = [
 				'key'=>'h12',
 				'label'=>__("Woocommerce ticket sale", 'event-tickets-with-ticket-scanner'),
@@ -414,7 +426,6 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketSalesCutoffHours', 'label'=>__("How many hours before the event should online sales stop?", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Only used if the option above is active. 0 means sales stop exactly at the event start. If the product has a date but no start time, the end of that day (23:59:59) counts as the start.", 'event-tickets-with-ticket-scanner'), 'type'=>"number", 'def'=>2, "additional"=>["min"=>0]];
 		$options[] = ['key'=>'wcTicketTransSalesCutoffBoxOffice', 'label'=>__("Message added when tickets are still available at the box office", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Appended to the 'sales closed' message for products where the box office is switched on (premium, per product).", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('Tickets are still available at the box office.', 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketTransSalesCutoffMessage', 'label'=>__("Message when online sales are closed", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. Shown in the cart and when the product is added to the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('Online sales for "{PRODUCT_NAME}" have closed.', 'event-tickets-with-ticket-scanner')];
-		$options[] = ['key'=>'wcTicketAllowTicketsWithoutOrder', 'label'=>__("Allow tickets without a WooCommerce order", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Off by default. If active, tickets that belong to no order — for example numbers you generated yourself for printed cards — can be opened, shown and redeemed at the scanner. <b>You give up the order check as copy protection for those tickets:</b> the plugin can no longer verify against a paid order, only that the number exists, is active, is not redeemed yet and belongs to its ticket list. Tickets sold through WooCommerce are unaffected and keep the full check. You can also switch this on for a single ticket list instead of the whole shop, in the list's settings.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>false];
 		$options[] = ['key'=>'wcTicketTransSalesCutoffRemovedMessage', 'label'=>__("Message when a closed ticket is dropped from the cart", 'event-tickets-with-ticket-scanner'), 'desc'=>__("WooCommerce removes a ticket from the cart as soon as it can no longer be bought — this happens when the buyer leaves the cart open past the sales stop. You can use the placeholder {PRODUCT_NAME}. Leave empty for the default text.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('Online sales for "{PRODUCT_NAME}" have closed, so it was removed from your cart.', 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketLabelCartForName', 'label'=>__("Label for error message on cart for missing text value", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a value for checkout.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" requires a value for checkout.', 'event-tickets-with-ticket-scanner')];
 		$options[] = ['key'=>'wcTicketLabelCartForValue', 'label'=>__("Label for error message on cart for not choosen dropdown value", 'event-tickets-with-ticket-scanner'), 'desc'=>__("You can use the placeholder {PRODUCT_NAME} for the product name. If left empty, default will be 'The product {PRODUCT_NAME} requires a value from the dropdown for checkout.' as the error message on the cart.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>__('The product "{PRODUCT_NAME}" requires a value from the dropdown for checkout.', 'event-tickets-with-ticket-scanner')];
@@ -996,6 +1007,7 @@ class sasoEventtickets_Options {
 			'h12a'           => $all,                                    // Ticket scanner
 			'hWallet'        => ['event', 'daypass', 'membership'],      // Digital Wallets
 			'h12'            => $all,                                    // WooCommerce ticket sale
+			'hDirectSales'   => $all,                                    // Direct sales (no WooCommerce order)
 			'h_view_access'  => $all,                                    // View access (security)
 			'h12b2'          => $all,                                    // Ticket PDF settings
 			'h120'           => ['event'],                               // Seating Plan settings

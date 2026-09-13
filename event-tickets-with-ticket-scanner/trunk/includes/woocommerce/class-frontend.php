@@ -1788,6 +1788,14 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			// steht keine Variante fest, hier gilt der Plan des Produkts.
 			$plan = $frontendManager->getPlanForProductFrontend($product_id_orig);
 			if ($plan) {
+				// Option: bei simplen Produkten mit Plan kann der Selector (inkl.
+				// "Open seating plan"-Link) auch komplett ausgeblendet werden, damit
+				// der Kunde zuerst die Anzahl auf der Produktseite waehlt (Ticket 014894).
+				// Default ON = Status quo (kein Breaking Change fuer 3.1.x-Installationen).
+				if (!$this->MAIN->getOptions()->isOptionCheckboxActive('showSeatingPlanLinkInShopLoop')) {
+					return;
+				}
+
 				$frontendManager->enqueueScripts();
 
 				echo '<div class="saso-seating-wrapper" data-product-id="' . esc_attr($product_id) . '" data-requires-date="' . ($isDaychooser ? '1' : '0') . '">';
@@ -2006,6 +2014,31 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				}
 
 				$seatCount = count($seatsToValidate);
+
+				// Duplicate seat_ids within one selection (double tap on the seat map,
+				// stale page state): the count check below would pass (2 seats for
+				// quantity 2) and both tickets would be created for the SAME seat
+				// (#014980). Reject with a clear message before anything is blocked.
+				if ($seatCount > 1) {
+					$seen = [];
+					foreach ($seatsToValidate as $seat) {
+						if (!isset($seat['seat_id'])) continue;
+						$sid = (int) $seat['seat_id'];
+						if (isset($seen[$sid])) {
+							$seatLabel = $seat['seat_label'] ?? $seat['seat_id'];
+							wc_add_notice(
+								sprintf(
+									/* translators: %s: seat label */
+									__('Seat "%s" was selected more than once. Please deselect it and choose a different seat.', 'event-tickets-with-ticket-scanner'),
+									esc_html($seatLabel)
+								),
+								'error'
+							);
+							return false;
+						}
+						$seen[$sid] = true;
+					}
+				}
 
 				// Check if seats are required but missing
 				if ($seatingRequired && $seatCount === 0) {

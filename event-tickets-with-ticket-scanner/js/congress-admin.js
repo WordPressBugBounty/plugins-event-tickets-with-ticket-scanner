@@ -48,7 +48,7 @@
 
         $('<div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:12px;">')
             .append(
-                $('<button>').addClass('button-primary').html(__('New congress', 'event-tickets-with-ticket-scanner'))
+                $('<button>').addClass('button-primary').html(__('New event app', 'event-tickets-with-ticket-scanner'))
                     .on('click', function () { openEditor(null); })
             )
             .appendTo($card);
@@ -97,7 +97,13 @@
                     var extra = (row && row.export_url)
                         ? '<div class="et-btn-group"><a class="et-btn-action congress-btn-export" href="' + row.export_url + '">' + __('Export contacts', 'event-tickets-with-ticket-scanner') + '</a></div>'
                         : '';
-                    return '<div class="et-btn-group"><button class="et-btn-action congress-btn-edit" data-id="' + id + '">' + __('Edit', 'event-tickets-with-ticket-scanner') + '</button><button class="et-btn-action congress-btn-edition" data-id="' + id + '">' + __('New edition', 'event-tickets-with-ticket-scanner') + '</button></div>' + extra + '<div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger congress-btn-delete" data-id="' + id + '">' + __('Delete', 'event-tickets-with-ticket-scanner') + '</button></div>';
+                    // Preview: open the visitor view (app page with a real ticket
+                    // of this app) in a new tab. Server-side resolved; hidden
+                    // when no sold ticket exists for the app yet.
+                    var openBtn = (row && row.preview_url)
+                        ? '<a class="et-btn-action congress-btn-open" href="' + row.preview_url + '" target="_blank" rel="noopener" title="' + __('Open the app page as a visitor sees it, in a new tab', 'event-tickets-with-ticket-scanner') + '">' + __('Open example', 'event-tickets-with-ticket-scanner') + '</a>'
+                        : '';
+                    return '<div class="et-btn-group">' + openBtn + '<button class="et-btn-action congress-btn-edit" data-id="' + id + '">' + __('Edit', 'event-tickets-with-ticket-scanner') + '</button><button class="et-btn-action congress-btn-edition" data-id="' + id + '">' + __('New edition', 'event-tickets-with-ticket-scanner') + '</button></div>' + extra + '<div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger congress-btn-delete" data-id="' + id + '">' + __('Delete', 'event-tickets-with-ticket-scanner') + '</button></div>';
                 }}
             ]
         });
@@ -106,7 +112,7 @@
         $('<div class="notice notice-info" style="margin:16px 0 0;padding:10px 14px;">')
             .html(
                 '<span class="dashicons dashicons-info-outline" style="color:var(--et-primary);margin-right:6px;vertical-align:middle;"></span>' +
-                __('Congresses let you attach structured information (programme, downloads, media, texts) to an event. Ticket holders can access the congress page using their ticket ID. Assign a congress to a product in the WooCommerce product settings — one congress can be shared across multiple products.', 'event-tickets-with-ticket-scanner')
+                __('An event app is the companion page your visitors open with their ticket: programme and schedule, speaker or artist info, venue maps, downloads, media and support pages — everything structured in one place. Perfect for a congress with multiple sessions, but just as much for a single event where ticket holders need extra info, a FAQ or contact options. Visitors do not need an account or an extra app: their ticket ID is the key, access opens with the ticket and can expire with it. Assign an event app to a product in the WooCommerce product settings — one app can serve multiple products, so an event series shares one app.', 'event-tickets-with-ticket-scanner')
             )
             .appendTo($app);
 
@@ -114,7 +120,7 @@
         $app.on('click', '.congress-btn-delete', function () {
             var id = $(this).data('id');
             layout.renderYesNo(
-                __('Delete this congress?', 'event-tickets-with-ticket-scanner'),
+                __('Delete this event app?', 'event-tickets-with-ticket-scanner'),
                 __('This action cannot be undone. All sections will be deleted as well.', 'event-tickets-with-ticket-scanner'),
                 function () { post('delete', { id: id }, function () { dtTable.ajax.reload(); }); }
             );
@@ -185,7 +191,7 @@
     function renderEditor(congress) {
         var c = congress || { id: '', title: '', slug: '', access_expires_at: '', is_active: 1, product_ids: [], sections: [] };
         var isNew = !c.id;
-        var heading = isNew ? __('New congress', 'event-tickets-with-ticket-scanner') : __('Edit congress', 'event-tickets-with-ticket-scanner');
+        var heading = isNew ? __('New event app', 'event-tickets-with-ticket-scanner') : __('Edit event app', 'event-tickets-with-ticket-scanner');
         var toLocal = function (v) { return (v || '').replace(' ', 'T').substring(0, 16); };
         var expiresVal = toLocal(c.access_expires_at);
         var productCount = (c.product_ids && c.product_ids.length) ? c.product_ids.length : 0;

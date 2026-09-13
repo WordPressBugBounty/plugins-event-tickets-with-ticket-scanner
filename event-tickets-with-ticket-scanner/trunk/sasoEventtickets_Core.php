@@ -1163,7 +1163,9 @@ class sasoEventtickets_Core {
 			return $idcode;
 		}
 
-		$idcode = strtoupper(md5($listId . '-' . time() . '-' . uniqid()));
+		// CWE-338 (DIG-1745): CSPRNG instead of md5(listId + time + uniqid), which was
+		// predictable from wall-clock + process ordering. Same 32 hex chars as before.
+		$idcode = strtoupper(bin2hex(random_bytes(16)));
 		$listMeta['idcode'] = $idcode;
 		$this->MAIN->getDB()->update(
 			'lists',
@@ -1252,7 +1254,9 @@ class sasoEventtickets_Core {
 		$order_id = $order->get_id();
 		$idcode = $order->get_meta('_saso_eventtickets_order_idcode');
 		if (empty($idcode)) {
-			$idcode = strtoupper(md5($order_id."-".time()."-".uniqid()));
+			// CWE-338 (DIG-1745): CSPRNG instead of md5(order_id + time + uniqid), which was
+			// predictable from wall-clock + process ordering. Same 32 hex chars as before.
+			$idcode = strtoupper(bin2hex(random_bytes(16)));
 			$order->update_meta_data( '_saso_eventtickets_order_idcode', $idcode );
 			$order->save();
 		}

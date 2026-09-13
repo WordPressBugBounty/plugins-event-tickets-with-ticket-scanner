@@ -121,16 +121,30 @@ class sasoEventtickets_TicketDesigner {
         $codeObj = $this->MAIN->getCore()->setMetaObj($codeObj);
 		$metaObj = $codeObj['metaObj'];
         $order_id = intval($codeObj['order_id']);
-		$order = wc_get_order($order_id);
-        if ($order == null) throw new Exception("#7001 Ticket Designer: Order not available");
 
-        $listObj = $this->MAIN->getAdmin()->getList(['id'=>$codeObj['list_id']]);
-        $list_metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+		$isOrderless = $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj);
+		if ($isOrderless) {
+			// A ticket without an order has neither order nor order item nor
+			// product. Everything derived from them resolves to empty below
+			// instead of throwing #7001/#7002 — the switch says that is
+			// wanted. Same stand-in pattern as the scanner path
+			// (sasoEventtickets_Ticket, rest_helper).
+			$order = null;
+			$order_item = new WC_Order_Item_Product();
+			$product = new WC_Product_Simple();
+			$listObj = $this->MAIN->getAdmin()->getList(['id'=>intval($codeObj['list_id'] ?? 0)]);
+			$product->set_name(!empty($listObj['name']) ? $listObj['name'] : '');
+		} else {
+			$order = wc_get_order($order_id);
+			if ($order == null) throw new Exception("#7001 Ticket Designer: Order not available");
 
-		// suche item in der order
-		$order_item = $this->MAIN->getTicketHandler()->getOrderItem($order, $metaObj);
-		if ($order_item == null) throw new Exception("#7002 Order not found");
-		$product = $order_item->get_product();
+			$listObj = $this->MAIN->getAdmin()->getList(['id'=>$codeObj['list_id']]);
+			// suche item in der order
+			$order_item = $this->MAIN->getTicketHandler()->getOrderItem($order, $metaObj);
+			if ($order_item == null) throw new Exception("#7002 Order not found");
+			$product = $order_item->get_product();
+		}
+		$list_metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
         $is_variation = false;
         try {
 		    $is_variation = $product->get_type() == "variation" ? true : false;
@@ -192,18 +206,27 @@ class sasoEventtickets_TicketDesigner {
         $ticket["is_event_over"] =  $ticket_times["is_date_set"] && $ticket_times["ticket_end_date_timestamp"] < $ticket_times["server_time_timestamp"];
         $ticket["is_daychooser"] = $ticket_times["is_daychooser"];
         $ticket["is_expired"] = $this->MAIN->getCore()->checkCodeExpired($codeObj); // prem expiration
-        $ticket["date_as_string"] = $this->MAIN->getTicketHandler()->displayTicketDateAsString($tmp_product->get_id(), $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj);
+        // Order-less tickets have no product behind them: the stand-in
+        // product carries id 0 and there is no event date to print (the
+        // list's event window governs redemption instead). The scanner
+        // helper (rest path) guards the same call the same way.
+        $ticket["date_as_string"] = ( !$isOrderless && $tmp_product->get_id() > 0 )
+            ? $this->MAIN->getTicketHandler()->displayTicketDateAsString($tmp_product->get_id(), $this->MAIN->getOptions()->getOptionDateFormat(), $this->MAIN->getOptions()->getOptionTimeFormat(), $codeObj)
+            : '';
         //$ticket["short_desc"] = $is_variation ? $product_parent->get_short_description() : $product->get_short_description();
         $ticket["short_desc"] = $product_parent->get_short_description();
         $ticket["info"] = wp_kses_post(nl2br(trim(get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_ticket_is_ticket_info', true ))));
         //$ticket["date_time_format"] = str_replace("Y","yyyy", str_replace("i", "mm", str_replace("H", "kk", str_replace("d", "dd", str_replace("m", "MM", $date_time_format)))));
         $ticket["date_time_format"] = $date_time_format;
 
-        $ticket["order_date_paid_text"] = empty($order->get_date_paid()) ? "-" : wp_date($date_time_format, strtotime($order->get_date_paid()));
-        $ticket["order_date_completed_text"] = empty($order->get_date_completed()) ? "-" : wp_date($date_time_format, strtotime($order->get_date_completed()));
+        // Order-less tickets have no order dates and no item codes — the
+        // stand-in order item carries neither meta. Everything order-derived
+        // degrades to its empty form instead of fataling.
+        $ticket["order_date_paid_text"] = ($order != null && !empty($order->get_date_paid())) ? wp_date($date_time_format, strtotime($order->get_date_paid())) : "-";
+        $ticket["order_date_completed_text"] = ($order != null && !empty($order->get_date_completed())) ? wp_date($date_time_format, strtotime($order->get_date_completed())) : "-";
         $ticket["order_item_pos"] = 1;
-        $ticket["codes"] = explode(",", $order_item->get_meta('_saso_eventtickets_product_code', true));
-        if (count($ticket["codes"]) > 1) {
+        $ticket["codes"] = explode(",", (string) $order_item->get_meta('_saso_eventtickets_product_code', true));
+        if (count($ticket["codes"]) > 1 && $ticket["codes"][0] !== "") {
             // ermittel ticket pos
             $ticket["order_item_pos"] = $this->MAIN->getTicketHandler()->ermittelCodePosition($codeObj['code_display'], $ticket["codes"]);
         }
@@ -274,7 +297,9 @@ class sasoEventtickets_TicketDesigner {
             'OPTIONS' => $options,
             'TICKET' => $ticket,
             'ORDER' => $order,
-            'CUSTOMER' => $order->get_user(),
+            // order-less tickets have no order and therefore no customer —
+            // the empty form is null, templates must treat CUSTOMER as optional
+            'CUSTOMER' => ($order != null) ? $order->get_user() : null,
             'ORDER_ITEM' => $order_item,
             'CODEOBJ' => $codeObj,
             'METAOBJ' => $metaObj,

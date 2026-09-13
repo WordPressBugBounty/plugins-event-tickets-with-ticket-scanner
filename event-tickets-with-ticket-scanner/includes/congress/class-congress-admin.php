@@ -84,6 +84,11 @@ class sasoEventtickets_CongressAdmin {
                         'access_expires_at' => esc_html($c['access_expires_at'] ?? ''),
                         'status'            => $expired ? 'expired' : 'active',
                     ];
+                    // Preview: resolve ONE ticket that opens this app, so the
+                    // admin can open the visitor view in a new tab straight
+                    // from the list. Empty when no sold/active ticket exists
+                    // for any of the app's products yet (no button then).
+                    $row['preview_url'] = esc_url($this->findPreviewUrl($repo, $product_ids));
                     // Generic seam: premium can enrich each admin list row (e.g. add an export_url).
                     $row = apply_filters($this->MAIN->_add_filter_prefix.'congress_admin_list_row', $row, $c);
                     $data[] = $row;
@@ -393,5 +398,53 @@ class sasoEventtickets_CongressAdmin {
             default:
                 return [];
         }
+    }
+
+    /**
+     * Resolves ONE ticket whose congress/product link opens the given app, and
+     * builds the visitor URL for it. Used for the "Open" preview button in the
+     * admin list. Mirrors resolveTicketCongress()'s lookup direction (order →
+     * product → congress), but inverse: app products → a code of one of them
+     * that has an order. Returns '' when nothing fits (no sold ticket yet).
+     */
+    private function findPreviewUrl($repo, array $product_ids): string {
+        if (empty($product_ids)) return '';
+        global $wpdb;
+        // Cheapest useful ticket: active, has an order, belongs to one of the
+        // app's products (meta carries the product id in the standard place).
+        $list = implode(',', array_map('intval', $product_ids));
+        $code = $wpdb->get_row(
+            "SELECT code FROM {$wpdb->prefix}saso_eventtickets_codes
+             WHERE aktiv = 1 AND order_id > 0
+               AND JSON_UNQUOTE(JSON_EXTRACT(meta, '$.woocommerce.product_id')) IN ($list)
+             LIMIT 1",
+            ARRAY_A
+        );
+        // Fallback: any active ticket of the products' ticket lists.
+        if (!$code) {
+            $lists = implode(',', array_map('intval', $wpdb->get_col(
+                "SELECT DISTINCT meta_value FROM {$wpdb->postmeta}
+                 WHERE meta_key = 'saso_eventtickets_list' AND meta_value <> ''
+                   AND post_id IN ($list)"
+            ) ?: [0]));
+            if ($lists !== '0') {
+                $code = $wpdb->get_row(
+                    "SELECT code FROM {$wpdb->prefix}saso_eventtickets_codes
+                     WHERE aktiv = 1 AND order_id > 0 AND list_id IN ($lists)
+                     LIMIT 1",
+                    ARRAY_A
+                );
+            }
+        }
+        if (!$code) return '';
+        $public_id = $code['code'];
+        // The visitor URL wants the public ticket id when one exists.
+        $pub = $wpdb->get_var($wpdb->prepare(
+            "SELECT JSON_UNQUOTE(JSON_EXTRACT(meta, '$.wc_ticket._public_ticket_id'))
+             FROM {$wpdb->prefix}saso_eventtickets_codes WHERE code = %s",
+            $public_id
+        ));
+        if (!empty($pub)) $public_id = $pub;
+        return $repo->getUrl($public_id);
     }
 }

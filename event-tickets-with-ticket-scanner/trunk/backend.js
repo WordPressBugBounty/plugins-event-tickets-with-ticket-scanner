@@ -1084,6 +1084,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							let content2 = _getTicketScannerURL()+'&auth='+encodeURIComponent(content);
 
 							let div = $('<div/>');
+							$('<div>').html("<b>ID: </b>#"+d.id).appendTo(div);
 							$('<div>').html("<b>Authcode: </b>"+d.code).appendTo(div);
 							let div_wrapper = $('<div style="padding-top:10px;">').appendTo(div);
 
@@ -1285,7 +1286,6 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			console.log('Loading seating admin JS: ' + jsFile);
 			$.getScript(myAjax._plugin_home_url + '/' + jsFile, (data) => {
 				system.DYNJS[jsFile] = data;
-				eval(data);
 				sasoEventtickets_js_seating_admin(myAjax, getHelperFunktions()).initAdmin(div);
 			});
 		}
@@ -3649,7 +3649,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		$('<button/>')
 			.addClass("event-tickets-with-ticket-scanner-topmenu-item")
 			.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'congresses')
-			.html(_x('Congresses', 'label', 'event-tickets-with-ticket-scanner'))
+			.html(_x('Event App', 'label', 'event-tickets-with-ticket-scanner'))
 			.on("click", () => {
 				_displayCongressesArea();
 			}).appendTo(btn_grp);
@@ -4426,7 +4426,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			{key: 'wcTicketDisplayOrderTicketsViewLinkOnMail', label: __('Show "Open Tickets" link in email? All QR codes on one page — ideal for groups.', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets', label: __('Auto-complete orders when all items are tickets? Tickets are generated immediately.', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'walletVollstartEnable', label: __('Enable Vollstart Wallet? Customers can collect tickets in the free wallet app.', 'event-tickets-with-ticket-scanner'), preset: 1},
-			{key: 'wcTicketAllowTicketsWithoutOrder', label: __('Do you also hand out tickets that were not bought in the shop? For example printed cards. They can then be redeemed without an order — the check against a paid order does not apply to them.', 'event-tickets-with-ticket-scanner'), preset: 0}
+			{key: 'wcTicketAllowTicketsWithoutOrder', label: __('Will you sell or hand out tickets directly, without a WooCommerce order? For example at the door, by invoice or as printed cards. Create the ticket numbers in a ticket list, switch this on, and the scanner redeems them without an order — every check except the paid-order check stays on (active, not redeemed, time window, CVV).', 'event-tickets-with-ticket-scanner'), preset: 0}
 		],
 		'daypass': [
 			{key: 'wcTicketAllowRedeemTicketAfterEnd', label: __('Allow redemption after closing time?', 'event-tickets-with-ticket-scanner'), preset: 1},
@@ -4434,20 +4434,26 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			{key: 'wcTicketDisplayOrderTicketsViewLinkOnMail', label: __('Show "Open Tickets" link in email? All QR codes on one page — ideal for families.', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets', label: __('Auto-complete orders when all items are tickets? Tickets are generated immediately.', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'walletVollstartEnable', label: __('Enable Vollstart Wallet? Customers can collect tickets in the free wallet app.', 'event-tickets-with-ticket-scanner'), preset: 1},
-			{key: 'wcTicketAllowTicketsWithoutOrder', label: __('Do you also hand out tickets that were not bought in the shop? For example printed cards. They can then be redeemed without an order — the check against a paid order does not apply to them.', 'event-tickets-with-ticket-scanner'), preset: 0}
+			{key: 'wcTicketAllowTicketsWithoutOrder', label: __('Will you sell or hand out tickets directly, without a WooCommerce order? For example at the door, by invoice or as printed cards. Create the ticket numbers in a ticket list, switch this on, and the scanner redeems them without an order — every check except the paid-order check stays on (active, not redeemed, time window, CVV).', 'event-tickets-with-ticket-scanner'), preset: 0}
 		],
 		'membership': [
 			{key: 'wcTicketUserProfileDisplayRedeemAmount', label: __('Show redemption counter to customer? E.g. "15 of 30 visits used"', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'wcTicketShowRedeemBtnOnTicket', label: __('Show self-redeem button on ticket page? For self-service access.', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned? Disable to verify identity first.', 'event-tickets-with-ticket-scanner'), preset: 0},
 			{key: 'walletVollstartEnable', label: __('Enable Vollstart Wallet? Customers can collect tickets in the free wallet app.', 'event-tickets-with-ticket-scanner'), preset: 1},
-			{key: 'wcTicketAllowTicketsWithoutOrder', label: __('Do you also hand out tickets that were not bought in the shop? For example printed cards. They can then be redeemed without an order — the check against a paid order does not apply to them.', 'event-tickets-with-ticket-scanner'), preset: 0}
+			{key: 'wcTicketAllowTicketsWithoutOrder', label: __('Will you sell or hand out tickets directly, without a WooCommerce order? For example at the door, by invoice or as printed cards. Create the ticket numbers in a ticket list, switch this on, and the scanner redeems them without an order — every check except the paid-order check stays on (active, not redeemed, time window, CVV).', 'event-tickets-with-ticket-scanner'), preset: 0}
 		],
 		'voucher': [
 			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned?', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'wcTicketShowRedeemBtnOnTicket', label: __('Show self-redeem button? Customer redeems the voucher themselves.', 'event-tickets-with-ticket-scanner'), preset: 1},
 			{key: 'walletVollstartEnable', label: __('Enable Vollstart Wallet? Customers can collect tickets in the free wallet app.', 'event-tickets-with-ticket-scanner'), preset: 1},
-			{key: 'wcTicketAllowTicketsWithoutOrder', label: __('Do you also hand out tickets that were not bought in the shop? For example printed cards. They can then be redeemed without an order — the check against a paid order does not apply to them.', 'event-tickets-with-ticket-scanner'), preset: 0}
+			{key: 'wcTicketAllowTicketsWithoutOrder', label: __('Will you sell or hand out tickets directly, without a WooCommerce order? For example at the door, by invoice or as printed cards. Create the ticket numbers in a ticket list, switch this on, and the scanner redeems them without an order — every check except the paid-order check stays on (active, not redeemed, time window, CVV).', 'event-tickets-with-ticket-scanner'), preset: 0}
+		],
+		'direct': [
+			{key: 'ticketScannerScanAndRedeemImmediately', label: __('Auto-redeem when scanned?', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'ticketScannerVibrate', label: __('Vibrate the scanner on result?', 'event-tickets-with-ticket-scanner'), preset: 1},
+			{key: 'wcTicketDontAllowRedeemTicketBeforeStart', label: __('Lock redemption until the event starts? Uses the event window on the ticket list.', 'event-tickets-with-ticket-scanner'), preset: 0},
+			{key: 'wcTicketAllowRedeemTicketAfterEnd', label: __('Allow redemption after the event ended? Uses the event window on the ticket list.', 'event-tickets-with-ticket-scanner'), preset: 1}
 		]
 	};
 
@@ -4455,7 +4461,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		{key: 'event', icon: '&#127915;', label: __('Event tickets', 'event-tickets-with-ticket-scanner'), desc: __('Concerts, shows, festivals', 'event-tickets-with-ticket-scanner')},
 		{key: 'daypass', icon: '&#127965;', label: __('Day passes', 'event-tickets-with-ticket-scanner'), desc: __('Theme park, zoo, spa', 'event-tickets-with-ticket-scanner')},
 		{key: 'membership', icon: '&#127183;', label: __('Memberships / Season passes', 'event-tickets-with-ticket-scanner'), desc: __('Recurring access', 'event-tickets-with-ticket-scanner')},
-		{key: 'voucher', icon: '&#127873;', label: __('Vouchers / Simple codes', 'event-tickets-with-ticket-scanner'), desc: __('Gift cards, promo codes', 'event-tickets-with-ticket-scanner')}
+		{key: 'voucher', icon: '&#127873;', label: __('Vouchers / Simple codes', 'event-tickets-with-ticket-scanner'), desc: __('Gift cards, promo codes', 'event-tickets-with-ticket-scanner')},
+		{key: 'direct', icon: '&#127887;', label: __('Direct sales — no WooCommerce', 'event-tickets-with-ticket-scanner'), desc: __('At the door, by invoice, printed cards', 'event-tickets-with-ticket-scanner')}
 	];
 
 	function __showSetupWizard(force) {
@@ -4502,6 +4509,17 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			}
 			else if (currentStep === 2) {
 				var wrap = $('<div class="saso-wizard-usecases"/>');
+				// No WooCommerce on this installation → the direct-sales preset
+				// is the only one that fully works (the others sell through Woo),
+				// so preselect it and say why.
+				var wcAvailable = _getOptions_Versions_isActivatedByKey('is_wc_available');
+				if (!wcAvailable && !selectedPreset) {
+					selectedPreset = 'direct';
+				}
+				var noWcNote = (!wcAvailable)
+					? $('<p class="saso-wizard-note" style="margin:0 4px 10px;font-size:12.5px;color:#1d2327;"></p>').text(__('WooCommerce was not found on this site — selling tickets directly without a shop is preselected. You can still pick another type if you plan to add WooCommerce later.', 'event-tickets-with-ticket-scanner'))
+					: null;
+				if (noWcNote) dlg.append(noWcNote);
 				_wizardUseCases.forEach(function(uc) {
 					var card = $('<div class="saso-wizard-usecase"/>').attr('data-preset', uc.key);
 					if (uc.key === selectedPreset) card.addClass('selected');
@@ -5679,6 +5697,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				drop_search.append('<option value="USERID:">'+_x('Filter for registered user id', 'option value', 'event-tickets-with-ticket-scanner')+'</option>');
 				drop_search.append('<option value="CUSTOMER:">'+_x('Filter for customer name in billing first and last name', 'option value', 'event-tickets-with-ticket-scanner')+'</option>');
 				drop_search.append('<option value="PRODUCTID:">'+_x('Filter for product id', 'option value', 'event-tickets-with-ticket-scanner')+'</option>');
+			drop_search.append('<option value="AUTHTOKEN:">'+_x('Filter for scanner (authtoken id, see ticket scanners)', 'option value', 'event-tickets-with-ticket-scanner')+'</option>');
 				drop_search.append('<option value="DAYPERTICKET:">'+_x('Filter for chosen date (enter YYYY-MM-DD)', 'option value', 'event-tickets-with-ticket-scanner')+'</option>');
 				drop_search.on("change", e=>{
 					let old_search = tabelle_codes_datatable.search().trim();

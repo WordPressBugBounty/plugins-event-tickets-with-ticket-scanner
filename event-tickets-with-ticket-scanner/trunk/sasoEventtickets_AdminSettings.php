@@ -641,6 +641,27 @@ class sasoEventtickets_AdminSettings {
 		die();
 	}
 
+	/**
+	 * Reads a WP.org readme.txt header (e.g. "Tested up to") from the
+	 * plugin's own readme.txt. Single source of truth for the support-info
+	 * block so it can never lag behind the readme again.
+	 *
+	 * @param string $header header name, e.g. 'Tested up to'
+	 * @param string $fallback returned when the readme or the header is missing
+	 * @return string
+	 */
+	private function _readmeHeader($header, $fallback = '') {
+		static $readme = null;
+		if ($readme === null) {
+			$readme = @file_get_contents($this->MAIN->getPluginPath().'readme.txt');
+			if ($readme === false) $readme = '';
+		}
+		if ($readme !== '' && preg_match('/^'.preg_quote($header, '/').':\s*(.+)$/im', $readme, $m)) {
+			return trim($m[1]);
+		}
+		return $fallback;
+	}
+
 	private function getSupportInfos($data) {
 		$codes_size = $this->MAIN->getDB()->getCodesSize();
 		$lists_size = $this->MAIN->getDB()->_db_getRecordCountOfTable('lists');
@@ -902,10 +923,14 @@ class sasoEventtickets_AdminSettings {
 				'is_wc_available'=>class_exists( 'WooCommerce' ) ? 1 : 0,
 				'IS_PRETTY_PERMALINK_ACTIVATED' => get_option('permalink_structure') ? true :false,
 				'plugin_version' => defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION') ? SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION : SASO_EVENTTICKETS_PLUGIN_VERSION,
-				'requires_wp' => '6.0',
-				'tested_up_to' => '6.9',
-				'requires_php' => '8.1'
-			];
+				// readme.txt is the single source of truth for the WP.org
+				// headers — read them from there so the support info can never
+				// lag behind the readme again (it did: hardcoded 6.9 while the
+				// readme already said 7.1). Fallback = last known values.
+				'requires_wp' => $this->_readmeHeader('Requires at least', '6.0'),
+				'tested_up_to' => $this->_readmeHeader('Tested up to', '6.9'),
+				'requires_php' => $this->_readmeHeader('Requires PHP', '8.1')
+				];
 			$versions["isOldPremiumDetected"] = $this->MAIN->isOldPremiumDetected();
 			$versions["isStarterOrStopDetected"] = $this->MAIN->isStarterOrStopDetected();
 			$versions["date_default_timezone"] = date_default_timezone_get();
@@ -1295,6 +1320,27 @@ class sasoEventtickets_AdminSettings {
 				// Order processing
 				'wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets' => 1,
 			],
+			'direct' => [
+				// Sell or hand out tickets WITHOUT a WooCommerce order: at the
+				// door, by invoice, as printed cards. The whole point of the
+				// preset — the orderless path is on, everything that would act
+				// on a WooCommerce order (auto-complete, order view links,
+				// ICS/calendar to the purchase mail) is deliberately absent.
+				'wcTicketAllowTicketsWithoutOrder' => 1,
+				// Redemption rules: no product → the ticket list's event window
+				// governs; unlock nothing by default, the list is configured
+				// per event anyway.
+				'wcTicketDontAllowRedeemTicketBeforeStart' => 0,
+				'wcTicketOffsetAllowRedeemTicketBeforeStart' => 0,
+				'wcTicketAllowRedeemTicketAfterEnd' => 1,
+				// Scanner
+				'ticketScannerScanAndRedeemImmediately' => 1,
+				'ticketScannerVibrate' => 1,
+				// Customer features: printed cards carry no self-redeem page
+				// by default; the counter display belongs to memberships.
+				'wcTicketShowRedeemBtnOnTicket' => 0,
+				'wcTicketUserProfileDisplayRedeemAmount' => 0,
+			],
 		];
 		if (!isset($presets[$preset])) {
 			return [];
@@ -1331,6 +1377,9 @@ class sasoEventtickets_AdminSettings {
 				'wcTicketAttachTicketToMailAsOnePDF' => 0,
 				'wcTicketAttachTicketToMailMax' => 5,
 			],
+			// Direct sales: no order, no purchase email to attach anything to.
+			// Deliberately empty — PDFs come from the admin print sheet.
+			'direct' => [],
 		];
 		if (!isset($presets[$preset])) {
 			return [];
@@ -1521,7 +1570,7 @@ class sasoEventtickets_AdminSettings {
 		return $metaObj;
 	}
 
-	private function removeUserRegistrationFromCode($data) {
+	public function removeUserRegistrationFromCode($data) {
 		if(!isset($data['code'])) throw new Exception("#9221 code paramter missing - cannot remove user registration from the ticket");
 		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
@@ -1550,7 +1599,7 @@ class sasoEventtickets_AdminSettings {
 		}
 		if (isset($data['reg_userid'])) $metaObj['user']['reg_userid'] = intval($data['reg_userid']);
 		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
-		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta'], "user_id"=>$metaObj['used']['reg_userid']], ['id'=>$codeObj['id']]);
+		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta'], "user_id"=>$metaObj['user']['reg_userid']], ['id'=>$codeObj['id']]);
 		// send webhook if activated
 		$this->MAIN->getCore()->triggerWebhooks(7, $codeObj);
 		do_action( $this->MAIN->_do_action_prefix.'editUseridForUserRegistrationFromCode', $data, $codeObj, $metaObj );
@@ -2007,6 +2056,13 @@ class sasoEventtickets_AdminSettings {
 					$where .= " and json_extract(a.meta, '$.woocommerce.product_id') = ".$product_id." ";
 					$nomatch = false;
 				}
+				preg_match('/\s?AUTHTOKEN:\s*([0-9]+)/', $search_element, $matches);
+				if ($matches && count($matches) > 1) {
+					$search_element = str_replace($matches[0], "", $search_element);
+					$authtoken_id = intval($matches[1]);
+					$where .= " and json_extract(a.meta, '$.wc_ticket.redeemed_via_authtoken_id') = ".$authtoken_id." ";
+					$nomatch = false;
+				}
 				preg_match('/\s?DAYPERTICKET:\s*([^\s]*)/', $search_element, $matches);
 				if ($matches && count($matches) > 1) {
 					$search_element = str_replace($matches[0], "", $search_element);
@@ -2231,10 +2287,14 @@ class sasoEventtickets_AdminSettings {
 		// uses a list to define the autogenerated code, that will be taken (if not used codes exists) or store a new generated code to the list
 		$data = ["code"=>"", "list_id"=>$list_id, "order_id"=>$order_id, "semaphorecode"=>""]; // semaphorecode wird beim speichern wieder frei gemacht
 		$id = 0;
+		$reusedCode = false;
 		// check if option is activate to reuse not purchased codes from the code list assigned to the woocommerce product
 		if ($this->isOptionCheckboxActive('wcassignmentReuseNotusedCodes')) {
 			// semaphore to prevent stealing code on heavy loaded servers
-			$semaphorecode = md5(SASO_EVENTTICKETS::PasswortGenerieren() . microtime(). "_". rand());
+			// CWE-338 (DIG-1762): CSPRNG instead of md5(PasswortGenerieren() + microtime() + rand());
+			// PasswortGenerieren() itself uses rand()/shuffle(), so the whole expression was
+			// non-cryptographic. random_bytes(16) yields the same 32 hex chars (column is varchar(50)).
+			$semaphorecode = bin2hex(random_bytes(16));
 			$rescueCounter = 0;
 			while($rescueCounter < 50) {
 				// get a code from the list with order_id = 0
@@ -2258,6 +2318,7 @@ class sasoEventtickets_AdminSettings {
 						// set the $id
 						$id = intval($d[0]['id']);
 						$data['code'] = $d[0]['code_display'];
+						$reusedCode = true;
 						// too clean up again after the testing // $this->MAIN->getDB()->update("codes", ['semaphorecode'=>''], ['id'=>$d[0]['id']]);
 						break; // done
 					}
@@ -2324,6 +2385,34 @@ class sasoEventtickets_AdminSettings {
 		//if (SASO_EVENTTICKETS::issetRPara('a') && SASO_EVENTTICKETS::getRequestPara('a') == 'testing') exit;
 
 		if ($id > 0) {
+			// Lazy cleanup on reuse (Saso 2026-09-10, same as Serial Codes): a ticket
+			// re-drawn from the pool may still carry registration/usage remains from a
+			// refund that ran before the refund-cleanup knew how to clear them. Only
+			// re-used tickets are touched, and only when remains actually exist —
+			// the new order must not inherit the previous owner.
+			if ($reusedCode) {
+				try {
+					$stale = $this->MAIN->getCore()->retrieveCodeById($id, true);
+					$staleMeta = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($stale['meta'], $stale);
+					$hasRemains = (
+						intval($stale['user_id']) !== 0
+						|| !empty($staleMeta['user']['value'])
+						|| !empty($staleMeta['user']['reg_ip'])
+						|| intval($staleMeta['user']['reg_approved']) !== 0
+						|| !empty($staleMeta['user']['reg_request'])
+						|| !empty($staleMeta['used']['reg_ip'])
+						|| !empty($staleMeta['used']['reg_request'])
+						|| intval($staleMeta['confirmedCount']) !== 0
+					);
+					if ($hasRemains) {
+						$this->removeUserRegistrationFromCode(['code'=>$data['code']]);
+						$this->removeUsedInformationFromCode(['code'=>$data['code']]);
+					}
+				} catch (Exception $e) {
+					// best effort: never block the assignment on cleanup
+				}
+			}
+
 			// Auto-generate CVV when the product has the "Require CVV at scanner"
 			// option on — extracted to Core for SRP and to be testable in isolation.
 			$this->MAIN->getCore()->maybeGenerateCVVForCode($id, $product_id);
@@ -2347,7 +2436,10 @@ class sasoEventtickets_AdminSettings {
 	}
 	private function generateCode($formatterValues="") {
 		$datePrefix = $this->encodeDateToLetters();
-		$code = $datePrefix . '-' . implode('-', str_split(substr(strtoupper(md5(time()."_".rand())), 0, 10), 5));
+		// CWE-338 (DIG-1762): CSPRNG instead of md5(time()."_".rand()), which was
+		// predictable from wall-clock time + process ordering. random_bytes(5) yields
+		// the same 10 uppercase hex chars, so the printed code format stays identical.
+		$code = $datePrefix . '-' . implode('-', str_split(strtoupper(bin2hex(random_bytes(5))), 5));
 		if (!empty($formatterValues) || $this->isOptionCheckboxActive("wcassignmentUseGlobalSerialFormatter")) {
 			if (empty($formatterValues)) {
 				$codeFormatterJSON = $this->getOptionValue('wcassignmentUseGlobalSerialFormatter_values');
