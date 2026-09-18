@@ -2092,7 +2092,10 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 					// If blockOnAddToCart is active, we need to create blocks now
 					if ($blockOnAddToCart) {
 						// Try to block the seat
-						$blockResult = $blockManager->blockSeat($seatId, $planId, $product_id, $eventDate, $sessionId);
+						// Signature: blockSeat(int $seatId, int $productId, string $sessionId, ?string $eventDate = null)
+						// (regression fix 015027: was called as ($seatId, $planId, $product_id, $eventDate, $sessionId)
+						//  which silently stored blocks under the plan id / a bogus session id)
+						$blockResult = $blockManager->blockSeat($seatId, $product_id, $sessionId, $eventDate);
 
 						if (!$blockResult['success']) {
 							$seatLabel = $seat['seat_label'] ?? $seat['seat_id'];

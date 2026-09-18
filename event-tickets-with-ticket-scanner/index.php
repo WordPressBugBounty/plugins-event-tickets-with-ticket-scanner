@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.2.0
+ * Version: 3.2.1
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.2.0');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.2.1');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -1183,7 +1183,10 @@ class sasoEventtickets {
 		wp_enqueue_media(); // um die js wp.media lib zu laden
 
 		// einbinden das js starter skript
-		$js_url = $this->_js_file."?_v=".$this->_js_version;
+		// _f = filemtime cache buster: die Plugin-Version steht waehrend der Entwicklung
+		// still (Version-offen-Konvention) — ohne den Buster haelt der Browser die
+		// alte Datei, obwohl ?_v= identisch bleibt (Kasse-Title-Bug 2026-09-14).
+		$js_url = $this->_js_file."?_v=".$this->_js_version."&_f=".filemtime(__DIR__.'/'.$this->_js_file);
 		if (defined( 'WP_DEBUG')) $js_url .= '&debug=1';
 		wp_register_script('ajax_script_backend', plugins_url( $js_url,__FILE__ ), array('jquery', 'jquery-ui-dialog', 'wp-i18n'));
         wp_enqueue_script('ajax_script_backend');

@@ -122,6 +122,18 @@ class sasoEventtickets_AdminSettings {
 				case "emptyTableErrorLogs":
 					$ret = $this->emptyTableErrorLogs();
 					break;
+				case "getInternalOrders":
+					$ret = $this->getInternalOrders($data, SASO_EVENTTICKETS::getRequest());
+					break;
+				case "addInternalOrder":
+					$ret = $this->addInternalOrder($data);
+					break;
+				case "setInternalOrderStatus":
+					$ret = $this->setInternalOrderStatus($data);
+					break;
+				case "getInternalOrderTicketURL":
+					$ret = $this->getInternalOrderTicketURL($data);
+					break;
 				case "premium":
 					$ret = $this->executeJSONPremium($data);
 					break;
@@ -2446,6 +2458,14 @@ class sasoEventtickets_AdminSettings {
 			} else {
 				$codeFormatterJSON = $formatterValues;
 			}
+			// The options layer decodes JSON values into arrays
+			// (_loadSingleOption / _applyDbCacheToOption) and list meta can carry
+			// a decoded array as well — json_decode() on an array is a TypeError
+			// (fatal 500 via addInternalOrder, seen 2026-09-14). Normalize: an
+			// array is already the decoded formatter object, re-encode it.
+			if (is_array($codeFormatterJSON)) {
+				$codeFormatterJSON = wp_json_encode($codeFormatterJSON);
+			}
 			// check ob formatter infos gespeichert
 			if (!empty($codeFormatterJSON)) {
 				// check ob man das JSON erstellen kann
@@ -3713,6 +3733,220 @@ class sasoEventtickets_AdminSettings {
 		];
 		$id = $this->MAIN->getDB()->insert("errorlogs", $felder);
 	}
+	/**
+	 * Direct-sales orders for the Kasse DataTable (server-side, mirrors getCodes /
+	 * getOptionsHistory). Filters: list_id, status, search; full counts for
+	 * paging; totalCount comes from the same WHERE without LIMIT.
+	 */
+	public function getInternalOrders($data, $request): array {
+		$table = $this->MAIN->getDB()->getTabelle("orders");
+		$listsTable = $this->MAIN->getDB()->getTabelle("lists");
+
+		$length = isset($request['length']) ? intval($request['length']) : 0;
+		$draw = isset($request['draw']) ? intval($request['draw']) : 1;
+		$start = isset($request['start']) ? intval($request['start']) : 0;
+
+		$where = "1=1";
+		if (isset($data['list_id']) && intval($data['list_id']) > 0) $where .= " and o.list_id = ".intval($data['list_id']);
+		if (isset($data['status']) && trim((string)$data['status']) !== '') $where .= " and o.status = '".$this->MAIN->getDB()->reinigen_in(trim((string)$data['status']))."'";
+
+		$search = "";
+		if (isset($request['search']['value'])) $search = $this->MAIN->getDB()->reinigen_in($request['search']['value']);
+
+		$columns = ['id', 'list_name', 'status', 'payment_note', 'customer_name', 'time', 'tickets_count'];
+		if ($search != "") {
+			$where .= " and (cast(o.id as char) like '%".$search."%'";
+			$where .= " or l.name like '%".$search."%'";
+			$where .= " or o.status like '%".$search."%'";
+			$where .= " or o.payment_note like '%".$search."%'";
+			$where .= " or o.customer_name like '%".$search."%'";
+			$where .= ")";
+		}
+
+		$order_column = "o.id";
+		$order_dir = "desc";
+		if (isset($request['order']) && is_array($request['order']) && count($request['order']) > 0) {
+			$col_idx = intval($request['order'][0]['column']);
+			if (isset($columns[$col_idx])) $order_column = $columns[$col_idx];
+			if (isset($request['order'][0]['dir']) && $request['order'][0]['dir'] == 'asc') $order_dir = "asc";
+		}
+
+		// Map aliased select column to its real alias
+		$select_order = $order_column;
+		if ($order_column == 'list_name') $select_order = 'l.name';
+		else if ($order_column == 'tickets_count') $select_order = "(select count(*) from ".$table." where 1=0)"; // computed below
+
+		$count_sql = "select count(*) as anzahl from ".$table." o left join ".$listsTable." l on o.list_id = l.id where ".$where;
+		$count_row = $this->MAIN->getDB()->_db_datenholen($count_sql);
+		$recordsTotalFilter = is_array($count_row) && count($count_row) > 0 ? intval($count_row[0]['anzahl']) : 0;
+		$recordsTotal = $this->MAIN->getDB()->_db_getRecordCountOfTable('orders');
+
+		// Join the tickets count per order via a subquery; cards_count is cheap on the orderless-row table
+		$list_sql = "select o.*, l.name as list_name, (select count(*) from ".$table." inner_ where 1=0) as tickets_count_dummy from ".$table." o left join ".$listsTable." l on o.list_id = l.id where ".$where." order by ".$select_order." ".$order_dir;
+		if ($length > 0) $list_sql .= " limit ".$start.", ".$length;
+
+		$daten = $this->MAIN->getDB()->_db_datenholen($list_sql);
+		if (!is_array($daten)) $daten = [];
+		foreach ($daten as &$r) {
+			$r['code_ids_arr'] = json_decode($r['code_ids'], true) ?: [];
+			$r['tickets_count'] = count($r['code_ids_arr']);
+			unset($r['tickets_count_dummy']);
+		}
+		unset($r);
+
+		return [
+			"draw" => $draw,
+			"recordsTotal" => $recordsTotal,
+			"recordsFiltered" => $recordsTotalFilter,
+			"data" => $daten,
+		];
+	}
+
+	/**
+	 * Kasse: create a direct-sales order and issue tickets from a list.
+	 *
+	 * amount = number of tickets. Creates the order (draft or completed when
+	 * 'confirm' is set — the Kasse confirms payment with completed), then draws
+	 * tickets from the list via the existing order-less generation path
+	 * (generateCode/addCode), stamps internal_order_id + meta and keeps the
+	 * ticket-id idcode mechanism of 3.2.0 intact.
+	 */
+	private function addInternalOrder($data) {
+		$list_id = isset($data['list_id']) ? intval($data['list_id']) : 0;
+		if ($list_id < 1) throw new Exception("#9240 list id is missing");
+		$amount = isset($data['amount']) ? intval($data['amount']) : 1;
+		if ($amount < 1 || $amount > 100) throw new Exception("#9241 amount must be between 1 and 100");
+		$this->getList(['id'=>$list_id]); // throws #104/#105 when unknown
+
+		$confirm = !empty($data['confirm']);
+		$order_id = $this->MAIN->getDB()->insert("orders", [
+			"list_id"=>$list_id,
+			"status"=>$confirm ? "completed" : "draft",
+			"payment_note"=>isset($data['payment_note']) ? sanitize_text_field(substr((string)$data['payment_note'], 0, 100)) : "",
+			"delivery_state"=>$confirm ? "issued" : "draft",
+			"customer_name"=>isset($data['customer_name']) ? sanitize_text_field(substr((string)$data['customer_name'], 0, 255)) : "",
+			"customer_email"=>isset($data['customer_email']) ? sanitize_email(substr((string)$data['customer_email'], 0, 255)) : "",
+			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling([])
+		]);
+
+		// formatter from the list (same source addCodeFromListForOrder uses)
+		$listObj = $this->getList(['id'=>$list_id]);
+		$formatterValues = "";
+		$listMeta = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+		if (!empty($listMeta['formatter']['active']) && $listMeta['formatter']['active'] == 1) {
+			$formatterValues = stripslashes($listMeta['formatter']['format']);
+		}
+
+		$code_ids = [];
+		$codes = [];
+		$urls = [];
+		for ($i = 0; $i < $amount; $i++) {
+			$counter = 0;
+			$id = 0;
+			$code = "";
+			while($counter < 500) {
+				$counter++;
+				$code = $this->generateCode($formatterValues);
+				try {
+					$id = $this->addCode(["code"=>$code, "list_id"=>$list_id]);
+					break;
+				} catch(Exception $e) {
+					if (substr($e->getMessage(), 0, 5) == "#208 ") throw $e; // limit reached
+				}
+			}
+			if ($id == 0) throw new Exception("#9242 could not generate a unique ticket code");
+			$this->MAIN->getDB()->update("codes", ["internal_order_id"=>$order_id], ["id"=>$id]);
+			$codeObj = $this->MAIN->getCore()->retrieveCodeById($id);
+			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+			$metaObj['internal_order'] = ["id"=>$order_id, "status"=>$confirm ? "completed" : "draft"];
+			// ticket marker + list idcode (getTicketId resolves on first read when
+			// missing — calling it here warms it so the ticket is scanner-ready)
+			$this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
+			$code_ids[] = $id;
+			$codes[] = $code;
+			// print-preview URL: the ticket page needs the full ticket id
+			$urls[] = $this->MAIN->getCore()->getTicketURL($codeObj, $metaObj);
+		}
+		$this->MAIN->getDB()->update("orders", ["code_ids"=>$this->MAIN->getCore()->json_encode_with_error_handling($code_ids)], ["id"=>$order_id]);
+
+		do_action( $this->MAIN->_do_action_prefix.'admin_addInternalOrder', $order_id, $code_ids, $data );
+		return ["order_id"=>$order_id, "code_ids"=>$code_ids, "codes"=>$codes, "urls"=>$urls, "status"=>$confirm ? "completed" : "draft"];
+	}
+
+	/**
+	 * Kasse / order detail: change the status of an internal order.
+	 *
+	 * completed = payment confirmed (the redeem gate opens).
+	 * cancelled = storno: tickets are freed (redeem info cleared, registration
+	 * cleared, aktiv reset) and the order loses its ticket binding (they go back
+	 * to the pool semantics of order-less codes).
+	 * partially_refunded = selected codes (data.codes) are cancelled, the order
+	 * keeps the rest; redeem stays open for the remaining tickets.
+	 */
+	private function setInternalOrderStatus($data) {
+		if (!isset($data['id'])) throw new Exception("#9243 order id parameter is missing");
+		$order_id = intval($data['id']);
+		$order = $this->MAIN->getCore()->getInternalOrderById($order_id);
+		if ($order === null) throw new Exception("#9244 internal order not found");
+		$status = isset($data['status']) ? trim((string)$data['status']) : "";
+		if (!in_array($status, ["draft", "completed", "cancelled", "partially_refunded"], true)) {
+			throw new Exception("#9245 invalid status");
+		}
+
+		$felder = ["status"=>$status];
+		if ($status == "completed") $felder["delivery_state"] = ($order['delivery_state'] == "draft") ? "issued" : $order['delivery_state'];
+
+		if ($status == "cancelled" || $status == "partially_refunded") {
+			$code_ids = json_decode($order['code_ids'], true) ?: [];
+			$only = (isset($data['codes']) && is_array($data['codes']) && count($data['codes']) > 0)
+				? array_map('strval', $data['codes'])
+				: null;
+			$remaining = [];
+			foreach ($code_ids as $cid) {
+				$cancelThis = ($only === null) || in_array(strval($cid), $only, true);
+				if (!$cancelThis) { $remaining[] = $cid; continue; }
+				try {
+					$codeObj = $this->MAIN->getCore()->retrieveCodeById(intval($cid), false);
+					$_code = $codeObj['code'];
+					// free the ticket: redeem info + registration + meta mirror
+					$this->removeRedeemWoocommerceTicketForCode(['code'=>$_code], $codeObj);
+					$this->removeUserRegistrationFromCode(['code'=>$_code]);
+					$this->removeUsedInformationFromCode(['code'=>$_code]);
+					$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+					unset($metaObj['internal_order']);
+					$this->MAIN->getDB()->update("codes",
+						["internal_order_id"=>0, "aktiv"=>1, "meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($metaObj)],
+						["id"=>intval($cid)]
+					);
+				} catch (Exception $e) {
+					// a single broken ticket must not block the storno; log and continue
+					$this->logErrorToDB($e, null, "direct-sales storno ticket #".$cid);
+				}
+			}
+			if ($status == "cancelled") {
+				$felder["code_ids"] = $this->MAIN->getCore()->json_encode_with_error_handling([]);
+			} else {
+				$felder["code_ids"] = $this->MAIN->getCore()->json_encode_with_error_handling($remaining);
+			}
+		}
+
+		$ret = $this->MAIN->getDB()->update("orders", $felder, ["id"=>$order_id]);
+		do_action( $this->MAIN->_do_action_prefix.'admin_setInternalOrderStatus', $order_id, $status, $data );
+		return $ret;
+	}
+
+	/**
+	 * Print-preview URL of a single ticket of a direct sale (ticket page).
+	 */
+	private function getInternalOrderTicketURL($data) {
+		if (!isset($data['code_id'])) throw new Exception("#9246 code id parameter is missing");
+		$codeObj = $this->MAIN->getCore()->retrieveCodeById(intval($data['code_id']));
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$url = $this->MAIN->getCore()->getTicketURL($codeObj, $metaObj);
+		// ?pdf delivers the ticket PDF inline — the Kasse preview opens the PDF
+		return ["url"=>$url.'?pdf'];
+	}
+
 	private function emptyTableErrorLogs() {
 		$sql = "delete from ".$this->MAIN->getDB()->getTabelle("errorlogs");
 		$this->MAIN->getDB()->_db_query($sql);

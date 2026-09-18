@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -246,7 +246,18 @@ Old premium version will no longer work with this version. You need to downgrade
 
 == Changelog ==
 
+= 3.2.1 - 2026-09-18 =
+* Fix: With "Reserve seat only when adding to cart" enabled, the reservation was stored under wrong identifiers — the seat was not reliably blocked for other customers until the order was completed. Reservations created by this option now block the seat correctly.
+* Fix: On block themes (like Twenty Twenty-Four) the public ticket page fell back to a deprecated WordPress legacy template and printed a deprecation notice — the page now renders a clean minimal shell there.
+* New: The print preview in the Kasse opens the ticket as a PDF.
+* Fix: Selling a ticket crashed with a server error when the ticket list used a code format — the format reached the code generator in the wrong shape; the generator now handles both shapes.
+* New: The Kasse area shows one button per ticket list — a single click opens the sale popup with the list preselected (switchable inside the popup), amount, payment note and customer name.
+* New: Sell tickets directly at the counter — the new "Kasse" area issues tickets from a ticket list without a shop order, attaches an internal sale number to every ticket and confirms payment with one click. Sales can be cancelled or partially refunded; cancelled tickets are freed for reuse. Print preview opens each ticket in the browser. The sale confirmation is checked at the scanner: a ticket whose direct sale was not confirmed yet does not redeem.
+
 = 3.2.0 - 2026-09-13 =
+* New: Kasse is now switchable (default on) — turn the whole Kasse tab off as a safety stop or for handheld-only shops.
+* New: The Kasse ticket-list overview is switchable (default on) — disable to open the sale popup directly on touch screens.
+* New: The Kasse orders table now uses server-side DataTable processing (search / paging / sorting), status pills, and per-row Confirm / Cancel / Refund / Partial refund / Print tickets actions. Filtering and ordering are handled on the server.
 * New: Filter the ticket list by scanner account — new search filter "AUTHTOKEN:" shows all tickets redeemed by one ticket scanner (enter the id shown in the scanner details), so you can review each entrance team member's activity without opening every ticket.
 * New: The scanner makes a successful read unmistakable — the camera area lights up with a green frame (like card payment terminals) and a clear "code read, waiting for server" message the moment a QR code is recognized, followed by a short deliberate pause before the next scan is processed. Queued scans of group members are never lost and keep their order.
 * Fix: The ticket scanner silently dropped scans that arrived while the previous ticket was still loading (slow Wi-Fi, fast consecutive scanning of groups) — those guests were never redeemed in the dashboard. Scans are now queued and processed one after another, with a short on-screen note.

@@ -1486,6 +1486,19 @@ final class sasoEventtickets_Ticket {
 			if ($product == null) return wp_send_json_error("#303 ".esc_html__("product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
 
 			$this->isProductAllowedByAuthToken([$product->get_id()]);
+		} else if ($this->MAIN->getCore()->isDirectSaleTicket($codeObj)) {
+			// Direct sale: the internal order carries the payment confirmation —
+			// the Kasse sets it with 'completed'. Without it the ticket does not
+			// redeem (spec: direct-sales-internal-orders).
+			if (!$this->MAIN->getCore()->isInternalOrderRedeemable($codeObj)) {
+				$_io = $this->MAIN->getCore()->getInternalOrderById($this->MAIN->getCore()->getInternalOrderIdOfCode($codeObj));
+				$_io_status = is_array($_io) ? (string) $_io['status'] : 'unknown';
+				return wp_send_json_error("#8030 ".esc_html(sprintf(
+					/* translators: %s: internal order status */
+					__('The ticket was sold directly but its sale has not been confirmed as paid yet (sale status: %s).', 'event-tickets-with-ticket-scanner'),
+					$_io_status
+				)));
+			}
 		}
 
 		$this->redeemTicket($codeObj);
@@ -3812,7 +3825,7 @@ final class sasoEventtickets_Ticket {
 	private function renderViewDisabledHtmlPage() {
 		$modern = $this->isModernLayout();
 		if ($modern) $this->enqueueModernFrontendCSS();
-		if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideHeader') == false) get_header();
+		if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideHeader') == false) $this->renderThemeHeader();
 		if ($modern) {
 			echo '<div style="max-width:640px;margin:40px auto;">';
 			echo $this->renderStatusBanner('info', esc_html($this->getViewDisabledMessage()), '');
@@ -3822,7 +3835,42 @@ final class sasoEventtickets_Ticket {
 			echo '<p>'.esc_html($this->getViewDisabledMessage()).'</p>';
 			echo '</div>';
 		}
-		if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideFooter') == false) get_footer();
+		if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideFooter') == false) $this->renderThemeFooter();
+	}
+
+	/**
+	 * Theme header for the public ticket page.
+	 *
+	 * Block themes (full site editing) have no header.php — WP then loads the
+	 * deprecated theme-compat fallback (Kubrick markup + deprecation notice,
+	 * "Theme without header.php is deprecated since 3.0.0"). On block themes we
+	 * render a minimal shell instead; classic themes keep get_header().
+	 */
+	private function renderThemeHeader() {
+		if (function_exists('wp_is_block_theme') && wp_is_block_theme()) {
+			echo '<!DOCTYPE html>';
+			echo '<html ';
+			language_attributes();
+			echo '><head><meta charset="'.esc_attr(get_bloginfo('charset')).'" />';
+			echo '<meta name="viewport" content="width=device-width, initial-scale=1" />';
+			echo '<title>'.esc_html(wp_get_document_title()).'</title>';
+			wp_head();
+			echo '</head><body class="'.esc_attr(implode(' ', get_body_class())).'">';
+			return;
+		}
+		get_header();
+	}
+
+	/**
+	 * Theme footer counterpart to renderThemeHeader().
+	 */
+	private function renderThemeFooter() {
+		if (function_exists('wp_is_block_theme') && wp_is_block_theme()) {
+			wp_footer();
+			echo '</body></html>';
+			return;
+		}
+		get_footer();
 	}
 
 	private function isPDFRequest() {
@@ -3986,7 +4034,7 @@ final class sasoEventtickets_Ticket {
 				$hasError = true;
 				$modern = $this->isModernLayout();
 				if ($modern) $this->enqueueModernFrontendCSS();
-				get_header();
+				$this->renderThemeHeader();
 				if ($modern) {
 					echo '<div style="width:100%;">';
 					echo '<div class="saso-ticket ticket_content">';
@@ -4017,7 +4065,7 @@ final class sasoEventtickets_Ticket {
 				wp_set_script_translations('ajax_script', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
 
 				if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideHeader') == false) {
-					get_header();
+					$this->renderThemeHeader();
 				}
 				// Wrapper: modern uses BEM class + legacy alias; legacy keeps inline styles.
 				if ($modern) {
@@ -4064,13 +4112,13 @@ final class sasoEventtickets_Ticket {
 			echo '</div>';
 
 			if ($hasError || $this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideFooter') == false) {
-				get_footer();
+				$this->renderThemeFooter();
 			}
 		} else {
-			get_header();
+			$this->renderThemeHeader();
 			echo '<h1 style="color:red;">'.esc_html__('No WooCommerce Support Found', 'event-tickets-with-ticket-scanner').'</h1>';
 			echo '<p>'.esc_html__('Please contact us for a solution.', 'event-tickets-with-ticket-scanner').'</p>';
-			get_footer();
+			$this->renderThemeFooter();
 		}
 	}
 }

@@ -386,6 +386,12 @@ class sasoEventtickets_Options {
 			];
 		$options[] = ['key'=>'wcTicketAllowTicketsWithoutOrder', 'label'=>__("Allow tickets without a WooCommerce order", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Off by default. If active, tickets that belong to no order — for example numbers you generated yourself to sell at the door, by invoice or as printed cards — can be opened, shown and redeemed at the scanner. <b>You give up the order check as copy protection for those tickets:</b> the plugin can no longer verify against a paid order, only that the number exists, is active, is not redeemed yet and belongs to its ticket list. Tickets sold through WooCommerce are unaffected and keep the full check. You can also switch this on for a single ticket list instead of the whole shop, in the list's settings.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>false];
 
+	// Direct sales / Kasse: opt-out for the whole area + display of the
+	// ticket-list overview tiles (Saso 2026-09-14). Default on; turn off
+	// to hide the tab without uninstalling the engine.
+	$options[] = ['key'=>'wcTicketKasseEnabled', 'label'=>__("Show the Kasse area in the admin menu", 'event-tickets-with-ticket-scanner'), 'desc'=>__("On by default. If turned off, the Kasse tab (sell tickets directly from a list, manage internal sales) is hidden completely. Useful as a safety stop when something goes wrong, or when direct sales should only happen on a separate handheld.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>true];
+	$options[] = ['key'=>'wcTicketKasseShowListOverview', 'label'=>__("Show the ticket lists overview in the Kasse area", 'event-tickets-with-ticket-scanner'), 'desc'=>__("On by default. If turned off, the Kasse area skips the list-of-lists tile view and opens the sale popup directly (useful on small touch screens where one ticket list is sold at a time).", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>true];
+
 		$options[] = [
 				'key'=>'h12',
 				'label'=>__("Woocommerce ticket sale", 'event-tickets-with-ticket-scanner'),

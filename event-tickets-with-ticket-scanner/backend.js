@@ -1123,6 +1123,329 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		});
 	}
 
+	let KASSE_DIV = null;
+	let tabelle_orders_datatable = null;
+	function _displayKasseArea() {
+		STATE = 'kasse';
+		DIV.html('');
+		// Kanonisches Sektions-Muster: Back-Button + komplettes Topmenü (wie authtokens/faq/…)
+		DIV.append(getBackButtonDiv());
+
+		KASSE_DIV = $('<div/>').html(_getSpinnerHTML()).appendTo(DIV);
+		getDataLists(()=>{
+			__renderKasse();
+		});
+	}
+
+	function __kasseOrderRow(order) {
+		let div = $('<div class="et-kasse-order"/>');
+		let head = $('<div class="et-kasse-order__head"/>').appendTo(div);
+		head.append($('<span class="et-kasse-order__id"/>').text('#'+order.id));
+		head.append($('<span class="et-kasse-order__list"/>').text(__kasseListName(order.list_id)));
+		head.append($('<span class="et-kasse-order__status"/>').text(order.status));
+		head.append($('<span class="et-kasse-order__count"/>').text(order.tickets_count+' '+_x('tickets', 'label', 'event-tickets-with-ticket-scanner')));
+		if (order.payment_note) head.append($('<span class="et-kasse-order__note"/>').text(order.payment_note));
+		if (order.customer_name) head.append($('<span class="et-kasse-order__customer"/>').text(order.customer_name));
+		let btns = $('<div class="et-btn-group"/>').appendTo(head);
+		if (order.status == 'draft') {
+			btns.append($('<button class="et-btn-action"/>').text(_x('Confirm payment', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+				__kasseSetStatus(order, 'completed');
+			}));
+			btns.append($('<button class="et-btn-action et-btn-action--danger"/>').text(_x('Cancel', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+				__kasseSetStatus(order, 'cancelled');
+			}));
+		} else if (order.status == 'completed' || order.status == 'partially_refunded') {
+			btns.append($('<button class="et-btn-action et-btn-action--danger"/>').text(_x('Refund', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+				__kasseSetStatus(order, 'cancelled');
+			}));
+			btns.append($('<button class="et-btn-action"/>').text(_x('Partial refund', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+				__kassePartialRefund(order);
+			}));
+		}
+		let codes = $('<div class="et-kasse-order__codes"/>').appendTo(div);
+		(order.code_ids_arr || []).forEach(cid=>{
+			let chip = $('<div class="et-kasse-card"/>').appendTo(codes);
+			$('<div class="et-kasse-card__code"/>').text('#'+cid).appendTo(chip);
+			$('<div class="et-kasse-card__actions"/>')
+				.append($('<button class="et-btn-action"/>').text(_x('Print preview', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+					_makeGet('getInternalOrderTicketURL', {code_id:cid}, (ret)=>{
+						if (ret && ret.url) window.open(ret.url, '_blank');
+						else LAYOUT.renderFatalError('no url');
+					}, (err)=>{
+						LAYOUT.renderFatalError(err.data || 'error');
+					});
+				}))
+				.appendTo(chip);
+		});
+		return div;
+	}
+
+	function __kasseListMeta(l) {
+		try {
+			if (l && typeof l.meta == "string" && l.meta != "") return JSON.parse(l.meta);
+			if (l && l.meta && typeof l.meta == "object") return l.meta;
+		} catch(e) {}
+		return {};
+	}
+	function __kasseListDesc(l) {
+		let m = __kasseListMeta(l);
+		return (m.desc || "").toString().trim();
+	}
+	function __kasseListEventLine(l) {
+		let m = __kasseListMeta(l);
+		let s = (m.event_start_date || "").toString().trim();
+		let e = (m.event_end_date || "").toString().trim();
+		if (s == "" && e == "") return "";
+		if (e == "" || e == s) return s;
+		return s + ' – ' + e;
+	}
+
+	function __kasseListName(listId) {
+		if (!DATA_LISTS) return _x('List', 'label', 'event-tickets-with-ticket-scanner')+' '+listId;
+		let l = DATA_LISTS.find(x=>parseInt(x.id,10) === parseInt(listId,10));
+		return l ? l.name : (_x('List', 'label', 'event-tickets-with-ticket-scanner')+' '+listId);
+	}
+
+	function __kasseSetStatus(order, status, codes) {
+		let payload = {id: order.id, status: status};
+		if (codes) payload.codes = codes;
+		_makePost('setInternalOrderStatus', payload, ()=>{
+			__kasseReload();
+		}, (err)=>{
+			LAYOUT.renderFatalError(err.data || 'error');
+		});
+	}
+
+	function __kassePartialRefund(order) {
+		let dlg = $('<div/>');
+		let list = $('<div/>').appendTo(dlg);
+		(order.code_ids_arr || []).forEach(cid=>{
+			let row = $('<label style="display:block;margin:2px 0;"/>').appendTo(list);
+			row.append($('<input type="checkbox" class="et-kasse-refund-code" />').val(cid));
+			row.append($('<span/>').text(' #'+cid));
+		});
+		dlg.dialog({
+			modal: true,
+			title: _x('Partial refund — choose tickets', 'label', 'event-tickets-with-ticket-scanner'),
+			buttons: [
+				{text: _x('Cancel tickets', 'label', 'event-tickets-with-ticket-scanner'), click: function(){
+					let sel = dlg.find('.et-kasse-refund-code:checked').map((i,el)=>$(el).val()).get();
+					if (sel.length == 0) return;
+					let _dlg = this;
+					__kasseSetStatus(order, 'partially_refunded', sel);
+					closeDialog(_dlg);
+				}},
+				{text: _x('Close', 'label', 'event-tickets-with-ticket-scanner'), click: function(){ closeDialog(this); }}
+			]
+		});
+	}
+
+	function __kasseReload() {
+		if (tabelle_orders_datatable) { tabelle_orders_datatable.ajax.reload(null, false); return; }
+		__renderKasse();
+	}
+
+	// Print ALL tickets of an order: dialog with all code_ids as PDF cards
+	function __kassePrintAll(order) {
+		let ids = (order.code_ids_arr || []).slice();
+		if (ids.length == 0) return;
+		let dlg = $('<div class="et-kasse-printall"/>');
+		let cards = $('<div class="et-kasse-cards"/>').appendTo(dlg);
+		let fetched = 0;
+		ids.forEach(cid=>{
+			_makeGet('getInternalOrderTicketURL', {code_id:cid}, (ret)=>{
+				let card = $('<div class="et-kasse-card"/>').appendTo(cards);
+				$('<div class="et-kasse-card__code"/>').text('#'+cid).appendTo(card);
+				$('<div class="et-kasse-card__actions"/>').append(
+					$('<button class="et-btn-action"/>').text(_x('Print preview','label','event-tickets-with-ticket-scanner')).on('click', e=>{
+						window.open(ret.url, '_blank');
+					})
+				).appendTo(card);
+				fetched++;
+				if (fetched == ids.length) {
+					dlg.dialog({modal:true, width:520, title:_x('Print tickets — order #','label','event-tickets-with-ticket-scanner')+order.id, buttons:[{text:_x('Close','label','event-tickets-with-ticket-scanner'), click:function(){ closeDialog(this); }}]});
+				}
+			}, ()=>{ fetched++; });
+		});
+	}
+
+	function __renderKasse() {
+		if (!KASSE_DIV) return;
+		let wrap = $('<div/>');
+		wrap.append('<h3>'+_x('Kasse — sell tickets directly', 'title', 'event-tickets-with-ticket-scanner')+'</h3>');
+		// Direct: skip the tile overview when the option is off — useful on
+		// touch screens where one list is sold at a time. Without options
+		// loaded yet (default on), still show the tiles.
+		let showOverview = _getOptions_isActivatedByKey('wcTicketKasseShowListOverview');
+		if (showOverview === undefined) showOverview = true;
+		if (showOverview) {
+			let tiles = $('<div class="et-kasse-tiles"/>').appendTo(wrap);
+			(DATA_LISTS || []).forEach(l=>{
+				let tile = $('<button class="et-kasse-tile"/>').appendTo(tiles).on('click', e=>{
+					__kasseSellDialog(l.id);
+				});
+				$('<span class="et-kasse-tile__name"/>').text(l.name).appendTo(tile);
+				let desc = __kasseListDesc(l);
+				if (desc) $('<span class="et-kasse-tile__desc"/>').text(desc).appendTo(tile);
+				let ev = __kasseListEventLine(l);
+				if (ev) $('<span class="et-kasse-tile__meta"/>').text(ev).appendTo(tile);
+			});
+			if ((DATA_LISTS || []).length == 0) {
+				wrap.append($('<p/>').text(_x('No ticket lists yet.', 'label', 'event-tickets-with-ticket-scanner')));
+			}
+		} else {
+			// one-shot sell popup (first list or none). If multiple lists exist,
+			// a small picker stays open; if only one, it auto-opens for it.
+			if ((DATA_LISTS || []).length == 1) {
+				__kasseSellDialog(DATA_LISTS[0].id);
+			} else if ((DATA_LISTS || []).length > 1) {
+				let tiles = $('<div class="et-kasse-tiles"/>').appendTo(wrap);
+				DATA_LISTS.forEach(l=>{
+					let tile = $('<button class="et-kasse-tile"/>').appendTo(tiles).on('click', e=>{
+						__kasseSellDialog(l.id);
+					});
+					$('<span class="et-kasse-tile__name"/>').text(l.name).appendTo(tile);
+				});
+			} else {
+				wrap.append($('<p/>').text(_x('No ticket lists yet.', 'label', 'event-tickets-with-ticket-scanner')));
+			}
+		}
+		let listDiv = $('<div class="et-kasse-list"/>').appendTo(wrap);
+		tabelle_orders_datatable = null;
+		let tabelle_orders = $('<table/>').attr('id', myAjax.divPrefix+'_tabelle_orders');
+		listDiv.append(tabelle_orders);
+		KASSE_DIV.html(wrap);
+		let table = $('#'+myAjax.divPrefix+'_tabelle_orders');
+		tabelle_orders_datatable = table.DataTable({
+			language: {
+				emptyTable: '<b>'+_x('No direct sales yet.', 'label', 'event-tickets-with-ticket-scanner')+'</b>'
+			},
+			"responsive": true,
+			"searching": true,
+			"ordering": true,
+			"processing": true,
+			"serverSide": true,
+			"stateSave": false,
+			"ajax": {
+				url: _requestURL('getInternalOrders'),
+				type: 'GET'
+			},
+			"order": [[0, 'desc']],
+			"columns": [
+				{"data":"id", "width":70},
+				{"data":"list_name", "render": (d)=> d == null ? '—' : d},
+				{"data":"status", "width":110, "render": (d)=> '<span class="et-kasse-status et-kasse-status--'+d+'">'+d+'</span>'},
+				{"data":"tickets_count", "width":80, "className":"dt-center"},
+				{"data":"customer_name", "render": (d)=> (d==null||d=='') ? '—' : d},
+				{"data":"payment_note", "render": (d)=> (d==null||d=='') ? '—' : d},
+				{"data":"time", "render": (d)=> d==null ? '' : DateFormatStringToDateTimeText(d)},
+				{"data":null, "orderable":false, "width":260, "render": (d, t, row)=> {
+					let html = '<div class="et-btn-group">';
+					if (row.status == 'draft') {
+						html += '<button class="et-btn-action" data-type="confirm">'+_x('Confirm payment','label','event-tickets-with-ticket-scanner')+'</button>';
+						html += '<button class="et-btn-action et-btn-action--danger" data-type="cancel">'+_x('Cancel','label','event-tickets-with-ticket-scanner')+'</button>';
+					} else if (row.status == 'completed' || row.status == 'partially_refunded') {
+						html += '<button class="et-btn-action et-btn-action--danger" data-type="refund">'+_x('Refund','label','event-tickets-with-ticket-scanner')+'</button>';
+						html += '<button class="et-btn-action" data-type="partial">'+_x('Partial refund','label','event-tickets-with-ticket-scanner')+'</button>';
+					}
+					if (row.tickets_count > 0) {
+						html += '<button class="et-btn-action" data-type="print">'+_x('Print tickets','label','event-tickets-with-ticket-scanner')+'</button>';
+					}
+					html += '</div>';
+					return html;
+				}}
+			],
+			"initComplete": function() { LAYOUT.renderSpinnerHide(); },
+			"autowidth": true
+		});
+		table.on('click', 'button[data-type="confirm"]', e=>{
+			let data = tabelle_orders_datatable.row($(e.target).parents('tr')).data();
+			__kasseSetStatus(data, 'completed');
+		});
+		table.on('click', 'button[data-type="cancel"]', e=>{
+			let data = tabelle_orders_datatable.row($(e.target).parents('tr')).data();
+			__kasseSetStatus(data, 'cancelled');
+		});
+		table.on('click', 'button[data-type="refund"]', e=>{
+			let data = tabelle_orders_datatable.row($(e.target).parents('tr')).data();
+			__kasseSetStatus(data, 'cancelled');
+		});
+		table.on('click', 'button[data-type="partial"]', e=>{
+			let data = tabelle_orders_datatable.row($(e.target).parents('tr')).data();
+			__kassePartialRefund(data);
+		});
+		table.on('click', 'button[data-type="print"]', e=>{
+			let data = tabelle_orders_datatable.row($(e.target).parents('tr')).data();
+			__kassePrintAll(data);
+		});
+	}
+
+	function __kasseSell(confirm, ctx) {
+		let $ctx = ctx || $(document);
+		let listId = $ctx.find('.et-kasse-form__list').val();
+		let amount = parseInt($ctx.find('.et-kasse-form__amount').val(), 10) || 1;
+		let note = $ctx.find('.et-kasse-form__note').val() || '';
+		let cname = $ctx.find('.et-kasse-form__cname').val() || '';
+		if (!listId) return;
+		_makePost('addInternalOrder', {list_id:listId, amount:amount, payment_note:note, customer_name:cname, confirm:confirm?1:0}, (ret)=>{
+			let dlg = $('<div/>');
+			dlg.append($('<p/>').text(_x('Direct sale stored.', 'label', 'event-tickets-with-ticket-scanner')+' #'+ret.order_id+' — '+ret.status));
+			let cards = $('<div class="et-kasse-cards"/>').appendTo(dlg);
+			(ret.codes || []).forEach((c, i)=>{
+				let card = $('<div class="et-kasse-card"/>').appendTo(cards);
+				$('<div class="et-kasse-card__code"/>').text(c).appendTo(card);
+				$('<div class="et-kasse-card__actions"/>')
+					.append($('<button class="et-btn-action"/>').text(_x('Print preview', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+						// The ticket URL with ?pdf delivers the ticket PDF inline
+						window.open(((ret.urls || [])[i] || '') + '?pdf', '_blank');
+					}))
+					.appendTo(card);
+			});
+			dlg.dialog({modal:true, width:520, title:_x('Tickets issued', 'label', 'event-tickets-with-ticket-scanner'),
+				buttons:[{text:_x('Close', 'label', 'event-tickets-with-ticket-scanner'), click:function(){ closeDialog(this); }}]});
+			if (ctx) closeDialog(ctx); // close the sell popup, result dialog takes over
+			__kasseReload();
+		}, (err)=>{
+			LAYOUT.renderFatalError(err.data || 'error');
+		});
+	}
+
+	function __kasseSellDialog(listId) {
+		// Sell popup: list (switchable), amount, note, customer — one click per
+		// fast button opens this with the list preselected (Saso 2026-09-14).
+		let dlg = $('<div class="et-kasse-sell"/>');
+		let row1 = $('<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"/>').appendTo(dlg);
+		row1.append($('<label/>').text(_x('Ticket list', 'label', 'event-tickets-with-ticket-scanner')));
+		let sel = $('<select class="et-kasse-form__list"/>').appendTo(row1);
+		(DATA_LISTS || []).forEach(l=>{
+			sel.append($('<option/>').val(l.id).text(l.name));
+		});
+		if (listId) sel.val(String(listId));
+		let row2 = $('<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"/>').appendTo(dlg);
+		row2.append($('<label/>').text(_x('Amount', 'label', 'event-tickets-with-ticket-scanner')));
+		$('<input type="number" class="et-kasse-form__amount" min="1" max="100" value="1" style="width:80px;"/>').appendTo(row2);
+		let row3 = $('<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"/>').appendTo(dlg);
+		$('<input type="text" class="et-kasse-form__note" placeholder="'+_x('Payment note (cash, card, invoice)', 'label', 'event-tickets-with-ticket-scanner')+'" style="flex:1;"/>').appendTo(row3);
+		let row4 = $('<div style="display:flex;gap:8px;align-items:center;"/>').appendTo(dlg);
+		$('<input type="text" class="et-kasse-form__cname" placeholder="'+_x('Customer name (optional)', 'label', 'event-tickets-with-ticket-scanner')+'" style="flex:1;"/>').appendTo(row4);
+		dlg.dialog({
+			modal: true,
+			width: 480,
+			title: _x('Sell tickets', 'label', 'event-tickets-with-ticket-scanner'),
+			buttons: [
+				{text: _x('Sell — issue tickets (draft)', 'label', 'event-tickets-with-ticket-scanner'), click: function(){
+					let _dlg = this;
+					__kasseSell(false, $(_dlg));
+				}},
+				{text: _x('Sell & confirm payment', 'label', 'event-tickets-with-ticket-scanner'), click: function(){
+					let _dlg = this;
+					__kasseSell(true, $(_dlg));
+				}},
+				{text: _x('Close', 'label', 'event-tickets-with-ticket-scanner'), click: function(){ closeDialog(this); }}
+			]
+		});
+	}
+
 	function _displayFAQArea() {
 		STATE = 'faq';
 		DIV.html(_getSpinnerHTML());
@@ -2227,7 +2550,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							hits++;
 							if (!belongs) outside++;
 						}
-						visible = match && (belongs || VIEW.showOutside);
+						// search always wins over the section filter: a key the user
+						// searched for must be visible, even if it belongs to another
+						// event type. The belonging check is restored by marking the
+						// option with the section it actually lives in so the user
+						// does not assume it belongs to the current view.
+						visible = match;
 					} else if (foreign) {
 						visible = true;
 					} else if (essentialsOnly) {
@@ -2249,7 +2577,21 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						shown++;
 						if (belongs && !__isAtDefault(option_by_key[key])) view_keys.push(key);
 						groupsVisible[search_groups[key] || ''] = true;
-						if (term) __markSearchHits($(this), term);
+						if (term) {
+						__markSearchHits($(this), term);
+						// When the option lives in another event-type section, show
+						// that section name under the label so the customer who
+						// searched for a key from a support answer does not mistake
+						// it for the current section.
+						let grp = search_groups[key] || '';
+						if (grp && !belongs) {
+							let note = $('<div class="et-other-section-note"/>').text(
+								__('In section: ', 'event-tickets-with-ticket-scanner') + grp
+							);
+							$(this).append(note);
+						}
+					}
+						$(this).children('.et-other-section-note').remove();
 					}
 				});
 				foreign_count = foreignKeys.length;
@@ -3637,6 +3979,15 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			.on("click", ()=>{
 				_displayAuthTokensArea();
 			}).appendTo(btn_grp);
+		if (typeof _getOptions_isActivatedByKey !== 'undefined' ? _getOptions_isActivatedByKey('wcTicketKasseEnabled') !== false : true) {
+			$('<button/>')
+				.addClass("event-tickets-with-ticket-scanner-topmenu-item")
+				.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'kasse')
+				.html(_x('Kasse', 'label', 'event-tickets-with-ticket-scanner'))
+				.on("click", ()=>{
+					_displayKasseArea();
+				}).appendTo(btn_grp);
+		}
 		if (isPremium()) {
 			$('<button/>')
 				.addClass("event-tickets-with-ticket-scanner-topmenu-item")
