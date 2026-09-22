@@ -528,9 +528,23 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 			throw new Exception(__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
 		}
 
-		// Merge with existing meta defaults
+		// Merge with existing meta defaults — but element LISTS are replaced,
+		// never merged (#015050): array_replace_recursive() resurrected deleted
+		// decorations/lines/labels because a shorter client list only overwrote
+		// the first N keys and kept the stale tail. The designer always sends
+		// the complete list; an intentionally emptied list must clear the
+		// stored one. Scalar/config keys and unknown keys still merge, so
+		// partial saves keep working.
 		$currentDraft = $this->getDraftMeta($planId);
-		$newDraft = array_replace_recursive($currentDraft, $draftData);
+		$elementListKeys = ['decorations', 'lines', 'labels'];
+		$newDraft = $currentDraft;
+		foreach ($elementListKeys as $listKey) {
+			if (array_key_exists($listKey, $draftData)) {
+				$newDraft[$listKey] = $draftData[$listKey];
+				unset($draftData[$listKey]);
+			}
+		}
+		$newDraft = array_replace_recursive($newDraft, $draftData);
 
 		$draftJson = $this->MAIN->getCore()->json_encode_with_error_handling($newDraft);
 
@@ -928,13 +942,22 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 	 * @param int $planId Plan ID
 	 */
 	protected function syncSeatsOnPublish(int $planId): void {
-		// This will be called after publish to sync the seats table
-		// with the published design. New seats get created, removed
-		// seats get soft-deleted (is_deleted = 1).
-		// Implementation depends on how Visual Designer stores seat data.
-
-		// For now, this is a placeholder. The actual implementation
-		// will parse the published meta and sync seats accordingly.
+		// #015050 (3.2.2): previously an empty placeholder. Live case
+		// (kbuenaradio.tv): designer full of seats, plan published, frontend
+		// showed ONE seat — the seats table had drifted (rows inactive from
+		// delete/re-create cycles) while publish only copied the meta JSON.
+		//
+		// Publish semantics: the draft is the source of truth. Every seat row
+		// of this plan that is not soft-deleted must be active after publish.
+		// Soft-deleted rows stay deleted (they carry sold-ticket history).
+		global $wpdb;
+		$wpdb->query($wpdb->prepare(
+			"UPDATE {$this->getTable('seats')}
+			 SET aktiv = 1, updated_at = %s
+			 WHERE seatingplan_id = %d AND is_deleted = 0 AND aktiv = 0",
+			current_time('mysql'),
+			$planId
+		));
 	}
 
 	/**

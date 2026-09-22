@@ -585,7 +585,7 @@
 
 			// Seat label text
 			var fontSize = Math.min(14, Math.max(8, Math.min(seatWidth, seatHeight) / 3));
-			svg += '<text class="saso-seat-label" x="' + textX + '" y="' + textY + '" text-anchor="middle" dominant-baseline="central" font-size="' + fontSize + '" fill="#fff" pointer-events="none">' + this.escapeHtml(seatLabel) + '</text>';
+			svg += '<text class="saso-seat-label" x="' + textX + '" y="' + textY + '" text-anchor="middle" dominant-baseline="central" font-size="' + fontSize + '" fill="' + this.escapeHtml(meta.label_color || '#fff') + '" pointer-events="none">' + this.escapeHtml(seatLabel) + '</text>';
 
 			return svg;
 		},

@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.2.1
+ * Version: 3.2.2
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.2.1');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.2.2');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -571,6 +571,11 @@ class sasoEventtickets {
 		add_action( 'admin_notices', [$this, 'showPhpVersionWarning'] );
 		add_action( 'admin_notices', [$this, 'showOptionsMigrationNotice'] );
 		add_action( 'admin_notices', [$this, 'showWelcomeNotice'] );
+		// #015050 (3.2.2): gebundener, unpublizierter Seating-Plan = leere
+		// Produktseite ohne Erklaerung — Notice auf der Produkt-Edit-Seite.
+		if ($this->getSeating() !== null) {
+			$this->getSeating()->registerUnpublishedPlanNotice();
+		}
 		add_action( 'wp_ajax_saso_et_dismiss_fomo', [$this, 'ajaxDismissFomo'] );
 
 		if (basename($_SERVER['SCRIPT_NAME'] ?? '') == "admin-ajax.php") {
@@ -2467,7 +2472,29 @@ class sasoEventtickets {
 				echo '</p>';
 			} else {
 				// Starter plugin - just update within plugins area
+				// starter_delete_hint (#015050, 3.2.2): hat der Kunde bereits
+				// Premium ueber die Lizenz installiert (Serial gesetzt UND das
+				// echte Premium-Plugin im Plugins-Ordner), gewinnt der Starter
+				// trotzdem den Class-Load-Race — die Loesung ist dann NICHT
+				// "Premium hochladen", sondern "Starter loeschen".
+				$premium_folder = $this->getPremiumPluginFolder();
+				$realPremiumInstalled = !empty($premium_folder) && defined('SASO_EVENTTICKETS_STARTER_VERSION')
+					&& false === strpos($premium_folder, 'starter') && false === strpos($premium_folder, 'stop');
 				echo '<p style="margin:0 0 10px 0;"><strong>' . esc_html__('Solution: Update to Premium via Plugins Page', 'event-tickets-with-ticket-scanner') . '</strong></p>';
+				if ($hasSerial && $realPremiumInstalled) {
+					echo '<p style="margin:0 0 8px 0;color:#1d2327;">';
+					printf(
+						/* translators: %s: plugin folder name */
+						esc_html__('It looks like the full Premium plugin is ALREADY installed (%s) next to the Starter — the Starter only needs to be removed:', 'event-tickets-with-ticket-scanner'),
+						'<code>' . esc_html($premium_folder) . '</code>'
+					);
+					echo '</p>';
+					echo '<ol style="margin:0 0 12px 20px;padding-left:20px;">';
+					echo '<li style="margin:0 0 6px 0;">' . esc_html__('Go to Plugins > Installed Plugins', 'event-tickets-with-ticket-scanner') . '</li>';
+					echo '<li style="margin:0 0 6px 0;">' . esc_html__('Deactivate and DELETE the entry labeled "Starter" (version 1.5.x)', 'event-tickets-with-ticket-scanner') . '</li>';
+					echo '<li style="margin:0;">' . esc_html__('This warning disappears immediately — your Premium license keeps working', 'event-tickets-with-ticket-scanner') . '</li>';
+					echo '</ol>';
+				} else {
 				echo '<p style="margin:0 0 8px 0;">';
 				esc_html_e('The Starter plugin needs to be updated to Premium. Please update within the Plugins page:', 'event-tickets-with-ticket-scanner');
 				echo '</p>';
@@ -2480,6 +2507,7 @@ class sasoEventtickets {
 				echo '<li style="margin:0 0 6px 0;">' . esc_html__('WordPress will replace the Starter plugin with Premium', 'event-tickets-with-ticket-scanner') . '</li>';
 				echo '<li style="margin:0;">' . esc_html__('Click "Replace current with uploaded" and activate', 'event-tickets-with-ticket-scanner') . '</li>';
 				echo '</ol>';
+				}
 			}
 
 			echo '</div>';

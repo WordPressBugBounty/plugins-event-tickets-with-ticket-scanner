@@ -921,10 +921,20 @@ class sasoEventtickets_AdminSettings {
 			if ( method_exists( $wpdb, 'db_version' ) ) {
 				$mysql_version = preg_replace( '/[^0-9.].*/', '', $wpdb->db_version() );
 			}
+			// #015050: the SQL mode decides whether e.g. `date_col = ''` is a
+			// silent warning (loose) or a hard error (strict) — half the seat-map
+			// debugging sessions start with this question. Empty = not MySQL-ish
+			// (SQLite drop-in etc.).
+			$sql_mode = 'N/A';
+			if ( method_exists( $wpdb, 'get_var' ) ) {
+				$raw_mode = $wpdb->get_var( "SELECT @@SESSION.sql_mode" );
+				$sql_mode = ( $raw_mode === null || $raw_mode === false ) ? 'N/A' : ( $raw_mode === '' ? '(empty - loose)' : $raw_mode );
+			}
 			$versions = [
 				'php'=>phpversion(),
 				'wp'=>$wp_version,
 				'mysql'=>$mysql_version,
+				'sql_mode'=>$sql_mode,
 				'db'=>$this->MAIN->getDB()->dbversion,
 				'premium_db'=>$premium_db_version,
 				'basic'=>$pversions['basic'],
@@ -2842,6 +2852,25 @@ class sasoEventtickets_AdminSettings {
 		do_action( $this->MAIN->_do_action_prefix.'admin_removeWoocommerceTicketForCode', $data, $codeObj );
 		return $codeObj;
 	}
+	/**
+	 * Öffentlicher Retry-Wrapper für Optimistic Locking (osTicket #014976-Followup):
+	 * bei verlorenem Lock-Rennen (Exception #9650) wird frisch gelesen und erneut
+	 * versucht — die komplette Prüf-Logik (max_redeem etc.) läuft im Retry mit
+	 * aktuellen Daten erneut.
+	 */
+	public function redeemWoocommerceTicketForCodeGuarded($data, $expectedLock = "") {
+		$versuche = 3;
+		for ($i = 0; $i < $versuche; $i++) {
+			try {
+				return $this->redeemWoocommerceTicketForCode($data);
+			} catch (Exception $e) {
+				if (strpos($e->getMessage(), "#9650") === false) throw $e;
+				usleep(150000 + random_int(0, 100000)); // kurzes Jitter, dann neuer Versuch
+			}
+		}
+		throw new Exception("#9651 concurrent redeem detected, please rescan");
+	}
+
 	private function redeemWoocommerceTicketForCode($data) {
 		if (!isset($data['code'])) throw new Exception("#9622 code parameter is missing");
 		// lade code
@@ -2911,7 +2940,12 @@ class sasoEventtickets_AdminSettings {
 			}
 			$where = ['id'=>intval($codeObj['id'])];
 
-			$this->MAIN->getDB()->update("codes", $felder, $where);
+			// Optimistic Locking (#014976): nur schreiben, wenn meta_lock unverändert;
+			// bei Konflikt #9650 werfen, der Retry-Wrapper liest neu und prüft erneut.
+			$affected = $this->MAIN->getDB()->update_guarded("codes", $felder, $where, isset($codeObj['meta_lock']) ? $codeObj['meta_lock'] : "");
+			if ($affected === 0) {
+				throw new Exception("#9650 concurrent write on ticket, retrying");
+			}
 			$this->MAIN->getCore()->triggerWebhooks(13, $codeObj);
 			do_action( $this->MAIN->_do_action_prefix.'admin_redeemWoocommerceTicketForCode', $data, $codeObj );
 		}

@@ -1736,6 +1736,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">PHP</span><span class="et-kv-value">'+versions.php+'</span></div>';
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">Requires PHP</span><span class="et-kv-value">'+versions.requires_php+'</span></div>';
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">MySQL/MariaDB</span><span class="et-kv-value">'+versions.mysql+'</span></div>';
+			if (versions.sql_mode) {
+				sysRows += '<div class="et-kv-row"><span class="et-kv-label">SQL Mode</span><span class="et-kv-value" style="font-family:monospace;font-size:12px;">'+versions.sql_mode+'</span></div>';
+			}
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">Basic Plugin</span><span class="et-kv-value">'+versions.basic+'</span></div>';
 			sysRows += '<div class="et-kv-row"><span class="et-kv-label">Basic DB</span><span class="et-kv-value">'+versions.db+'</span></div>';
 			if (versions.first_activated_at) {
@@ -1759,6 +1762,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				lines.push('PHP Version: '+versions.php);
 				lines.push('Requires PHP: '+versions.requires_php);
 				lines.push('MySQL/MariaDB Version: '+versions.mysql);
+				if (versions.sql_mode) {
+					lines.push('SQL Mode: '+versions.sql_mode);
+				}
 				lines.push('Product: Event Tickets with WooCommerce');
 				lines.push('Basic Plugin Version: '+versions.basic);
 				lines.push('Basic DB Version: '+versions.db);
@@ -4631,9 +4637,12 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			$('<button class="et-vn-dismiss-btn"/>')
 				.text(__("Dismiss", 'event-tickets-with-ticket-scanner'))
 				.on('click', function() {
-					_saveOptionValue('versionNoticeSeen', currentVersion, function() {
-						wrap.slideUp(300, function() { wrap.remove(); });
-					});
+					// Instant visual feedback (#015050 UX): hide the box right away —
+					// the persist call runs in the background and cannot fail visibly
+					// in a way the user could react to here. Waiting for the roundtrip
+					// made the button feel unresponsive.
+					wrap.slideUp(300, function() { wrap.remove(); });
+					_saveOptionValue('versionNoticeSeen', currentVersion);
 				}).appendTo(dismissRow);
 			card.append(dismissRow);
 			wrap.append(card);
@@ -5023,9 +5032,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		}
 
 		function skipWizard() {
-			_saveOptionValue('wizardCompleted', myAjax._plugin_version, function() {
-				closeDialog(dlg);
-			});
+			// Instant close, persist in background (#015050 UX, same pattern
+			// as the notification-box dismiss).
+			closeDialog(dlg);
+			_saveOptionValue('wizardCompleted', myAjax._plugin_version);
 		}
 
 		function applyPreset() {

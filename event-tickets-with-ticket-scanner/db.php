@@ -1,7 +1,7 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventticketsDB extends sasoEventtickets_DB {
-	public $dbversion = '1.20';
+	public $dbversion = '1.22';
 	public function __construct($MAIN) {
 		$this->MAIN = $MAIN;
 		parent::$dbprefix = "saso_eventtickets_";
@@ -42,6 +42,7 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				order_id int(32) unsigned NOT NULL DEFAULT 0,
 				semaphorecode varchar(50) NOT NULL DEFAULT '',
 				internal_order_id int(32) unsigned NOT NULL DEFAULT 0,
+				meta_lock varchar(64) NOT NULL DEFAULT '',
 				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
 			"additional"=>[
 				"CREATE UNIQUE INDEX idx1 ON ".$this->getTabelle('codes')." (code)",
@@ -163,6 +164,7 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				seatingplan_id int(32) unsigned NOT NULL DEFAULT 0,
 				product_id int(32) unsigned NOT NULL DEFAULT 0,
 				event_date date DEFAULT NULL,
+				event_date_ts int(32) unsigned NOT NULL DEFAULT 0,
 				session_id varchar(100) NOT NULL DEFAULT '',
 				order_id int(32) unsigned DEFAULT NULL,
 				code_id int(32) unsigned DEFAULT NULL,
@@ -172,8 +174,8 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				meta longtext NOT NULL DEFAULT '',
 				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
 			"additional"=>[
-				"CREATE INDEX idx1 ON ".$this->getTabelle('seat_blocks')." (seatingplan_id, event_date, status)",
-				"CREATE INDEX idx2 ON ".$this->getTabelle('seat_blocks')." (seat_id, product_id, event_date, status)",
+				"CREATE INDEX idx1 ON ".$this->getTabelle('seat_blocks')." (seatingplan_id, event_date_ts, status)",
+				"CREATE INDEX idx2 ON ".$this->getTabelle('seat_blocks')." (seat_id, product_id, event_date_ts, status)",
 				"CREATE INDEX idx3 ON ".$this->getTabelle('seat_blocks')." (status, expires_at)",
 				"CREATE INDEX idx4 ON ".$this->getTabelle('seat_blocks')." (session_id)",
 				"CREATE INDEX idx5 ON ".$this->getTabelle('seat_blocks')." (order_id)",
@@ -423,8 +425,59 @@ class sasoEventtickets_DB {
 		global $wpdb;
 		if (count($felder) == 0) throw new Exception("no fields provided");
 		$felder = $this->addMissingFelder($felder);
+		// Optimistic Locking: jede neue codes-Zeile bekommt einen initialen Lock,
+		// damit update_guarded() von Anfang an funktioniert (leerer String wuerde
+		// bei bestehenden Zeilen als "kein Lock" gelten, bei neuen aber explizit sein).
+		if ($tabelle == "codes" && empty($felder["meta_lock"])) {
+			$felder["meta_lock"] = $this->neuerMetaLock();
+		}
 		$wpdb->insert( $this->getTabelle($tabelle), $felder );
 		return $wpdb->insert_id;
+	}
+
+	/**
+	 * Neue Lock-Version fuer Optimistic Locking: UUID (enthält Zeit-/Zufallsanteil).
+	 */
+	public function neuerMetaLock() {
+		return wp_generate_uuid4();
+	}
+
+	/**
+	 * Optimistic-locking UPDATE (osTicket #014976-Followup): schreibt nur, wenn
+	 * meta_lock noch dem erwarteten Wert entspricht, und rotiert den Lock im
+	 * selben Statement. Liefert 0 Zeilen, wenn zwischenzeitlich ein anderer
+	 * Writer gewonnen hat (lost update verhindert) — Aufrufer muss dann neu
+	 * lesen und erneut versuchen.
+	 */
+	public function update_guarded($tabelle, $felder, $where, $expectedLock) {
+		global $wpdb;
+		if (count($felder) == 0) throw new Exception("no fields provided");
+		if (count($where) == 0) throw new Exception("no where fields provided");
+		$felder = $this->addMissingFelder($felder);
+		$newLock = $this->neuerMetaLock();
+		$felder["meta_lock"] = $newLock;
+		$format = [];
+		$whereFormat = [];
+		$sql = "UPDATE ".$this->getTabelle($tabelle)." SET ";
+		$sets = [];
+		foreach ($felder as $k => $v) {
+			if ($v === null) { $sets[] = "`$k` = NULL"; continue; }
+			$sets[] = "`$k` = ".$wpdb->prepare(is_int($v) ? "%d" : "%s", $v);
+		}
+		$sql .= implode(", ", $sets);
+		$wheres = [];
+		foreach ($where as $k => $v) {
+			$wheres[] = "`$k` = ".$wpdb->prepare(is_int($v) ? "%d" : "%s", $v);
+		}
+		// Leerer erwarteter Lock = Altbestand vor der Spalte: NULL-Semantik zulassen.
+		$expectedLock = (string)$expectedLock;
+		if ($expectedLock === "") {
+			$wheres[] = "(meta_lock = '' OR meta_lock IS NULL)";
+		} else {
+			$wheres[] = "meta_lock = ".$wpdb->prepare("%s", $expectedLock);
+		}
+		$sql .= " WHERE ".implode(" AND ", $wheres);
+		return intval($wpdb->query($sql));
 	}
 
 	public function update($tabelle, $felder, $where) {

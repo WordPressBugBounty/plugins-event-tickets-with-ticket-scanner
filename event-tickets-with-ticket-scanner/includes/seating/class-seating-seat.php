@@ -676,9 +676,13 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 	public function getCountForPlan(int $planId): int {
 		global $wpdb;
 
+		// #015050 (3.2.2): count only seats the frontend can actually sell
+		// (aktiv=1, not soft-deleted) — matches getSeatsWithStatus. Before,
+		// stats reported e.g. "75 available" while the selector delivered
+		// zero seats because the rows were inactive.
 		return (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$this->getTable($this->table)} WHERE seatingplan_id = %d",
+				"SELECT COUNT(*) FROM {$this->getTable($this->table)} WHERE seatingplan_id = %d AND aktiv = 1 AND is_deleted = 0",
 				$planId
 			)
 		);
