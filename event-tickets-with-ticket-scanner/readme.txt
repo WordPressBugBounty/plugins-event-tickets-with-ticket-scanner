@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.2.2
+Stable tag: 3.2.3
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -245,6 +245,11 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.2.3 - 2026-09-27 =
+* New: The seat map opens as a fullscreen overlay on every device. The confirm buttons sit in a footer that stays visible at the bottom edge, so they can no longer be cut off on small phone displays. Close anytime with the large X in the top right corner. (#015084)
+* New: Zoom buttons beside the seat map. Stacked vertically in a narrow bar on the right, they never cover the map. Zooming is useful on phones to pick the right seat on large plans.
+* New: Global option "Confirm seat selection automatically once complete" (default off) — the seat map confirms as soon as the customer has picked all seats, one less tap on mobile.
 
 = 3.2.2 - 2026-09-22 =
 * Fix: Redeem operations are now protected against parallel scanner writes (optimistic locking). When two devices redeem or edit the same ticket code at the same moment, the second write is detected, re-read and safely retried instead of silently overwriting the first one's redeem entry. (#014976)

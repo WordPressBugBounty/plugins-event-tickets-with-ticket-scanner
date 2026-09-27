@@ -634,6 +634,13 @@ class sasoEventtickets_Options {
 			'def'=>false
 		];
 		$options[] = [
+			'key'=>'seatingAutoConfirmSeatSelection',
+			'label'=>__("Confirm seat selection automatically once complete", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, the seat map confirms the selection as soon as the customer has picked the number of seats matching the product quantity - no need to tap Confirm. Fewer taps on mobile, but no chance to review the seats before they are confirmed.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
 			'key'=>'seatingShowDescInChooser',
 			'label'=>__("Show seat description in seating plan chooser", 'event-tickets-with-ticket-scanner'),
 			'desc'=>__("If active, the seat description will be displayed when hovering or selecting a seat in the seating plan on the product page.", 'event-tickets-with-ticket-scanner'),

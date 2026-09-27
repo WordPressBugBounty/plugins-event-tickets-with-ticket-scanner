@@ -119,6 +119,7 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 			'lockSelectedSeats' => $this->MAIN->getOptions()->isOptionCheckboxActive('seatingLockSelectedSeats'),
 			'blockOnAddToCart' => $this->MAIN->getOptions()->isOptionCheckboxActive('seatingBlockOnAddToCart'),
 			'showSeatDescInChooser' => $this->MAIN->getOptions()->isOptionCheckboxActive('seatingShowDescInChooser'),
+			'autoConfirmSeatSelection' => $this->MAIN->getOptions()->isOptionCheckboxActive('seatingAutoConfirmSeatSelection'),
 		]);
 
 		wp_set_script_translations('saso-seating-frontend', 'event-tickets-with-ticket-scanner', dirname(dirname(__DIR__)) . '/languages');

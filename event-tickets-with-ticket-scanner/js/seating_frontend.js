@@ -55,6 +55,21 @@
 		refreshIntervalId: null,
 
 		/**
+		 * Current zoom factor of the seat map (1 = 100%)
+		 */
+		mapZoom: 1,
+
+		/**
+		 * Un-zoomed pixel width of the seat map (layout basis for zoom)
+		 */
+		mapBaseWidth: 0,
+
+		/**
+		 * Allowed zoom steps for the seat map
+		 */
+		ZOOM_STEPS: [1, 1.25, 1.5, 2, 2.5, 3],
+
+		/**
 		 * Interval ID for countdown timer
 		 */
 		countdownIntervalId: null,
@@ -346,7 +361,17 @@
 			html += '</div>';
 
 			html += '<div class="saso-seat-map-body">';
+			html += '<div class="saso-seat-map-scroll">';
 			html += this.buildSvgMap(data, selectedId, colorAvailable, colorReserved, colorBooked, colorSelected);
+			html += '</div>';
+			// Zoom controls: fixed-width column right of the map, stacked
+			// vertically so they never overlap or get cut off (#015084).
+			html += '<div class="saso-seat-map-zoom">';
+			html += '<div class="saso-zoom-level" aria-live="polite">100%</div>';
+			html += '<button type="button" class="saso-zoom-btn saso-zoom-in" title="' + __('Zoom in', 'event-tickets-with-ticket-scanner') + '" aria-label="' + __('Zoom in', 'event-tickets-with-ticket-scanner') + '">&#43;</button>';
+			html += '<button type="button" class="saso-zoom-btn saso-zoom-reset" title="' + __('Reset zoom', 'event-tickets-with-ticket-scanner') + '" aria-label="' + __('Reset zoom', 'event-tickets-with-ticket-scanner') + '">100%</button>';
+			html += '<button type="button" class="saso-zoom-btn saso-zoom-out" title="' + __('Zoom out', 'event-tickets-with-ticket-scanner') + '" aria-label="' + __('Zoom out', 'event-tickets-with-ticket-scanner') + '">&#8722;</button>';
+			html += '</div>';
 			html += '</div>';
 
 			// Legend
@@ -677,6 +702,26 @@
 				self.closeModal();
 			});
 
+			// Seat map zoom controls (#015084)
+			$(document).on('click', '.saso-zoom-in', function(e) {
+				e.preventDefault();
+				self.setMapZoom(self.mapZoom >= self.ZOOM_STEPS[self.ZOOM_STEPS.length - 1]
+					? self.mapZoom
+					: self.ZOOM_STEPS[self.findZoomStepIndex(self.mapZoom) + 1]);
+			});
+
+			$(document).on('click', '.saso-zoom-out', function(e) {
+				e.preventDefault();
+				self.setMapZoom(self.mapZoom <= self.ZOOM_STEPS[0]
+					? self.mapZoom
+					: self.ZOOM_STEPS[Math.max(0, self.findZoomStepIndex(self.mapZoom) - 1)]);
+			});
+
+			$(document).on('click', '.saso-zoom-reset', function(e) {
+				e.preventDefault();
+				self.setMapZoom(1);
+			});
+
 			// Visual selector - Seat click
 			$(document).on('click', '.saso-seat[data-available="1"]', function(e) {
 				self.onSeatClick($(this));
@@ -903,6 +948,12 @@
 			// Update seat info text with counter
 			this.updateModalSeatInfo();
 
+			// Reset zoom to 100% on every open (#015084)
+			this.mapZoom = 1;
+			this.mapBaseWidth = 0;
+			this.$currentModal.find('.saso-seat-map').css('width', '');
+			this.$currentModal.find('.saso-zoom-level').text('100%');
+
 			// Focus trap for accessibility
 			this.$currentModal.find('.saso-close-modal').focus();
 
@@ -969,6 +1020,59 @@
 		},
 
 		/**
+		 * Find the closest zoom-step index for a factor (#015084)
+		 *
+		 * @param {number} zoom Current zoom factor
+		 * @returns {number} Index in ZOOM_STEPS
+		 */
+		findZoomStepIndex: function(zoom) {
+			var i;
+			for (i = this.ZOOM_STEPS.length - 1; i >= 0; i--) {
+				if (zoom >= this.ZOOM_STEPS[i]) return i;
+			}
+			return 0;
+		},
+
+		/**
+		 * Apply a zoom factor to the seat map SVG (#015084)
+		 *
+		 * Scales the SVG via CSS transform. The scroll container keeps full
+		 * scrollability so the zoomed map can be moved with a finger.
+		 *
+		 * @param {number} zoom New zoom factor (1 = 100%)
+		 */
+		setMapZoom: function(zoom) {
+			zoom = parseFloat(zoom) || 1;
+			if (zoom < this.ZOOM_STEPS[0]) zoom = this.ZOOM_STEPS[0];
+			if (zoom > this.ZOOM_STEPS[this.ZOOM_STEPS.length - 1]) zoom = this.ZOOM_STEPS[this.ZOOM_STEPS.length - 1];
+			this.mapZoom = zoom;
+
+			if (!this.$currentModal) {
+				return;
+			}
+
+			var $svg = this.$currentModal.find('.saso-seat-map');
+			if (!$svg.length) {
+				return;
+			}
+
+			// Layout-based zoom (#015084): a transform scale() does not
+			// reliably extend the scroll container's scrollable area in
+			// every browser, so the right map edge became unreachable.
+			// Setting an explicit pixel width grows the layout box itself —
+			// scrolling reaches every seat at any zoom level.
+			if (!this.mapBaseWidth) {
+				this.mapBaseWidth = $svg.width() || $svg.closest('.saso-seat-map-scroll').width() || 0;
+			}
+			if (this.mapBaseWidth > 0) {
+				$svg.css('width', Math.round(this.mapBaseWidth * zoom) + 'px');
+			}
+
+			var pct = Math.round(zoom * 100);
+			this.$currentModal.find('.saso-zoom-level').text(pct + '%');
+		},
+
+		/**
 		 * Handle seat click in modal (toggle selection)
 		 *
 		 * @param {jQuery} $seat The clicked seat element
@@ -1029,13 +1133,18 @@
 
 			// Update seat info display
 			this.updateModalSeatInfo();
-		},
 
-		/**
-		 * Find seat index in array by seat_id
-		 *
-		 * @param {Array} seats Array of seat objects
-		 * @param {number|string} seatId Seat ID to find
+			// Auto-confirm once the selectable number of seats is reached (#015084)
+			if (canConfirm && typeof sasoSeatingData !== 'undefined' && sasoSeatingData.autoConfirmSeatSelection) {
+				this.confirmSelection();
+			}
+	},
+
+	/**
+	 * Find seat index in array by seat_id
+	 *
+	 * @param {Array} seats Array of seat objects
+	 * @param {number|string} seatId Seat ID to find
 		 * @returns {number} Index or -1 if not found
 		 */
 		findSeatIndex: function(seats, seatId) {
