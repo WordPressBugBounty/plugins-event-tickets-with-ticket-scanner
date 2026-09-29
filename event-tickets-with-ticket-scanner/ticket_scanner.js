@@ -64,6 +64,14 @@ jQuery(document).ready(()=>{
         ticketScannerDontShowBtnBadge:toBool(myAjax.ticketScannerDontShowBtnBadge)
     };
 
+    // Same-code dedup window: how long a repeated scan of the SAME ticket code is
+    // ignored (camera keeps framing the ticket). Global option, default 7 seconds.
+    var RESCAN_WAIT_SECONDS = 7;
+    if (typeof myAjax.ticketScannerRescanWaitSeconds !== "undefined") {
+        RESCAN_WAIT_SECONDS = parseInt(myAjax.ticketScannerRescanWaitSeconds, 10);
+        if (isNaN(RESCAN_WAIT_SECONDS) || RESCAN_WAIT_SECONDS < 0) RESCAN_WAIT_SECONDS = 7;
+    }
+
     var loadingticket = false;
     // Scans arriving while another scan is still being processed (slow network,
     // staff scanning the next guest immediately) were silently dropped by the
@@ -173,7 +181,7 @@ jQuery(document).ready(()=>{
     }
     function onScanSuccess(decodedText, decodedResult) {
         //if (decodedText) decodedText = decodedText.trim();
-        if (system.last_scanned_ticket.code == decodedText && system.last_scanned_ticket.timestamp + 10 > time()) {
+        if (system.last_scanned_ticket.code == decodedText && system.last_scanned_ticket.timestamp + RESCAN_WAIT_SECONDS > time()) {
             return;
         }
         if (loadingticket) {
@@ -195,7 +203,7 @@ jQuery(document).ready(()=>{
         // Same-code dedup (also guards the queue drain against a still-framed
         // ticket being processed twice): skip if this exact code was just
         // handled within 10 seconds.
-        if (system.last_scanned_ticket.code == decodedText && system.last_scanned_ticket.timestamp + 10 > time()) {
+        if (system.last_scanned_ticket.code == decodedText && system.last_scanned_ticket.timestamp + RESCAN_WAIT_SECONDS > time()) {
             drainPendingScan();
             return;
         }

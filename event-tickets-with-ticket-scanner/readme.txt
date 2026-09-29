@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.2.3
+Stable tag: 3.2.4
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -245,6 +245,10 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.2.4 - 2026-09-29 =
+* New: Deleting a ticket list that still contains tickets is now blocked by default. The list delete dialog has a new checkbox "Block if list still contains tickets" (checked by default) — unchecking it allows the delete anyway. Prevents accidentally orphaning tickets whose QR code, PDF and scanner checks depend on the list. (#015122)
+* New: You decide how long the ticket scanner ignores a repeated scan of the same ticket — set the waiting time in seconds in the global options (default 7 seconds), so the camera never picks up the same ticket twice by accident.
 
 = 3.2.3 - 2026-09-27 =
 * New: The seat map opens as a fullscreen overlay on every device. The confirm buttons sit in a footer that stays visible at the bottom edge, so they can no longer be cut off on small phone displays. Close anytime with the large X in the top right corner. (#015084)

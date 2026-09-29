@@ -119,6 +119,7 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 			'lockSelectedSeats' => $this->MAIN->getOptions()->isOptionCheckboxActive('seatingLockSelectedSeats'),
 			'blockOnAddToCart' => $this->MAIN->getOptions()->isOptionCheckboxActive('seatingBlockOnAddToCart'),
 			'showSeatDescInChooser' => $this->MAIN->getOptions()->isOptionCheckboxActive('seatingShowDescInChooser'),
+			'autoConfirmSeatSelection' => $this->MAIN->getOptions()->isOptionCheckboxActive('seatingAutoConfirmSeatSelection'),
 		]);
 
 		wp_set_script_translations('saso-seating-frontend', 'event-tickets-with-ticket-scanner', dirname(dirname(__DIR__)) . '/languages');
@@ -164,7 +165,10 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 		}
 
 		// Check published status and admin preview
-		$isPublished = !empty($plan['published_at']);
+		// Null-Date-Schutz (#015050): MariaDB ohne strict mode speichert "leer"
+		// als '0000-00-00 00:00:00' — das ist NICHT published.
+		$rawPublishedAt = $plan['published_at'] ?? null;
+		$isPublished = !empty($rawPublishedAt) && $rawPublishedAt !== '0000-00-00 00:00:00';
 		$allowDraftPreview = isset($_GET['preview_seating']) && $_GET['preview_seating'] === '1';
 		$isAdminPreview = $allowDraftPreview && current_user_can('manage_woocommerce');
 
@@ -194,8 +198,11 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 			$plan['_is_preview'] = true;
 		}
 
-		// Merge: defaults < plan meta (image_id etc) < designer meta (canvas, elements)
-		$plan['meta'] = array_replace_recursive(
+		// #015050: element lists (decorations/lines/labels) are replaced wholesale —
+		// array_replace_recursive on lists resurrects stale tail entries from the
+		// legacy meta column (rect9 came back on the shop page while draft/published
+		// were clean). mergePlanMeta replaces lists and merges scalars correctly.
+		$plan['meta'] = $this->mergePlanMeta(
 			$planManager->getMetaObject(),
 			is_array($planMeta) ? $planMeta : [],
 			is_array($designerMeta) ? $designerMeta : []
@@ -217,6 +224,26 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 	 * @param int $variationId Variation ID - its own plan wins over the parent product
 	 * @return string HTML output
 	 */
+	/**
+	 * #015050: merge plan meta with list-replacement semantics. Element lists
+	 * (decorations, lines, labels) replace wholesale when a later layer
+	 * provides them; scalars/unknown keys merge as before.
+	 */
+	private function mergePlanMeta(array ...$layers): array {
+		$listKeys = ['decorations', 'lines', 'labels'];
+		$out = [];
+		foreach ($layers as $layer) {
+			foreach ($listKeys as $lk) {
+				if (array_key_exists($lk, $layer)) {
+					$out[$lk] = $layer[$lk];
+					unset($layer[$lk]);
+				}
+			}
+			$out = array_replace_recursive($out, $layer);
+		}
+		return $out;
+	}
+
 	public function renderSeatSelector(int $productId, ?string $eventDate = null, ?string $cartItemKey = null, ?array $currentSelection = null, int $variationId = 0): string {
 		$jsData = $this->buildSelectorData($productId, $eventDate, $currentSelection, $variationId);
 
@@ -505,7 +532,10 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 		$data = $this->buildSelectorData($productId, $eventDate, null, $variationId);
 
 		// Kein Plan ist eine gueltige Antwort: die Variante hat schlicht keinen.
-		wp_send_json_success(['selector' => $data]);
+		// _server_time (#015050): sobald der Timestamp im Response vom
+		// Absendezeitpunkt abweicht, kam die Antwort aus einem Cache, nicht
+		// aus PHP — sofortiges Cache-vs-Live-Erkennungsmerkmal.
+		wp_send_json_success(['_server_time' => wp_date('c'), 'selector' => $data]);
 	}
 
 	/**
@@ -513,7 +543,11 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 	 */
 	private function doGetAvailableSeats(): void {
 		$productIdRaw = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
-		$eventDate = isset($_POST['event_date']) ? sanitize_text_field($_POST['event_date']) : null;
+		// #015050: '' (no date chosen) must become null — MySQL 8 strict mode
+		// rejects `event_date = ''` and the seat query dies silently.
+		$eventDate = sasoEventtickets_Seating::normalizeEventDate(
+			isset($_POST['event_date']) ? sanitize_text_field($_POST['event_date']) : null
+		);
 
 		if (!$productIdRaw) {
 			wp_send_json_error(['error' => 'missing_params']);
@@ -541,7 +575,10 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 				'layout_type' => $plan['layout_type'] ?? self::LAYOUT_SIMPLE
 			],
 			'seats' => $seats,
-			'stats' => $stats
+			'stats' => $stats,
+			// #015050: Cache-vs-Live-Merkmal — weicht _server_time vom
+			// Absendezeitpunkt ab, kam die Antwort aus einem Cache.
+			'_server_time' => wp_date('c')
 		]);
 	}
 
@@ -643,7 +680,10 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 				'layout_type' => $plan['layout_type'] ?? self::LAYOUT_SIMPLE
 			],
 			'seats' => $seats,
-			'stats' => $stats
+			'stats' => $stats,
+			// #015050: Cache-vs-Live-Merkmal — weicht _server_time vom
+			// Absendezeitpunkt ab, kam die Antwort aus einem Cache.
+			'_server_time' => wp_date('c')
 		]);
 	}
 

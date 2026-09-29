@@ -183,6 +183,7 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 						buttons += '<button type="button" class="button button-small saso-edit-plan" title="' + __('Edit', 'event-tickets-with-ticket-scanner') + '"><span class="dashicons dashicons-edit"></span></button> ';
 						buttons += '<button type="button" class="button button-small saso-manage-seats" title="' + __('Manage Seats', 'event-tickets-with-ticket-scanner') + '"><span class="dashicons dashicons-grid-view"></span></button> ';
 						buttons += '<button type="button" class="button button-small saso-clone-plan" title="' + __('Clone', 'event-tickets-with-ticket-scanner') + '"><span class="dashicons dashicons-admin-page"></span></button> ';
+						buttons += '<button type="button" class="button button-small saso-export-plan-json" title="' + __('Export Plan (JSON)', 'event-tickets-with-ticket-scanner') + '"><span class="dashicons dashicons-database-export"></span></button> ';
 						buttons += '<button type="button" class="button button-small saso-delete-plan" title="' + __('Delete', 'event-tickets-with-ticket-scanner') + '"><span class="dashicons dashicons-trash"></span></button>';
 						return buttons;
 					}
@@ -225,6 +226,12 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 			const row = plansDataTable.row($(this).closest('tr'));
 			const plan = row.data();
 			if (plan) clonePlan(plan.id);
+		});
+
+		$tbody.on('click.sasoPlanActions', '.saso-export-plan-json', function() {
+			const row = plansDataTable.row($(this).closest('tr'));
+			const plan = row.data();
+			if (plan) window.open(BASIC._requestURL('seating', {c: 'exportPlanJSON', plan_id: plan.id}), '_blank');
 		});
 
 		$tbody.on('click.sasoPlanActions', '.saso-open-designer', function() {
@@ -515,6 +522,7 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 				'</div>' +
 				'<div class="saso-designer-sidebar">' +
 					'<div class="saso-designer-properties-area"></div>' +
+					'<div class="saso-designer-navigator-area"></div>' +
 					'<div class="saso-designer-actions-area"></div>' +
 				'</div>' +
 			'</div>' +
@@ -843,7 +851,7 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 	}
 
 	function updateSeatsCount() {
-		$('.saso-seats-count').text(sprintf(__('%d seats', 'event-tickets-with-ticket-scanner'), seatsData.length));
+		$('.saso-seats-count').text(sprintf(__('%d seats', 'event-tickets-with-ticket-scanner'), seatsData.length) + ' / ~2000');
 	}
 
 	function updateSeatToolbarButtons() {
@@ -1278,12 +1286,66 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 
 		// Toolbar buttons (not in DataTable) - use namespaced events
 		$wrap.on('click.sasoSeating', '.saso-add-plan', function() { openPlanModal(null); });
+
+		// ── Import Plan (JSON) ── #015050
+		$wrap.on('click.sasoSeating', '.saso-import-plan-json', function() {
+			// Zielplan-Dropdown befuellen (alle Plaene, mit Seat-Anzahl)
+			const $sel = $('#saso-import-target-plan').empty();
+			$('<option>').val('').text(__('Select plan…', 'event-tickets-with-ticket-scanner')).appendTo($sel);
+			(plansData || []).forEach(function(p) {
+				$('<option>').val(p.id).text(p.name + ' (' + (p.seat_count ?? '?') + ' ' + __('seats', 'event-tickets-with-ticket-scanner') + ')').appendTo($sel);
+			});
+			$('#saso-import-plan-file').val('');
+			$wrap.find('input[name="saso_import_mode"][value="create"]').prop('checked', true);
+			$('#saso-import-target-row').hide();
+			$('#saso-import-plan-modal').show();
+		});
+		$wrap.on('click.sasoSeating', 'input[name="saso_import_mode"]', function() {
+			$('#saso-import-target-row').toggle($wrap.find('input[name="saso_import_mode"]:checked').val() === 'override');
+		});
+		$wrap.on('click.sasoSeating', '.saso-import-plan-cancel, #saso-import-plan-modal .saso-modal-close', function() {
+			$('#saso-import-plan-modal').hide();
+		});
+		$wrap.on('click.sasoSeating', '.saso-import-plan-confirm', function() {
+			const fileInput = document.getElementById('saso-import-plan-file');
+			const file = fileInput && fileInput.files ? fileInput.files[0] : null;
+			if (!file) {
+				alert(__('Please choose a .json file first.', 'event-tickets-with-ticket-scanner'));
+				return;
+			}
+			const mode = $wrap.find('input[name="saso_import_mode"]:checked').val() || 'create';
+			const targetId = $('#saso-import-target-plan').val() || '';
+			if (mode === 'override' && !targetId) {
+				alert(__('Please select which plan to replace.', 'event-tickets-with-ticket-scanner'));
+				return;
+			}
+			if (mode === 'override' && !confirm(__('Replace the draft of the selected plan with the file contents? The current draft of that plan will be overwritten (the published version stays live until you publish).', 'event-tickets-with-ticket-scanner'))) {
+				return;
+			}
+			const reader = new FileReader();
+			reader.onload = function(e) {
+				const data = { json: e.target.result, mode: mode };
+				if (mode === 'override') data.target_plan_id = targetId;
+				makeRequest('importPlanJSON', data, function(response) {
+					$('#saso-import-plan-modal').hide();
+					const msg = (response && response.message) ? response.message : __('Import finished.', 'event-tickets-with-ticket-scanner');
+					showNotice(msg);
+					loadPlans();
+				});
+			};
+			reader.readAsText(file);
+		});
 		$wrap.on('click.sasoSeating', '.saso-back-to-plans', function() { showPlansView(); });
 		$wrap.on('click.sasoSeating', '.saso-add-seat', function() { openSeatModal(null); });
 		$wrap.on('click.sasoSeating', '.saso-reorder-seats', function() { openSeatOrderModal(); });
 		$wrap.on('click.sasoSeating', '.saso-export-seats-csv', function() {
 			if (!currentPlanId) return;
 			let url = BASIC._requestURL('seating', {c: 'exportSeatsCSV', plan_id: currentPlanId});
+			window.open(url, '_blank');
+		});
+		$wrap.on('click.sasoSeating', '.saso-export-plan-json', function() {
+			if (!currentPlanId) return;
+			let url = BASIC._requestURL('seating', {c: 'exportPlanJSON', plan_id: currentPlanId});
 			window.open(url, '_blank');
 		});
 		$wrap.on('click.sasoSeating', '.saso-import-seats-csv', function() {
@@ -1364,6 +1426,44 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 					<button type="button" class="button button-primary saso-add-plan">
 						${__('+ Add Seating Plan', 'event-tickets-with-ticket-scanner')}
 					</button>
+					<button type="button" class="button saso-import-plan-json">
+						<span class="dashicons dashicons-database-import" style="vertical-align:middle;margin-right:2px;"></span>
+						${__('Import Plan (JSON)', 'event-tickets-with-ticket-scanner')}
+					</button>
+				</div>
+				<!-- Import Plan Modal -->
+				<div class="saso-modal" id="saso-import-plan-modal" style="display:none;">
+					<div class="saso-modal-content">
+						<div class="saso-modal-header">
+							<h3 class="saso-modal-title">${__('Import Seating Plan', 'event-tickets-with-ticket-scanner')}</h3>
+							<button type="button" class="saso-modal-close"><span class="dashicons dashicons-no"></span></button>
+						</div>
+						<div class="saso-modal-body">
+							<p style="margin-top:0;">${__('Choose a plan export file (.json) and what should happen with it:', 'event-tickets-with-ticket-scanner')}</p>
+							<label style="display:block;margin-bottom:10px;">
+								<input type="radio" name="saso_import_mode" value="create" checked>
+								<b>${__('Create a new plan', 'event-tickets-with-ticket-scanner')}</b><br>
+								<span style="margin-left:22px;color:#50575e;">${__('A new plan is created from the file. Its name gets "(imported)" added, and it is NOT published — you review and publish it yourself. Your existing plans stay untouched.', 'event-tickets-with-ticket-scanner')}</span>
+							</label>
+							<label style="display:block;margin-bottom:10px;">
+								<input type="radio" name="saso_import_mode" value="override">
+								<b>${__('Replace an existing plan', 'event-tickets-with-ticket-scanner')}</b><br>
+								<span style="margin-left:22px;color:#50575e;">${__('The DRAFT of the selected plan is replaced with the file contents and its seats are re-created. The published version stays live until you publish the new draft — sold tickets are never touched.', 'event-tickets-with-ticket-scanner')}</span>
+							</label>
+							<div id="saso-import-target-row" style="display:none;margin:0 0 10px 22px;">
+								<label>${__('Plan to replace:', 'event-tickets-with-ticket-scanner')}<br>
+									<select id="saso-import-target-plan" class="regular-text"></select>
+								</label>
+							</div>
+							<label style="display:block;margin-bottom:6px;"><b>${__('File:', 'event-tickets-with-ticket-scanner')}</b>
+								<input type="file" id="saso-import-plan-file" accept=".json,application/json">
+							</label>
+						</div>
+						<div class="saso-modal-footer">
+							<button type="button" class="button button-primary saso-import-plan-confirm">${__('Import', 'event-tickets-with-ticket-scanner')}</button>
+							<button type="button" class="button saso-import-plan-cancel">${__('Cancel', 'event-tickets-with-ticket-scanner')}</button>
+						</div>
+					</div>
 				</div>
 				<div class="saso-seating-plans-list">
 					<div class="saso-loading">${config.i18n.loading}</div>
@@ -1391,6 +1491,7 @@ function sasoEventtickets_js_seating_admin(_myAjaxVar, _basicObj) {
 						${__('Show Layout', 'event-tickets-with-ticket-scanner')}
 					</button>
 					${myAjax._isPremium ? '<button type="button" class="button saso-export-seats-csv"><span class="dashicons dashicons-download" style="vertical-align:middle;margin-right:2px;"></span>' + __('Export CSV', 'event-tickets-with-ticket-scanner') + '</button>' : ''}
+				<button type="button" class="button saso-export-plan-json"><span class="dashicons dashicons-database-export" style="vertical-align:middle;margin-right:2px;"></span>' + __('Export Plan (JSON)', 'event-tickets-with-ticket-scanner') + '</button>
 					${myAjax._isPremium ? '<button type="button" class="button saso-import-seats-csv"><span class="dashicons dashicons-upload" style="vertical-align:middle;margin-right:2px;"></span>' + __('Import CSV', 'event-tickets-with-ticket-scanner') + '</button><input type="file" class="saso-import-csv-file" accept=".csv" style="display:none;">' : ''}
 					<span class="saso-seats-count"></span>
 				</div>

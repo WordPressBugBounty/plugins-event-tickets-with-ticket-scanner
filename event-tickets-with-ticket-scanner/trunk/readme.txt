@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.2.0
+Stable tag: 3.2.4
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -246,7 +246,45 @@ Old premium version will no longer work with this version. You need to downgrade
 
 == Changelog ==
 
+= 3.2.4 - 2026-09-29 =
+* New: Deleting a ticket list that still contains tickets is now blocked by default. The list delete dialog has a new checkbox "Block if list still contains tickets" (checked by default) — unchecking it allows the delete anyway. Prevents accidentally orphaning tickets whose QR code, PDF and scanner checks depend on the list. (#015122)
+* New: You decide how long the ticket scanner ignores a repeated scan of the same ticket — set the waiting time in seconds in the global options (default 7 seconds), so the camera never picks up the same ticket twice by accident.
+
+= 3.2.3 - 2026-09-27 =
+* New: The seat map opens as a fullscreen overlay on every device. The confirm buttons sit in a footer that stays visible at the bottom edge, so they can no longer be cut off on small phone displays. Close anytime with the large X in the top right corner. (#015084)
+* New: Zoom buttons beside the seat map. Stacked vertically in a narrow bar on the right, they never cover the map. Zooming is useful on phones to pick the right seat on large plans.
+* New: Global option "Confirm seat selection automatically once complete" (default off) — the seat map confirms as soon as the customer has picked all seats, one less tap on mobile.
+
+= 3.2.2 - 2026-09-22 =
+* Fix: Redeem operations are now protected against parallel scanner writes (optimistic locking). When two devices redeem or edit the same ticket code at the same moment, the second write is detected, re-read and safely retried instead of silently overwriting the first one's redeem entry. (#014976)
+* New: Admin notice on the product edit screen when the product's seating plan has seats but was never published — until now the product page simply showed no seat selection, with no hint why. The notice links straight to the plan for publishing. (#015050)
+* Fix: On MariaDB servers without strict mode, a never-published seating plan could be treated as published ("0000-00-00" zero-date) — the product page then rendered an empty plan instead of none. Zero dates are now handled correctly. (#015050)
+* Fix: Publishing a seating plan did not sync the seats table — after deleting and re-creating seats in the designer, the shop showed only a fraction of the seats (or none) while the designer showed them all. Publish now re-activates the plan's seats so the shop matches the designer. (#015050)
+* Fix: The seat statistics ("total seats / available") counted inactive and deleted seats, reporting seats as available that the shop could not sell. Counts now match what the seat selector actually offers. (#015050)
+* Fix: Seating-plan JSON exports are timestamped down to the second in the download filename so multiple exports on the same day do not overwrite each other.
+* Fix: The seat-map selector endpoint could still show deleted decorations (rect9) because getPlanForProductFrontend merged with array_replace_recursive directly instead of using the helper that replaces element lists. The selector now renders exactly the published decorations. (#015050)
+* Fix: The shop's seat map could show deleted decorations and seats from an old layout version (e.g. overlapping "ghost" seats) although the designer showed the current plan — the page merged the plan's legacy meta column into the current published version, and list-merging resurrects deleted elements. The seat map now renders exactly the published version. (#015050)
+* Fix: Seat maps stayed empty on MySQL 8 servers with strict SQL mode — comparing the (empty) event date against a DATE column aborted the seat query with "Incorrect DATE value" while the shop showed no error. Empty and zero dates are now normalized before every seat query. The support info block additionally shows the server's SQL mode. (#015050)
+* New: "Import Plan (JSON)" next to "Add Seating Plan" — restores a plan export in one click. Two clearly explained modes: create a new plan (gets "(imported)" added, stays unpublished for review) or replace the draft of an existing plan (published version stays live until you publish; sold tickets are never touched). Seat dates are now stored and compared as integer timestamps with self-healing backfill of existing rows — MySQL 8 strict mode can no longer break seat maps. (#015050)
+* New: The seating plan designer and the seat list show an approximate element limit ("n / ~2000") — plans are stored as JSON and saving extremely large plans can fail silently depending on the server configuration. The counter turns red with a warning when the approximate maximum is reached. (#015050)
+* New: Seating plan designer: "Navigator" — a collapsible element list between the properties panel and the save buttons. Every seat, decoration, line and label is listed by name; click a row to select the element (works for overlapping elements that are hard to click on the canvas), hover to highlight it on the canvas. Essential for debugging customer plans. (#015050)
+* Fix: Deleted elements in the seating plan designer came back after saving and reopening the plan — the server merged the new element list into the stored one instead of replacing it, resurrecting every deleted decoration, line and label. This made plans impossible to clean up (the root cause behind seats never matching the designer). Lists are now replaced on save. (#015050)
+* Fix: Publishing a seating plan raced the draft upload — the publish request fired on a fixed timer instead of waiting for the save to finish, so on slower connections the shop was published with a stale draft while the editor showed "published successfully". Publish now waits for the save roundtrip and aborts with a clear error if saving fails. (#015050)
+* New: "Export Plan (JSON)" button in the seating plan seat view — downloads the complete plan (canvas, decorations, draft, published version and all seats) without any customer data, so a plan can be shared with support and re-created 1:1 for debugging. (#015050)
+* Tweak: The "Starter plugin is installed" warning now recognizes when the full Premium plugin is already installed next to the Starter and tells you to simply delete the Starter, instead of suggesting a Premium upload you do not need. (#015050)
+
+= 3.2.1 - 2026-09-18 =
+* Fix: With "Reserve seat only when adding to cart" enabled, the reservation was stored under wrong identifiers — the seat was not reliably blocked for other customers until the order was completed. Reservations created by this option now block the seat correctly.
+* Fix: On block themes (like Twenty Twenty-Four) the public ticket page fell back to a deprecated WordPress legacy template and printed a deprecation notice — the page now renders a clean minimal shell there.
+* New: The print preview in the Kasse opens the ticket as a PDF.
+* Fix: Selling a ticket crashed with a server error when the ticket list used a code format — the format reached the code generator in the wrong shape; the generator now handles both shapes.
+* New: The Kasse area shows one button per ticket list — a single click opens the sale popup with the list preselected (switchable inside the popup), amount, payment note and customer name.
+* New: Sell tickets directly at the counter — the new "Kasse" area issues tickets from a ticket list without a shop order, attaches an internal sale number to every ticket and confirms payment with one click. Sales can be cancelled or partially refunded; cancelled tickets are freed for reuse. Print preview opens each ticket in the browser. The sale confirmation is checked at the scanner: a ticket whose direct sale was not confirmed yet does not redeem.
+
 = 3.2.0 - 2026-09-13 =
+* New: Kasse is now switchable (default on) — turn the whole Kasse tab off as a safety stop or for handheld-only shops.
+* New: The Kasse ticket-list overview is switchable (default on) — disable to open the sale popup directly on touch screens.
+* New: The Kasse orders table now uses server-side DataTable processing (search / paging / sorting), status pills, and per-row Confirm / Cancel / Refund / Partial refund / Print tickets actions. Filtering and ordering are handled on the server.
 * New: Filter the ticket list by scanner account — new search filter "AUTHTOKEN:" shows all tickets redeemed by one ticket scanner (enter the id shown in the scanner details), so you can review each entrance team member's activity without opening every ticket.
 * New: The scanner makes a successful read unmistakable — the camera area lights up with a green frame (like card payment terminals) and a clear "code read, waiting for server" message the moment a QR code is recognized, followed by a short deliberate pause before the next scan is processed. Queued scans of group members are never lost and keep their order.
 * Fix: The ticket scanner silently dropped scans that arrived while the previous ticket was still loading (slow Wi-Fi, fast consecutive scanning of groups) — those guests were never redeemed in the dashboard. Scans are now queued and processed one after another, with a short on-screen note.

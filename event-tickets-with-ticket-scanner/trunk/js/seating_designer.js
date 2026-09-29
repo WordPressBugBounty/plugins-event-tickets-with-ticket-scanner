@@ -101,6 +101,7 @@
 		this.createCanvas();
 		this.createToolbar();
 		this.createPropertiesPanel();
+		this.createNavigatorPanel();
 		this.createActionsPanel();
 		this.bindEvents();
 		this.bindVersionToggleHandlers();
@@ -1905,6 +1906,141 @@
 	};
 
 	// =========================================================================
+	// Navigator (element list, Elementor-style, collapsed by default)
+	// =========================================================================
+
+	/**
+	 * Create the navigator panel between properties and actions.
+	 * Lists every element on the canvas (seats, decorations, lines, labels)
+	 * so overlapping/hidden elements can be selected without clicking them.
+	 * Collapsed by default — click the header to expand.
+	 */
+	SeatingDesigner.prototype.createNavigatorPanel = function() {
+		var self = this;
+		var $container = $(this.config.container);
+
+		var html = '<div class="saso-designer-navigator">';
+		html += '<button type="button" class="saso-navigator-toggle" aria-expanded="false">';
+		html += '<span class="dashicons dashicons-list-view"></span> ';
+		html += (this.config.i18n.navigator || 'Navigator');
+		html += '<span class="saso-navigator-count">0</span>';
+		html += '<span class="dashicons dashicons-arrow-down saso-navigator-arrow"></span>';
+		html += '</button>';
+		html += '<div class="saso-navigator-body" style="display:none;">';
+		html += '<div class="saso-navigator-search">';
+		html += '<input type="search" class="saso-navigator-search-input" placeholder="' +
+			(this.config.i18n.searchElements || 'Search label, identifier or id…') + '">';
+		html += '<span class="dashicons dashicons-search"></span>';
+		html += '</div>';
+		html += '<ul class="saso-navigator-list"></ul>';
+		html += '</div>';
+		html += '</div>';
+
+		$container.find('.saso-designer-navigator-area').html(html);
+
+		$container.find('.saso-navigator-toggle').on('click', function() {
+			var $body = $container.find('.saso-navigator-body');
+			var isOpen = $body.is(':visible');
+			$body.slideToggle(120);
+			$(this).attr('aria-expanded', isOpen ? 'false' : 'true');
+			$container.find('.saso-designer-navigator').toggleClass('is-open', !isOpen);
+			if (!isOpen) {
+				self.renderNavigatorList();
+				// Focus the search field when opening the navigator to allow typing immediately
+				$container.find('.saso-navigator-search-input').trigger('focus');
+			}
+		});
+
+		// Live search/filter (#015050): filter navigator rows by label,
+		// identifier or element id — helpful for large plans or hidden
+		// (overlapping) elements. Input filters; Escape/X clears and restores.
+		$container.find('.saso-navigator-search-input').on('input', function() {
+			var q = $(this).val().toLowerCase().trim();
+			if (q === '') {
+				$container.find('.saso-navigator-item').removeClass('is-filtered-out');
+				return;
+			}
+			$container.find('.saso-navigator-item').each(function() {
+				var $row = $(this);
+				var text = ($row.find('.saso-navigator-name').text() + ' ' + $row.attr('data-element-id')).toLowerCase();
+				$row.toggleClass('is-filtered-out', text.indexOf(q) === -1);
+			});
+		}).on('keydown', function(e) {
+			if (e.key === 'Escape') {
+				$(this).val('').trigger('input');
+			}
+		});
+	};
+
+	/**
+	 * (Re)build the navigator list. Called on expand and after every
+	 * structural change (add/remove/rename) via updateElementCounts().
+	 */
+	SeatingDesigner.prototype.renderNavigatorList = function() {
+		var self = this;
+		var $container = $(this.config.container);
+		var $list = $container.find('.saso-navigator-list');
+		if ($list.length === 0) return;
+		$list.empty();
+
+		var entries = [];
+
+		// Seats first (they are the sellable elements)
+		this.elements.seats.forEach(function(el) {
+			entries.push({ el: el, kind: 'seat', icon: 'dashicons-tickets-alt', name: el.identifier || el.label || el.id });
+		});
+		this.elements.decorations.forEach(function(el) {
+			entries.push({ el: el, kind: 'deco', icon: 'dashicons-shape', name: el.label || el.identifier || el.id });
+		});
+		this.elements.lines.forEach(function(el) {
+			entries.push({ el: el, kind: 'line', icon: 'dashicons-leftright', name: el.label || el.id });
+		});
+		this.elements.labels.forEach(function(el) {
+			entries.push({ el: el, kind: 'label', icon: 'dashicons-editor-textcolor', name: el.label || el.text || el.id });
+		});
+
+		$container.find('.saso-navigator-count').text(entries.length);
+
+		entries.forEach(function(entry) {
+			var $li = $('<li>')
+				.addClass('saso-navigator-item saso-navigator-' + entry.kind)
+				.attr('data-element-id', entry.el.id)
+				.html('<span class="dashicons ' + entry.icon + '"></span><span class="saso-navigator-name"></span>');
+			$li.find('.saso-navigator-name').text(String(entry.name));
+
+			// click = select the element (and bring props up)
+			$li.on('click', function(e) {
+				e.stopPropagation();
+				self.selectElement(entry.el.id);
+				self.highlightNavigatorSelection();
+			});
+			// hover = flash-outline the element on canvas (canvas nodes carry data-id)
+			$li.on('mouseenter', function() {
+				$(self.svg).find('.saso-element[data-id="' + entry.el.id + '"]').first().addClass('saso-navigator-hover');
+			});
+			$li.on('mouseleave', function() {
+				$(self.svg).find('.saso-navigator-hover').removeClass('saso-navigator-hover');
+			});
+
+			$list.append($li);
+		});
+
+		this.highlightNavigatorSelection();
+	};
+
+	/**
+	 * Mark the currently selected element(s) in the navigator list.
+	 */
+	SeatingDesigner.prototype.highlightNavigatorSelection = function() {
+		var $container = $(this.config.container);
+		$container.find('.saso-navigator-item.is-selected').removeClass('is-selected');
+		var ids = (this.selectedElements || []).map(function(el) { return el.id; });
+		ids.forEach(function(id) {
+			$container.find('.saso-navigator-item[data-element-id="' + id + '"]').addClass('is-selected');
+		});
+	};
+
+	// =========================================================================
 	// Actions Panel
 	// =========================================================================
 
@@ -1954,6 +2090,31 @@
 
 		$container.find('.count-seats .count-value').text(seatCount);
 		$container.find('.count-elements .count-value').text(elementCount);
+
+		// #015050: approximate plan-size guard. The plan is stored as JSON in
+		// LONGTEXT — the practical limit is the server's max_allowed_packet
+		// (default 16-64 MB), beyond which saves fail silently. With a safety
+		// buffer for long identifiers/labels we communicate ~2000 elements
+		// (seats + decorations together) as the approximate maximum.
+		var MAX_PLAN_ELEMENTS = 2000;
+		var total = seatCount + elementCount;
+		var $limit = $container.find('.saso-element-limit');
+		if ($limit.length === 0) {
+			$container.find('.saso-element-counts').append(
+				'<span class="count-item count-limit saso-element-limit"></span>');
+			$limit = $container.find('.saso-element-limit');
+		}
+		if (total >= MAX_PLAN_ELEMENTS) {
+			$limit.addClass('is-over').html('<span class="dashicons dashicons-warning"></span> ' +
+				total + ' / ~' + MAX_PLAN_ELEMENTS);
+			$limit.attr('title', 'The plan is very large — saving may fail silently depending on the server limit (max_allowed_packet). Split the plan or reduce elements.');
+		} else {
+			$limit.removeClass('is-over').text(total + ' / ~' + MAX_PLAN_ELEMENTS);
+			$limit.attr('title', 'Approximate maximum number of elements (seats + decorations) per plan');
+		}
+
+		// Navigator: keep list + count in sync on structural changes
+		this.renderNavigatorList();
 	};
 
 	// =========================================================================
@@ -4211,6 +4372,11 @@
 		// Update element counts
 		this.updateElementCounts();
 
+		// Show canvas properties right away (#015050 UX): the properties panel
+		// starts populated with the plan/canvas settings instead of an empty
+		// "select an element" hint that needed a pointless canvas click first.
+		this.showCanvasProperties();
+
 		// Show warnings if needed (only on initial load, not on version switch)
 		if (!usePublished) {
 			if (plan.active_sales && plan.active_sales.has_active_sales) {
@@ -4270,8 +4436,14 @@
 
 	/**
 	 * Save draft to server
+	 *
+	 * @param {function} [onSuccess] optional callback after a SUCCESSFUL save —
+	 *        used by publish() to chain without the old 500ms-setTimeout race
+	 *        (#015050): publishing fired while the seats upload was still in
+	 *        flight, so the server published a stale draft.
+	 * @param {function} [onError] optional callback on failure
 	 */
-	SeatingDesigner.prototype.saveDraft = function() {
+	SeatingDesigner.prototype.saveDraft = function(onSuccess, onError) {
 		var self = this;
 
 		var draftData = {
@@ -4370,15 +4542,18 @@
 						self.deletedSeatIds = new Set();
 						// Update header badges
 						self.updateHeaderBadges(response.data);
-					} else {
-					self.showNotice('error', response.data.error || 'Save failed');
-				}
-			},
-			error: function(xhr, status, error) {
-				self.showNotice('error', 'Save failed: ' + error);
-			}
-		});
-	};
+						if (typeof onSuccess === 'function') onSuccess();
+						} else {
+						self.showNotice('error', response.data.error || 'Save failed');
+						if (typeof onError === 'function') onError(response.data.error || 'Save failed');
+						}
+						},
+						error: function(xhr, status, error) {
+						self.showNotice('error', 'Save failed: ' + error);
+						if (typeof onError === 'function') onError(error);
+						}
+						});
+						};
 
 	/**
 	 * Publish plan
@@ -4390,40 +4565,57 @@
 			return;
 		}
 
-		// Save draft first, then publish
-		this.saveDraft();
+		// Save draft first, then publish — but ONLY after the save roundtrip
+		// succeeded. The old setTimeout(500) fired publishPlan while the
+		// seats upload was still in flight on slow connections: the server
+		// then published a STALE draft and the shop showed old/missing seats
+		// even though the user saw "published successfully" (#015050).
+		this.saveDraft(
+			function() { self.doPublishRequest(); },
+			function(err) {
+				self.showNotice('error',
+					(self.config.i18n.publishBlockedBySave || 'Publish cancelled: the draft could not be saved.') +
+					' (' + err + ')');
+			}
+		);
+	};
 
-		setTimeout(function() {
-			$.ajax({
-				url: self.config.ajaxUrl,
-				type: 'POST',
-				data: {
-					action: self.config.ajaxAction,
-					a: 'publishPlan',
-					plan_id: self.config.planId,
-					nonce: self.config.nonce
-				},
-				success: function(response) {
-					if (response.success && response.data.success) {
-						self.showNotice('success', self.config.i18n.planPublished || 'Seating plan published successfully');
-						// Hide unpublished banner
-						$(self.config.container).find('.saso-unpublished-banner').remove();
-						// Update header badges
-						self.updateHeaderBadges(response.data);
+	/**
+	 * Fire the actual publishPlan AJAX request (called by publish() after
+	 * a successful save).
+	 */
+	SeatingDesigner.prototype.doPublishRequest = function() {
+		var self = this;
+
+		$.ajax({
+			url: self.config.ajaxUrl,
+			type: 'POST',
+			data: {
+				action: self.config.ajaxAction,
+				a: 'publishPlan',
+				plan_id: self.config.planId,
+				nonce: self.config.nonce
+			},
+			success: function(response) {
+				if (response.success && response.data.success) {
+					self.showNotice('success', self.config.i18n.planPublished || 'Seating plan published successfully');
+					// Hide unpublished banner
+					$(self.config.container).find('.saso-unpublished-banner').remove();
+					// Update header badges
+					self.updateHeaderBadges(response.data);
+				} else {
+					// Show conflicts
+					if (response.data.conflicts) {
+						self.showConflictsModal(response.data.conflicts);
 					} else {
-						// Show conflicts
-						if (response.data.conflicts) {
-							self.showConflictsModal(response.data.conflicts);
-						} else {
-							self.showNotice('error', response.data.message || 'Publish failed');
-						}
+						self.showNotice('error', response.data.message || 'Publish failed');
 					}
-				},
-				error: function(xhr, status, error) {
-					self.showNotice('error', 'Publish failed: ' + error);
 				}
-			});
-		}, 500);
+			},
+			error: function(xhr, status, error) {
+				self.showNotice('error', 'Publish failed: ' + error);
+			}
+		});
 	};
 
 	/**

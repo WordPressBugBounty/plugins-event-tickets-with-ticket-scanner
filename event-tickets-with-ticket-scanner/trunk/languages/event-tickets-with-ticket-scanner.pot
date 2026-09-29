@@ -2891,6 +2891,14 @@ msgstr ""
 msgid "Show seat description in seating plan chooser"
 msgstr ""
 
+#: sasoEventtickets_Options.php:637
+msgid "Confirm seat selection automatically once complete"
+msgstr ""
+
+#: sasoEventtickets_Options.php:637
+msgid "If active, the seat map confirms the selection as soon as the customer has picked the number of seats matching the product quantity - no need to tap Confirm. Fewer taps on mobile, but no chance to review the seats before they are confirmed."
+msgstr ""
+
 #: sasoEventtickets_Options.php:621
 msgid "If active, the seat description will be displayed when hovering or selecting a seat in the seating plan on the product page."
 msgstr ""
@@ -6571,6 +6579,18 @@ msgstr ""
 msgid "Check if list is used by products"
 msgstr ""
 
+#: backend.js:5832
+msgid "Block if list still contains tickets"
+msgstr ""
+
+#: backend.js:5844
+msgid "This list still contains %d tickets!"
+msgstr ""
+
+#: backend.js:5844
+msgid "Deleting the list would leave these tickets without a list — their QR code, PDF and scanner checks can break. Delete the tickets first, or move them to another list. To delete anyway, uncheck \"Block if list still contains tickets\" in the delete dialog."
+msgstr ""
+
 #: backend.js:5458
 msgid "This list is still assigned to products:"
 msgstr ""
@@ -7924,6 +7944,18 @@ msgstr ""
 msgid "Open Seat Map"
 msgstr ""
 
+#: js/seating_frontend.js:366
+msgid "Zoom in"
+msgstr ""
+
+#: js/seating_frontend.js:367
+msgid "Reset zoom"
+msgstr ""
+
+#: js/seating_frontend.js:368
+msgid "Zoom out"
+msgstr ""
+
 #: js/seating_frontend.js:335
 msgid "Selected: {label} - Click to change"
 msgstr ""
@@ -8450,3 +8482,12 @@ msgstr ""
 #: wc_frontend.js:176
 msgid "This code is not valid for this product."
 msgstr ""
+
+#: sasoEventtickets_Options.php:322
+msgid "Ticket scanner: waiting time in seconds before the same ticket can be scanned again"
+msgstr ""
+
+#: sasoEventtickets_Options.php:322
+msgid "How long the ticket scanner ignores a repeated scan of the same ticket code. This prevents the camera from picking up the same ticket twice while it is still in front of the lens. Enter the waiting time in seconds. Default is 7 seconds."
+msgstr ""
+

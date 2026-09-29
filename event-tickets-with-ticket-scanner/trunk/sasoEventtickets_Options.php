@@ -319,6 +319,7 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'ticketScannerHideTicketInformation', 'label'=>__('Preset: Hide ticket information', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, the ticket information wil not be shown.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', '_doc_video'=>'https://youtu.be/StDkB_u0PZc'];
 		$options[] = ['key'=>'ticketScannerHideTicketInformationShowShortDesc', 'label'=>__('Preset: Display short description if ticket information is hidden', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, the ticket short description will be shown at the top after the ticket is retrieved. It is only executed if the ticket information is hidden.', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', '_doc_video'=>''];
 		$options[] = ['key'=>'ticketScannerVibrate', 'label'=>__('Preset: Haptic feedback (vibration) on scan result', 'event-tickets-with-ticket-scanner'), 'desc'=>__('If active, the device will vibrate when a ticket is redeemed. Short vibration for success, triple pulse for failure. Only works on devices that support vibration (most Android phones).', 'event-tickets-with-ticket-scanner'), 'type'=>'checkbox', 'def'=>true];
+		$options[] = ['key'=>'ticketScannerRescanWaitSeconds', 'label'=>__('Ticket scanner: waiting time in seconds before the same ticket can be scanned again', 'event-tickets-with-ticket-scanner'), 'desc'=>__('How long the ticket scanner ignores a repeated scan of the same ticket code. This prevents the camera from picking up the same ticket twice while it is still in front of the lens. Enter the waiting time in seconds. Default is 7 seconds.', 'event-tickets-with-ticket-scanner'), 'type'=>'number', 'def'=>7, "additional"=>["min"=>0], '_doc_video'=>''];
 		$additional = [ "multiple"=>0, "values"=>[ ["label"=>__('Do not change the order status', 'event-tickets-with-ticket-scanner'), "value"=>"1"] ] ];
 		foreach($order_status as $key => $value) {
 			$additional['values'][] = ["label"=>$value, "value"=>$key];
@@ -385,6 +386,12 @@ class sasoEventtickets_Options {
 				'type'=>"heading"
 			];
 		$options[] = ['key'=>'wcTicketAllowTicketsWithoutOrder', 'label'=>__("Allow tickets without a WooCommerce order", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Off by default. If active, tickets that belong to no order — for example numbers you generated yourself to sell at the door, by invoice or as printed cards — can be opened, shown and redeemed at the scanner. <b>You give up the order check as copy protection for those tickets:</b> the plugin can no longer verify against a paid order, only that the number exists, is active, is not redeemed yet and belongs to its ticket list. Tickets sold through WooCommerce are unaffected and keep the full check. You can also switch this on for a single ticket list instead of the whole shop, in the list's settings.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>false];
+
+	// Direct sales / Kasse: opt-out for the whole area + display of the
+	// ticket-list overview tiles (Saso 2026-09-14). Default on; turn off
+	// to hide the tab without uninstalling the engine.
+	$options[] = ['key'=>'wcTicketKasseEnabled', 'label'=>__("Show the Kasse area in the admin menu", 'event-tickets-with-ticket-scanner'), 'desc'=>__("On by default. If turned off, the Kasse tab (sell tickets directly from a list, manage internal sales) is hidden completely. Useful as a safety stop when something goes wrong, or when direct sales should only happen on a separate handheld.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>true];
+	$options[] = ['key'=>'wcTicketKasseShowListOverview', 'label'=>__("Show the ticket lists overview in the Kasse area", 'event-tickets-with-ticket-scanner'), 'desc'=>__("On by default. If turned off, the Kasse area skips the list-of-lists tile view and opens the sale popup directly (useful on small touch screens where one ticket list is sold at a time).", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>true];
 
 		$options[] = [
 				'key'=>'h12',
@@ -624,6 +631,13 @@ class sasoEventtickets_Options {
 			'key'=>'seatingShowDescInCart',
 			'label'=>__("Show seat description in cart", 'event-tickets-with-ticket-scanner'),
 			'desc'=>__("If active, the seat description will be displayed in the cart and checkout.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>false
+		];
+		$options[] = [
+			'key'=>'seatingAutoConfirmSeatSelection',
+			'label'=>__("Confirm seat selection automatically once complete", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, the seat map confirms the selection as soon as the customer has picked the number of seats matching the product quantity - no need to tap Confirm. Fewer taps on mobile, but no chance to review the seats before they are confirmed.", 'event-tickets-with-ticket-scanner'),
 			'type'=>"checkbox",
 			'def'=>false
 		];

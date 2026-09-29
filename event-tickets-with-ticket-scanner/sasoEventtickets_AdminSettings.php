@@ -1884,6 +1884,21 @@ class sasoEventtickets_AdminSettings {
 			}
 		}
 
+		// Ticket-Löschschutz (#015122): deleting a list that still contains
+		// tickets orphans them (codes.list_id=0) — QR/PDF/scanner then lose
+		// their list-based idcode (#9232-class fallout). Block unless the
+		// admin explicitly confirms with skip_ticket_check.
+		$skip_ticket_check = isset($data['skip_ticket_check']) && $data['skip_ticket_check'] === true;
+		if (!$skip_ticket_check) {
+			$ticketCount = $this->countTicketsInList($list_id);
+			if ($ticketCount > 0) {
+				return [
+					'error' => 'list_has_tickets',
+					'ticket_count' => $ticketCount
+				];
+			}
+		}
+
 		$felder = ["list_id"=>0];
 		$where = ["list_id"=>$list_id];
 		$this->MAIN->getDB()->update("codes", $felder, $where);
@@ -1891,6 +1906,15 @@ class sasoEventtickets_AdminSettings {
 		$this->MAIN->getDB()->_db_query($sql);
 		do_action( $this->MAIN->_do_action_prefix.'removeList', $data );
 		return ['success' => true];
+	}
+
+	/**
+	 * Count tickets (codes) still assigned to a list (#015122)
+	 */
+	private function countTicketsInList(int $list_id): int {
+		$sql = "select count(*) as anzahl from ".$this->MAIN->getDB()->getTabelle("codes")." where list_id = ".intval($list_id);
+		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
+		return intval($ret[0]['anzahl'] ?? 0);
 	}
 
 	/**

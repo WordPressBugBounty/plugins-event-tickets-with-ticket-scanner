@@ -207,6 +207,14 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 					$ret = $this->handleGetStats($data);
 					break;
 
+				// #015050 diagnostics: raw seat query introspection. Read-only,
+				// admin-only — answers "why does the selector see no seats while
+				// the count says 64" in one call (table names, raw WHERE hits,
+				// wpdb last_error, plan resolution for the product).
+				case 'seatsDiagnostics':
+					$ret = $this->handleSeatsDiagnostics($data);
+					break;
+
 				case 'getDesignerPage':
 					$ret = $this->handleGetDesignerPage($data);
 					break;
@@ -1084,7 +1092,9 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 				'confirmPublish' => __('Publish changes? This will make them visible to customers.', 'event-tickets-with-ticket-scanner'),
 				'publishConflicts' => __('Cannot publish: The following seats have sold tickets and cannot be deleted:', 'event-tickets-with-ticket-scanner'),
 				'activeSalesWarning' => __('Warning: This seating plan has active ticket sales. Changes will only be visible after publishing.', 'event-tickets-with-ticket-scanner'),
-				'ticketsSold' => __('%d tickets sold', 'event-tickets-with-ticket-scanner')
+				'ticketsSold' => __('%d tickets sold', 'event-tickets-with-ticket-scanner'),
+				'navigator' => __('Navigator', 'event-tickets-with-ticket-scanner'),
+				'searchElements' => __('Search label, identifier or id…', 'event-tickets-with-ticket-scanner')
 			]
 		]);
 
@@ -1116,5 +1126,65 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 
 	// NOTE: renderAdminPage() removed - HTML is now generated in JavaScript (seating_admin.js)
 	// See renderAdminHTML(), renderPlanModal(), renderSeatModal() in seating_admin.js
+
+
+	/**
+	 * #015050 diagnostics: raw seat query introspection (read-only).
+	 */
+	private function handleSeatsDiagnostics(array $data): array {
+		global $wpdb;
+		$productId = isset($data['product_id']) ? intval($data['product_id']) : 0;
+		$planId = isset($data['plan_id']) ? intval($data['plan_id']) : 0;
+
+		if ($planId <= 0 && $productId > 0) {
+			$norm = $this->MAIN->getTicketHandler()->getWPMLProductId($productId);
+			$plan = $this->MAIN->getSeating()->getFrontendManager()->getPlanForProductFrontend($norm);
+			$planId = $plan ? (int) $plan['id'] : 0;
+		}
+		if ($planId <= 0) {
+			return ['error' => 'no plan resolvable', 'product_id' => $productId];
+		}
+
+		$db = $this->MAIN->getDB();
+		$out = [
+			'plan_id' => $planId,
+			'tables' => [
+				'seats' => $db->getTabelle('seats'),
+				'seat_blocks' => $db->getTabelle('seat_blocks'),
+				'seatingplans' => $db->getTabelle('seatingplans'),
+			],
+		];
+
+		// 1) Raw count exactly as getCountForPlan sees it
+		$out['count_aktiv_notdeleted'] = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM {$db->getTabelle('seats')} WHERE seatingplan_id=%d AND aktiv=1 AND is_deleted=0", $planId));
+
+		// 2) The exact selector JOIN query, raw
+		$seats = $this->MAIN->getSeating()->getSeatsWithStatus($planId, $productId > 0 ? $productId : 0, null);
+		$out['selector_query_rows'] = count($seats);
+		$out['wpdb_last_error'] = $wpdb->last_error;
+
+		// 3) Simplest possible selects, to isolate which condition kills it
+		$out['raw_where_planid'] = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM {$db->getTabelle('seats')} WHERE seatingplan_id=%d", $planId));
+		$out['raw_where_planid_aktiv'] = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM {$db->getTabelle('seats')} WHERE seatingplan_id=%d AND aktiv=1", $planId));
+		$out['raw_join_blocks'] = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(s.id) FROM {$db->getTabelle('seats')} s LEFT JOIN {$db->getTabelle('seat_blocks')} sb ON s.id=sb.seat_id WHERE s.seatingplan_id=%d AND s.aktiv=1", $planId));
+
+		// 4) Plan row as the resolver sees it
+		$planRow = $this->MAIN->getSeating()->getPlanManager()->getById($planId);
+		$out['plan_row'] = $planRow ? [
+			'id' => $planRow['id'],
+			'aktiv' => $planRow['aktiv'],
+			'published_at' => $planRow['published_at'],
+			'layout_type' => $planRow['layout_type'],
+		] : null;
+
+		// 5) Object cache present? (persistent cache can serve stale counts)
+		$out['wp_object_cache'] = wp_using_ext_object_cache() ? 'external' : 'internal';
+
+		return $out;
+	}
 
 }

@@ -783,6 +783,16 @@
 	color: #50575e;
 }
 
+.count-limit {
+	color: #787c82;
+	font-size: 12px;
+}
+
+.count-limit.is-over {
+	color: #d63638;
+	font-weight: 600;
+}
+
 .saso-element-counts .count-item .dashicons {
 	font-size: 16px;
 	width: 16px;
@@ -1426,4 +1436,147 @@
 
 .saso-bulk-insert-modal .saso-bulk-insert {
 	min-width: 120px;
+}
+
+/* =========================================================================
+   Navigator (element list between properties and actions)
+   ========================================================================= */
+
+.saso-designer-navigator {
+	margin: 12px 0 0;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.saso-navigator-toggle {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: 100%;
+	padding: 8px 10px;
+	background: #f6f7f7;
+	border: 0;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+	text-align: left;
+}
+
+.saso-navigator-toggle:hover {
+	background: #f0f0f1;
+}
+
+.saso-navigator-toggle .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.saso-navigator-count {
+	margin-left: auto;
+	background: #dcdcde;
+	border-radius: 10px;
+	font-size: 11px;
+	font-weight: 600;
+	padding: 1px 8px;
+	color: #50575e;
+}
+
+.saso-designer-navigator.is-open .saso-navigator-count {
+	background: #2271b1;
+	color: #fff;
+}
+
+.saso-navigator-arrow {
+	transition: transform 0.12s ease;
+}
+
+.saso-designer-navigator.is-open .saso-navigator-arrow {
+	transform: rotate(180deg);
+}
+
+.saso-navigator-body {
+	max-height: 260px;
+	overflow-y: auto;
+	border-top: 1px solid #dcdcde;
+}
+
+.saso-navigator-search {
+	position: relative;
+	padding: 8px 10px 4px;
+}
+
+.saso-navigator-search-input {
+	width: 100%;
+	padding: 3px 24px 3px 8px;
+	font-size: 12px;
+	line-height: 1.5;
+	margin: 0;
+}
+
+.saso-navigator-search .dashicons-search {
+	position: absolute;
+	right: 14px;
+	top: 11px;
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+	color: #787c82;
+	pointer-events: none;
+}
+
+.saso-navigator-item.is-filtered-out {
+	display: none;
+}
+
+.saso-navigator-list {
+	margin: 0;
+	padding: 4px 0;
+	list-style: none;
+}
+
+.saso-navigator-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 4px 10px;
+	font-size: 12px;
+	cursor: pointer;
+	color: #1d2327;
+}
+
+.saso-navigator-item:hover {
+	background: #f6f7f7;
+}
+
+.saso-navigator-item.is-selected {
+	background: #e7f1f8;
+	box-shadow: inset 3px 0 0 #2271b1;
+}
+
+.saso-navigator-item .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+	color: #787c82;
+	flex: 0 0 auto;
+}
+
+.saso-navigator-seat .dashicons {
+	color: #00a32a;
+}
+
+.saso-navigator-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Canvas highlight when hovering a navigator row */
+.saso-element.saso-navigator-hover {
+	outline: 2px dashed #2271b1;
+	outline-offset: 2px;
 }

@@ -5825,14 +5825,26 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						checkboxWrapper.append(checkbox);
 						checkboxWrapper.append(__('Check if list is used by products', 'event-tickets-with-ticket-scanner'));
 						content.append(checkboxWrapper);
+						let ticketCheckboxId = 'delete-list-check-tickets-' + data.id;
+						let ticketCheckboxWrapper = $('<label for="' + ticketCheckboxId + '" style="display:flex;align-items:center;gap:8px;cursor:pointer;">');
+						let ticketCheckbox = $('<input type="checkbox" id="' + ticketCheckboxId + '" checked>');
+						ticketCheckboxWrapper.append(ticketCheckbox);
+						ticketCheckboxWrapper.append(__('Block if list still contains tickets', 'event-tickets-with-ticket-scanner'));
+						content.append(ticketCheckboxWrapper);
 
 		        		LAYOUT.renderYesNo(_x('Do you want to delete?', 'title', 'event-tickets-with-ticket-scanner'), content, ()=>{
 		        			let _data = {
 								'id': data.id,
-								'skip_product_check': !checkbox.is(':checked')
-							};
+								'skip_product_check': !checkbox.is(':checked'),
+								'skip_ticket_check': !ticketCheckbox.is(':checked')
+								};
 		        			_makePost('removeList', _data, result=>{
-								if (result && result.error === 'list_in_use' && result.products) {
+		        			if (result && result.error === 'list_has_tickets' && result.ticket_count) {
+		        			let ticketErrorContent = $('<div>');
+		        			ticketErrorContent.append('<p style="color:#b32d2e;font-weight:bold;">' + sprintf(__('This list still contains %d tickets!', 'event-tickets-with-ticket-scanner'), result.ticket_count) + '</p>');
+		        			ticketErrorContent.append('<p>' + __('Deleting the list would leave these tickets without a list — their QR code, PDF and scanner checks can break. Delete the tickets first, or move them to another list. To delete anyway, uncheck "Block if list still contains tickets" in the delete dialog.', 'event-tickets-with-ticket-scanner') + '</p>');
+		        			LAYOUT.renderInfoBox(__('Cannot delete list', 'event-tickets-with-ticket-scanner'), ticketErrorContent);
+		        			} else if (result && result.error === 'list_in_use' && result.products) {
 									let errorContent = $('<div>');
 									errorContent.append('<p style="color:#b32d2e;font-weight:bold;">' + __('This list is still assigned to products:', 'event-tickets-with-ticket-scanner') + '</p>');
 									let productList = $('<ul style="margin:10px 0;padding-left:20px;">');

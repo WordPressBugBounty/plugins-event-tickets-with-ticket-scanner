@@ -20,9 +20,21 @@ class sasoEventtickets_Core {
 	}
 
 	public function getListById($id) {
-		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("lists")." where id = ".intval($id);
+		// Fallback (2026-09-19, #015033): when the list row is missing OR id is 0,
+		// return a synthetic empty row instead of throwing #9232. The PDF path
+		// and the scanner call this for ticket-id idcode resolution; a throw
+		// there breaks email PDF attachments and customer-visible flows.
+		// Caller can still resolve an idcode for the orderless path because
+		// getListTicketIDCode(0) and the auto-heal below cover it.
+		$id = intval($id);
+		if ($id < 1) {
+			return ['id'=>0, 'name'=>'', 'aktiv'=>0, 'meta'=>'{}', 'time'=>'', 'timezone'=>''];
+		}
+		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("lists")." where id = ".$id;
 		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
-		if (count($ret) == 0) throw new Exception("#9232 ticket list not found");
+		if (count($ret) == 0) {
+			return ['id'=>$id, 'name'=>'', 'aktiv'=>0, 'meta'=>'{}', 'time'=>'', 'timezone'=>''];
+		}
 		return $ret[0];
 	}
 
@@ -1119,6 +1131,13 @@ class sasoEventtickets_Core {
 			return false;
 		}
 
+		// Direct-sales tickets (internal order) use the order-less render paths —
+		// no Woo order exists — but keep their own redeem gate via the internal
+		// order status (isInternalOrderRedeemable).
+		if ($this->isDirectSaleTicket($codeObj)) {
+			return true;
+		}
+
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowTicketsWithoutOrder')) {
 			return true;
 		}
@@ -1174,6 +1193,51 @@ class sasoEventtickets_Core {
 		);
 
 		return $idcode;
+	}
+
+	/**
+	 * Is this ticket sold through the internal direct-sales order?
+	 *
+	 * Three explicit states a ticket can be in: Woo order (codes.order_id > 0),
+	 * internal direct-sales order (codes.internal_order_id > 0), order-less
+	 * (both 0). Internal orders bring the order check back for direct sales —
+	 * spec: specs/direct-sales-internal-orders.
+	 */
+	public function isDirectSaleTicket($codeObj): bool {
+		return is_array($codeObj) && intval($codeObj['internal_order_id'] ?? 0) > 0;
+	}
+
+	/**
+	 * Internal direct-sales order row by id (null when unknown)
+	 */
+	public function getInternalOrderById(int $orderId) {
+		if ($orderId < 1) return null;
+		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("orders")." where id = ".$orderId;
+		$d = $this->MAIN->getDB()->_db_datenholen($sql);
+		return (is_array($d) && count($d) > 0) ? $d[0] : null;
+	}
+
+	/**
+	 * Internal order id of a ticket row (0 when none)
+	 */
+	public function getInternalOrderIdOfCode($codeObj): int {
+		return is_array($codeObj) ? intval($codeObj['internal_order_id'] ?? 0) : 0;
+	}
+
+	/**
+	 * Is the internal order of this ticket in a state that allows redemption?
+	 *
+	 * The Kasse confirms payment with the status 'completed' — the internal
+	 * equivalent of the Woo isPaid() gate. draft (not yet confirmed) and
+	 * cancelled/refunded orders block redemption.
+	 */
+	public function isInternalOrderRedeemable($codeObj): bool {
+		$orderId = $this->getInternalOrderIdOfCode($codeObj);
+		if ($orderId < 1) return true; // not a direct-sale ticket — no internal gate
+		$order = $this->getInternalOrderById($orderId);
+		if ($order === null) return false; // dangling reference — refuse, do not fail open
+		$status = (string) $order['status'];
+		return in_array($status, ['completed', 'partially_refunded'], true);
 	}
 
 	/**

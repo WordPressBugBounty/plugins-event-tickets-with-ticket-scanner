@@ -101,6 +101,19 @@ class sasoEventtickets_Seating {
 	}
 
 	/**
+	 * Unpublished-plan admin notice (#015050, 3.2.2): registers the
+	 * product-screen notice for seating plans that are bound to a product,
+	 * carry seats in the draft, but were never published (product page
+	 * renders empty without explanation).
+	 */
+	public function registerUnpublishedPlanNotice() {
+		$this->loadSeatingClass('class-seating-unpublished-notice.php', 'sasoEventtickets_UnpublishedPlanNotice');
+		if (class_exists('sasoEventtickets_UnpublishedPlanNotice')) {
+			add_action('admin_notices', ['sasoEventtickets_UnpublishedPlanNotice', 'hookAdminNotices'], 20, 0);
+		}
+	}
+
+	/**
 	 * Get Seat Manager instance (lazy loading)
 	 *
 	 * @return sasoEventtickets_Seating_Seat
@@ -368,6 +381,12 @@ class sasoEventtickets_Seating {
 				case "exportSeatsCSV":
 					$this->handleExportSeatsCSV($data);
 					return; // CSV sends own headers + die(), no JSON response
+				case "exportPlanJSON":
+					$this->handleExportPlanJSON($data);
+					return; // JSON download sends own headers + exit()
+				case "importPlanJSON":
+					$ret = $this->handleImportPlanJSON($data);
+					break;
 				case "importSeatsCSV":
 					$ret = $this->handleImportSeatsCSV($data);
 					break;
@@ -657,7 +676,19 @@ class sasoEventtickets_Seating {
 	 * @return array Seats with status
 	 */
 	public function getSeatsWithStatus(int $planId, int $productId, ?string $eventDate = null): array {
-		return $this->getBlockManager()->getSeatsWithStatus($planId, $productId, $eventDate);
+		return $this->getBlockManager()->getSeatsWithStatus($planId, $productId, self::normalizeEventDate($eventDate));
+	}
+
+	/**
+	 * #015050: MySQL 8 strict mode rejects `event_date = ''` as an incorrect
+	 * DATE literal — the whole seat query then fails silently (get_results
+	 * returns [] with the error only visible in wpdb->last_error). The
+	 * frontend sends an empty string when no date is chosen; normalize it to
+	 * null, which compares harmlessly (the IS NULL branch carries the match).
+	 */
+	public static function normalizeEventDate(?string $eventDate): ?string {
+		$d = trim((string)$eventDate);
+		return ($d === '' || $d === '0000-00-00') ? null : $d;
 	}
 
 	// =========================================================================
@@ -898,6 +929,189 @@ class sasoEventtickets_Seating {
 		];
 
 		return $result;
+	}
+
+	/**
+	 * Import a seating plan from an exportPlanJSON file (#015050 support tooling).
+	 *
+	 * Two modes:
+	 * - create (default): a NEW plan is created from the JSON (" (imported)" is
+	 *   appended to the name so it can never silently shadow an existing plan).
+	 * - override: mode=override + target_plan_id replaces the DRAFT of an
+	 *   existing plan with the JSON contents (canvas, decorations, seats) and
+	 *   leaves it unpublished — the merchant reviews and publishes explicitly.
+	 *   Existing seats of the target plan are soft-deleted first (sold history
+	 *   rows stay untouched — they live in seat_blocks, not in seats).
+	 *
+	 * The JSON never contains customer data (see handleExportPlanJSON).
+	 */
+	private function handleImportPlanJSON(array $data): array {
+		$jsonRaw = isset($data['json']) ? (string) $data['json'] : '';
+		if ($jsonRaw === '') {
+			throw new \Exception('Missing json payload');
+		}
+		$payload = json_decode(wp_unslash($jsonRaw), true);
+		if (!is_array($payload) || ($payload['_format'] ?? '') !== 'saso-eventtickets-seatingplan-export/1') {
+			throw new \Exception(__('This file is not a seating plan export (unknown format).', 'event-tickets-with-ticket-scanner'));
+		}
+		$planIn = $payload['plan'] ?? [];
+		$seatsIn = is_array($payload['seats'] ?? null) ? $payload['seats'] : [];
+		if (empty($planIn['name'])) {
+			throw new \Exception(__('The export contains no plan name.', 'event-tickets-with-ticket-scanner'));
+		}
+
+		global $wpdb;
+		$mode = ($data['mode'] ?? 'create') === 'override' ? 'override' : 'create';
+
+		if ($mode === 'override') {
+			$targetId = intval($data['target_plan_id'] ?? 0);
+			$target = $this->getPlanManager()->getById($targetId);
+			if (!$target) {
+				throw new \Exception(__('Target plan not found.', 'event-tickets-with-ticket-scanner'));
+			}
+			// Draft ersetzen (meta_draft), published unangetastet lassen:
+		// der Händler entscheidet per Publish, ob der Inhalt live geht.
+			$draft = [
+				'canvas_width' => $planIn['meta_draft']['canvas_width'] ?? ($planIn['meta']['canvas_width'] ?? 800),
+				'canvas_height' => $planIn['meta_draft']['canvas_height'] ?? ($planIn['meta']['canvas_height'] ?? 600),
+				'background_color' => $planIn['meta_draft']['background_color'] ?? '#ffffff',
+				'background_image' => $planIn['meta_draft']['background_image'] ?? '',
+				'background_image_id' => intval($planIn['meta_draft']['background_image_id'] ?? ($planIn['meta']['background_image_id'] ?? 0)),
+				'background_image_fit' => $planIn['meta_draft']['background_image_fit'] ?? 'contain',
+				'background_image_align' => $planIn['meta_draft']['background_image_align'] ?? 'center',
+				'colors' => $planIn['meta_draft']['colors'] ?? [],
+				'decorations' => $planIn['meta_draft']['decorations'] ?? [],
+				'lines' => $planIn['meta_draft']['lines'] ?? [],
+				'labels' => $planIn['meta_draft']['labels'] ?? [],
+			];
+			$this->getPlanManager()->saveDraft($targetId, $draft);
+
+			// Alte Seats des Zielplans soft-deleten (nur unbestätigte, ohne Sold-Historie)
+			$wpdb->query($wpdb->prepare(
+				"UPDATE " . $this->MAIN->getDB()->getTabelle('seats') . "
+				 SET is_deleted = 1, deleted_at = %s, deleted_by = %d
+				 WHERE seatingplan_id = %d AND is_deleted = 0",
+				current_time('mysql'), get_current_user_id(), $targetId
+			));
+
+			// Seats aus dem Import anlegen (gleiche Routine wie create-Modus)
+			$this->importSeats($targetId, $seatsIn);
+
+			return [
+				'mode' => 'override',
+				'plan_id' => $targetId,
+				'name' => $target['name'],
+				'seats_imported' => count($seatsIn),
+				'message' => sprintf(/* translators: 1: plan name, 2: seat count */__('Draft of "%1$s" replaced with %2$d imported seats. Review and publish when ready — the published version is unchanged until you do.', 'event-tickets-with-ticket-scanner'), $target['name'], count($seatsIn)),
+			];
+		}
+
+		// create: neuen Plan anlegen
+		$name = sanitize_text_field($planIn['name']) . ' (' . __('imported', 'event-tickets-with-ticket-scanner') . ')';
+		$planId = $this->getPlanManager()->create([
+			'name' => $name,
+			'aktiv' => 1,
+			'layout_type' => sanitize_text_field($planIn['layout_type'] ?? 'visual'),
+			'meta' => [
+				'image_id' => intval($planIn['meta']['image_id'] ?? 0),
+				'description' => sanitize_text_field($planIn['meta']['description'] ?? ''),
+			],
+		]);
+		if (!$planId) {
+			throw new \Exception(__('Could not create the plan.', 'event-tickets-with-ticket-scanner'));
+		}
+
+		// Draft = published des Exports (der Import soll genau den exportierten Stand zeigen)
+		$draft = $planIn['meta_draft'] ?? $planIn['meta_published'] ?? $planIn['meta'] ?? [];
+		if (!empty($draft)) {
+				$this->getPlanManager()->saveDraft(intval($planId), is_array($draft) ? $draft : []);
+			}
+
+		$this->importSeats(intval($planId), $seatsIn);
+
+		return [
+			'mode' => 'create',
+			'plan_id' => intval($planId),
+			'name' => $name,
+			'seats_imported' => count($seatsIn),
+			'message' => sprintf(/* translators: 1: plan name, 2: seat count */__('New plan "%1$s" created with %2$d seats. It is NOT published yet — open it, review, then publish.', 'event-tickets-with-ticket-scanner'), $name, count($seatsIn)),
+		];
+	}
+
+	/**
+	 * Shared seat import for handleImportPlanJSON.
+	 */
+	private function importSeats(int $planId, array $seatsIn): void {
+		global $wpdb;
+		$seatManager = $this->getSeatManager();
+		foreach ($seatsIn as $i => $seatIn) {
+			if (!is_array($seatIn)) continue;
+			$identifier = sanitize_text_field($seatIn['seat_identifier'] ?? '');
+			if ($identifier === '') $identifier = 'IMP-' . uniqid();
+			// Kollisionen im Zielplan vermeiden (override-Modus hat alte Rows soft-deleted,
+			// aber Unique-Key kann historische Rows umfassen)
+			$meta = is_array($seatIn['meta'] ?? null) ? $seatIn['meta'] : [];
+			$seatManager->create($planId, [
+				'seat_identifier' => $identifier,
+				'aktiv' => 1,
+				'sort_order' => intval($seatIn['sort_order'] ?? $i),
+				'meta' => $meta,
+			]);
+		}
+	}
+
+	/**
+	 * Export a seating plan as JSON download (#015050 support tooling).
+	 * Bundles the complete plan row (meta, draft, published, publish info)
+	 * plus all seat rows — WITHOUT any customer/order references — so a
+	 * customer's exact plan can be re-created 1:1 on our staging for
+	 * debugging. No premium gate: support tooling for the free plugin.
+	 */
+	private function handleExportPlanJSON(array $data): void {
+		$plan_id = intval($data['plan_id'] ?? 0);
+		if ($plan_id <= 0) {
+			throw new \Exception('Missing plan_id');
+		}
+		$plan = $this->getPlanManager()->getById($plan_id);
+		if (!$plan) {
+			throw new \Exception('Plan not found');
+		}
+
+		global $wpdb;
+		$seats = $wpdb->get_results($wpdb->prepare(
+			"SELECT id, seatingplan_id, seat_identifier, aktiv, sort_order, is_deleted, meta
+			 FROM " . $this->MAIN->getDB()->getTabelle('seats') . "
+			 WHERE seatingplan_id = %d ORDER BY sort_order ASC, id ASC",
+			$plan_id
+		), ARRAY_A);
+		foreach ($seats as &$seat) {
+			$seat['meta'] = json_decode($seat['meta'] ?? '', true);
+		}
+		unset($seat);
+
+		$payload = [
+			'_format' => 'saso-eventtickets-seatingplan-export/1',
+			'exported_at' => wp_date('c'),
+			'plan' => [
+				'name' => $plan['name'],
+				'aktiv' => $plan['aktiv'],
+				'layout_type' => $plan['layout_type'],
+				'meta' => $plan['meta'],
+				'meta_draft' => json_decode($plan['meta_draft'] ?? '', true),
+				'meta_published' => json_decode($plan['meta_published'] ?? '', true),
+				'published_at' => $plan['published_at'],
+			],
+			'seats' => $seats,
+		];
+
+		$json = wp_json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+		$filename = 'seatingplan-' . sanitize_file_name($plan['name']) . '-' . wp_date('Y-m-d_His') . '.json';
+		header('Content-Type: application/json; charset=utf-8');
+		header('Content-Disposition: attachment; filename="' . $filename . '"');
+		header('Expires: 0');
+		header('Pragma: public');
+		echo $json;
+		exit;
 	}
 
 	private function handleImportSeatsCSV(array $data): array {

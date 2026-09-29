@@ -33,6 +33,51 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 	private string $table = 'seat_blocks';
 
 	/**
+	 * #015050 (Saso design): event dates compare as INT via event_date_ts.
+	 *
+	 * Self-healing backfill: rows whose event_date_ts is still 0 but carry an
+	 * event_date get the timestamp extracted and written back — the system
+	 * repairs itself through use. Only ever fills 0; never overwrites anything.
+	 */
+	private function backfillEventDateTs(): void {
+		// Run at most once per request
+		if (self::$_tsBackfilled) return;
+		self::$_tsBackfilled = true;
+		global $wpdb;
+		$t = $this->getTable($this->table);
+		$rows = $wpdb->get_results(
+			"SELECT id, UNIX_TIMESTAMP(event_date) AS ts FROM {$t}
+			 WHERE event_date_ts = 0 AND event_date IS NOT NULL AND event_date != '0000-00-00'
+			 LIMIT 500",
+			ARRAY_A
+		);
+		foreach (($rows ?: []) as $r) {
+			if ((int)$r['ts'] > 0) {
+				$wpdb->update($t, ['event_date_ts' => (int)$r['ts']], ['id' => (int)$r['id']], ['%d'], ['%d']);
+			}
+		}
+	}
+
+	/**
+	 * INT comparison fragment for an event date (Saso: never string-compare a
+	 * DATE column — MySQL 8 strict mode errors on the empty-string literal and
+	 * wpdb->prepare('%s', null) yields '' as well). No date chosen → ts = 0
+	 * matches exactly the no-event rows. Returns [sql, args].
+	 */
+	private function eventDateCondition(?string $eventDate): array {
+		$eventDate = sasoEventtickets_Seating::normalizeEventDate($eventDate);
+		if ($eventDate !== null) {
+			$ts = strtotime($eventDate);
+			if ($ts === false) $ts = 0;
+			$dayStart = strtotime(date('Y-m-d 00:00:00', $ts));
+			return ["AND (event_date_ts BETWEEN %d AND %d OR event_date_ts = 0)", [$dayStart, $dayStart + 86399]];
+		}
+		return ["AND event_date_ts = 0", []];
+	}
+
+	private static bool $_tsBackfilled = false;
+
+	/**
 	 * Get meta object structure for seat blocks
 	 *
 	 * @return array Meta object structure with all defaults
@@ -107,19 +152,20 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		try {
 			// Lock the rows we're checking (prevent race conditions)
 			// Check if seat is already blocked/confirmed for this product/date
+			// #015050: int timestamp compare via event_date_ts (self-healing backfill above)
+			[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
 			$existingBlock = $wpdb->get_row(
 				$wpdb->prepare(
 					"SELECT * FROM {$this->getTable($this->table)}
 					WHERE seat_id = %d
 					AND product_id = %d
-					AND (event_date = %s OR event_date IS NULL)
 					AND status IN (%s, %s)
+					AND (1=1 {$edCond})
 					FOR UPDATE",
-					$seatId,
-					$productId,
-					$eventDate,
-					self::STATUS_BLOCKED,
-					self::STATUS_CONFIRMED
+					array_merge(
+						[$seatId, $productId, self::STATUS_BLOCKED, self::STATUS_CONFIRMED],
+						$edArgs
+					)
 				),
 				ARRAY_A
 			);
@@ -176,6 +222,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 					'seatingplan_id' => $planId,
 					'product_id' => $productId,
 					'event_date' => $eventDate,
+					'event_date_ts' => (sasoEventtickets_Seating::normalizeEventDate($eventDate) !== null ? strtotime(sasoEventtickets_Seating::normalizeEventDate($eventDate)) : 0) ?: 0,
 					'session_id' => $sessionId,
 					'order_id' => null,
 					'code_id' => null,
@@ -187,7 +234,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 						'user_id' => get_current_user_id()
 					])
 				],
-				['%s', '%s', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s']
+				['%s', '%s', '%d', '%d', '%d', '%s', '%d', '%s', '%d', '%d', '%s', '%s', '%s', '%s']
 			);
 
 			if ($result === false) {
@@ -289,7 +336,15 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		}
 
 		if ($eventDate !== null) {
-			$sql .= $wpdb->prepare(" AND b.event_date = %s", $eventDate);
+			// #015050: int timestamp compare via event_date_ts
+			$ed = sasoEventtickets_Seating::normalizeEventDate($eventDate);
+			if ($ed !== null) {
+				$ts = strtotime($ed);
+				if ($ts !== false) {
+					$dayStart = strtotime(date('Y-m-d 00:00:00', $ts));
+					$sql .= $wpdb->prepare(" AND b.event_date_ts BETWEEN %d AND %d", $dayStart, $dayStart + 86399);
+				}
+			}
 		}
 
 		$results = $wpdb->get_results($sql, ARRAY_A);
@@ -412,20 +467,21 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		// to completed in wp-admin days later has no session at all, and a hold
 		// that expired in between may have been taken over. What decides is the
 		// seat, not who once held it.
+		// #015050: int timestamp compare via event_date_ts
+		[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
 		$blocks = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$this->getTable($this->table)}
 				WHERE seat_id = %d
 				AND product_id = %d
-				AND (event_date = %s OR event_date IS NULL)
 				AND status IN (%s, %s)
+				AND (1=1 {$edCond})
 				ORDER BY (session_id = %s) DESC, id ASC",
-				$seatId,
-				$productId,
-				$eventDate,
-				self::STATUS_CONFIRMED,
-				self::STATUS_BLOCKED,
-				$sessionId
+				array_merge(
+					[$seatId, $productId, self::STATUS_CONFIRMED, self::STATUS_BLOCKED],
+					$edArgs,
+					[$sessionId]
+				)
 			),
 			ARRAY_A
 		);
@@ -467,6 +523,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 					'seatingplan_id' => $this->getSeatPlanId($seatId),
 					'product_id' => $productId,
 					'event_date' => $eventDate,
+					'event_date_ts' => (sasoEventtickets_Seating::normalizeEventDate($eventDate) !== null ? strtotime(sasoEventtickets_Seating::normalizeEventDate($eventDate)) : 0) ?: 0,
 					'session_id' => $sessionId,
 					'order_id' => $orderId,
 					'code_id' => $codeId,
@@ -478,7 +535,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 						'confirmed_at' => current_time('mysql')
 					])
 				],
-				['%s', '%s', '%d', '%d', '%d', '%s', '%s', '%d', '%d', '%s', '%s', '%s']
+				['%s', '%s', '%d', '%d', '%d', '%s', '%d', '%s', '%d', '%d', '%s', '%s', '%s']
 			);
 			return $result !== false;
 		}
@@ -583,45 +640,43 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		// Check for active blocks: confirmed OR (blocked AND not expired AND not stale)
 		// Optionally exclude blocks from the current session (user's own blocks are allowed)
 		if ($excludeSessionId) {
-			$count = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(*) FROM {$this->getTable($this->table)}
-					WHERE seat_id = %d
-					AND product_id = %d
-					AND (event_date = %s OR event_date IS NULL)
-					AND session_id != %s
-					AND (
-						status = %s
-						OR (status = %s AND expires_at > %s{$staleCondition})
-					)",
-					$seatId,
-					$productId,
-					$eventDate,
-					$excludeSessionId,
-					self::STATUS_CONFIRMED,
-					self::STATUS_BLOCKED,
-					$now
-				)
-			);
-		} else {
-			$count = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(*) FROM {$this->getTable($this->table)}
-					WHERE seat_id = %d
-					AND product_id = %d
-					AND (event_date = %s OR event_date IS NULL)
-					AND (
-						status = %s
-						OR (status = %s AND expires_at > %s{$staleCondition})
-					)",
-					$seatId,
-					$productId,
-					$eventDate,
-					self::STATUS_CONFIRMED,
-					self::STATUS_BLOCKED,
-					$now
-				)
-			);
+					// #015050: int timestamp compare via event_date_ts
+					[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
+					$count = $wpdb->get_var(
+						$wpdb->prepare(
+							"SELECT COUNT(*) FROM {$this->getTable($this->table)}
+							WHERE seat_id = %d
+							AND product_id = %d
+							AND session_id != %s
+							AND (
+								status = %s
+								OR (status = %s AND expires_at > %s{$staleCondition})
+							)
+							AND (1=1 {$edCond})",
+							array_merge(
+								[$seatId, $productId, $excludeSessionId, self::STATUS_CONFIRMED, self::STATUS_BLOCKED, $now],
+								$edArgs
+							)
+						)
+					);
+				} else {
+					[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
+					$count = $wpdb->get_var(
+						$wpdb->prepare(
+							"SELECT COUNT(*) FROM {$this->getTable($this->table)}
+							WHERE seat_id = %d
+							AND product_id = %d
+							AND (
+								status = %s
+								OR (status = %s AND expires_at > %s{$staleCondition})
+							)
+							AND (1=1 {$edCond})",
+							array_merge(
+								[$seatId, $productId, self::STATUS_CONFIRMED, self::STATUS_BLOCKED, $now],
+								$edArgs
+							)
+						)
+					);
 		}
 
 		return (int) $count === 0;
@@ -680,22 +735,22 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		}
 
 		// Get seats that are: confirmed OR (blocked AND not expired AND not stale)
+		// #015050: int timestamp compare via event_date_ts
+		[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
 		return $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT DISTINCT seat_id FROM {$this->getTable($this->table)}
 				WHERE seatingplan_id = %d
 				AND product_id = %d
-				AND (event_date = %s OR event_date IS NULL)
 				AND (
 					status = %s
 					OR (status = %s AND expires_at > %s{$staleCondition})
-				)",
-				$planId,
-				$productId,
-				$eventDate,
-				self::STATUS_CONFIRMED,
-				self::STATUS_BLOCKED,
-				$now
+				)
+				AND (1=1 {$edCond})",
+				array_merge(
+					[$planId, $productId, self::STATUS_CONFIRMED, self::STATUS_BLOCKED, $now],
+					$edArgs
+				)
 			)
 		);
 	}
@@ -828,15 +883,15 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 	public function getConfirmedCount(int $planId, ?string $eventDate = null): int {
 		global $wpdb;
 
+		// #015050: int timestamp compare via event_date_ts
+		[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
 		return (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM {$this->getTable($this->table)}
 				WHERE seatingplan_id = %d
-				AND (event_date = %s OR event_date IS NULL)
-				AND status = %s",
-				$planId,
-				$eventDate,
-				self::STATUS_CONFIRMED
+				AND status = %s
+				AND (1=1 {$edCond})",
+				array_merge([$planId, self::STATUS_CONFIRMED], $edArgs)
 			)
 		);
 	}
@@ -851,17 +906,16 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 	public function getBlockedCount(int $planId, ?string $eventDate = null): int {
 		global $wpdb;
 
+		// #015050: int timestamp compare via event_date_ts
+		[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
 		return (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM {$this->getTable($this->table)}
 				WHERE seatingplan_id = %d
-				AND (event_date = %s OR event_date IS NULL)
 				AND status = %s
-				AND expires_at > %s",
-				$planId,
-				$eventDate,
-				self::STATUS_BLOCKED,
-				current_time('mysql')
+				AND expires_at > %s
+				AND (1=1 {$edCond})",
+				array_merge([$planId, self::STATUS_BLOCKED, current_time('mysql')], $edArgs)
 			)
 		);
 	}
@@ -877,6 +931,13 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 	public function getSeatsWithStatus(int $planId, int $productId, ?string $eventDate = null): array {
 		global $wpdb;
 
+		// #015050 (Saso design): int timestamp compare. Self-healing backfill
+		// fills event_date_ts=0 rows first; the JOIN then compares ints —
+		// MySQL 8 strict mode can no longer kill the query with an
+		// 'Incorrect DATE value' error on the empty-string date.
+		$this->backfillEventDateTs();
+		[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
+
 		$now = current_time('mysql');
 		$staleTimeout = $this->getStaleTimeout();
 
@@ -888,29 +949,24 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		}
 
 		// Get all seats with active blocks (confirmed OR blocked+not expired+not stale)
-		$seats = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT s.*, sb.status as block_status, sb.session_id, sb.order_id
-				FROM {$this->getTable('seats')} s
-				LEFT JOIN {$this->getTable($this->table)} sb
-					ON s.id = sb.seat_id
-					AND sb.product_id = %d
-					AND (sb.event_date = %s OR sb.event_date IS NULL)
-					AND (
-						sb.status = %s
-						OR (sb.status = %s AND sb.expires_at > %s{$staleCondition})
-					)
-				WHERE s.seatingplan_id = %d AND s.aktiv = 1
-				ORDER BY s.sort_order ASC",
-				$productId,
-				$eventDate,
-				self::STATUS_CONFIRMED,
-				self::STATUS_BLOCKED,
-				$now,
-				$planId
-			),
-			ARRAY_A
+		$sql = "SELECT s.*, sb.status as block_status, sb.session_id, sb.order_id
+			FROM {$this->getTable('seats')} s
+			LEFT JOIN {$this->getTable($this->table)} sb
+				ON s.id = sb.seat_id
+				AND sb.product_id = %d
+				AND (
+					sb.status = %s
+					OR (sb.status = %s AND sb.expires_at > %s{$staleCondition})
+				)
+				AND (1=1 {$edCond})
+			WHERE s.seatingplan_id = %d AND s.aktiv = 1 AND s.is_deleted = 0
+			ORDER BY s.sort_order ASC";
+		$args = array_merge(
+			[$productId, self::STATUS_CONFIRMED, self::STATUS_BLOCKED, $now],
+			$edArgs,
+			[$planId]
 		);
+		$seats = $wpdb->get_results($wpdb->prepare($sql, ...$args), ARRAY_A);
 
 		// Get SeatManager for proper meta merging with defaults
 		$seatManager = $this->MAIN->getSeating()->getSeatManager();
@@ -940,19 +996,19 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 			return [];
 		}
 
+		// #015050: int timestamp compare via event_date_ts
+		[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT sb.*, s.seat_identifier, s.meta as seat_meta
 				FROM {$this->getTable($this->table)} sb
 				JOIN {$this->getTable('seats')} s ON sb.seat_id = s.id
 				WHERE sb.seatingplan_id = %d
-				AND (sb.event_date = %s OR sb.event_date IS NULL)
 				AND sb.time > %s
+				AND (1=1 {$edCond})
 				ORDER BY sb.time DESC
 				LIMIT 50",
-				$planId,
-				$eventDate,
-				$sinceTimestamp
+				array_merge([$planId, $sinceTimestamp], $edArgs)
 			),
 			ARRAY_A
 		);
