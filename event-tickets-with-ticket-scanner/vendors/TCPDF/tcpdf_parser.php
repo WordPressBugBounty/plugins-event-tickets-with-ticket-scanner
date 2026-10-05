@@ -9,20 +9,20 @@
 // -------------------------------------------------------------------
 // Copyright (C) 2011-2015 Nicola Asuni - Tecnick.com LTD
 //
-// This file is part of TCPDF software library.
+// This file is part of SASOET_TCPDF software library.
 //
-// TCPDF is free software: you can redistribute it and/or modify it
+// SASOET_TCPDF is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //
-// TCPDF is distributed in the hope that it will be useful, but
+// SASOET_TCPDF is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the License
-// along with TCPDF. If not, see
+// along with SASOET_TCPDF. If not, see
 // <http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT>.
 //
 // See LICENSE.TXT file for more information.
@@ -44,14 +44,14 @@
 require_once(dirname(__FILE__).'/include/tcpdf_filters.php');
 
 /**
- * @class TCPDF_PARSER
+ * @class SASOET_TCPDF_PARSER
  * This is a PHP class for parsing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @brief This is a PHP class for parsing PDF documents..
  * @version 1.0.15
  * @author Nicola Asuni - info@tecnick.com
  */
-class TCPDF_PARSER {
+class SASOET_TCPDF_PARSER {
 
 	/**
 	 * Raw content of the PDF document.
@@ -776,9 +776,9 @@ class TCPDF_PARSER {
 		// decode the stream
 		$remaining_filters = array();
 		foreach ($filters as $filter) {
-			if (in_array($filter, TCPDF_FILTERS::getAvailableFilters())) {
+			if (in_array($filter, SASOET_TCPDF_FILTERS::getAvailableFilters())) {
 				try {
-					$stream = TCPDF_FILTERS::decodeFilter($filter, $stream);
+					$stream = SASOET_TCPDF_FILTERS::decodeFilter($filter, $stream);
 				} catch (Exception $e) {
 					$emsg = $e->getMessage();
 					if ((($emsg[0] == '~') AND !$this->cfg['ignore_missing_filter_decoders'])
@@ -802,13 +802,13 @@ class TCPDF_PARSER {
 	 */
 	public function Error($msg) {
 		if ($this->cfg['die_for_errors']) {
-			die('<strong>TCPDF_PARSER ERROR: </strong>'.$msg);
+			die('<strong>SASOET_TCPDF_PARSER ERROR: </strong>'.$msg);
 		} else {
-			throw new Exception('TCPDF_PARSER ERROR: '.$msg);
+			throw new Exception('SASOET_TCPDF_PARSER ERROR: '.$msg);
 		}
 	}
 
-} // END OF TCPDF_PARSER CLASS
+} // END OF SASOET_TCPDF_PARSER CLASS
 
 //============================================================+
 // END OF FILE

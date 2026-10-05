@@ -9,27 +9,27 @@
 // -------------------------------------------------------------------
 // Copyright (C) 2010-2012 Nicola Asuni - Tecnick.com LTD
 //
-// This file is part of TCPDF software library.
+// This file is part of SASOET_TCPDF software library.
 //
-// TCPDF is free software: you can redistribute it and/or modify it
+// SASOET_TCPDF is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //
-// TCPDF is distributed in the hope that it will be useful, but
+// SASOET_TCPDF is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with TCPDF.  If not, see <http://www.gnu.org/licenses/>.
+// along with SASOET_TCPDF.  If not, see <http://www.gnu.org/licenses/>.
 //
 // See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
 //
 // DESCRIPTION :
 //
-// Class to create QR-code arrays for TCPDF class.
+// Class to create QR-code arrays for SASOET_TCPDF class.
 // QR Code symbol is a 2D barcode that can be scanned by
 // handy terminals such as a mobile phone with CCD.
 // The capacity of QR Code is up to 7000 digits or 4000
@@ -65,7 +65,7 @@
 
 /**
  * @file
- * Class to create QR-code arrays for TCPDF class.
+ * Class to create QR-code arrays for SASOET_TCPDF class.
  * QR Code symbol is a 2D barcode that can be scanned by handy terminals such as a mobile phone with CCD.
  * The capacity of QR Code is up to 7000 digits or 4000 characters, and has high robustness.
  * This class supports QR Code model 2, described in JIS (Japanese Industrial Standards) X0510:2004 or ISO/IEC 18004.
@@ -80,12 +80,12 @@
  */
 
 // definitions
-if (!defined('QRCODEDEFS')) {
+if (!defined('SASOET_QRCODEDEFS')) {
 
 	/**
 	 * Indicate that definitions for this class are set
 	 */
-	define('QRCODEDEFS', true);
+	define('SASOET_QRCODEDEFS', true);
 
 	// -----------------------------------------------------
 
@@ -94,32 +94,32 @@ if (!defined('QRCODEDEFS')) {
 	/**
 	 * Encoding mode
 	 */
-	define('QR_MODE_NL', -1);
+	define('SASOET_QR_MODE_NL', -1);
 
 	/**
 	 * Encoding mode numeric (0-9). 3 characters are encoded to 10bit length. In theory, 7089 characters or less can be stored in a QRcode.
 	 */
-	define('QR_MODE_NM', 0);
+	define('SASOET_QR_MODE_NM', 0);
 
 	/**
 	 * Encoding mode alphanumeric (0-9A-Z $%*+-./:) 45characters. 2 characters are encoded to 11bit length. In theory, 4296 characters or less can be stored in a QRcode.
 	 */
-	define('QR_MODE_AN', 1);
+	define('SASOET_QR_MODE_AN', 1);
 
 	/**
 	 * Encoding mode 8bit byte data. In theory, 2953 characters or less can be stored in a QRcode.
 	 */
-	define('QR_MODE_8B', 2);
+	define('SASOET_QR_MODE_8B', 2);
 
 	/**
 	 * Encoding mode KANJI. A KANJI character (multibyte character) is encoded to 13bit length. In theory, 1817 characters or less can be stored in a QRcode.
 	 */
-	define('QR_MODE_KJ', 3);
+	define('SASOET_QR_MODE_KJ', 3);
 
 	/**
 	 * Encoding mode STRUCTURED (currently unsupported)
 	 */
-	define('QR_MODE_ST', 4);
+	define('SASOET_QR_MODE_ST', 4);
 
 	// -----------------------------------------------------
 
@@ -130,22 +130,22 @@ if (!defined('QRCODEDEFS')) {
 	/**
 	 * Error correction level L : About 7% or less errors can be corrected.
 	 */
-	define('QR_ECLEVEL_L', 0);
+	define('SASOET_QR_ECLEVEL_L', 0);
 
 	/**
 	 * Error correction level M : About 15% or less errors can be corrected.
 	 */
-	define('QR_ECLEVEL_M', 1);
+	define('SASOET_QR_ECLEVEL_M', 1);
 
 	/**
 	 * Error correction level Q : About 25% or less errors can be corrected.
 	 */
-	define('QR_ECLEVEL_Q', 2);
+	define('SASOET_QR_ECLEVEL_Q', 2);
 
 	/**
 	 * Error correction level H : About 30% or less errors can be corrected.
 	 */
-	define('QR_ECLEVEL_H', 3);
+	define('SASOET_QR_ECLEVEL_H', 3);
 
 	// -----------------------------------------------------
 
@@ -157,34 +157,34 @@ if (!defined('QRCODEDEFS')) {
 	/**
 	 * Maximum QR Code version.
 	 */
-	define('QRSPEC_VERSION_MAX', 40);
+	define('SASOET_QRSPEC_VERSION_MAX', 40);
 
 	/**
 	 * Maximum matrix size for maximum version (version 40 is 177*177 matrix).
 	 */
-    define('QRSPEC_WIDTH_MAX', 177);
+    define('SASOET_QRSPEC_WIDTH_MAX', 177);
 
 	// -----------------------------------------------------
 
 	/**
 	 * Matrix index to get width from $capacity array.
 	 */
-    define('QRCAP_WIDTH',    0);
+    define('SASOET_QRCAP_WIDTH',    0);
 
     /**
 	 * Matrix index to get number of words from $capacity array.
 	 */
-    define('QRCAP_WORDS',    1);
+    define('SASOET_QRCAP_WORDS',    1);
 
     /**
 	 * Matrix index to get remainder from $capacity array.
 	 */
-    define('QRCAP_REMINDER', 2);
+    define('SASOET_QRCAP_REMINDER', 2);
 
     /**
 	 * Matrix index to get error correction level from $capacity array.
 	 */
-    define('QRCAP_EC',       3);
+    define('SASOET_QRCAP_EC',       3);
 
 	// -----------------------------------------------------
 
@@ -193,12 +193,12 @@ if (!defined('QRCODEDEFS')) {
 	/**
 	 * Number of header bits for structured mode
 	 */
-    if (!defined('STRUCTURE_HEADER_BITS')) define('STRUCTURE_HEADER_BITS',  20);
+    if (!defined('SASOET_STRUCTURE_HEADER_BITS')) define('SASOET_STRUCTURE_HEADER_BITS',  20);
 
     /**
 	 * Max number of symbols for structured mode
 	 */
-    if (!defined('MAX_STRUCTURED_SYMBOLS')) define('MAX_STRUCTURED_SYMBOLS', 16);
+    if (!defined('SASOET_MAX_STRUCTURED_SYMBOLS')) define('SASOET_MAX_STRUCTURED_SYMBOLS', 16);
 
 	// -----------------------------------------------------
 
@@ -207,22 +207,22 @@ if (!defined('QRCODEDEFS')) {
     /**
 	 * Down point base value for case 1 mask pattern (concatenation of same color in a line or a column)
 	 */
-    if (!defined('N1')) define('N1',  3);
+    if (!defined('SASOET_N1')) define('SASOET_N1',  3);
 
     /**
 	 * Down point base value for case 2 mask pattern (module block of same color)
 	 */
-	if (!defined('N2')) define('N2',  3);
+	if (!defined('SASOET_N2')) define('SASOET_N2',  3);
 
     /**
 	 * Down point base value for case 3 mask pattern (1:1:3:1:1(dark:bright:dark:bright:dark)pattern in a line or a column)
 	 */
-	if (!defined('N3')) define('N3', 40);
+	if (!defined('SASOET_N3')) define('SASOET_N3', 40);
 
     /**
 	 * Down point base value for case 4 mask pattern (ration of dark modules in whole)
 	 */
-	if (!defined('N4')) define('N4', 10);
+	if (!defined('SASOET_N4')) define('SASOET_N4', 10);
 
 	// -----------------------------------------------------
 
@@ -231,17 +231,17 @@ if (!defined('QRCODEDEFS')) {
 	/**
 	 * if true, estimates best mask (spec. default, but extremally slow; set to false to significant performance boost but (propably) worst quality code
 	 */
-	if (!defined('QR_FIND_BEST_MASK')) define('QR_FIND_BEST_MASK', true);
+	if (!defined('SASOET_QR_FIND_BEST_MASK')) define('SASOET_QR_FIND_BEST_MASK', true);
 
 	/**
 	 * if false, checks all masks available, otherwise value tells count of masks need to be checked, mask id are got randomly
 	 */
-	if (!defined('QR_FIND_FROM_RANDOM')) define('QR_FIND_FROM_RANDOM', 2);
+	if (!defined('SASOET_QR_FIND_FROM_RANDOM')) define('SASOET_QR_FIND_FROM_RANDOM', 2);
 
 	/**
-	 * when QR_FIND_BEST_MASK === false
+	 * when SASOET_QR_FIND_BEST_MASK === false
 	 */
-	if (!defined('QR_DEFAULT_MASK')) define('QR_DEFAULT_MASK', 2);
+	if (!defined('SASOET_QR_DEFAULT_MASK')) define('SASOET_QR_DEFAULT_MASK', 2);
 
 	// -----------------------------------------------------
 
@@ -249,7 +249,7 @@ if (!defined('QRCODEDEFS')) {
 
 /**
  * @class QRcode
- * Class to create QR-code arrays for TCPDF class.
+ * Class to create QR-code arrays for SASOET_TCPDF class.
  * QR Code symbol is a 2D barcode that can be scanned by handy terminals such as a mobile phone with CCD.
  * The capacity of QR Code is up to 7000 digits or 4000 characters, and has high robustness.
  * This class supports QR Code model 2, described in JIS (Japanese Industrial Standards) X0510:2004 or ISO/IEC 18004.
@@ -265,7 +265,7 @@ if (!defined('QRCODEDEFS')) {
 class QRcode {
 
 	/**
-	 * Barcode array to be returned which is readable by TCPDF.
+	 * Barcode array to be returned which is readable by SASOET_TCPDF.
 	 * @protected
 	 */
 	protected $barcode_array = array();
@@ -280,13 +280,13 @@ class QRcode {
 	 * Levels of error correction. See definitions for possible values.
 	 * @protected
 	 */
-	protected $level = QR_ECLEVEL_L;
+	protected $level = SASOET_QR_ECLEVEL_L;
 
 	/**
 	 * Encoding mode.
 	 * @protected
 	 */
-	protected $hint = QR_MODE_8B;
+	protected $hint = SASOET_QR_MODE_8B;
 
 	/**
 	 * Boolean flag, if true the input string will be converted to uppercase.
@@ -575,7 +575,7 @@ class QRcode {
 	/**
 	 * Array Version information pattern (BCH coded).
 	 * See Table 1 in Appendix D (pp.68) of JIS X0510:2004.
-	 * size: [QRSPEC_VERSION_MAX - 6]
+	 * size: [SASOET_QRSPEC_VERSION_MAX - 6]
 	 * @protected
 	 */
 	protected $versionPattern = array(
@@ -618,12 +618,12 @@ class QRcode {
 		// set error correction level
 		$this->level = array_search($eclevel, array('L', 'M', 'Q', 'H'));
 		if ($this->level === false) {
-			$this->level = QR_ECLEVEL_L;
+			$this->level = SASOET_QR_ECLEVEL_L;
 		}
-		if (($this->hint != QR_MODE_8B) AND ($this->hint != QR_MODE_KJ)) {
+		if (($this->hint != SASOET_QR_MODE_8B) AND ($this->hint != SASOET_QR_MODE_KJ)) {
 			return false;
 		}
-		if (($this->version < 0) OR ($this->version > QRSPEC_VERSION_MAX)) {
+		if (($this->version < 0) OR ($this->version > SASOET_QRSPEC_VERSION_MAX)) {
 			return false;
 		}
 		$this->items = array();
@@ -647,8 +647,8 @@ class QRcode {
 	}
 
 	/**
-	 * Returns a barcode array which is readable by TCPDF
-	 * @return array barcode array readable by TCPDF;
+	 * Returns a barcode array which is readable by SASOET_TCPDF
+	 * @return array barcode array readable by SASOET_TCPDF;
 	 * @public
 	 */
 	public function getBarcodeArray() {
@@ -732,12 +732,12 @@ class QRcode {
 			$this->setFrameAt($addr, 0x02);
 		}
 		// masking
-		$this->runLength = array_fill(0, QRSPEC_WIDTH_MAX + 1, 0);
+		$this->runLength = array_fill(0, SASOET_QRSPEC_WIDTH_MAX + 1, 0);
 		if ($mask < 0) {
-			if (QR_FIND_BEST_MASK) {
+			if (SASOET_QR_FIND_BEST_MASK) {
 				$masked = $this->mask($this->width, $this->frame, $this->level);
 			} else {
-				$masked = $this->makeMask($this->width, $this->frame, (intval(QR_DEFAULT_MASK) % 8), $this->level);
+				$masked = $this->makeMask($this->width, $this->frame, (intval(SASOET_QR_DEFAULT_MASK) % 8), $this->level);
 			}
 		} else {
 			$masked = $this->makeMask($this->width, $this->frame, $mask, $this->level);
@@ -1102,7 +1102,7 @@ class QRcode {
 		$demerit = 0;
 		for ($i=0; $i<$length; ++$i) {
 			if ($this->runLength[$i] >= 5) {
-				$demerit += (N1 + ($this->runLength[$i] - 5));
+				$demerit += (SASOET_N1 + ($this->runLength[$i] - 5));
 			}
 			if ($i & 1) {
 				if (($i >= 3) AND ($i < ($length-2)) AND ($this->runLength[$i] % 3 == 0)) {
@@ -1112,9 +1112,9 @@ class QRcode {
 						AND ($this->runLength[$i+1] == $fact)
 						AND ($this->runLength[$i+2] == $fact)) {
 						if (($this->runLength[$i-3] < 0) OR ($this->runLength[$i-3] >= (4 * $fact))) {
-							$demerit += N3;
+							$demerit += SASOET_N3;
 						} elseif ((($i+3) >= $length) OR ($this->runLength[$i+3] >= (4 * $fact))) {
-							$demerit += N3;
+							$demerit += SASOET_N3;
 						}
 					}
 				}
@@ -1144,7 +1144,7 @@ class QRcode {
 					$b22 = ord($frameY[$x]) & ord($frameY[$x-1]) & ord($frameYM[$x]) & ord($frameYM[$x-1]);
 					$w22 = ord($frameY[$x]) | ord($frameY[$x-1]) | ord($frameYM[$x]) | ord($frameYM[$x-1]);
 					if (($b22 | ($w22 ^ 1)) & 1) {
-						$demerit += N2;
+						$demerit += SASOET_N2;
 					}
 				}
 				if (($x == 0) AND (ord($frameY[$x]) & 1)) {
@@ -1196,8 +1196,8 @@ class QRcode {
 		$bestMaskNum = 0;
 		$bestMask = array();
 		$checked_masks = array(0, 1, 2, 3, 4, 5, 6, 7);
-		if (QR_FIND_FROM_RANDOM !== false) {
-			$howManuOut = 8 - (QR_FIND_FROM_RANDOM % 9);
+		if (SASOET_QR_FIND_FROM_RANDOM !== false) {
+			$howManuOut = 8 - (SASOET_QR_FIND_FROM_RANDOM % 9);
 			for ($i = 0; $i <  $howManuOut; ++$i) {
 				$remPos = rand (0, count($checked_masks)-1);
 				unset($checked_masks[$remPos]);
@@ -1212,7 +1212,7 @@ class QRcode {
 			$blacks  = $this->makeMaskNo($i, $width, $frame, $mask);
 			$blacks += $this->writeFormatInformation($width, $mask, $i, $level);
 			$blacks  = (int)(100 * $blacks / ($width * $width));
-			$demerit = (int)((int)(abs($blacks - 50) / 5) * N4);
+			$demerit = (int)((int)(abs($blacks - 50) / 5) * SASOET_N4);
 			$demerit += $this->evaluateSymbol($width, $mask);
 			if ($demerit < $minDemerit) {
 				$minDemerit = $demerit;
@@ -1260,23 +1260,23 @@ class QRcode {
 	 */
 	 protected function identifyMode($pos) {
 		if ($pos >= strlen($this->dataStr)) {
-			return QR_MODE_NL;
+			return SASOET_QR_MODE_NL;
 		}
 		$c = $this->dataStr[$pos];
 		if ($this->isdigitat($this->dataStr, $pos)) {
-			return QR_MODE_NM;
+			return SASOET_QR_MODE_NM;
 		} elseif ($this->isalnumat($this->dataStr, $pos)) {
-			return QR_MODE_AN;
-		} elseif ($this->hint == QR_MODE_KJ) {
+			return SASOET_QR_MODE_AN;
+		} elseif ($this->hint == SASOET_QR_MODE_KJ) {
 			if ($pos+1 < strlen($this->dataStr)) {
 				$d = $this->dataStr[$pos+1];
 				$word = (ord($c) << 8) | ord($d);
 				if (($word >= 0x8140 && $word <= 0x9ffc) OR ($word >= 0xe040 && $word <= 0xebbf)) {
-					return QR_MODE_KJ;
+					return SASOET_QR_MODE_KJ;
 				}
 			}
 		}
-		return QR_MODE_8B;
+		return SASOET_QR_MODE_8B;
 	}
 
 	/**
@@ -1284,14 +1284,14 @@ class QRcode {
 	 * @return int run
 	 */
 	 protected function eatNum() {
-		$ln = $this->lengthIndicator(QR_MODE_NM, $this->version);
+		$ln = $this->lengthIndicator(SASOET_QR_MODE_NM, $this->version);
 		$p = 0;
 		while($this->isdigitat($this->dataStr, $p)) {
 			$p++;
 		}
 		$run = $p;
 		$mode = $this->identifyMode($p);
-		if ($mode == QR_MODE_8B) {
+		if ($mode == SASOET_QR_MODE_8B) {
 			$dif = $this->estimateBitsModeNum($run) + 4 + $ln
 			+ $this->estimateBitsMode8(1)         // + 4 + l8
 			- $this->estimateBitsMode8($run + 1); // - 4 - l8
@@ -1299,7 +1299,7 @@ class QRcode {
 				return $this->eat8();
 			}
 		}
-		if ($mode == QR_MODE_AN) {
+		if ($mode == SASOET_QR_MODE_AN) {
 			$dif = $this->estimateBitsModeNum($run) + 4 + $ln
 			+ $this->estimateBitsModeAn(1)        // + 4 + la
 			- $this->estimateBitsModeAn($run + 1);// - 4 - la
@@ -1307,7 +1307,7 @@ class QRcode {
 				return $this->eatAn();
 			}
 		}
-		$this->items = $this->appendNewInputItem($this->items, QR_MODE_NM, $run, str_split($this->dataStr));
+		$this->items = $this->appendNewInputItem($this->items, SASOET_QR_MODE_NM, $run, str_split($this->dataStr));
 		return $run;
 	}
 
@@ -1316,8 +1316,8 @@ class QRcode {
 	 * @return int run
 	 */
 	 protected function eatAn() {
-		$la = $this->lengthIndicator(QR_MODE_AN,  $this->version);
-		$ln = $this->lengthIndicator(QR_MODE_NM, $this->version);
+		$la = $this->lengthIndicator(SASOET_QR_MODE_AN,  $this->version);
+		$ln = $this->lengthIndicator(SASOET_QR_MODE_NM, $this->version);
 		$p =1 ;
 		while($this->isalnumat($this->dataStr, $p)) {
 			if ($this->isdigitat($this->dataStr, $p)) {
@@ -1346,7 +1346,7 @@ class QRcode {
 				return $this->eat8();
 			}
 		}
-		$this->items = $this->appendNewInputItem($this->items, QR_MODE_AN, $run, str_split($this->dataStr));
+		$this->items = $this->appendNewInputItem($this->items, SASOET_QR_MODE_AN, $run, str_split($this->dataStr));
 		return $run;
 	}
 
@@ -1356,10 +1356,10 @@ class QRcode {
 	 */
 	 protected function eatKanji() {
 		$p = 0;
-		while($this->identifyMode($p) == QR_MODE_KJ) {
+		while($this->identifyMode($p) == SASOET_QR_MODE_KJ) {
 			$p += 2;
 		}
-		$this->items = $this->appendNewInputItem($this->items, QR_MODE_KJ, $p, str_split($this->dataStr));
+		$this->items = $this->appendNewInputItem($this->items, SASOET_QR_MODE_KJ, $p, str_split($this->dataStr));
 		$run = $p;
 		return $run;
 	}
@@ -1369,16 +1369,16 @@ class QRcode {
 	 * @return int run
 	 */
 	 protected function eat8() {
-		$la = $this->lengthIndicator(QR_MODE_AN, $this->version);
-		$ln = $this->lengthIndicator(QR_MODE_NM, $this->version);
+		$la = $this->lengthIndicator(SASOET_QR_MODE_AN, $this->version);
+		$ln = $this->lengthIndicator(SASOET_QR_MODE_NM, $this->version);
 		$p = 1;
 		$dataStrLen = strlen($this->dataStr);
 		while($p < $dataStrLen) {
 			$mode = $this->identifyMode($p);
-			if ($mode == QR_MODE_KJ) {
+			if ($mode == SASOET_QR_MODE_KJ) {
 				break;
 			}
-			if ($mode == QR_MODE_NM) {
+			if ($mode == SASOET_QR_MODE_NM) {
 				$q = $p;
 				while($this->isdigitat($this->dataStr, $q)) {
 					$q++;
@@ -1391,7 +1391,7 @@ class QRcode {
 				} else {
 					$p = $q;
 				}
-			} elseif ($mode == QR_MODE_AN) {
+			} elseif ($mode == SASOET_QR_MODE_AN) {
 				$q = $p;
 				while($this->isalnumat($this->dataStr, $q)) {
 					$q++;
@@ -1409,7 +1409,7 @@ class QRcode {
 			}
 		}
 		$run = $p;
-		$this->items = $this->appendNewInputItem($this->items, QR_MODE_8B, $run, str_split($this->dataStr));
+		$this->items = $this->appendNewInputItem($this->items, SASOET_QR_MODE_8B, $run, str_split($this->dataStr));
 		return $run;
 	}
 
@@ -1421,16 +1421,16 @@ class QRcode {
 		while (strlen($this->dataStr) > 0) {
 			$mode = $this->identifyMode(0);
 			switch ($mode) {
-				case QR_MODE_NM: {
+				case SASOET_QR_MODE_NM: {
 					$length = $this->eatNum();
 					break;
 				}
-				case QR_MODE_AN: {
+				case SASOET_QR_MODE_AN: {
 					$length = $this->eatAn();
 					break;
 				}
-				case QR_MODE_KJ: {
-					if ($this->hint == QR_MODE_KJ) {
+				case SASOET_QR_MODE_KJ: {
+					if ($this->hint == SASOET_QR_MODE_KJ) {
 						$length = $this->eatKanji();
 					} else {
 						$length = $this->eat8();
@@ -1461,7 +1461,7 @@ class QRcode {
 		$p = 0;
 		while ($p < $stringLen) {
 			$mode = $this->identifyMode(substr($this->dataStr, $p), $this->hint);
-			if ($mode == QR_MODE_KJ) {
+			if ($mode == SASOET_QR_MODE_KJ) {
 				$p += 2;
 			} else {
 				if ((ord($this->dataStr[$p]) >= ord('a')) AND (ord($this->dataStr[$p]) <= ord('z'))) {
@@ -1512,7 +1512,7 @@ class QRcode {
 		$inputitem['bstream'] = array();
 		$val = 0x1;
 		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], 4, $val);
-		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(QR_MODE_NM, $version), $inputitem['size']);
+		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(SASOET_QR_MODE_NM, $version), $inputitem['size']);
 		for ($i=0; $i < $words; ++$i) {
 			$val  = (ord($inputitem['data'][$i*3  ]) - ord('0')) * 100;
 			$val += (ord($inputitem['data'][$i*3+1]) - ord('0')) * 10;
@@ -1540,7 +1540,7 @@ class QRcode {
 		$words = (int)($inputitem['size'] / 2);
 		$inputitem['bstream'] = array();
 		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], 4, 0x02);
-		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(QR_MODE_AN, $version), $inputitem['size']);
+		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(SASOET_QR_MODE_AN, $version), $inputitem['size']);
 		for ($i=0; $i < $words; ++$i) {
 			$val  = (int)($this->lookAnTable(ord($inputitem['data'][$i*2])) * 45);
 			$val += (int)($this->lookAnTable(ord($inputitem['data'][($i*2)+1])));
@@ -1562,7 +1562,7 @@ class QRcode {
 	 protected function encodeMode8($inputitem, $version) {
 		$inputitem['bstream'] = array();
 		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], 4, 0x4);
-		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(QR_MODE_8B, $version), $inputitem['size']);
+		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(SASOET_QR_MODE_8B, $version), $inputitem['size']);
 		for ($i=0; $i < $inputitem['size']; ++$i) {
 			$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], 8, ord($inputitem['data'][$i]));
 		}
@@ -1578,7 +1578,7 @@ class QRcode {
 	 protected function encodeModeKanji($inputitem, $version) {
 		$inputitem['bstream'] = array();
 		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], 4, 0x8);
-		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(QR_MODE_KJ, $version), (int)($inputitem['size'] / 2));
+		$inputitem['bstream'] = $this->appendNum($inputitem['bstream'], $this->lengthIndicator(SASOET_QR_MODE_KJ, $version), (int)($inputitem['size'] / 2));
 		for ($i=0; $i<$inputitem['size']; $i+=2) {
 			$val = (ord($inputitem['data'][$i]) << 8) | ord($inputitem['data'][$i+1]);
 			if ($val <= 0x9ffc) {
@@ -1626,23 +1626,23 @@ class QRcode {
 			$inputitem['bstream'] = $this->appendBitstream($inputitem['bstream'], $st2['bstream']);
 		} else {
 			switch($inputitem['mode']) {
-				case QR_MODE_NM: {
+				case SASOET_QR_MODE_NM: {
 					$inputitem = $this->encodeModeNum($inputitem, $version);
 					break;
 				}
-				case QR_MODE_AN: {
+				case SASOET_QR_MODE_AN: {
 					$inputitem = $this->encodeModeAn($inputitem, $version);
 					break;
 				}
-				case QR_MODE_8B: {
+				case SASOET_QR_MODE_8B: {
 					$inputitem = $this->encodeMode8($inputitem, $version);
 					break;
 				}
-				case QR_MODE_KJ: {
+				case SASOET_QR_MODE_KJ: {
 					$inputitem = $this->encodeModeKanji($inputitem, $version);
 					break;
 				}
-				case QR_MODE_ST: {
+				case SASOET_QR_MODE_ST: {
 					$inputitem = $this->encodeModeStructure($inputitem);
 					break;
 				}
@@ -1685,14 +1685,14 @@ class QRcode {
 	 * @return array items
 	 */
 	 protected function insertStructuredAppendHeader($items, $size, $index, $parity) {
-		if ($size > MAX_STRUCTURED_SYMBOLS) {
+		if ($size > SASOET_MAX_STRUCTURED_SYMBOLS) {
 			return -1;
 		}
-		if (($index <= 0) OR ($index > MAX_STRUCTURED_SYMBOLS)) {
+		if (($index <= 0) OR ($index > SASOET_MAX_STRUCTURED_SYMBOLS)) {
 			return -1;
 		}
 		$buf = array($size, $index, $parity);
-		$entry = $this->newInputItem(QR_MODE_ST, 3, buf);
+		$entry = $this->newInputItem(SASOET_QR_MODE_ST, 3, buf);
 		array_unshift($items, $entry);
 		return $items;
 	}
@@ -1705,7 +1705,7 @@ class QRcode {
 	 protected function calcParity($items) {
 		$parity = 0;
 		foreach ($items as $item) {
-			if ($item['mode'] != QR_MODE_ST) {
+			if ($item['mode'] != SASOET_QR_MODE_ST) {
 				for ($i=$item['size']-1; $i>=0; --$i) {
 					$parity ^= $item['data'][$i];
 				}
@@ -1836,19 +1836,19 @@ class QRcode {
 			return false;
 		}
 		switch($mode) {
-			case QR_MODE_NM: {
+			case SASOET_QR_MODE_NM: {
 				return $this->checkModeNum($size, $data);
 			}
-			case QR_MODE_AN: {
+			case SASOET_QR_MODE_AN: {
 				return $this->checkModeAn($size, $data);
 			}
-			case QR_MODE_KJ: {
+			case SASOET_QR_MODE_KJ: {
 				return $this->checkModeKanji($size, $data);
 			}
-			case QR_MODE_8B: {
+			case SASOET_QR_MODE_8B: {
 				return true;
 			}
-			case QR_MODE_ST: {
+			case SASOET_QR_MODE_ST: {
 				return true;
 			}
 			default: {
@@ -1871,24 +1871,24 @@ class QRcode {
 		}
 		foreach ($items as $item) {
 			switch($item['mode']) {
-				case QR_MODE_NM: {
+				case SASOET_QR_MODE_NM: {
 					$bits = $this->estimateBitsModeNum($item['size']);
 					break;
 				}
-				case QR_MODE_AN: {
+				case SASOET_QR_MODE_AN: {
 					$bits = $this->estimateBitsModeAn($item['size']);
 					break;
 				}
-				case QR_MODE_8B: {
+				case SASOET_QR_MODE_8B: {
 					$bits = $this->estimateBitsMode8($item['size']);
 					break;
 				}
-				case QR_MODE_KJ: {
+				case SASOET_QR_MODE_KJ: {
 					$bits = $this->estimateBitsModeKanji($item['size']);
 					break;
 				}
-				case QR_MODE_ST: {
-					return STRUCTURE_HEADER_BITS;
+				case SASOET_QR_MODE_ST: {
+					return SASOET_STRUCTURE_HEADER_BITS;
 				}
 				default: {
 					return 0;
@@ -1931,7 +1931,7 @@ class QRcode {
 	 protected function lengthOfCode($mode, $version, $bits) {
 		$payload = $bits - 4 - $this->lengthIndicator($mode, $version);
 		switch($mode) {
-			case QR_MODE_NM: {
+			case SASOET_QR_MODE_NM: {
 				$chunks = (int)($payload / 10);
 				$remain = $payload - $chunks * 10;
 				$size = $chunks * 3;
@@ -1942,7 +1942,7 @@ class QRcode {
 				}
 				break;
 			}
-			case QR_MODE_AN: {
+			case SASOET_QR_MODE_AN: {
 				$chunks = (int)($payload / 11);
 				$remain = $payload - $chunks * 11;
 				$size = $chunks * 2;
@@ -1951,15 +1951,15 @@ class QRcode {
 				}
 				break;
 			}
-			case QR_MODE_8B: {
+			case SASOET_QR_MODE_8B: {
 				$size = (int)($payload / 8);
 				break;
 			}
-			case QR_MODE_KJ: {
+			case SASOET_QR_MODE_KJ: {
 				$size = (int)(($payload / 13) * 2);
 				break;
 			}
-			case QR_MODE_ST: {
+			case SASOET_QR_MODE_ST: {
 				$size = (int)($payload / 8);
 				break;
 			}
@@ -2257,7 +2257,7 @@ class QRcode {
 	 * @return int maximum size (bytes)
 	 */
 	protected function getDataLength($version, $level) {
-		return $this->capacity[$version][QRCAP_WORDS] - $this->capacity[$version][QRCAP_EC][$level];
+		return $this->capacity[$version][SASOET_QRCAP_WORDS] - $this->capacity[$version][SASOET_QRCAP_EC][$level];
 	}
 
 	/**
@@ -2267,7 +2267,7 @@ class QRcode {
 	 * @return int ECC size (bytes)
 	 */
 	protected function getECCLength($version, $level){
-		return $this->capacity[$version][QRCAP_EC][$level];
+		return $this->capacity[$version][SASOET_QRCAP_EC][$level];
 	}
 
 	/**
@@ -2276,7 +2276,7 @@ class QRcode {
 	 * @return int width
 	 */
 	protected function getWidth($version) {
-		return $this->capacity[$version][QRCAP_WIDTH];
+		return $this->capacity[$version][SASOET_QRCAP_WIDTH];
 	}
 
 	/**
@@ -2285,7 +2285,7 @@ class QRcode {
 	 * @return int number of remainder bits
 	 */
 	protected function getRemainder($version) {
-		return $this->capacity[$version][QRCAP_REMINDER];
+		return $this->capacity[$version][SASOET_QRCAP_REMINDER];
 	}
 
 	/**
@@ -2295,8 +2295,8 @@ class QRcode {
 	 * @return int version number
 	 */
 	protected function getMinimumVersion($size, $level) {
-		for ($i = 1; $i <= QRSPEC_VERSION_MAX; ++$i) {
-			$words = ($this->capacity[$i][QRCAP_WORDS] - $this->capacity[$i][QRCAP_EC][$level]);
+		for ($i = 1; $i <= SASOET_QRSPEC_VERSION_MAX; ++$i) {
+			$words = ($this->capacity[$i][SASOET_QRCAP_WORDS] - $this->capacity[$i][SASOET_QRCAP_EC][$level]);
 			if ($words >= $size) {
 				return $i;
 			}
@@ -2312,7 +2312,7 @@ class QRcode {
 	 * @return int the size of the appropriate length indicator (bits).
 	 */
 	protected function lengthIndicator($mode, $version) {
-		if ($mode == QR_MODE_ST) {
+		if ($mode == SASOET_QR_MODE_ST) {
 			return 0;
 		}
 		if ($version <= 9) {
@@ -2332,7 +2332,7 @@ class QRcode {
 	 * @return int the maximum length (bytes)
 	 */
 	protected function maximumWords($mode, $version) {
-		if ($mode == QR_MODE_ST) {
+		if ($mode == SASOET_QR_MODE_ST) {
 			return 3;
 		}
 		if ($version <= 9) {
@@ -2344,7 +2344,7 @@ class QRcode {
 		}
 		$bits = $this->lengthTableBits[$mode][$l];
 		$words = (1 << $bits) - 1;
-		if ($mode == QR_MODE_KJ) {
+		if ($mode == SASOET_QR_MODE_KJ) {
 			$words *= 2; // the number of bytes is required
 		}
 		return $words;
@@ -2452,7 +2452,7 @@ class QRcode {
 	 * @return string BCH encoded version information pattern
 	 */
 	protected function getVersionPattern($version) {
-		if (($version < 7) OR ($version > QRSPEC_VERSION_MAX)) {
+		if (($version < 7) OR ($version > SASOET_QRSPEC_VERSION_MAX)) {
 			return 0;
 		}
 		return $this->versionPattern[($version - 7)];
@@ -2503,7 +2503,7 @@ class QRcode {
 	 * @return array array of unsigned char.
 	 */
 	protected function createFrame($version) {
-		$width = $this->capacity[$version][QRCAP_WIDTH];
+		$width = $this->capacity[$version][SASOET_QRCAP_WIDTH];
 		$frameLine = str_repeat ("\0", $width);
 		$frame = array_fill(0, $width, $frameLine);
 		// Finder pattern
@@ -2568,7 +2568,7 @@ class QRcode {
 	 * @return array array of unsigned char.
 	 */
 	protected function newFrame($version) {
-		if (($version < 1) OR ($version > QRSPEC_VERSION_MAX)) {
+		if (($version < 1) OR ($version > SASOET_QRSPEC_VERSION_MAX)) {
 			return NULL;
 		}
 		if (!isset($this->frames[$version])) {

@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.2.4
+Stable tag: 3.2.5
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -245,6 +245,10 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.2.5 - 2026-10-02 =
+* Fix: Ticket scanner no longer traps multi-redeem tickets in the self-redeem echo. Scanning a group ticket (one QR for N guests) for guest #2..N now flows through to the next redeem instead of locking on "already redeemed by this scanner a moment ago" until a manual browser refresh. Single-redeem tickets still show the calm echo — that protection is unchanged. (#015130 / ticket 000356 — celebrations-messen.de, Sharam, group ticket 1/30→2/30→…)
+* Fix: PDF library isolation — the bundled TCPDF classes and constants are now prefixed (SASOET_TCPDF*) and the loader no longer falls back to system-wide TCPDF installations. Fixes fatal "Cannot redeclare class TCPDF_FONT_DATA" crashes when another plugin also bundles TCPDF (e.g. DPD Connect shipping labels) — whoever loads first, both plugins keep working. (#015161 — germanische-heilkunde.nl, Casper)
 
 = 3.2.4 - 2026-09-29 =
 * New: Deleting a ticket list that still contains tickets is now blocked by default. The list delete dialog has a new checkbox "Block if list still contains tickets" (checked by default) — unchecking it allows the delete anyway. Prevents accidentally orphaning tickets whose QR code, PDF and scanner checks depend on the list. (#015122)

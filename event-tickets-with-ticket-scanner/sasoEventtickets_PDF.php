@@ -40,18 +40,15 @@ class sasoEventtickets_PDF {
 		//require_once('vendors/TCPDF/config/tcpdf_config_alt.php');
 		require_once('vendors/TCPDF/config/tcpdf_config.php');
 
-		// Include the main TCPDF library (search the library on the following directories).
-		if (!class_exists('TCPDF')) {
+		// Include the main TCPDF library — ONLY our own bundled copy.
+		// The bundled classes are prefixed (SASOET_TCPDF*, #015161) so they can
+		// never collide with another plugin's global TCPDF, and we never fall
+		// back to system paths (/usr/share/php/tcpdf etc.) — a foreign install
+		// there would collide with other plugins on its own.
+		if (!class_exists('SASOET_TCPDF')) {
 			$tcpdf_include_dirs = array(
 				plugin_dir_path(__FILE__).'vendors/TCPDF/tcpdf.php',
-				realpath(dirname(__FILE__) . '/vendors/TCPDF/tcpdf.php'),// True source file
-				realpath('vendors/TCPDF/tcpdf.php'),// Relative from $PWD
-				'/usr/share/php/tcpdf/tcpdf.php',
-				'/usr/share/tcpdf/tcpdf.php',
-				'/usr/share/php-tcpdf/tcpdf.php',
-				'/var/www/tcpdf/tcpdf.php',
-				'/var/www/html/tcpdf/tcpdf.php',
-				'/usr/local/apache2/htdocs/tcpdf/tcpdf.php'
+				realpath(dirname(__FILE__) . '/vendors/TCPDF/tcpdf.php')// True source file
 			);
 			foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
 				if (@file_exists($tcpdf_include_path)) {
@@ -378,7 +375,7 @@ class sasoEventtickets_PDF {
 		$this->prepareOutputBuffer();
 		$this->checkFilePath();
 		$format = $this->getFormat();
-		$pdf = new Fpdi($this->orientation, PDF_UNIT, $format, true, 'UTF-8', false, false);
+		$pdf = new Fpdi($this->orientation, SASOET_PDF_UNIT, $format, true, 'UTF-8', false, false);
 		$pdf = $this->attachPDFs($pdf, $pdf_filelocations);
 
 		$this->cleanOutputBuffer();
@@ -394,7 +391,7 @@ class sasoEventtickets_PDF {
 			$this->orientation = "L";
 		}
 
-		$pdf = new Fpdi($this->orientation, PDF_UNIT, $format, true, 'UTF-8', false, false);
+		$pdf = new Fpdi($this->orientation, SASOET_PDF_UNIT, $format, true, 'UTF-8', false, false);
 		//$pdf->error = function ($msg) {throw new Exception("PDF-Parser: ".$msg);};
 
         $preferences = [
@@ -420,7 +417,7 @@ class sasoEventtickets_PDF {
 		$pdf->SetAutoPageBreak(TRUE, 5);
 
 		// set image scale factor
-		$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+		$pdf->setImageScale(SASOET_PDF_IMAGE_SCALE_RATIO);
 		$pdf->setJPEGQuality(90);
 
 		//$pdf->addFormat("custom", $this->size_width, $this->size_height);

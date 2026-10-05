@@ -13,7 +13,7 @@ namespace setasign\Fpdi;
 /**
  * Class TcpdfFpdi
  *
- * This class let you import pages of existing PDF documents into a reusable structure for TCPDF.
+ * This class let you import pages of existing PDF documents into a reusable structure for SASOET_TCPDF.
  *
  * @deprecated Class was moved to \setasign\Fpdi\Tcpdf\Fpdi
  */

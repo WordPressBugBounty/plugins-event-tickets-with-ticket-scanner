@@ -221,9 +221,30 @@ jQuery(document).ready(()=>{
         // Self-redeem echo (#014977): this device redeemed this code earlier in
         // the session (scan & redeem, camera kept framing the ticket). Show a
         // calm confirmation instead of re-redeeming and scaring the operator
-        // with a red "already used".
+        // with a red "already used". EXCEPT for multi-redeem tickets that
+        // still have redeem capacity left (#015130 / ticket 000356 — group
+        // tickets, one QR for N guests: operator IS supposed to scan that
+        // QR for the next guest; the echo would lock the scanner until
+        // browser refresh). For those tickets the operator explicitly
+        // re-scanned to redeem the next member — fall through to the normal
+        // retrieveTicket() path that triggers another server-side redeem.
         if (self_redeemed_this_session[decodedText]) {
             let _d = self_redeemed_this_session[decodedText];
+            if (_d && _d.data && typeof canTicketBeRedeemed === 'function' && canTicketBeRedeemed(_d.data)) {
+                // Multi-redeem with capacity left — do NOT show the echo,
+                // do NOT call finishScanLifecycle(). The scan is a deliberate
+                // re-scan for the next guest. Drop the cached session entry
+                // (it is misleading now: that slot is "redeemed", but the
+                // server is about to add another one) and process the code
+                // normally.
+                delete self_redeemed_this_session[decodedText];
+                if (system.last_scanned_ticket.code === decodedText) {
+                    system.last_scanned_ticket = {code: '', timestamp: 0};
+                }
+                pending_scans.push(decodedText);
+                drainPendingScan();
+                return;
+            }
             let _ret = (_d && _d.data && _d.data._ret) ? _d.data._ret : null;
             clearAreas();
             $("#reader_output").html('');

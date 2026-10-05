@@ -9,33 +9,33 @@
 // -------------------------------------------------------------------
 // Copyright (C) 2010-2014  Nicola Asuni - Tecnick.com LTD
 //
-// This file is part of TCPDF software library.
+// This file is part of SASOET_TCPDF software library.
 //
-// TCPDF is free software: you can redistribute it and/or modify it
+// SASOET_TCPDF is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //
-// TCPDF is distributed in the hope that it will be useful, but
+// SASOET_TCPDF is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the GNU Lesser General Public License
-// along with TCPDF.  If not, see <http://www.gnu.org/licenses/>.
+// along with SASOET_TCPDF.  If not, see <http://www.gnu.org/licenses/>.
 //
 // See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
 //
 // DESCRIPTION :
 //
-// Class to create DataMatrix ECC 200 barcode arrays for TCPDF class.
+// Class to create DataMatrix ECC 200 barcode arrays for SASOET_TCPDF class.
 // DataMatrix (ISO/IEC 16022:2006) is a 2-dimensional bar code.
 //============================================================+
 
 /**
 * @file
-* Class to create DataMatrix ECC 200 barcode arrays for TCPDF class.
+* Class to create DataMatrix ECC 200 barcode arrays for SASOET_TCPDF class.
 * DataMatrix (ISO/IEC 16022:2006) is a 2-dimensional bar code.
 *
 * @package com.tecnick.tcpdf
@@ -44,12 +44,12 @@
 */
 
 // custom definitions
-if (!defined('DATAMATRIXDEFS')) {
+if (!defined('SASOET_DATAMATRIXDEFS')) {
 
 	/**
 	 * Indicate that definitions for this class are set
 	 */
-	define('DATAMATRIXDEFS', true);
+	define('SASOET_DATAMATRIXDEFS', true);
 
 	// -----------------------------------------------------
 
@@ -61,46 +61,46 @@ if (!defined('DATAMATRIXDEFS')) {
 /**
 * ASCII encoding: ASCII character 0 to 127 (1 byte per CW)
 */
-define('ENC_ASCII', 0);
+define('SASOET_ENC_ASCII', 0);
 
 /**
 * C40 encoding: Upper-case alphanumeric (3/2 bytes per CW)
 */
-define('ENC_C40', 1);
+define('SASOET_ENC_C40', 1);
 
 /**
 * TEXT encoding: Lower-case alphanumeric (3/2 bytes per CW)
 */
-define('ENC_TXT', 2);
+define('SASOET_ENC_TXT', 2);
 
 /**
 * X12 encoding: ANSI X12 (3/2 byte per CW)
 */
-define('ENC_X12', 3);
+define('SASOET_ENC_X12', 3);
 
 /**
 * EDIFACT encoding: ASCII character 32 to 94 (4/3 bytes per CW)
 */
-define('ENC_EDF', 4);
+define('SASOET_ENC_EDF', 4);
 
 /**
 * BASE 256 encoding: ASCII character 0 to 255 (1 byte per CW)
 */
-define('ENC_BASE256', 5);
+define('SASOET_ENC_BASE256', 5);
 
 /**
 * ASCII extended encoding: ASCII character 128 to 255 (1/2 byte per CW)
 */
-define('ENC_ASCII_EXT', 6);
+define('SASOET_ENC_ASCII_EXT', 6);
 
 /**
 * ASCII number encoding: ASCII digits (2 bytes per CW)
 */
-define('ENC_ASCII_NUM', 7);
+define('SASOET_ENC_ASCII_NUM', 7);
 
 /**
 * @class Datamatrix
-* Class to create DataMatrix ECC 200 barcode arrays for TCPDF class.
+* Class to create DataMatrix ECC 200 barcode arrays for SASOET_TCPDF class.
 * DataMatrix (ISO/IEC 16022:2006) is a 2-dimensional bar code.
 *
 * @package com.tecnick.tcpdf
@@ -110,7 +110,7 @@ define('ENC_ASCII_NUM', 7);
 class Datamatrix {
 
 	/**
-	 * Barcode array to be returned which is readable by TCPDF.
+	 * Barcode array to be returned which is readable by SASOET_TCPDF.
 	 * @protected
 	 */
 	protected $barcode_array = array();
@@ -119,7 +119,7 @@ class Datamatrix {
 	 * Store last used encoding for data codewords.
 	 * @protected
 	 */
-	protected $last_enc = ENC_ASCII;
+	protected $last_enc = SASOET_ENC_ASCII;
 
 	/**
 	 * Table of Data Matrix ECC 200 Symbol Attributes:<ul>
@@ -181,7 +181,7 @@ class Datamatrix {
 	 * Map encodation modes whit character sets.
 	 * @protected
 	 */
-	protected $chset_id = array(ENC_C40 => 'C40', ENC_TXT => 'TXT', ENC_X12 =>'X12');
+	protected $chset_id = array(SASOET_ENC_C40 => 'C40', SASOET_ENC_TXT => 'TXT', SASOET_ENC_X12 =>'X12');
 
 	/**
 	 * Basic set of characters for each encodation mode.
@@ -257,11 +257,11 @@ class Datamatrix {
 		} elseif ($params[11] > $nd) {
 			// add padding
 			if ((($params[11] - $nd) > 1) AND ($cw[($nd - 1)] != 254)) {
-				if ($this->last_enc == ENC_EDF) {
+				if ($this->last_enc == SASOET_ENC_EDF) {
 					// switch to ASCII encoding
 					$cw[] = 124;
 					++$nd;
-				} elseif (($this->last_enc != ENC_ASCII) AND ($this->last_enc != ENC_BASE256)) {
+				} elseif (($this->last_enc != SASOET_ENC_ASCII) AND ($this->last_enc != SASOET_ENC_BASE256)) {
 					// switch to ASCII encoding
 					$cw[] = 254;
 					++$nd;
@@ -345,8 +345,8 @@ class Datamatrix {
 	}
 
 	/**
-	 * Returns a barcode array which is readable by TCPDF
-	 * @return array barcode array readable by TCPDF;
+	 * Returns a barcode array which is readable by SASOET_TCPDF
+	 * @return array barcode array readable by SASOET_TCPDF;
 	 * @public
 	 */
 	public function getBarcodeArray() {
@@ -476,35 +476,35 @@ class Datamatrix {
 	protected function isCharMode($chr, $mode) {
 		$status = false;
 		switch ($mode) {
-			case ENC_ASCII: { // ASCII character 0 to 127
+			case SASOET_ENC_ASCII: { // ASCII character 0 to 127
 				$status = (($chr >= 0) AND ($chr <= 127));
 				break;
 			}
-			case ENC_C40: { // Upper-case alphanumeric
+			case SASOET_ENC_C40: { // Upper-case alphanumeric
 				$status = (($chr == 32) OR (($chr >= 48) AND ($chr <= 57)) OR (($chr >= 65) AND ($chr <= 90)));
 				break;
 			}
-			case ENC_TXT: { // Lower-case alphanumeric
+			case SASOET_ENC_TXT: { // Lower-case alphanumeric
 				$status = (($chr == 32) OR (($chr >= 48) AND ($chr <= 57)) OR (($chr >= 97) AND ($chr <= 122)));
 				break;
 			}
-			case ENC_X12: { // ANSI X12
+			case SASOET_ENC_X12: { // ANSI X12
 				$status = (($chr == 13) OR ($chr == 42) OR ($chr == 62));
 				break;
 			}
-			case ENC_EDF: { // ASCII character 32 to 94
+			case SASOET_ENC_EDF: { // ASCII character 32 to 94
 				$status = (($chr >= 32) AND ($chr <= 94));
 				break;
 			}
-			case ENC_BASE256: { // Function character (FNC1, Structured Append, Reader Program, or Code Page)
+			case SASOET_ENC_BASE256: { // Function character (FNC1, Structured Append, Reader Program, or Code Page)
 				$status = (($chr == 232) OR ($chr == 233) OR ($chr == 234) OR ($chr == 241));
 				break;
 			}
-			case ENC_ASCII_EXT: { // ASCII character 128 to 255
+			case SASOET_ENC_ASCII_EXT: { // ASCII character 128 to 255
 				$status = (($chr >= 128) AND ($chr <= 255));
 				break;
 			}
-			case ENC_ASCII_NUM: { // ASCII digits
+			case SASOET_ENC_ASCII_NUM: { // ASCII digits
 				$status = (($chr >= 48) AND ($chr <= 57));
 				break;
 			}
@@ -527,7 +527,7 @@ class Datamatrix {
 		}
 		$charscount = 0; // count processed chars
 		// STEP J
-		if ($mode == ENC_ASCII) {
+		if ($mode == SASOET_ENC_ASCII) {
 			$numch = array(0, 1, 1, 1, 1, 1.25);
 		} else {
 			$numch = array(1, 2, 2, 2, 2, 2.25);
@@ -536,108 +536,108 @@ class Datamatrix {
 		while (true) {
 			// STEP K
 			if (($pos + $charscount) == $data_length) {
-				if ($numch[ENC_ASCII] <= ceil(min($numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_X12], $numch[ENC_EDF], $numch[ENC_BASE256]))) {
-					return ENC_ASCII;
+				if ($numch[SASOET_ENC_ASCII] <= ceil(min($numch[SASOET_ENC_C40], $numch[SASOET_ENC_TXT], $numch[SASOET_ENC_X12], $numch[SASOET_ENC_EDF], $numch[SASOET_ENC_BASE256]))) {
+					return SASOET_ENC_ASCII;
 				}
-				if ($numch[ENC_BASE256] < ceil(min($numch[ENC_ASCII], $numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_X12], $numch[ENC_EDF]))) {
-					return ENC_BASE256;
+				if ($numch[SASOET_ENC_BASE256] < ceil(min($numch[SASOET_ENC_ASCII], $numch[SASOET_ENC_C40], $numch[SASOET_ENC_TXT], $numch[SASOET_ENC_X12], $numch[SASOET_ENC_EDF]))) {
+					return SASOET_ENC_BASE256;
 				}
-				if ($numch[ENC_EDF] < ceil(min($numch[ENC_ASCII], $numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_X12], $numch[ENC_BASE256]))) {
-					return ENC_EDF;
+				if ($numch[SASOET_ENC_EDF] < ceil(min($numch[SASOET_ENC_ASCII], $numch[SASOET_ENC_C40], $numch[SASOET_ENC_TXT], $numch[SASOET_ENC_X12], $numch[SASOET_ENC_BASE256]))) {
+					return SASOET_ENC_EDF;
 				}
-				if ($numch[ENC_TXT] < ceil(min($numch[ENC_ASCII], $numch[ENC_C40], $numch[ENC_X12], $numch[ENC_EDF], $numch[ENC_BASE256]))) {
-					return ENC_TXT;
+				if ($numch[SASOET_ENC_TXT] < ceil(min($numch[SASOET_ENC_ASCII], $numch[SASOET_ENC_C40], $numch[SASOET_ENC_X12], $numch[SASOET_ENC_EDF], $numch[SASOET_ENC_BASE256]))) {
+					return SASOET_ENC_TXT;
 				}
-				if ($numch[ENC_X12] < ceil(min($numch[ENC_ASCII], $numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_EDF], $numch[ENC_BASE256]))) {
-					return ENC_X12;
+				if ($numch[SASOET_ENC_X12] < ceil(min($numch[SASOET_ENC_ASCII], $numch[SASOET_ENC_C40], $numch[SASOET_ENC_TXT], $numch[SASOET_ENC_EDF], $numch[SASOET_ENC_BASE256]))) {
+					return SASOET_ENC_X12;
 				}
-				return ENC_C40;
+				return SASOET_ENC_C40;
 			}
 			// get char
 			$chr = ord($data[$pos + $charscount]);
 			$charscount++;
 			// STEP L
-			if ($this->isCharMode($chr, ENC_ASCII_NUM)) {
-				$numch[ENC_ASCII] += (1 / 2);
-			} elseif ($this->isCharMode($chr, ENC_ASCII_EXT)) {
-				$numch[ENC_ASCII] = ceil($numch[ENC_ASCII]);
-				$numch[ENC_ASCII] += 2;
+			if ($this->isCharMode($chr, SASOET_ENC_ASCII_NUM)) {
+				$numch[SASOET_ENC_ASCII] += (1 / 2);
+			} elseif ($this->isCharMode($chr, SASOET_ENC_ASCII_EXT)) {
+				$numch[SASOET_ENC_ASCII] = ceil($numch[SASOET_ENC_ASCII]);
+				$numch[SASOET_ENC_ASCII] += 2;
 			} else {
-				$numch[ENC_ASCII] = ceil($numch[ENC_ASCII]);
-				$numch[ENC_ASCII] += 1;
+				$numch[SASOET_ENC_ASCII] = ceil($numch[SASOET_ENC_ASCII]);
+				$numch[SASOET_ENC_ASCII] += 1;
 			}
 			// STEP M
-			if ($this->isCharMode($chr, ENC_C40)) {
-				$numch[ENC_C40] += (2 / 3);
-			} elseif ($this->isCharMode($chr, ENC_ASCII_EXT)) {
-				$numch[ENC_C40] += (8 / 3);
+			if ($this->isCharMode($chr, SASOET_ENC_C40)) {
+				$numch[SASOET_ENC_C40] += (2 / 3);
+			} elseif ($this->isCharMode($chr, SASOET_ENC_ASCII_EXT)) {
+				$numch[SASOET_ENC_C40] += (8 / 3);
 			} else {
-				$numch[ENC_C40] += (4 / 3);
+				$numch[SASOET_ENC_C40] += (4 / 3);
 			}
 			// STEP N
-			if ($this->isCharMode($chr, ENC_TXT)) {
-				$numch[ENC_TXT] += (2 / 3);
-			} elseif ($this->isCharMode($chr, ENC_ASCII_EXT)) {
-				$numch[ENC_TXT] += (8 / 3);
+			if ($this->isCharMode($chr, SASOET_ENC_TXT)) {
+				$numch[SASOET_ENC_TXT] += (2 / 3);
+			} elseif ($this->isCharMode($chr, SASOET_ENC_ASCII_EXT)) {
+				$numch[SASOET_ENC_TXT] += (8 / 3);
 			} else {
-				$numch[ENC_TXT] += (4 / 3);
+				$numch[SASOET_ENC_TXT] += (4 / 3);
 			}
 			// STEP O
-			if ($this->isCharMode($chr, ENC_X12) OR $this->isCharMode($chr, ENC_C40)) {
-				$numch[ENC_X12] += (2 / 3);
-			} elseif ($this->isCharMode($chr, ENC_ASCII_EXT)) {
-				$numch[ENC_X12] += (13 / 3);
+			if ($this->isCharMode($chr, SASOET_ENC_X12) OR $this->isCharMode($chr, SASOET_ENC_C40)) {
+				$numch[SASOET_ENC_X12] += (2 / 3);
+			} elseif ($this->isCharMode($chr, SASOET_ENC_ASCII_EXT)) {
+				$numch[SASOET_ENC_X12] += (13 / 3);
 			} else {
-				$numch[ENC_X12] += (10 / 3);
+				$numch[SASOET_ENC_X12] += (10 / 3);
 			}
 			// STEP P
-			if ($this->isCharMode($chr, ENC_EDF)) {
-				$numch[ENC_EDF] += (3 / 4);
-			} elseif ($this->isCharMode($chr, ENC_ASCII_EXT)) {
-				$numch[ENC_EDF] += (17 / 4);
+			if ($this->isCharMode($chr, SASOET_ENC_EDF)) {
+				$numch[SASOET_ENC_EDF] += (3 / 4);
+			} elseif ($this->isCharMode($chr, SASOET_ENC_ASCII_EXT)) {
+				$numch[SASOET_ENC_EDF] += (17 / 4);
 			} else {
-				$numch[ENC_EDF] += (13 / 4);
+				$numch[SASOET_ENC_EDF] += (13 / 4);
 			}
 			// STEP Q
-			if ($this->isCharMode($chr, ENC_BASE256)) {
-				$numch[ENC_BASE256] += 4;
+			if ($this->isCharMode($chr, SASOET_ENC_BASE256)) {
+				$numch[SASOET_ENC_BASE256] += 4;
 			} else {
-				$numch[ENC_BASE256] += 1;
+				$numch[SASOET_ENC_BASE256] += 1;
 			}
 			// STEP R
 			if ($charscount >= 4) {
-				if (($numch[ENC_ASCII] + 1) <= min($numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_X12], $numch[ENC_EDF], $numch[ENC_BASE256])) {
-					return ENC_ASCII;
+				if (($numch[SASOET_ENC_ASCII] + 1) <= min($numch[SASOET_ENC_C40], $numch[SASOET_ENC_TXT], $numch[SASOET_ENC_X12], $numch[SASOET_ENC_EDF], $numch[SASOET_ENC_BASE256])) {
+					return SASOET_ENC_ASCII;
 				}
-				if ((($numch[ENC_BASE256] + 1) <= $numch[ENC_ASCII])
-					OR (($numch[ENC_BASE256] + 1) < min($numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_X12], $numch[ENC_EDF]))) {
-					return ENC_BASE256;
+				if ((($numch[SASOET_ENC_BASE256] + 1) <= $numch[SASOET_ENC_ASCII])
+					OR (($numch[SASOET_ENC_BASE256] + 1) < min($numch[SASOET_ENC_C40], $numch[SASOET_ENC_TXT], $numch[SASOET_ENC_X12], $numch[SASOET_ENC_EDF]))) {
+					return SASOET_ENC_BASE256;
 				}
-				if (($numch[ENC_EDF] + 1) < min($numch[ENC_ASCII], $numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_X12], $numch[ENC_BASE256])) {
-					return ENC_EDF;
+				if (($numch[SASOET_ENC_EDF] + 1) < min($numch[SASOET_ENC_ASCII], $numch[SASOET_ENC_C40], $numch[SASOET_ENC_TXT], $numch[SASOET_ENC_X12], $numch[SASOET_ENC_BASE256])) {
+					return SASOET_ENC_EDF;
 				}
-				if (($numch[ENC_TXT] + 1) < min($numch[ENC_ASCII], $numch[ENC_C40], $numch[ENC_X12], $numch[ENC_EDF], $numch[ENC_BASE256])) {
-					return ENC_TXT;
+				if (($numch[SASOET_ENC_TXT] + 1) < min($numch[SASOET_ENC_ASCII], $numch[SASOET_ENC_C40], $numch[SASOET_ENC_X12], $numch[SASOET_ENC_EDF], $numch[SASOET_ENC_BASE256])) {
+					return SASOET_ENC_TXT;
 				}
-				if (($numch[ENC_X12] + 1) < min($numch[ENC_ASCII], $numch[ENC_C40], $numch[ENC_TXT], $numch[ENC_EDF], $numch[ENC_BASE256])) {
-					return ENC_X12;
+				if (($numch[SASOET_ENC_X12] + 1) < min($numch[SASOET_ENC_ASCII], $numch[SASOET_ENC_C40], $numch[SASOET_ENC_TXT], $numch[SASOET_ENC_EDF], $numch[SASOET_ENC_BASE256])) {
+					return SASOET_ENC_X12;
 				}
-				if (($numch[ENC_C40] + 1) < min($numch[ENC_ASCII], $numch[ENC_TXT], $numch[ENC_EDF], $numch[ENC_BASE256])) {
-					if ($numch[ENC_C40] < $numch[ENC_X12]) {
-						return ENC_C40;
+				if (($numch[SASOET_ENC_C40] + 1) < min($numch[SASOET_ENC_ASCII], $numch[SASOET_ENC_TXT], $numch[SASOET_ENC_EDF], $numch[SASOET_ENC_BASE256])) {
+					if ($numch[SASOET_ENC_C40] < $numch[SASOET_ENC_X12]) {
+						return SASOET_ENC_C40;
 					}
-					if ($numch[ENC_C40] == $numch[ENC_X12]) {
+					if ($numch[SASOET_ENC_C40] == $numch[SASOET_ENC_X12]) {
 						$k = ($pos + $charscount + 1);
 						while ($k < $data_length) {
 							$tmpchr = ord($data[$k]);
-							if ($this->isCharMode($tmpchr, ENC_X12)) {
-								return ENC_X12;
-							} elseif (!($this->isCharMode($tmpchr, ENC_X12) OR $this->isCharMode($tmpchr, ENC_C40))) {
+							if ($this->isCharMode($tmpchr, SASOET_ENC_X12)) {
+								return SASOET_ENC_X12;
+							} elseif (!($this->isCharMode($tmpchr, SASOET_ENC_X12) OR $this->isCharMode($tmpchr, SASOET_ENC_C40))) {
 								break;
 							}
 							++$k;
 						}
-						return ENC_C40;
+						return SASOET_ENC_C40;
 					}
 				}
 			}
@@ -652,30 +652,30 @@ class Datamatrix {
 	 */
 	protected function getSwitchEncodingCodeword($mode) {
 		switch ($mode) {
-			case ENC_ASCII: { // ASCII character 0 to 127
+			case SASOET_ENC_ASCII: { // ASCII character 0 to 127
 				$cw = 254;
-				if ($this->last_enc == ENC_EDF) {
+				if ($this->last_enc == SASOET_ENC_EDF) {
 					$cw = 124;
 				}
 				break;
 			}
-			case ENC_C40: { // Upper-case alphanumeric
+			case SASOET_ENC_C40: { // Upper-case alphanumeric
 				$cw = 230;
 				break;
 			}
-			case ENC_TXT: { // Lower-case alphanumeric
+			case SASOET_ENC_TXT: { // Lower-case alphanumeric
 				$cw = 239;
 				break;
 			}
-			case ENC_X12: { // ANSI X12
+			case SASOET_ENC_X12: { // ANSI X12
 				$cw = 238;
 				break;
 			}
-			case ENC_EDF: { // ASCII character 32 to 94
+			case SASOET_ENC_EDF: { // ASCII character 32 to 94
 				$cw = 240;
 				break;
 			}
-			case ENC_BASE256: { // Function character (FNC1, Structured Append, Reader Program, or Code Page)
+			case SASOET_ENC_BASE256: { // Function character (FNC1, Structured Append, Reader Program, or Code Page)
 				$cw = 231;
 				break;
 			}
@@ -706,7 +706,7 @@ class Datamatrix {
 	 */
 	protected function getHighLevelEncoding($data) {
 		// STEP A. Start in ASCII encodation.
-		$enc = ENC_ASCII; // current encoding mode
+		$enc = SASOET_ENC_ASCII; // current encoding mode
 		$pos = 0; // current position
 		$cw = array(); // array of codewords to be returned
 		$cw_num = 0; // number of data codewords
@@ -715,8 +715,8 @@ class Datamatrix {
 			// set last used encoding
 			$this->last_enc = $enc;
 			switch ($enc) {
-				case ENC_ASCII: { // STEP B. While in ASCII encodation
-					if (($data_length > 1) AND ($pos < ($data_length - 1)) AND ($this->isCharMode(ord($data[$pos]), ENC_ASCII_NUM) AND $this->isCharMode(ord($data[$pos + 1]), ENC_ASCII_NUM))) {
+				case SASOET_ENC_ASCII: { // STEP B. While in ASCII encodation
+					if (($data_length > 1) AND ($pos < ($data_length - 1)) AND ($this->isCharMode(ord($data[$pos]), SASOET_ENC_ASCII_NUM) AND $this->isCharMode(ord($data[$pos + 1]), SASOET_ENC_ASCII_NUM))) {
 						// 1. If the next data sequence is at least 2 consecutive digits, encode the next two digits as a double digit in ASCII mode.
 						$cw[] = (intval(substr($data, $pos, 2)) + 130);
 						++$cw_num;
@@ -733,7 +733,7 @@ class Datamatrix {
 							// get new byte
 							$chr = ord($data[$pos]);
 							++$pos;
-							if ($this->isCharMode($chr, ENC_ASCII_EXT)) {
+							if ($this->isCharMode($chr, SASOET_ENC_ASCII_EXT)) {
 								// 3. If the next data character is extended ASCII (greater than 127) encode it in ASCII mode first using the Upper Shift (value 235) character.
 								$cw[] = 235;
 								$cw[] = ($chr - 127);
@@ -747,9 +747,9 @@ class Datamatrix {
 					}
 					break;
 				}
-				case ENC_C40 :   // Upper-case alphanumeric
-				case ENC_TXT :   // Lower-case alphanumeric
-				case ENC_X12 : { // ANSI X12
+				case SASOET_ENC_C40 :   // Upper-case alphanumeric
+				case SASOET_ENC_TXT :   // Lower-case alphanumeric
+				case SASOET_ENC_X12 : { // ANSI X12
 					$temp_cw = array();
 					$p = 0;
 					$epos = $pos;
@@ -763,7 +763,7 @@ class Datamatrix {
 						++$epos;
 						// check for extended character
 						if ($chr & 0x80) {
-							if ($enc == ENC_X12) {
+							if ($enc == SASOET_ENC_X12) {
 								return false;
 							}
 							$chr = ($chr & 0x7f);
@@ -781,10 +781,10 @@ class Datamatrix {
 							} elseif (isset($chr, $this->chset['SH2'][$chr])) {
 								$temp_cw[] = 1; // shift 2
 								$shiftset = $this->chset['SH2'];
-							} elseif (($enc == ENC_C40) AND isset($this->chset['S3C'][$chr])) {
+							} elseif (($enc == SASOET_ENC_C40) AND isset($this->chset['S3C'][$chr])) {
 								$temp_cw[] = 2; // shift 3
 								$shiftset = $this->chset['S3C'];
-							} elseif (($enc == ENC_TXT) AND isset($this->chset['S3T'][$chr])) {
+							} elseif (($enc == SASOET_ENC_TXT) AND isset($this->chset['S3T'][$chr])) {
 								$temp_cw[] = 2; // shift 3
 								$shiftset = $this->chset['S3T'];
 							} else {
@@ -808,9 +808,9 @@ class Datamatrix {
 							if ($newenc != $enc) {
 								// switch to new encoding
 								$enc = $newenc;
-								if ($enc != ENC_ASCII) {
+								if ($enc != SASOET_ENC_ASCII) {
 									// set unlatch character
-									$cw[] = $this->getSwitchEncodingCodeword(ENC_ASCII);
+									$cw[] = $this->getSwitchEncodingCodeword(SASOET_ENC_ASCII);
 									++$cw_num;
 								}
 								$cw[] = $this->getSwitchEncodingCodeword($enc);
@@ -832,7 +832,7 @@ class Datamatrix {
 							$cw[] = ($chr + 1);
 							++$cw_num;
 							$pos = $epos;
-							$enc = ENC_ASCII;
+							$enc = SASOET_ENC_ASCII;
 							$this->last_enc = $enc;
 						} elseif (($cwr == 2) AND ($p == 1)) {
 							// c. If two symbol characters remain and only one C40 value (data character) remains to be encoded
@@ -842,7 +842,7 @@ class Datamatrix {
 							$cw[] = ($chr + 1);
 							$cw_num += 2;
 							$pos = $epos;
-							$enc = ENC_ASCII;
+							$enc = SASOET_ENC_ASCII;
 							$this->last_enc = $enc;
 						} elseif (($cwr == 2) AND ($p == 2)) {
 							// b. If two symbol characters remain and two C40 values remain to be encoded
@@ -854,12 +854,12 @@ class Datamatrix {
 							$cw[] = ($tmp % 256);
 							$cw_num += 2;
 							$pos = $epos;
-							$enc = ENC_ASCII;
+							$enc = SASOET_ENC_ASCII;
 							$this->last_enc = $enc;
 						} else {
 							// switch to ASCII encoding
-							if ($enc != ENC_ASCII) {
-								$enc = ENC_ASCII;
+							if ($enc != SASOET_ENC_ASCII) {
+								$enc = SASOET_ENC_ASCII;
 								$this->last_enc = $enc;
 								$cw[] = $this->getSwitchEncodingCodeword($enc);
 								++$cw_num;
@@ -869,7 +869,7 @@ class Datamatrix {
 					}
 					break;
 				}
-				case ENC_EDF: { // F. While in EDIFACT (EDF) encodation
+				case SASOET_ENC_EDF: { // F. While in EDIFACT (EDF) encodation
 					// initialize temporary array with 0 length
 					$temp_cw = array();
 					$epos = $pos;
@@ -878,14 +878,14 @@ class Datamatrix {
 					do {
 						// 2. process the next character in EDIFACT encodation.
 						$chr = ord($data[$epos]);
-						if ($this->isCharMode($chr, ENC_EDF)) {
+						if ($this->isCharMode($chr, SASOET_ENC_EDF)) {
 							++$epos;
 							$temp_cw[] = $chr;
 							++$field_length;
 						}
-						if (($field_length == 4) OR ($epos == $data_length) OR !$this->isCharMode($chr, ENC_EDF)) {
+						if (($field_length == 4) OR ($epos == $data_length) OR !$this->isCharMode($chr, SASOET_ENC_EDF)) {
 							if (($epos == $data_length) AND ($field_length < 3)) {
-								$enc = ENC_ASCII;
+								$enc = SASOET_ENC_ASCII;
 								$cw[] = $this->getSwitchEncodingCodeword($enc);
 								++$cw_num;
 								break;
@@ -898,7 +898,7 @@ class Datamatrix {
 								for ($i = $field_length; $i < 4; ++$i) {
 									$temp_cw[] = 0;
 								}
-								$enc = ENC_ASCII;
+								$enc = SASOET_ENC_ASCII;
 								$this->last_enc = $enc;
 							}
 							// encodes four data characters in three codewords
@@ -920,14 +920,14 @@ class Datamatrix {
 							$temp_cw = array();
 							$pos = $epos;
 							$field_length = 0;
-							if ($enc == ENC_ASCII) {
+							if ($enc == SASOET_ENC_ASCII) {
 								break; // exit from EDIFACT mode
 							}
 						}
 					} while ($epos < $data_length);
 					break;
 				}
-				case ENC_BASE256: { // G. While in Base 256 (B256) encodation
+				case SASOET_ENC_BASE256: { // G. While in Base 256 (B256) encodation
 					// initialize temporary array with 0 length
 					$temp_cw = array();
 					$field_length = 0;
