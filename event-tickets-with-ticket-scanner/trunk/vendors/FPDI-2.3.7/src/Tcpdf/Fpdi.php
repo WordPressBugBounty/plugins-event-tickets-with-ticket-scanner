@@ -26,11 +26,11 @@ use setasign\Fpdi\PdfParser\Type\PdfTypeException;
 /**
  * Class Fpdi
  *
- * This class let you import pages of existing PDF documents into a reusable structure for TCPDF.
+ * This class let you import pages of existing PDF documents into a reusable structure for SASOET_TCPDF.
  *
  * @method _encrypt_data(int $n, string $s) string
  */
-class Fpdi extends \TCPDF
+class Fpdi extends \SASOET_TCPDF
 {
     use FpdiTrait {
         writePdfType as fpdiWritePdfType;
@@ -205,7 +205,7 @@ class Fpdi extends \TCPDF
     }
 
     /**
-     * Append content to the buffer of TCPDF.
+     * Append content to the buffer of SASOET_TCPDF.
      *
      * @param string $s
      * @param bool $newLine
@@ -247,7 +247,7 @@ class Fpdi extends \TCPDF
         if ($value instanceof PdfString) {
             $string = PdfString::unescape($value->value);
             $string = $this->_encrypt_data($this->currentObjectNumber, $string);
-            $value->value = \TCPDF_STATIC::_escape($string);
+            $value->value = \SASOET_TCPDF_STATIC::_escape($string);
         } elseif ($value instanceof PdfHexString) {
             $filter = new AsciiHex();
             $string = $filter->decode($value->value);

@@ -1,3 +1,9 @@
+= 3.2.6 - 2026-10-13 =
+* Fix: PDF library isolation now also keeps the global class aliases for TCPDF and FPDF, so plugins that ship their own PDF subclasses (shipping label generators, invoicing, etc.) keep working without changes on their side. After 3.2.5 introduced the underlying isolation, the legacy class names are restored alongside it. Shops without such plugins see no change.
+* Tweak: The "Show seating plan link in shop overview" option has moved to the Seating Plan settings section, where it belongs next to the other seat-map behaviour switches. Setting value is preserved.
+* Tweak: The "Congress" portal has been renamed to "Event Guide" across the admin area, options headings, and the public ticket-link view label. Internal option keys, database columns and REST namespaces stay the same for backward compatibility.
+* Fix: Resolved a scanner crash on servers returning partial ticket metadata. The scanner now safely handles responses where the ticket's redemption metadata is missing — instead of stopping with an error, it falls back to the operator-driven redeem path. No action needed for previously-working tickets; the behaviour is unchanged for them.
+
 = 3.1.6 - 2026-08-13 =
 * Tweak: The admin area was redesigned. The top navigation is now a segmented control, the footer cards sit in a four-column grid, ticket status pills use semantic colors, and the primary action buttons share one style across the whole settings page.
 * Tweak: The support footer now has a "Rate this Plugin" card linking to the WordPress.org review page, so the four footer cards fill one row.

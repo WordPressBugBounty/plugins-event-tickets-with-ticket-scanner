@@ -218,15 +218,14 @@ jQuery(document).ready(()=>{
         showScanSuccessFrame();
         $("#reader_output").html('<div style="padding:6px;text-align:center;"><b style="color:#16a34a;">'+__('Code read', 'event-tickets-with-ticket-scanner')+'</b> — '+__('sending to server, please wait…', 'event-tickets-with-ticket-scanner')+'</div>');
 
-        // Self-redeem echo (#014977): this device redeemed this code earlier in
-        // the session (scan & redeem, camera kept framing the ticket). Show a
-        // calm confirmation instead of re-redeeming and scaring the operator
-        // with a red "already used". EXCEPT for multi-redeem tickets that
-        // still have redeem capacity left (#015130 / ticket 000356 — group
-        // tickets, one QR for N guests: operator IS supposed to scan that
-        // QR for the next guest; the echo would lock the scanner until
-        // browser refresh). For those tickets the operator explicitly
-        // re-scanned to redeem the next member — fall through to the normal
+        // Self-redeem echo (git history: see PRs about the echo path): this
+        // device redeemed this code earlier in the session (scan & redeem,
+        // camera kept framing the ticket). Show a calm confirmation instead
+        // of re-redeeming and scaring the operator with a red "already used".
+        // EXCEPT for multi-redeem tickets that still have redeem capacity
+        // left (git history: see the multi-redeem-echo fix). For those
+        // tickets the operator explicitly re-scanned to redeem the next
+        // member — fall through to the normal
         // retrieveTicket() path that triggers another server-side redeem.
         if (self_redeemed_this_session[decodedText]) {
             let _d = self_redeemed_this_session[decodedText];
@@ -1863,11 +1862,32 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         } else {
             allow_redeem = true;
         }
+        // Defensive read of the wc_ticket metadata.
+        // canTicketBeRedeemed() runs from six callers, some of which only
+        // guard on _d.data / system.last_scanned_ticket.data. When the
+        // server-side response shape changes (older plugin versions, partial
+        // /code/endpoint responses, retrieval-before-redeem sequences), the
+        // fields this function relies on can be missing. Other paths in this
+        // file already do the same defensive check (lines 829, 1455, 1494);
+        // without it here, the scanner throws
+        //   "Cannot read properties of undefined (reading 'wc_ticket')"
+        // (the original crash, see git history for the ticket-no reference)
+        // and never reaches the calmer self-redeem-echo or the manual
+        // redeem button path.
+        //
+        // Conservative default: if the wc_ticket metadata is missing we
+        // cannot verify the ticket's multi-redeem state, so we refuse the
+        // auto-redeem and let the operator drive the manual flow. Returning
+        // true would silently auto-redeem a ticket whose state we cannot
+        // verify.
         if (allow_redeem) {
-            if (data.metaObj['wc_ticket']['redeemed_date'] != "") {
+            const wc_ticket = data && data.metaObj ? data.metaObj['wc_ticket'] : undefined;
+            if (wc_ticket && wc_ticket.redeemed_date && wc_ticket.redeemed_date != "") {
                 allow_redeem = false;
             }
-            if (data._ret.max_redeem_amount > 1 && data.metaObj.wc_ticket.stats_redeemed.length < data._ret.max_redeem_amount) {
+            if (wc_ticket && wc_ticket.stats_redeemed &&
+                data._ret.max_redeem_amount > 1 &&
+                wc_ticket.stats_redeemed.length < data._ret.max_redeem_amount) {
                 allow_redeem = true;
             }
             if (data._ret.max_redeem_per_day > 0 && data._ret.redeems_today >= data._ret.max_redeem_per_day) {

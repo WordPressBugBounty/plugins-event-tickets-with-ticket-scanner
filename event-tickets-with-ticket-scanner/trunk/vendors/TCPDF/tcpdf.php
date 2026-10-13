@@ -9,20 +9,20 @@
 // -------------------------------------------------------------------
 // Copyright (C) 2002-2021 Nicola Asuni - Tecnick.com LTD
 //
-// This file is part of TCPDF software library.
+// This file is part of SASOET_TCPDF software library.
 //
-// TCPDF is free software: you can redistribute it and/or modify it
+// SASOET_TCPDF is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //
-// TCPDF is distributed in the hope that it will be useful, but
+// SASOET_TCPDF is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the License
-// along with TCPDF. If not, see
+// along with SASOET_TCPDF. If not, see
 // <http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT>.
 //
 // See LICENSE.TXT file for more information.
@@ -70,8 +70,8 @@
 /**
  * @file
  * This is a PHP class for generating PDF documents without requiring external extensions.<br>
- * TCPDF project (http://www.tcpdf.org) was originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
- * <h3>TCPDF main features are:</h3>
+ * SASOET_TCPDF project (http://www.tcpdf.org) was originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
+ * <h3>SASOET_TCPDF main features are:</h3>
  * <ul>
  * <li>no external libraries are required for the basic functions;</li>
  * <li>all standard page formats, custom page formats, custom margins and units of measure;</li>
@@ -107,25 +107,25 @@
  * @version 6.3.2
  */
 
-// TCPDF configuration
+// SASOET_TCPDF configuration
 require_once(dirname(__FILE__).'/tcpdf_autoconfig.php');
-// TCPDF static font methods and data
+// SASOET_TCPDF static font methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_font_data.php');
-// TCPDF static font methods and data
+// SASOET_TCPDF static font methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_fonts.php');
-// TCPDF static color methods and data
+// SASOET_TCPDF static color methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_colors.php');
-// TCPDF static image methods and data
+// SASOET_TCPDF static image methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_images.php');
-// TCPDF static methods and data
+// SASOET_TCPDF static methods and data
 require_once(dirname(__FILE__).'/include/tcpdf_static.php');
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 /**
- * @class TCPDF
+ * @class SASOET_TCPDF
  * PHP class for generating PDF documents without requiring external extensions.
- * TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
+ * SASOET_TCPDF project (http://www.tcpdf.org) has been originally derived in 2002 from the Public Domain FPDF class by Olivier Plathey (http://www.fpdf.org), but now is almost entirely rewritten.<br>
  * @package com.tecnick.tcpdf
  * @brief PHP class for generating PDF documents without requiring external extensions.
  * @version 6.3.2
@@ -134,7 +134,7 @@ require_once(dirname(__FILE__).'/include/tcpdf_static.php');
  * @IgnoreAnnotation("public")
  * @IgnoreAnnotation("pre")
  */
-class TCPDF {
+class SASOET_TCPDF {
 
 	// Protected properties
 
@@ -930,7 +930,7 @@ class TCPDF {
 	 * @since 3.0.014 (2008-05-23)
 	 * @var float
 	 */
-	protected $cell_height_ratio = K_CELL_HEIGHT_RATIO;
+	protected $cell_height_ratio = SASOET_K_CELL_HEIGHT_RATIO;
 
 	/**
 	 * PDF viewer preferences.
@@ -1826,7 +1826,7 @@ class TCPDF {
 	protected $page_boxes = array('MediaBox', 'CropBox', 'BleedBox', 'TrimBox', 'ArtBox');
 
 	/**
-	 * If true print TCPDF meta link.
+	 * If true print SASOET_TCPDF meta link.
 	 * @protected
 	 * @since 5.9.152 (2012-03-23)
 	 */
@@ -1877,7 +1877,7 @@ class TCPDF {
 	public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false) {
 		// set file ID for trailer
 		$serformat = (is_array($format) ? json_encode($format) : $format);
-		$this->file_id = md5(TCPDF_STATIC::getRandomSeed('TCPDF'.$orientation.$unit.$serformat.$encoding));
+		$this->file_id = md5(SASOET_TCPDF_STATIC::getRandomSeed('SASOET_TCPDF'.$orientation.$unit.$serformat.$encoding));
 		$this->font_obj_ids = array();
 		$this->page_obj_id = array();
 		$this->form_obj_id = array();
@@ -1912,7 +1912,7 @@ class TCPDF {
 		$this->gradients = array();
 		$this->InFooter = false;
 		$this->lasth = 0;
-		$this->FontFamily = defined('PDF_FONT_NAME_MAIN')?PDF_FONT_NAME_MAIN:'helvetica';
+		$this->FontFamily = defined('SASOET_PDF_FONT_NAME_MAIN')?SASOET_PDF_FONT_NAME_MAIN:'helvetica';
 		$this->FontStyle = '';
 		$this->FontSizePt = 12;
 		$this->underline = false;
@@ -1997,7 +1997,7 @@ class TCPDF {
 		// set default JPEG quality
 		$this->jpeg_quality = 75;
 		// initialize some settings
-		TCPDF_FONTS::utf8Bidi(array(), '', false, $this->isunicode, $this->CurrentFont);
+		SASOET_TCPDF_FONTS::utf8Bidi(array(), '', false, $this->isunicode, $this->CurrentFont);
 		// set default font
 		$this->setFont($this->FontFamily, $this->FontStyle, $this->FontSizePt);
 		$this->setHeaderFont(array($this->FontFamily, $this->FontStyle, $this->FontSizePt));
@@ -2144,13 +2144,13 @@ class TCPDF {
 		}
 		if (is_string($format)) {
 			// get page measures from format name
-			$pf = TCPDF_STATIC::getPageSizeFromFormat($format);
+			$pf = SASOET_TCPDF_STATIC::getPageSizeFromFormat($format);
 			$this->fwPt = $pf[0];
 			$this->fhPt = $pf[1];
 		} else {
 			// the boundaries of the physical medium on which the page shall be displayed or printed
 			if (isset($format['MediaBox'])) {
-				$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'MediaBox', $format['MediaBox']['llx'], $format['MediaBox']['lly'], $format['MediaBox']['urx'], $format['MediaBox']['ury'], false, $this->k, $this->pagedim);
+				$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'MediaBox', $format['MediaBox']['llx'], $format['MediaBox']['lly'], $format['MediaBox']['urx'], $format['MediaBox']['ury'], false, $this->k, $this->pagedim);
 				$this->fwPt = (($format['MediaBox']['urx'] - $format['MediaBox']['llx']) * $this->k);
 				$this->fhPt = (($format['MediaBox']['ury'] - $format['MediaBox']['lly']) * $this->k);
 			} else {
@@ -2161,27 +2161,27 @@ class TCPDF {
 						// default value
 						$format['format'] = 'A4';
 					}
-					$pf = TCPDF_STATIC::getPageSizeFromFormat($format['format']);
+					$pf = SASOET_TCPDF_STATIC::getPageSizeFromFormat($format['format']);
 				}
 				$this->fwPt = $pf[0];
 				$this->fhPt = $pf[1];
-				$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'MediaBox', 0, 0, $this->fwPt, $this->fhPt, true, $this->k, $this->pagedim);
+				$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'MediaBox', 0, 0, $this->fwPt, $this->fhPt, true, $this->k, $this->pagedim);
 			}
 			// the visible region of default user space
 			if (isset($format['CropBox'])) {
-				$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'CropBox', $format['CropBox']['llx'], $format['CropBox']['lly'], $format['CropBox']['urx'], $format['CropBox']['ury'], false, $this->k, $this->pagedim);
+				$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'CropBox', $format['CropBox']['llx'], $format['CropBox']['lly'], $format['CropBox']['urx'], $format['CropBox']['ury'], false, $this->k, $this->pagedim);
 			}
 			// the region to which the contents of the page shall be clipped when output in a production environment
 			if (isset($format['BleedBox'])) {
-				$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'BleedBox', $format['BleedBox']['llx'], $format['BleedBox']['lly'], $format['BleedBox']['urx'], $format['BleedBox']['ury'], false, $this->k, $this->pagedim);
+				$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'BleedBox', $format['BleedBox']['llx'], $format['BleedBox']['lly'], $format['BleedBox']['urx'], $format['BleedBox']['ury'], false, $this->k, $this->pagedim);
 			}
 			// the intended dimensions of the finished page after trimming
 			if (isset($format['TrimBox'])) {
-				$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'TrimBox', $format['TrimBox']['llx'], $format['TrimBox']['lly'], $format['TrimBox']['urx'], $format['TrimBox']['ury'], false, $this->k, $this->pagedim);
+				$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'TrimBox', $format['TrimBox']['llx'], $format['TrimBox']['lly'], $format['TrimBox']['urx'], $format['TrimBox']['ury'], false, $this->k, $this->pagedim);
 			}
 			// the page's meaningful content (including potential white space)
 			if (isset($format['ArtBox'])) {
-				$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'ArtBox', $format['ArtBox']['llx'], $format['ArtBox']['lly'], $format['ArtBox']['urx'], $format['ArtBox']['ury'], false, $this->k, $this->pagedim);
+				$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'ArtBox', $format['ArtBox']['llx'], $format['ArtBox']['lly'], $format['ArtBox']['urx'], $format['ArtBox']['ury'], false, $this->k, $this->pagedim);
 			}
 			// specify the colours and other visual characteristics that should be used in displaying guidelines on the screen for the various page boundaries
 			if (isset($format['BoxColorInfo'])) {
@@ -2254,23 +2254,23 @@ class TCPDF {
 	public function setPageOrientation($orientation, $autopagebreak=null, $bottommargin=null) {
 		if (!isset($this->pagedim[$this->page]['MediaBox'])) {
 			// the boundaries of the physical medium on which the page shall be displayed or printed
-			$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'MediaBox', 0, 0, $this->fwPt, $this->fhPt, true, $this->k, $this->pagedim);
+			$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'MediaBox', 0, 0, $this->fwPt, $this->fhPt, true, $this->k, $this->pagedim);
 		}
 		if (!isset($this->pagedim[$this->page]['CropBox'])) {
 			// the visible region of default user space
-			$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'CropBox', $this->pagedim[$this->page]['MediaBox']['llx'], $this->pagedim[$this->page]['MediaBox']['lly'], $this->pagedim[$this->page]['MediaBox']['urx'], $this->pagedim[$this->page]['MediaBox']['ury'], true, $this->k, $this->pagedim);
+			$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'CropBox', $this->pagedim[$this->page]['MediaBox']['llx'], $this->pagedim[$this->page]['MediaBox']['lly'], $this->pagedim[$this->page]['MediaBox']['urx'], $this->pagedim[$this->page]['MediaBox']['ury'], true, $this->k, $this->pagedim);
 		}
 		if (!isset($this->pagedim[$this->page]['BleedBox'])) {
 			// the region to which the contents of the page shall be clipped when output in a production environment
-			$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'BleedBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury'], true, $this->k, $this->pagedim);
+			$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'BleedBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury'], true, $this->k, $this->pagedim);
 		}
 		if (!isset($this->pagedim[$this->page]['TrimBox'])) {
 			// the intended dimensions of the finished page after trimming
-			$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'TrimBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury'], true, $this->k, $this->pagedim);
+			$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'TrimBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury'], true, $this->k, $this->pagedim);
 		}
 		if (!isset($this->pagedim[$this->page]['ArtBox'])) {
 			// the page's meaningful content (including potential white space)
-			$this->pagedim = TCPDF_STATIC::setPageBoxes($this->page, 'ArtBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury'], true, $this->k, $this->pagedim);
+			$this->pagedim = SASOET_TCPDF_STATIC::setPageBoxes($this->page, 'ArtBox', $this->pagedim[$this->page]['CropBox']['llx'], $this->pagedim[$this->page]['CropBox']['lly'], $this->pagedim[$this->page]['CropBox']['urx'], $this->pagedim[$this->page]['CropBox']['ury'], true, $this->k, $this->pagedim);
 		}
 		if (!isset($this->pagedim[$this->page]['Rotate'])) {
 			// The number of degrees by which the page shall be rotated clockwise when displayed or printed. The value shall be a multiple of 90.
@@ -2304,18 +2304,18 @@ class TCPDF {
 		}
 		if ((abs($this->pagedim[$this->page]['MediaBox']['urx'] - $this->hPt) < $this->feps) AND (abs($this->pagedim[$this->page]['MediaBox']['ury'] - $this->wPt) < $this->feps)){
 			// swap X and Y coordinates (change page orientation)
-			$this->pagedim = TCPDF_STATIC::swapPageBoxCoordinates($this->page, $this->pagedim);
+			$this->pagedim = SASOET_TCPDF_STATIC::swapPageBoxCoordinates($this->page, $this->pagedim);
 		}
 		$this->w = ($this->wPt / $this->k);
 		$this->h = ($this->hPt / $this->k);
-		if (TCPDF_STATIC::empty_string($autopagebreak)) {
+		if (SASOET_TCPDF_STATIC::empty_string($autopagebreak)) {
 			if (isset($this->AutoPageBreak)) {
 				$autopagebreak = $this->AutoPageBreak;
 			} else {
 				$autopagebreak = true;
 			}
 		}
-		if (TCPDF_STATIC::empty_string($bottommargin)) {
+		if (SASOET_TCPDF_STATIC::empty_string($bottommargin)) {
 			if (isset($this->bMargin)) {
 				$bottommargin = $this->bMargin;
 			} else {
@@ -2682,16 +2682,16 @@ class TCPDF {
 	 * @see getCellPaddings(), SetCellPadding()
 	 */
 	public function setCellPaddings($left=null, $top=null, $right=null, $bottom=null) {
-		if (!TCPDF_STATIC::empty_string($left) AND ($left >= 0)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($left) AND ($left >= 0)) {
 			$this->cell_padding['L'] = $left;
 		}
-		if (!TCPDF_STATIC::empty_string($top) AND ($top >= 0)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($top) AND ($top >= 0)) {
 			$this->cell_padding['T'] = $top;
 		}
-		if (!TCPDF_STATIC::empty_string($right) AND ($right >= 0)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($right) AND ($right >= 0)) {
 			$this->cell_padding['R'] = $right;
 		}
-		if (!TCPDF_STATIC::empty_string($bottom) AND ($bottom >= 0)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($bottom) AND ($bottom >= 0)) {
 			$this->cell_padding['B'] = $bottom;
 		}
 	}
@@ -2718,16 +2718,16 @@ class TCPDF {
 	 * @see getCellMargins()
 	 */
 	public function setCellMargins($left=null, $top=null, $right=null, $bottom=null) {
-		if (!TCPDF_STATIC::empty_string($left) AND ($left >= 0)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($left) AND ($left >= 0)) {
 			$this->cell_margin['L'] = $left;
 		}
-		if (!TCPDF_STATIC::empty_string($top) AND ($top >= 0)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($top) AND ($top >= 0)) {
 			$this->cell_margin['T'] = $top;
 		}
-		if (!TCPDF_STATIC::empty_string($right) AND ($right >= 0)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($right) AND ($right >= 0)) {
 			$this->cell_margin['R'] = $right;
 		}
-		if (!TCPDF_STATIC::empty_string($bottom) AND ($bottom >= 0)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($bottom) AND ($bottom >= 0)) {
 			$this->cell_margin['B'] = $bottom;
 		}
 	}
@@ -2882,8 +2882,8 @@ class TCPDF {
 		} else {
 			$this->Error('Incorrect zoom display mode: '.$zoom);
 		}
-		$this->LayoutMode = TCPDF_STATIC::getPageLayoutMode($layout);
-		$this->PageMode = TCPDF_STATIC::getPageMode($mode);
+		$this->LayoutMode = SASOET_TCPDF_STATIC::getPageLayoutMode($layout);
+		$this->PageMode = SASOET_TCPDF_STATIC::getPageMode($mode);
 	}
 
 	/**
@@ -3001,10 +3001,10 @@ class TCPDF {
 	public function Error($msg) {
 		// unset all class variables
 		$this->_destroy(true);
-		if (defined('K_TCPDF_THROW_EXCEPTION_ERROR') AND !K_TCPDF_THROW_EXCEPTION_ERROR) {
-			die('<strong>TCPDF ERROR: </strong>'.$msg);
+		if (defined('SASOET_K_TCPDF_THROW_EXCEPTION_ERROR') AND !SASOET_K_TCPDF_THROW_EXCEPTION_ERROR) {
+			die('<strong>SASOET_TCPDF ERROR: </strong>'.$msg);
 		} else {
-			throw new Exception('TCPDF ERROR: '.$msg);
+			throw new Exception('SASOET_TCPDF ERROR: '.$msg);
 		}
 	}
 
@@ -3046,7 +3046,7 @@ class TCPDF {
 			$this->y = $this->h - (1 / $this->k);
 			$this->lMargin = 0;
 			$this->_outSaveGraphicsState();
-			$font = defined('PDF_FONT_NAME_MAIN')?PDF_FONT_NAME_MAIN:'helvetica';
+			$font = defined('SASOET_PDF_FONT_NAME_MAIN')?SASOET_PDF_FONT_NAME_MAIN:'helvetica';
 			$this->setFont($font, '', 1);
 			$this->setTextRenderingMode(0, false, false);
 			$msg = "\x50\x6f\x77\x65\x72\x65\x64\x20\x62\x79\x20\x54\x43\x50\x44\x46\x20\x28\x77\x77\x77\x2e\x74\x63\x70\x64\x66\x2e\x6f\x72\x67\x29";
@@ -3481,14 +3481,14 @@ class TCPDF {
 			} else {
 				$this->x = $this->original_lMargin;
 			}
-			if (($headerdata['logo']) AND ($headerdata['logo'] != K_BLANK_IMAGE)) {
-				$imgtype = TCPDF_IMAGES::getImageFileType(K_PATH_IMAGES.$headerdata['logo']);
+			if (($headerdata['logo']) AND ($headerdata['logo'] != SASOET_K_BLANK_IMAGE)) {
+				$imgtype = SASOET_TCPDF_IMAGES::getImageFileType(SASOET_K_PATH_IMAGES.$headerdata['logo']);
 				if (($imgtype == 'eps') OR ($imgtype == 'ai')) {
-					$this->ImageEps(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+					$this->ImageEps(SASOET_K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
 				} elseif ($imgtype == 'svg') {
-					$this->ImageSVG(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+					$this->ImageSVG(SASOET_K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
 				} else {
-					$this->Image(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+					$this->Image(SASOET_K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
 				}
 				$imgy = $this->getImageRBY();
 			} else {
@@ -3710,7 +3710,7 @@ class TCPDF {
 			$this->pagedim[$this->page]['tm'] = $this->tMargin;
 			$this->y = $this->tMargin;
 		}
-		if (!TCPDF_STATIC::empty_string($this->thead) AND (!$this->inthead)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($this->thead) AND (!$this->inthead)) {
 			// set margins
 			$prev_lMargin = $this->lMargin;
 			$prev_rMargin = $this->rMargin;
@@ -3810,7 +3810,7 @@ class TCPDF {
 	 * @since 5.9.125 (2011-10-03)
 	 */
 	public function setSpotColor($type, $name, $tint=100) {
-		$spotcolor = TCPDF_COLORS::getSpotColor($name, $this->spot_colors);
+		$spotcolor = SASOET_TCPDF_COLORS::getSpotColor($name, $this->spot_colors);
 		if ($spotcolor === false) {
 			$this->Error('Undefined spot color: '.$name.', you must add it using the AddSpotColor() method.');
 		}
@@ -4110,7 +4110,7 @@ class TCPDF {
 	 * @since 1.2
 	 */
 	public function GetStringWidth($s, $fontname='', $fontstyle='', $fontsize=0, $getarray=false) {
-		return $this->GetArrStringWidth(TCPDF_FONTS::utf8Bidi(TCPDF_FONTS::UTF8StringToArray($s, $this->isunicode, $this->CurrentFont), $s, $this->tmprtl, $this->isunicode, $this->CurrentFont), $fontname, $fontstyle, $fontsize, $getarray);
+		return $this->GetArrStringWidth(SASOET_TCPDF_FONTS::utf8Bidi(SASOET_TCPDF_FONTS::UTF8StringToArray($s, $this->isunicode, $this->CurrentFont), $s, $this->tmprtl, $this->isunicode, $this->CurrentFont), $fontname, $fontstyle, $fontsize, $getarray);
 	}
 
 	/**
@@ -4127,7 +4127,7 @@ class TCPDF {
 	 */
 	public function GetArrStringWidth($sa, $fontname='', $fontstyle='', $fontsize=0, $getarray=false) {
 		// store current values
-		if (!TCPDF_STATIC::empty_string($fontname)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($fontname)) {
 			$prev_FontFamily = $this->FontFamily;
 			$prev_FontStyle = $this->FontStyle;
 			$prev_FontSizePt = $this->FontSizePt;
@@ -4135,7 +4135,7 @@ class TCPDF {
 		}
 		// convert UTF-8 array to Latin1 if required
 		if ($this->isunicode AND (!$this->isUnicodeFont())) {
-			$sa = TCPDF_FONTS::UTF8ArrToLatin1Arr($sa);
+			$sa = SASOET_TCPDF_FONTS::UTF8ArrToLatin1Arr($sa);
 		}
 		$w = 0; // total width
 		$wa = array(); // array of characters widths
@@ -4146,7 +4146,7 @@ class TCPDF {
 			$w += $cw;
 		}
 		// restore previous values
-		if (!TCPDF_STATIC::empty_string($fontname)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($fontname)) {
 			$this->setFont($prev_FontFamily, $prev_FontStyle, $prev_FontSizePt, '', 'default', false);
 		}
 		if ($getarray) {
@@ -4214,7 +4214,7 @@ class TCPDF {
 	 */
 	public function GetNumChars($s) {
 		if ($this->isUnicodeFont()) {
-			return count(TCPDF_FONTS::UTF8StringToArray($s, $this->isunicode, $this->CurrentFont));
+			return count(SASOET_TCPDF_FONTS::UTF8StringToArray($s, $this->isunicode, $this->CurrentFont));
 		}
 		return strlen($s);
 	}
@@ -4225,7 +4225,7 @@ class TCPDF {
 	 * @since 4.0.013 (2008-07-28)
 	 */
 	protected function getFontsList() {
-		if (($fontsdir = opendir(TCPDF_FONTS::_getfontpath())) !== false) {
+		if (($fontsdir = opendir(SASOET_TCPDF_FONTS::_getfontpath())) !== false) {
 			while (($file = readdir($fontsdir)) !== false) {
 				if (substr($file, -4) == '.php') {
 					array_push($this->fontlist, strtolower(basename($file, '.php')));
@@ -4238,7 +4238,7 @@ class TCPDF {
 	/**
 	 * Imports a TrueType, Type1, core, or CID0 font and makes it available.
 	 * It is necessary to generate a font definition file first (read /fonts/utils/README.TXT).
-	 * The definition file (and the font file itself when embedding) must be present either in the current directory or in the one indicated by K_PATH_FONTS if the constant is defined. If it could not be found, the error "Could not include font definition file" is generated.
+	 * The definition file (and the font file itself when embedding) must be present either in the current directory or in the one indicated by SASOET_K_PATH_FONTS if the constant is defined. If it could not be found, the error "Could not include font definition file" is generated.
 	 * @param string $family Font family. The name can be chosen arbitrarily. If it is a standard family name, it will override the corresponding font.
 	 * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular (default)</li><li>B: bold</li><li>I: italic</li><li>BI or IB: bold italic</li></ul>
 	 * @param string $fontfile The font definition file. By default, the name is built from the family and style, in lower case with no spaces.
@@ -4255,8 +4255,8 @@ class TCPDF {
 		if ($this->pdfa_mode) {
 			$subset = false;
 		}
-		if (TCPDF_STATIC::empty_string($family)) {
-			if (!TCPDF_STATIC::empty_string($this->FontFamily)) {
+		if (SASOET_TCPDF_STATIC::empty_string($family)) {
+			if (!SASOET_TCPDF_STATIC::empty_string($this->FontFamily)) {
 				$family = $this->FontFamily;
 			} else {
 				$this->Error('Empty font family');
@@ -4326,9 +4326,9 @@ class TCPDF {
 		}
 		// get specified font directory (if any)
 		$fontdir = false;
-		if (!TCPDF_STATIC::empty_string($fontfile)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($fontfile)) {
 			$fontdir = dirname($fontfile);
-			if (TCPDF_STATIC::empty_string($fontdir) OR ($fontdir == '.')) {
+			if (SASOET_TCPDF_STATIC::empty_string($fontdir) OR ($fontdir == '.')) {
 				$fontdir = '';
 			} else {
 				$fontdir .= '/';
@@ -4337,19 +4337,19 @@ class TCPDF {
 		// true when the font style variation is missing
 		$missing_style = false;
 		// search and include font file
-		if (TCPDF_STATIC::empty_string($fontfile) OR (!@TCPDF_STATIC::file_exists($fontfile))) {
+		if (SASOET_TCPDF_STATIC::empty_string($fontfile) OR (!@SASOET_TCPDF_STATIC::file_exists($fontfile))) {
 			// build a standard filenames for specified font
 			$tmp_fontfile = str_replace(' ', '', $family).strtolower($style).'.php';
-			$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontfile, $fontdir);
-			if (TCPDF_STATIC::empty_string($fontfile)) {
+			$fontfile = SASOET_TCPDF_FONTS::getFontFullPath($tmp_fontfile, $fontdir);
+			if (SASOET_TCPDF_STATIC::empty_string($fontfile)) {
 				$missing_style = true;
 				// try to remove the style part
 				$tmp_fontfile = str_replace(' ', '', $family).'.php';
-				$fontfile = TCPDF_FONTS::getFontFullPath($tmp_fontfile, $fontdir);
+				$fontfile = SASOET_TCPDF_FONTS::getFontFullPath($tmp_fontfile, $fontdir);
 			}
 		}
 		// include font file
-		if (!TCPDF_STATIC::empty_string($fontfile) AND (@TCPDF_STATIC::file_exists($fontfile))) {
+		if (!SASOET_TCPDF_STATIC::empty_string($fontfile) AND (@SASOET_TCPDF_STATIC::file_exists($fontfile))) {
 			include($fontfile);
 		} else {
 			$this->Error('Could not include font definition file: '.$family.'');
@@ -4359,32 +4359,32 @@ class TCPDF {
 			$this->Error('The font definition file has a bad format: '.$fontfile.'');
 		}
 		// SET default parameters
-		if (!isset($file) OR TCPDF_STATIC::empty_string($file)) {
+		if (!isset($file) OR SASOET_TCPDF_STATIC::empty_string($file)) {
 			$file = '';
 		}
-		if (!isset($enc) OR TCPDF_STATIC::empty_string($enc)) {
+		if (!isset($enc) OR SASOET_TCPDF_STATIC::empty_string($enc)) {
 			$enc = '';
 		}
-		if (!isset($cidinfo) OR TCPDF_STATIC::empty_string($cidinfo)) {
+		if (!isset($cidinfo) OR SASOET_TCPDF_STATIC::empty_string($cidinfo)) {
 			$cidinfo = array('Registry'=>'Adobe', 'Ordering'=>'Identity', 'Supplement'=>0);
 			$cidinfo['uni2cid'] = array();
 		}
-		if (!isset($ctg) OR TCPDF_STATIC::empty_string($ctg)) {
+		if (!isset($ctg) OR SASOET_TCPDF_STATIC::empty_string($ctg)) {
 			$ctg = '';
 		}
-		if (!isset($desc) OR TCPDF_STATIC::empty_string($desc)) {
+		if (!isset($desc) OR SASOET_TCPDF_STATIC::empty_string($desc)) {
 			$desc = array();
 		}
-		if (!isset($up) OR TCPDF_STATIC::empty_string($up)) {
+		if (!isset($up) OR SASOET_TCPDF_STATIC::empty_string($up)) {
 			$up = -100;
 		}
-		if (!isset($ut) OR TCPDF_STATIC::empty_string($ut)) {
+		if (!isset($ut) OR SASOET_TCPDF_STATIC::empty_string($ut)) {
 			$ut = 50;
 		}
-		if (!isset($cw) OR TCPDF_STATIC::empty_string($cw)) {
+		if (!isset($cw) OR SASOET_TCPDF_STATIC::empty_string($cw)) {
 			$cw = array();
 		}
-		if (!isset($dw) OR TCPDF_STATIC::empty_string($dw)) {
+		if (!isset($dw) OR SASOET_TCPDF_STATIC::empty_string($dw)) {
 			// set default width
 			if (isset($desc['MissingWidth']) AND ($desc['MissingWidth'] > 0)) {
 				$dw = $desc['MissingWidth'];
@@ -4469,7 +4469,7 @@ class TCPDF {
 			}
 			$this->setFontSubBuffer($fontkey, 'diff', $d);
 		}
-		if (!TCPDF_STATIC::empty_string($file)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($file)) {
 			if (!isset($this->FontFiles[$file])) {
 				if ((strcasecmp($type,'TrueType') == 0) OR (strcasecmp($type, 'TrueTypeUnicode') == 0)) {
 					$this->FontFiles[$file] = array('length1' => $originalsize, 'fontdir' => $fontdir, 'subset' => $subset, 'fontkeys' => array($fontkey));
@@ -4492,7 +4492,7 @@ class TCPDF {
 	 * The font can be either a standard one or a font added via the AddFont() method. Standard fonts use Windows encoding cp1252 (Western Europe).
 	 * The method can be called before the first page is created and the font is retained from page to page.
 	 * If you just wish to change the current font size, it is simpler to call SetFontSize().
-	 * Note: for the standard fonts, the font metric files must be accessible. There are three possibilities for this:<ul><li>They are in the current directory (the one where the running script lies)</li><li>They are in one of the directories defined by the include_path parameter</li><li>They are in the directory defined by the K_PATH_FONTS constant</li></ul><br />
+	 * Note: for the standard fonts, the font metric files must be accessible. There are three possibilities for this:<ul><li>They are in the current directory (the one where the running script lies)</li><li>They are in one of the directories defined by the include_path parameter</li><li>They are in the directory defined by the SASOET_K_PATH_FONTS constant</li></ul><br />
 	 * @param string $family Family font. It can be either a name defined by AddFont() or one of the standard Type1 families (case insensitive):<ul><li>times (Times-Roman)</li><li>timesb (Times-Bold)</li><li>timesi (Times-Italic)</li><li>timesbi (Times-BoldItalic)</li><li>helvetica (Helvetica)</li><li>helveticab (Helvetica-Bold)</li><li>helveticai (Helvetica-Oblique)</li><li>helveticabi (Helvetica-BoldOblique)</li><li>courier (Courier)</li><li>courierb (Courier-Bold)</li><li>courieri (Courier-Oblique)</li><li>courierbi (Courier-BoldOblique)</li><li>symbol (Symbol)</li><li>zapfdingbats (ZapfDingbats)</li></ul> It is also possible to pass an empty string. In that case, the current family is retained.
 	 * @param string $style Font style. Possible values are (case insensitive):<ul><li>empty string: regular</li><li>B: bold</li><li>I: italic</li><li>U: underline</li><li>D: line through</li><li>O: overline</li></ul> or any combination. The default value is regular. Bold and italic styles do not apply to Symbol and ZapfDingbats basic fonts or other fonts when not defined.
 	 * @param float|null $size Font size in points. The default value is the current size. If no size has been specified since the beginning of the document, the value taken is 12
@@ -4689,11 +4689,11 @@ class TCPDF {
 	public function isCharDefined($char, $font='', $style='') {
 		if (is_string($char)) {
 			// get character code
-			$char = TCPDF_FONTS::UTF8StringToArray($char, $this->isunicode, $this->CurrentFont);
+			$char = SASOET_TCPDF_FONTS::UTF8StringToArray($char, $this->isunicode, $this->CurrentFont);
 			$char = $char[0];
 		}
-		if (TCPDF_STATIC::empty_string($font)) {
-			if (TCPDF_STATIC::empty_string($style)) {
+		if (SASOET_TCPDF_STATIC::empty_string($font)) {
+			if (SASOET_TCPDF_STATIC::empty_string($style)) {
 				return (isset($this->CurrentFont['cw'][intval($char)]));
 			}
 			$font = $this->FontFamily;
@@ -4717,12 +4717,12 @@ class TCPDF {
 		if (empty($subs)) {
 			return $text;
 		}
-		if (TCPDF_STATIC::empty_string($font)) {
+		if (SASOET_TCPDF_STATIC::empty_string($font)) {
 			$font = $this->FontFamily;
 		}
 		$fontdata = $this->AddFont($font, $style);
 		$fontinfo = $this->getFontBuffer($fontdata['fontkey']);
-		$uniarr = TCPDF_FONTS::UTF8StringToArray($text, $this->isunicode, $this->CurrentFont);
+		$uniarr = SASOET_TCPDF_FONTS::UTF8StringToArray($text, $this->isunicode, $this->CurrentFont);
 		foreach ($uniarr as $k => $chr) {
 			if (!isset($fontinfo['cw'][$chr])) {
 				// this character is missing on the selected font
@@ -4741,7 +4741,7 @@ class TCPDF {
 				}
 			}
 		}
-		return TCPDF_FONTS::UniArrSubString(TCPDF_FONTS::UTF8ArrayToUniArray($uniarr, $this->isunicode));
+		return SASOET_TCPDF_FONTS::UniArrSubString(SASOET_TCPDF_FONTS::UTF8ArrayToUniArray($uniarr, $this->isunicode));
 	}
 
 	/**
@@ -4889,20 +4889,20 @@ class TCPDF {
 		}
 		$this->PageAnnots[$page][] = array('n' => ++$this->n, 'x' => $x, 'y' => $y, 'w' => $w, 'h' => $h, 'txt' => $text, 'opt' => $opt, 'numspaces' => $spaces);
 		if (!$this->pdfa_mode || ($this->pdfa_mode && $this->pdfa_version == 3)) {
-			if ((($opt['Subtype'] == 'FileAttachment') OR ($opt['Subtype'] == 'Sound')) AND (!TCPDF_STATIC::empty_string($opt['FS']))
-				AND (@TCPDF_STATIC::file_exists($opt['FS']) OR TCPDF_STATIC::isValidURL($opt['FS']))
+			if ((($opt['Subtype'] == 'FileAttachment') OR ($opt['Subtype'] == 'Sound')) AND (!SASOET_TCPDF_STATIC::empty_string($opt['FS']))
+				AND (@SASOET_TCPDF_STATIC::file_exists($opt['FS']) OR SASOET_TCPDF_STATIC::isValidURL($opt['FS']))
 				AND (!isset($this->embeddedfiles[basename($opt['FS'])]))) {
 				$this->embeddedfiles[basename($opt['FS'])] = array('f' => ++$this->n, 'n' => ++$this->n, 'file' => $opt['FS']);
 			}
 		}
 		// Add widgets annotation's icons
-		if (isset($opt['mk']['i']) AND @TCPDF_STATIC::file_exists($opt['mk']['i'])) {
+		if (isset($opt['mk']['i']) AND @SASOET_TCPDF_STATIC::file_exists($opt['mk']['i'])) {
 			$this->Image($opt['mk']['i'], '', '', 10, 10, '', '', '', false, 300, '', false, false, 0, false, true);
 		}
-		if (isset($opt['mk']['ri']) AND @TCPDF_STATIC::file_exists($opt['mk']['ri'])) {
+		if (isset($opt['mk']['ri']) AND @SASOET_TCPDF_STATIC::file_exists($opt['mk']['ri'])) {
 			$this->Image($opt['mk']['ri'], '', '', 0, 0, '', '', '', false, 300, '', false, false, 0, false, true);
 		}
-		if (isset($opt['mk']['ix']) AND @TCPDF_STATIC::file_exists($opt['mk']['ix'])) {
+		if (isset($opt['mk']['ix']) AND @SASOET_TCPDF_STATIC::file_exists($opt['mk']['ix'])) {
 			$this->Image($opt['mk']['ix'], '', '', 0, 0, '', '', '', false, 300, '', false, false, 0, false, true);
 		}
 	}
@@ -5027,7 +5027,7 @@ class TCPDF {
 	 * @protected
 	 */
 	protected function checkPageBreak($h=0, $y=null, $addpage=true) {
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		$current_page = $this->page;
@@ -5151,10 +5151,10 @@ class TCPDF {
 	 */
 	protected function getCellCode($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='', $stretch=0, $ignore_min_height=false, $calign='T', $valign='M') {
 		// replace 'NO-BREAK SPACE' (U+00A0) character with a simple space
-		$txt = str_replace(TCPDF_FONTS::unichr(160, $this->isunicode), ' ', $txt);
+		$txt = str_replace(SASOET_TCPDF_FONTS::unichr(160, $this->isunicode), ' ', $txt);
 		$prev_cell_margin = $this->cell_margin;
 		$prev_cell_padding = $this->cell_padding;
-		$txt = TCPDF_STATIC::removeSHY($txt, $this->isunicode);
+		$txt = SASOET_TCPDF_STATIC::removeSHY($txt, $this->isunicode);
 		$rs = ''; //string to be returned
 		$this->adjustCellPadding($border);
 		if (!$ignore_min_height) {
@@ -5283,7 +5283,7 @@ class TCPDF {
 			}
 		}
 		$basefonty = $yt + $this->FontAscent;
-		if (TCPDF_STATIC::empty_string($w) OR ($w <= 0)) {
+		if (SASOET_TCPDF_STATIC::empty_string($w) OR ($w <= 0)) {
 			if ($this->rtl) {
 				$w = $x - $this->lMargin;
 			} else {
@@ -5315,12 +5315,12 @@ class TCPDF {
 			$txt2 = $txt;
 			if ($this->isunicode) {
 				if (($this->CurrentFont['type'] == 'core') OR ($this->CurrentFont['type'] == 'TrueType') OR ($this->CurrentFont['type'] == 'Type1')) {
-					$txt2 = TCPDF_FONTS::UTF8ToLatin1($txt2, $this->isunicode, $this->CurrentFont);
+					$txt2 = SASOET_TCPDF_FONTS::UTF8ToLatin1($txt2, $this->isunicode, $this->CurrentFont);
 				} else {
-					$unicode = TCPDF_FONTS::UTF8StringToArray($txt, $this->isunicode, $this->CurrentFont); // array of UTF-8 unicode values
-					$unicode = TCPDF_FONTS::utf8Bidi($unicode, '', $this->tmprtl, $this->isunicode, $this->CurrentFont);
+					$unicode = SASOET_TCPDF_FONTS::UTF8StringToArray($txt, $this->isunicode, $this->CurrentFont); // array of UTF-8 unicode values
+					$unicode = SASOET_TCPDF_FONTS::utf8Bidi($unicode, '', $this->tmprtl, $this->isunicode, $this->CurrentFont);
 					// replace thai chars (if any)
-					if (defined('K_THAI_TOPCHARS') AND (K_THAI_TOPCHARS == true)) {
+					if (defined('SASOET_K_THAI_TOPCHARS') AND (SASOET_K_THAI_TOPCHARS == true)) {
 						// number of chars
 						$numchars = count($unicode);
 						// po pla, for far, for fan
@@ -5409,11 +5409,11 @@ class TCPDF {
 						$unicode = $output;
 						// update font subsetchars
 						$this->setFontSubBuffer($this->CurrentFont['fontkey'], 'subsetchars', $this->CurrentFont['subsetchars']);
-					} // end of K_THAI_TOPCHARS
-					$txt2 = TCPDF_FONTS::arrUTF8ToUTF16BE($unicode, false);
+					} // end of SASOET_K_THAI_TOPCHARS
+					$txt2 = SASOET_TCPDF_FONTS::arrUTF8ToUTF16BE($unicode, false);
 				}
 			}
-			$txt2 = TCPDF_STATIC::_escape($txt2);
+			$txt2 = SASOET_TCPDF_STATIC::_escape($txt2);
 			// get current text width (considering general font stretching and spacing)
 			$txwidth = $this->GetStringWidth($txt);
 			$width = $txwidth;
@@ -5541,8 +5541,8 @@ class TCPDF {
 						$xshift += $this->GetArrStringWidth($uniarr); // + shift justification
 					} else {
 						// character to print
-						$topchr = TCPDF_FONTS::arrUTF8ToUTF16BE($uniarr, false);
-						$topchr = TCPDF_STATIC::_escape($topchr);
+						$topchr = SASOET_TCPDF_FONTS::arrUTF8ToUTF16BE($uniarr, false);
+						$topchr = SASOET_TCPDF_STATIC::_escape($topchr);
 						$s .= sprintf(' BT %F %F Td [(%s)] TJ ET', ($xdk + ($xshift * $k)), $ty, $topchr);
 					}
 				}
@@ -5853,11 +5853,11 @@ class TCPDF {
 		$this->cell_padding['T'] = 0;
 		$this->cell_padding['B'] = 0;
 		$this->setCellMargins(0, 0, 0, 0);
-		if (TCPDF_STATIC::empty_string($this->lasth) OR $reseth) {
+		if (SASOET_TCPDF_STATIC::empty_string($this->lasth) OR $reseth) {
 			// reset row height
 			$this->resetLastH();
 		}
-		if (!TCPDF_STATIC::empty_string($y)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($y)) {
 			$this->setY($y); // set y in order to convert negative y values to positive ones
 		}
 		$y = $this->GetY();
@@ -5872,7 +5872,7 @@ class TCPDF {
 		$startpage = $this->page;
 		// get current column
 		$startcolumn = $this->current_column;
-		if (!TCPDF_STATIC::empty_string($x)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($x)) {
 			$this->setX($x);
 		} else {
 			$x = $this->GetX();
@@ -5889,7 +5889,7 @@ class TCPDF {
 		$this->x = $ox;
 		$this->y = $oy;
 		// set width
-		if (TCPDF_STATIC::empty_string($w) OR ($w <= 0)) {
+		if (SASOET_TCPDF_STATIC::empty_string($w) OR ($w <= 0)) {
 			if ($this->rtl) {
 				$w = ($this->x - $this->lMargin - $mc_margin['L']);
 			} else {
@@ -6009,9 +6009,9 @@ class TCPDF {
 		$check_page_regions = $this->check_page_regions;
 		$this->check_page_regions = false;
 		// get border modes
-		$border_start = TCPDF_STATIC::getBorderMode($border, $position='start', $this->opencell);
-		$border_end = TCPDF_STATIC::getBorderMode($border, $position='end', $this->opencell);
-		$border_middle = TCPDF_STATIC::getBorderMode($border, $position='middle', $this->opencell);
+		$border_start = SASOET_TCPDF_STATIC::getBorderMode($border, $position='start', $this->opencell);
+		$border_end = SASOET_TCPDF_STATIC::getBorderMode($border, $position='end', $this->opencell);
+		$border_middle = SASOET_TCPDF_STATIC::getBorderMode($border, $position='middle', $this->opencell);
 		// design borders around HTML cells.
 		for ($page = $startpage; $page <= $endpage; ++$page) { // for each page
 			$ccode = '';
@@ -6226,7 +6226,7 @@ class TCPDF {
 			$this->cell_padding = $cellpadding;
 		}
 		$this->adjustCellPadding($border);
-		if (TCPDF_STATIC::empty_string($w) OR ($w <= 0)) {
+		if (SASOET_TCPDF_STATIC::empty_string($w) OR ($w <= 0)) {
 			if ($this->rtl) {
 				$w = $this->x - $this->lMargin;
 			} else {
@@ -6240,7 +6240,7 @@ class TCPDF {
 		}
 		$lines = 1;
 		$sum = 0;
-		$chars = TCPDF_FONTS::utf8Bidi(TCPDF_FONTS::UTF8StringToArray($txt, $this->isunicode, $this->CurrentFont), $txt, $this->tmprtl, $this->isunicode, $this->CurrentFont);
+		$chars = SASOET_TCPDF_FONTS::utf8Bidi(SASOET_TCPDF_FONTS::UTF8StringToArray($txt, $this->isunicode, $this->CurrentFont), $txt, $this->tmprtl, $this->isunicode, $this->CurrentFont);
 		$charsWidth = $this->GetArrStringWidth($chars, '', '', 0, true);
 		$length = count($chars);
 		$lastSeparator = -1;
@@ -6249,11 +6249,11 @@ class TCPDF {
 			$charWidth = $charsWidth[$i];
 			if (($c != 160)
 					AND (($c == 173)
-						OR preg_match($this->re_spaces, TCPDF_FONTS::unichr($c, $this->isunicode))
+						OR preg_match($this->re_spaces, SASOET_TCPDF_FONTS::unichr($c, $this->isunicode))
 						OR (($c == 45)
 							AND ($i > 0) AND ($i < ($length - 1))
-							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], TCPDF_FONTS::unichr($chars[($i - 1)], $this->isunicode))
-							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], TCPDF_FONTS::unichr($chars[($i + 1)], $this->isunicode))
+							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], SASOET_TCPDF_FONTS::unichr($chars[($i - 1)], $this->isunicode))
+							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], SASOET_TCPDF_FONTS::unichr($chars[($i + 1)], $this->isunicode))
 						)
 					)
 				) {
@@ -6377,13 +6377,13 @@ class TCPDF {
 		// remove carriage returns
 		$s = str_replace("\r", '', $txt);
 		// check if string contains arabic text
-		if (preg_match(TCPDF_FONT_DATA::$uni_RE_PATTERN_ARABIC, $s)) {
+		if (preg_match(SASOET_TCPDF_FONT_DATA::$uni_RE_PATTERN_ARABIC, $s)) {
 			$arabic = true;
 		} else {
 			$arabic = false;
 		}
 		// check if string contains RTL text
-		if ($arabic OR ($this->tmprtl == 'R') OR preg_match(TCPDF_FONT_DATA::$uni_RE_PATTERN_RTL, $s)) {
+		if ($arabic OR ($this->tmprtl == 'R') OR preg_match(SASOET_TCPDF_FONT_DATA::$uni_RE_PATTERN_RTL, $s)) {
 			$rtlmode = true;
 		} else {
 			$rtlmode = false;
@@ -6391,18 +6391,18 @@ class TCPDF {
 		// get a char width
 		$chrwidth = $this->GetCharWidth(46); // dot character
 		// get array of unicode values
-		$chars = TCPDF_FONTS::UTF8StringToArray($s, $this->isunicode, $this->CurrentFont);
+		$chars = SASOET_TCPDF_FONTS::UTF8StringToArray($s, $this->isunicode, $this->CurrentFont);
 		// calculate maximum width for a single character on string
 		$chrw = $this->GetArrStringWidth($chars, '', '', 0, true);
 		array_walk($chrw, array($this, 'getRawCharWidth'));
 		$maxchwidth = max($chrw);
 		// get array of chars
-		$uchars = TCPDF_FONTS::UTF8ArrayToUniArray($chars, $this->isunicode);
+		$uchars = SASOET_TCPDF_FONTS::UTF8ArrayToUniArray($chars, $this->isunicode);
 		// get the number of characters
 		$nb = count($chars);
 		// replacement for SHY character (minus symbol)
 		$shy_replacement = 45;
-		$shy_replacement_char = TCPDF_FONTS::unichr($shy_replacement, $this->isunicode);
+		$shy_replacement_char = SASOET_TCPDF_FONTS::unichr($shy_replacement, $this->isunicode);
 		// widht for SHY replacement
 		$shy_replacement_width = $this->GetCharWidth($shy_replacement);
 		// page width
@@ -6455,12 +6455,12 @@ class TCPDF {
 				} else {
 					$talign = $align;
 				}
-				$tmpstr = TCPDF_FONTS::UniArrSubString($uchars, $j, $i);
+				$tmpstr = SASOET_TCPDF_FONTS::UniArrSubString($uchars, $j, $i);
 				if ($firstline) {
 					$startx = $this->x;
 					$tmparr = array_slice($chars, $j, ($i - $j));
 					if ($rtlmode) {
-						$tmparr = TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
+						$tmparr = SASOET_TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
 					}
 					$linew = $this->GetArrStringWidth($tmparr);
 					unset($tmparr);
@@ -6485,7 +6485,7 @@ class TCPDF {
 				unset($tmpstr);
 				if ($firstline) {
 					$this->cell_padding = $tmpcellpadding;
-					return (TCPDF_FONTS::UniArrSubString($uchars, $i));
+					return (SASOET_TCPDF_FONTS::UniArrSubString($uchars, $i));
 				}
 				++$nl;
 				$j = $i + 1;
@@ -6514,11 +6514,11 @@ class TCPDF {
 				// \p{Lo} is needed because Chinese characters are packed next to each other without spaces in between.
 				if (($c != 160)
 					AND (($c == 173)
-						OR preg_match($this->re_spaces, TCPDF_FONTS::unichr($c, $this->isunicode))
+						OR preg_match($this->re_spaces, SASOET_TCPDF_FONTS::unichr($c, $this->isunicode))
 						OR (($c == 45)
 							AND ($i < ($nb - 1))
-							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], TCPDF_FONTS::unichr($pc, $this->isunicode))
-							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], TCPDF_FONTS::unichr($chars[($i + 1)], $this->isunicode))
+							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], SASOET_TCPDF_FONTS::unichr($pc, $this->isunicode))
+							AND @preg_match('/[\p{L}]/'.$this->re_space['m'], SASOET_TCPDF_FONTS::unichr($chars[($i + 1)], $this->isunicode))
 						)
 					)
 				) {
@@ -6544,7 +6544,7 @@ class TCPDF {
 				if ($this->isUnicodeFont() AND ($arabic)) {
 					// with bidirectional algorithm some chars may be changed affecting the line length
 					// *** very slow ***
-					$l = $this->GetArrStringWidth(TCPDF_FONTS::utf8Bidi(array_slice($chars, $j, ($i - $j)), '', $this->tmprtl, $this->isunicode, $this->CurrentFont));
+					$l = $this->GetArrStringWidth(SASOET_TCPDF_FONTS::utf8Bidi(array_slice($chars, $j, ($i - $j)), '', $this->tmprtl, $this->isunicode, $this->CurrentFont));
 				} else {
 					$l += $this->GetCharWidth($c, ($i+1 < $nb));
 				}
@@ -6562,16 +6562,16 @@ class TCPDF {
 							$this->Cell($w, $h, '', 0, 1);
 							$linebreak = true;
 							if ($firstline) {
-								return (TCPDF_FONTS::UniArrSubString($uchars, $j));
+								return (SASOET_TCPDF_FONTS::UniArrSubString($uchars, $j));
 							}
 						} else {
 							// truncate the word because do not fit on column
-							$tmpstr = TCPDF_FONTS::UniArrSubString($uchars, $j, $i);
+							$tmpstr = SASOET_TCPDF_FONTS::UniArrSubString($uchars, $j, $i);
 							if ($firstline) {
 								$startx = $this->x;
 								$tmparr = array_slice($chars, $j, ($i - $j));
 								if ($rtlmode) {
-									$tmparr = TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
+									$tmparr = SASOET_TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
 								}
 								$linew = $this->GetArrStringWidth($tmparr);
 								unset($tmparr);
@@ -6593,7 +6593,7 @@ class TCPDF {
 							unset($tmpstr);
 							if ($firstline) {
 								$this->cell_padding = $tmpcellpadding;
-								return (TCPDF_FONTS::UniArrSubString($uchars, $i));
+								return (SASOET_TCPDF_FONTS::UniArrSubString($uchars, $i));
 							}
 							$j = $i;
 							--$i;
@@ -6606,16 +6606,16 @@ class TCPDF {
 							$endspace = 0;
 						}
 						// check the length of the next string
-						$strrest = TCPDF_FONTS::UniArrSubString($uchars, ($sep + $endspace));
-						$nextstr = TCPDF_STATIC::pregSplit('/'.$this->re_space['p'].'/', $this->re_space['m'], $this->stringTrim($strrest));
+						$strrest = SASOET_TCPDF_FONTS::UniArrSubString($uchars, ($sep + $endspace));
+						$nextstr = SASOET_TCPDF_STATIC::pregSplit('/'.$this->re_space['p'].'/', $this->re_space['m'], $this->stringTrim($strrest));
 						if (isset($nextstr[0]) AND ($this->GetStringWidth($nextstr[0]) > $pw)) {
 							// truncate the word because do not fit on a full page width
-							$tmpstr = TCPDF_FONTS::UniArrSubString($uchars, $j, $i);
+							$tmpstr = SASOET_TCPDF_FONTS::UniArrSubString($uchars, $j, $i);
 							if ($firstline) {
 								$startx = $this->x;
 								$tmparr = array_slice($chars, $j, ($i - $j));
 								if ($rtlmode) {
-									$tmparr = TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
+									$tmparr = SASOET_TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
 								}
 								$linew = $this->GetArrStringWidth($tmparr);
 								unset($tmparr);
@@ -6637,7 +6637,7 @@ class TCPDF {
 							unset($tmpstr);
 							if ($firstline) {
 								$this->cell_padding = $tmpcellpadding;
-								return (TCPDF_FONTS::UniArrSubString($uchars, $i));
+								return (SASOET_TCPDF_FONTS::UniArrSubString($uchars, $i));
 							}
 							$j = $i;
 							--$i;
@@ -6658,12 +6658,12 @@ class TCPDF {
 								$shy_char_left = '';
 								$shy_char_right = '';
 							}
-							$tmpstr = TCPDF_FONTS::UniArrSubString($uchars, $j, ($sep + $endspace));
+							$tmpstr = SASOET_TCPDF_FONTS::UniArrSubString($uchars, $j, ($sep + $endspace));
 							if ($firstline) {
 								$startx = $this->x;
 								$tmparr = array_slice($chars, $j, (($sep + $endspace) - $j));
 								if ($rtlmode) {
-									$tmparr = TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
+									$tmparr = SASOET_TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
 								}
 								$linew = $this->GetArrStringWidth($tmparr);
 								unset($tmparr);
@@ -6690,7 +6690,7 @@ class TCPDF {
 								}
 								// return the remaining text
 								$this->cell_padding = $tmpcellpadding;
-								return (TCPDF_FONTS::UniArrSubString($uchars, ($sep + $endspace)));
+								return (SASOET_TCPDF_FONTS::UniArrSubString($uchars, ($sep + $endspace)));
 							}
 							$i = $sep;
 							$sep = -1;
@@ -6747,12 +6747,12 @@ class TCPDF {
 					break;
 				}
 			}
-			$tmpstr = TCPDF_FONTS::UniArrSubString($uchars, $j, $nb);
+			$tmpstr = SASOET_TCPDF_FONTS::UniArrSubString($uchars, $j, $nb);
 			if ($firstline) {
 				$startx = $this->x;
 				$tmparr = array_slice($chars, $j, ($nb - $j));
 				if ($rtlmode) {
-					$tmparr = TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
+					$tmparr = SASOET_TCPDF_FONTS::utf8Bidi($tmparr, $tmpstr, $this->tmprtl, $this->isunicode, $this->CurrentFont);
 				}
 				$linew = $this->GetArrStringWidth($tmparr);
 				unset($tmparr);
@@ -6774,7 +6774,7 @@ class TCPDF {
 			unset($tmpstr);
 			if ($firstline) {
 				$this->cell_padding = $tmpcellpadding;
-				return (TCPDF_FONTS::UniArrSubString($uchars, $nb));
+				return (SASOET_TCPDF_FONTS::UniArrSubString($uchars, $nb));
 			}
 			++$nl;
 		}
@@ -6908,10 +6908,10 @@ class TCPDF {
 		if ($this->state != 2) {
 			return false;
 		}
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -6947,8 +6947,8 @@ class TCPDF {
 		if (!empty($imgdata)) {
 			// copy image to cache
 			$original_file = $file;
-			$file = TCPDF_STATIC::getObjFilename('img', $this->file_id);
-			$fp = TCPDF_STATIC::fopenLocal($file, 'w');
+			$file = SASOET_TCPDF_STATIC::getObjFilename('img', $this->file_id);
+			$fp = SASOET_TCPDF_STATIC::fopenLocal($file, 'w');
 			if (!$fp) {
 				$this->Error('Unable to write file: '.$file);
 			}
@@ -7071,9 +7071,9 @@ class TCPDF {
 			}
 		} elseif (($ismask === false) AND ($imgmask === false) AND (strpos($file, '__tcpdf_'.$this->file_id.'_imgmask_') === FALSE)) {
 			// create temp image file (without alpha channel)
-			$tempfile_plain = K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_plain_'.$filehash;
+			$tempfile_plain = SASOET_K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_plain_'.$filehash;
 			// create temp alpha file
-			$tempfile_alpha = K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_alpha_'.$filehash;
+			$tempfile_alpha = SASOET_K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_alpha_'.$filehash;
 			// check for cached images
 			if (in_array($tempfile_plain, $this->imagekeys)) {
 				// get existing image data
@@ -7095,20 +7095,20 @@ class TCPDF {
 			//First use of image, get info
 			$type = strtolower($type);
 			if ($type == '') {
-				$type = TCPDF_IMAGES::getImageFileType($file, $imsize);
+				$type = SASOET_TCPDF_IMAGES::getImageFileType($file, $imsize);
 			} elseif ($type == 'jpg') {
 				$type = 'jpeg';
 			}
-			$mqr = TCPDF_STATIC::get_mqr();
-			TCPDF_STATIC::set_mqr(false);
-			// Specific image handlers (defined on TCPDF_IMAGES CLASS)
+			$mqr = SASOET_TCPDF_STATIC::get_mqr();
+			SASOET_TCPDF_STATIC::set_mqr(false);
+			// Specific image handlers (defined on SASOET_TCPDF_IMAGES CLASS)
 			$mtd = '_parse'.$type;
 			// GD image handler function
 			$gdfunction = 'imagecreatefrom'.$type;
 			$info = false;
-			if ((method_exists('TCPDF_IMAGES', $mtd)) AND (!($resize AND (function_exists($gdfunction) OR extension_loaded('imagick'))))) {
-				// TCPDF image functions
-				$info = TCPDF_IMAGES::$mtd($file);
+			if ((method_exists('SASOET_TCPDF_IMAGES', $mtd)) AND (!($resize AND (function_exists($gdfunction) OR extension_loaded('imagick'))))) {
+				// SASOET_TCPDF image functions
+				$info = SASOET_TCPDF_IMAGES::$mtd($file);
 				if (($ismask === false) AND ($imgmask === false) AND (strpos($file, '__tcpdf_'.$this->file_id.'_imgmask_') === FALSE)
 					AND (($info === 'pngalpha') OR (isset($info['trns']) AND !empty($info['trns'])))) {
 					return $this->ImagePngAlpha($file, $x, $y, $pixw, $pixh, $w, $h, 'PNG', $link, $align, $resize, $dpi, $palign, $filehash);
@@ -7122,15 +7122,15 @@ class TCPDF {
 						if ($resize) {
 							$imgr = imagecreatetruecolor($neww, $newh);
 							if (($type == 'gif') OR ($type == 'png')) {
-								$imgr = TCPDF_IMAGES::setGDImageTransparency($imgr, $img);
+								$imgr = SASOET_TCPDF_IMAGES::setGDImageTransparency($imgr, $img);
 							}
 							imagecopyresampled($imgr, $img, 0, 0, 0, 0, $neww, $newh, $pixw, $pixh);
 							$img = $imgr;
 						}
 						if (($type == 'gif') OR ($type == 'png')) {
-							$info = TCPDF_IMAGES::_toPNG($img, TCPDF_STATIC::getObjFilename('img', $this->file_id));
+							$info = SASOET_TCPDF_IMAGES::_toPNG($img, SASOET_TCPDF_STATIC::getObjFilename('img', $this->file_id));
 						} else {
-							$info = TCPDF_IMAGES::_toJPEG($img, $this->jpeg_quality, TCPDF_STATIC::getObjFilename('img', $this->file_id));
+							$info = SASOET_TCPDF_IMAGES::_toJPEG($img, $this->jpeg_quality, SASOET_TCPDF_STATIC::getObjFilename('img', $this->file_id));
 						}
 					}
 				} catch(Exception $e) {
@@ -7189,9 +7189,9 @@ class TCPDF {
 					}
 					$img->setCompressionQuality($this->jpeg_quality);
 					$img->setImageFormat('jpeg');
-					$tempname = TCPDF_STATIC::getObjFilename('img', $this->file_id);
+					$tempname = SASOET_TCPDF_STATIC::getObjFilename('img', $this->file_id);
 					$img->writeImage($tempname);
-					$info = TCPDF_IMAGES::_parsejpeg($tempname);
+					$info = SASOET_TCPDF_IMAGES::_parsejpeg($tempname);
 					unlink($tempname);
 					$img->destroy();
 				} catch(Exception $e) {
@@ -7202,7 +7202,7 @@ class TCPDF {
 				// unable to process image
 				return false;
 			}
-			TCPDF_STATIC::set_mqr($mqr);
+			SASOET_TCPDF_STATIC::set_mqr($mqr);
 			if ($ismask) {
 				// force grayscale
 				$info['cs'] = 'DeviceGray';
@@ -7317,9 +7317,9 @@ class TCPDF {
 			$filehash = md5($file);
 		}
 		// create temp image file (without alpha channel)
-		$tempfile_plain = K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_plain_'.$filehash;
+		$tempfile_plain = SASOET_K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_plain_'.$filehash;
 		// create temp alpha file
-		$tempfile_alpha = K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_alpha_'.$filehash;
+		$tempfile_alpha = SASOET_K_PATH_CACHE.'__tcpdf_'.$this->file_id.'_imgmask_alpha_'.$filehash;
 		$parsed = false;
 		$parse_error = '';
 		// ImageMagick extension
@@ -7329,7 +7329,7 @@ class TCPDF {
 				$img = new Imagick();
 				$img->readImage($file);
 				// clone image object
-				$imga = TCPDF_STATIC::objclone($img);
+				$imga = SASOET_TCPDF_STATIC::objclone($img);
 				// extract alpha channel
 				if (method_exists($img, 'setImageAlphaChannel') AND defined('Imagick::ALPHACHANNEL_EXTRACT')) {
 					$img->setImageAlphaChannel(Imagick::ALPHACHANNEL_EXTRACT);
@@ -7387,7 +7387,7 @@ class TCPDF {
 		}
 		if ($parsed === false) {
 			if (empty($parse_error)) {
-				$this->Error('TCPDF requires the Imagick or GD extension to handle PNG images with alpha channel.');
+				$this->Error('SASOET_TCPDF requires the Imagick or GD extension to handle PNG images with alpha channel.');
 			} else {
 				$this->Error($parse_error);
 			}
@@ -7449,7 +7449,7 @@ class TCPDF {
 		} else {
 			$this->x = $this->lMargin + $cellpadding;
 		}
-		if (TCPDF_STATIC::empty_string($h)) {
+		if (SASOET_TCPDF_STATIC::empty_string($h)) {
 			$h = $this->lasth;
 		}
 		$this->y += $h;
@@ -7643,21 +7643,21 @@ class TCPDF {
 			// remove last newline
 			$pdfdoc = substr($pdfdoc, 0, -1);
 			// remove filler space
-			$byterange_string_len = strlen(TCPDF_STATIC::$byterange_string);
+			$byterange_string_len = strlen(SASOET_TCPDF_STATIC::$byterange_string);
 			// define the ByteRange
 			$byte_range = array();
 			$byte_range[0] = 0;
-			$byte_range[1] = strpos($pdfdoc, TCPDF_STATIC::$byterange_string) + $byterange_string_len + 10;
+			$byte_range[1] = strpos($pdfdoc, SASOET_TCPDF_STATIC::$byterange_string) + $byterange_string_len + 10;
 			$byte_range[2] = $byte_range[1] + $this->signature_max_length + 2;
 			$byte_range[3] = strlen($pdfdoc) - $byte_range[2];
 			$pdfdoc = substr($pdfdoc, 0, $byte_range[1]).substr($pdfdoc, $byte_range[2]);
 			// replace the ByteRange
 			$byterange = sprintf('/ByteRange[0 %u %u %u]', $byte_range[1], $byte_range[2], $byte_range[3]);
 			$byterange .= str_repeat(' ', ($byterange_string_len - strlen($byterange)));
-			$pdfdoc = str_replace(TCPDF_STATIC::$byterange_string, $byterange, $pdfdoc);
+			$pdfdoc = str_replace(SASOET_TCPDF_STATIC::$byterange_string, $byterange, $pdfdoc);
 			// write the document to a temporary folder
-			$tempdoc = TCPDF_STATIC::getObjFilename('doc', $this->file_id);
-			$f = TCPDF_STATIC::fopenLocal($tempdoc, 'wb');
+			$tempdoc = SASOET_TCPDF_STATIC::getObjFilename('doc', $this->file_id);
+			$f = SASOET_TCPDF_STATIC::fopenLocal($tempdoc, 'wb');
 			if (!$f) {
 				$this->Error('Unable to create temporary file: '.$tempdoc);
 			}
@@ -7665,7 +7665,7 @@ class TCPDF {
 			fwrite($f, $pdfdoc, $pdfdoc_length);
 			fclose($f);
 			// get digital signature via openssl library
-			$tempsign = TCPDF_STATIC::getObjFilename('sig', $this->file_id);
+			$tempsign = SASOET_TCPDF_STATIC::getObjFilename('sig', $this->file_id);
 			if (empty($this->signature_data['extracerts'])) {
 				openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED);
 			} else {
@@ -7707,7 +7707,7 @@ class TCPDF {
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 					header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
 					header('Content-Disposition: inline; filename="'.basename($name).'"');
-					TCPDF_STATIC::sendOutputData($this->getBuffer(), $this->bufferlen);
+					SASOET_TCPDF_STATIC::sendOutputData($this->getBuffer(), $this->bufferlen);
 				} else {
 					echo $this->getBuffer();
 				}
@@ -7739,14 +7739,14 @@ class TCPDF {
 				// use the Content-Disposition header to supply a recommended filename
 				header('Content-Disposition: attachment; filename="'.basename($name).'"');
 				header('Content-Transfer-Encoding: binary');
-				TCPDF_STATIC::sendOutputData($this->getBuffer(), $this->bufferlen);
+				SASOET_TCPDF_STATIC::sendOutputData($this->getBuffer(), $this->bufferlen);
 				break;
 			}
 			case 'F':
 			case 'FI':
 			case 'FD': {
 				// save PDF to a local file
-				$f = TCPDF_STATIC::fopenLocal($name, 'wb');
+				$f = SASOET_TCPDF_STATIC::fopenLocal($name, 'wb');
 				if (!$f) {
 					$this->Error('Unable to create output file: '.$name);
 				}
@@ -7761,7 +7761,7 @@ class TCPDF {
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 					header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
 					header('Content-Disposition: inline; filename="'.basename($name).'"');
-					TCPDF_STATIC::sendOutputData(file_get_contents($name), filesize($name));
+					SASOET_TCPDF_STATIC::sendOutputData(file_get_contents($name), filesize($name));
 				} elseif ($dest == 'FD') {
 					// send headers to browser
 					if (ob_get_contents()) {
@@ -7787,7 +7787,7 @@ class TCPDF {
 					// use the Content-Disposition header to supply a recommended filename
 					header('Content-Disposition: attachment; filename="'.basename($name).'"');
 					header('Content-Transfer-Encoding: binary');
-					TCPDF_STATIC::sendOutputData(file_get_contents($name), filesize($name));
+					SASOET_TCPDF_STATIC::sendOutputData(file_get_contents($name), filesize($name));
 				}
 				break;
 			}
@@ -7827,17 +7827,17 @@ class TCPDF {
 		if ($destroyall AND !$preserve_objcopy && isset($this->file_id)) {
 			self::$cleaned_ids[$this->file_id] = true;
 			// remove all temporary files
-			if ($handle = @opendir(K_PATH_CACHE)) {
+			if ($handle = @opendir(SASOET_K_PATH_CACHE)) {
 				while ( false !== ( $file_name = readdir( $handle ) ) ) {
 					if (strpos($file_name, '__tcpdf_'.$this->file_id.'_') === 0) {
-						unlink(K_PATH_CACHE.$file_name);
+						unlink(SASOET_K_PATH_CACHE.$file_name);
 					}
 				}
 				closedir($handle);
 			}
 			if (isset($this->imagekeys)) {
 				foreach($this->imagekeys as $file) {
-					if (strpos($file, K_PATH_CACHE) === 0 && TCPDF_STATIC::file_exists($file)) {
+					if (strpos($file, SASOET_K_PATH_CACHE) === 0 && SASOET_TCPDF_STATIC::file_exists($file)) {
 						@unlink($file);
 					}
 				}
@@ -7892,14 +7892,14 @@ class TCPDF {
 		// build array of Unicode + ASCII variants (the order is important)
 		$alias = array('u' => array(), 'a' => array());
 		$u = '{'.$a.'}';
-		$alias['u'][] = TCPDF_STATIC::_escape($u);
+		$alias['u'][] = SASOET_TCPDF_STATIC::_escape($u);
 		if ($this->isunicode) {
-			$alias['u'][] = TCPDF_STATIC::_escape(TCPDF_FONTS::UTF8ToLatin1($u, $this->isunicode, $this->CurrentFont));
-			$alias['u'][] = TCPDF_STATIC::_escape(TCPDF_FONTS::utf8StrRev($u, false, $this->tmprtl, $this->isunicode, $this->CurrentFont));
-			$alias['a'][] = TCPDF_STATIC::_escape(TCPDF_FONTS::UTF8ToLatin1($a, $this->isunicode, $this->CurrentFont));
-			$alias['a'][] = TCPDF_STATIC::_escape(TCPDF_FONTS::utf8StrRev($a, false, $this->tmprtl, $this->isunicode, $this->CurrentFont));
+			$alias['u'][] = SASOET_TCPDF_STATIC::_escape(SASOET_TCPDF_FONTS::UTF8ToLatin1($u, $this->isunicode, $this->CurrentFont));
+			$alias['u'][] = SASOET_TCPDF_STATIC::_escape(SASOET_TCPDF_FONTS::utf8StrRev($u, false, $this->tmprtl, $this->isunicode, $this->CurrentFont));
+			$alias['a'][] = SASOET_TCPDF_STATIC::_escape(SASOET_TCPDF_FONTS::UTF8ToLatin1($a, $this->isunicode, $this->CurrentFont));
+			$alias['a'][] = SASOET_TCPDF_STATIC::_escape(SASOET_TCPDF_FONTS::utf8StrRev($a, false, $this->tmprtl, $this->isunicode, $this->CurrentFont));
 		}
-		$alias['a'][] = TCPDF_STATIC::_escape($a);
+		$alias['a'][] = SASOET_TCPDF_STATIC::_escape($a);
 		return $alias;
 	}
 
@@ -7909,7 +7909,7 @@ class TCPDF {
 	 * @protected
 	 */
 	protected function getAllInternalPageNumberAliases() {
-		$basic_alias = array(TCPDF_STATIC::$alias_tot_pages, TCPDF_STATIC::$alias_num_page, TCPDF_STATIC::$alias_group_tot_pages, TCPDF_STATIC::$alias_group_num_page, TCPDF_STATIC::$alias_right_shift);
+		$basic_alias = array(SASOET_TCPDF_STATIC::$alias_tot_pages, SASOET_TCPDF_STATIC::$alias_num_page, SASOET_TCPDF_STATIC::$alias_group_tot_pages, SASOET_TCPDF_STATIC::$alias_group_num_page, SASOET_TCPDF_STATIC::$alias_right_shift);
 		$pnalias = array();
 		foreach($basic_alias as $k => $a) {
 			$pnalias[$k] = $this->getInternalPageNumberAliases($a);
@@ -7944,7 +7944,7 @@ class TCPDF {
 					if ($type == 'u') {
 						$chrdiff = floor(($diff + 12) * $ratio);
 						$shift = str_repeat(' ', $chrdiff);
-						$shift = TCPDF_FONTS::UTF8ToUTF16BE($shift, false, $this->isunicode, $this->CurrentFont);
+						$shift = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($shift, false, $this->isunicode, $this->CurrentFont);
 					} else {
 						$chrdiff = floor(($diff + 11) * $ratio);
 						$shift = str_repeat(' ', $chrdiff);
@@ -7964,7 +7964,7 @@ class TCPDF {
 	protected function setPageBoxTypes($boxes) {
 		$this->page_boxes = array();
 		foreach ($boxes as $box) {
-			if (in_array($box, TCPDF_STATIC::$pageboxes)) {
+			if (in_array($box, SASOET_TCPDF_STATIC::$pageboxes)) {
 				$this->page_boxes[] = $box;
 			}
 		}
@@ -7979,8 +7979,8 @@ class TCPDF {
 		// get internal aliases for page numbers
 		$pnalias = $this->getAllInternalPageNumberAliases();
 		$num_pages = $this->numpages;
-		$ptpa = TCPDF_STATIC::formatPageNumber(($this->starting_page_number + $num_pages - 1));
-		$ptpu = TCPDF_FONTS::UTF8ToUTF16BE($ptpa, false, $this->isunicode, $this->CurrentFont);
+		$ptpa = SASOET_TCPDF_STATIC::formatPageNumber(($this->starting_page_number + $num_pages - 1));
+		$ptpu = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($ptpa, false, $this->isunicode, $this->CurrentFont);
 		$ptp_num_chars = $this->GetNumChars($ptpa);
 		$pagegroupnum = 0;
 		$groupnum = 0;
@@ -7992,8 +7992,8 @@ class TCPDF {
 			$temppage = $this->getPageBuffer($n);
 			$pagelen = strlen($temppage);
 			// set replacements for total pages number
-			$pnpa = TCPDF_STATIC::formatPageNumber(($this->starting_page_number + $n - 1));
-			$pnpu = TCPDF_FONTS::UTF8ToUTF16BE($pnpa, false, $this->isunicode, $this->CurrentFont);
+			$pnpa = SASOET_TCPDF_STATIC::formatPageNumber(($this->starting_page_number + $n - 1));
+			$pnpu = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($pnpa, false, $this->isunicode, $this->CurrentFont);
 			$pnp_num_chars = $this->GetNumChars($pnpa);
 			$pdiff = 0; // difference used for right shift alignment of page numbers
 			$gdiff = 0; // difference used for right shift alignment of page group numbers
@@ -8001,13 +8001,13 @@ class TCPDF {
 				if (isset($this->newpagegroup[$n])) {
 					$pagegroupnum = 0;
 					++$groupnum;
-					$ptga = TCPDF_STATIC::formatPageNumber($this->pagegroups[$groupnum]);
-					$ptgu = TCPDF_FONTS::UTF8ToUTF16BE($ptga, false, $this->isunicode, $this->CurrentFont);
+					$ptga = SASOET_TCPDF_STATIC::formatPageNumber($this->pagegroups[$groupnum]);
+					$ptgu = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($ptga, false, $this->isunicode, $this->CurrentFont);
 					$ptg_num_chars = $this->GetNumChars($ptga);
 				}
 				++$pagegroupnum;
-				$pnga = TCPDF_STATIC::formatPageNumber($pagegroupnum);
-				$pngu = TCPDF_FONTS::UTF8ToUTF16BE($pnga, false, $this->isunicode, $this->CurrentFont);
+				$pnga = SASOET_TCPDF_STATIC::formatPageNumber($pagegroupnum);
+				$pngu = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($pnga, false, $this->isunicode, $this->CurrentFont);
 				$png_num_chars = $this->GetNumChars($pnga);
 				// replace page numbers
 				$replace = array();
@@ -8015,7 +8015,7 @@ class TCPDF {
 				$replace[] = array($ptga, $ptg_num_chars, 7, $pnalias[2]['a']);
 				$replace[] = array($pngu, $png_num_chars, 9, $pnalias[3]['u']);
 				$replace[] = array($pnga, $png_num_chars, 7, $pnalias[3]['a']);
-				list($temppage, $gdiff) = TCPDF_STATIC::replacePageNumAliases($temppage, $replace, $gdiff);
+				list($temppage, $gdiff) = SASOET_TCPDF_STATIC::replacePageNumAliases($temppage, $replace, $gdiff);
 			}
 			// replace page numbers
 			$replace = array();
@@ -8023,7 +8023,7 @@ class TCPDF {
 			$replace[] = array($ptpa, $ptp_num_chars, 7, $pnalias[0]['a']);
 			$replace[] = array($pnpu, $pnp_num_chars, 9, $pnalias[1]['u']);
 			$replace[] = array($pnpa, $pnp_num_chars, 7, $pnalias[1]['a']);
-			list($temppage, $pdiff) = TCPDF_STATIC::replacePageNumAliases($temppage, $replace, $pdiff);
+			list($temppage, $pdiff) = SASOET_TCPDF_STATIC::replacePageNumAliases($temppage, $replace, $pdiff);
 			// replace right shift alias
 			$temppage = $this->replaceRightShiftPageNumAliases($temppage, $pnalias[4], max($pdiff, $gdiff));
 			// replace EPS marker
@@ -8389,7 +8389,7 @@ class TCPDF {
 						$annots .= '>>';
 					}
 					if (isset($pl['opt']['c']) AND (is_array($pl['opt']['c'])) AND !empty($pl['opt']['c'])) {
-						$annots .= ' /C '.TCPDF_COLORS::getColorStringFromArray($pl['opt']['c']);
+						$annots .= ' /C '.SASOET_TCPDF_COLORS::getColorStringFromArray($pl['opt']['c']);
 					}
 					//$annots .= ' /StructParent ';
 					//$annots .= ' /OC ';
@@ -8460,7 +8460,7 @@ class TCPDF {
 							if (is_string($pl['txt']) && !empty($pl['txt'])) {
 								if ($pl['txt'][0] == '#') {
 									// internal destination
-									$annots .= ' /A <</S /GoTo /D /'.TCPDF_STATIC::encodeNameObject(substr($pl['txt'], 1)).'>>';
+									$annots .= ' /A <</S /GoTo /D /'.SASOET_TCPDF_STATIC::encodeNameObject(substr($pl['txt'], 1)).'>>';
 								} elseif ($pl['txt'][0] == '%') {
 									// embedded PDF file
 									$filename = basename(substr($pl['txt'], 1));
@@ -8632,10 +8632,10 @@ class TCPDF {
 									$annots .= ' /R '.$pl['opt']['mk']['r'];
 								}
 								if (isset($pl['opt']['mk']['bc']) AND (is_array($pl['opt']['mk']['bc']))) {
-									$annots .= ' /BC '.TCPDF_COLORS::getColorStringFromArray($pl['opt']['mk']['bc']);
+									$annots .= ' /BC '.SASOET_TCPDF_COLORS::getColorStringFromArray($pl['opt']['mk']['bc']);
 								}
 								if (isset($pl['opt']['mk']['bg']) AND (is_array($pl['opt']['mk']['bg']))) {
-									$annots .= ' /BG '.TCPDF_COLORS::getColorStringFromArray($pl['opt']['mk']['bg']);
+									$annots .= ' /BG '.SASOET_TCPDF_COLORS::getColorStringFromArray($pl['opt']['mk']['bg']);
 								}
 								if (isset($pl['opt']['mk']['ca'])) {
 									$annots .= ' /CA '.$pl['opt']['mk']['ca'];
@@ -8867,12 +8867,12 @@ class TCPDF {
 			$this->_newobj();
 			$this->_out('<< /Type /Encoding /BaseEncoding /WinAnsiEncoding /Differences ['.$diff.'] >>'."\n".'endobj');
 		}
-		$mqr = TCPDF_STATIC::get_mqr();
-		TCPDF_STATIC::set_mqr(false);
+		$mqr = SASOET_TCPDF_STATIC::get_mqr();
+		SASOET_TCPDF_STATIC::set_mqr(false);
 		foreach ($this->FontFiles as $file => $info) {
 			// search and get font file to embedd
-			$fontfile = TCPDF_FONTS::getFontFullPath($file, $info['fontdir']);
-			if (!TCPDF_STATIC::empty_string($fontfile)) {
+			$fontfile = SASOET_TCPDF_FONTS::getFontFullPath($file, $info['fontdir']);
+			if (!SASOET_TCPDF_STATIC::empty_string($fontfile)) {
 				$font = file_get_contents($fontfile);
 				$compressed = (substr($file, -2) == '.z');
 				if ((!$compressed) AND (isset($info['length2']))) {
@@ -8897,7 +8897,7 @@ class TCPDF {
 						$subsetchars += $fontinfo['subsetchars'];
 					}
 					// rebuild a font subset
-					$font = TCPDF_FONTS::_getTrueTypeFontSubset($font, $subsetchars);
+					$font = SASOET_TCPDF_FONTS::_getTrueTypeFontSubset($font, $subsetchars);
 					// calculate new font length
 					$info['length1'] = strlen($font);
 					if ($compressed) {
@@ -8922,7 +8922,7 @@ class TCPDF {
 				$this->_out($out);
 			}
 		}
-		TCPDF_STATIC::set_mqr($mqr);
+		SASOET_TCPDF_STATIC::set_mqr($mqr);
 		foreach ($this->fontkeys as $k) {
 			//Font objects
 			$font = $this->getFontBuffer($k);
@@ -8987,7 +8987,7 @@ class TCPDF {
 					}
 					$s .= ' /'.$fdk.' '.$fdv.'';
 				}
-				if (!TCPDF_STATIC::empty_string($font['file'])) {
+				if (!SASOET_TCPDF_STATIC::empty_string($font['file'])) {
 					$s .= ' /FontFile'.($type == 'Type1' ? '' : '2').' '.$this->FontFiles[$font['file']]['n'].' 0 R';
 				}
 				$s .= '>>';
@@ -9035,7 +9035,7 @@ class TCPDF {
 		$out .= "\n".'endobj';
 		$this->_out($out);
 		// ToUnicode map for Identity-H
-		$stream = TCPDF_FONT_DATA::$uni_identity_h;
+		$stream = SASOET_TCPDF_FONT_DATA::$uni_identity_h;
 		// ToUnicode Object
 		$this->_newobj();
 		$stream = ($this->compress) ? gzcompress($stream) : $stream;
@@ -9055,8 +9055,8 @@ class TCPDF {
 		$out .= ' /CIDSystemInfo << '.$cidinfo.' >>';
 		$out .= ' /FontDescriptor '.($this->n + 1).' 0 R';
 		$out .= ' /DW '.$font['dw']; // default width
-		$out .= "\n".TCPDF_FONTS::_putfontwidths($font, 0);
-		if (isset($font['ctg']) AND (!TCPDF_STATIC::empty_string($font['ctg']))) {
+		$out .= "\n".SASOET_TCPDF_FONTS::_putfontwidths($font, 0);
+		if (isset($font['ctg']) AND (!SASOET_TCPDF_STATIC::empty_string($font['ctg']))) {
 			$out .= "\n".'/CIDToGIDMap '.($this->n + 2).' 0 R';
 		}
 		$out .= ' >>';
@@ -9074,7 +9074,7 @@ class TCPDF {
 			$out .= ' /'.$key.' '.$value;
 		}
 		$fontdir = false;
-		if (!TCPDF_STATIC::empty_string($font['file'])) {
+		if (!SASOET_TCPDF_STATIC::empty_string($font['file'])) {
 			// A stream containing a TrueType font
 			$out .= ' /FontFile2 '.$this->FontFiles[$font['file']]['n'].' 0 R';
 			$fontdir = $this->FontFiles[$font['file']]['fontdir'];
@@ -9082,15 +9082,15 @@ class TCPDF {
 		$out .= ' >>';
 		$out .= "\n".'endobj';
 		$this->_out($out);
-		if (isset($font['ctg']) AND (!TCPDF_STATIC::empty_string($font['ctg']))) {
+		if (isset($font['ctg']) AND (!SASOET_TCPDF_STATIC::empty_string($font['ctg']))) {
 			$this->_newobj();
 			// Embed CIDToGIDMap
 			// A specification of the mapping from CIDs to glyph indices
 			// search and get CTG font file to embedd
 			$ctgfile = strtolower($font['ctg']);
 			// search and get ctg font file to embedd
-			$fontfile = TCPDF_FONTS::getFontFullPath($ctgfile, $fontdir);
-			if (TCPDF_STATIC::empty_string($fontfile)) {
+			$fontfile = SASOET_TCPDF_FONTS::getFontFullPath($ctgfile, $fontdir);
+			if (SASOET_TCPDF_STATIC::empty_string($fontfile)) {
 				$this->Error('Font file not found: '.$ctgfile);
 			}
 			$stream = $this->_getrawstream(file_get_contents($fontfile));
@@ -9163,7 +9163,7 @@ class TCPDF {
 		$out .= ' /CIDSystemInfo <<'.$cidinfo.'>>';
 		$out .= ' /FontDescriptor '.($this->n + 1).' 0 R';
 		$out .= ' /DW '.$font['dw'];
-		$out .= "\n".TCPDF_FONTS::_putfontwidths($font, $cidoffset);
+		$out .= "\n".SASOET_TCPDF_FONTS::_putfontwidths($font, $cidoffset);
 		$out .= ' >>';
 		$out .= "\n".'endobj';
 		$this->_out($out);
@@ -9545,30 +9545,30 @@ class TCPDF {
 		if ($this->docinfounicode) {
 			$this->isunicode = true;
 		}
-		if (!TCPDF_STATIC::empty_string($this->title)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($this->title)) {
 			// The document's title.
 			$out .= ' /Title '.$this->_textstring($this->title, $oid);
 		}
-		if (!TCPDF_STATIC::empty_string($this->author)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($this->author)) {
 			// The name of the person who created the document.
 			$out .= ' /Author '.$this->_textstring($this->author, $oid);
 		}
-		if (!TCPDF_STATIC::empty_string($this->subject)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($this->subject)) {
 			// The subject of the document.
 			$out .= ' /Subject '.$this->_textstring($this->subject, $oid);
 		}
-		if (!TCPDF_STATIC::empty_string($this->keywords)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($this->keywords)) {
 			// Keywords associated with the document.
 			$out .= ' /Keywords '.$this->_textstring($this->keywords, $oid);
 		}
-		if (!TCPDF_STATIC::empty_string($this->creator)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($this->creator)) {
 			// If the document was converted to PDF from another format, the name of the conforming product that created the original document from which it was converted.
 			$out .= ' /Creator '.$this->_textstring($this->creator, $oid);
 		}
 		// restore previous isunicode value
 		$this->isunicode = $prev_isunicode;
 		// default producer
-		$out .= ' /Producer '.$this->_textstring(TCPDF_STATIC::getTCPDFProducer(), $oid);
+		$out .= ' /Producer '.$this->_textstring(SASOET_TCPDF_STATIC::getTCPDFProducer(), $oid);
 		// The date and time the document was created, in human-readable form
 		$out .= ' /CreationDate '.$this->_datestring(0, $this->doc_creation_timestamp);
 		// The date and time the document was most recently modified, in human-readable form
@@ -9617,44 +9617,44 @@ class TCPDF {
 		$prev_encrypted = $this->encrypted;
 		$this->encrypted = false;
 		// set XMP data
-		$xmp = '<?xpacket begin="'.TCPDF_FONTS::unichr(0xfeff, $this->isunicode).'" id="W5M0MpCehiHzreSzNTczkc9d"?>'."\n";
+		$xmp = '<?xpacket begin="'.SASOET_TCPDF_FONTS::unichr(0xfeff, $this->isunicode).'" id="W5M0MpCehiHzreSzNTczkc9d"?>'."\n";
 		$xmp .= '<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 4.2.1-c043 52.372728, 2009/01/18-15:08:04">'."\n";
 		$xmp .= "\t".'<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">'."\n";
 		$xmp .= "\t\t\t".'<dc:format>application/pdf</dc:format>'."\n";
 		$xmp .= "\t\t\t".'<dc:title>'."\n";
 		$xmp .= "\t\t\t\t".'<rdf:Alt>'."\n";
-		$xmp .= "\t\t\t\t\t".'<rdf:li xml:lang="x-default">'.TCPDF_STATIC::_escapeXML($this->title).'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li xml:lang="x-default">'.SASOET_TCPDF_STATIC::_escapeXML($this->title).'</rdf:li>'."\n";
 		$xmp .= "\t\t\t\t".'</rdf:Alt>'."\n";
 		$xmp .= "\t\t\t".'</dc:title>'."\n";
 		$xmp .= "\t\t\t".'<dc:creator>'."\n";
 		$xmp .= "\t\t\t\t".'<rdf:Seq>'."\n";
-		$xmp .= "\t\t\t\t\t".'<rdf:li>'.TCPDF_STATIC::_escapeXML($this->author).'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li>'.SASOET_TCPDF_STATIC::_escapeXML($this->author).'</rdf:li>'."\n";
 		$xmp .= "\t\t\t\t".'</rdf:Seq>'."\n";
 		$xmp .= "\t\t\t".'</dc:creator>'."\n";
 		$xmp .= "\t\t\t".'<dc:description>'."\n";
 		$xmp .= "\t\t\t\t".'<rdf:Alt>'."\n";
-		$xmp .= "\t\t\t\t\t".'<rdf:li xml:lang="x-default">'.TCPDF_STATIC::_escapeXML($this->subject).'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li xml:lang="x-default">'.SASOET_TCPDF_STATIC::_escapeXML($this->subject).'</rdf:li>'."\n";
 		$xmp .= "\t\t\t\t".'</rdf:Alt>'."\n";
 		$xmp .= "\t\t\t".'</dc:description>'."\n";
 		$xmp .= "\t\t\t".'<dc:subject>'."\n";
 		$xmp .= "\t\t\t\t".'<rdf:Bag>'."\n";
-		$xmp .= "\t\t\t\t\t".'<rdf:li>'.TCPDF_STATIC::_escapeXML($this->keywords).'</rdf:li>'."\n";
+		$xmp .= "\t\t\t\t\t".'<rdf:li>'.SASOET_TCPDF_STATIC::_escapeXML($this->keywords).'</rdf:li>'."\n";
 		$xmp .= "\t\t\t\t".'</rdf:Bag>'."\n";
 		$xmp .= "\t\t\t".'</dc:subject>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		// convert doc creation date format
-		$dcdate = TCPDF_STATIC::getFormattedDate($this->doc_creation_timestamp);
+		$dcdate = SASOET_TCPDF_STATIC::getFormattedDate($this->doc_creation_timestamp);
 		$doccreationdate = substr($dcdate, 0, 4).'-'.substr($dcdate, 4, 2).'-'.substr($dcdate, 6, 2);
 		$doccreationdate .= 'T'.substr($dcdate, 8, 2).':'.substr($dcdate, 10, 2).':'.substr($dcdate, 12, 2);
 		$doccreationdate .= substr($dcdate, 14, 3).':'.substr($dcdate, 18, 2);
-		$doccreationdate = TCPDF_STATIC::_escapeXML($doccreationdate);
+		$doccreationdate = SASOET_TCPDF_STATIC::_escapeXML($doccreationdate);
 		// convert doc modification date format
-		$dmdate = TCPDF_STATIC::getFormattedDate($this->doc_modification_timestamp);
+		$dmdate = SASOET_TCPDF_STATIC::getFormattedDate($this->doc_modification_timestamp);
 		$docmoddate = substr($dmdate, 0, 4).'-'.substr($dmdate, 4, 2).'-'.substr($dmdate, 6, 2);
 		$docmoddate .= 'T'.substr($dmdate, 8, 2).':'.substr($dmdate, 10, 2).':'.substr($dmdate, 12, 2);
 		$docmoddate .= substr($dmdate, 14, 3).':'.substr($dmdate, 18, 2);
-		$docmoddate = TCPDF_STATIC::_escapeXML($docmoddate);
+		$docmoddate = SASOET_TCPDF_STATIC::_escapeXML($docmoddate);
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:xmp="http://ns.adobe.com/xap/1.0/">'."\n";
 		$xmp .= "\t\t\t".'<xmp:CreateDate>'.$doccreationdate.'</xmp:CreateDate>'."\n";
 		$xmp .= "\t\t\t".'<xmp:CreatorTool>'.$this->creator.'</xmp:CreatorTool>'."\n";
@@ -9662,8 +9662,8 @@ class TCPDF {
 		$xmp .= "\t\t\t".'<xmp:MetadataDate>'.$doccreationdate.'</xmp:MetadataDate>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/">'."\n";
-		$xmp .= "\t\t\t".'<pdf:Keywords>'.TCPDF_STATIC::_escapeXML($this->keywords).'</pdf:Keywords>'."\n";
-		$xmp .= "\t\t\t".'<pdf:Producer>'.TCPDF_STATIC::_escapeXML(TCPDF_STATIC::getTCPDFProducer()).'</pdf:Producer>'."\n";
+		$xmp .= "\t\t\t".'<pdf:Keywords>'.SASOET_TCPDF_STATIC::_escapeXML($this->keywords).'</pdf:Keywords>'."\n";
+		$xmp .= "\t\t\t".'<pdf:Producer>'.SASOET_TCPDF_STATIC::_escapeXML(SASOET_TCPDF_STATIC::getTCPDFProducer()).'</pdf:Producer>'."\n";
 		$xmp .= "\t\t".'</rdf:Description>'."\n";
 		$xmp .= "\t\t".'<rdf:Description rdf:about="" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">'."\n";
 		$uuid = 'uuid:'.substr($this->file_id, 0, 8).'-'.substr($this->file_id, 8, 4).'-'.substr($this->file_id, 12, 4).'-'.substr($this->file_id, 16, 4).'-'.substr($this->file_id, 20, 12);
@@ -9796,10 +9796,10 @@ class TCPDF {
 			$out .= ' /Dests '.($this->n_dests).' 0 R';
 		}
 		$out .= $this->_putviewerpreferences();
-		if (isset($this->LayoutMode) AND (!TCPDF_STATIC::empty_string($this->LayoutMode))) {
+		if (isset($this->LayoutMode) AND (!SASOET_TCPDF_STATIC::empty_string($this->LayoutMode))) {
 			$out .= ' /PageLayout /'.$this->LayoutMode;
 		}
-		if (isset($this->PageMode) AND (!TCPDF_STATIC::empty_string($this->PageMode))) {
+		if (isset($this->PageMode) AND (!SASOET_TCPDF_STATIC::empty_string($this->PageMode))) {
 			$out .= ' /PageMode /'.$this->PageMode;
 		}
 		if (count($this->outlines) > 0) {
@@ -9855,7 +9855,7 @@ class TCPDF {
 			$out .= ' /OCProperties << /OCGs ['.$lyrobjs.']';
 			$out .= ' /D <<';
 			$out .= ' /Name '.$this->_textstring('Layers', $oid);
-			$out .= ' /Creator '.$this->_textstring('TCPDF', $oid);
+			$out .= ' /Creator '.$this->_textstring('SASOET_TCPDF', $oid);
 			$out .= ' /BaseState /ON';
 			$out .= ' /OFF ['.$lyrobjs_off.']';
 			$out .= ' /Locked ['.$lyrobjs_lock.']';
@@ -9989,7 +9989,7 @@ class TCPDF {
 		if (isset($vp['PrintScaling'])) {
 			$out .= ' /PrintScaling /'.$vp['PrintScaling'];
 		}
-		if (isset($vp['Duplex']) AND (!TCPDF_STATIC::empty_string($vp['Duplex']))) {
+		if (isset($vp['Duplex']) AND (!SASOET_TCPDF_STATIC::empty_string($vp['Duplex']))) {
 			$out .= ' /Duplex /'.$vp['Duplex'];
 		}
 		if (isset($vp['PickTrayByPDFSize'])) {
@@ -10124,7 +10124,7 @@ class TCPDF {
 		// initialize array for graphics tranformation positions inside a page buffer
 		$this->transfmrk[$this->page] = array();
 		$this->state = 2;
-		if (TCPDF_STATIC::empty_string($orientation)) {
+		if (SASOET_TCPDF_STATIC::empty_string($orientation)) {
 			if (isset($this->CurOrientation)) {
 				$orientation = $this->CurOrientation;
 			} elseif ($this->fwPt > $this->fhPt) {
@@ -10135,7 +10135,7 @@ class TCPDF {
 				$orientation = 'P';
 			}
 		}
-		if (TCPDF_STATIC::empty_string($format)) {
+		if (SASOET_TCPDF_STATIC::empty_string($format)) {
 			$this->pagedim[$this->page] = $this->pagedim[($this->page - 1)];
 			$this->setPageOrientation($orientation);
 		} else {
@@ -10183,7 +10183,7 @@ class TCPDF {
 	 * @since 5.8.009 (2010-08-20)
 	 */
 	protected function _getobj($objid=null) {
-		if (TCPDF_STATIC::empty_string($objid)) {
+		if (SASOET_TCPDF_STATIC::empty_string($objid)) {
 			++$this->n;
 			$objid = $this->n;
 		}
@@ -10281,7 +10281,7 @@ class TCPDF {
 			$n = $this->n;
 		}
 		$s = $this->_encrypt_data($n, $s);
-		return '('. TCPDF_STATIC::_escape($s).')';
+		return '('. SASOET_TCPDF_STATIC::_escape($s).')';
 	}
 
 	/**
@@ -10292,7 +10292,7 @@ class TCPDF {
 	 */
 	public function setDocCreationTimestamp($time) {
 		if (is_string($time)) {
-			$time = TCPDF_STATIC::getTimestamp($time);
+			$time = SASOET_TCPDF_STATIC::getTimestamp($time);
 		}
 		$this->doc_creation_timestamp = intval($time);
 	}
@@ -10305,7 +10305,7 @@ class TCPDF {
 	 */
 	public function setDocModificationTimestamp($time) {
 		if (is_string($time)) {
-			$time = TCPDF_STATIC::getTimestamp($time);
+			$time = SASOET_TCPDF_STATIC::getTimestamp($time);
 		}
 		$this->doc_modification_timestamp = intval($time);
 	}
@@ -10342,7 +10342,7 @@ class TCPDF {
 		if ((empty($timestamp)) OR ($timestamp < 0)) {
 			$timestamp = $this->doc_creation_timestamp;
 		}
-		return $this->_datastring('D:'.TCPDF_STATIC::getFormattedDate($timestamp), $n);
+		return $this->_datastring('D:'.SASOET_TCPDF_STATIC::getFormattedDate($timestamp), $n);
 	}
 
 	/**
@@ -10355,7 +10355,7 @@ class TCPDF {
 	protected function _textstring($s, $n=0) {
 		if ($this->isunicode) {
 			//Convert string to UTF-16BE
-			$s = TCPDF_FONTS::UTF8ToUTF16BE($s, true, $this->isunicode, $this->CurrentFont);
+			$s = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($s, true, $this->isunicode, $this->CurrentFont);
 		}
 		return $this->_datastring($s, $n);
 	}
@@ -10560,7 +10560,7 @@ class TCPDF {
 			// AES padding
 			$objkey .= "\x73\x41\x6C\x54"; // sAlT
 		}
-		$objkey = substr(TCPDF_STATIC::_md5_16($objkey), 0, (($this->encryptdata['Length'] / 8) + 5));
+		$objkey = substr(SASOET_TCPDF_STATIC::_md5_16($objkey), 0, (($this->encryptdata['Length'] / 8) + 5));
 		$objkey = substr($objkey, 0, 16);
 		return $objkey;
 	}
@@ -10581,15 +10581,15 @@ class TCPDF {
 		switch ($this->encryptdata['mode']) {
 			case 0:   // RC4-40
 			case 1: { // RC4-128
-				$s = TCPDF_STATIC::_RC4($this->_objectkey($n), $s, $this->last_enc_key, $this->last_enc_key_c);
+				$s = SASOET_TCPDF_STATIC::_RC4($this->_objectkey($n), $s, $this->last_enc_key, $this->last_enc_key_c);
 				break;
 			}
 			case 2: { // AES-128
-				$s = TCPDF_STATIC::_AES($this->_objectkey($n), $s);
+				$s = SASOET_TCPDF_STATIC::_AES($this->_objectkey($n), $s);
 				break;
 			}
 			case 3: { // AES-256
-				$s = TCPDF_STATIC::_AES($this->encryptdata['key'], $s);
+				$s = SASOET_TCPDF_STATIC::_AES($this->encryptdata['key'], $s);
 				break;
 			}
 		}
@@ -10691,9 +10691,9 @@ class TCPDF {
 			$out .= ' /R';
 			if ($this->encryptdata['V'] == 5) { // AES-256
 				$out .= ' 5';
-				$out .= ' /OE ('.TCPDF_STATIC::_escape($this->encryptdata['OE']).')';
-				$out .= ' /UE ('.TCPDF_STATIC::_escape($this->encryptdata['UE']).')';
-				$out .= ' /Perms ('.TCPDF_STATIC::_escape($this->encryptdata['perms']).')';
+				$out .= ' /OE ('.SASOET_TCPDF_STATIC::_escape($this->encryptdata['OE']).')';
+				$out .= ' /UE ('.SASOET_TCPDF_STATIC::_escape($this->encryptdata['UE']).')';
+				$out .= ' /Perms ('.SASOET_TCPDF_STATIC::_escape($this->encryptdata['perms']).')';
 			} elseif ($this->encryptdata['V'] == 4) { // AES-128
 				$out .= ' 4';
 			} elseif ($this->encryptdata['V'] < 2) { // RC-40
@@ -10701,8 +10701,8 @@ class TCPDF {
 			} else { // RC-128
 				$out .= ' 3';
 			}
-			$out .= ' /O ('.TCPDF_STATIC::_escape($this->encryptdata['O']).')';
-			$out .= ' /U ('.TCPDF_STATIC::_escape($this->encryptdata['U']).')';
+			$out .= ' /O ('.SASOET_TCPDF_STATIC::_escape($this->encryptdata['O']).')';
+			$out .= ' /U ('.SASOET_TCPDF_STATIC::_escape($this->encryptdata['U']).')';
 			$out .= ' /P '.$this->encryptdata['P'];
 			if (isset($this->encryptdata['EncryptMetadata']) AND (!$this->encryptdata['EncryptMetadata'])) {
 				$out .= ' /EncryptMetadata false';
@@ -10724,22 +10724,22 @@ class TCPDF {
 	 */
 	protected function _Uvalue() {
 		if ($this->encryptdata['mode'] == 0) { // RC4-40
-			return TCPDF_STATIC::_RC4($this->encryptdata['key'], TCPDF_STATIC::$enc_padding, $this->last_enc_key, $this->last_enc_key_c);
+			return SASOET_TCPDF_STATIC::_RC4($this->encryptdata['key'], SASOET_TCPDF_STATIC::$enc_padding, $this->last_enc_key, $this->last_enc_key_c);
 		} elseif ($this->encryptdata['mode'] < 3) { // RC4-128, AES-128
-			$tmp = TCPDF_STATIC::_md5_16(TCPDF_STATIC::$enc_padding.$this->encryptdata['fileid']);
-			$enc = TCPDF_STATIC::_RC4($this->encryptdata['key'], $tmp, $this->last_enc_key, $this->last_enc_key_c);
+			$tmp = SASOET_TCPDF_STATIC::_md5_16(SASOET_TCPDF_STATIC::$enc_padding.$this->encryptdata['fileid']);
+			$enc = SASOET_TCPDF_STATIC::_RC4($this->encryptdata['key'], $tmp, $this->last_enc_key, $this->last_enc_key_c);
 			$len = strlen($tmp);
 			for ($i = 1; $i <= 19; ++$i) {
 				$ek = '';
 				for ($j = 0; $j < $len; ++$j) {
 					$ek .= chr(ord($this->encryptdata['key'][$j]) ^ $i);
 				}
-				$enc = TCPDF_STATIC::_RC4($ek, $enc, $this->last_enc_key, $this->last_enc_key_c);
+				$enc = SASOET_TCPDF_STATIC::_RC4($ek, $enc, $this->last_enc_key, $this->last_enc_key_c);
 			}
 			$enc .= str_repeat("\x00", 16);
 			return substr($enc, 0, 32);
 		} elseif ($this->encryptdata['mode'] == 3) { // AES-256
-			$seed = TCPDF_STATIC::_md5_16(TCPDF_STATIC::getRandomSeed());
+			$seed = SASOET_TCPDF_STATIC::_md5_16(SASOET_TCPDF_STATIC::getRandomSeed());
 			// User Validation Salt
 			$this->encryptdata['UVS'] = substr($seed, 0, 8);
 			// User Key Salt
@@ -10757,7 +10757,7 @@ class TCPDF {
 	 */
 	protected function _UEvalue() {
 		$hashkey = hash('sha256', $this->encryptdata['user_password'].$this->encryptdata['UKS'], true);
-		return TCPDF_STATIC::_AESnopad($hashkey, $this->encryptdata['key']);
+		return SASOET_TCPDF_STATIC::_AESnopad($hashkey, $this->encryptdata['key']);
 	}
 
 	/**
@@ -10769,14 +10769,14 @@ class TCPDF {
 	 */
 	protected function _Ovalue() {
 		if ($this->encryptdata['mode'] < 3) { // RC4-40, RC4-128, AES-128
-			$tmp = TCPDF_STATIC::_md5_16($this->encryptdata['owner_password']);
+			$tmp = SASOET_TCPDF_STATIC::_md5_16($this->encryptdata['owner_password']);
 			if ($this->encryptdata['mode'] > 0) {
 				for ($i = 0; $i < 50; ++$i) {
-					$tmp = TCPDF_STATIC::_md5_16($tmp);
+					$tmp = SASOET_TCPDF_STATIC::_md5_16($tmp);
 				}
 			}
 			$owner_key = substr($tmp, 0, ($this->encryptdata['Length'] / 8));
-			$enc = TCPDF_STATIC::_RC4($owner_key, $this->encryptdata['user_password'], $this->last_enc_key, $this->last_enc_key_c);
+			$enc = SASOET_TCPDF_STATIC::_RC4($owner_key, $this->encryptdata['user_password'], $this->last_enc_key, $this->last_enc_key_c);
 			if ($this->encryptdata['mode'] > 0) {
 				$len = strlen($owner_key);
 				for ($i = 1; $i <= 19; ++$i) {
@@ -10784,12 +10784,12 @@ class TCPDF {
 					for ($j = 0; $j < $len; ++$j) {
 						$ek .= chr(ord($owner_key[$j]) ^ $i);
 					}
-					$enc = TCPDF_STATIC::_RC4($ek, $enc, $this->last_enc_key, $this->last_enc_key_c);
+					$enc = SASOET_TCPDF_STATIC::_RC4($ek, $enc, $this->last_enc_key, $this->last_enc_key_c);
 				}
 			}
 			return $enc;
 		} elseif ($this->encryptdata['mode'] == 3) { // AES-256
-			$seed = TCPDF_STATIC::_md5_16(TCPDF_STATIC::getRandomSeed());
+			$seed = SASOET_TCPDF_STATIC::_md5_16(SASOET_TCPDF_STATIC::getRandomSeed());
 			// Owner Validation Salt
 			$this->encryptdata['OVS'] = substr($seed, 0, 8);
 			// Owner Key Salt
@@ -10807,7 +10807,7 @@ class TCPDF {
 	 */
 	protected function _OEvalue() {
 		$hashkey = hash('sha256', $this->encryptdata['owner_password'].$this->encryptdata['OKS'].$this->encryptdata['U'], true);
-		return TCPDF_STATIC::_AESnopad($hashkey, $this->encryptdata['key']);
+		return SASOET_TCPDF_STATIC::_AESnopad($hashkey, $this->encryptdata['key']);
 	}
 
 	/**
@@ -10820,9 +10820,9 @@ class TCPDF {
 	 */
 	protected function _fixAES256Password($password) {
 		$psw = ''; // password to be returned
-		$psw_array = TCPDF_FONTS::utf8Bidi(TCPDF_FONTS::UTF8StringToArray($password, $this->isunicode, $this->CurrentFont), $password, $this->rtl, $this->isunicode, $this->CurrentFont);
+		$psw_array = SASOET_TCPDF_FONTS::utf8Bidi(SASOET_TCPDF_FONTS::UTF8StringToArray($password, $this->isunicode, $this->CurrentFont), $password, $this->rtl, $this->isunicode, $this->CurrentFont);
 		foreach ($psw_array as $c) {
-			$psw .= TCPDF_FONTS::unichr($c, $this->isunicode);
+			$psw .= SASOET_TCPDF_FONTS::unichr($c, $this->isunicode);
 		}
 		return substr($psw, 0, 127);
 	}
@@ -10838,7 +10838,7 @@ class TCPDF {
 		if (!$this->encryptdata['pubkey']) { // standard mode
 			if ($this->encryptdata['mode'] == 3) { // AES-256
 				// generate 256 bit random key
-				$this->encryptdata['key'] = substr(hash('sha256', TCPDF_STATIC::getRandomSeed(), true), 0, $keybytelen);
+				$this->encryptdata['key'] = substr(hash('sha256', SASOET_TCPDF_STATIC::getRandomSeed(), true), 0, $keybytelen);
 				// truncate passwords
 				$this->encryptdata['user_password'] = $this->_fixAES256Password($this->encryptdata['user_password']);
 				$this->encryptdata['owner_password'] = $this->_fixAES256Password($this->encryptdata['owner_password']);
@@ -10853,7 +10853,7 @@ class TCPDF {
 				// Compute P value
 				$this->encryptdata['P'] = $this->encryptdata['protection'];
 				// Computing the encryption dictionary's Perms (permissions) value
-				$perms = TCPDF_STATIC::getEncPermissionsString($this->encryptdata['protection']); // bytes 0-3
+				$perms = SASOET_TCPDF_STATIC::getEncPermissionsString($this->encryptdata['protection']); // bytes 0-3
 				$perms .= chr(255).chr(255).chr(255).chr(255); // bytes 4-7
 				if (isset($this->encryptdata['CF']['EncryptMetadata']) AND (!$this->encryptdata['CF']['EncryptMetadata'])) { // byte 8
 					$perms .= 'F';
@@ -10862,20 +10862,20 @@ class TCPDF {
 				}
 				$perms .= 'adb'; // bytes 9-11
 				$perms .= 'nick'; // bytes 12-15
-				$this->encryptdata['perms'] = TCPDF_STATIC::_AESnopad($this->encryptdata['key'], $perms);
+				$this->encryptdata['perms'] = SASOET_TCPDF_STATIC::_AESnopad($this->encryptdata['key'], $perms);
 			} else { // RC4-40, RC4-128, AES-128
 				// Pad passwords
-				$this->encryptdata['user_password'] = substr($this->encryptdata['user_password'].TCPDF_STATIC::$enc_padding, 0, 32);
-				$this->encryptdata['owner_password'] = substr($this->encryptdata['owner_password'].TCPDF_STATIC::$enc_padding, 0, 32);
+				$this->encryptdata['user_password'] = substr($this->encryptdata['user_password'].SASOET_TCPDF_STATIC::$enc_padding, 0, 32);
+				$this->encryptdata['owner_password'] = substr($this->encryptdata['owner_password'].SASOET_TCPDF_STATIC::$enc_padding, 0, 32);
 				// Compute O value
 				$this->encryptdata['O'] = $this->_Ovalue();
 				// get default permissions (reverse byte order)
-				$permissions = TCPDF_STATIC::getEncPermissionsString($this->encryptdata['protection']);
+				$permissions = SASOET_TCPDF_STATIC::getEncPermissionsString($this->encryptdata['protection']);
 				// Compute encryption key
-				$tmp = TCPDF_STATIC::_md5_16($this->encryptdata['user_password'].$this->encryptdata['O'].$permissions.$this->encryptdata['fileid']);
+				$tmp = SASOET_TCPDF_STATIC::_md5_16($this->encryptdata['user_password'].$this->encryptdata['O'].$permissions.$this->encryptdata['fileid']);
 				if ($this->encryptdata['mode'] > 0) {
 					for ($i = 0; $i < 50; ++$i) {
-						$tmp = TCPDF_STATIC::_md5_16(substr($tmp, 0, $keybytelen));
+						$tmp = SASOET_TCPDF_STATIC::_md5_16(substr($tmp, 0, $keybytelen));
 					}
 				}
 				$this->encryptdata['key'] = substr($tmp, 0, $keybytelen);
@@ -10886,29 +10886,29 @@ class TCPDF {
 			}
 		} else { // Public-Key mode
 			// random 20-byte seed
-			$seed = sha1(TCPDF_STATIC::getRandomSeed(), true);
+			$seed = sha1(SASOET_TCPDF_STATIC::getRandomSeed(), true);
 			$recipient_bytes = '';
 			foreach ($this->encryptdata['pubkeys'] as $pubkey) {
 				// for each public certificate
 				if (isset($pubkey['p'])) {
-					$pkprotection = TCPDF_STATIC::getUserPermissionCode($pubkey['p'], $this->encryptdata['mode']);
+					$pkprotection = SASOET_TCPDF_STATIC::getUserPermissionCode($pubkey['p'], $this->encryptdata['mode']);
 				} else {
 					$pkprotection = $this->encryptdata['protection'];
 				}
 				// get default permissions (reverse byte order)
-				$pkpermissions = TCPDF_STATIC::getEncPermissionsString($pkprotection);
+				$pkpermissions = SASOET_TCPDF_STATIC::getEncPermissionsString($pkprotection);
 				// envelope data
 				$envelope = $seed.$pkpermissions;
 				// write the envelope data to a temporary file
-				$tempkeyfile = TCPDF_STATIC::getObjFilename('key', $this->file_id);
-				$f = TCPDF_STATIC::fopenLocal($tempkeyfile, 'wb');
+				$tempkeyfile = SASOET_TCPDF_STATIC::getObjFilename('key', $this->file_id);
+				$f = SASOET_TCPDF_STATIC::fopenLocal($tempkeyfile, 'wb');
 				if (!$f) {
 					$this->Error('Unable to create temporary key file: '.$tempkeyfile);
 				}
 				$envelope_length = strlen($envelope);
 				fwrite($f, $envelope, $envelope_length);
 				fclose($f);
-				$tempencfile = TCPDF_STATIC::getObjFilename('enc', $this->file_id);
+				$tempencfile = SASOET_TCPDF_STATIC::getObjFilename('enc', $this->file_id);
 				if (!openssl_pkcs7_encrypt($tempkeyfile, $tempencfile, $pubkey['c'], array(), PKCS7_BINARY | PKCS7_DETACHED)) {
 					$this->Error('Unable to encrypt the file: '.$tempkeyfile);
 				}
@@ -10956,7 +10956,7 @@ class TCPDF {
 			// encryption is not allowed in PDF/A mode
 			return;
 		}
-		$this->encryptdata['protection'] = TCPDF_STATIC::getUserPermissionCode($permissions, $mode);
+		$this->encryptdata['protection'] = SASOET_TCPDF_STATIC::getUserPermissionCode($permissions, $mode);
 		if (($pubkeys !== null) AND (is_array($pubkeys))) {
 			// public-key mode
 			$this->encryptdata['pubkeys'] = $pubkeys;
@@ -10995,7 +10995,7 @@ class TCPDF {
 			}
 		}
 		if ($owner_pass === null) {
-			$owner_pass = md5(TCPDF_STATIC::getRandomSeed());
+			$owner_pass = md5(SASOET_TCPDF_STATIC::getRandomSeed());
 		}
 		$this->encryptdata['user_password'] = $user_pass;
 		$this->encryptdata['owner_password'] = $owner_pass;
@@ -11041,7 +11041,7 @@ class TCPDF {
 			}
 		}
 		$this->encrypted = true;
-		$this->encryptdata['fileid'] = TCPDF_STATIC::convertHexStringToString($this->file_id);
+		$this->encryptdata['fileid'] = SASOET_TCPDF_STATIC::convertHexStringToString($this->file_id);
 		$this->_generateencryptionkey();
 	}
 
@@ -11146,10 +11146,10 @@ class TCPDF {
 	 * @see StartTransform(), StopTransform()
 	 */
 	public function Scale($s_x, $s_y, $x=null, $y=null) {
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		if (($s_x == 0) OR ($s_y == 0)) {
@@ -11272,10 +11272,10 @@ class TCPDF {
 	 * @see StartTransform(), StopTransform()
 	 */
 	public function Rotate($angle, $x=null, $y=null) {
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		$y = ($this->h - $y) * $this->k;
@@ -11329,10 +11329,10 @@ class TCPDF {
 	 * @see StartTransform(), StopTransform()
 	 */
 	public function Skew($angle_x, $angle_y, $x=null, $y=null) {
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		if (($angle_x <= -90) OR ($angle_x >= 90) OR ($angle_y <= -90) OR ($angle_y >= 90)) {
@@ -11648,7 +11648,7 @@ class TCPDF {
 			}
 		}
 		if (!empty($style)) {
-			$op = TCPDF_STATIC::getPathPaintOperator($style);
+			$op = SASOET_TCPDF_STATIC::getPathPaintOperator($style);
 			$this->_outRect($x, $y, $w, $h, $op);
 		}
 		if (!empty($border_style)) {
@@ -11701,7 +11701,7 @@ class TCPDF {
 		if (!(false === strpos($style, 'F')) AND isset($fill_color)) {
 			$this->setFillColorArray($fill_color);
 		}
-		$op = TCPDF_STATIC::getPathPaintOperator($style);
+		$op = SASOET_TCPDF_STATIC::getPathPaintOperator($style);
 		if ($line_style) {
 			$this->setLineStyle($line_style);
 		}
@@ -11731,7 +11731,7 @@ class TCPDF {
 		if (!(false === strpos($style, 'F')) AND isset($fill_color)) {
 			$this->setFillColorArray($fill_color);
 		}
-		$op = TCPDF_STATIC::getPathPaintOperator($style);
+		$op = SASOET_TCPDF_STATIC::getPathPaintOperator($style);
 		if ($op == 'f') {
 			$line_style = array();
 		}
@@ -11768,13 +11768,13 @@ class TCPDF {
 		if ($this->state != 2) {
 			return;
 		}
-		if (TCPDF_STATIC::empty_string($ry) OR ($ry == 0)) {
+		if (SASOET_TCPDF_STATIC::empty_string($ry) OR ($ry == 0)) {
 			$ry = $rx;
 		}
 		if (!(false === strpos($style, 'F')) AND isset($fill_color)) {
 			$this->setFillColorArray($fill_color);
 		}
-		$op = TCPDF_STATIC::getPathPaintOperator($style);
+		$op = SASOET_TCPDF_STATIC::getPathPaintOperator($style);
 		if ($op == 'f') {
 			$line_style = array();
 		}
@@ -11993,7 +11993,7 @@ class TCPDF {
 		if (!(false === strpos($style, 'F')) AND isset($fill_color)) {
 			$this->setFillColorArray($fill_color);
 		}
-		$op = TCPDF_STATIC::getPathPaintOperator($style);
+		$op = SASOET_TCPDF_STATIC::getPathPaintOperator($style);
 		if ($op == 'f') {
 			$line_style = array();
 		}
@@ -12196,7 +12196,7 @@ class TCPDF {
 		if (!(false === strpos($style, 'F')) AND isset($fill_color)) {
 			$this->setFillColorArray($fill_color);
 		}
-		$op = TCPDF_STATIC::getPathPaintOperator($style);
+		$op = SASOET_TCPDF_STATIC::getPathPaintOperator($style);
 		if ($op == 'f') {
 			$border_style = array();
 		}
@@ -12320,8 +12320,8 @@ class TCPDF {
 	 */
 	public function setDestination($name, $y=-1, $page='', $x=-1) {
 		// remove unsupported characters
-		$name = TCPDF_STATIC::encodeNameObject($name);
-		if (TCPDF_STATIC::empty_string($name)) {
+		$name = SASOET_TCPDF_STATIC::encodeNameObject($name);
+		if (SASOET_TCPDF_STATIC::empty_string($name)) {
 			return false;
 		}
 		if ($y == -1) {
@@ -12541,7 +12541,7 @@ class TCPDF {
 				if (is_string($o['u'])) {
 					if ($o['u'][0] == '#') {
 						// internal destination
-						$out .= ' /Dest /'.TCPDF_STATIC::encodeNameObject(substr($o['u'], 1));
+						$out .= ' /Dest /'.SASOET_TCPDF_STATIC::encodeNameObject(substr($o['u'], 1));
 					} elseif ($o['u'][0] == '%') {
 						// embedded PDF file
 						$filename = basename(substr($o['u'], 1));
@@ -12704,7 +12704,7 @@ class TCPDF {
 		$this->javascript .= 'f'.$name.'.textSize='.$this->FontSizePt.";\n";
 		foreach($prop as $key => $val) {
 			if (strcmp(substr($key, -5), 'Color') == 0) {
-				$val = TCPDF_COLORS::_JScolor($val);
+				$val = SASOET_TCPDF_COLORS::_JScolor($val);
 			} else {
 				$val = "'".$val."'";
 			}
@@ -12759,10 +12759,10 @@ class TCPDF {
 	 * @since 4.8.000 (2009-09-07)
 	 */
 	public function TextField($name, $w, $h, $prop=array(), $opt=array(), $x=null, $y=null, $js=false) {
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -12774,7 +12774,7 @@ class TCPDF {
 		// get default style
 		$prop = array_merge($this->getFormDefaultProp(), $prop);
 		// get annotation data
-		$popt = TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
+		$popt = SASOET_TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
 		// set default appearance stream
 		$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
 		$fontstyle = sprintf('/F%d %F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
@@ -12880,10 +12880,10 @@ class TCPDF {
 	 * @since 4.8.000 (2009-09-07)
 	 */
 	public function RadioButton($name, $w, $prop=array(), $opt=array(), $onvalue='On', $checked=false, $x=null, $y=null, $js=false) {
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -12892,7 +12892,7 @@ class TCPDF {
 			$this->_addfield('radiobutton', $name, $x, $y, $w, $w, $prop);
 			return;
 		}
-		if (TCPDF_STATIC::empty_string($onvalue)) {
+		if (SASOET_TCPDF_STATIC::empty_string($onvalue)) {
 			$onvalue = 'On';
 		}
 		if ($checked) {
@@ -12927,7 +12927,7 @@ class TCPDF {
 		$prop['Radio'] = 'true';
 		$prop['borderStyle'] = 'inset';
 		// get annotation data
-		$popt = TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
+		$popt = SASOET_TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
 		// set additional default options
 		$this->annotation_fonts[$tmpfont['fontkey']] = $tmpfont['i'];
 		$fontstyle = sprintf('/F%d %F Tf %s', $tmpfont['i'], $this->FontSizePt, $this->TextColor);
@@ -12983,10 +12983,10 @@ class TCPDF {
 	 * @since 4.8.000 (2009-09-07)
 	 */
 	public function ListBox($name, $w, $h, $values, $prop=array(), $opt=array(), $x=null, $y=null, $js=false) {
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -13007,7 +13007,7 @@ class TCPDF {
 		// get default style
 		$prop = array_merge($this->getFormDefaultProp(), $prop);
 		// get annotation data
-		$popt = TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
+		$popt = SASOET_TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
 		// set additional default values
 		$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
 		$fontstyle = sprintf('/F%d %F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
@@ -13069,10 +13069,10 @@ class TCPDF {
 	 * @since 4.8.000 (2009-09-07)
 	 */
 	public function ComboBox($name, $w, $h, $values, $prop=array(), $opt=array(), $x=null, $y=null, $js=false) {
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -13094,7 +13094,7 @@ class TCPDF {
 		$prop = array_merge($this->getFormDefaultProp(), $prop);
 		$prop['Combo'] = true;
 		// get annotation data
-		$popt = TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
+		$popt = SASOET_TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
 		// set additional default options
 		$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
 		$fontstyle = sprintf('/F%d %F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
@@ -13156,10 +13156,10 @@ class TCPDF {
 	 * @since 4.8.000 (2009-09-07)
 	 */
 	public function CheckBox($name, $w, $checked=false, $prop=array(), $opt=array(), $onvalue='Yes', $x=null, $y=null, $js=false) {
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -13175,7 +13175,7 @@ class TCPDF {
 		$prop = array_merge($this->getFormDefaultProp(), $prop);
 		$prop['borderStyle'] = 'inset';
 		// get annotation data
-		$popt = TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
+		$popt = SASOET_TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
 		// set additional default options
 		$font = 'zapfdingbats';
 		if ($this->pdfa_mode) {
@@ -13200,7 +13200,7 @@ class TCPDF {
 		$opt['Subtype'] = 'Widget';
 		$opt['ft'] = 'Btn';
 		$opt['t'] = $name;
-		if (TCPDF_STATIC::empty_string($onvalue)) {
+		if (SASOET_TCPDF_STATIC::empty_string($onvalue)) {
 			$onvalue = 'Yes';
 		}
 		$opt['opt'] = array($onvalue);
@@ -13236,10 +13236,10 @@ class TCPDF {
 	 * @since 4.8.000 (2009-09-07)
 	 */
 	public function Button($name, $w, $h, $caption, $action, $prop=array(), $opt=array(), $x=null, $y=null, $js=false) {
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -13258,7 +13258,7 @@ class TCPDF {
 		$prop['highlight'] = 'push';
 		$prop['display'] = 'display.noPrint';
 		// get annotation data
-		$popt = TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
+		$popt = SASOET_TCPDF_STATIC::getAnnotOptFromJSProp($prop, $this->spot_colors, $this->rtl);
 		$this->annotation_fonts[$this->CurrentFont['fontkey']] = $this->CurrentFont['i'];
 		$fontstyle = sprintf('/F%d %F Tf %s', $this->CurrentFont['i'], $this->FontSizePt, $this->TextColor);
 		$popt['da'] = $fontstyle;
@@ -13411,7 +13411,7 @@ class TCPDF {
 		$out .= '<< /Type /Sig';
 		$out .= ' /Filter /Adobe.PPKLite';
 		$out .= ' /SubFilter /adbe.pkcs7.detached';
-		$out .= ' '.TCPDF_STATIC::$byterange_string;
+		$out .= ' '.SASOET_TCPDF_STATIC::$byterange_string;
 		$out .= ' /Contents<'.str_repeat('0', $this->signature_max_length).'>';
 		if (empty($this->signature_data['approval']) OR ($this->signature_data['approval'] != 'A')) {
 			$out .= ' /Reference ['; // array of signature reference dictionaries
@@ -13427,22 +13427,22 @@ class TCPDF {
 				$out .= ' /TransformParams <<';
 				$out .= ' /Type /TransformParams';
 				$out .= ' /V /2.2';
-				if (!TCPDF_STATIC::empty_string($this->ur['document'])) {
+				if (!SASOET_TCPDF_STATIC::empty_string($this->ur['document'])) {
 					$out .= ' /Document['.$this->ur['document'].']';
 				}
-				if (!TCPDF_STATIC::empty_string($this->ur['form'])) {
+				if (!SASOET_TCPDF_STATIC::empty_string($this->ur['form'])) {
 					$out .= ' /Form['.$this->ur['form'].']';
 				}
-				if (!TCPDF_STATIC::empty_string($this->ur['signature'])) {
+				if (!SASOET_TCPDF_STATIC::empty_string($this->ur['signature'])) {
 					$out .= ' /Signature['.$this->ur['signature'].']';
 				}
-				if (!TCPDF_STATIC::empty_string($this->ur['annots'])) {
+				if (!SASOET_TCPDF_STATIC::empty_string($this->ur['annots'])) {
 					$out .= ' /Annots['.$this->ur['annots'].']';
 				}
-				if (!TCPDF_STATIC::empty_string($this->ur['ef'])) {
+				if (!SASOET_TCPDF_STATIC::empty_string($this->ur['ef'])) {
 					$out .= ' /EF['.$this->ur['ef'].']';
 				}
-				if (!TCPDF_STATIC::empty_string($this->ur['formex'])) {
+				if (!SASOET_TCPDF_STATIC::empty_string($this->ur['formex'])) {
 					$out .= ' /FormEX['.$this->ur['formex'].']';
 				}
 			}
@@ -13455,16 +13455,16 @@ class TCPDF {
 			$out .= ' >>';
 			$out .= ' ]'; // end of reference
 		}
-		if (isset($this->signature_data['info']['Name']) AND !TCPDF_STATIC::empty_string($this->signature_data['info']['Name'])) {
+		if (isset($this->signature_data['info']['Name']) AND !SASOET_TCPDF_STATIC::empty_string($this->signature_data['info']['Name'])) {
 			$out .= ' /Name '.$this->_textstring($this->signature_data['info']['Name'], $sigobjid);
 		}
-		if (isset($this->signature_data['info']['Location']) AND !TCPDF_STATIC::empty_string($this->signature_data['info']['Location'])) {
+		if (isset($this->signature_data['info']['Location']) AND !SASOET_TCPDF_STATIC::empty_string($this->signature_data['info']['Location'])) {
 			$out .= ' /Location '.$this->_textstring($this->signature_data['info']['Location'], $sigobjid);
 		}
-		if (isset($this->signature_data['info']['Reason']) AND !TCPDF_STATIC::empty_string($this->signature_data['info']['Reason'])) {
+		if (isset($this->signature_data['info']['Reason']) AND !SASOET_TCPDF_STATIC::empty_string($this->signature_data['info']['Reason'])) {
 			$out .= ' /Reason '.$this->_textstring($this->signature_data['info']['Reason'], $sigobjid);
 		}
-		if (isset($this->signature_data['info']['ContactInfo']) AND !TCPDF_STATIC::empty_string($this->signature_data['info']['ContactInfo'])) {
+		if (isset($this->signature_data['info']['ContactInfo']) AND !SASOET_TCPDF_STATIC::empty_string($this->signature_data['info']['ContactInfo'])) {
 			$out .= ' /ContactInfo '.$this->_textstring($this->signature_data['info']['ContactInfo'], $sigobjid);
 		}
 		$out .= ' /M '.$this->_datestring($sigobjid, $this->doc_modification_timestamp);
@@ -13699,7 +13699,7 @@ class TCPDF {
 	 */
 	public function getAliasRightShift() {
 		// calculate aproximatively the ratio between widths of aliases and replacements.
-		$ref = '{'.TCPDF_STATIC::$alias_right_shift.'}{'.TCPDF_STATIC::$alias_tot_pages.'}{'.TCPDF_STATIC::$alias_num_page.'}';
+		$ref = '{'.SASOET_TCPDF_STATIC::$alias_right_shift.'}{'.SASOET_TCPDF_STATIC::$alias_tot_pages.'}{'.SASOET_TCPDF_STATIC::$alias_num_page.'}';
 		$rep = str_repeat(' ', $this->GetNumChars($ref));
 		$wrep = $this->GetStringWidth($rep);
 		if ($wrep > 0) {
@@ -13708,7 +13708,7 @@ class TCPDF {
 			$wdiff = 1;
 		}
 		$sdiff = sprintf('%F', $wdiff);
-		$alias = TCPDF_STATIC::$alias_right_shift.$sdiff.'}';
+		$alias = SASOET_TCPDF_STATIC::$alias_right_shift.$sdiff.'}';
 		if ($this->isUnicodeFont()) {
 			$alias = '{'.$alias;
 		}
@@ -13725,9 +13725,9 @@ class TCPDF {
 	 */
 	public function getAliasNbPages() {
 		if ($this->isUnicodeFont()) {
-			return '{'.TCPDF_STATIC::$alias_tot_pages.'}';
+			return '{'.SASOET_TCPDF_STATIC::$alias_tot_pages.'}';
 		}
-		return TCPDF_STATIC::$alias_tot_pages;
+		return SASOET_TCPDF_STATIC::$alias_tot_pages;
 	}
 
 	/**
@@ -13740,9 +13740,9 @@ class TCPDF {
 	 */
 	public function getAliasNumPage() {
 		if ($this->isUnicodeFont()) {
-			return '{'.TCPDF_STATIC::$alias_num_page.'}';
+			return '{'.SASOET_TCPDF_STATIC::$alias_num_page.'}';
 		}
-		return TCPDF_STATIC::$alias_num_page;
+		return SASOET_TCPDF_STATIC::$alias_num_page;
 	}
 
 	/**
@@ -13755,9 +13755,9 @@ class TCPDF {
 	 */
 	public function getPageGroupAlias() {
 		if ($this->isUnicodeFont()) {
-			return '{'.TCPDF_STATIC::$alias_group_tot_pages.'}';
+			return '{'.SASOET_TCPDF_STATIC::$alias_group_tot_pages.'}';
 		}
-		return TCPDF_STATIC::$alias_group_tot_pages;
+		return SASOET_TCPDF_STATIC::$alias_group_tot_pages;
 	}
 
 	/**
@@ -13770,9 +13770,9 @@ class TCPDF {
 	 */
 	public function getPageNumGroupAlias() {
 		if ($this->isUnicodeFont()) {
-			return '{'.TCPDF_STATIC::$alias_group_num_page.'}';
+			return '{'.SASOET_TCPDF_STATIC::$alias_group_num_page.'}';
 		}
-		return TCPDF_STATIC::$alias_group_num_page;
+		return SASOET_TCPDF_STATIC::$alias_group_num_page;
 	}
 
 	/**
@@ -13792,7 +13792,7 @@ class TCPDF {
 	 * @see PaneNo(), formatPageNumber()
 	 */
 	public function getGroupPageNoFormatted() {
-		return TCPDF_STATIC::formatPageNumber($this->getGroupPageNo());
+		return SASOET_TCPDF_STATIC::formatPageNumber($this->getGroupPageNo());
 	}
 
 	/**
@@ -13802,7 +13802,7 @@ class TCPDF {
 	 * @see PaneNo(), formatPageNumber()
 	 */
 	public function PageNoFormatted() {
-		return TCPDF_STATIC::formatPageNumber($this->PageNo());
+		return SASOET_TCPDF_STATIC::formatPageNumber($this->PageNo());
 	}
 
 	/**
@@ -13988,7 +13988,7 @@ class TCPDF {
 			return;
 		}
 		$stroking = $stroking ? true : false;
-		if (TCPDF_STATIC::empty_string($nonstroking)) {
+		if (SASOET_TCPDF_STATIC::empty_string($nonstroking)) {
 			// default value if not set
 			$nonstroking = $stroking;
 		} else {
@@ -14028,7 +14028,7 @@ class TCPDF {
 			return;
 		}
 		$stroking = floatval($stroking);
-		if (TCPDF_STATIC::empty_string($nonstroking)) {
+		if (SASOET_TCPDF_STATIC::empty_string($nonstroking)) {
 			// default value if not set
 			$nonstroking = $stroking;
 		} else {
@@ -14250,7 +14250,7 @@ class TCPDF {
 				}
 				default: { // SPECIFIC SPOT COLOR NAME
 					$col_a = array(0,0,0,0,'None');
-					$col_b = TCPDF_COLORS::getSpotColor($col, $this->spot_colors);
+					$col_b = SASOET_TCPDF_COLORS::getSpotColor($col, $this->spot_colors);
 					if ($col_b === false) {
 						// in case of error defaults to the registration color
 						$col_b = array(100,100,100,100,'All');
@@ -14914,7 +14914,7 @@ class TCPDF {
 		if ($this->rtl) {
 			$xc = ($this->w - $xc);
 		}
-		$op = TCPDF_STATIC::getPathPaintOperator($style);
+		$op = SASOET_TCPDF_STATIC::getPathPaintOperator($style);
 		if ($op == 'f') {
 			$line_style = array();
 		}
@@ -14959,10 +14959,10 @@ class TCPDF {
 			// convert EPS to raster image using GD or ImageMagick libraries
 			return $this->Image($file, $x, $y, $w, $h, 'EPS', $link, $align, true, 300, $palign, false, false, $border, false, false, $fitonpage);
 		}
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -15315,14 +15315,14 @@ class TCPDF {
 	 * @public
 	 */
 	public function write1DBarcode($code, $type, $x=null, $y=null, $w=null, $h=null, $xres=null, $style=array(), $align='') {
-		if (TCPDF_STATIC::empty_string(trim($code))) {
+		if (SASOET_TCPDF_STATIC::empty_string(trim($code))) {
 			return;
 		}
 		require_once(dirname(__FILE__).'/tcpdf_barcodes_1d.php');
 		// save current graphic settings
 		$gvars = $this->getGraphicVars();
 		// create new barcode object
-		$barcodeobj = new TCPDFBarcode($code, $type);
+		$barcodeobj = new SASOET_TCPDFBarcode($code, $type);
 		$arrcode = $barcodeobj->getBarcodeArray();
 		if (empty($arrcode) OR ($arrcode['maxw'] <= 0)) {
 			$this->Error('Error in 1D barcode string');
@@ -15378,15 +15378,15 @@ class TCPDF {
 		if (!isset($style['stretchtext'])) {
 			$style['stretchtext'] = 4;
 		}
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
 		list($x, $y) = $this->checkPageRegions($h, $x, $y);
-		if (TCPDF_STATIC::empty_string($w) OR ($w <= 0)) {
+		if (SASOET_TCPDF_STATIC::empty_string($w) OR ($w <= 0)) {
 			if ($this->rtl) {
 				$w = $x - $this->lMargin;
 			} else {
@@ -15422,7 +15422,7 @@ class TCPDF {
 		if ($style['stretch']) {
 			$xres = $max_xres;
 		} else {
-			if (TCPDF_STATIC::empty_string($xres)) {
+			if (SASOET_TCPDF_STATIC::empty_string($xres)) {
 				$xres = (0.141 * $this->k); // default bar width = 0.4 mm
 			}
 			if ($xres > $max_xres) {
@@ -15470,7 +15470,7 @@ class TCPDF {
 		}
 		$text_height = $this->getCellHeight($fontsize / $this->k);
 		// height
-		if (TCPDF_STATIC::empty_string($h) OR ($h <= 0)) {
+		if (SASOET_TCPDF_STATIC::empty_string($h) OR ($h <= 0)) {
 			// set default height
 			$h = (($arrcode['maxw'] * $xres) / 3) + (2 * $vpadding) + $text_height;
 		}
@@ -15559,7 +15559,7 @@ class TCPDF {
 		}
 		// print text
 		if ($style['text']) {
-			if (isset($style['label']) AND !TCPDF_STATIC::empty_string($style['label'])) {
+			if (isset($style['label']) AND !SASOET_TCPDF_STATIC::empty_string($style['label'])) {
 				$label = $style['label'];
 			} else {
 				$label = $code;
@@ -15633,14 +15633,14 @@ class TCPDF {
 	 * @public
 	 */
 	public function write2DBarcode($code, $type, $x=null, $y=null, $w=null, $h=null, $style=array(), $align='', $distort=false) {
-		if (TCPDF_STATIC::empty_string(trim($code))) {
+		if (SASOET_TCPDF_STATIC::empty_string(trim($code))) {
 			return;
 		}
 		require_once(dirname(__FILE__).'/tcpdf_barcodes_2d.php');
 		// save current graphic settings
 		$gvars = $this->getGraphicVars();
 		// create new barcode object
-		$barcodeobj = new TCPDF2DBarcode($code, $type);
+		$barcodeobj = new SASOET_TCPDF2DBarcode($code, $type);
 		$arrcode = $barcodeobj->getBarcodeArray();
 		if (empty($arrcode) OR !isset($arrcode['num_rows']) OR ($arrcode['num_rows'] == 0) OR !isset($arrcode['num_cols']) OR ($arrcode['num_cols'] == 0)) {
 			$this->Error('Error in 2D barcode string');
@@ -15683,10 +15683,10 @@ class TCPDF {
 		if (!isset($style['module_height'])) {
 			$style['module_height'] = 1; // height of a single module in points
 		}
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -15728,7 +15728,7 @@ class TCPDF {
 			$h = $maxh;
 		}
 		// set dimensions
-		if ((TCPDF_STATIC::empty_string($w) OR ($w <= 0)) AND (TCPDF_STATIC::empty_string($h) OR ($h <= 0))) {
+		if ((SASOET_TCPDF_STATIC::empty_string($w) OR ($w <= 0)) AND (SASOET_TCPDF_STATIC::empty_string($h) OR ($h <= 0))) {
 			$w = ($cols + $hpad) * ($mw / $this->k);
 			$h = ($rows + $vpad) * ($mh / $this->k);
 		} elseif (($w === '') OR ($w <= 0)) {
@@ -15949,7 +15949,7 @@ class TCPDF {
 	 * @see setHtmlVSpace()
 	 */
 	public function fixHTMLCode($html, $default_css='', $tagvs=null, $tidy_options=null) {
-		return TCPDF_STATIC::fixHTMLCode($html, $default_css, $tagvs, $tidy_options, $this->tagvspaces);
+		return SASOET_TCPDF_STATIC::fixHTMLCode($html, $default_css, $tagvs, $tidy_options, $this->tagvspaces);
 	}
 
 	/**
@@ -16054,7 +16054,7 @@ class TCPDF {
 			return array();
 		}
 		$border['width'] = $this->getCSSBorderWidth($width);
-		$border['color'] = TCPDF_COLORS::convertHTMLColorToDec($color, $this->spot_colors);
+		$border['color'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($color, $this->spot_colors);
 		return $border;
 	}
 
@@ -16312,8 +16312,8 @@ class TCPDF {
 	 * @public
 	 */
 	public function getHTMLFontUnits($val, $refsize=12, $parent_size=12, $defaultunit='pt') {
-		$refsize = TCPDF_FONTS::getFontRefSize($refsize);
-		$parent_size = TCPDF_FONTS::getFontRefSize($parent_size, $refsize);
+		$refsize = SASOET_TCPDF_FONTS::getFontRefSize($refsize);
+		$parent_size = SASOET_TCPDF_FONTS::getFontRefSize($parent_size, $refsize);
 		switch ($val) {
 			case 'xx-small': {
 				$size = ($refsize - 4);
@@ -16392,7 +16392,7 @@ class TCPDF {
 							// read CSS data file
                             $cssdata = $this->getCachedFileContents(trim($type[1]));
 							if (($cssdata !== FALSE) AND (strlen($cssdata) > 0)) {
-								$css = array_merge($css, TCPDF_STATIC::extractCSSproperties($cssdata));
+								$css = array_merge($css, SASOET_TCPDF_STATIC::extractCSSproperties($cssdata));
 							}
 						}
 					}
@@ -16409,7 +16409,7 @@ class TCPDF {
 				// (all, braille, embossed, handheld, print, projection, screen, speech, tty, tv)
 				if (empty($type) OR (isset($type[1]) AND (($type[1] == 'all') OR ($type[1] == 'print')))) {
 					$cssdata = $matches[2][$key];
-					$css = array_merge($css, TCPDF_STATIC::extractCSSproperties($cssdata));
+					$css = array_merge($css, SASOET_TCPDF_STATIC::extractCSSproperties($cssdata));
 				}
 			}
 		}
@@ -16616,7 +16616,7 @@ class TCPDF {
 						&& !empty($dom[($dom[$key]['parent'])]['thead'])
 						&& ($dom[($dom[$key]['parent'])]['thead'] === true)
 					) {
-						if (TCPDF_STATIC::empty_string($dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'])) {
+						if (SASOET_TCPDF_STATIC::empty_string($dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'])) {
 							$dom[($dom[($dom[$key]['parent'])]['parent'])]['thead'] = $csstagarray.$a[$dom[($dom[($dom[$key]['parent'])]['parent'])]['elkey']];
 						}
 						for ($i = $dom[$key]['parent']; $i <= $key; ++$i) {
@@ -16628,7 +16628,7 @@ class TCPDF {
 						// header elements must be always contained in a single page
 						$dom[($dom[$key]['parent'])]['attribute']['nobr'] = 'true';
 					}
-					if (($dom[$key]['value'] == 'table') AND (!TCPDF_STATIC::empty_string($dom[($dom[$key]['parent'])]['thead']))) {
+					if (($dom[$key]['value'] == 'table') AND (!SASOET_TCPDF_STATIC::empty_string($dom[($dom[$key]['parent'])]['thead']))) {
 						// remove the nobr attributes from the table header
 						$dom[($dom[$key]['parent'])]['thead'] = str_replace(' nobr="true"', '', $dom[($dom[$key]['parent'])]['thead']);
 						$dom[($dom[$key]['parent'])]['thead'] .= '</tablehead>';
@@ -16677,8 +16677,8 @@ class TCPDF {
                     }
 					if (!empty($css)) {
 						// merge CSS style to current style
-						list($dom[$key]['csssel'], $dom[$key]['cssdata']) = TCPDF_STATIC::getCSSdataArray($dom, $key, $css);
-						$dom[$key]['attribute']['style'] = TCPDF_STATIC::getTagStyleFromCSSarray($dom[$key]['cssdata']);
+						list($dom[$key]['csssel'], $dom[$key]['cssdata']) = SASOET_TCPDF_STATIC::getCSSdataArray($dom, $key, $css);
+						$dom[$key]['attribute']['style'] = SASOET_TCPDF_STATIC::getTagStyleFromCSSarray($dom[$key]['cssdata']);
 					}
 					// split style attributes
 					if (isset($dom[$key]['attribute']['style']) AND !empty($dom[$key]['attribute']['style'])) {
@@ -16775,21 +16775,21 @@ class TCPDF {
 							$dom[$key]['fontstyle'] .= 'I';
 						}
 						// font color
-						if (isset($dom[$key]['style']['color']) AND (!TCPDF_STATIC::empty_string($dom[$key]['style']['color']))) {
-							$dom[$key]['fgcolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['color'], $this->spot_colors);
+						if (isset($dom[$key]['style']['color']) AND (!SASOET_TCPDF_STATIC::empty_string($dom[$key]['style']['color']))) {
+							$dom[$key]['fgcolor'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['color'], $this->spot_colors);
 						} elseif ($dom[$key]['value'] == 'a') {
 							$dom[$key]['fgcolor'] = $this->htmlLinkColorArray;
 						}
 						// background color
-						if (isset($dom[$key]['style']['background-color']) AND (!TCPDF_STATIC::empty_string($dom[$key]['style']['background-color']))) {
-							$dom[$key]['bgcolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['background-color'], $this->spot_colors);
+						if (isset($dom[$key]['style']['background-color']) AND (!SASOET_TCPDF_STATIC::empty_string($dom[$key]['style']['background-color']))) {
+							$dom[$key]['bgcolor'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['background-color'], $this->spot_colors);
 						}
 						// text-decoration
 						if (isset($dom[$key]['style']['text-decoration'])) {
 							$decors = explode(' ', strtolower($dom[$key]['style']['text-decoration']));
 							foreach ($decors as $dec) {
 								$dec = trim($dec);
-								if (!TCPDF_STATIC::empty_string($dec)) {
+								if (!SASOET_TCPDF_STATIC::empty_string($dec)) {
 									if ($dec[0] == 'u') {
 										// underline
 										$dom[$key]['fontstyle'] .= 'U';
@@ -16827,16 +16827,16 @@ class TCPDF {
 						if (isset($dom[$key]['style']['border-color'])) {
 							$brd_colors = preg_split('/[\s]+/', trim($dom[$key]['style']['border-color']));
 							if (isset($brd_colors[3])) {
-								$dom[$key]['border']['L']['color'] = TCPDF_COLORS::convertHTMLColorToDec($brd_colors[3], $this->spot_colors);
+								$dom[$key]['border']['L']['color'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($brd_colors[3], $this->spot_colors);
 							}
 							if (isset($brd_colors[1])) {
-								$dom[$key]['border']['R']['color'] = TCPDF_COLORS::convertHTMLColorToDec($brd_colors[1], $this->spot_colors);
+								$dom[$key]['border']['R']['color'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($brd_colors[1], $this->spot_colors);
 							}
 							if (isset($brd_colors[0])) {
-								$dom[$key]['border']['T']['color'] = TCPDF_COLORS::convertHTMLColorToDec($brd_colors[0], $this->spot_colors);
+								$dom[$key]['border']['T']['color'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($brd_colors[0], $this->spot_colors);
 							}
 							if (isset($brd_colors[2])) {
-								$dom[$key]['border']['B']['color'] = TCPDF_COLORS::convertHTMLColorToDec($brd_colors[2], $this->spot_colors);
+								$dom[$key]['border']['B']['color'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($brd_colors[2], $this->spot_colors);
 							}
 						}
 						if (isset($dom[$key]['style']['border-width'])) {
@@ -16898,7 +16898,7 @@ class TCPDF {
 								}
 							}
 							if (isset($dom[$key]['style']['border-'.$bsv.'-color'])) {
-								$dom[$key]['border'][$bsk]['color'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['border-'.$bsv.'-color'], $this->spot_colors);
+								$dom[$key]['border'][$bsk]['color'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['style']['border-'.$bsv.'-color'], $this->spot_colors);
 							}
 							if (isset($dom[$key]['style']['border-'.$bsv.'-width'])) {
 								$dom[$key]['border'][$bsk]['width'] = $this->getCSSBorderWidth($dom[$key]['style']['border-'.$bsv.'-width']);
@@ -16993,7 +16993,7 @@ class TCPDF {
 					}
 					// force natural alignment for lists
 					if ((($dom[$key]['value'] == 'ul') OR ($dom[$key]['value'] == 'ol') OR ($dom[$key]['value'] == 'dl'))
-						AND (!isset($dom[$key]['align']) OR TCPDF_STATIC::empty_string($dom[$key]['align']) OR ($dom[$key]['align'] != 'J'))) {
+						AND (!isset($dom[$key]['align']) OR SASOET_TCPDF_STATIC::empty_string($dom[$key]['align']) OR ($dom[$key]['align'] != 'J'))) {
 						if ($this->rtl) {
 							$dom[$key]['align'] = 'R';
 						} else {
@@ -17002,7 +17002,7 @@ class TCPDF {
 					}
 					if (($dom[$key]['value'] == 'small') OR ($dom[$key]['value'] == 'sup') OR ($dom[$key]['value'] == 'sub')) {
 						if (!isset($dom[$key]['attribute']['size']) AND !isset($dom[$key]['style']['font-size'])) {
-							$dom[$key]['fontsize'] = $dom[$key]['fontsize'] * K_SMALL_RATIO;
+							$dom[$key]['fontsize'] = $dom[$key]['fontsize'] * SASOET_K_SMALL_RATIO;
 						}
 					}
 					if (($dom[$key]['value'] == 'strong') OR ($dom[$key]['value'] == 'b')) {
@@ -17075,18 +17075,18 @@ class TCPDF {
 						$dom[$key]['dir'] = $dom[$key]['attribute']['dir'];
 					}
 					// set foreground color attribute
-					if (isset($dom[$key]['attribute']['color']) AND (!TCPDF_STATIC::empty_string($dom[$key]['attribute']['color']))) {
-						$dom[$key]['fgcolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['attribute']['color'], $this->spot_colors);
+					if (isset($dom[$key]['attribute']['color']) AND (!SASOET_TCPDF_STATIC::empty_string($dom[$key]['attribute']['color']))) {
+						$dom[$key]['fgcolor'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['attribute']['color'], $this->spot_colors);
 					} elseif (!isset($dom[$key]['style']['color']) AND ($dom[$key]['value'] == 'a')) {
 						$dom[$key]['fgcolor'] = $this->htmlLinkColorArray;
 					}
 					// set background color attribute
-					if (isset($dom[$key]['attribute']['bgcolor']) AND (!TCPDF_STATIC::empty_string($dom[$key]['attribute']['bgcolor']))) {
-						$dom[$key]['bgcolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['attribute']['bgcolor'], $this->spot_colors);
+					if (isset($dom[$key]['attribute']['bgcolor']) AND (!SASOET_TCPDF_STATIC::empty_string($dom[$key]['attribute']['bgcolor']))) {
+						$dom[$key]['bgcolor'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['attribute']['bgcolor'], $this->spot_colors);
 					}
 					// set stroke color attribute
-					if (isset($dom[$key]['attribute']['strokecolor']) AND (!TCPDF_STATIC::empty_string($dom[$key]['attribute']['strokecolor']))) {
-						$dom[$key]['strokecolor'] = TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['attribute']['strokecolor'], $this->spot_colors);
+					if (isset($dom[$key]['attribute']['strokecolor']) AND (!SASOET_TCPDF_STATIC::empty_string($dom[$key]['attribute']['strokecolor']))) {
+						$dom[$key]['strokecolor'] = SASOET_TCPDF_COLORS::convertHTMLColorToDec($dom[$key]['attribute']['strokecolor'], $this->spot_colors);
 					}
 					// check for width attribute
 					if (isset($dom[$key]['attribute']['width'])) {
@@ -17097,7 +17097,7 @@ class TCPDF {
 						$dom[$key]['height'] = $dom[$key]['attribute']['height'];
 					}
 					// check for text alignment
-					if (isset($dom[$key]['attribute']['align']) AND (!TCPDF_STATIC::empty_string($dom[$key]['attribute']['align'])) AND ($dom[$key]['value'] !== 'img')) {
+					if (isset($dom[$key]['attribute']['align']) AND (!SASOET_TCPDF_STATIC::empty_string($dom[$key]['attribute']['align'])) AND ($dom[$key]['value'] !== 'img')) {
 						$dom[$key]['align'] = strtoupper($dom[$key]['attribute']['align'][0]);
 					}
 					// check for text rendering mode (the following attributes do not exist in HTML)
@@ -17177,7 +17177,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Return an hash code used to ensure that the serialized data has been generated by this TCPDF instance.
+	 * Return an hash code used to ensure that the serialized data has been generated by this SASOET_TCPDF instance.
 	 * @param string $data serialized data
 	 * @return string
 	 * @public static
@@ -17187,7 +17187,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Serialize an array of parameters to be used with TCPDF tag in HTML code.
+	 * Serialize an array of parameters to be used with SASOET_TCPDF tag in HTML code.
 	 * @param array $data parameters array
 	 * @return string containing serialized data
 	 * @public static
@@ -17198,7 +17198,7 @@ class TCPDF {
 	}
 
 	/**
-	 * Unserialize parameters to be used with TCPDF tag in HTML code.
+	 * Unserialize parameters to be used with SASOET_TCPDF tag in HTML code.
 	 * @param string $data serialized data
 	 * @return array containing unserialized data
 	 * @protected static
@@ -17336,7 +17336,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->listordered = array();
 		$this->listcount = array();
 		$this->lispacer = '';
-		if ((TCPDF_STATIC::empty_string($this->lasth)) OR ($reseth)) {
+		if ((SASOET_TCPDF_STATIC::empty_string($this->lasth)) OR ($reseth)) {
 			// reset row height
 			$this->resetLastH();
 		}
@@ -17425,7 +17425,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			// print THEAD block
 			if (($dom[$key]['value'] == 'tr') AND isset($dom[$key]['thead']) AND $dom[$key]['thead']) {
-				if (isset($dom[$key]['parent']) AND isset($dom[$dom[$key]['parent']]['thead']) AND !TCPDF_STATIC::empty_string($dom[$dom[$key]['parent']]['thead'])) {
+				if (isset($dom[$key]['parent']) AND isset($dom[$dom[$key]['parent']]['thead']) AND !SASOET_TCPDF_STATIC::empty_string($dom[$dom[$key]['parent']]['thead'])) {
 					$this->inthead = true;
 					// print table header (thead)
 					$this->writeHTML($this->thead, false, false, false, false, '');
@@ -17679,7 +17679,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (isset($dom[$key]['align'])) {
 					$lalign = $dom[$key]['align'];
 				}
-				if (TCPDF_STATIC::empty_string($lalign)) {
+				if (SASOET_TCPDF_STATIC::empty_string($lalign)) {
 					$lalign = $align;
 				}
 			}
@@ -17748,14 +17748,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$no = 0; // number of spaces on a line contained on a single block
 						if ($this->isRTLTextDir()) { // RTL
 							// remove left space if exist
-							$pos1 = TCPDF_STATIC::revstrpos($pmid, '[(');
+							$pos1 = SASOET_TCPDF_STATIC::revstrpos($pmid, '[(');
 							if ($pos1 > 0) {
 								$pos1 = intval($pos1);
 								if ($this->isUnicodeFont()) {
-									$pos2 = intval(TCPDF_STATIC::revstrpos($pmid, '[('.chr(0).chr(32)));
+									$pos2 = intval(SASOET_TCPDF_STATIC::revstrpos($pmid, '[('.chr(0).chr(32)));
 									$spacelen = 2;
 								} else {
-									$pos2 = intval(TCPDF_STATIC::revstrpos($pmid, '[('.chr(32)));
+									$pos2 = intval(SASOET_TCPDF_STATIC::revstrpos($pmid, '[('.chr(32)));
 									$spacelen = 1;
 								}
 								if ($pos1 == $pos2) {
@@ -17769,14 +17769,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							}
 						} else { // LTR
 							// remove right space if exist
-							$pos1 = TCPDF_STATIC::revstrpos($pmid, ')]');
+							$pos1 = SASOET_TCPDF_STATIC::revstrpos($pmid, ')]');
 							if ($pos1 > 0) {
 								$pos1 = intval($pos1);
 								if ($this->isUnicodeFont()) {
-									$pos2 = intval(TCPDF_STATIC::revstrpos($pmid, chr(0).chr(32).')]')) + 2;
+									$pos2 = intval(SASOET_TCPDF_STATIC::revstrpos($pmid, chr(0).chr(32).')]')) + 2;
 									$spacelen = 2;
 								} else {
-									$pos2 = intval(TCPDF_STATIC::revstrpos($pmid, chr(32).')]')) + 1;
+									$pos2 = intval(SASOET_TCPDF_STATIC::revstrpos($pmid, chr(32).')]')) + 1;
 									$spacelen = 1;
 								}
 								if ($pos1 == $pos2) {
@@ -17917,7 +17917,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 										}
 										case 're': {
 											// justify block
-											if (!TCPDF_STATIC::empty_string($this->lispacer)) {
+											if (!SASOET_TCPDF_STATIC::empty_string($this->lispacer)) {
 												$this->lispacer = '';
 												break;
 											}
@@ -18434,7 +18434,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 			} elseif (strlen($dom[$key]['value']) > 0) {
 				// print list-item
-				if (!TCPDF_STATIC::empty_string($this->lispacer) AND ($this->lispacer != '^')) {
+				if (!SASOET_TCPDF_STATIC::empty_string($this->lispacer) AND ($this->lispacer != '^')) {
 					$this->setFont($pfontname, $pfontstyle, $pfontsize);
 					$this->resetLastH();
 					$minstartliney = $this->y;
@@ -18454,7 +18454,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 				// text
 				$this->htmlvspace = 0;
-				$isRTLString = preg_match(TCPDF_FONT_DATA::$uni_RE_PATTERN_RTL, $dom[$key]['value']) || preg_match(TCPDF_FONT_DATA::$uni_RE_PATTERN_ARABIC, $dom[$key]['value']);
+				$isRTLString = preg_match(SASOET_TCPDF_FONT_DATA::$uni_RE_PATTERN_RTL, $dom[$key]['value']) || preg_match(SASOET_TCPDF_FONT_DATA::$uni_RE_PATTERN_ARABIC, $dom[$key]['value']);
 				if ((!$this->premode) AND $this->isRTLTextDir() AND !$isRTLString) {
 					// reverse spaces order
 					$lsp = ''; // left spaces
@@ -18534,7 +18534,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 									$tmp_fontsize = isset($dom[$nkey]['fontsize']) ? $dom[$nkey]['fontsize'] : $this->FontSizePt;
 									$same_textdir = ($dom[$nkey]['dir'] == $dom[$key]['dir']);
 								} else {
-									$nextstr = TCPDF_STATIC::pregSplit('/'.$this->re_space['p'].'+/', $this->re_space['m'], $dom[$nkey]['value']);
+									$nextstr = SASOET_TCPDF_STATIC::pregSplit('/'.$this->re_space['p'].'+/', $this->re_space['m'], $dom[$nkey]['value']);
 									if (isset($nextstr[0]) AND $same_textdir) {
 										$wadj += $this->GetStringWidth($nextstr[0], $tmp_fontname, $tmp_fontstyle, $tmp_fontsize);
 										if (isset($nextstr[1])) {
@@ -18547,7 +18547,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						}
 						if (($wadj > 0) AND (($strlinelen + $wadj) >= $cwa)) {
 							$wadj = 0;
-							$nextstr = TCPDF_STATIC::pregSplit('/'.$this->re_space['p'].'/', $this->re_space['m'], $dom[$key]['value']);
+							$nextstr = SASOET_TCPDF_STATIC::pregSplit('/'.$this->re_space['p'].'/', $this->re_space['m'], $dom[$key]['value']);
 							$numblks = count($nextstr);
 							if ($numblks > 1) {
 								// try to split on blank spaces
@@ -18696,14 +18696,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$no = 0; // number of spaces on a line contained on a single block
 				if ($this->isRTLTextDir()) { // RTL
 					// remove left space if exist
-					$pos1 = TCPDF_STATIC::revstrpos($pmid, '[(');
+					$pos1 = SASOET_TCPDF_STATIC::revstrpos($pmid, '[(');
 					if ($pos1 > 0) {
 						$pos1 = intval($pos1);
 						if ($this->isUnicodeFont()) {
-							$pos2 = intval(TCPDF_STATIC::revstrpos($pmid, '[('.chr(0).chr(32)));
+							$pos2 = intval(SASOET_TCPDF_STATIC::revstrpos($pmid, '[('.chr(0).chr(32)));
 							$spacelen = 2;
 						} else {
-							$pos2 = intval(TCPDF_STATIC::revstrpos($pmid, '[('.chr(32)));
+							$pos2 = intval(SASOET_TCPDF_STATIC::revstrpos($pmid, '[('.chr(32)));
 							$spacelen = 1;
 						}
 						if ($pos1 == $pos2) {
@@ -18717,14 +18717,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 				} else { // LTR
 					// remove right space if exist
-					$pos1 = TCPDF_STATIC::revstrpos($pmid, ')]');
+					$pos1 = SASOET_TCPDF_STATIC::revstrpos($pmid, ')]');
 					if ($pos1 > 0) {
 						$pos1 = intval($pos1);
 						if ($this->isUnicodeFont()) {
-							$pos2 = intval(TCPDF_STATIC::revstrpos($pmid, chr(0).chr(32).')]')) + 2;
+							$pos2 = intval(SASOET_TCPDF_STATIC::revstrpos($pmid, chr(0).chr(32).')]')) + 2;
 							$spacelen = 2;
 						} else {
-							$pos2 = intval(TCPDF_STATIC::revstrpos($pmid, chr(32).')]')) + 1;
+							$pos2 = intval(SASOET_TCPDF_STATIC::revstrpos($pmid, chr(32).')]')) + 1;
 							$spacelen = 1;
 						}
 						if ($pos1 == $pos2) {
@@ -18882,7 +18882,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				if (!isset($dom[$key]['attribute']['nested']) OR ($dom[$key]['attribute']['nested'] != 'true')) {
 					$this->htmlvspace = 0;
 					// set table header
-					if (!TCPDF_STATIC::empty_string($dom[$key]['thead'])) {
+					if (!SASOET_TCPDF_STATIC::empty_string($dom[$key]['thead'])) {
 						// set table header
 						$this->thead = $dom[$key]['thead'];
 						if (!isset($this->theadMargins) OR (empty($this->theadMargins))) {
@@ -18993,7 +18993,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				} elseif ( $this->allowLocalFiles && substr($imgsrc, 0, 7) === 'file://') {
                     // get image type from a local file path
                     $imgsrc = substr($imgsrc, 7);
-                    $type = TCPDF_IMAGES::getImageFileType($imgsrc);
+                    $type = SASOET_TCPDF_IMAGES::getImageFileType($imgsrc);
                 } else {
 					if (($imgsrc[0] === '/') AND !empty($_SERVER['DOCUMENT_ROOT']) AND ($_SERVER['DOCUMENT_ROOT'] != '/')) {
 						// fix image path
@@ -19009,14 +19009,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$testscrtype = @parse_url($imgsrc);
 						if (empty($testscrtype['query'])) {
 							// convert URL to server path
-							$imgsrc = str_replace(K_PATH_URL, K_PATH_MAIN, $imgsrc);
+							$imgsrc = str_replace(SASOET_K_PATH_URL, SASOET_K_PATH_MAIN, $imgsrc);
 						} elseif (preg_match('|^https?://|', $imgsrc) !== 1) {
 							// convert URL to server path
-							$imgsrc = str_replace(K_PATH_MAIN, K_PATH_URL, $imgsrc);
+							$imgsrc = str_replace(SASOET_K_PATH_MAIN, SASOET_K_PATH_URL, $imgsrc);
 						}
 					}
 					// get image type
-					$type = TCPDF_IMAGES::getImageFileType($imgsrc);
+					$type = SASOET_TCPDF_IMAGES::getImageFileType($imgsrc);
 				}
 				if (!isset($tag['width'])) {
 					$tag['width'] = 0;
@@ -19050,7 +19050,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$prevy = $this->y;
 				$xpos = $this->x;
 				$imglink = '';
-				if (isset($this->HREF['url']) AND !TCPDF_STATIC::empty_string($this->HREF['url'])) {
+				if (isset($this->HREF['url']) AND !SASOET_TCPDF_STATIC::empty_string($this->HREF['url'])) {
 					$imglink = $this->HREF['url'];
 					if ($imglink[0] == '#') {
 						// convert url to internal link
@@ -19165,11 +19165,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 				if ($this->listordered[$this->listnum]) {
 					// ordered item
-					if (isset($parent['attribute']['type']) AND !TCPDF_STATIC::empty_string($parent['attribute']['type'])) {
+					if (isset($parent['attribute']['type']) AND !SASOET_TCPDF_STATIC::empty_string($parent['attribute']['type'])) {
 						$this->lispacer = $parent['attribute']['type'];
-					} elseif (isset($parent['listtype']) AND !TCPDF_STATIC::empty_string($parent['listtype'])) {
+					} elseif (isset($parent['listtype']) AND !SASOET_TCPDF_STATIC::empty_string($parent['listtype'])) {
 						$this->lispacer = $parent['listtype'];
-					} elseif (isset($this->lisymbol) AND !TCPDF_STATIC::empty_string($this->lisymbol)) {
+					} elseif (isset($this->lisymbol) AND !SASOET_TCPDF_STATIC::empty_string($this->lisymbol)) {
 						$this->lispacer = $this->lisymbol;
 					} else {
 						$this->lispacer = '#';
@@ -19180,11 +19180,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 				} else {
 					// unordered item
-					if (isset($parent['attribute']['type']) AND !TCPDF_STATIC::empty_string($parent['attribute']['type'])) {
+					if (isset($parent['attribute']['type']) AND !SASOET_TCPDF_STATIC::empty_string($parent['attribute']['type'])) {
 						$this->lispacer = $parent['attribute']['type'];
-					} elseif (isset($parent['listtype']) AND !TCPDF_STATIC::empty_string($parent['listtype'])) {
+					} elseif (isset($parent['listtype']) AND !SASOET_TCPDF_STATIC::empty_string($parent['listtype'])) {
 						$this->lispacer = $parent['listtype'];
-					} elseif (isset($this->lisymbol) AND !TCPDF_STATIC::empty_string($this->lisymbol)) {
+					} elseif (isset($this->lisymbol) AND !SASOET_TCPDF_STATIC::empty_string($this->lisymbol)) {
 						$this->lispacer = $this->lisymbol;
 					} else {
 						$this->lispacer = '!';
@@ -19256,24 +19256,24 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'input': {
-				if (isset($tag['attribute']['name']) AND !TCPDF_STATIC::empty_string($tag['attribute']['name'])) {
+				if (isset($tag['attribute']['name']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['name'])) {
 					$name = $tag['attribute']['name'];
 				} else {
 					break;
 				}
 				$prop = array();
 				$opt = array();
-				if (isset($tag['attribute']['readonly']) AND !TCPDF_STATIC::empty_string($tag['attribute']['readonly'])) {
+				if (isset($tag['attribute']['readonly']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['readonly'])) {
 					$prop['readonly'] = true;
 				}
-				if (isset($tag['attribute']['value']) AND !TCPDF_STATIC::empty_string($tag['attribute']['value'])) {
+				if (isset($tag['attribute']['value']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['value'])) {
 					$value = $tag['attribute']['value'];
 				}
-				if (isset($tag['attribute']['maxlength']) AND !TCPDF_STATIC::empty_string($tag['attribute']['maxlength'])) {
+				if (isset($tag['attribute']['maxlength']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['maxlength'])) {
 					$opt['maxlen'] = intval($tag['attribute']['maxlength']);
 				}
 				$h = $this->getCellHeight($this->FontSize);
-				if (isset($tag['attribute']['size']) AND !TCPDF_STATIC::empty_string($tag['attribute']['size'])) {
+				if (isset($tag['attribute']['size']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['size'])) {
 					$w = intval($tag['attribute']['size']) * $this->GetStringWidth(chr(32)) * 2;
 				} else {
 					$w = $h;
@@ -19381,7 +19381,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					}
 					case 'image': {
 						// THIS TYPE MUST BE FIXED
-						if (isset($tag['attribute']['src']) AND !TCPDF_STATIC::empty_string($tag['attribute']['src'])) {
+						if (isset($tag['attribute']['src']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['src'])) {
 							$img = $tag['attribute']['src'];
 						} else {
 							break;
@@ -19417,23 +19417,23 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			case 'textarea': {
 				$prop = array();
 				$opt = array();
-				if (isset($tag['attribute']['readonly']) AND !TCPDF_STATIC::empty_string($tag['attribute']['readonly'])) {
+				if (isset($tag['attribute']['readonly']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['readonly'])) {
 					$prop['readonly'] = true;
 				}
-				if (isset($tag['attribute']['name']) AND !TCPDF_STATIC::empty_string($tag['attribute']['name'])) {
+				if (isset($tag['attribute']['name']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['name'])) {
 					$name = $tag['attribute']['name'];
 				} else {
 					break;
 				}
-				if (isset($tag['attribute']['value']) AND !TCPDF_STATIC::empty_string($tag['attribute']['value'])) {
+				if (isset($tag['attribute']['value']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['value'])) {
 					$opt['v'] = $tag['attribute']['value'];
 				}
-				if (isset($tag['attribute']['cols']) AND !TCPDF_STATIC::empty_string($tag['attribute']['cols'])) {
+				if (isset($tag['attribute']['cols']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['cols'])) {
 					$w = intval($tag['attribute']['cols']) * $this->GetStringWidth(chr(32)) * 2;
 				} else {
 					$w = 40;
 				}
-				if (isset($tag['attribute']['rows']) AND !TCPDF_STATIC::empty_string($tag['attribute']['rows'])) {
+				if (isset($tag['attribute']['rows']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['rows'])) {
 					$h = intval($tag['attribute']['rows']) * $this->getCellHeight($this->FontSize);
 				} else {
 					$h = 10;
@@ -19444,18 +19444,18 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			case 'select': {
 				$h = $this->getCellHeight($this->FontSize);
-				if (isset($tag['attribute']['size']) AND !TCPDF_STATIC::empty_string($tag['attribute']['size'])) {
+				if (isset($tag['attribute']['size']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['size'])) {
 					$h *= ($tag['attribute']['size'] + 1);
 				}
 				$prop = array();
 				$opt = array();
-				if (isset($tag['attribute']['name']) AND !TCPDF_STATIC::empty_string($tag['attribute']['name'])) {
+				if (isset($tag['attribute']['name']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['name'])) {
 					$name = $tag['attribute']['name'];
 				} else {
 					break;
 				}
 				$w = 0;
-				if (isset($tag['attribute']['opt']) AND !TCPDF_STATIC::empty_string($tag['attribute']['opt'])) {
+				if (isset($tag['attribute']['opt']) AND !SASOET_TCPDF_STATIC::empty_string($tag['attribute']['opt'])) {
 					$options = explode('#!NwL!#', $tag['attribute']['opt']);
 					$values = array();
 					foreach ($options as $val) {
@@ -19481,8 +19481,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'tcpdf': {
-				if (defined('K_TCPDF_CALLS_IN_HTML') AND (K_TCPDF_CALLS_IN_HTML === true)) {
-					// Special tag used to call TCPDF methods
+				if (defined('SASOET_K_TCPDF_CALLS_IN_HTML') AND (SASOET_K_TCPDF_CALLS_IN_HTML === true)) {
+					// Special tag used to call SASOET_TCPDF methods
 					if (isset($tag['attribute']['method'])) {
 						$tcpdf_method = $tag['attribute']['method'];
 						if (method_exists($this, $tcpdf_method)) {
@@ -19745,9 +19745,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$starty = $y;
 						$w = abs($cellpos['endx'] - $cellpos['startx']);
 						// get border modes
-						$border_start = TCPDF_STATIC::getBorderMode($border, $position='start', $this->opencell);
-						$border_end = TCPDF_STATIC::getBorderMode($border, $position='end', $this->opencell);
-						$border_middle = TCPDF_STATIC::getBorderMode($border, $position='middle', $this->opencell);
+						$border_start = SASOET_TCPDF_STATIC::getBorderMode($border, $position='start', $this->opencell);
+						$border_end = SASOET_TCPDF_STATIC::getBorderMode($border, $position='end', $this->opencell);
+						$border_middle = SASOET_TCPDF_STATIC::getBorderMode($border, $position='middle', $this->opencell);
 						// design borders around HTML cells.
 						for ($page = $startpage; $page <= $endpage; ++$page) { // for each page
 							$ccode = '';
@@ -20136,9 +20136,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (isset($tag['border']) AND !empty($tag['border'])) {
 			// get border style
 			$border = $tag['border'];
-			if (!TCPDF_STATIC::empty_string($this->thead) AND (!$this->inthead)) {
+			if (!SASOET_TCPDF_STATIC::empty_string($this->thead) AND (!$this->inthead)) {
 				// border for table header
-				$border = TCPDF_STATIC::getBorderMode($border, $position='middle', $this->opencell);
+				$border = SASOET_TCPDF_STATIC::getBorderMode($border, $position='middle', $this->opencell);
 			}
 		}
 		if (isset($tag['bgcolor']) AND ($tag['bgcolor'] !== false)) {
@@ -20192,9 +20192,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->num_columns = 1;
 		}
 		// get border modes
-		$border_start = TCPDF_STATIC::getBorderMode($border, $position='start', $this->opencell);
-		$border_end = TCPDF_STATIC::getBorderMode($border, $position='end', $this->opencell);
-		$border_middle = TCPDF_STATIC::getBorderMode($border, $position='middle', $this->opencell);
+		$border_start = SASOET_TCPDF_STATIC::getBorderMode($border, $position='start', $this->opencell);
+		$border_end = SASOET_TCPDF_STATIC::getBorderMode($border, $position='end', $this->opencell);
+		$border_middle = SASOET_TCPDF_STATIC::getBorderMode($border, $position='middle', $this->opencell);
 		// temporary disable page regions
 		$temp_page_regions = $this->page_regions;
 		$this->page_regions = array();
@@ -20629,12 +20629,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 			case 'i':
 			case 'lower-roman': {
-				$textitem = strtolower(TCPDF_STATIC::intToRoman($this->listcount[$this->listnum]));
+				$textitem = strtolower(SASOET_TCPDF_STATIC::intToRoman($this->listcount[$this->listnum]));
 				break;
 			}
 			case 'I':
 			case 'upper-roman': {
-				$textitem = TCPDF_STATIC::intToRoman($this->listcount[$this->listnum]);
+				$textitem = SASOET_TCPDF_STATIC::intToRoman($this->listcount[$this->listnum]);
 				break;
 			}
 			case 'a':
@@ -20650,7 +20650,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				break;
 			}
 			case 'lower-greek': {
-				$textitem = TCPDF_FONTS::unichr((945 + $this->listcount[$this->listnum] - 1), $this->isunicode);
+				$textitem = SASOET_TCPDF_FONTS::unichr((945 + $this->listcount[$this->listnum] - 1), $this->isunicode);
 				break;
 			}
 			/*
@@ -20684,7 +20684,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$textitem = $this->listcount[$this->listnum];
 			}
 		}
-		if (!TCPDF_STATIC::empty_string($textitem)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($textitem)) {
 			// Check whether we need a new page or new column
 			$prev_y = $this->y;
 			$h = $this->getCellHeight($this->FontSize);
@@ -20835,7 +20835,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->num_columns = $gvars['num_columns'];
 		}
 		$this->_out(''.$this->linestyleWidth.' '.$this->linestyleCap.' '.$this->linestyleJoin.' '.$this->linestyleDash.' '.$this->DrawColor.' '.$this->FillColor.'');
-		if (!TCPDF_STATIC::empty_string($this->FontFamily)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($this->FontFamily)) {
 			$this->setFont($this->FontFamily, $this->FontStyle, $this->FontSizePt);
 		}
 	}
@@ -21477,13 +21477,13 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$page_fill_start = false;
 		$page_fill_end = false;
 		$current_column = $this->current_column;
-		if (TCPDF_STATIC::empty_string($numbersfont)) {
+		if (SASOET_TCPDF_STATIC::empty_string($numbersfont)) {
 			$numbersfont = $this->default_monospaced_font;
 		}
-		if (TCPDF_STATIC::empty_string($filler)) {
+		if (SASOET_TCPDF_STATIC::empty_string($filler)) {
 			$filler = ' ';
 		}
-		if (TCPDF_STATIC::empty_string($page)) {
+		if (SASOET_TCPDF_STATIC::empty_string($page)) {
 			$gap = ' ';
 		} else {
 			$gap = '';
@@ -21555,7 +21555,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$tw = $this->w - $this->rMargin - $this->x;
 			}
 			$this->setFont($numbersfont, $fontstyle, $fontsize);
-			if (TCPDF_STATIC::empty_string($page)) {
+			if (SASOET_TCPDF_STATIC::empty_string($page)) {
 				$pagenum = $outline['p'];
 			} else {
 				// placemark to be replaced with the correct number
@@ -21606,7 +21606,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 		}
 		$maxpage = max($maxpage, $page_last);
-		if (!TCPDF_STATIC::empty_string($page)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($page)) {
 			for ($p = $page_first; $p <= $page_last; ++$p) {
 				// get page data
 				$temppage = $this->getPageBuffer($p);
@@ -21621,15 +21621,15 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					} else {
 						$np = $n;
 					}
-					$na = TCPDF_STATIC::formatTOCPageNumber(($this->starting_page_number + $np - 1));
-					$nu = TCPDF_FONTS::UTF8ToUTF16BE($na, false, $this->isunicode, $this->CurrentFont);
+					$na = SASOET_TCPDF_STATIC::formatTOCPageNumber(($this->starting_page_number + $np - 1));
+					$nu = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($na, false, $this->isunicode, $this->CurrentFont);
 					// replace aliases with numbers
 					foreach ($pnalias['u'] as $u) {
 						$sfill = str_repeat($filler, max(0, (strlen($u) - strlen($nu.' '))));
 						if ($this->rtl) {
-							$nr = $nu.TCPDF_FONTS::UTF8ToUTF16BE(' '.$sfill, false, $this->isunicode, $this->CurrentFont);
+							$nr = $nu.SASOET_TCPDF_FONTS::UTF8ToUTF16BE(' '.$sfill, false, $this->isunicode, $this->CurrentFont);
 						} else {
-							$nr = TCPDF_FONTS::UTF8ToUTF16BE($sfill.' ', false, $this->isunicode, $this->CurrentFont).$nu;
+							$nr = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($sfill.' ', false, $this->isunicode, $this->CurrentFont).$nu;
 						}
 						$temppage = str_replace($u, $nr, $temppage);
 					}
@@ -21699,7 +21699,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		foreach ($this->outlines as $key => $outline) {
 			// get HTML template
 			$row = $templates[$outline['l']];
-			if (TCPDF_STATIC::empty_string($page)) {
+			if (SASOET_TCPDF_STATIC::empty_string($page)) {
 				$pagenum = $outline['p'];
 			} else {
 				// placemark to be replaced with the correct number
@@ -21742,7 +21742,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 		}
 		$maxpage = max($maxpage, $page_last);
-		if (!TCPDF_STATIC::empty_string($page)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($page)) {
 			for ($p = $page_first; $p <= $page_last; ++$p) {
 				// get page data
 				$temppage = $this->getPageBuffer($p);
@@ -21757,16 +21757,16 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 					} else {
 						$np = $n;
 					}
-					$na = TCPDF_STATIC::formatTOCPageNumber(($this->starting_page_number + $np - 1));
-					$nu = TCPDF_FONTS::UTF8ToUTF16BE($na, false, $this->isunicode, $this->CurrentFont);
+					$na = SASOET_TCPDF_STATIC::formatTOCPageNumber(($this->starting_page_number + $np - 1));
+					$nu = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($na, false, $this->isunicode, $this->CurrentFont);
 					// replace aliases with numbers
 					foreach ($pnalias['u'] as $u) {
 						if ($correct_align) {
 							$sfill = str_repeat($filler, (strlen($u) - strlen($nu.' ')));
 							if ($this->rtl) {
-								$nr = $nu.TCPDF_FONTS::UTF8ToUTF16BE(' '.$sfill, false, $this->isunicode, $this->CurrentFont);
+								$nr = $nu.SASOET_TCPDF_FONTS::UTF8ToUTF16BE(' '.$sfill, false, $this->isunicode, $this->CurrentFont);
 							} else {
-								$nr = TCPDF_FONTS::UTF8ToUTF16BE($sfill.' ', false, $this->isunicode, $this->CurrentFont).$nu;
+								$nr = SASOET_TCPDF_FONTS::UTF8ToUTF16BE($sfill.' ', false, $this->isunicode, $this->CurrentFont).$nu;
 							}
 						} else {
 							$nr = $nu;
@@ -21802,7 +21802,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	}
 
 	/**
-	 * Stores a copy of the current TCPDF object used for undo operation.
+	 * Stores a copy of the current SASOET_TCPDF object used for undo operation.
 	 * @public
 	 * @since 4.5.029 (2009-03-19)
 	 */
@@ -21815,11 +21815,11 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$this->start_transaction_page = $this->page;
 		$this->start_transaction_y = $this->y;
 		// clone current object
-		$this->objcopy = TCPDF_STATIC::objclone($this);
+		$this->objcopy = SASOET_TCPDF_STATIC::objclone($this);
 	}
 
 	/**
-	 * Delete the copy of the current TCPDF object used for undo operation.
+	 * Delete the copy of the current SASOET_TCPDF object used for undo operation.
 	 * @public
 	 * @since 4.5.029 (2009-03-19)
 	 */
@@ -21833,9 +21833,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	}
 
 	/**
-	 * This method allows to undo the latest transaction by returning the latest saved TCPDF object with startTransaction().
+	 * This method allows to undo the latest transaction by returning the latest saved SASOET_TCPDF object with startTransaction().
 	 * @param boolean $self if true restores current class object to previous state without the need of reassignment via the returned value.
-	 * @return TCPDF object.
+	 * @return SASOET_TCPDF object.
 	 * @public
 	 * @since 4.5.029 (2009-03-19)
 	 */
@@ -21882,7 +21882,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			if (($width == 0) OR ($width > $maxwidth)) {
 				$width = $maxwidth;
 			}
-			if (TCPDF_STATIC::empty_string($y)) {
+			if (SASOET_TCPDF_STATIC::empty_string($y)) {
 				$y = $this->y;
 			}
 			// space between columns
@@ -21931,7 +21931,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 	 * @since 4.9.001 (2010-03-28)
 	 */
 	public function selectColumn($col=null) {
-		if (TCPDF_STATIC::empty_string($col)) {
+		if (SASOET_TCPDF_STATIC::empty_string($col)) {
 			$col = $this->current_column;
 		} elseif ($col >= $this->num_columns) {
 			$col = 0;
@@ -21978,7 +21978,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		// fix for HTML mode
 		$this->newline = true;
 		// print HTML table header (if any)
-		if ((!TCPDF_STATIC::empty_string($this->thead)) AND (!$this->inthead)) {
+		if ((!SASOET_TCPDF_STATIC::empty_string($this->thead)) AND (!$this->inthead)) {
 			if ($enable_thead) {
 				// print table header
 				$this->writeHTML($this->thead, false, false, false, false, '');
@@ -22152,7 +22152,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if ($numchars <= $charmin) {
 			return $word;
 		}
-		$word_string = TCPDF_FONTS::UTF8ArrSubString($word, '', '', $this->isunicode);
+		$word_string = SASOET_TCPDF_FONTS::UTF8ArrSubString($word, '', '', $this->isunicode);
 		// some words will be returned as-is
 		$pattern = '/^([a-zA-Z0-9_\.\-]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/';
 		if (preg_match($pattern, $word_string) > 0) {
@@ -22165,7 +22165,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			return $word;
 		}
 		if (isset($dictionary[$word_string])) {
-			return TCPDF_FONTS::UTF8StringToArray($dictionary[$word_string], $this->isunicode, $this->CurrentFont);
+			return SASOET_TCPDF_FONTS::UTF8StringToArray($dictionary[$word_string], $this->isunicode, $this->CurrentFont);
 		}
 		// surround word with '_' characters
 		$tmpword = array_merge(array(46), $word, array(46));
@@ -22174,9 +22174,9 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		for ($pos = 0; $pos < $maxpos; ++$pos) {
 			$imax = min(($tmpnumchars - $pos), $charmax);
 			for ($i = 1; $i <= $imax; ++$i) {
-				$subword = strtolower(TCPDF_FONTS::UTF8ArrSubString($tmpword, $pos, ($pos + $i), $this->isunicode));
+				$subword = strtolower(SASOET_TCPDF_FONTS::UTF8ArrSubString($tmpword, $pos, ($pos + $i), $this->isunicode));
 				if (isset($patterns[$subword])) {
-					$pattern = TCPDF_FONTS::UTF8StringToArray($patterns[$subword], $this->isunicode, $this->CurrentFont);
+					$pattern = SASOET_TCPDF_FONTS::UTF8StringToArray($patterns[$subword], $this->isunicode, $this->CurrentFont);
 					$pattern_length = count($pattern);
 					$digits = 1;
 					for ($j = 0; $j < $pattern_length; ++$j) {
@@ -22233,18 +22233,18 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		$intag = false; // true if we are inside an HTML tag
 		$skip = false; // true to skip hyphenation
 		if (!is_array($patterns)) {
-			$patterns = TCPDF_STATIC::getHyphenPatternsFromTEX($patterns);
+			$patterns = SASOET_TCPDF_STATIC::getHyphenPatternsFromTEX($patterns);
 		}
 		// get array of characters
-		$unichars = TCPDF_FONTS::UTF8StringToArray($text, $this->isunicode, $this->CurrentFont);
+		$unichars = SASOET_TCPDF_FONTS::UTF8StringToArray($text, $this->isunicode, $this->CurrentFont);
 		// for each char
 		foreach ($unichars as $char) {
-			if ((!$intag) AND (!$skip) AND TCPDF_FONT_DATA::$uni_type[$char] == 'L') {
+			if ((!$intag) AND (!$skip) AND SASOET_TCPDF_FONT_DATA::$uni_type[$char] == 'L') {
 				// letter character
 				$word[] = $char;
 			} else {
 				// other type of character
-				if (!TCPDF_STATIC::empty_string($word)) {
+				if (!SASOET_TCPDF_STATIC::empty_string($word)) {
 					// hypenate the word
 					$txtarr = array_merge($txtarr, $this->hyphenateWord($word, $patterns, $dictionary, $leftmin, $rightmin, $charmin, $charmax));
 					$word = array();
@@ -22276,12 +22276,12 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				}
 			}
 		}
-		if (!TCPDF_STATIC::empty_string($word)) {
+		if (!SASOET_TCPDF_STATIC::empty_string($word)) {
 			// hypenate the word
 			$txtarr = array_merge($txtarr, $this->hyphenateWord($word, $patterns, $dictionary, $leftmin, $rightmin, $charmin, $charmax));
 		}
 		// convert char array to string and return
-		return TCPDF_FONTS::UTF8ArrSubString($txtarr, '', '', $this->isunicode);
+		return SASOET_TCPDF_FONTS::UTF8ArrSubString($txtarr, '', '', $this->isunicode);
 	}
 
 	/**
@@ -22535,10 +22535,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			}
 		}
 		// set default values
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -22608,10 +22608,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if (!empty($this->xobjects[$id]['annotations'])) {
 			foreach ($this->xobjects[$id]['annotations'] as $annot) {
 				// transform original coordinates
-				$coordlt = TCPDF_STATIC::getTransformationMatrixProduct($tm, array(1, 0, 0, 1, ($annot['x'] * $this->k), (-$annot['y'] * $this->k)));
+				$coordlt = SASOET_TCPDF_STATIC::getTransformationMatrixProduct($tm, array(1, 0, 0, 1, ($annot['x'] * $this->k), (-$annot['y'] * $this->k)));
 				$ax = ($coordlt[4] / $this->k);
 				$ay = ($this->h - $h - ($coordlt[5] / $this->k));
-				$coordrb = TCPDF_STATIC::getTransformationMatrixProduct($tm, array(1, 0, 0, 1, (($annot['x'] + $annot['w']) * $this->k), ((-$annot['y'] - $annot['h']) * $this->k)));
+				$coordrb = SASOET_TCPDF_STATIC::getTransformationMatrixProduct($tm, array(1, 0, 0, 1, (($annot['x'] + $annot['w']) * $this->k), ((-$annot['y'] - $annot['h']) * $this->k)));
 				$aw = ($coordrb[4] / $this->k) - $ax;
 				$ah = ($this->h - $h - ($coordrb[5] / $this->k)) - $ay;
 				$this->Annotation($ax, $ay, $aw, $ah, $annot['text'], $annot['opt'], $annot['spaces']);
@@ -22900,10 +22900,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 		if ($svgdata === FALSE) {
 			$this->Error('SVG file not found: '.$file);
 		}
-		if (TCPDF_STATIC::empty_string($x)) {
+		if (SASOET_TCPDF_STATIC::empty_string($x)) {
 			$x = $this->x;
 		}
-		if (TCPDF_STATIC::empty_string($y)) {
+		if (SASOET_TCPDF_STATIC::empty_string($y)) {
 			$y = $this->y;
 		}
 		// check page for no-write regions and adapt page margins if necessary
@@ -23257,10 +23257,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$this->setAlpha($svgstyle['opacity'], 'Normal', $svgstyle['opacity'], false);
 		}
 		// color
-		$fill_color = TCPDF_COLORS::convertHTMLColorToDec($svgstyle['color'], $this->spot_colors);
+		$fill_color = SASOET_TCPDF_COLORS::convertHTMLColorToDec($svgstyle['color'], $this->spot_colors);
 		$this->setFillColorArray($fill_color);
 		// text color
-		$text_color = TCPDF_COLORS::convertHTMLColorToDec($svgstyle['text-color'], $this->spot_colors);
+		$text_color = SASOET_TCPDF_COLORS::convertHTMLColorToDec($svgstyle['text-color'], $this->spot_colors);
 		$this->setTextColorArray($text_color);
 		// clip
 		if (preg_match('/rect\(([a-z0-9\-\.]*)[\s]*([a-z0-9\-\.]*)[\s]*([a-z0-9\-\.]*)[\s]*([a-z0-9\-\.]*)\)/si', $svgstyle['clip'], $regs)) {
@@ -23384,7 +23384,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$this->Gradient($gradient['type'], $gradient['coords'], $gradient['stops'], array(), false);
 			}
 		} elseif ($svgstyle['fill'] != 'none') {
-			$fill_color = TCPDF_COLORS::convertHTMLColorToDec($svgstyle['fill'], $this->spot_colors);
+			$fill_color = SASOET_TCPDF_COLORS::convertHTMLColorToDec($svgstyle['fill'], $this->spot_colors);
 			if ($svgstyle['fill-opacity'] != 1) {
 				$this->setAlpha($this->alpha['CA'], 'Normal', $svgstyle['fill-opacity'], false);
 			}
@@ -23403,7 +23403,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$this->setAlpha($rgba_matches[1], 'Normal', $this->alpha['ca'], false);
 			}
 			$stroke_style = array(
-				'color' => TCPDF_COLORS::convertHTMLColorToDec($svgstyle['stroke'], $this->spot_colors),
+				'color' => SASOET_TCPDF_COLORS::convertHTMLColorToDec($svgstyle['stroke'], $this->spot_colors),
 				'width' => $this->getHTMLUnitToUnits($svgstyle['stroke-width'], 0, $this->svgunit, false),
 				'cap' => $svgstyle['stroke-linecap'],
 				'join' => $svgstyle['stroke-linejoin']
@@ -23535,7 +23535,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			return;
 		}
 		// set fill/stroke style
-		$op = TCPDF_STATIC::getPathPaintOperator($style, '');
+		$op = SASOET_TCPDF_STATIC::getPathPaintOperator($style, '');
 		if (empty($op)) {
 			return;
 		}
@@ -23835,8 +23835,8 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 								$cx = ($cax * $cos_ang) - ($cay * $sin_ang) + (($x0 + $x) / 2);
 								$cy = ($cax * $sin_ang) + ($cay * $cos_ang) + (($y0 + $y) / 2);
 								// get angles
-								$angs = TCPDF_STATIC::getVectorsAngle(1, 0, (($xa - $cax) / $rx), (($cay - $ya) / $ry));
-								$dang = TCPDF_STATIC::getVectorsAngle((($xa - $cax) / $rx), (($ya - $cay) / $ry), ((-$xa - $cax) / $rx), ((-$ya - $cay) / $ry));
+								$angs = SASOET_TCPDF_STATIC::getVectorsAngle(1, 0, (($xa - $cax) / $rx), (($cay - $ya) / $ry));
+								$dang = SASOET_TCPDF_STATIC::getVectorsAngle((($xa - $cax) / $rx), (($ya - $cay) / $ry), ((-$xa - $cax) / $rx), ((-$ya - $cay) / $ry));
 								if (($fs == 0) AND ($dang > 0)) {
 									$dang -= (2 * M_PI);
 								} elseif (($fs == 1) AND ($dang < 0)) {
@@ -23947,23 +23947,23 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			// default fill attribute for clipping
 			$attribs['fill'] = 'none';
 		}
-		if (isset($attribs['style']) AND !TCPDF_STATIC::empty_string($attribs['style']) AND ($attribs['style'][0] != ';')) {
+		if (isset($attribs['style']) AND !SASOET_TCPDF_STATIC::empty_string($attribs['style']) AND ($attribs['style'][0] != ';')) {
 			// fix style for regular expression
 			$attribs['style'] = ';'.$attribs['style'];
 		}
 		foreach ($prev_svgstyle as $key => $val) {
-			if (in_array($key, TCPDF_IMAGES::$svginheritprop)) {
+			if (in_array($key, SASOET_TCPDF_IMAGES::$svginheritprop)) {
 				// inherit previous value
 				$svgstyle[$key] = $val;
 			}
-			if (isset($attribs[$key]) AND !TCPDF_STATIC::empty_string($attribs[$key])) {
+			if (isset($attribs[$key]) AND !SASOET_TCPDF_STATIC::empty_string($attribs[$key])) {
 				// specific attribute settings
 				if ($attribs[$key] == 'inherit') {
 					$svgstyle[$key] = $val;
 				} else {
 					$svgstyle[$key] = $attribs[$key];
 				}
-			} elseif (isset($attribs['style']) AND !TCPDF_STATIC::empty_string($attribs['style'])) {
+			} elseif (isset($attribs['style']) AND !SASOET_TCPDF_STATIC::empty_string($attribs['style'])) {
 				// CSS style syntax
 				$attrval = array();
 				if (preg_match('/[;\"\s]{1}'.$key.'[\s]*:[\s]*([^;\"]*)/si', $attribs['style'], $attrval) AND isset($attrval[1])) {
@@ -23982,7 +23982,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 			$tm = array(1,0,0,1,0,0);
 		}
 		if (isset($attribs['transform']) AND !empty($attribs['transform'])) {
-			$tm = TCPDF_STATIC::getTransformationMatrixProduct($tm, TCPDF_STATIC::getSVGTransformMatrix($attribs['transform']));
+			$tm = SASOET_TCPDF_STATIC::getTransformationMatrixProduct($tm, SASOET_TCPDF_STATIC::getSVGTransformMatrix($attribs['transform']));
 		}
 		$svgstyle['transfmatrix'] = $tm;
 		$invisible = false;
@@ -24023,7 +24023,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$svgW = (isset($attribs['width'])?$attribs['width']:0);
 				$svgH = (isset($attribs['height'])?$attribs['height']:0);
 				// set x, y position using transform matrix
-				$tm = TCPDF_STATIC::getTransformationMatrixProduct($tm, array( 1, 0, 0, 1, $svgX, $svgY));
+				$tm = SASOET_TCPDF_STATIC::getTransformationMatrixProduct($tm, array( 1, 0, 0, 1, $svgX, $svgY));
 				$this->SVGTransform($tm);
 				// set clipping for width and height
 				$x = 0;
@@ -24081,7 +24081,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 							$hr = $wr;
 						}
 						$newtm = array($wr, 0, 0, $hr, (($wr * ($ax - $vx)) - $svgX), (($hr * ($ay - $vy)) - $svgY));
-						$tm = TCPDF_STATIC::getTransformationMatrixProduct($tm, $newtm);
+						$tm = SASOET_TCPDF_STATIC::getTransformationMatrixProduct($tm, $newtm);
 						$this->SVGTransform($tm);
 					}
 				}
@@ -24096,7 +24096,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$y = (isset($attribs['y'])?$attribs['y']:0);
 				$w = 1;//(isset($attribs['width'])?$attribs['width']:1);
 				$h = 1;//(isset($attribs['height'])?$attribs['height']:1);
-				$tm = TCPDF_STATIC::getTransformationMatrixProduct($tm, array($w, 0, 0, $h, $x, $y));
+				$tm = SASOET_TCPDF_STATIC::getTransformationMatrixProduct($tm, array($w, 0, 0, $h, $x, $y));
 				$this->SVGTransform($tm);
 				$this->setSVGStyles($svgstyle, $prev_svgstyle);
 				break;
@@ -24132,7 +24132,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$x2 = (isset($attribs['x2'])?$attribs['x2']:'100');
 				$y2 = (isset($attribs['y2'])?$attribs['y2']:'0');
 				if (isset($attribs['gradientTransform'])) {
-					$this->svggradients[$this->svggradientid]['gradientTransform'] = TCPDF_STATIC::getSVGTransformMatrix($attribs['gradientTransform']);
+					$this->svggradients[$this->svggradientid]['gradientTransform'] = SASOET_TCPDF_STATIC::getSVGTransformMatrix($attribs['gradientTransform']);
 				}
 				$this->svggradients[$this->svggradientid]['coords'] = array($x1, $y1, $x2, $y2);
 				if (isset($attribs['xlink:href']) AND !empty($attribs['xlink:href'])) {
@@ -24173,7 +24173,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 				$fy = (isset($attribs['fy']) ? $attribs['fy'] : $cy);
 				$r = (isset($attribs['r']) ? $attribs['r'] : 0.5);
 				if (isset($attribs['gradientTransform'])) {
-					$this->svggradients[$this->svggradientid]['gradientTransform'] = TCPDF_STATIC::getSVGTransformMatrix($attribs['gradientTransform']);
+					$this->svggradients[$this->svggradientid]['gradientTransform'] = SASOET_TCPDF_STATIC::getSVGTransformMatrix($attribs['gradientTransform']);
 				}
 				$this->svggradients[$this->svggradientid]['coords'] = array($cx, $cy, $fx, $fy, $r);
 				if (isset($attribs['xlink:href']) AND !empty($attribs['xlink:href'])) {
@@ -24192,7 +24192,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$offset /= 100;
 					}
 				}
-				$stop_color = isset($svgstyle['stop-color'])?TCPDF_COLORS::convertHTMLColorToDec($svgstyle['stop-color'], $this->spot_colors):'black';
+				$stop_color = isset($svgstyle['stop-color'])?SASOET_TCPDF_COLORS::convertHTMLColorToDec($svgstyle['stop-color'], $this->spot_colors):'black';
 				$opacity = isset($svgstyle['stop-opacity'])?$svgstyle['stop-opacity']:1;
 				$this->svggradients[$this->svggradientid]['stops'][] = array('offset' => $offset, 'color' => $stop_color, 'opacity' => $opacity);
 				break;
@@ -24209,7 +24209,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$y = (isset($attribs['y'])?$attribs['y']:0);
 						$w = (isset($attribs['width'])?$attribs['width']:1);
 						$h = (isset($attribs['height'])?$attribs['height']:1);
-						$tm = TCPDF_STATIC::getTransformationMatrixProduct($tm, array($w, 0, 0, $h, $x, $y));
+						$tm = SASOET_TCPDF_STATIC::getTransformationMatrixProduct($tm, array($w, 0, 0, $h, $x, $y));
 						if ($clipping) {
 							$this->SVGTransform($tm);
 							$this->SVGPath($d, 'CNZ');
@@ -24402,7 +24402,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$img = '@'.base64_decode(substr($img, strlen($m[0])));
 					} else {
 						// fix image path
-						if (!TCPDF_STATIC::empty_string($this->svgdir) AND (($img[0] == '.') OR (basename($img) == $img))) {
+						if (!SASOET_TCPDF_STATIC::empty_string($this->svgdir) AND (($img[0] == '.') OR (basename($img) == $img))) {
 							// replace relative path with full server path
 							$img = $this->svgdir.'/'.$img;
 						}
@@ -24420,14 +24420,14 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
 						$testscrtype = @parse_url($img);
 						if (empty($testscrtype['query'])) {
 							// convert URL to server path
-							$img = str_replace(K_PATH_URL, K_PATH_MAIN, $img);
+							$img = str_replace(SASOET_K_PATH_URL, SASOET_K_PATH_MAIN, $img);
 						} elseif (preg_match('|^https?://|', $img) !== 1) {
 							// convert server path to URL
-							$img = str_replace(K_PATH_MAIN, K_PATH_URL, $img);
+							$img = str_replace(SASOET_K_PATH_MAIN, SASOET_K_PATH_URL, $img);
 						}
 					}
 					// get image type
-					$imgtype = TCPDF_IMAGES::getImageFileType($img);
+					$imgtype = SASOET_TCPDF_IMAGES::getImageFileType($img);
 					if (($imgtype == 'eps') OR ($imgtype == 'ai')) {
 						$this->ImageEps($img, $x, $y, $w, $h);
 					} elseif ($imgtype == 'svg') {
@@ -24703,7 +24703,7 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
     protected function getCachedFileContents($file)
     {
         if (!isset($this->fileContentCache[$file])) {
-            $this->fileContentCache[$file] = TCPDF_STATIC::fileGetContents($file);
+            $this->fileContentCache[$file] = SASOET_TCPDF_STATIC::fileGetContents($file);
         }
         return $this->fileContentCache[$file];
     }
@@ -24719,10 +24719,10 @@ Putting 1 is equivalent to putting 0 and calling Ln() just after. Default value:
             return true;
         }
 
-        return TCPDF_STATIC::file_exists($file);
+        return SASOET_TCPDF_STATIC::file_exists($file);
     }
 
-} // END OF TCPDF CLASS
+} // END OF SASOET_TCPDF CLASS
 
 //============================================================+
 // END OF FILE

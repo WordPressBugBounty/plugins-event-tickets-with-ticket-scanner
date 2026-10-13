@@ -1,0 +1,27 @@
+{
+  "name": "event-tickets-with-ticket-scanner-js-tests",
+  "version": "3.2.6",
+  "description": "JS test suite for the Event Tickets with Ticket Scanner plugin",
+  "private": true,
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "babel-jest": "^29.7.0"
+  },
+  "babel": {
+    "presets": [
+      ["@babel/preset-env", { "targets": { "node": "current" } }]
+    ]
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": [
+      "<rootDir>/js_tests/**/*.test.js"
+    ]
+  }
+}

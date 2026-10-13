@@ -9,26 +9,26 @@
 // -------------------------------------------------------------------
 // Copyright (C) 2011-2013 Nicola Asuni - Tecnick.com LTD
 //
-// This file is part of TCPDF software library.
+// This file is part of SASOET_TCPDF software library.
 //
-// TCPDF is free software: you can redistribute it and/or modify it
+// SASOET_TCPDF is free software: you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //
-// TCPDF is distributed in the hope that it will be useful, but
+// SASOET_TCPDF is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // See the GNU Lesser General Public License for more details.
 //
 // You should have received a copy of the License
-// along with TCPDF. If not, see
+// along with SASOET_TCPDF. If not, see
 // <http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT>.
 //
 // See LICENSE.TXT file for more information.
 // -------------------------------------------------------------------
 //
-// Description : This is a PHP class extension of the TCPDF library to
+// Description : This is a PHP class extension of the SASOET_TCPDF library to
 //               import existing PDF documents.
 //
 //============================================================+
@@ -36,27 +36,27 @@
 /**
  * @file
  * !!! THIS CLASS IS UNDER DEVELOPMENT !!!
- * This is a PHP class extension of the TCPDF (http://www.tcpdf.org) library to import existing PDF documents.<br>
+ * This is a PHP class extension of the SASOET_TCPDF (http://www.tcpdf.org) library to import existing PDF documents.<br>
  * @package com.tecnick.tcpdf
  * @author Nicola Asuni
  * @version 1.0.001
  */
 
-// include the TCPDF class
+// include the SASOET_TCPDF class
 require_once(dirname(__FILE__).'/tcpdf.php');
 // include PDF parser class
 require_once(dirname(__FILE__).'/tcpdf_parser.php');
 
 /**
- * @class TCPDF_IMPORT
+ * @class SASOET_TCPDF_IMPORT
  * !!! THIS CLASS IS UNDER DEVELOPMENT !!!
- * PHP class extension of the TCPDF (http://www.tcpdf.org) library to import existing PDF documents.<br>
+ * PHP class extension of the SASOET_TCPDF (http://www.tcpdf.org) library to import existing PDF documents.<br>
  * @package com.tecnick.tcpdf
- * @brief PHP class extension of the TCPDF library to import existing PDF documents.
+ * @brief PHP class extension of the SASOET_TCPDF library to import existing PDF documents.
  * @version 1.0.001
  * @author Nicola Asuni - info@tecnick.com
  */
-class TCPDF_IMPORT extends TCPDF {
+class SASOET_TCPDF_IMPORT extends SASOET_TCPDF {
 
 	/**
 	 * Import an existing PDF document
@@ -79,7 +79,7 @@ class TCPDF_IMPORT extends TCPDF {
 		);
 		try {
 			// parse PDF data
-			$pdf = new TCPDF_PARSER($rawdata, $cfg);
+			$pdf = new SASOET_TCPDF_PARSER($rawdata, $cfg);
 		} catch (Exception $e) {
 			die($e->getMessage());
 		}

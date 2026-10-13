@@ -7,7 +7,7 @@
 * Author:  Olivier PLATHEY                                                     *
 *******************************************************************************/
 
-class FPDF
+class SASOET_FPDF
 {
 const VERSION = '1.85';
 protected $page;               // current page number

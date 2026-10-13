@@ -13,8 +13,8 @@ class sasoEventtickets_CongressAdmin {
         // Register as hidden admin page (no sidebar entry) — accessible via the plugin's own nav button
         add_submenu_page(
             null,
-            __('Congresses', 'event-tickets-with-ticket-scanner'),
-            __('Congresses', 'event-tickets-with-ticket-scanner'),
+            __('Event Guides', 'event-tickets-with-ticket-scanner'),
+            __('Event Guides', 'event-tickets-with-ticket-scanner'),
             'manage_options',
             'saso-et-congresses',
             [$this, 'renderPage']

@@ -260,7 +260,6 @@ class sasoEventtickets_Options {
 		$this->_options[] = $this->getOptionsObject('adminAreaAllowedRoles', "Allow the specific role to access the backend of the event ticket", "If a role is chosen, then the user with this role is allowed to access the event ticket admin area. This will not exclude the 'administrator', if the option is activated.", "dropdown",	"-", $additional, false);
 		$this->_options[] = $this->getOptionsObject('wcTicketAllowOnlyLoggedinToDownload', "Allow only logged in users to download their tickets","If active, then only logged in users can download and see the ticket, calendar file and the bagde.","checkbox", false, [], true, '');
 		$this->_options[] = $this->getOptionsObject('wcTicketAllowOnlyLoggedinToDownloadRedirectURL', "URL where not logged in users should be redirected to","If option wcTicketAllowOnlyLoggedinToDownload is active, then the not logged in users will be redirected to this URL. If the URL is empty, then a message will be shown.","text", '', [], false, '');
-		$this->_options[] = $this->getOptionsObject('showSeatingPlanLinkInShopLoop', "Show seating plan link in shop overview", "If active, simple products with a seating plan show the seat selector (and 'open seating plan' link) directly in the shop overview. Deactivate to hide the selector there - customers then pick a quantity on the product page first, then choose a seat. (Ticket 014894 / Bemark16)", "checkbox", true, [], false, '');
 
 		$options = [];
 		$options[] = [
@@ -415,7 +414,7 @@ class sasoEventtickets_Options {
 		$options[] = ['key'=>'wcTicketShowICSView', 'label'=>__("Show the calendar (ICS) file", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If off, the ICS calendar file can no longer be downloaded through the ticket link (403).", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>true];
 		$options[] = ['key'=>'wcTicketShowBadgeView', 'label'=>__("Show the badge PDF", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If off, the badge PDF can no longer be downloaded through the ticket link (403).", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>true];
 		$options[] = ['key'=>'wcTicketShowOnePDFView', 'label'=>__("Show the \"all tickets in one PDF\" view", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If off, the combined \"all tickets of an order as one PDF\" download is no longer generated through the order link (403).", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>true];
-		$options[] = ['key'=>'wcTicketShowCongressView', 'label'=>__("Show the event portal / congress view", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If off, the congress / event-portal page reachable through the ticket link is no longer rendered and a \"deactivated\" notice is shown instead.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>true];
+		$options[] = ['key'=>'wcTicketShowCongressView', 'label'=>__("Show the Event Guide", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If off, the congress / event-portal page reachable through the ticket link is no longer rendered and a \"deactivated\" notice is shown instead.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>true];
 		$options[] = ['key'=>'wcTicketAllowRedeemByTicketNumber', 'label'=>__("Allow redemption by plain ticket number", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Off by default. If active, a ticket can <b>additionally</b> be redeemed using only the plain ticket number printed on the card. The full public ticket id keeps working <b>always</b> — the plain number is just accepted on top. Warning: for the plain number the copy protection (order/idcode check) does not apply — anyone who can read or guess the number could redeem it. Unsafe together with ticket reuse (option-ID <code>wcassignmentReuseNotusedCodes</code>).", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>false];
 		$options[] = ['key'=>'wcTicketDisplayOrderTicketsViewLinkOnMail', 'label'=>__("Display the order detail view link with all tickets in one page in the purchase order email", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, a link to see all tickets QR codes within the purchase email to the client. This speeds up the entrance for groups and family ticket purchase. It wil be below the order details table.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", 'def'=>"1", '_doc_video'=>'https://youtu.be/iNgJLj8a2iE'];
 		$options[] = ['key'=>'wcTicketDisplayOrderTicketsViewLinkOnCheckout', 'label'=>__("Display the order detail view link with all tickets in one page on the checkout page", 'event-tickets-with-ticket-scanner'), 'desc'=>__("If active, a link to see all tickets QR codes within the checkout page will be placed. Only if the purchase has tickets. This speeds up the entrance for groups and family ticket purchase. It wil be above the order details table.", 'event-tickets-with-ticket-scanner'), 'type'=>"checkbox", '_doc_video'=>'https://youtu.be/P71ImAU0u3U'];
@@ -521,7 +520,19 @@ class sasoEventtickets_Options {
 			'label'=>__("Seating Plan settings", 'event-tickets-with-ticket-scanner'),
 			'desc'=>"",
 			'type'=>"heading"
-			];
+		];
+		// Frontend shop-loop behaviour for products with a seating plan.
+		// Moved from "Access" section (Saso 2026-10-07) — Access options
+		// control who can do things; this controls how the seat selector
+		// renders in the public shop overview. Same fix surfaced by
+		// OptionsSeatingPlanGroupingTest as a regression guard.
+		$options[] = [
+			'key'=>'showSeatingPlanLinkInShopLoop',
+			'label'=>__("Show seating plan link in shop overview", 'event-tickets-with-ticket-scanner'),
+			'desc'=>__("If active, simple products with a seating plan show the seat selector (and 'open seating plan' link) directly in the shop overview. Deactivate to hide the selector there - customers then pick a quantity on the product page first, then choose a seat.", 'event-tickets-with-ticket-scanner'),
+			'type'=>"checkbox",
+			'def'=>true,
+		];
 		$additional = [ "values"=>[] ];
 		$options[] = [
 			'key'=>'seatingBlockTimeout',
@@ -902,7 +913,7 @@ class sasoEventtickets_Options {
 		$this->_options[] = $this->getOptionsObject('qrAttachQRPdfToEmail', __("Attach QR pdf to purchase email", 'event-tickets-with-ticket-scanner'), __("If active, then the QR as an pdf will be attached to the purchase email. The settings are taken from the ticket settings for purchase email.", 'event-tickets-with-ticket-scanner'), "checkbox", "", [], false, 'https://youtu.be/lIer7r3U5q0');
 		$this->_options[] = $this->getOptionsObject('qrAttachQRFilesToMailAsOnePDF', __("Attach QR PDF to purchase email as one PDF instead of single PDFs", 'event-tickets-with-ticket-scanner'), __("If active, the ticket QR code files are merged into one PDF and will be added as an attachment to the mails.", 'event-tickets-with-ticket-scanner'), "checkbox", "", [], false, 'https://youtu.be/8ZsXV95XGnw');
 
-		$this->_options[] = $this->getOptionsObject('hCongress', __("Congress-Modus", 'event-tickets-with-ticket-scanner'), "", "heading");
+		$this->_options[] = $this->getOptionsObject('hCongress', __("Event Guide", 'event-tickets-with-ticket-scanner'), "", "heading");
 		$this->_options[] = $this->getOptionsObject(
 			'congressDefaultLabel',
 			__("Default portal label", 'event-tickets-with-ticket-scanner'),
@@ -912,7 +923,7 @@ class sasoEventtickets_Options {
 		);
 		$this->_options[] = $this->getOptionsObject(
 			'congressModeActive',
-			__("Congress page active", 'event-tickets-with-ticket-scanner'),
+			__("Event Guide aktiv", 'event-tickets-with-ticket-scanner'),
 			__("Shows the congress information page publicly to ticket holders. The page is only displayed when the ticket's product has a congress assigned to it. The congress admin area (Congresses menu) is always available regardless of this setting.", 'event-tickets-with-ticket-scanner'),
 			"checkbox",
 			true

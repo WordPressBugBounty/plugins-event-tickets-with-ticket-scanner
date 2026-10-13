@@ -61,8 +61,38 @@ class sasoEventtickets_PDF {
 		if (!class_exists('Fpdi')) {
 			require_once('vendors/FPDI-2.3.7/src/autoload.php');
 		}
-		if (!class_exists('FPDF')) {
+		if (!class_exists('SASOET_FPDF')) {
+			// Include the bundled FPDF library — ONLY our own copy.
+			// The bundled class is prefixed (SASOET_FPDF, #015161 follow-up)
+			// so it never collides with another plugin's global FPDF
+			// (DPD Connect's myokyawhtun/pdfmerger / TCPDI bundle ships
+			// its own plain `class FPDF`).
 			require_once("vendors/fpdf185/fpdf.php");
+		}
+
+		// Legacy-class alias bridge (ticket #015226, Shiptastic 5.1.5 follow-up).
+		// The 3.2.5 prefix-isolation (SASOET_TCPDF / SASOET_FPDF) prevents our
+		// bundles from colliding with foreign ones. The cost: third-party plugins
+		// whose own FPDI subclass does `class Foo extends \TCPDF` (Shiptastic's
+		// vendor/setasign/fpdi/Tcpdf/Fpdi.php:37 is one example; any plugin whose
+		// Composer pulls setasign/fpdi may have the same shape) crash with
+		// "Class 'TCPDF' not found" because the global symbol no longer exists.
+		//
+		// Bridge: declare the legacy global symbols as class_alias()es on our
+		// prefixed classes. The alias only fires when no other plugin has already
+		// installed a real global \TCPDF / \FPDF — class_alias's second arg
+		// (`false` / `autoload`) is set so a foreign class that auto-loads
+		// AFTER this declaration still wins.
+		//
+		// This restores compatibility for plugins that subclass the legacy
+		// global symbols without giving up our prefix-isolation (no foreign
+		// plugin can hijack our SASOET_ classes, they can only ever get the
+		// alias bridge that points to OUR copy).
+		if (!class_exists('TCPDF', false)) {
+			class_alias('SASOET_TCPDF', 'TCPDF');
+		}
+		if (!class_exists('FPDF', false)) {
+			class_alias('SASOET_FPDF', 'FPDF');
 		}
 	}
 
