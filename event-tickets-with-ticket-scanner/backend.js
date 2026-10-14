@@ -841,11 +841,15 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 	}
 
 	function getDataLists(cbf) {
-		if (DATA_LISTS !== null) cbf && cbf();
+		let fired = false;
+		if (DATA_LISTS !== null) { fired = true; cbf && cbf(); } // sofort rendern (Cache)
 		_makeGet('getLists', {}, data=>{
 			DATA_LISTS = data;
 			__updateFirstStepsProgress();
-			cbf && cbf(DATA_LISTS);
+			// Bei Cache-Treffer wurde bereits gerendert — der Hintergrund-Refetch
+			// aktualisiert nur still den Cache (Frische), feuert cbf NICHT erneut.
+			// Vorher: doppelter Render => doppelte getInternalOrders-Anfrage (2x draw=1).
+			if (!fired) cbf && cbf(DATA_LISTS);
 		});
 	}
 
@@ -1125,8 +1129,41 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 	let KASSE_DIV = null;
 	let tabelle_orders_datatable = null;
+	let __kasseAutoRefreshTimer = null;
+	const KASSE_AUTOREFRESH_KEY = 'saso_et_kasse_autorefresh';
+	const KASSE_AUTOREFRESH_MS = 30000;
+
+	// Auto-Refresh der Kasse-Tabelle (Mehrkassen-Betrieb): Ein/Aus wird pro
+	// Browser persistiert (Scanner-Options-Pattern). start(false) stoppt und
+	// räumt den Timer ab — wird beim Verlassen des Kasse-Bereichs gerufen.
+	function __kasseAutoRefresh(on) {
+		if (__kasseAutoRefreshTimer !== null) {
+			clearInterval(__kasseAutoRefreshTimer);
+			__kasseAutoRefreshTimer = null;
+		}
+		try {
+			if (on) localStorage.setItem(KASSE_AUTOREFRESH_KEY, '1');
+			else localStorage.setItem(KASSE_AUTOREFRESH_KEY, '0');
+		} catch (e) { /* private mode — nicht gespeichert, gilt für diese Session */ }
+		if (on) {
+			__kasseAutoRefreshTimer = setInterval(()=>{ __kasseReload(); }, KASSE_AUTOREFRESH_MS);
+		}
+	}
+	function __kasseAutoRefreshActive() {
+		try {
+			return localStorage.getItem(KASSE_AUTOREFRESH_KEY) === '1';
+		} catch (e) { return false; }
+	}
+	function __kasseAutoRefreshStop() {
+		if (__kasseAutoRefreshTimer !== null) {
+			clearInterval(__kasseAutoRefreshTimer);
+			__kasseAutoRefreshTimer = null;
+		}
+	}
+
 	function _displayKasseArea() {
 		STATE = 'kasse';
+		__kasseAutoRefreshStop(); // falls noch ein Timer einer vorherigen Session läuft
 		DIV.html('');
 		// Kanonisches Sektions-Muster: Back-Button + komplettes Topmenü (wie authtokens/faq/…)
 		DIV.append(getBackButtonDiv());
@@ -1286,7 +1323,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				});
 				$('<span class="et-kasse-tile__name"/>').text(l.name).appendTo(tile);
 				let desc = __kasseListDesc(l);
-				if (desc) $('<span class="et-kasse-tile__desc"/>').text(desc).appendTo(tile);
+				if (desc) $('<span class="et-kasse-tile__desc"/>').html(desc).appendTo(tile);
 				let ev = __kasseListEventLine(l);
 				if (ev) $('<span class="et-kasse-tile__meta"/>').text(ev).appendTo(tile);
 			});
@@ -1311,6 +1348,19 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			}
 		}
 		let listDiv = $('<div class="et-kasse-list"/>').appendTo(wrap);
+		// Toolbar over the orders table: with several kassen selling in
+		// parallel, the table runs behind — a manual refresh pulls the
+		// current rows without losing pagination/filter (ajax.reload).
+		let listBar = $('<div class="et-kasse-toolbar"/>').appendTo(listDiv);
+		listBar.append($('<button type="button" class="et-btn-action et-kasse-toolbar__refresh"/>')
+			.text(_x('Refresh','label','event-tickets-with-ticket-scanner'))
+			.on('click', e=>{ e.preventDefault(); __kasseReload(); }));
+		// Auto-Refresh (30s) für Mehrkassen-Betrieb; pro Browser persistiert.
+		let arLabel = $('<label class="et-kasse-toolbar__autorefresh"/>').appendTo(listBar);
+		let arCheck = $('<input type="checkbox"/>').prop('checked', __kasseAutoRefreshActive()).prependTo(arLabel)
+			.on('change', e=>{ __kasseAutoRefresh($(e.target).prop('checked')); });
+		arLabel.append($('<span/>').text(_x('Auto refresh','label','event-tickets-with-ticket-scanner')));
+		if (__kasseAutoRefreshActive()) __kasseAutoRefresh(true); // Timer starten (persistiert = an)
 		tabelle_orders_datatable = null;
 		let tabelle_orders = $('<table/>').attr('id', myAjax.divPrefix+'_tabelle_orders');
 		listDiv.append(tabelle_orders);

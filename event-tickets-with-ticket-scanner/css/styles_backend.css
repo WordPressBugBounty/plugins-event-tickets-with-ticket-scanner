@@ -1973,6 +1973,16 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     gap: 8px;
 }
 
+/* Kasse-Toolbar: Refresh über der Bestellliste (Saso 2026-10-14) */
+.event-tickets-with-ticket-scanner-admin-page .et-kasse-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-kasse-toolbar__refresh::before {
+    content: "\21BB\00a0";
+}
+
 /* Ticket-Listen als Kacheln (Saso 2026-09-14) */
 .event-tickets-with-ticket-scanner-admin-page .et-kasse-tiles {
     display: grid;

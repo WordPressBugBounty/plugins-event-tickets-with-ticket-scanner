@@ -20,12 +20,12 @@ msgstr ""
 #. Plugin Name of the plugin
 #: index.php
 msgid "Event Tickets with Ticket Scanner"
-msgstr ""
+msgstr "Event Tickets with Ticket Scanner"
 
 #. Plugin URI of the plugin
 #: index.php
 msgid "https://vollstart.com/event-tickets-with-ticket-scanner/docs/"
-msgstr ""
+msgstr "https://vollstart.com/event-tickets-with-ticket-scanner/docs/"
 
 #. Description of the plugin
 #: index.php
@@ -45,12 +45,12 @@ msgstr ""
 #. Author of the plugin
 #: index.php
 msgid "Vollstart"
-msgstr ""
+msgstr "Vollstart"
 
 #. Author URI of the plugin
 #: index.php
 msgid "https://vollstart.com"
-msgstr ""
+msgstr "https://vollstart.com"
 
 #: includes/congress/class-congress-admin.php:16
 #: includes/congress/class-congress-admin.php:17
@@ -394,7 +394,7 @@ msgstr "-- Sitzplatz auswählen --"
 #: includes/wallet/class-wallet-rest.php:235
 #, php-format
 msgid "Open %s"
-msgstr ""
+msgstr "%s öffnen"
 
 #: includes/woocommerce/class-email.php:443 sasoEventtickets_Options.php:922
 msgid "Open your congress page"
@@ -449,13 +449,13 @@ msgstr "der Freigabecode \"%1$s\" für das Produkt \"%2$s\" ist nicht gültig."
 #: includes/woocommerce/class-frontend.php:1301
 #, php-format
 msgid "Online sales for \"%s\" have closed."
-msgstr ""
+msgstr "Der Online-Verkauf für \\\"%s\\\" ist beendet."
 
 #. translators: %s: product name
 #: includes/woocommerce/class-frontend.php:1350
 #, php-format
 msgid "Online sales for \"%s\" have closed, so it was removed from your cart."
-msgstr ""
+msgstr "Der Online-Verkauf für \\\"%s\\\" ist beendet, daher wurde er aus deinem Warenkorb entfernt."
 
 #. translators: 1: product name 2: seat labels
 #: includes/woocommerce/class-frontend.php:1555
@@ -681,7 +681,7 @@ msgstr ""
 msgid ""
 "With the free basic plugin, you can only <b>create up to %d tickets!</"
 "b><br>Make sure you are not selling more tickets :)"
-msgstr ""
+msgstr "Mit der kostenlosen Basisversion kannst du nur <b>bis zu %d Tickets erstellen!</b><br>Stelle sicher, dass du nicht mehr Tickets verkaufst :)"
 
 #. translators: 1: start of a-tag 2: end of a-tag
 #: includes/woocommerce/class-product.php:181
@@ -693,28 +693,28 @@ msgstr ""
 
 #: includes/woocommerce/class-product.php:189
 msgid "— No restriction —"
-msgstr ""
+msgstr "— Keine Einschränkung —"
 
 #: includes/woocommerce/class-product.php:197
 msgid "Required ticket / access code"
-msgstr ""
+msgstr "Erforderliches Ticket / Zugangscode"
 
 #: includes/woocommerce/class-product.php:198
 msgid ""
 "Buyers must enter a valid, unused code or ticket number from this list "
 "before they can buy this product. Use it for presale/access codes, or to "
 "require a ticket from an earlier event."
-msgstr ""
+msgstr "Käufer müssen einen gültigen, unbenutzten Code oder eine Ticketnummer aus dieser Liste eingeben, bevor sie dieses Produkt kaufen können. Nutze es für Vorkaufs-/Zugangscodes oder um ein Ticket einer früheren Veranstaltung vorauszusetzen."
 
 #: includes/woocommerce/class-product.php:205
 msgid "Allow the same code for several purchases"
-msgstr ""
+msgstr "Dieselben Code für mehrere Käufe erlauben"
 
 #: includes/woocommerce/class-product.php:206
 msgid ""
 "If off (default), each code unlocks exactly one purchase. If on, the same "
 "code stays valid for further purchases."
-msgstr ""
+msgstr "Wenn aus (Standard), schaltet jeder Code genau einen Kauf frei. Wenn an, bleibt derselbe Code für weitere Käufe gültig."
 
 #: includes/woocommerce/class-product.php:216
 msgid "— None —"
@@ -727,7 +727,7 @@ msgstr "Kongress zuweisen"
 #: includes/woocommerce/class-product.php:230
 msgid ""
 "Ticket holders of this product will get access to the assigned congress page."
-msgstr ""
+msgstr "Ticketinhaber dieses Produkts erhalten Zugriff auf die zugewiesene Kongress-Seite."
 
 #: includes/woocommerce/class-product.php:242
 msgid "Require CVV at the ticket scanner"
@@ -740,7 +740,7 @@ msgid ""
 "is delivered via the order email and customer profile, never embedded in the "
 "QR code. Best for private/exclusive events where a lost ticket card alone "
 "must not grant entry."
-msgstr ""
+msgstr "Wenn aktiv, wird für jedes neue Ticket dieses Produkts automatisch ein CVV erzeugt, und der Ticket-Scanner fordert den Kunden auf, vor dem Einlösen den CVV einzugeben. Der CVV wird per Bestell-E-Mail und im Kundenprofil geliefert, nie im QR-Code eingebettet. Am besten für private/exklusive Veranstaltungen, bei denen eine verlorene Ticketkarte allein keinen Einlass gewähren darf."
 
 #: includes/woocommerce/class-product.php:272
 msgid "Assign a seating plan to this ticket product."
@@ -958,7 +958,7 @@ msgid ""
 "If the current time is past this value, today will no longer be selectable. "
 "Only applies when \"Offset days for start date\" is 0. Leave empty to "
 "disable."
-msgstr ""
+msgstr "Wenn die aktuelle Uhrzeit über diesem Wert liegt, ist heute nicht mehr wählbar. Gilt nur, wenn \\\"Tage bis Startdatum verschieben\\\" 0 ist. Leer lassen zum Deaktivieren."
 
 #: includes/woocommerce/class-product.php:444
 msgid "Label for the date picker"
@@ -1158,7 +1158,7 @@ msgstr "Ja"
 #: includes/woocommerce/class-product.php:908
 #: includes/woocommerce/class-product.php:942
 msgid "No"
-msgstr ""
+msgstr "Nein"
 
 #: includes/woocommerce/class-product.php:878
 msgid "Override: Ask for a name/text input per ticket."
@@ -1240,7 +1240,7 @@ msgstr "Liste drucken"
 msgid ""
 "Calendar is available for date picker products. For all products use the "
 "Attendance tab."
-msgstr ""
+msgstr "Der Kalender ist für Datumswahl-Produkte verfügbar. Für alle Produkte nutze den Anwesenheits-Tab."
 
 #: includes/woocommerce/class-product.php:1194
 msgid "Product Id for the event flyer is missing"
@@ -1267,17 +1267,17 @@ msgstr "Zum Vollstart Wallet hinzufügen"
 #: index.php:760
 #, php-format
 msgid "Ticket for %s"
-msgstr ""
+msgstr "Ticket für %s"
 
 #: index.php:764
 msgid "Send to phone"
-msgstr ""
+msgstr "Aufs Handy senden"
 
 #: index.php:765
 msgid ""
 "Only send it to the person who is coming — whoever has the link can show the "
 "QR code."
-msgstr ""
+msgstr "Sende es nur an die Person, die kommt — wer den Link hat, kann den QR-Code zeigen."
 
 #: index.php:864
 msgid "Add to Wallet"
@@ -1285,17 +1285,17 @@ msgstr "Zum Wallet hinzufügen"
 
 #: index.php:1128
 msgid "Event Tickets is active."
-msgstr ""
+msgstr "Event Tickets ist aktiv."
 
 #: index.php:1129
 msgid ""
 "Two steps and your shop can sell and check tickets: connect a product with a "
 "ticket list, and give your door team access to the scanner."
-msgstr ""
+msgstr "Zwei Schritte, dann kann dein Shop Tickets verkaufen und prüfen: verbinde ein Produkt mit einer Ticketliste und gib deinem Einlass-Team Zugriff auf den Scanner."
 
 #: index.php:1132
 msgid "Set up now"
-msgstr ""
+msgstr "Jetzt einrichten"
 
 #: index.php:1154
 msgid "Event Tickets"
@@ -1347,29 +1347,29 @@ msgstr "Premium-Version hier"
 
 #: index.php:1303
 msgid "Maintenance &amp; Support"
-msgstr ""
+msgstr "Wartung &amp; Support"
 
 #. translators: %s: date of the last plugin update
 #: index.php:1311
 #, php-format
 msgid "last updated %s"
-msgstr ""
+msgstr "zuletzt aktualisiert %s"
 
 #: index.php:1315
 msgid "See what changed in each release"
-msgstr ""
+msgstr "Sieh, was sich in jeder Version geändert hat"
 
 #. translators: %d: average number of hours until support replies
 #: index.php:1319
 #, php-format
 msgid "Support replies in %d hour on average."
 msgid_plural "Support replies in %d hours on average."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Support antwortet in durchschnittlich %d Stunde."
+msgstr[1] "Support antwortet in durchschnittlich %d Stunden."
 
 #: index.php:1322
 msgid "Ask a question"
-msgstr ""
+msgstr "Eine Frage stellen"
 
 #: index.php:1329
 msgid "Shortcodes"
@@ -1377,27 +1377,27 @@ msgstr "Shortcodes"
 
 #: index.php:1339
 msgid "Event calendar form"
-msgstr ""
+msgstr "Veranstaltungskalender-Formular"
 
 #: index.php:1340
 msgid "Displays the event calendar. Supports parameters below."
-msgstr ""
+msgstr "Zeigt den Veranstaltungskalender. Unterstützt die Parameter unten."
 
 #: index.php:1342
 msgid "Number of months to display (higher than 0). Default: 3"
-msgstr ""
+msgstr "Anzahl der anzuzeigenden Monate (größer als 0). Standard: 3"
 
 #: index.php:1348
 msgid "Assigned tickets and codes"
-msgstr ""
+msgstr "Zugewiesene Tickets und Codes"
 
 #: index.php:1349
 msgid "Displays tickets assigned to the current user or a specific order."
-msgstr ""
+msgstr "Zeigt Tickets, die dem aktuellen Benutzer oder einer bestimmten Bestellung zugewiesen sind."
 
 #: index.php:1351
 msgid "Show tickets from a specific order (user must own it)"
-msgstr ""
+msgstr "Tickets einer bestimmten Bestellung zeigen (Benutzer muss sie besitzen)"
 
 #: index.php:1352
 msgid "Output format. Values: json"
@@ -1407,11 +1407,11 @@ msgstr "Ausgabeformat. Werte: json"
 msgid ""
 "Fields to show: codes, validation, user, used, confirmedCount, woocommerce, "
 "wc_rp, wc_ticket"
-msgstr ""
+msgstr "Anzuzeigende Felder: codes, validation, user, used, confirmedCount, woocommerce, wc_rp, wc_ticket"
 
 #: index.php:1354
 msgid "Show download button for all tickets as PDF. Values: true/false"
-msgstr ""
+msgstr "Download-Button für alle Tickets als PDF zeigen. Werte: true/false"
 
 #: index.php:1359 sasoEventtickets_Options.php:267
 #: sasoEventtickets_Ticket.php:2176
@@ -1422,29 +1422,29 @@ msgstr "Ticket-Scanner"
 msgid ""
 "Embeds the browser-based scanner in a page. Useful when the standalone "
 "scanner URL has security restrictions."
-msgstr ""
+msgstr "Bettet den Browser-Scanner in eine Seite ein. Nützlich, wenn die eigenständige Scanner-URL Sicherheitseinschränkungen hat."
 
 #: index.php:1365
 msgid "Ticket detail view"
-msgstr ""
+msgstr "Ticket-Detailansicht"
 
 #: index.php:1366
 msgid ""
 "Shows the ticket detail page within a page. Useful when /ticket/ URL "
 "rewriting fails."
-msgstr ""
+msgstr "Zeigt die Ticket-Detailseite innerhalb einer Seite. Nützlich, wenn das /ticket/-URL-Rewriting fehlschlägt."
 
 #: index.php:1368
 msgid "Read ?ticket=CODE from URL (default behaviour)"
-msgstr ""
+msgstr "?ticket=CODE aus der URL lesen (Standardverhalten)"
 
 #: index.php:1369
 msgid "Show details for a specific code directly"
-msgstr ""
+msgstr "Details eines bestimmten Codes direkt zeigen"
 
 #: index.php:1377
 msgid "Shortcode"
-msgstr ""
+msgstr "Shortcode"
 
 #: index.php:1378 js/seating_admin.js:1441
 msgid "Description"
@@ -1807,66 +1807,66 @@ msgstr ""
 
 #: sasoEventtickets_AdminSettings.php:1080
 msgid "Connect a product with a ticket list"
-msgstr ""
+msgstr "Ein Produkt mit einer Ticketliste verbinden"
 
 #: sasoEventtickets_AdminSettings.php:1082
 msgid ""
 "A product is marked as a ticket but has no list assigned - without a list it "
 "does not create tickets."
-msgstr ""
+msgstr "Ein Produkt ist als Ticket markiert, hat aber keine Liste zugewiesen — ohne Liste werden keine Tickets erstellt."
 
 #: sasoEventtickets_AdminSettings.php:1083
 msgid ""
 "Mark a WooCommerce product as a ticket and assign your list. That is all it "
 "takes to sell tickets."
-msgstr ""
+msgstr "Markiere ein WooCommerce-Produkt als Ticket und weise deine Liste zu. Mehr braucht es nicht, um Tickets zu verkaufen."
 
 #: sasoEventtickets_AdminSettings.php:1085 backend.js:4631
 msgid "Open products"
-msgstr ""
+msgstr "Produkte öffnen"
 
 #: sasoEventtickets_AdminSettings.php:1086
 msgid "Install WooCommerce"
-msgstr ""
+msgstr "WooCommerce installieren"
 
 #: sasoEventtickets_AdminSettings.php:1094
 msgid ""
 "There is no ticket list to connect a product to - create one first, then "
 "assign it to your product."
-msgstr ""
+msgstr "Es gibt keine Ticketliste, mit der ein Produkt verbunden werden kann — erstelle zuerst eine, dann weise sie deinem Produkt zu."
 
 #: sasoEventtickets_AdminSettings.php:1095
 msgid "Create list"
-msgstr ""
+msgstr "Liste erstellen"
 
 #: sasoEventtickets_AdminSettings.php:1110
 msgid "Switch permalinks away from \"Plain\""
-msgstr ""
+msgstr "Permalinks von \\\"Einfach\\\" wechseln"
 
 #: sasoEventtickets_AdminSettings.php:1111
 msgid ""
 "With plain permalinks the ticket page and the ticket scanner cannot be "
 "reached. Pick any other structure in the WordPress permalink settings - "
 "\"Post name\" is the usual choice."
-msgstr ""
+msgstr "Mit einfachen Permalinks sind Ticketseite und Ticket-Scanner nicht erreichbar. Wähle eine andere Struktur in den WordPress-Permalink-Einstellungen — \\\"Beitragsname\\\" ist die übliche Wahl."
 
 #: sasoEventtickets_AdminSettings.php:1112
 msgid "Open permalink settings"
-msgstr ""
+msgstr "Permalink-Einstellungen öffnen"
 
 #: sasoEventtickets_AdminSettings.php:1122
 msgid "Set up scanner access"
-msgstr ""
+msgstr "Scanner-Zugriff einrichten"
 
 #: sasoEventtickets_AdminSettings.php:1123
 msgid ""
 "Your door team needs access to the ticket scanner - either with an auth "
 "token or by allowing a user role."
-msgstr ""
+msgstr "Dein Einlass-Team braucht Zugriff auf den Ticket-Scanner — entweder mit einem Auth-Token oder über eine erlaubte Benutzerrolle."
 
 #: sasoEventtickets_AdminSettings.php:1124
 msgid "Set up access"
-msgstr ""
+msgstr "Zugriff einrichten"
 
 #: sasoEventtickets_AdminSettings.php:1352
 #, php-format
@@ -2081,26 +2081,26 @@ msgid ""
 "No writable temporary directory is available for the ticket PDF. Please "
 "define WP_TEMP_DIR in wp-config.php or ask your host to make the temporary "
 "directory writable."
-msgstr ""
+msgstr "Kein beschreibbares temporäres Verzeichnis für das Ticket-PDF verfügbar. Definiere WP_TEMP_DIR in der wp-config.php oder bitte deinen Hoster, das temporäre Verzeichnis beschreibbar zu machen."
 
 #: sasoEventtickets_Core.php:1427
 msgid "PDF file was not created and is skipped in the merge."
-msgstr ""
+msgstr "Die PDF-Datei wurde nicht erstellt und wird beim Zusammenführen übersprungen."
 
 #: sasoEventtickets_Options.php:196
 msgid "Event type"
-msgstr ""
+msgstr "Veranstaltungstyp"
 
 #: sasoEventtickets_Options.php:197
 msgid ""
 "Which kind of tickets do you sell? The settings view then shows the options "
 "that belong to that kind. Nothing is hidden for good - 'All options' stays "
 "one click away."
-msgstr ""
+msgstr "Welche Art von Tickets verkaufst du? Die Einstellungsansicht zeigt dann die Optionen, die dazu gehören. Nichts wird dauerhaft versteckt — \\\"Alle Optionen\\\" ist immer einen Klick entfernt."
 
 #: sasoEventtickets_Options.php:203
 msgid "All settings (no filter)"
-msgstr ""
+msgstr "Alle Einstellungen (kein Filter)"
 
 #: sasoEventtickets_Options.php:204 backend.js:4455
 msgid "Event tickets"
@@ -2112,31 +2112,31 @@ msgstr "Tageskarten"
 
 #: sasoEventtickets_Options.php:206
 msgid "Memberships"
-msgstr ""
+msgstr "Mitgliedschaften"
 
 #: sasoEventtickets_Options.php:207
 msgid "Vouchers"
-msgstr ""
+msgstr "Gutscheine"
 
 #: sasoEventtickets_Options.php:217
 msgid "Setup hint dismissed"
-msgstr ""
+msgstr "Einrichtungshinweis ausgeblendet"
 
 #: sasoEventtickets_Options.php:218
 msgid ""
 "Stores the plugin version when the setup hint on the settings page was "
 "dismissed. Clear this value to show it again."
-msgstr ""
+msgstr "Speichert die Plugin-Version, wenn der Einrichtungshinweis auf der Einstellungsseite ausgeblendet wurde. Lösche diesen Wert, um ihn wieder anzuzeigen."
 
 #: sasoEventtickets_Options.php:229
 msgid "Event type question answered"
-msgstr ""
+msgstr "Veranstaltungstyp-Frage beantwortet"
 
 #: sasoEventtickets_Options.php:230
 msgid ""
 "Stores the plugin version when the event type was chosen or the question was "
 "dismissed. Clear this value to be asked again."
-msgstr ""
+msgstr "Speichert die Plugin-Version, wenn der Veranstaltungstyp gewählt oder die Frage ausgeblendet wurde. Lösche diesen Wert, um erneut gefragt zu werden."
 
 #: sasoEventtickets_Options.php:236
 msgid "Display options"
@@ -2257,7 +2257,7 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:247
 msgid "Display a column with the extra fields of the order line"
-msgstr ""
+msgstr "Spalte mit den Zusatzfeldern der Bestellposition zeigen"
 
 #: sasoEventtickets_Options.php:247
 msgid ""
@@ -2265,18 +2265,18 @@ msgid ""
 "shown with the fields another plugin added to the order line - for example "
 "the answers of a product add-on plugin. The values belong to the whole order "
 "line, not to the single ticket. <b>This feature can be very slow.</b>"
-msgstr ""
+msgstr "Wenn aktiv, wird im Admin-Bereich für jedes Ticket eine neue Spalte mit den Feldern gezeigt, die ein anderes Plugin zur Bestellposition hinzugefügt hat — z.B. die Antworten eines Produkt-Add-on-Plugins. Die Werte gehören zur gesamten Bestellposition, nicht zum einzelnen Ticket. <b>Dieses Feature kann sehr langsam sein.</b>"
 
 #: sasoEventtickets_Options.php:248
 msgid "Hide these fields of the order line"
-msgstr ""
+msgstr "Diese Felder der Bestellposition ausblenden"
 
 #: sasoEventtickets_Options.php:248
 msgid ""
 "Field names that should never be shown, one per line. Use this for answers "
 "that belong in the order but not on a ticket or in a list, like a phone "
 "number."
-msgstr ""
+msgstr "Feldnamen, die nie angezeigt werden sollen, einer pro Zeile. Nutze dies für Antworten, die zur Bestellung gehören, aber nicht auf ein Ticket oder in eine Liste — wie eine Telefonnummer."
 
 #: sasoEventtickets_Options.php:249
 msgid "Display a column with the billing company of the order"
@@ -2760,7 +2760,7 @@ msgstr "Vollstart Wallet aktivieren"
 
 #: sasoEventtickets_Options.php:369
 msgid "Let customers send their ticket on"
-msgstr ""
+msgstr "Kunden das Weiterleiten ihres Tickets erlauben"
 
 #: sasoEventtickets_Options.php:370
 msgid ""
@@ -2770,7 +2770,7 @@ msgid ""
 "Your shop sends nothing — the customer does, which is how the second ticket "
 "reaches the friend who is coming along. The page says out loud that whoever "
 "receives the link can show the QR code."
-msgstr ""
+msgstr "Wenn aktiv, bietet die Ticketseite an, das Ticket weiterzugeben: Auf dem Handy öffnet sich das übliche Teilen-Menü (WhatsApp, Telegram, Signal, E-Mail, was installiert ist), im Desktop-Browser werden WhatsApp und Telegram als Links angeboten. Dein Shop sendet nichts — der Kunde tut es, so erreicht das zweite Ticket die Begleitung. Die Seite sagt deutlich, dass jeder mit dem Link den QR-Code zeigen kann."
 
 #: sasoEventtickets_Options.php:378
 msgid "Woocommerce ticket sale"
@@ -3159,7 +3159,7 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:412
 msgid "Stop online sales before the event starts"
-msgstr ""
+msgstr "Online-Verkauf vor Veranstaltungsbeginn stoppen"
 
 #: sasoEventtickets_Options.php:412
 msgid ""
@@ -3168,50 +3168,50 @@ msgid ""
 "office and want the online shop to close first. Products without an event "
 "date are never affected. For day chooser products the date the customer "
 "picked is used."
-msgstr ""
+msgstr "Wenn aktiv, können Ticketprodukte nicht mehr gekauft werden, sobald der Veranstaltungsbeginn näher liegt als die unten eingestellten Stunden. Nützlich, wenn du auch an der Abendkasse verkaufst und den Online-Shop zuerst schließen willst. Produkte ohne Veranstaltungsdatum sind nie betroffen. Bei Datumswahl-Produkten zählt das vom Kunden gewählte Datum."
 
 #: sasoEventtickets_Options.php:413
 msgid "How many hours before the event should online sales stop?"
-msgstr ""
+msgstr "Wie viele Stunden vor der Veranstaltung soll der Online-Verkauf enden?"
 
 #: sasoEventtickets_Options.php:413
 msgid ""
 "Only used if the option above is active. 0 means sales stop exactly at the "
 "event start. If the product has a date but no start time, the end of that "
 "day (23:59:59) counts as the start."
-msgstr ""
+msgstr "Wird nur genutzt, wenn die Option oben aktiv ist. 0 bedeutet, der Verkauf endet genau zum Veranstaltungsbeginn. Hat das Produkt ein Datum, aber keine Startzeit, zählt das Tagesende (23:59:59) als Beginn."
 
 #: sasoEventtickets_Options.php:414
 msgid "Message added when tickets are still available at the box office"
-msgstr ""
+msgstr "Zusätzliche Meldung, wenn Tickets an der Abendkasse erhältlich sind"
 
 #: sasoEventtickets_Options.php:414
 msgid ""
 "Appended to the 'sales closed' message for products where the box office is "
 "switched on (premium, per product)."
-msgstr ""
+msgstr "Wird an die Meldung \\\"Verkauf beendet\\\" für Produkte angehängt, bei denen die Abendkasse aktiviert ist (Premium, pro Produkt)."
 
 #: sasoEventtickets_Options.php:414
 msgid "Tickets are still available at the box office."
-msgstr ""
+msgstr "Tickets sind noch an der Abendkasse erhältlich."
 
 #: sasoEventtickets_Options.php:415
 msgid "Message when online sales are closed"
-msgstr ""
+msgstr "Meldung, wenn der Online-Verkauf beendet ist"
 
 #: sasoEventtickets_Options.php:415
 msgid ""
 "You can use the placeholder {PRODUCT_NAME} for the product name. Shown in "
 "the cart and when the product is added to the cart."
-msgstr ""
+msgstr "Du kannst den Platzhalter {PRODUCT_NAME} für den Produktnamen nutzen. Angezeigt im Warenkorb und beim Hinzufügen zum Warenkorb."
 
 #: sasoEventtickets_Options.php:415
 msgid "Online sales for \"{PRODUCT_NAME}\" have closed."
-msgstr ""
+msgstr "Der Online-Verkauf für \\\"{PRODUCT_NAME}\\\" ist beendet."
 
 #: sasoEventtickets_Options.php:416
 msgid "Allow tickets without a WooCommerce order"
-msgstr ""
+msgstr "Tickets ohne WooCommerce-Bestellung erlauben"
 
 #: sasoEventtickets_Options.php:416
 msgid ""
@@ -3238,7 +3238,7 @@ msgstr ""
 
 #: sasoEventtickets_Options.php:417
 msgid "Message when a closed ticket is dropped from the cart"
-msgstr ""
+msgstr "Meldung, wenn ein geschlossenes Ticket aus dem Warenkorb entfernt wird"
 
 #: sasoEventtickets_Options.php:417
 msgid ""
@@ -3246,13 +3246,13 @@ msgid ""
 "bought — this happens when the buyer leaves the cart open past the sales "
 "stop. You can use the placeholder {PRODUCT_NAME}. Leave empty for the "
 "default text."
-msgstr ""
+msgstr "WooCommerce entfernt ein Ticket aus dem Warenkorb, sobald es nicht mehr gekauft werden kann — das passiert, wenn der Käufer den Warenkorb über das Verkaufsende hinaus offen lässt. Du kannst den Platzhalter {PRODUCT_NAME} nutzen. Leer lassen für den Standardtext."
 
 #: sasoEventtickets_Options.php:417
 msgid ""
 "Online sales for \"{PRODUCT_NAME}\" have closed, so it was removed from your "
 "cart."
-msgstr ""
+msgstr "Der Online-Verkauf für \\\"{PRODUCT_NAME}\\\" ist beendet, daher wurde er aus deinem Warenkorb entfernt."
 
 #: sasoEventtickets_Options.php:418
 msgid "Label for error message on cart for missing text value"
@@ -5237,7 +5237,7 @@ msgstr "Bitte kontaktieren Sie unseren Support für Ihr Ticket"
 
 #: sasoEventtickets_Options.php:848
 msgid "Allow requiring a ticket or access code to purchase"
-msgstr ""
+msgstr "Erforderliches Ticket / Zugangscode beim Kauf erlauben"
 
 #: sasoEventtickets_Options.php:848
 msgid ""
@@ -5248,57 +5248,57 @@ msgid ""
 "a group-stage ticket in order to buy the final). Switch this off to disable "
 "the whole feature globally, including on products that still have a list "
 "assigned."
-msgstr ""
+msgstr "Nichts ändert sich, bis du ein erforderliches Veranstaltungs-/Codeliste am Produkt wählst (Event-Tickets-Tab des Produkts). Erst dann müssen Käufer einen gültigen, unbenutzten Code oder eine Ticketnummer aus dieser Liste eingeben, um es zu kaufen — nützlich für Vorkaufs- und Zugangscodes oder um ein Ticket einer früheren Veranstaltung vorauszusetzen (z.B. ein Gruppenspiel-Ticket für den Kauf des Finales). Schalte dies aus, um das gesamte Feature global zu deaktivieren, auch für Produkte, die noch eine Liste zugewiesen haben."
 
 #: sasoEventtickets_Options.php:849
 msgid "Cart label above the required code field"
-msgstr ""
+msgstr "Warenkorb-Beschriftung über dem erforderlichen Code-Feld"
 
 #: sasoEventtickets_Options.php:849
 msgid ""
 "Shown in the cart above the input where the buyer enters the required ticket "
 "or access code."
-msgstr ""
+msgstr "Wird im Warenkorb über dem Eingabefeld gezeigt, in das der Käufer das erforderliche Ticket oder den Zugangscode eingibt."
 
 #: sasoEventtickets_Options.php:849
 msgid "Please enter your ticket or access code for this product"
-msgstr ""
+msgstr "Bitte gib dein Ticket oder deinen Zugangscode für dieses Produkt ein"
 
 #: sasoEventtickets_Options.php:850
 msgid "Placeholder inside the required code field"
-msgstr ""
+msgstr "Platzhalter im erforderlichen Code-Feld"
 
 #: sasoEventtickets_Options.php:850
 msgid "Grey hint text inside the input field in the cart."
-msgstr ""
+msgstr "Grauer Hinweistext im Eingabefeld im Warenkorb."
 
 #: sasoEventtickets_Options.php:850
 msgid "Your ticket or access code"
-msgstr ""
+msgstr "Dein Ticket oder Zugangscode"
 
 #: sasoEventtickets_Options.php:851
 msgid "Label for the used code in orders and emails"
-msgstr ""
+msgstr "Beschriftung des verwendeten Codes in Bestellungen und E-Mails"
 
 #: sasoEventtickets_Options.php:851
 msgid ""
 "Printed in front of the code the buyer used, in the order view, the emails "
 "and on the PDF."
-msgstr ""
+msgstr "Wird vor dem vom Käufer verwendeten Code gedruckt, in der Bestellansicht, den E-Mails und im PDF."
 
 #: sasoEventtickets_Options.php:851
 msgid "Used ticket / access code:"
-msgstr ""
+msgstr "Verwendetes Ticket / Zugangscode:"
 
 #: sasoEventtickets_Options.php:852
 msgid "Do not print the used ticket / access code on the PDF"
-msgstr ""
+msgstr "Verwendetes Ticket / Zugangscode nicht im PDF drucken"
 
 #: sasoEventtickets_Options.php:852
 msgid ""
 "If active, the code the buyer used to unlock the purchase is left off the "
 "PDF ticket."
-msgstr ""
+msgstr "Wenn aktiv, bleibt der Code, den der Käufer zum Freischalten des Kaufs genutzt hat, auf dem Ticket-PDF aus."
 
 #: sasoEventtickets_Options.php:853
 msgid "Clear the ticket number if the order was deleted, canceled or refunded"
@@ -5790,7 +5790,7 @@ msgstr "Premium-Lizenzschlüssel"
 #: sasoEventtickets_Seating.php:595
 #, php-format
 msgid "Order saved for %d seats"
-msgstr ""
+msgstr "Bestellung für %d Plätze gespeichert"
 
 #: sasoEventtickets_Seating.php:895
 #, php-format
@@ -5892,7 +5892,7 @@ msgstr "Ticket schon entwertet"
 
 #: sasoEventtickets_Ticket.php:2333
 msgid "Ticket Scanner"
-msgstr ""
+msgstr "Ticket-Scanner"
 
 #: sasoEventtickets_Ticket.php:2338 ticket_scanner.js:1241
 msgid "Ticket not redeemed"
@@ -5900,11 +5900,11 @@ msgstr "Ticket nicht eingelöst"
 
 #: sasoEventtickets_Ticket.php:2338
 msgid "See reason below."
-msgstr ""
+msgstr "Siehe Grund unten."
 
 #: sasoEventtickets_Ticket.php:2340
 msgid "TICKET OK — Redeemed"
-msgstr ""
+msgstr "TICKET OK — Eingelöst"
 
 #: sasoEventtickets_Ticket.php:2461
 msgid ""
@@ -5924,7 +5924,7 @@ msgstr "Produkt für das PDF-Ticket nicht gefunden"
 
 #: sasoEventtickets_Ticket.php:2884
 msgid "The ticket PDF could not be written to the temporary directory."
-msgstr ""
+msgstr "Das Ticket-PDF konnte nicht in das temporäre Verzeichnis geschrieben werden."
 
 #: sasoEventtickets_Ticket.php:2932
 msgid "Product ID not valid for ticket date string"
@@ -6244,12 +6244,12 @@ msgstr ""
 #: backend.js:945
 msgctxt "label"
 msgid "Bound to ticket list(s)"
-msgstr ""
+msgstr "Gebunden an Ticketliste(n)"
 
 #: backend.js:945
 msgctxt "label"
 msgid "all ticket lists allowed to be redeemed"
-msgstr ""
+msgstr "alle zum Einlösen erlaubten Ticketlisten"
 
 #: backend.js:945
 msgid ""
@@ -6257,7 +6257,7 @@ msgid ""
 "to redeem tickets of these lists only. If left empty, all are allowed. This "
 "is the only restriction that works for tickets without an order, because "
 "those have no product."
-msgstr ""
+msgstr "Du kannst durch Komma getrennte Ticketlisten-IDs angeben. Der Nutzer kann dann nur Tickets dieser Listen einlösen. Leer = alle erlaubt. Dies ist die einzige Einschränkung, die auch für Tickets ohne Bestellung funktioniert, da diese kein Produkt haben."
 
 #: backend.js:948 backend.js:5169
 msgctxt "label"
@@ -6317,12 +6317,12 @@ msgstr ""
 #: backend.js:1101
 msgctxt "label"
 msgid "Bound to ticket list"
-msgstr ""
+msgstr "Gebunden an Ticketliste"
 
 #: backend.js:1101
 msgctxt "label"
 msgid "all ticket lists"
-msgstr ""
+msgstr "alle Ticketlisten"
 
 #: backend.js:1298 backend.js:1318 backend.js:3237 js/congress-admin.js:63
 #: js/seating_admin.js:118 js/seating_admin.js:759 wc_backend.js:386
@@ -6368,7 +6368,7 @@ msgstr "Neueste Updates ansehen"
 
 #: backend.js:1373
 msgid "Help us with a 5-star review on WordPress.org"
-msgstr ""
+msgstr "Hilf uns mit einer 5-Sterne-Bewertung auf WordPress.org"
 
 #: backend.js:1384
 msgid "Support Context Information"
@@ -6388,7 +6388,7 @@ msgstr "Lizenzstatus"
 
 #: backend.js:1395 backend.js:1399 backend.js:1402
 msgid "Refresh Status"
-msgstr ""
+msgstr "Status aktualisieren"
 
 #: backend.js:1485
 msgid "Copy to clipboard"
@@ -6497,15 +6497,15 @@ msgstr "Funktion"
 
 #: backend.js:1737
 msgid "Your setup is complete - you can sell and check tickets."
-msgstr ""
+msgstr "Dein Setup ist komplett — du kannst Tickets verkaufen und prüfen."
 
 #: backend.js:1738
 msgid "Getting started - these steps make your installation ready to sell:"
-msgstr ""
+msgstr "Erste Schritte — diese Schritte machen deine Installation verkaufsbereit:"
 
 #: backend.js:1745 backend.js:1746
 msgid "Hide this hint for good"
-msgstr ""
+msgstr "Diesen Hinweis dauerhaft ausblenden"
 
 #: backend.js:1833
 msgctxt "label"
@@ -6599,133 +6599,133 @@ msgstr ""
 msgid ""
 "Set, but it does not belong to this event type. It can make your shop behave "
 "unexpectedly."
-msgstr ""
+msgstr "Gesetzt, aber gehört nicht zu diesem Veranstaltungstyp. Kann dein Shop-Verhalten unerwartet beeinflussen."
 
 #: backend.js:2014
 msgid "Reset to default"
-msgstr ""
+msgstr "Auf Standard zurücksetzen"
 
 #: backend.js:2074
 msgid "What do you use the plugin for?"
-msgstr ""
+msgstr "Wofür nutzt du das Plugin?"
 
 #: backend.js:2076
 msgid ""
 "The settings page then starts with the handful of settings that belong to "
 "your kind of sale. You can switch to all options at any time."
-msgstr ""
+msgstr "Die Einstellungsseite startet dann mit den wenigen Einstellungen, die zu deiner Verkaufsart gehören. Du kannst jederzeit zu allen Optionen wechseln."
 
 #: backend.js:2086
 msgid "Decide later - show me all options"
-msgstr ""
+msgstr "Später entscheiden — alle Optionen zeigen"
 
 #: backend.js:2108
 msgctxt "label"
 msgid "All options"
-msgstr ""
+msgstr "Alle Optionen"
 
 #: backend.js:2112
 msgctxt "label"
 msgid "For your event type"
-msgstr ""
+msgstr "Für deinen Veranstaltungstyp"
 
 #: backend.js:2148
 msgid "Back to the essentials"
-msgstr ""
+msgstr "Zurück zu den Grundlagen"
 
 #: backend.js:2165
 msgid "Search all settings - name, description or key"
-msgstr ""
+msgstr "Alle Einstellungen durchsuchen — Name, Beschreibung oder Schlüssel"
 
 #: backend.js:2286 backend.js:2306
 msgctxt "title"
 msgid "Restore defaults"
-msgstr ""
+msgstr "Standards wiederherstellen"
 
 #: backend.js:2287
 msgid "Everything in this view is already at its default value."
-msgstr ""
+msgstr "Alles in dieser Ansicht steht bereits auf dem Standardwert."
 
 #. translators: %d: number of settings
 #: backend.js:2298
 msgid ""
 "%d settings in this view differ from their default and would be restored:"
-msgstr ""
+msgstr "%d Einstellungen in dieser Ansicht weichen vom Standard ab und würden zurückgesetzt:"
 
 #. translators: %d: number of settings
 #: backend.js:2301
 msgid "... and %d more"
-msgstr ""
+msgstr "... und %d weitere"
 
 #: backend.js:2303
 msgid "Nothing outside this view is touched."
-msgstr ""
+msgstr "Nichts außerhalb dieser Ansicht wird verändert."
 
 #: backend.js:2319
 msgid "Restore the defaults of this view"
-msgstr ""
+msgstr "Standards dieser Ansicht wiederherstellen"
 
 #: backend.js:2320
 msgid "Restore all defaults"
-msgstr ""
+msgstr "Alle Standards wiederherstellen"
 
 #. translators: %d: number of settings
 #: backend.js:2325
 msgid "%d settings are set although they belong to another event type"
-msgstr ""
+msgstr "%d Einstellungen sind gesetzt, obwohl sie zu einem anderen Veranstaltungstyp gehören"
 
 #: backend.js:2331
 msgid "No setting matches your search."
-msgstr ""
+msgstr "Keine Einstellung passt zu deiner Suche."
 
 #. translators: 1: total matches 2: matches outside the chosen event type
 #: backend.js:2333
 msgid "%1$d matches, %2$d of them outside your event type"
-msgstr ""
+msgstr "%1$d Treffer, %2$d davon außerhalb deines Veranstaltungstyps"
 
 #. translators: %d: number of matching settings
 #: backend.js:2334
 msgid "%d match"
 msgid_plural "%d matches"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d Treffer"
+msgstr[1] "%d Treffer"
 
 #: backend.js:2336
 msgid "Show the matches outside your event type"
-msgstr ""
+msgstr "Treffer außerhalb deines Veranstaltungstyps zeigen"
 
 #: backend.js:2346
 msgid "Pick your event type to see only the settings that belong to it."
-msgstr ""
+msgstr "Wähle deinen Veranstaltungstyp, um nur die zugehörigen Einstellungen zu sehen."
 
 #. translators: %d: number of settings
 #: backend.js:2347
 msgid "All %d settings"
-msgstr ""
+msgstr "Alle %d Einstellungen"
 
 #. translators: 1: event type 2: shown settings 3: all settings
 #: backend.js:2355
 msgid "%1$s - the essentials: %2$d of %3$d settings"
-msgstr ""
+msgstr "%1$s — die Grundlagen: %2$d von %3$d Einstellungen"
 
 #. translators: %d: number of settings
 #: backend.js:2357
 msgid "Show everything for this event type (%d)"
-msgstr ""
+msgstr "Alles für diesen Veranstaltungstyp zeigen (%d)"
 
 #. translators: 1: event type 2: shown settings 3: all settings
 #: backend.js:2364
 msgid "%1$s: %2$d of %3$d settings"
-msgstr ""
+msgstr "%1$s: %2$d von %3$d Einstellungen"
 
 #. translators: %d: number of settings
 #: backend.js:2368
 msgid "More settings (%d)"
-msgstr ""
+msgstr "Weitere Einstellungen (%d)"
 
 #: backend.js:2371
 msgid "Hide the more settings again"
-msgstr ""
+msgstr "Weitere Einstellungen wieder ausblenden"
 
 #: backend.js:2455
 msgid "Load template"
@@ -6837,12 +6837,12 @@ msgstr "Option \"%s\" auf den vorherigen Wert zurücksetzen?"
 #: backend.js:2987
 msgctxt "tab"
 msgid "Sold Tickets"
-msgstr ""
+msgstr "Verkaufte Tickets"
 
 #: backend.js:2988
 msgctxt "tab"
 msgid "Daily Redemption Summary"
-msgstr ""
+msgstr "Tagesübersicht der Einlösungen"
 
 #: backend.js:3026
 msgid "Products:"
@@ -6873,7 +6873,7 @@ msgstr "Aus"
 
 #: backend.js:3116
 msgid "Error loading data."
-msgstr ""
+msgstr "Fehler beim Laden der Daten."
 
 #: backend.js:3149 wc_backend.js:451
 msgid "January"
@@ -7119,7 +7119,7 @@ msgstr "Anwesenheit"
 #: backend.js:3652
 msgctxt "label"
 msgid "Congresses"
-msgstr ""
+msgstr "Kongresse"
 
 #: backend.js:3660
 msgctxt "label"
@@ -7402,13 +7402,13 @@ msgstr ""
 msgid ""
 "Eventado.com is a free public event calendar — Premium customers can list "
 "their ticket events automatically."
-msgstr ""
+msgstr "Eventado.com ist ein kostenloser öffentlicher Veranstaltungskalender — Premium-Kunden können ihre Ticket-Events automatisch eintragen."
 
 #: backend.js:4160
 msgid ""
 "Do you want to publish your ticket events to Eventado.com for more reach and "
 "SEO?"
-msgstr ""
+msgstr "Möchtest du deine Ticket-Events für mehr Reichweite und SEO auf Eventado.com veröffentlichen?"
 
 #: backend.js:4199
 msgid "Yes, enable"
@@ -7649,12 +7649,12 @@ msgstr "Ihre Einstellungen wurden für %s konfiguriert."
 
 #: backend.js:4616
 msgid "These settings are now active - you can change every one of them later:"
-msgstr ""
+msgstr "Diese Einstellungen sind jetzt aktiv — du kannst jede davon später ändern:"
 
 #: backend.js:4625
 msgid ""
 "One thing is still missing: a WooCommerce product that sells your tickets."
-msgstr ""
+msgstr "Eines fehlt noch: ein WooCommerce-Produkt, das deine Tickets verkauft."
 
 #: backend.js:4664
 msgid "Applying settings..."
@@ -8074,12 +8074,12 @@ msgstr "URL zu Ihrem Service, wenn das WooCommerce-Ticket verkauft wird"
 #: backend.js:5213
 msgctxt "heading"
 msgid "Tickets without a WooCommerce order"
-msgstr ""
+msgstr "Tickets ohne WooCommerce-Bestellung"
 
 #: backend.js:5216
 msgctxt "label"
 msgid "Tickets of this list may exist without an order"
-msgstr ""
+msgstr "Tickets dieser Liste können ohne Bestellung existieren"
 
 #: backend.js:5217
 msgctxt "label"
@@ -8088,7 +8088,7 @@ msgid ""
 "can be opened and redeemed at the scanner without a paid order — the order "
 "check as copy protection does not apply to them. Tickets sold through "
 "WooCommerce keep the full check."
-msgstr ""
+msgstr "Für selbst erzeugte Nummern, z.B. gedruckte Karten. Diese Tickets können am Scanner ohne bezahlte Bestellung geöffnet und eingelöst werden — die Bestellprüfung als Kopierschutz greift für sie nicht. Über WooCommerce verkaufte Tickets behalten die volle Prüfung."
 
 #: backend.js:5220
 msgctxt "label"
@@ -8096,12 +8096,12 @@ msgid ""
 "Event window for these tickets (optional). Only used for tickets without an "
 "order — leave empty for no time limit. Whether it blocks redemption is "
 "governed by the existing scanner options."
-msgstr ""
+msgstr "Zeitfenster für diese Tickets (optional). Wird nur für Tickets ohne Bestellung genutzt — leer lassen für kein Zeitlimit. Ob es die Einlösung blockiert, steuern die bestehenden Scanner-Optionen."
 
 #: backend.js:5229
 msgctxt "label"
 msgid "Until"
-msgstr ""
+msgstr "Bis"
 
 #: backend.js:5311
 msgctxt "title"
@@ -8225,7 +8225,7 @@ msgstr "%d Tickets wurden gelöscht."
 #. translators: 1: deleted tickets, 2: total tickets
 #: backend.js:5524
 msgid "%1$d of %2$d"
-msgstr ""
+msgstr "%1$d von %2$d"
 
 #. translators: %s: title list of tickets
 #: backend.js:5554
@@ -8285,7 +8285,7 @@ msgstr "Entwertungen"
 #: backend.js:5590
 msgctxt "label"
 msgid "Order line details"
-msgstr ""
+msgstr "Details der Bestellposition"
 
 #: backend.js:5594 ticket_scanner.js:1461
 msgctxt "label"
@@ -8394,7 +8394,7 @@ msgstr "Gestohlen"
 
 #: backend.js:5747
 msgid "used"
-msgstr ""
+msgstr "benutzt"
 
 #: backend.js:5747
 msgid "active"
@@ -8413,7 +8413,7 @@ msgstr "Sie haben noch keine Tickets."
 msgid ""
 "Or add ticket numbers to a ticket list yourself - with the \"Add\" button "
 "above. Useful for printed cards you hand out at the door."
-msgstr ""
+msgstr "Oder füge selbst Ticketnummern zu einer Ticketliste hinzu — mit dem \\\"Hinzufügen\\\"-Button oben. Nützlich für gedruckte Karten, die du an der Tür ausgibst."
 
 #. translators: 1: amount tickets 2: total amount tickets
 #: backend.js:5832
@@ -8639,12 +8639,12 @@ msgstr "Eingelöst per authtoken:"
 #: backend.js:6431
 msgctxt "label"
 msgid "Congress"
-msgstr ""
+msgstr "Kongress"
 
 #: backend.js:6431
 msgctxt "label"
 msgid "Open congress page"
-msgstr ""
+msgstr "Kongress-Seite öffnen"
 
 #: backend.js:6434
 msgid "Wallet Test"
@@ -9398,19 +9398,19 @@ msgstr "Kennung ist erforderlich"
 
 #: js/seating_admin.js:967 js/seating_admin.js:1387
 msgid "Seat Order"
-msgstr ""
+msgstr "Sitzplatz-Reihenfolge"
 
 #: js/seating_admin.js:971
 msgid "Drag the seats into the order customers should see in the dropdown."
-msgstr ""
+msgstr "Ziehe die Sitze in die Reihenfolge, in der Kunden sie im Dropdown sehen sollen."
 
 #: js/seating_admin.js:976
 msgid "Save Order"
-msgstr ""
+msgstr "Reihenfolge speichern"
 
 #: js/seating_admin.js:1011
 msgid "Seat order saved."
-msgstr ""
+msgstr "Sitzplatz-Reihenfolge gespeichert."
 
 #: js/seating_admin.js:1033
 msgid "No valid rows found in CSV file."
@@ -9707,7 +9707,7 @@ msgstr "Kamera starten"
 #: ticket_scanner.js:372 ticket_scanner.js:1724
 msgctxt "label"
 msgid "Ticket Info"
-msgstr ""
+msgstr "Ticket-Info"
 
 #: ticket_scanner.js:386
 msgid "Stop camera"
@@ -9739,7 +9739,7 @@ msgstr "Alte Ticketscanner-Bibliothek verwenden – Kompatibilitätsmodus"
 
 #: ticket_scanner.js:464
 msgid "Use classic layout"
-msgstr ""
+msgstr "Klassisches Layout verwenden"
 
 #: ticket_scanner.js:479 ticket_scanner.js:491
 msgid "Fullscreen"
@@ -9781,7 +9781,7 @@ msgstr "Sicherheitscode erforderlich"
 msgid ""
 "Please hand this device to the customer to enter the security code from "
 "their e-mail or profile."
-msgstr ""
+msgstr "Bitte gib dieses Gerät dem Kunden, damit er den Sicherheitscode aus seiner E-Mail oder seinem Profil eingibt."
 
 #: ticket_scanner.js:980 ticket_scanner.js:984
 msgid "Show"
@@ -9815,11 +9815,11 @@ msgstr "Ticket gesperrt"
 msgid ""
 "Too many wrong security code attempts. Please ask the event admin to reset "
 "this ticket."
-msgstr ""
+msgstr "Zu viele falsche Sicherheitscode-Versuche. Bitte den Veranstaltungs-Admin bitten, dieses Ticket zurückzusetzen."
 
 #: ticket_scanner.js:1155
 msgid "Ticket without a shop order - handed out directly."
-msgstr ""
+msgstr "Ticket ohne Shop-Bestellung — direkt ausgehändigt."
 
 #: ticket_scanner.js:1229
 msgid "Ticket paid"
@@ -9919,7 +9919,7 @@ msgstr "Komplette Bestellung einlösen"
 #: ticket_scanner.js:1517
 msgctxt "label"
 msgid "Confirm codes"
-msgstr ""
+msgstr "Codes bestätigen"
 
 #. translators: %s: order status
 #: ticket_scanner.js:1717
@@ -9954,7 +9954,7 @@ msgstr "Sitzplan"
 #: ticket_scanner.js:1787
 msgctxt "label"
 msgid "Redeem again"
-msgstr ""
+msgstr "Erneut einlösen"
 
 #: ticket_scanner.js:1788
 msgctxt "label"
@@ -10060,15 +10060,15 @@ msgstr "Bitte wählen Sie ein gültiges Datum."
 
 #: wc_frontend.js:171
 msgid "Code accepted."
-msgstr ""
+msgstr "Code akzeptiert."
 
 #: wc_frontend.js:174
 msgid "This code has already been used."
-msgstr ""
+msgstr "Dieser Code wurde bereits verwendet."
 
 #: wc_frontend.js:176
 msgid "This code is not valid for this product."
-msgstr ""
+msgstr "Dieser Code ist für dieses Produkt nicht gültig."
 
 #~ msgid ""
 #~ "Enable PDF ticket attachment in emails? Customers receive their tickets "
@@ -11107,3 +11107,82 @@ msgstr ""
 "einer Ticketliste an, aktivieren Sie diese Option, und der Scanner "
 "entwertet sie ohne Bestellung. Der Schalter in den Einstellungen der "
 "Ticketliste bewirkt dasselbe für eine einzelne Liste."
+
+#: backend.js / ticket_scanner.js — Kasse area + scanner (3.2.7)
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+msgid "No direct sales yet."
+msgstr "Noch keine Direktverkäufe."
+
+msgid "Direct sale stored."
+msgstr "Direktverkauf gespeichert."
+
+msgid "Confirm payment"
+msgstr "Zahlung bestätigen"
+
+msgid "Refund"
+msgstr "Rückerstattung"
+
+msgid "Partial refund"
+msgstr "Teilrückerstattung"
+
+msgid "Partial refund — choose tickets"
+msgstr "Teilrückerstattung — Tickets wählen"
+
+msgid "Cancel tickets"
+msgstr "Tickets stornieren"
+
+msgid "Print tickets"
+msgstr "Tickets drucken"
+
+msgid "Print tickets — order #"
+msgstr "Tickets drucken — Bestellung Nr. "
+
+msgid "Print preview"
+msgstr "Druckvorschau"
+
+msgid "Tickets issued"
+msgstr "Tickets ausgestellt"
+
+msgid "Sell tickets"
+msgstr "Tickets verkaufen"
+
+msgid "Sell & confirm payment"
+msgstr "Verkaufen & Zahlung bestätigen"
+
+msgid "Sell — issue tickets (draft)"
+msgstr "Verkaufen — Tickets ausstellen (Entwurf)"
+
+msgid "Payment note (cash, card, invoice)"
+msgstr "Zahlungsvermerk (Bar, Karte, Rechnung)"
+
+msgid "Customer name (optional)"
+msgstr "Kundenname (optional)"
+
+msgid "Kasse — sell tickets directly"
+msgstr "Kasse — Tickets direkt verkaufen"
+
+msgid "No ticket lists yet."
+msgstr "Noch keine Ticketlisten."
+
+msgid "Ticket list"
+msgstr "Ticketliste"
+
+msgid "Next ticket queued — finishing current scan…"
+msgstr "Nächstes Ticket in der Warteschlange — aktueller Scan wird abgeschlossen…"
+
+msgid "This ticket was already redeemed by this scanner a moment ago"
+msgstr "Dieses Ticket wurde von diesem Scanner gerade bereits eingelöst"
+
+msgid "Code read"
+msgstr "Code gelesen"
+
+msgid "Redeem button at the top"
+msgstr "Redeem-Button oben"
+
+
+
+#: backend.js
+msgid "Auto refresh"
+msgstr "Auto-Aktualisierung"

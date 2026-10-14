@@ -235,7 +235,13 @@ class sasoEventtickets_Frontend {
 						if(!isset($codeObj['_retObject'])) $codeObj['_retObject'] = [];
 						$text = "";
 						if (isset($codeObj['_retObject']['message']) && !empty($codeObj['_retObject']['message']['text'])) $text = $codeObj['_retObject']['message']['text']."<br>";
-						$text .= htmlentities($metaObj['desc']);
+						// The list description is operator-authored rich text. PHP
+						// only sanitizes the DATA (wp_kses_post strips disallowed
+						// tags); the frontend renders it as HTML (validator.js
+						// displayCheckResult). Rows saved before the wp_unslash
+						// fix carry literal backslashes — repair them so operators
+						// do not have to re-save every list.
+						$text .= wp_kses_post(wp_unslash($metaObj['desc']));
 						$codeObj['_retObject']['message'] = ['ok'=>true, 'text'=>$text, 'color'=>'', 'weight'=>'normal']; // normale schriftfarbe
 					}
 				}

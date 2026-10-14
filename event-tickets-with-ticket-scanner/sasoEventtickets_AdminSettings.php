@@ -124,6 +124,7 @@ class sasoEventtickets_AdminSettings {
 					break;
 				case "getInternalOrders":
 					$ret = $this->getInternalOrders($data, SASO_EVENTTICKETS::getRequest());
+					$justJSON = true; // DataTables serverSide needs raw {draw,records*,data} — no WP success wrapper
 					break;
 				case "addInternalOrder":
 					$ret = $this->addInternalOrder($data);
@@ -1708,7 +1709,10 @@ class sasoEventtickets_AdminSettings {
 	private function _setMetaDataForList($data, $metaObj) {
 		if (isset($data['meta'])) {
 			if (isset($data['meta']['desc'])) {
-				$metaObj['desc'] = trim($data['meta']['desc']);
+				// WordPress slashes every POST/AJAX payload (magic-quote
+				// emulation) — without wp_unslash the stored meta carries
+				// literal backslashes that show up in the frontend.
+				$metaObj['desc'] = trim(wp_unslash($data['meta']['desc']));
 			}
 			if (isset($data['meta']['formatter']['active'])) {
 				$metaObj['formatter']['active'] = 0;
@@ -1789,7 +1793,23 @@ class sasoEventtickets_AdminSettings {
 	}
 	public function _getLists() {
 		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("lists")." order by name asc";
-		return $this->MAIN->getDB()->_db_datenholen($sql);
+		$daten = $this->MAIN->getDB()->_db_datenholen($sql);
+		// Data layer responsibility: deliver a render-ready list description.
+		// wp_kses_post sanitizes the operator-authored rich text server-side;
+		// wp_unslash repairs rows saved before the unslash fix landed (their
+		// desc still carries the WordPress-added backslashes). The frontend
+		// (Kasse tiles) then renders the desc as HTML — it does not sanitize.
+		foreach ($daten as &$r) {
+			if (!empty($r['meta'])) {
+				$metaObj = json_decode($r['meta'], true);
+				if (is_array($metaObj) && isset($metaObj['desc']) && is_string($metaObj['desc']) && $metaObj['desc'] !== "") {
+					$metaObj['desc'] = wp_kses_post(wp_unslash($metaObj['desc']));
+					$r['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+				}
+			}
+		}
+		unset($r);
+		return $daten;
 	}
 	public function getLists() {
 		add_filter( $this->MAIN->_add_filter_prefix.'getLists', [$this, '_getLists'], 10 );

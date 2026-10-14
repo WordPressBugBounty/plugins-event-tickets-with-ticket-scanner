@@ -56,6 +56,7 @@ jQuery(document).ready(()=>{
         distract_free_show_short_desc: false,
         speak: false,
         vibrate: false,
+        ticketScannerRedeemButtonAtTop: (typeof myAjax !== "undefined" && typeof myAjax.ticketScannerRedeemButtonAtTop !== "undefined") ? toBool(myAjax.ticketScannerRedeemButtonAtTop) : true,
         auth:"",
         ticketScannerDontRememberCamChoice:toBool(myAjax.ticketScannerDontRememberCamChoice),
         ticketScannerStartCamWithoutButtonClicked:false,
@@ -145,6 +146,14 @@ jQuery(document).ready(()=>{
             ticket_scanner_operating_option.vibrate = !ticket_scanner_operating_option.vibrate;
         }
         _storeValue("ticket_scanner_operating_option.vibrate", ticket_scanner_operating_option.vibrate ? 1 : 0);
+    }
+    function setRedeemButtonAtTop(value) {
+        if (typeof value != "undefined") {
+            ticket_scanner_operating_option.ticketScannerRedeemButtonAtTop = value;
+        } else {
+            ticket_scanner_operating_option.ticketScannerRedeemButtonAtTop = !ticket_scanner_operating_option.ticketScannerRedeemButtonAtTop;
+        }
+        _storeValue("ticket_scanner_operating_option.ticketScannerRedeemButtonAtTop", ticket_scanner_operating_option.ticketScannerRedeemButtonAtTop ? 1 : 0);
     }
     function setDistractFreeShowShortDesc(value) {
         if (typeof value != "undefined") {
@@ -240,6 +249,11 @@ jQuery(document).ready(()=>{
                 if (system.last_scanned_ticket.code === decodedText) {
                     system.last_scanned_ticket = {code: '', timestamp: 0};
                 }
+                // Drain refuses to run while a scan is flagged in-flight —
+                // but this early-return path IS the in-flight scan. Release
+                // the flag so the re-queued code is actually processed
+                // (retrieveTicket → next slot redeem). See git history.
+                loadingticket = false;
                 pending_scans.push(decodedText);
                 drainPendingScan();
                 return;
@@ -552,6 +566,17 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             }).appendTo(div);
             if (ticket_scanner_operating_option.vibrate) chkbox_vibrate.prop("checked", true);
             div.append(' '+__("Vibrate on scan result", 'event-tickets-with-ticket-scanner'));
+            div.append("<br>");
+
+            let chkbox_redeem_button_at_top = $('<input type="checkbox">').on("click", e=>{
+                setRedeemButtonAtTop();
+                // Re-render the redeemed view so the button position follows immediately
+                if (system.status == "redeemed" && system.last_scanned_ticket.data) {
+                    displayTicketRedeemedInfo(system.last_scanned_ticket.data);
+                }
+            }).appendTo(div);
+            if (ticket_scanner_operating_option.ticketScannerRedeemButtonAtTop) chkbox_redeem_button_at_top.prop("checked", true);
+            div.append(' '+__("Redeem button at the top", 'event-tickets-with-ticket-scanner'));
             div.append("<br>");
 
             let chkbox_redeem_imediately = $('<input type="checkbox">').on("click", e=>{
@@ -1269,23 +1294,30 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
     // ── /CVV prompt ──────────────────────────────────────────────────────────
 
     function isTicketExpired(ticketRetObject) {
-        if (ticketRetObject.is_expired) return true;
+        if (ticketRetObject && ticketRetObject.is_expired) return true;
         return false;
     }
+    // The three timing guards below run on cached ticket data from DIFFERENT
+    // response shapes (retrieve vs. redeem confirmation). The redeem
+    // confirmation carries no _ret._options — a missing options block means
+    // "no local timing evidence", which must NOT block the scan: the server
+    // re-evaluates every timing rule on each redeem request and refuses with
+    // a clear error if the ticket is out of window. Local guards are an
+    // early convenience display, never the authority.
     function isRedeemTooEarly(data) {
-        if (data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart) {
+        if (data && data._ret && data._ret._options && data._ret._options.wcTicketDontAllowRedeemTicketBeforeStart) {
             return data._ret._options.isRedeemOperationTooEarly;
         }
         return false;
     }
     function isRedeemTooLate(data) {
-        if (data._ret._options.wsticketDenyRedeemAfterstart) {
+        if (data && data._ret && data._ret._options && data._ret._options.wsticketDenyRedeemAfterstart) {
            return data._ret._options.isRedeemOperationTooLate;
         }
         return false;
     }
     function isRedeemTooLateEndEvent(data) {
-        if (data._ret._options.wcTicketAllowRedeemTicketAfterEnd == false) {
+        if (data && data._ret && data._ret._options && data._ret._options.wcTicketAllowRedeemTicketAfterEnd == false) {
            return data._ret._options.isRedeemOperationTooLateEventEnded;
         }
         return false;
@@ -1452,9 +1484,42 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         // lookup happens on the raw text.
         if (data.redeem_successfully) {
             var _rd = (data.metaObj && data.metaObj.wc_ticket && data.metaObj.wc_ticket.redeemed_date) ? data.metaObj.wc_ticket.redeemed_date : '';
-            self_redeemed_this_session[code] = {date: _rd, data: data};
+            // Store the FULL RETRIEVE shape for the echo gate, not this thin
+            // redeem confirmation. The redeem endpoint answers with a minimal
+            // {redeem_successfully, ticket_id, _ret: tickets_redeemed*} object
+            // that lacks metaObj/_options — the second-scan gate would either
+            // crash or wrongly fall to "no capacity" on it. The retrieve
+            // response of THIS scan lifecycle is still in
+            // system.last_scanned_ticket.data; mirror it and account for the
+            // redeem that just happened so capacity counters stay truthful.
+            var _echoData = (system.last_scanned_ticket && system.last_scanned_ticket.data
+                && system.last_scanned_ticket.data._ret) ? system.last_scanned_ticket.data : data;
+            if (_echoData !== data) {
+                try {
+                    _echoData = JSON.parse(JSON.stringify(_echoData));
+                    // Skip the local increment when the mirrored retrieve was
+                    // re-fetched AFTER the redeem (auto-redeem / CVV paths):
+                    // those counters already include this redeem (PHP
+                    // sasoEventtickets_Ticket.php :857 sets
+                    // _ret.redeem_operation only on the post-redeem re-fetch).
+                    // Incrementing again would understate remaining capacity
+                    // by one (a 1-slot-left ticket would wrongly echo).
+                    const alreadyCounted = _echoData._ret
+                        && typeof _echoData._ret.redeem_operation !== "undefined";
+                    if (!alreadyCounted) {
+                        if (!_echoData.metaObj) _echoData.metaObj = {};
+                        if (!_echoData.metaObj.wc_ticket) _echoData.metaObj.wc_ticket = {};
+                        if (!_echoData.metaObj.wc_ticket.stats_redeemed) _echoData.metaObj.wc_ticket.stats_redeemed = [];
+                        _echoData.metaObj.wc_ticket.stats_redeemed.push({d: new Date().toISOString()});
+                        if (_echoData._ret && typeof _echoData._ret.redeems_today === "number") {
+                            _echoData._ret.redeems_today++;
+                        }
+                    }
+                } catch (e) { _echoData = data; }
+            }
+            self_redeemed_this_session[code] = {date: _rd, data: _echoData};
             if (system.last_scanned_ticket.code && system.last_scanned_ticket.code !== code) {
-                self_redeemed_this_session[system.last_scanned_ticket.code] = {date: _rd, data: data};
+                self_redeemed_this_session[system.last_scanned_ticket.code] = {date: _rd, data: _echoData};
             }
         }
         vibrateOnResult(data.redeem_successfully);
@@ -1466,6 +1531,22 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         }
         system.INPUTFIELD.focus();
         system.INPUTFIELD.select();
+    }
+    // Top redeem button (operator ergonomics): after a redeem, the classic
+    // "Redeem Ticket"/"Redeem again" button sits far below the ticket info,
+    // forcing the operator to scroll past the info block on every guest. When
+    // the option is on (default) and the ticket still has redeem capacity,
+    // render a second button at the TOP of the redeemed view so the workflow
+    // is: read the info, tap the button right below it. buildRedeemButton()
+    // already disables itself when no capacity remains.
+    function displayRedeemButtonAtTop(container) {
+        if (!ticket_scanner_operating_option.ticketScannerRedeemButtonAtTop) return;
+        const data = system.last_scanned_ticket && system.last_scanned_ticket.data;
+        if (!data || !data._ret) return;
+        if (!canTicketBeRedeemed(data)) return;
+        const wrap = $('<div style="text-align:center;margin-top:8px;">');
+        buildRedeemButton(data, true).appendTo(wrap);
+        container.append(wrap);
     }
     function displayTicketRedeemedInfo(data) {
         let t = '';
@@ -1503,6 +1584,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         // race with the paint and the user sees the banner a beat before
         // the audio starts, which feels delayed. requestAnimationFrame
         // schedules the speak() call after the current paint.
+        displayRedeemButtonAtTop(content);
         requestAnimationFrame(() => speakText(t, 'en-EN'));
         showScanNextTicketButton();
         updateTicketScannerInfoArea(content);
@@ -2641,6 +2723,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 }
                 if (_loadValue("ticket_scanner_operating_option.vibrate") == "1" || toBool(myAjax.ticketScannerVibrate)) {
                     setVibrate(true);
+                }
+                if (_loadValue("ticket_scanner_operating_option.ticketScannerRedeemButtonAtTop") == "0") {
+                    setRedeemButtonAtTop(false);
                 }
             }
 

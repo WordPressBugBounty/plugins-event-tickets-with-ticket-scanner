@@ -332,6 +332,27 @@ class sasoEventtickets_PDF {
 		$this->filename = trim($p);
 	}
 
+	/**
+	 * Build the Content-Disposition: attachment header value that
+	 * keeps the suggested filename in front of the browser, instead
+	 * of falling back to the request URL (e.g. `admin-ajax.php.pdf`
+	 * on admin-ajax endpoints — support ticket #015283).
+	 *
+	 * Returns the header string so the caller can decide when to
+	 * actually send it (`header()` is a no-op in CLI / after output,
+	 * and tests prefer an in-memory value to assert against).
+	 * Returns null when the header must not be emitted:
+	 *   - filemode "F" (server-side file write, no browser involved)
+	 *   - empty filename (caller did not configure one yet)
+	 */
+	public function setContentDispositionForBrowser() {
+		if ($this->filemode == "F") return null;
+		if (empty($this->filename)) return null;
+		// Strip any path components — the filename is a leaf, not a path.
+		$leaf = basename($this->filename);
+		return 'Content-Disposition: attachment; filename="' . $leaf . '"';
+	}
+
 	public function getFullFilePath() {
 		return $this->filepath.$this->filename;
 	}
@@ -368,6 +389,12 @@ class sasoEventtickets_PDF {
 		if ($this->filemode == "F") {
 			$pdf->Output($this->filepath.$this->filename, $this->filemode);
 		} else {
+			// Force the browser to honor the suggested filename.
+			// Without this, FPDF's "inline" disposition is ignored by
+			// some browser/security-plugin combos and the file is saved
+			// under the request URL (e.g. admin-ajax.php.pdf). #015283.
+			$cd = $this->setContentDispositionForBrowser();
+			if ($cd) header($cd);
 			header_remove();
 			$pdf->Output($this->filename, $this->filemode);
 		}
