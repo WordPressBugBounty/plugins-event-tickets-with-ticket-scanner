@@ -1,4 +1,17 @@
-= 3.2.7 =
+
+
+
+
+= 3.2.8 - 2026-10-20 =
+* Fix: When two orders are paid at the exact same moment, a ticket could end up linked to the other order. Ticket generation now locks per order and the ticket data writes are protected against such parallel-payment mix-ups.
+* Fix: PDF library compatibility reworked — plugins that bundle their own TCPDF/FPDF (e.g. shipping-label plugins) no longer crash when both libraries load in the same request; the legacy class names are now provided lazily on reference instead of being occupied at load time.
+* New: Internal order API for the premium online shop — public sales pages sell ticket products without WooCommerce (premium feature, 1.9.0).
+* New: Ticket products (ticket types) with prices — sell different ticket types directly at the Kasse (direct sales) with automatic totals and a cash change calculator, no WooCommerce needed.
+* New: Manage ticket products per event in the list editor — name, price, currency and active state; the Kasse switches to them automatically once one exists.
+* Fix: The calendar file (ICS) of a variable ticket product now uses the event date of the purchased variation. When event dates were only set on the variations (parent product empty, \"date valid for all variants\" off), the ICS file carried today's date instead of the variation's event date.
+
+= 3.2.7 - 2026-10-14 =
+* New: The German translation is complete again — 174 previously untranslated strings are now in German, including every new Kasse (direct sales) and ticket scanner text of this version.
 * New: Optional auto refresh for the direct sales (Kasse) table — a checkbox in the toolbar reloads the table every 30 seconds, so parallel kassen always see each other's sales. The setting is remembered per browser.
 * Fix: Opening the direct sales (Kasse) view a second time fired the orders request twice — the list cache rendered immediately and again after its background refresh. The refresh now updates the cache silently.
 * New: A refresh button above the direct sales (Kasse) table reloads the current rows without losing your search, filters or page position — useful when several kassen sell in parallel.

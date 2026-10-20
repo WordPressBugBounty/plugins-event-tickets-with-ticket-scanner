@@ -135,6 +135,18 @@ class sasoEventtickets_AdminSettings {
 				case "getInternalOrderTicketURL":
 					$ret = $this->getInternalOrderTicketURL($data);
 					break;
+				case "getTicketProducts":
+					$ret = $this->getTicketProducts($data);
+					break;
+				case "addTicketProduct":
+					$ret = $this->addTicketProduct($data);
+					break;
+				case "editTicketProduct":
+					$ret = $this->editTicketProduct($data);
+					break;
+				case "removeTicketProduct":
+					$ret = $this->removeTicketProduct($data);
+					break;
 				case "premium":
 					$ret = $this->executeJSONPremium($data);
 					break;
@@ -2644,7 +2656,25 @@ class sasoEventtickets_AdminSettings {
 		$metaObj[$key]['user_id'] = intval($order->get_user_id());
 
 		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
-		$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+		$db = $this->MAIN->getDB();
+		if (method_exists($db, 'update_guarded')) {
+			// Optimistic Locking (#015355): Meta nur schreiben, wenn meta_lock
+			// unverändert ist. Zwischen Lesen und Schreiben kann ein paralleler
+			// Writer (zweiter Order-Prozess, Scanner, Premium) die Meta bereits
+			// weitergeschrieben haben — dann frisch lesen und den eigenen Block
+			// auf den frischen Stand erneut anwenden, statt ihn zu überbügeln.
+			$affected = $db->update_guarded("codes", ["meta"=>$codeObj['meta']], ['id'=>intval($codeObj['id'])], isset($codeObj['meta_lock']) ? $codeObj['meta_lock'] : "");
+			if ($affected === 0) {
+				$frisch = $this->MAIN->getCore()->retrieveCodeByCode($data['code']);
+				$frischMeta = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($frisch['meta'], $frisch);
+				$frischMeta[$key] = $metaObj[$key]; // unser Block ist ein Voll-Ersatz
+				$frisch['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($frischMeta);
+				$db->update_guarded("codes", ["meta"=>$frisch['meta']], ['id'=>intval($frisch['id'])], isset($frisch['meta_lock']) ? $frisch['meta_lock'] : "");
+				$codeObj = $frisch;
+			}
+		} else {
+			$this->MAIN->getDB()->update("codes", ["meta"=>$codeObj['meta']], ['id'=>$codeObj['id']]);
+		}
 
 		if($trigger_webhooks) {
 			$this->MAIN->getCore()->triggerWebhooks(10, $codeObj);
@@ -3047,7 +3077,55 @@ class sasoEventtickets_AdminSettings {
 	public function setWoocommerceTicketInfoForCode($code, $namePerTicket="", $valuePerTicket="", $dayPerTicket="", $seatData=null) {
 		$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($code);
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+		$metaObj = $this->applyWcTicketInfoToMetaObj($metaObj, $codeObj, $namePerTicket, $valuePerTicket, $dayPerTicket, $seatData);
 
+		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+
+		$felder = ["meta"=>$codeObj['meta']];
+		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'setWoocommerceTicketInfoForCode')) {
+			$felder = $this->MAIN->getPremiumFunctions()->setWoocommerceTicketInfoForCode($codeObj, $felder, $code);
+		}
+		$db = $this->MAIN->getDB();
+		if (method_exists($db, 'update_guarded')) {
+			// Optimistic Locking (#015355): siehe addWoocommerceInfoToCode — bei
+			// Konflikt frisch lesen und die Feld-Änderungen erneut anwenden.
+			$affected = $db->update_guarded("codes", $felder, ['id'=>intval($codeObj['id'])], isset($codeObj['meta_lock']) ? $codeObj['meta_lock'] : "");
+			if ($affected === 0) {
+				$frisch = $this->MAIN->getCore()->retrieveCodeByCode($code);
+				$frischMeta = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($frisch['meta'], $frisch);
+				$frischMeta = $this->applyWcTicketInfoToMetaObj($frischMeta, $frisch, $namePerTicket, $valuePerTicket, $dayPerTicket, $seatData);
+				$frisch['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($frischMeta);
+				$felderNeu = ["meta"=>$frisch['meta']];
+				if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'setWoocommerceTicketInfoForCode')) {
+					$felderNeu = $this->MAIN->getPremiumFunctions()->setWoocommerceTicketInfoForCode($frisch, $felderNeu, $code);
+				}
+				$db->update_guarded("codes", $felderNeu, ['id'=>intval($frisch['id'])], isset($frisch['meta_lock']) ? $frisch['meta_lock'] : "");
+				$codeObj = $frisch;
+			}
+		} else {
+			$this->MAIN->getDB()->update("codes", $felder, ['id'=>intval($codeObj['id'])]);
+		}
+		$this->MAIN->getCore()->triggerWebhooks(12, $codeObj);
+		do_action( $this->MAIN->_do_action_prefix.'admin_setWoocommerceTicketInfoForCode', $code, $codeObj );
+		return $codeObj;
+	}
+
+	/**
+	 * Apply the order-item ticket fields (name/value/day/seat) to a meta object.
+	 *
+	 * Extracted from setWoocommerceTicketInfoForCode so the optimistic-locking
+	 * conflict path can re-apply exactly the same field changes on a freshly
+	 * read state (#015355).
+	 *
+	 * @param array $metaObj decoded meta object (modified in place)
+	 * @param array $codeObj code row the meta belongs to
+	 * @param string $namePerTicket buyer-entered name for this ticket
+	 * @param string $valuePerTicket buyer-entered value for this ticket
+	 * @param string $dayPerTicket chosen day for day-chooser products
+	 * @param array|null $seatData seat selection data
+	 * @return array the modified meta object
+	 */
+	private function applyWcTicketInfoToMetaObj($metaObj, $codeObj, $namePerTicket="", $valuePerTicket="", $dayPerTicket="", $seatData=null) {
 		$metaObj['wc_ticket']['is_ticket'] = 1;
 		$namePerTicket = trim($namePerTicket);
 		if (!empty($namePerTicket)) {
@@ -3072,19 +3150,7 @@ class sasoEventtickets_AdminSettings {
 		if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".time());
 		$metaObj['wc_ticket']['_url'] = $this->MAIN->getCore()->getTicketURL($codeObj, $metaObj);
 		$metaObj['wc_ticket']['_public_ticket_id'] = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
-
-		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
-
-		$felder = ["meta"=>$codeObj['meta']];
-		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'setWoocommerceTicketInfoForCode')) {
-			$felder = $this->MAIN->getPremiumFunctions()->setWoocommerceTicketInfoForCode($codeObj, $felder, $code);
-		}
-		$where = ['id'=>intval($codeObj['id'])];
-
-		$this->MAIN->getDB()->update("codes", $felder, $where);
-		$this->MAIN->getCore()->triggerWebhooks(12, $codeObj);
-		do_action( $this->MAIN->_do_action_prefix.'admin_setWoocommerceTicketInfoForCode', $code, $codeObj );
-		return $codeObj;
+		return $metaObj;
 	}
 	public function addCode($data) {
 		if (!isset($data['code']) || trim($data['code']) == "") throw new Exception("#201 code parameter missing");
@@ -3881,6 +3947,15 @@ class sasoEventtickets_AdminSettings {
 	}
 
 	/**
+	 * Public API for premium / other surfaces (online shop, Stufe 2): creates
+	 * an internal order with optional product lines. Runs the same validation
+	 * and code-issuing engine as the admin Kasse path.
+	 */
+	public function createInternalOrder($data) {
+		return $this->addInternalOrder($data);
+	}
+
+	/**
 	 * Kasse: create a direct-sales order and issue tickets from a list.
 	 *
 	 * amount = number of tickets. Creates the order (draft or completed when
@@ -3893,10 +3968,58 @@ class sasoEventtickets_AdminSettings {
 		$list_id = isset($data['list_id']) ? intval($data['list_id']) : 0;
 		if ($list_id < 1) throw new Exception("#9240 list id is missing");
 		$amount = isset($data['amount']) ? intval($data['amount']) : 1;
-		if ($amount < 1 || $amount > 100) throw new Exception("#9241 amount must be between 1 and 100");
 		$this->getList(['id'=>$list_id]); // throws #104/#105 when unknown
 
 		$confirm = !empty($data['confirm']);
+
+		// ── Ticket products (Ticketarten) with prices — product-ticket-entity
+		// spec (3.3.0). $data['products'] = [{product_id, qty}, …]. Totals are
+		// computed in integer cents; name/price are snapshotted per line so
+		// later price changes never rewrite sold orders.
+		$lines = [];
+		$priceTotalCents = 0;
+		$priceCurrency = '';
+		$productsInput = (isset($data['products']) && is_array($data['products'])) ? $data['products'] : null;
+		if ($productsInput !== null) {
+			if (count($productsInput) < 1) throw new Exception("#9254 products array is empty");
+			$prodTable = $this->MAIN->getDB()->getTabelle('products');
+			foreach ($productsInput as $p) {
+				$pid = isset($p['product_id']) ? intval($p['product_id']) : 0;
+				$qty = isset($p['qty']) ? intval($p['qty']) : 1;
+				if ($pid < 1) throw new Exception("#9255 product id missing in products lines");
+				if ($qty < 1 || $qty > 100) throw new Exception("#9256 qty must be between 1 and 100");
+				$rows = $this->MAIN->getDB()->_db_datenholen("select * from ".$prodTable." where id = ".intval($pid));
+				$prod = (is_array($rows) && count($rows) > 0) ? $rows[0] : null;
+				if ($prod == null) throw new Exception("#9257 ticket product not found: ".$pid);
+				if (intval($prod['list_id']) != 0 && intval($prod['list_id']) != $list_id) throw new Exception("#9258 ticket product belongs to another list: ".$pid);
+				if (intval($prod['aktiv']) != 1) throw new Exception("#9259 ticket product is not active: ".$pid);
+				$prodMeta = json_decode((string)$prod['meta'], true);
+				$line = [
+					'product_id' => intval($prod['id']),
+					'name' => (string)$prod['name'],
+					'price' => self::ticketCentsToPrice(self::ticketPriceToCents($prod['price'])),
+					'price_cents' => self::ticketPriceToCents($prod['price']),
+					'currency' => strtoupper(substr(trim((string)$prod['currency']), 0, 8)),
+					'qty' => $qty,
+					'code_ids' => [],
+				];
+				$line['formatter_values'] = (is_array($prodMeta) && !empty($prodMeta['formatter_values'])) ? stripslashes((string)$prodMeta['formatter_values']) : null;
+				$priceTotalCents += $line['price_cents'] * $qty;
+				if ($priceCurrency == '' && $line['currency'] != '') $priceCurrency = $line['currency'];
+				$lines[] = $line;
+			}
+			$amount = array_sum(array_column($lines, 'qty'));
+		}
+		if ($amount < 1 || $amount > 100) throw new Exception("#9241 amount must be between 1 and 100");
+
+		// Bargeld-Back: optional "amount given" — must cover the total; the
+		// change is persisted for the cash trail (pure calculator, no drawer).
+		$givenCents = null;
+		if (isset($data['amount_given']) && trim((string)$data['amount_given']) !== '') {
+			$givenCents = self::ticketPriceToCents($data['amount_given']);
+			if ($givenCents < $priceTotalCents) throw new Exception("#9260 amount given is less than the total");
+		}
+
 		$order_id = $this->MAIN->getDB()->insert("orders", [
 			"list_id"=>$list_id,
 			"status"=>$confirm ? "completed" : "draft",
@@ -3904,7 +4027,7 @@ class sasoEventtickets_AdminSettings {
 			"delivery_state"=>$confirm ? "issued" : "draft",
 			"customer_name"=>isset($data['customer_name']) ? sanitize_text_field(substr((string)$data['customer_name'], 0, 255)) : "",
 			"customer_email"=>isset($data['customer_email']) ? sanitize_email(substr((string)$data['customer_email'], 0, 255)) : "",
-			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling([])
+			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($this->buildInternalOrderMeta($lines, $priceTotalCents, $priceCurrency, $givenCents))
 		]);
 
 		// formatter from the list (same source addCodeFromListForOrder uses)
@@ -3915,16 +4038,32 @@ class sasoEventtickets_AdminSettings {
 			$formatterValues = stripslashes($listMeta['formatter']['format']);
 		}
 
+		// Issuing plan: one entry per ticket. Legacy path (no products) = one
+		// implicit line using the list formatter. Product path may override the
+		// formatter per line (product meta formatter_values).
+		$plan = [];
+		if (count($lines) > 0) {
+			foreach ($lines as $li => $line) {
+				for ($i = 0; $i < $line['qty']; $i++) {
+					$plan[] = [$li, $line['formatter_values'] !== null ? $line['formatter_values'] : $formatterValues];
+				}
+			}
+		} else {
+			for ($i = 0; $i < $amount; $i++) $plan[] = [null, $formatterValues];
+		}
+
 		$code_ids = [];
 		$codes = [];
 		$urls = [];
-		for ($i = 0; $i < $amount; $i++) {
+		foreach ($plan as $planEntry) {
+			$lineIdx = $planEntry[0];
+			$useFormatter = $planEntry[1];
 			$counter = 0;
 			$id = 0;
 			$code = "";
 			while($counter < 500) {
 				$counter++;
-				$code = $this->generateCode($formatterValues);
+				$code = $this->generateCode($useFormatter);
 				try {
 					$id = $this->addCode(["code"=>$code, "list_id"=>$list_id]);
 					break;
@@ -3942,13 +4081,150 @@ class sasoEventtickets_AdminSettings {
 			$this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
 			$code_ids[] = $id;
 			$codes[] = $code;
+			if ($lineIdx !== null) $lines[$lineIdx]['code_ids'][] = $id;
 			// print-preview URL: the ticket page needs the full ticket id
 			$urls[] = $this->MAIN->getCore()->getTicketURL($codeObj, $metaObj);
 		}
-		$this->MAIN->getDB()->update("orders", ["code_ids"=>$this->MAIN->getCore()->json_encode_with_error_handling($code_ids)], ["id"=>$order_id]);
+		// second write: flat aggregate + the completed meta (line code_ids are
+		// only known after generation — the insert-time meta had them empty)
+		$this->MAIN->getDB()->update("orders", [
+			"code_ids"=>$this->MAIN->getCore()->json_encode_with_error_handling($code_ids),
+			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($this->buildInternalOrderMeta($lines, $priceTotalCents, $priceCurrency, $givenCents)),
+		], ["id"=>$order_id]);
 
 		do_action( $this->MAIN->_do_action_prefix.'admin_addInternalOrder', $order_id, $code_ids, $data );
-		return ["order_id"=>$order_id, "code_ids"=>$code_ids, "codes"=>$codes, "urls"=>$urls, "status"=>$confirm ? "completed" : "draft"];
+		$ret = ["order_id"=>$order_id, "code_ids"=>$code_ids, "codes"=>$codes, "urls"=>$urls, "status"=>$confirm ? "completed" : "draft"];
+		if (count($lines) > 0) {
+			$ret["price_total"] = self::ticketCentsToPrice($priceTotalCents);
+			$ret["price_currency"] = $priceCurrency;
+			$ret["lines"] = $lines;
+			if ($givenCents !== null) {
+				$ret["payment_amount_given"] = self::ticketCentsToPrice($givenCents);
+				$ret["payment_change_returned"] = self::ticketCentsToPrice($givenCents - $priceTotalCents);
+			}
+		}
+		return $ret;
+	}
+
+	/**
+	 * orders.meta payload for a direct-sales order: line snapshots + money
+	 * fields (product-ticket-entity spec). Legacy orders keep [] (no keys).
+	 */
+	private function buildInternalOrderMeta(array $lines, int $priceTotalCents, string $priceCurrency, $givenCents): array {
+		if (count($lines) == 0) return [];
+		// NOTE: the house JSON encoder runs JSON_NUMERIC_CHECK, so decimal
+		// strings ("60.00") decode back as floats. The *_cents integers are
+		// the authoritative money values; the display strings are for humans.
+		$meta = [
+			"lines" => $lines,
+			"price_total" => self::ticketCentsToPrice($priceTotalCents),
+			"price_total_cents" => $priceTotalCents,
+			"price_currency" => $priceCurrency,
+		];
+		if ($givenCents !== null) {
+			$meta["payment_amount_given"] = self::ticketCentsToPrice($givenCents);
+			$meta["payment_amount_given_cents"] = $givenCents;
+			$meta["payment_change_returned"] = self::ticketCentsToPrice($givenCents - $priceTotalCents);
+			$meta["payment_change_returned_cents"] = $givenCents - $priceTotalCents;
+		}
+		return $meta;
+	}
+
+	/** decimal price string/expression to integer cents (never float-added). */
+	public static function ticketPriceToCents($price): int {
+		$p = floatval(str_replace(",", ".", (string)$price));
+		return (int) round($p * 100);
+	}
+
+	/** integer cents to canonical decimal string '12.34'. */
+	public static function ticketCentsToPrice(int $cents): string {
+		return number_format($cents / 100, 2, ".", "");
+	}
+
+	/**
+	 * Ticket products (Ticketarten) of a list/event — the Kasse picker source
+	 * and the basis for the later online sales surface (no WooCommerce).
+	 */
+	public function getTicketProducts($data): array {
+		$table = $this->MAIN->getDB()->getTabelle('products');
+		$where = "1=1";
+		if (isset($data['list_id'])) $where .= " and list_id = ".intval($data['list_id']);
+		if (isset($data['aktiv'])) $where .= " and aktiv = ".intval($data['aktiv']);
+		$daten = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where ".$where." order by sort asc, name asc");
+		if (!is_array($daten)) $daten = [];
+		foreach ($daten as &$r) {
+			$r['meta_obj'] = json_decode((string)$r['meta'], true) ?: [];
+			$r['price_cents'] = self::ticketPriceToCents($r['price']);
+			unset($r['meta']);
+		}
+		unset($r);
+		return ["products" => $daten];
+	}
+
+	public function addTicketProduct($data): array {
+		if (!isset($data['name']) || trim((string)$data['name']) == "") throw new Exception("#9250 name parameter missing - cannot add ticket product");
+		$list_id = isset($data['list_id']) ? intval($data['list_id']) : 0;
+		if ($list_id < 1) throw new Exception("#9251 list id is missing");
+		$this->getList(['id'=>$list_id]); // throws #104/#105 when unknown
+		$priceCents = self::ticketPriceToCents(isset($data['price']) ? $data['price'] : 0);
+		if ($priceCents < 0) throw new Exception("#9252 price must not be negative");
+		$meta = [
+			"description" => isset($data['description']) ? wp_kses_post((string)$data['description']) : "",
+			"formatter_values" => isset($data['formatter_values']) ? (string)$data['formatter_values'] : "",
+		];
+		$id = $this->MAIN->getDB()->insert("products", [
+			"time"=>wp_date("Y-m-d H:i:s"),
+			"list_id"=>$list_id,
+			"name"=>sanitize_text_field(substr(trim((string)$data['name']), 0, 255)),
+			"price"=>self::ticketCentsToPrice($priceCents),
+			"currency"=>strtoupper(substr(sanitize_text_field(isset($data['currency']) ? (string)$data['currency'] : ""), 0, 8)),
+			"aktiv"=>isset($data['aktiv']) ? intval($data['aktiv']) : 1,
+			"sort"=>isset($data['sort']) ? intval($data['sort']) : 0,
+			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($meta),
+		]);
+		return ["id"=>$id];
+	}
+
+	public function editTicketProduct($data): array {
+		if (!isset($data['id']) || intval($data['id']) == 0) throw new Exception("#9253 ticket product id missing");
+		if (!isset($data['name']) || trim((string)$data['name']) == "") throw new Exception("#9250 name parameter missing");
+		$id = intval($data['id']);
+		$table = $this->MAIN->getDB()->getTabelle('products');
+		$rows = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where id = ".$id);
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9257 ticket product not found: ".$id);
+		$prod = $rows[0];
+		$priceCents = self::ticketPriceToCents(isset($data['price']) ? $data['price'] : $prod['price']);
+		if ($priceCents < 0) throw new Exception("#9252 price must not be negative");
+		$felder = [
+			"name"=>sanitize_text_field(substr(trim((string)$data['name']), 0, 255)),
+			"price"=>self::ticketCentsToPrice($priceCents),
+			"currency"=>strtoupper(substr(sanitize_text_field(isset($data['currency']) ? (string)$data['currency'] : (string)$prod['currency']), 0, 8)),
+			"aktiv"=>isset($data['aktiv']) ? intval($data['aktiv']) : intval($prod['aktiv']),
+			"sort"=>isset($data['sort']) ? intval($data['sort']) : intval($prod['sort']),
+		];
+		if (isset($data['list_id'])) {
+			$list_id = intval($data['list_id']);
+			if ($list_id < 1) throw new Exception("#9251 list id is missing");
+			$this->getList(['id'=>$list_id]);
+			$felder["list_id"] = $list_id;
+		}
+		$metaObj = json_decode((string)$prod['meta'], true) ?: [];
+		if (isset($data['description'])) $metaObj['description'] = wp_kses_post((string)$data['description']);
+		if (isset($data['formatter_values'])) $metaObj['formatter_values'] = (string)$data['formatter_values'];
+		$felder["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
+		$this->MAIN->getDB()->update("products", $felder, ["id"=>$id]);
+		return ["id"=>$id];
+	}
+
+	public function removeTicketProduct($data): array {
+		if (!isset($data['id']) || intval($data['id']) == 0) throw new Exception("#9253 ticket product id missing");
+		$id = intval($data['id']);
+		$table = $this->MAIN->getDB()->getTabelle('products');
+		$rows = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where id = ".$id);
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9257 ticket product not found: ".$id);
+		$sql = "delete from ".$this->MAIN->getDB()->getTabelle('products')." where id = ".$id;
+		$this->MAIN->getDB()->_db_query($sql); // orders keep their line snapshots
+		return ["id"=>$id, "removed"=>true];
 	}
 
 	/**

@@ -70,30 +70,59 @@ class sasoEventtickets_PDF {
 			require_once("vendors/fpdf185/fpdf.php");
 		}
 
-		// Legacy-class alias bridge (ticket #015226, Shiptastic 5.1.5 follow-up).
-		// The 3.2.5 prefix-isolation (SASOET_TCPDF / SASOET_FPDF) prevents our
-		// bundles from colliding with foreign ones. The cost: third-party plugins
-		// whose own FPDI subclass does `class Foo extends \TCPDF` (Shiptastic's
-		// vendor/setasign/fpdi/Tcpdf/Fpdi.php:37 is one example; any plugin whose
-		// Composer pulls setasign/fpdi may have the same shape) crash with
-		// "Class 'TCPDF' not found" because the global symbol no longer exists.
+		// Legacy-class bridge, LAZY via spl_autoload (ticket #015226 Shiptastic,
+		// reworked 2026-10-15 after #015161 round 3).
 		//
-		// Bridge: declare the legacy global symbols as class_alias()es on our
-		// prefixed classes. The alias only fires when no other plugin has already
-		// installed a real global \TCPDF / \FPDF — class_alias's second arg
-		// (`false` / `autoload`) is set so a foreign class that auto-loads
-		// AFTER this declaration still wins.
+		// The 3.2.6/3.2.7 EAGER class_alias('SASOET_TCPDF', 'TCPDF') re-occupied
+		// the global symbol, which fatally breaks any third-party plugin that
+		// later require_once's its OWN stock TCPDF/FPDF file (DPD Connect's
+		// myokyawhtun/pdfmerger on WooCommerce label bulk actions). PHP reports
+		// that collision as "Cannot redeclare class SASOET_TCPDF (previously
+		// declared in .../our tcpdf.php) in .../their tcpdf.php" — verified
+		// experimentally 2026-10-15.
 		//
-		// This restores compatibility for plugins that subclass the legacy
-		// global symbols without giving up our prefix-isolation (no foreign
-		// plugin can hijack our SASOET_ classes, they can only ever get the
-		// alias bridge that points to OUR copy).
-		if (!class_exists('TCPDF', false)) {
-			class_alias('SASOET_TCPDF', 'TCPDF');
+		// spl_autoload fires ONLY on REFERENCE (extends \TCPDF, new FPDF()),
+		// never on plain class DECLARATION — so Shiptastic-style subclasses get
+		// their legacy symbol resolved to our prefixed class, while stock
+		// bundles can still declare their own classes unimpeded, regardless of
+		// load order. Residual (accepted) limitation: if one request first
+		// REFERENCES the legacy name (alias created) and another plugin then
+		// DECLARES the same name, that plugin fatals — identical to the
+		// pre-3.2.5 behavior between two plain-name plugins.
+		self::_registerLegacyBridge();
+	}
+
+	/** @var bool */
+	private static $_legacyBridgeRegistered = false;
+
+	private static function _registerLegacyBridge() {
+		if (self::$_legacyBridgeRegistered) {
+			return;
 		}
-		if (!class_exists('FPDF', false)) {
-			class_alias('SASOET_FPDF', 'FPDF');
-		}
+		self::$_legacyBridgeRegistered = true;
+
+		spl_autoload_register(function ($name) {
+			$lower = strtolower($name);
+			if ($lower !== 'tcpdf' && $lower !== 'fpdf') {
+				return;
+			}
+			$base   = plugin_dir_path(__FILE__);
+			$prefixed = ($lower === 'tcpdf') ? 'SASOET_TCPDF' : 'SASOET_FPDF';
+			$legacy   = ($lower === 'tcpdf') ? 'TCPDF' : 'FPDF';
+			// we are inside an autoload request for $legacy — by definition it
+			// does not exist yet (or an earlier autoloader already won)
+			if (!class_exists($prefixed, false)) {
+				if ($lower === 'tcpdf') {
+					require_once($base . 'vendors/TCPDF/config/tcpdf_config.php');
+					require_once($base . 'vendors/TCPDF/tcpdf.php');
+				} else {
+					require_once($base . 'vendors/fpdf185/fpdf.php');
+				}
+			}
+			if (class_exists($prefixed, false)) {
+				class_alias($prefixed, $legacy);
+			}
+		});
 	}
 
 	public function getFontInfos() {

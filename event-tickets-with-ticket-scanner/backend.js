@@ -1437,9 +1437,39 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		let note = $ctx.find('.et-kasse-form__note').val() || '';
 		let cname = $ctx.find('.et-kasse-form__cname').val() || '';
 		if (!listId) return;
-		_makePost('addInternalOrder', {list_id:listId, amount:amount, payment_note:note, customer_name:cname, confirm:confirm?1:0}, (ret)=>{
+		// ticket products: lines win over the plain amount; money in cents
+		let prods = [];
+		let totalC = 0;
+		$ctx.find('.et-kasse-prod').each(function(){
+			let q = parseInt($(this).find('.et-kasse-prod__qty').val(), 10) || 0;
+			if (q > 0) {
+				prods.push({product_id: parseInt($(this).find('.et-kasse-prod__qty').data('product-id'), 10), qty: q});
+				totalC += (parseInt($(this).data('price-cents'), 10) || 0) * q;
+			}
+		});
+		let payload = {list_id:listId, payment_note:note, customer_name:cname, confirm:confirm?1:0};
+		if (prods.length > 0) {
+			payload.products = prods;
+			let g = $.trim($ctx.find('.et-kasse-form__given').val() || '');
+			if (g !== '') {
+				let gc = Math.round(parseFloat(g.replace(',', '.')) * 100);
+				if (isNaN(gc) || gc < totalC) return; // client gate; server re-validates (#9260)
+				payload.amount_given = g;
+			}
+		} else {
+			payload.amount = amount;
+		}
+		_makePost('addInternalOrder', payload, (ret)=>{
 			let dlg = $('<div/>');
 			dlg.append($('<p/>').text(_x('Direct sale stored.', 'label', 'event-tickets-with-ticket-scanner')+' #'+ret.order_id+' — '+ret.status));
+			if (typeof ret.price_total !== 'undefined') {
+				let money = $('<p/>').appendTo(dlg);
+				money.append($('<b/>').text(_x('Total', 'label', 'event-tickets-with-ticket-scanner')+': '+ret.price_total+(ret.price_currency ? ' '+ret.price_currency : '')));
+				if (typeof ret.payment_change_returned !== 'undefined') {
+					money.append('<br>');
+					money.append(_x('Given', 'label', 'event-tickets-with-ticket-scanner')+': '+ret.payment_amount_given+' → '+_x('Change', 'label', 'event-tickets-with-ticket-scanner')+': <b>'+ret.payment_change_returned+'</b>');
+				}
+			}
 			let cards = $('<div class="et-kasse-cards"/>').appendTo(dlg);
 			(ret.codes || []).forEach((c, i)=>{
 				let card = $('<div class="et-kasse-card"/>').appendTo(cards);
@@ -1471,6 +1501,71 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			sel.append($('<option/>').val(l.id).text(l.name));
 		});
 		if (listId) sel.val(String(listId));
+		// ── Ticket products (Ticketarten) with prices — product-ticket-entity
+		// spec. When the selected list has active products they replace the
+		// plain amount field; total + change (Bargeld-Back) update live.
+		let prodWrap = $('<div style="margin-bottom:8px;"/>').insertAfter(row1).hide();
+		let totalDiv = $('<div style="margin-bottom:8px;font-weight:600;"/>').insertAfter(prodWrap).hide();
+		let cashDiv = $('<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"/>').insertAfter(totalDiv).hide();
+		cashDiv.append($('<label/>').text(_x('Given', 'label', 'event-tickets-with-ticket-scanner')));
+		let givenInput = $('<input type="text" inputmode="decimal" class="et-kasse-form__given" style="width:100px;"/>').appendTo(cashDiv);
+		let changeDiv = $('<span/>').appendTo(cashDiv);
+		let __kassePrice = c => (c/100).toFixed(2);
+		let __updateKasseTotals = () => {
+			if (!prodWrap.is(':visible')) return;
+			let total = 0, cur = '';
+			prodWrap.find('.et-kasse-prod').each(function(){
+				let q = parseInt($(this).find('.et-kasse-prod__qty').val(), 10) || 0;
+				total += (parseInt($(this).data('price-cents'), 10) || 0) * q;
+				if (!cur && $(this).data('currency')) cur = String($(this).data('currency'));
+			});
+			totalDiv.text(_x('Total', 'label', 'event-tickets-with-ticket-scanner')+': '+__kassePrice(total)+(cur ? ' '+cur : '')).show();
+			let g = $.trim(givenInput.val());
+			if (g === '') {
+				changeDiv.text('').css('color', '');
+			} else {
+				let gc = Math.round(parseFloat(g.replace(',', '.')) * 100);
+				if (isNaN(gc)) { changeDiv.text('').css('color', ''); return; }
+				if (gc < total) {
+					changeDiv.text(_x('Given amount is less than the total.', 'label', 'event-tickets-with-ticket-scanner')).css('color', '#b32d2e');
+				} else {
+					changeDiv.text(_x('Change', 'label', 'event-tickets-with-ticket-scanner')+': '+__kassePrice(gc - total)).css('color', '');
+				}
+			}
+		};
+		prodWrap.on('input change', '.et-kasse-prod__qty', __updateKasseTotals);
+		givenInput.on('input change', __updateKasseTotals);
+		let __loadKasseProducts = lid => {
+			if (!lid) {
+				prodWrap.hide().empty();
+				totalDiv.hide();
+				cashDiv.hide();
+				row2.show();
+				return;
+			}
+			_makePost('getTicketProducts', {list_id: lid, aktiv: 1}, ret=>{
+				let prods = (ret && ret.products) || [];
+				if (prods.length == 0) {
+					prodWrap.hide().empty();
+					totalDiv.hide();
+					cashDiv.hide();
+					row2.show();
+					return;
+				}
+				row2.hide();
+				prodWrap.empty().show();
+				prods.forEach(p=>{
+					let row = $('<div class="et-kasse-prod" style="display:flex;gap:8px;align-items:center;margin-bottom:4px;"/>')
+						.data('price-cents', parseInt(p.price_cents, 10) || 0)
+						.data('currency', p.currency || '')
+						.appendTo(prodWrap);
+					$('<span style="flex:1;"/>').text(p.name).appendTo(row);
+					$('<span/>').text(__kassePrice(parseInt(p.price_cents, 10) || 0)+(p.currency ? ' '+p.currency : '')).appendTo(row);
+					$('<input type="number" class="et-kasse-prod__qty" min="0" max="100" value="0" data-product-id="'+parseInt(p.id, 10)+'" style="width:64px;"/>').appendTo(row);
+				});
+				__updateKasseTotals();
+			});
+		};
 		let row2 = $('<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"/>').appendTo(dlg);
 		row2.append($('<label/>').text(_x('Amount', 'label', 'event-tickets-with-ticket-scanner')));
 		$('<input type="number" class="et-kasse-form__amount" min="1" max="100" value="1" style="width:80px;"/>').appendTo(row2);
@@ -1478,6 +1573,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		$('<input type="text" class="et-kasse-form__note" placeholder="'+_x('Payment note (cash, card, invoice)', 'label', 'event-tickets-with-ticket-scanner')+'" style="flex:1;"/>').appendTo(row3);
 		let row4 = $('<div style="display:flex;gap:8px;align-items:center;"/>').appendTo(dlg);
 		$('<input type="text" class="et-kasse-form__cname" placeholder="'+_x('Customer name (optional)', 'label', 'event-tickets-with-ticket-scanner')+'" style="flex:1;"/>').appendTo(row4);
+		// products loader hooks in only now — row2/row4 exist (TDZ safety)
+		sel.on('change', ()=>{ __loadKasseProducts(sel.val()); });
+		__loadKasseProducts(sel.val());
 		dlg.dialog({
 			modal: true,
 			width: 480,
@@ -5656,6 +5754,54 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				};
 				let meta_event_start = _winRow(_x('From', 'label', 'event-tickets-with-ticket-scanner'), 'meta_event_start_date', 'meta_event_start_time');
 				let meta_event_end = _winRow(_x('Until', 'label', 'event-tickets-with-ticket-scanner'), 'meta_event_end_date', 'meta_event_end_time');
+
+				// ── Ticket products (Ticketarten) with prices — product-ticket-
+				// entity spec. Edit mode only (products need the list id); the
+				// Kasse sell dialog picks them up automatically.
+				if (editValues) {
+					let prodAdmin = $('<div style="margin-top:10px;">').appendTo(dlg);
+					$('<hr>').appendTo(prodAdmin);
+					$('<h4>').html(_x('Ticket products', 'heading', 'event-tickets-with-ticket-scanner')).appendTo(prodAdmin);
+					$('<div style="color:#666;">').html(_x('Named ticket types with prices for direct sales and later online selling — no WooCommerce needed. The Kasse switches to these products automatically once one exists.', 'label', 'event-tickets-with-ticket-scanner')).appendTo(prodAdmin);
+					let prodRows = $('<div style="margin-top:8px;">').appendTo(prodAdmin);
+					let __fmtPrice = c => (c/100).toFixed(2);
+					let __renderProdRow = p => {
+						let row = $('<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"/>').appendTo(prodRows);
+						$('<input type="text" class="et-prod-name" value="'+String(p.name == null ? '' : p.name).replace(/"/g, '&quot;')+'" style="flex:1;" placeholder="'+_x('Name', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
+						$('<input type="text" class="et-prod-price" inputmode="decimal" value="'+(p.id ? __fmtPrice(parseInt(p.price_cents, 10) || 0) : '')+'" style="width:80px;" placeholder="'+_x('Price', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
+						$('<input type="text" class="et-prod-currency" value="'+String(p.currency == null ? '' : p.currency)+'" style="width:52px;" placeholder="EUR"/>').appendTo(row);
+						let akt = $('<input type="checkbox" class="et-prod-aktiv"'+((!p.id || parseInt(p.aktiv, 10) === 1) ? ' checked' : '')+'/>').appendTo(row);
+						$('<label style="white-space:nowrap;">').text(' '+_x('Active', 'label', 'event-tickets-with-ticket-scanner')).insertAfter(akt).prepend(akt);
+						if (p.id) {
+							row.append($('<button type="button" class="et-btn-action"/>').text(_x('Save', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+								e.preventDefault();
+								_makePost('editTicketProduct', {id:p.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), aktiv:row.find('.et-prod-aktiv').prop('checked')?1:0}, ()=>{ __loadListProducts(); });
+							}));
+							row.append($('<button type="button" class="et-btn-action et-btn-action--danger"/>').text(_x('Remove', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+								e.preventDefault();
+								_makePost('removeTicketProduct', {id:p.id}, ()=>{ __loadListProducts(); });
+							}));
+						} else {
+							row.append($('<button type="button" class="et-btn-action"/>').text(_x('Add ticket product', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+								e.preventDefault();
+								_makePost('addTicketProduct', {list_id:editValues.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val()}, ()=>{ __loadListProducts(); });
+							}));
+						}
+					};
+					let __loadListProducts = ()=>{
+						prodRows.empty();
+						_makePost('getTicketProducts', {list_id: editValues.id}, ret=>{
+							let prods = (ret && ret.products) || [];
+							if (prods.length == 0) {
+								$('<div style="color:#666;">').text(_x('No ticket products yet — the Kasse sells by amount only.', 'label', 'event-tickets-with-ticket-scanner')).appendTo(prodRows);
+							} else {
+								prods.forEach(p=>{ __renderProdRow(p); });
+							}
+							__renderProdRow({id:0, name:'', price_cents:0, currency:'', aktiv:1});
+						});
+					};
+					__loadListProducts();
+				}
 
 				let form = dlg.find("form").on("submit", function(event) {
 					event.preventDefault();

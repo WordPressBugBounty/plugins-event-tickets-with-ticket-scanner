@@ -42,6 +42,17 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		private $refund_parent_id;
 
 		/**
+		 * Per-order ticket generation locks held by THIS request (order_id => true).
+		 *
+		 * Re-entrancy guard: the payment hook acquires the order lock and the
+		 * email item rendering later in the SAME request must not skip against
+		 * itself. Cross-process exclusion is handled by MySQL GET_LOCK.
+		 *
+		 * @var array<int, bool>
+		 */
+		private $heldTicketGenerationLocks = [];
+
+		/**
 		 * Constructor
 		 *
 		 * @param sasoEventtickets $main Main plugin instance
@@ -463,6 +474,46 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 			return $confirmed;
 		}
 
+	/**
+		 * Concurrency guard for the per-order ticket generation (#015355):
+		 * parallel runs for the SAME order (payment status hook, email item
+		 * rendering, admin order view) interleaved unsynchronized writes and
+		 * could cross-link tickets between orders that were paid at the same
+		 * moment. The primary path waits for the order lock; the render top-up
+		 * path skips instead — the primary run delivers the tickets moments
+		 * later, so skipping never loses anything.
+		 *
+		 * GET_LOCK is bound to the MySQL connection: a dying PHP process
+		 * releases the lock automatically, no stuck locks can block an order.
+		 *
+		 * @param int $order_id Order ID
+		 * @param int $timeoutSeconds 0 = return immediately when already held
+		 * @return bool lock acquired (or re-entrantly held by this request)
+		 */
+		private function acquireOrderTicketGenerationLock(int $order_id, int $timeoutSeconds): bool {
+			if ($order_id <= 0) return true;
+			if (isset($this->heldTicketGenerationLocks[$order_id])) return true; // re-entrant within this request
+			global $wpdb;
+			$lockName = $this->MAIN->getPrefix() . 'tgen_' . $order_id;
+			$got = $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, %d)', $lockName, $timeoutSeconds));
+			if (intval($got) !== 1) return false;
+			$this->heldTicketGenerationLocks[$order_id] = true;
+			return true;
+		}
+
+		/**
+		 * Release a previously acquired per-order generation lock.
+		 *
+		 * @param int $order_id Order ID
+		 * @return void
+		 */
+		private function releaseOrderTicketGenerationLock(int $order_id): void {
+			if ($order_id <= 0 || !isset($this->heldTicketGenerationLocks[$order_id])) return;
+			global $wpdb;
+			$wpdb->query($wpdb->prepare('SELECT RELEASE_LOCK(%s)', $this->MAIN->getPrefix() . 'tgen_' . $order_id));
+			unset($this->heldTicketGenerationLocks[$order_id]);
+		}
+
 		/**
 		 * Main ticket generation entry point
 		 *
@@ -471,9 +522,30 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 * Handles order status checks, day chooser preprocessing, and session cleanup.
 		 *
 		 * @param int $order_id Order ID
+		 * @param bool $isRenderTopUp true when called from email/order item rendering:
+		 *   the generation then never waits for a busy order (another process is
+		 *   generating right now) but renders the existing state instead.
 		 * @return void
 		 */
-		public function add_serialcode_to_order(int $order_id): void {
+		public function add_serialcode_to_order(int $order_id, bool $isRenderTopUp = false): void {
+			if (!$order_id) return;
+			if (!$this->acquireOrderTicketGenerationLock($order_id, $isRenderTopUp ? 0 : 10)) {
+				return; // another process is generating this order's tickets right now
+			}
+			try {
+				$this->add_serialcode_to_order_run($order_id);
+			} finally {
+				$this->releaseOrderTicketGenerationLock($order_id);
+			}
+		}
+
+		/**
+		 * Lock-protected body of add_serialcode_to_order().
+		 *
+		 * @param int $order_id Order ID
+		 * @return void
+		 */
+		private function add_serialcode_to_order_run(int $order_id): void {
 
 			if (!$order_id) return;
 
@@ -979,7 +1051,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		 */
 		public function woocommerce_order_item_meta_start($item_id, $item, $order, bool $plain_text = false): void {
 			$item_id = intval($item_id);
-			$this->add_serialcode_to_order($order->get_id()); // falls noch welche fehlen, dann vor der E-Mail noch hinzufügen
+			$this->add_serialcode_to_order($order->get_id(), true); // falls noch welche fehlen, dann vor der E-Mail noch hinzufügen — Top-up: nie warten, ein anderer Prozess generiert ggf. gerade
 
 			$order = $this->set_wcTicketSetOrderToCompleteIfAllOrderItemsAreTickets($order);
 

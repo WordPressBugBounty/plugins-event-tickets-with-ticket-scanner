@@ -11186,3 +11186,146 @@ msgstr "Redeem-Button oben"
 #: backend.js
 msgid "Auto refresh"
 msgstr "Auto-Aktualisierung"
+
+#: backend.js
+msgctxt "label"
+msgid "Save"
+msgstr "Speichern"
+
+#: backend.js
+msgctxt "label"
+msgid "Price"
+msgstr "Preis"
+
+#: backend.js
+msgctxt "label"
+msgid "Given"
+msgstr "Gegeben"
+
+#: backend.js
+msgctxt "label"
+msgid "Change"
+msgstr "Wechselgeld"
+
+#: backend.js
+msgctxt "label"
+msgid "Given amount is less than the total."
+msgstr "Gegebener Betrag ist kleiner als der Gesamtbetrag."
+
+#: backend.js
+msgctxt "label"
+msgid "Add ticket product"
+msgstr "Ticketart hinzufügen"
+
+#: backend.js
+msgctxt "label"
+msgid "No ticket products yet — the Kasse sells by amount only."
+msgstr "Noch keine Ticketarten — die Kasse verkauft nur nach Anzahl."
+
+#: backend.js
+msgctxt "label"
+msgid "Named ticket types with prices for direct sales and later online selling — no WooCommerce needed. The Kasse switches to these products automatically once one exists."
+msgstr "Benannte Ticketarten mit Preisen für den Direktverkauf und späteren Online-Verkauf — ohne WooCommerce. Die Kasse nutzt diese Ticketarten automatisch, sobald eine existiert."
+
+#: backend.js
+msgctxt "heading"
+msgid "Ticket products"
+msgstr "Ticketarten"
+
+#: js/shop.js sasoEventtickets_PremiumFunctions.php
+msgid "Quantity"
+msgstr "Anzahl"
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid "Your name"
+msgstr "Dein Name"
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid "Your email address"
+msgstr "Deine E-Mail-Adresse"
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid "Order tickets"
+msgstr "Tickets bestellen"
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid "Thank you! Your order #%d has been received. Check your email inbox."
+msgstr "Danke! Deine Bestellung #%d ist eingegangen. Bitte prüfe dein Postfach."
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid "We have received your order. You will get an email with payment details from the organizer — as soon as your payment is confirmed, your tickets are sent to this email address automatically."
+msgstr "Wir haben deine Bestellung erhalten. Du erhältst eine E-Mail mit den Zahlungsdetails vom Veranstalter — sobald deine Zahlung bestätigt ist, werden deine Tickets automatisch an diese E-Mail-Adresse gesendet."
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid "[%s] Your ticket order #%d"
+msgstr "[%s] Deine Ticket-Bestellung #%d"
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid ""
+"Hello %s,\n"
+"\n"
+"thank you for your order!\n"
+"\n"
+"Order number: #%d\n"
+"%s\n"
+"Total: %s%s\n"
+"\n"
+"%s"
+msgstr ""
+"Hallo %s,\n"
+"\n"
+"danke für deine Bestellung!\n"
+"\n"
+"Bestellnummer: #%d\n"
+"%s\n"
+"Gesamt: %s%s\n"
+"\n"
+"%s"
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid "[%s] New online ticket order #%d"
+msgstr "[%s] Neue Online-Ticketbestellung #%d"
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid ""
+"New online order waiting for payment confirmation:\n"
+"\n"
+"Order: #%d\n"
+"Customer: %s <%s>\n"
+"Tickets: %d\n"
+"Total: %s%s\n"
+"\n"
+"Confirm the payment in the Kasse (direct sales) to send the tickets to the customer automatically."
+msgstr ""
+"Neue Online-Bestellung wartet auf Zahlungsbestätigung:\n"
+"\n"
+"Bestellung: #%d\n"
+"Kunde: %s <%s>\n"
+"Tickets: %d\n"
+"Gesamt: %s%s\n"
+"\n"
+"Bestätige die Zahlung in der Kasse (Direktverkauf), um die Tickets automatisch an den Kunden zu senden."
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid "[%s] Your tickets for order #%d"
+msgstr "[%s] Deine Tickets zur Bestellung #%d"
+
+#: sasoEventtickets_PremiumFunctions.php
+msgid ""
+"Hello,\n"
+"\n"
+"your payment for order #%d was confirmed. Your tickets:\n"
+"\n"
+"%s\n"
+"Each link opens the ticket — add \"?pdf\" to the URL for the PDF version. Show the QR code at the entrance.\n"
+"\n"
+"See you at the event!"
+msgstr ""
+"Hallo,\n"
+"\n"
+"deine Zahlung für die Bestellung #%d wurde bestätigt. Deine Tickets:\n"
+"\n"
+"%s\n"
+"Jeder Link öffnet das Ticket — hänge \"?pdf\" an die URL an, um die PDF-Version zu erhalten. Zeige den QR-Code am Eingang.\n"
+"\n"
+"Wir freuen uns auf dich!"

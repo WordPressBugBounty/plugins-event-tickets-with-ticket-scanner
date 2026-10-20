@@ -1523,6 +1523,33 @@ final class sasoEventtickets_Ticket {
 		} catch (Exception $e) {
 			$this->MAIN->getAdmin()->logErrorToDB($e);
 		}
+		// #015303: the ticket code's woocommerce meta stores the PARENT product id
+		// (item->get_product_id()). When the event dates live on the purchased
+		// variation (parent fields empty, "date valid for all variants" off),
+		// reading the parent silently falls back to TODAY (#8011 fallback chain).
+		// Resolve the variation from the order item so variation dates are used.
+		if (!$is_variation && $codeObj != null && isset($codeObj['metaObj']['woocommerce'])) {
+			$wcMeta = $codeObj['metaObj']['woocommerce'];
+			$order_id = intval($wcMeta['order_id'] ?? 0);
+			$item_id = intval($wcMeta['item_id'] ?? 0);
+			if ($order_id > 0 && $item_id > 0) {
+				try {
+					$order = wc_get_order($order_id);
+					if ($order != null) {
+						$item = $order->get_item($item_id);
+						if ($item != null && $item->get_variation_id() > 0) {
+							$variation = $this->get_product($item->get_variation_id());
+							if ($variation != null) {
+								$product = $variation;
+								$is_variation = true;
+							}
+						}
+					}
+				} catch (Exception $e) {
+					$this->MAIN->getAdmin()->logErrorToDB($e);
+				}
+			}
+		}
 		$tmp_prod = $product;
 		if ($is_variation) {
 			$product_parent_id = $product->get_parent_id();
