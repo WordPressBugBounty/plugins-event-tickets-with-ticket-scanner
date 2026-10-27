@@ -202,6 +202,23 @@ class sasoEventtickets_Authtoken {
 			if (isset($data['meta']['ticketscanner']) && isset($data['meta']['ticketscanner']['bound_to_products'])) {
 				$metaObj['ticketscanner']['bound_to_products'] = strip_tags(trim($data['meta']['ticketscanner']['bound_to_products']));
 			}
+			// Offline scanning (premium): token-controlled — offline_enabled is a
+			// 0/1 flag, offline_lists is 'all' or csv list ids. Premium only:
+			// the free version never activates offline scanning.
+			if ($this->MAIN->isPremium() && isset($data['meta']['ticketscanner'])) {
+				if (isset($data['meta']['ticketscanner']['offline_enabled'])) {
+					$metaObj['ticketscanner']['offline_enabled'] = intval($data['meta']['ticketscanner']['offline_enabled']) === 1 ? 1 : '';
+				}
+				if (isset($data['meta']['ticketscanner']['offline_lists'])) {
+					$_rawOffline = strtolower(strip_tags(trim((string) $data['meta']['ticketscanner']['offline_lists'])));
+					if ($_rawOffline === "" || $_rawOffline === "all") {
+						$metaObj['ticketscanner']['offline_lists'] = "all";
+					} else {
+						$_offlineLists = array_filter(array_map("intval", array_map("trim", explode(",", $_rawOffline))));
+						$metaObj['ticketscanner']['offline_lists'] = implode(",", $_offlineLists);
+					}
+				}
+			}
 			// der rotz hier ist BS und funktioniert nicht, da wieder data.meta genutzt wird
 			//$this->MAIN->getCore()->alignArrays($metaObj, $data["meta"]);
 			//$metaObj = array_merge($metaObj, $data["meta"]);

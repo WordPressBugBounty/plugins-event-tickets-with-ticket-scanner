@@ -477,11 +477,23 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 			$expiresTimestamp = strtotime($result['expires_at']);
 			$remainingSeconds = max(0, $expiresTimestamp - current_time('timestamp'));
 
+			// security (Wordfence review 2026-10): ownership token so only
+			// the client that created (or last extended) a seat block can
+			// release it while it is still fresh — stops strangers from
+			// releasing other people's reservations via enumerable block ids.
+			$ownerToken = wp_generate_password(24, false, false);
+			set_transient(
+				'saso_seat_owner_' . $result['block_id'],
+				wp_hash_password($ownerToken),
+				$remainingSeconds + 120
+			);
+
 			wp_send_json_success([
 				'block_id' => $result['block_id'],
 				'expires_at' => $result['expires_at'],
 				'remaining_seconds' => $remainingSeconds,
 				'extended' => $result['extended'] ?? false,
+				'owner_token' => $ownerToken,
 				'seat' => $seatInfo
 			]);
 		} else {
@@ -494,11 +506,23 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 	 */
 	private function doReleaseSeat(): void {
 		$blockId = isset($_POST['block_id']) ? (int) $_POST['block_id'] : 0;
+		$ownerToken = isset($_POST['owner_token']) ? sanitize_text_field($_POST['owner_token']) : '';
 
 		if (!$blockId) {
 			wp_send_json_error(['error' => 'missing_params']);
 			return;
 		}
+
+		// security (Wordfence review 2026-10): while an ownership token exists
+		// for a fresh block, only its holder may release it. Once the token
+		// transient has expired (block stale/abandoned), anyone may release —
+		// which is just cleanup of dead reservations.
+		$storedHash = get_transient('saso_seat_owner_' . $blockId);
+		if ($storedHash !== false && ($ownerToken === '' || !wp_check_password($ownerToken, $storedHash))) {
+			wp_send_json_error(['error' => 'not_owner'], 403);
+			return;
+		}
+		if ($storedHash !== false) delete_transient('saso_seat_owner_' . $blockId);
 
 		$success = $this->MAIN->getSeating()->releaseSeatFromCart($blockId);
 

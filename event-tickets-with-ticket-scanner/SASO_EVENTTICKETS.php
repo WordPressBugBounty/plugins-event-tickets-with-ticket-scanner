@@ -251,9 +251,47 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_downloadPDFTicketBadge', 'args'=>['code'=>['required'=>true]], 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
 			]);
 			register_rest_route($prefix.'/ticket/scanner', '/seating_plan', [
-				['methods'=>WP_REST_SERVER::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_seating_plan', 'args'=>['plan_id'=>['required'=>true], 'seat_id'=>['required'=>false]], 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
+				['methods'=>WP_REST_Server::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_seating_plan', 'args'=>['plan_id'=>['required'=>true], 'seat_id'=>['required'=>false]], 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
 			]);
-		}
+			// offline scanning (token-controlled): config echo, ticket pack,
+			// queued-scan replay. Same permission gate as the live scan routes.
+			register_rest_route($prefix.'/ticket/scanner', '/offline_config', [
+				['methods'=>WP_REST_Server::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_offline_config', 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
+			]);
+			register_rest_route($prefix.'/ticket/scanner', '/offline_pack', [
+				['methods'=>WP_REST_Server::READABLE, 'callback'=>'SASO_EVENTTICKETS::rest_offline_pack', 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
+			]);
+			register_rest_route($prefix.'/ticket/scanner', '/offline_sync', [
+				['methods'=>WP_REST_Server::CREATABLE, 'callback'=>'SASO_EVENTTICKETS::rest_offline_sync', 'permission_callback'=>'SASO_EVENTTICKETS::rest_permission_callback']
+			]);
+			}
+			public static function rest_offline_config($web_request) {
+			try {
+				include_once plugin_dir_path(__FILE__)."sasoEventtickets_Ticket.php";
+				$ticket = sasoEventtickets_Ticket::Instance($_SERVER["REQUEST_URI"]);
+				wp_send_json_success($ticket->rest_offline_config($web_request));
+			} catch (Exception $e) {
+				wp_send_json_error($e->getMessage());
+			}
+			}
+			public static function rest_offline_pack($web_request) {
+			try {
+				include_once plugin_dir_path(__FILE__)."sasoEventtickets_Ticket.php";
+				$ticket = sasoEventtickets_Ticket::Instance($_SERVER["REQUEST_URI"]);
+				wp_send_json_success($ticket->rest_offline_pack($web_request));
+			} catch (Exception $e) {
+				wp_send_json_error($e->getMessage());
+			}
+			}
+			public static function rest_offline_sync($web_request) {
+			try {
+				include_once plugin_dir_path(__FILE__)."sasoEventtickets_Ticket.php";
+				$ticket = sasoEventtickets_Ticket::Instance($_SERVER["REQUEST_URI"]);
+				wp_send_json_success($ticket->rest_offline_sync($web_request));
+			} catch (Exception $e) {
+				wp_send_json_error($e->getMessage());
+			}
+			}
 		public static function rest_permission_callback($web_request) {
 			try {
 				include_once plugin_dir_path(__FILE__)."sasoEventtickets_Ticket.php";

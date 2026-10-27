@@ -14,7 +14,7 @@ class sasoEventtickets_Core {
 	}
 
 	public function clearCode($code) {
-		$ret = trim(urldecode(strip_tags(str_replace(" ","",str_replace(":","",str_replace("-", "", $code))))));
+		$ret = trim(strip_tags(urldecode(str_replace(" ","",str_replace(":","",str_replace("-", "", $code))))));
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'core_clearCode', $ret );
 		return $ret;
 	}
@@ -70,7 +70,7 @@ class sasoEventtickets_Core {
 			$sql = "select a.* from ".$this->MAIN->getDB()->getTabelle("codes")." a where code = '".$code."'";
 		}
 		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
-		if (count($ret) == 0) throw new Exception("#204 ticket with ".$code." not found");
+		if (count($ret) == 0) throw new Exception("#204 ticket with ".esc_html($code)." not found");
 		return $ret[0];
 	}
 
@@ -723,7 +723,7 @@ class sasoEventtickets_Core {
 	public function getMetaObjectAuthtoken() {
 		$metaObj = [
 			'desc'=>'',
-			'ticketscanner'=>["bound_to_products"=>"", "bound_to_lists"=>""]
+			'ticketscanner'=>["bound_to_products"=>"", "bound_to_lists"=>"", "offline_enabled"=>"", "offline_lists"=>""]
 		];
 		if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'getMetaObjectAuthtoken')) {
 			$metaObj = $this->MAIN->getPremiumFunctions()->getMetaObjectAuthtoken($metaObj);
@@ -954,19 +954,22 @@ class sasoEventtickets_Core {
 	}
 
 	public function getRealIpAddr() {
-	    if (!empty($_SERVER['HTTP_CLIENT_IP']))   //check ip from share internet
-	    {
-	      $ip=sanitize_text_field($_SERVER['HTTP_CLIENT_IP']);
-	    }
-	    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))   //to check ip is pass from proxy
-	    {
-	      $ip=sanitize_text_field($_SERVER['HTTP_X_FORWARDED_FOR']);
-	    }
-	    else
-	    {
-	      $ip=sanitize_text_field($_SERVER['REMOTE_ADDR']);
-	    }
-	    return $ip;
+		// Security (Wordfence review 2026-10): the proxy headers are CLIENT-
+		// CONTROLLABLE. Trusting them by default lets anyone spoof their IP and
+		// bypass every IP-based rate limit / block (shop order limit, IP block
+		// tracking) and forge IP logs. REMOTE_ADDR is the only server-side
+		// truth; proxies are honored exclusively behind the explicit option
+		// 'trustProxyIpHeaders' (for sites behind a CDN / reverse proxy).
+		$remote = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field($_SERVER['REMOTE_ADDR']) : '';
+		if ($this->MAIN->getOptions()->isOptionCheckboxActive('trustProxyIpHeaders')) {
+			$keys = ['HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP'];
+			foreach ($keys as $key) {
+				if (empty($_SERVER[$key])) continue;
+				$first = trim(explode(',', sanitize_text_field($_SERVER[$key]))[0]);
+				if (filter_var($first, FILTER_VALIDATE_IP)) return $first;
+			}
+		}
+		return $remote;
 	}
 
 	public function triggerWebhooks($status, $codeObj) {
@@ -1299,7 +1302,11 @@ class sasoEventtickets_Core {
 		}
 
 		if (isset($codeObj['code']) && isset($codeObj['order_id']) && isset($metaObj['wc_ticket']['idcode'])) {
-			$ret = $metaObj['wc_ticket']['idcode']."-".$codeObj['order_id']."-".$codeObj['code'];
+			// Order part of the public id: direct-sale (no-Woo) tickets carry
+			// their internal order id; WooCommerce tickets the Woo order id.
+			$internalOrderId = $this->getInternalOrderIdOfCode($codeObj);
+			$orderPart = ($internalOrderId > 0) ? $internalOrderId : $codeObj['order_id'];
+			$ret = $metaObj['wc_ticket']['idcode']."-".$orderPart."-".$codeObj['code'];
 		}
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'core_getTicketId', $ret, $codeObj, $metaObj );
 		return $ret;

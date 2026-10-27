@@ -11208,6 +11208,18 @@ msgid "Change"
 msgstr "Wechselgeld"
 
 #: backend.js
+msgid "Still open"
+msgstr "Noch offen"
+
+#: backend.js
+msgid "Decrease quantity"
+msgstr "Anzahl verringern"
+
+#: backend.js
+msgid "Increase quantity"
+msgstr "Anzahl erhöhen"
+
+#: backend.js
 msgctxt "label"
 msgid "Given amount is less than the total."
 msgstr "Gegebener Betrag ist kleiner als der Gesamtbetrag."
@@ -11329,3 +11341,253 @@ msgstr ""
 "Jeder Link öffnet das Ticket — hänge \"?pdf\" an die URL an, um die PDF-Version zu erhalten. Zeige den QR-Code am Eingang.\n"
 "\n"
 "Wir freuen uns auf dich!"
+
+msgctxt "label"
+msgid "Proof"
+msgstr "Nachweis"
+
+msgctxt "label"
+msgid "Discount ticket type: the ticket scanner asks at the entrance to check the eligibility (ID, student or retiree pass …) before it redeems the ticket."
+msgstr "Ermäßigter Kartentyp: Der Ticket-Scanner fordert am Einlass auf, die Berechtigung (Ausweis, Schüler-/Studenten- oder Seniorennachweis …) zu prüfen, bevor er das Ticket entwertet."
+
+msgid "Proof of eligibility required"
+msgstr "Nachweis der Berechtigung erforderlich"
+
+msgid "This ticket is discounted. Please check the eligibility (e.g. ID, student or retiree pass) before redeeming."
+msgstr "Dieses Ticket ist ermäßigt. Bitte vor dem Entwerten die Berechtigung prüfen (z. B. Ausweis, Schüler-, Studenten- oder Seniorenausweis)."
+
+msgid "Proof checked — redeem"
+msgstr "Nachweis geprüft — entwerten"
+
+msgid "Not eligible — do not redeem"
+msgstr "Nicht berechtigt — nicht entwerten"
+
+msgid "Ticket not redeemed. Please ask for a regular ticket."
+msgstr "Ticket nicht entwertet. Bitte um ein reguläres Ticket bitten."
+
+msgctxt "label"
+msgid "Location"
+msgstr "Ort"
+
+msgid "Security session expired"
+msgstr "Sicherheitssitzung abgelaufen"
+
+msgid "Your security session has expired after a long idle time. The page reloads to restore it — nothing was lost."
+msgstr "Die Sicherheitssitzung ist nach langer Inaktivität abgelaufen. Die Seite wird neu geladen — nichts geht verloren."
+
+msgid "OK — reload page"
+msgstr "OK — Seite neu laden"
+
+msgid "Scanner: show the customer name in large text"
+msgstr "Scanner: Kundename in großer Schrift anzeigen"
+
+msgid "If active, the scanner shows the first and last name from the order (WooCommerce or the plugin's own checkout) in big, clearly visible letters right after a ticket is validated. The regular customer block stays unchanged below it."
+msgstr "Wenn aktiv, zeigt der Scanner Vor- und Nachnamen aus der Bestellung (WooCommerce oder der plugin-eigene Kassenschalter) direkt nach der Validierung in großen, gut lesbaren Buchstaben. Der normale Kundenblock bleibt darunter unverändert."
+
+msgid "Scanner: show the ticket values in large text"
+msgstr "Scanner: Ticket-Values in großer Schrift anzeigen"
+
+msgid "If active, the per-ticket values (name per ticket and the free value per ticket) are shown in big letters instead of the small line."
+msgstr "Wenn aktiv, werden die Werte pro Ticket (Name pro Ticket und der freie Wert pro Ticket) groß angezeigt statt in der kleinen Zeile."
+
+msgid "Scanner: show the ticket type in large text"
+msgstr "Scanner: Ticketart in großer Schrift anzeigen"
+
+msgid "If active, the ticket type (product name, or the ticket type name for tickets sold without WooCommerce) is shown in big letters right after the validation status."
+msgstr "Wenn aktiv, erscheint die Ticketart (Produktname bzw. Ticketart-Name bei Tickets ohne WooCommerce-Verkauf) direkt nach dem Validierungsstatus in großer Schrift."
+
+msgctxt "label"
+msgid "Contingent: maximum sellable tickets of this type, 0 or empty means unlimited. The Kasse and the online shop stop automatically when it is reached."
+msgstr "Kontingent: maximale verkaufbare Anzahl dieser Ticketart, 0 oder leer bedeutet unbegrenzt. Kasse und Online-Shop stoppen automatisch, wenn es erreicht ist."
+
+msgid "Sold out"
+msgstr "Ausverkauft"
+
+msgid "%d ticket available"
+msgid_plural "%d tickets available"
+msgstr[0] "%d Ticket verfügbar"
+msgstr[1] "%d Tickets verfügbar"
+
+msgid "Ticket shop"
+msgstr "Ticket-Shop"
+
+msgid "Online shop page"
+msgstr "Online-Shop-Seite"
+
+msgid "open"
+msgstr "öffnen"
+
+#: sasoEventtickets_PremiumFunctions.php buildShopHtml
+msgid "Sold out in total"
+msgstr "Insgesamt ausverkauft"
+
+#: sasoEventtickets_PremiumFunctions.php buildShopHtml
+msgid "%d of %d ticket still available in total"
+msgid_plural "%d of %d tickets still available in total"
+msgstr[0] "Insgesamt noch %d von %d Ticket verfügbar"
+msgstr[1] "Insgesamt noch %d von %d Tickets verfügbar"
+
+#: backend.js list editor
+msgctxt "label"
+msgid "Max. tickets (total)"
+msgstr "Max. Tickets (gesamt)"
+
+msgctxt "label"
+msgid "Show in shop catalog"
+msgstr "Im Shop-Katalog anzeigen"
+
+msgctxt "label"
+msgid "Show this list as an event in the central shop catalog (/tickets/). The list's own event page and WooCommerce are not affected."
+msgstr "Diese Liste als Veranstaltung im zentralen Shop-Katalog (/tickets/) anzeigen. Die eigene Veranstaltungsseite der Liste und WooCommerce bleiben unberührt."
+
+msgid "No events on sale at the moment."
+msgstr "Derzeit sind keine Veranstaltungen im Verkauf."
+#: backend.js list editor
+msgctxt "label"
+msgid "Shared limit across all ticket types of this list — protects the venue capacity from overselling. 0 = unlimited."
+msgstr "Gemeinsames Limit für alle Ticketarten dieser Liste — schützt die Gesamtkapazität vor Überverkauf. 0 = unbegrenzt."
+
+#: backend.js
+msgctxt "label"
+msgid "After saving, the list opens again with all options — including ticket products with prices and limits."
+msgstr "Nach dem Speichern öffnet sich die Liste erneut mit allen Optionen – einschließlich Ticketprodukten mit Preisen und Limits."
+
+#: backend.js
+msgctxt "label"
+msgid "Offline scanning"
+msgstr "Offline-Scanning"
+
+#: backend.js
+msgctxt "label"
+msgid "Preload ticket list(s)"
+msgstr "Ticket-Liste(n) vorladen"
+
+#: backend.js
+msgctxt "label"
+msgid "all accessible ticket lists"
+msgstr "alle zugänglichen Ticket-Listen"
+
+#: backend.js
+msgid "The scanner of this token preloads its ticket lists and keeps scanning when the connection drops: scans are validated locally, queued and synced automatically once the network returns (also periodically and via a sync button). Multiple scanners are safe — the server keeps the final say and reports conflicts."
+msgstr "Der Scanner dieses Tokens lädt seine Ticket-Listen vor und scannt weiter, wenn die Verbindung abreißt: Scans werden lokal geprüft, in eine Warteschlange gestellt und automatisch abgeglichen, sobald das Netz zurück ist (zusätzlich periodisch und per Sync-Button). Mehrere Scanner sind sicher — der Server hat das letzte Wort und meldet Konflikte."
+
+#: backend.js
+msgid "Comma separated ticket list ids the scanner preloads, or leave empty for every list this token may access. Keep the pack small if you have many tickets."
+msgstr "Komma-getrennte Ticket-Listen-IDs, die der Scanner vorlädt; leer lassen für jede Liste, auf die dieser Token Zugriff hat. Halte das Paket klein, wenn du viele Tickets hast."
+
+#: index.php
+msgid "Connected"
+msgstr "Verbunden"
+
+#: index.php
+msgid "Offline — scans are validated locally and queued"
+msgstr "Offline — Scans werden lokal geprüft und in die Warteschlange gestellt"
+
+#: index.php
+msgid "Preloaded tickets: %s"
+msgstr "Vorgeladene Tickets: %s"
+
+#: index.php
+msgid "Waiting for sync: %s"
+msgstr "Warten auf Abgleich: %s"
+
+#: index.php
+msgid "Conflicts after last sync: %s"
+msgstr "Konflikte nach dem letzten Abgleich: %s"
+
+#: index.php
+msgid "Sync now"
+msgstr "Jetzt abgleichen"
+
+#: index.php
+msgid "Offline scanner"
+msgstr "Offline-Scanner"
+
+#: index.php
+msgid "Pack too large — restrict the offline lists on the auth token"
+msgstr "Paket zu groß — beschränke die Offline-Listen am Auth-Token"
+
+#: index.php
+msgid "Sync failed — will retry"
+msgstr "Abgleich fehlgeschlagen — wird wiederholt"
+
+#: index.php
+msgid "Unknown ticket (offline)"
+msgstr "Unbekanntes Ticket (offline)"
+
+#: index.php
+msgid "CVV-protected ticket — an online connection is required"
+msgstr "CVV-geschütztes Ticket — eine Online-Verbindung ist erforderlich"
+
+#: index.php
+msgid "Already redeemed (offline state)"
+msgstr "Bereits eingelöst (Offline-Stand)"
+
+#: index.php
+msgid "Valid — saved, queued for sync"
+msgstr "Gültig — gespeichert, zum Abgleich vorgemerkt"
+
+#: sasoEventtickets_Ticket.php
+msgid "auth token missing"
+msgstr "Auth-Token fehlt"
+
+#: sasoEventtickets_Ticket.php
+msgid "offline scanning is not enabled for this token"
+msgstr "Offline-Scanning ist für diesen Token nicht aktiviert"
+
+#: sasoEventtickets_Ticket.php
+msgid "no events"
+msgstr "keine Ereignisse"
+
+#: index.php
+msgid "Offline scanning?"
+msgstr "Offline-Scanning?"
+
+#: index.php
+msgid "Preload the tickets onto this device so scanning keeps working when the connection drops?"
+msgstr "Tickets auf dieses Gerät vorladen, damit das Scanning weiterläuft, wenn die Verbindung abreißt?"
+
+#: index.php
+msgid "Load tickets — from today onwards"
+msgstr "Tickets laden — ab heute"
+
+#: index.php
+msgid "Load tickets — today only"
+msgstr "Tickets laden — nur für heute"
+
+#: index.php
+msgid "No, stay online"
+msgstr "Nein, online bleiben"
+
+#: index.php
+msgid "Offline…"
+msgstr "Offline…"
+
+#: index.php
+msgid "Loading tickets…"
+msgstr "Tickets werden geladen…"
+
+#: sasoEventtickets_Options.php
+msgid "Enable offline scanning (premium)"
+msgstr "Offline-Scanning aktivieren (Premium)"
+
+#: sasoEventtickets_Options.php
+msgid "Master switch for offline scanning. Off: the scanner behaves exactly as before. On: auth-token scanners use the offline settings of their token; scanners opened without a token (e.g. logged-in team members) are asked at scanner start whether to preload tickets — all from today, or today only. Premium feature."
+msgstr "Hauptschalter für Offline-Scanning. Aus: der Scanner verhält sich exakt wie bisher. An: Auth-Token-Scanner nutzen die Offline-Einstellungen ihres Tokens; Scanner ohne Token (z. B. eingeloggte Team-Mitglieder) werden beim Scanner-Start gefragt, ob sie Tickets vorladen wollen — alle ab heute oder nur für heute. Premium-Feature."
+
+#: sasoEventtickets_Ticket.php
+msgid "offline scanning is not enabled"
+msgstr "Offline-Scanning ist nicht aktiviert"
+
+#: sasoEventtickets_Options.php
+msgid "Trust proxy IP headers (X-Forwarded-For)"
+msgstr "Proxy-IP-Header vertrauen (X-Forwarded-For)"
+
+#: sasoEventtickets_Options.php
+msgid "Only enable this if your site runs behind a reverse proxy or CDN (e.g. Cloudflare, Loadbalancer). The X-Forwarded-For / Client-IP headers are controlled by the visitor and can be spoofed — with this option off, IP-based rate limits and IP blocks use the server-side remote address and cannot be bypassed by header forgery."
+msgstr "Nur aktivieren, wenn die Website hinter einem Reverse-Proxy oder CDN läuft (z. B. Cloudflare, Loadbalancer). Die Header X-Forwarded-For / Client-IP werden vom Besucher kontrolliert und sind fälschbar — bei deaktivierter Option nutzen IP-Ratenlimits und IP-Sperren die serverseitige Remote-Adresse und können durch Header-Fälschung nicht umgangen werden."
+
+#: backend.js
+msgctxt "kasse keypad"
+msgid "Delete last digit"
+msgstr "Letzte Ziffer löschen"

@@ -166,6 +166,9 @@ function SasoEventticketsValidator(_myAjaxVar) {
 			});
 		return elem;
 	}
+	function __escHtml(v) {
+		return String(v === undefined || v === null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+	}
 	function __displayMessage(text) {
 		ELEM_OUTPUT.innerHTML = text;
 		BUTTON_ELEMENT.disabled = false;
@@ -230,7 +233,7 @@ function SasoEventticketsValidator(_myAjaxVar) {
 		showCheckResult(obj) {
 			if (obj.success === false) {
 				//let error_code = _server_result_getError(obj.error.msg);
-				__displayMessage('<center><span style="color:red;font-weight:bold;">'+obj.data.msg+'</span></center>');
+				__displayMessage('<center><span style="color:red;font-weight:bold;">'+__escHtml(obj.data.msg)+'</span></center>');
 				//return alert(obj.data.msg);
 				return;
 			}

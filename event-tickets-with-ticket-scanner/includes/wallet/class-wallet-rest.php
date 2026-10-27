@@ -27,6 +27,19 @@ class sasoEventtickets_Wallet_REST {
 	 * Register REST routes for the wallet API.
 	 */
 	public function register_routes(): void {
+		// Security (Wordfence review 2026-10): the wallet resolve endpoint is
+		// public by design, but must not be brute-forceable. Cheap transients
+		// rate-limit the lookups per IP before any DB resolution happens.
+		$ip = $this->MAIN->getCore()->getRealIpAddr();
+		if ($ip !== '') {
+			$tk = 'saso_et_wallet_rl_' . md5($ip);
+			$n = intval(get_transient($tk));
+			if ($n >= 60) {
+				status_header(429);
+				wp_send_json_error(['code' => 'rate_limited', 'message' => 'Too many requests'], 429);
+			}
+			set_transient($tk, $n + 1, 5 * MINUTE_IN_SECONDS);
+		}
 		register_rest_route('saso-eventtickets/v1', '/wallet/ticket/(?P<public_id>[a-zA-Z0-9_\-]+)', [
 			'methods'             => \WP_REST_Server::READABLE,
 			'callback'            => [$this, 'rest_get_wallet_ticket'],
@@ -82,6 +95,21 @@ class sasoEventtickets_Wallet_REST {
 	 * Handle GET request for a single wallet ticket.
 	 */
 	public function rest_get_wallet_ticket(\WP_REST_Request $request): \WP_REST_Response {
+		// Security (Wordfence review 2026-10): public-by-design endpoint, must
+		// not be brute-forceable. NOTE: this check lives in the CALLBACK —
+		// register_routes() runs for every REST request of the whole site
+		// (rest_api_init bootstraps every router), so a limit placed there
+		// throttles unrelated REST traffic (incl. the ticket scanner boot).
+		$ip = $this->MAIN->getCore()->getRealIpAddr();
+		if ($ip !== '') {
+			$tk = 'saso_et_wallet_rl_' . md5($ip);
+			$n = intval(get_transient($tk));
+			if ($n >= 60) {
+				return new WP_REST_Response(['code' => 'rate_limited', 'message' => 'Too many requests'], 429);
+			}
+			set_transient($tk, $n + 1, 5 * MINUTE_IN_SECONDS);
+		}
+
 		$public_id = $request->get_param('public_id');
 
 		try {
@@ -120,8 +148,10 @@ class sasoEventtickets_Wallet_REST {
 			throw new \Exception('Ticket not found', 404);
 		}
 
-		// Validate order_id matches
-		if (intval($codeObj['order_id']) !== intval($order_id)) {
+		// Validate order part: Woo order id — or, for direct-sale (no-Woo)
+		// tickets, the internal order id (see getTicketId).
+		if (intval($codeObj['order_id']) !== intval($order_id)
+			&& $this->MAIN->getCore()->getInternalOrderIdOfCode($codeObj) !== intval($order_id)) {
 			throw new \Exception('Ticket not found', 404);
 		}
 
@@ -136,6 +166,17 @@ class sasoEventtickets_Wallet_REST {
 		// Must be a ticket (not just a code)
 		if (intval($metaObj['wc_ticket']['is_ticket'] ?? 0) !== 1) {
 			throw new \Exception('Ticket not found', 404);
+		}
+
+		// Paid gate: WooCommerce orders pay via is_paid(); direct-sale
+		// (no-Woo) orders gate on their internal order status instead —
+		// 'completed' is the Kasse-confirmed payment, the exact gate the
+		// scanner uses (isInternalOrderRedeemable). draft stays locked.
+		if ($this->MAIN->getCore()->getInternalOrderIdOfCode($codeObj) > 0) {
+			if (!$this->MAIN->getCore()->isInternalOrderRedeemable($codeObj)) {
+				throw new \Exception('Ticket not found', 404);
+			}
+			return [$codeObj, $metaObj];
 		}
 
 		// Verify order is paid

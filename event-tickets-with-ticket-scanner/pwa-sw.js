@@ -5,6 +5,7 @@ var CACHE_URLS_SUBSTRING = [
     'qr-scanner',
     'jquery',
     'ticket_scanner.js',
+    'scanner-offline.js',
     'jquery.qrcode',
     '.css',
     '.woff',

@@ -42,11 +42,16 @@ class sasoEventtickets_AdminSettings {
 			'getAllDaychooserCalendarData', 'getProductCalendarDetails', 'getRedemptionSummary', 'getRedemptionDetails', 'downloadRedemptionSummary',
 			'downloadSoldTicketsCSV', 'downloadErrorLogsCSV',
 		];
+		// security (Wordfence review 2026-10): this layer used to fall back to
+		// isUserAllowedToAccessAdminArea() — dead code, because every caller of
+		// this dispatcher already passed that exact check, so the inner
+		// condition was never false and destructive actions (changeOption,
+		// emptyTableCodes, token reads, CSV exports) were reachable by ANY role
+		// listed in adminAreaAllowedRoles. Sensitive actions now hard-require
+		// manage_options.
 		if (in_array(trim($a), $sensitive_actions) && !current_user_can('manage_options')) {
-			if (!$this->MAIN->isUserAllowedToAccessAdminArea()) {
-				if ($just_ret) throw new Exception("Permission denied");
-				return wp_send_json_error("Permission denied", 403);
-			}
+			if ($just_ret) throw new Exception("Permission denied");
+			return wp_send_json_error("Permission denied", 403);
 		}
 
 		try {
@@ -1742,6 +1747,24 @@ class sasoEventtickets_AdminSettings {
 			if (isset($data['meta']['orderless'])) {
 				$metaObj['orderless'] = intval($data['meta']['orderless']) === 1 ? 1 : 0;
 			}
+			if (isset($data['meta']['event_location'])) {
+				// Event location of the event entity — shown on order-less
+				// tickets (Kasse / online shop) and the shop page.
+				$metaObj['event_location'] = mb_substr(trim(sanitize_text_field(wp_unslash($data['meta']['event_location']))), 0, 255);
+			}
+			if (isset($data['meta']['max_tickets'])) {
+				// Overall capacity shared by ALL ticket types of the list
+				// (e.g. the venue's total seats) — independent of the
+				// per-type contingents on each ticket product. 0 = no limit.
+				$metaObj['max_tickets'] = intval($data['meta']['max_tickets']) > 0 ? intval($data['meta']['max_tickets']) : 0;
+			}
+			if (isset($data['meta']['show_in_shop'])) {
+				// Shop catalog (central /tickets/ Kasse overview, premium):
+				// every list appears as a purchasable event section BY DEFAULT;
+				// 0 hides this list from the catalog only — its own event
+				// page (/tickets/<id>/) and WooCommerce keep working.
+				$metaObj['show_in_shop'] = intval($data['meta']['show_in_shop']) === 1 ? 1 : 0;
+			}
 			foreach (['event_start_date', 'event_end_date'] as $_dateKey) {
 				if (isset($data['meta'][$_dateKey])) {
 					$metaObj[$_dateKey] = SASO_EVENTTICKETS::sanitize_date_from_datepicker($data['meta'][$_dateKey]);
@@ -2158,7 +2181,7 @@ class sasoEventtickets_AdminSettings {
 			$search = trim(str_replace("&", "", $search));
 
 			if ($search != "") {
-				$where .= " and (a.code like '%".$this->MAIN->getCore()->clearCode($search)."%' or b.name like '%".$search."%' or a.time like '%".$search."%' ";
+				$where .= " and (a.code like '%".$this->MAIN->getDB()->reinigen_in($this->MAIN->getCore()->clearCode($search))."%' or b.name like '%".$search."%' or a.time like '%".$search."%' ";
 				if (intval($search) > 0) {
 					$where .= " or a.order_id = ".intval($search)." ";
 				}
@@ -3752,7 +3775,7 @@ class sasoEventtickets_AdminSettings {
 		$whereJoin = '';
 		$whereCount = '';
 		if ($search !== '') {
-			$searchClean = $this->MAIN->getCore()->clearCode($search);
+			$searchClean = $this->MAIN->getDB()->reinigen_in($this->MAIN->getCore()->clearCode($search));
 			$whereJoin = " WHERE h.option_key LIKE '%{$searchClean}%' OR h.old_value LIKE '%{$search}%' OR h.new_value LIKE '%{$search}%'";
 			$whereCount = "option_key LIKE '%{$searchClean}%' OR old_value LIKE '%{$search}%' OR new_value LIKE '%{$search}%'";
 			$sql .= $whereJoin;
@@ -3964,11 +3987,73 @@ class sasoEventtickets_AdminSettings {
 	 * (generateCode/addCode), stamps internal_order_id + meta and keeps the
 	 * ticket-id idcode mechanism of 3.2.0 intact.
 	 */
+	/**
+	 * Expire stale unpaid direct-sale orders: drafts older than the
+	 * filterable window (default 48h) are cancelled, which releases their
+	 * reserved tickets back into the contingent. Runs from the daily cron.
+	 *
+	 * Filter: saso_eventtickets_internal_order_expiry_hours (default 48).
+	 *
+	 * @return int number of expired orders
+	 */
+	public function expireStaleInternalOrders(): int {
+		$hours = max(1, intval(apply_filters($this->MAIN->_add_filter_prefix.'internal_order_expiry_hours', 48)));
+		$tbl = $this->MAIN->getDB()->getTabelle('orders');
+		$rows = $this->MAIN->getDB()->_db_datenholen(
+			"select id from ".$tbl." where status = 'draft' and time < date_sub(now(), interval ".intval($hours)." hour)"
+		);
+		$expired = 0;
+		foreach ((array) $rows as $row) {
+			try {
+				// full storno path: frees the tickets (internal_order_id reset,
+				// redeem/registration/meta cleaned) — same as a Kasse cancel
+				$this->setInternalOrderStatus(['id' => intval($row['id']), 'status' => 'cancelled']);
+				$expired++;
+			} catch (Exception $e) {
+				// one broken order must not block the sweep
+				$this->logErrorToDB($e, null, "expire stale order #".$row['id']);
+			}
+		}
+		return $expired;
+	}
+
+	/**
+	 * Sold ticket counts per product for one list. Draft orders count as
+	 * reserved (otherwise parallel drafts oversell), cancelled/refunded do
+	 * not. WooCommerce sales manage their own stock and are not counted.
+	 */
+	public function getSoldTicketCountsForList($list_id) {
+		$counts = [];
+		$rows = $this->MAIN->getDB()->_db_datenholen(
+			"select meta from ".$this->MAIN->getDB()->getTabelle('orders').
+			" where list_id = ".intval($list_id)." and status in ('draft','completed')"
+		);
+		foreach ((array) $rows as $row) {
+			$meta = json_decode((string) $row['meta'], true);
+			if (!is_array($meta) || !is_array($meta['lines'] ?? null)) continue;
+			foreach ($meta['lines'] as $l) {
+				$pid = isset($l['product_id']) ? intval($l['product_id']) : 0;
+				$qty = max(1, intval($l['qty'] ?? 1));
+				if ($pid > 0) $counts[$pid] = ($counts[$pid] ?? 0) + $qty;
+				// lines without a product (legacy amount-only sales) collect
+				// under key 0 — they count towards the list's overall
+				// capacity but never match a per-product gate.
+				else $counts[0] = ($counts[0] ?? 0) + $qty;
+			}
+		}
+		return $counts;
+	}
+
 	private function addInternalOrder($data) {
 		$list_id = isset($data['list_id']) ? intval($data['list_id']) : 0;
 		if ($list_id < 1) throw new Exception("#9240 list id is missing");
 		$amount = isset($data['amount']) ? intval($data['amount']) : 1;
-		$this->getList(['id'=>$list_id]); // throws #104/#105 when unknown
+		$listObj = $this->getList(['id'=>$list_id]); // throws #104/#105 when unknown
+		$listMeta = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+		// Overall capacity shared by every ticket type of the list — the
+		// venue's seats. 0 (default) = no overall limit; per-type contingents
+		// stay independent on top of it.
+		$listMaxTickets = !empty($listMeta['max_tickets']) ? intval($listMeta['max_tickets']) : 0;
 
 		$confirm = !empty($data['confirm']);
 
@@ -3983,6 +4068,10 @@ class sasoEventtickets_AdminSettings {
 		if ($productsInput !== null) {
 			if (count($productsInput) < 1) throw new Exception("#9254 products array is empty");
 			$prodTable = $this->MAIN->getDB()->getTabelle('products');
+			// Per-type contingents: draft orders count as reserved, so the
+			// check is taken once per sale and again per repeated line below.
+			$soldByProduct = $this->getSoldTicketCountsForList($list_id);
+			$pendingByProduct = [];
 			foreach ($productsInput as $p) {
 				$pid = isset($p['product_id']) ? intval($p['product_id']) : 0;
 				$qty = isset($p['qty']) ? intval($p['qty']) : 1;
@@ -4004,6 +4093,15 @@ class sasoEventtickets_AdminSettings {
 					'code_ids' => [],
 				];
 				$line['formatter_values'] = (is_array($prodMeta) && !empty($prodMeta['formatter_values'])) ? stripslashes((string)$prodMeta['formatter_values']) : null;
+				$line['proof_required'] = (is_array($prodMeta) && !empty($prodMeta['proof_required'])) ? 1 : 0;
+			$line['max_tickets'] = (is_array($prodMeta) && !empty($prodMeta['max_tickets'])) ? intval($prodMeta['max_tickets']) : 0;
+			if ($line['max_tickets'] > 0) {
+				$taken = intval($soldByProduct[$pid] ?? 0) + intval($pendingByProduct[$pid] ?? 0);
+				if ($taken + $qty > $line['max_tickets']) {
+					throw new Exception("#9270 sold out — only ".max(0, $line['max_tickets'] - $taken)." left for ".(string)$prod['name']);
+				}
+			}
+			$pendingByProduct[$pid] = intval($pendingByProduct[$pid] ?? 0) + $qty;
 				$priceTotalCents += $line['price_cents'] * $qty;
 				if ($priceCurrency == '' && $line['currency'] != '') $priceCurrency = $line['currency'];
 				$lines[] = $line;
@@ -4012,6 +4110,18 @@ class sasoEventtickets_AdminSettings {
 		}
 		if ($amount < 1 || $amount > 100) throw new Exception("#9241 amount must be between 1 and 100");
 
+		// Overall capacity: shared pool across every ticket type of the list.
+		// Sold + reserved (drafts) + this order must stay within the limit;
+		// WooCommerce sales manage their own stock and are not counted.
+		if ($listMaxTickets > 0) {
+			$soldCounts = $this->getSoldTicketCountsForList($list_id);
+			$soldTotal = array_sum($soldCounts);
+			$withThisOrder = ($productsInput !== null) ? $soldTotal + array_sum($pendingByProduct ?? []) : $soldTotal + $amount;
+			if ($withThisOrder > $listMaxTickets) {
+				throw new Exception("#9271 sold out — only ".max(0, $listMaxTickets - $soldTotal)." tickets left in total for this list");
+			}
+		}
+
 		// Bargeld-Back: optional "amount given" — must cover the total; the
 		// change is persisted for the cash trail (pure calculator, no drawer).
 		$givenCents = null;
@@ -4019,21 +4129,29 @@ class sasoEventtickets_AdminSettings {
 			$givenCents = self::ticketPriceToCents($data['amount_given']);
 			if ($givenCents < $priceTotalCents) throw new Exception("#9260 amount given is less than the total");
 		}
+		// Payment method whitelist (Saso 2026-10-26): cash is the Kasse
+		// default; unknown input NEVER lands raw in the stored meta.
+		$paymentMethod = 'cash';
+		if (isset($data['payment_method'])) {
+			$cand = strtolower(trim(substr((string)$data['payment_method'], 0, 20)));
+			if (in_array($cand, ['cash', 'card', 'other'], true)) $paymentMethod = $cand;
+		}
 
+		$buyerName = isset($data['customer_name']) ? sanitize_text_field(substr((string) $data['customer_name'], 0, 255)) : '';
 		$order_id = $this->MAIN->getDB()->insert("orders", [
+			"time"=>current_time('mysql'),
 			"list_id"=>$list_id,
 			"status"=>$confirm ? "completed" : "draft",
-			"payment_note"=>isset($data['payment_note']) ? sanitize_text_field(substr((string)$data['payment_note'], 0, 100)) : "",
+			"payment_note"=>isset($data['payment_note']) ? sanitize_text_field(substr((string) $data['payment_note'], 0, 100)) : "",
 			"delivery_state"=>$confirm ? "issued" : "draft",
-			"customer_name"=>isset($data['customer_name']) ? sanitize_text_field(substr((string)$data['customer_name'], 0, 255)) : "",
+			"customer_name"=>$buyerName,
 			"customer_email"=>isset($data['customer_email']) ? sanitize_email(substr((string)$data['customer_email'], 0, 255)) : "",
-			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($this->buildInternalOrderMeta($lines, $priceTotalCents, $priceCurrency, $givenCents))
+			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($this->buildInternalOrderMeta($lines, $priceTotalCents, $priceCurrency, $givenCents, $paymentMethod))
 		]);
 
 		// formatter from the list (same source addCodeFromListForOrder uses)
-		$listObj = $this->getList(['id'=>$list_id]);
+		// — $listObj/$listMeta were loaded at the top of addInternalOrder.
 		$formatterValues = "";
-		$listMeta = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
 		if (!empty($listMeta['formatter']['active']) && $listMeta['formatter']['active'] == 1) {
 			$formatterValues = stripslashes($listMeta['formatter']['format']);
 		}
@@ -4076,9 +4194,34 @@ class sasoEventtickets_AdminSettings {
 			$codeObj = $this->MAIN->getCore()->retrieveCodeById($id);
 			$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 			$metaObj['internal_order'] = ["id"=>$order_id, "status"=>$confirm ? "completed" : "draft"];
+			// Buyer freeze: the scanner's large guest-name display reads the
+			// customer name from the ticket itself — one shape for Kasse and
+			// online-shop sales alike.
+			if ($buyerName !== '') {
+				$metaObj['internal_order']['customer_name'] = $buyerName;
+			}
+			// Ticket-type snapshot (same freeze principle as the price): the
+			// order-less ticket PDF and later views show the ticket type it
+			// was sold as, independent of the products table.
+			if ($lineIdx !== null) {
+				$metaObj['internal_order']['product_id'] = intval($lines[$lineIdx]['product_id']);
+				$metaObj['internal_order']['product_name'] = (string) $lines[$lineIdx]['name'];
+				$metaObj['internal_order']['price_cents'] = intval($lines[$lineIdx]['price_cents']);
+				$metaObj['internal_order']['currency'] = (string) $lines[$lineIdx]['currency'];
+				// Proof-of-eligibility freeze (discount ticket types): the line
+				// flag is snapshotted onto the ticket so the scanner can demand
+				// the door check without a live product lookup.
+				if (!empty($lines[$lineIdx]['proof_required'])) {
+					$metaObj['internal_order']['proof_required'] = 1;
+				}
+			}
 			// ticket marker + list idcode (getTicketId resolves on first read when
 			// missing — calling it here warms it so the ticket is scanner-ready)
 			$this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
+			// getTicketId only persists in the order-less idcode case — write
+			// the internal-order snapshot (ticket type, price, proof flag)
+			// deterministically for every generated ticket.
+			$codeObj = $this->MAIN->getCore()->saveMetaObject($codeObj, $metaObj);
 			$code_ids[] = $id;
 			$codes[] = $code;
 			if ($lineIdx !== null) $lines[$lineIdx]['code_ids'][] = $id;
@@ -4089,7 +4232,7 @@ class sasoEventtickets_AdminSettings {
 		// only known after generation — the insert-time meta had them empty)
 		$this->MAIN->getDB()->update("orders", [
 			"code_ids"=>$this->MAIN->getCore()->json_encode_with_error_handling($code_ids),
-			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($this->buildInternalOrderMeta($lines, $priceTotalCents, $priceCurrency, $givenCents)),
+			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($this->buildInternalOrderMeta($lines, $priceTotalCents, $priceCurrency, $givenCents, $paymentMethod)),
 		], ["id"=>$order_id]);
 
 		do_action( $this->MAIN->_do_action_prefix.'admin_addInternalOrder', $order_id, $code_ids, $data );
@@ -4110,7 +4253,7 @@ class sasoEventtickets_AdminSettings {
 	 * orders.meta payload for a direct-sales order: line snapshots + money
 	 * fields (product-ticket-entity spec). Legacy orders keep [] (no keys).
 	 */
-	private function buildInternalOrderMeta(array $lines, int $priceTotalCents, string $priceCurrency, $givenCents): array {
+	private function buildInternalOrderMeta(array $lines, int $priceTotalCents, string $priceCurrency, $givenCents, string $paymentMethod = 'cash'): array {
 		if (count($lines) == 0) return [];
 		// NOTE: the house JSON encoder runs JSON_NUMERIC_CHECK, so decimal
 		// strings ("60.00") decode back as floats. The *_cents integers are
@@ -4127,6 +4270,16 @@ class sasoEventtickets_AdminSettings {
 			$meta["payment_change_returned"] = self::ticketCentsToPrice($givenCents - $priceTotalCents);
 			$meta["payment_change_returned_cents"] = $givenCents - $priceTotalCents;
 		}
+		// Structured payment trail (Saso 2026-10-26): one nested block, kept
+		// beside the flat fields for compatibility — future methods (card
+		// terminal, vouchers, split payments) extend here without migrations.
+		$meta["payment"] = [
+			"method" => $paymentMethod,
+			"source" => "kasse",
+			"currency" => $priceCurrency,
+			"given_cents" => ($givenCents !== null) ? $givenCents : null,
+			"change_cents" => ($givenCents !== null) ? ($givenCents - $priceTotalCents) : null,
+		];
 		return $meta;
 	}
 
@@ -4155,7 +4308,20 @@ class sasoEventtickets_AdminSettings {
 		foreach ($daten as &$r) {
 			$r['meta_obj'] = json_decode((string)$r['meta'], true) ?: [];
 			$r['price_cents'] = self::ticketPriceToCents($r['price']);
+			$r['proof_required'] = !empty($r['meta_obj']['proof_required']) ? 1 : 0;
+			$r['max_tickets'] = isset($r['meta_obj']['max_tickets']) ? intval($r['meta_obj']['max_tickets']) : 0;
+			$r['sold'] = 0;
 			unset($r['meta']);
+		}
+		unset($r); // break the & reference BEFORE any later foreach reuses $r
+		// sold counts in one pass (per-type contingents display)
+		$listIds = [];
+		foreach ($daten as $r) { if (!empty($r['list_id'])) $listIds[intval($r['list_id'])] = 1; }
+		$soldByList = [];
+		foreach (array_keys($listIds) as $lid) { $soldByList[$lid] = $this->getSoldTicketCountsForList($lid); }
+		foreach ($daten as $i => $r) {
+			$lid = intval($r['list_id'] ?? 0);
+			if ($lid > 0) $daten[$i]['sold'] = intval($soldByList[$lid][intval($r['id'])] ?? 0);
 		}
 		unset($r);
 		return ["products" => $daten];
@@ -4171,6 +4337,8 @@ class sasoEventtickets_AdminSettings {
 		$meta = [
 			"description" => isset($data['description']) ? wp_kses_post((string)$data['description']) : "",
 			"formatter_values" => isset($data['formatter_values']) ? (string)$data['formatter_values'] : "",
+			"proof_required" => !empty($data['proof_required']) ? 1 : 0,
+			"max_tickets" => (isset($data['max_tickets']) && intval($data['max_tickets']) > 0) ? intval($data['max_tickets']) : 0,
 		];
 		$id = $this->MAIN->getDB()->insert("products", [
 			"time"=>wp_date("Y-m-d H:i:s"),
@@ -4211,6 +4379,8 @@ class sasoEventtickets_AdminSettings {
 		$metaObj = json_decode((string)$prod['meta'], true) ?: [];
 		if (isset($data['description'])) $metaObj['description'] = wp_kses_post((string)$data['description']);
 		if (isset($data['formatter_values'])) $metaObj['formatter_values'] = (string)$data['formatter_values'];
+		if (isset($data['proof_required'])) $metaObj['proof_required'] = !empty($data['proof_required']) ? 1 : 0;
+		if (isset($data['max_tickets'])) $metaObj['max_tickets'] = intval($data['max_tickets']) > 0 ? intval($data['max_tickets']) : 0;
 		$felder["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 		$this->MAIN->getDB()->update("products", $felder, ["id"=>$id]);
 		return ["id"=>$id];
@@ -4328,7 +4498,7 @@ class sasoEventtickets_AdminSettings {
 
 		$where = "";
 		if ($search != "") {
-			$where .= " caller_name like '%".$this->MAIN->getCore()->clearCode($search)."%' or exception_msg like '%".$search."%' ";
+			$where .= " caller_name like '%".$this->MAIN->getDB()->reinigen_in($this->MAIN->getCore()->clearCode($search))."%' or exception_msg like '%".$search."%' ";
 			$sql .= $where;
 		}
 

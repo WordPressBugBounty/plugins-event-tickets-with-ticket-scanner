@@ -104,7 +104,7 @@ jQuery(document).ready(()=>{
                 if (ecbf) ecbf(response);
                 else {
                     let msg = (typeof response.data !== "undefined" && response.data.status ? response.data.status : '') + " " + (response.data.message ? response.data.message : '');
-                    renderFatalError(msg.trim());
+                    renderFatalError(escapeHtml(msg.trim()));
                 }
             } else {
                 cbf && cbf(response.data);
@@ -129,7 +129,7 @@ jQuery(document).ready(()=>{
                 if (ecbf) ecbf(response);
                 else {
                     let msg = (response.data.status ? response.data.status : '') + " " + (response.data.message ? response.data.message : '');
-                    renderFatalError(msg.trim());
+                    renderFatalError(escapeHtml(msg.trim()));
                 }
             } else {
                 cbf && cbf(response.data);
@@ -252,6 +252,10 @@ jQuery(document).ready(()=>{
         }
 		return format;
 	}
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
     function renderInfoBox(title, content) {
         let _options = {
             title: title,

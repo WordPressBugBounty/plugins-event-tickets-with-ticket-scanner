@@ -443,6 +443,267 @@ final class sasoEventtickets_Ticket {
 	function rest_ping(?WP_REST_Request $web_request = null) {
 		return ['time'=>time(), 'img_pfad'=>plugins_url( "img/",__FILE__ ), '_ret'=>['_server'=>$this->getTimes()] ];
 	}
+
+	// ── offline scanning (token-controlled, engine serves the scanner) ──
+
+	/**
+	 * Resolve the auth token for an offline request (param or the one the
+	 * permission callback already found). Returns the token row or null.
+	 */
+	private function offline_token(?WP_REST_Request $web_request) {
+		$authHandler = $this->MAIN->getAuthtokenHandler();
+		$code = null;
+		if (is_object($web_request) && method_exists($web_request, 'get_param') && $web_request->has_param($authHandler::$authtoken_param)) {
+			$code = $web_request->get_param($authHandler::$authtoken_param);
+		}
+		if (($code === null || $code === '') && !empty($this->authtoken)) {
+			$code = $this->authtoken;
+		}
+		if (empty($code)) return null;
+		$tokenObj = $authHandler->getAuthtokenByCode($code);
+		if (!$tokenObj) return null;
+		// keep the redeem path's token context in sync (list bindings etc.)
+		$this->authtoken = $code;
+		if (!empty($tokenObj['id'])) $this->authtoken_id = (int) $tokenObj['id'];
+		return $tokenObj;
+	}
+
+	private function offline_token_meta($tokenObj): array {
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectAuthtoken($tokenObj['meta'] ?? '');
+		return is_array($metaObj['ticketscanner'] ?? null) ? $metaObj['ticketscanner'] : [];
+	}
+
+	/**
+	 * Master switch for offline scanning: a premium feature. Off (or free
+	 * version) means the scanner behaves exactly as before this existed —
+	 * no pack, no queue, no endpoints answering anything.
+	 */
+	public function offline_master_active(): bool {
+		return $this->MAIN->isPremium()
+			&& $this->MAIN->getOptions()->isOptionCheckboxActive('ticketScannerOfflineMode');
+	}
+
+	public function offline_enabled_for_request(?WP_REST_Request $web_request): bool {
+		if (!$this->offline_master_active()) return false;
+		$tokenObj = $this->offline_token($web_request);
+		if (!$tokenObj) return false;
+		$ts = $this->offline_token_meta($tokenObj);
+		return intval($ts['offline_enabled'] ?? 0) === 1;
+	}
+
+	function rest_offline_config($web_request) {
+		if (!$this->offline_master_active()) {
+			return ['offline' => false, 'mode' => 'off', 'lists' => '', 'label' => '', 'v' => time()];
+		}
+		$tokenObj = $this->offline_token($web_request);
+		$ts = $tokenObj ? $this->offline_token_meta($tokenObj) : [];
+		$tokenOn = $tokenObj && intval($ts['offline_enabled'] ?? 0) === 1;
+		if ($tokenOn) {
+			return [
+				'offline' => true,
+				'mode' => 'token',
+				'lists' => (string) ($ts['offline_lists'] ?? 'all'),
+				'label' => (string) ($tokenObj['name'] ?? ''),
+				'v' => time(),
+			];
+		}
+		// master on, but no (activated) token: the scanner has access — ask at
+		// start whether to preload tickets (all from today, or today only)
+		return ['offline' => true, 'mode' => 'ask', 'lists' => '', 'label' => '', 'v' => time()];
+	}
+
+	/**
+	 * Ticket pack for offline validation: the lists the token may preload
+	 * (offline_lists 'all' or csv) intersected with its list bindings.
+	 * Tickets carry the public ticket id (what a scan delivers), the redeem
+	 * budget, used count and flags — no buyer data (data minimization).
+	 */
+	function rest_offline_pack($web_request) {
+		if (!$this->offline_master_active()) throw new Exception("#9013 ".__("offline scanning is not enabled", 'event-tickets-with-ticket-scanner'));
+		$tokenObj = $this->offline_token($web_request);
+		$ts = [];
+		if ($tokenObj) {
+			$ts = $this->offline_token_meta($tokenObj);
+			if (intval($ts['offline_enabled'] ?? 0) !== 1) $ts = [];
+		}
+		// token packs follow the token's list setup; ask-loads (no token
+		// activated) preload every accessible list — narrowed by scope
+		$scope = strtolower(trim((string) (is_object($web_request) && method_exists($web_request, 'get_param') ? $web_request->get_param('scope') : '')) ?: 'all');
+		if (!in_array($scope, ['all', 'today', 'since'], true)) $scope = 'all';
+
+		$allowed = $this->offline_pack_list_ids($ts);
+		$listsOut = [];
+		foreach ($allowed as $listId) {
+			if ($scope !== 'all' && !$this->offline_list_in_scope(intval($listId), $scope)) continue;
+			$listRow = $this->MAIN->getDB()->_db_datenholen(
+				"select id, name from ".$this->MAIN->getDB()->getTabelle('lists')." where id = ".intval($listId)." and aktiv = 1 limit 1"
+			);
+			if (empty($listRow)) continue;
+			$tickets = [];
+			$rows = $this->MAIN->getDB()->_db_datenholen(
+				"select * from ".$this->MAIN->getDB()->getTabelle('codes')." where list_id = ".intval($listId)." and aktiv = 1"
+			);
+			foreach ((array) $rows as $row) {
+				$codeObj = $this->MAIN->getCore()->setMetaObj($row);
+				$metaObj = $codeObj['metaObj'];
+				$publicId = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
+				if ($publicId === '') continue;
+				$used = max(
+					count((array) ($metaObj['wc_ticket']['stats_redeemed'] ?? [])),
+					intval($row['redeemed'] ?? 0)
+				);
+				$tickets[] = [
+					'c' => $publicId,
+					'r' => max(1, $this->getMaxRedeemAmountOfTicket($codeObj)),
+					'u' => $used,
+					'cvv' => $this->MAIN->getCore()->isCVVRequiredForScanner($codeObj) ? 1 : 0,
+				];
+			}
+			$listsOut[] = ['id' => intval($listId), 'name' => (string) $listRow[0]['name'], 'tickets' => $tickets];
+		}
+		return ['v' => time(), 'scope' => $scope, 'label' => $tokenObj ? (string) ($tokenObj['name'] ?? '') : '', 'lists' => $listsOut];
+	}
+
+	private function offline_pack_list_ids(array $ts): array {
+		$db = $this->MAIN->getDB();
+		$want = trim((string) ($ts['offline_lists'] ?? 'all'));
+		if ($want === '' || strtolower($want) === 'all') {
+			$rows = $db->_db_datenholen("select id from ".$db->getTabelle('lists')." where aktiv = 1 order by id asc");
+			$ids = array_map('intval', array_column((array) $rows, 'id'));
+		} else {
+			$ids = array_filter(array_map('intval', explode(',', $want)));
+		}
+		$bound = trim((string) ($ts['bound_to_lists'] ?? ''));
+		if ($bound !== '') {
+			$boundIds = array_filter(array_map('intval', explode(',', $bound)));
+			$ids = array_values(array_intersect($ids, $boundIds));
+		}
+		return array_values(array_unique($ids));
+	}
+
+	private function offline_reset_scan_state() {
+		// between replayed events the per-scan caches must go, the token stays
+		$this->setCodeObj(null);
+		$ref = new ReflectionProperty($this, 'parts');
+		$ref->setAccessible(true);
+		$ref->setValue($this, null);
+		$refO = new ReflectionProperty($this, 'order');
+		$refO->setAccessible(true);
+		$refO->setValue($this, null);
+	}
+
+	/**
+	 * Event window scope for ask-loads: 'today' = running today, 'since' =
+	 * not over yet. Lists without event dates always pass — never lose a
+	 * ticket just because the organizer skipped the date fields.
+	 */
+	private function offline_list_in_scope(int $listId, string $scope): bool {
+		$row = $this->MAIN->getDB()->_db_datenholen(
+			"select meta from ".$this->MAIN->getDB()->getTabelle('lists')." where id = ".$listId." limit 1"
+		);
+		if (empty($row)) return false;
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($row[0]['meta'] ?? '');
+		$start = trim((string) ($metaObj['event_start_date'] ?? ''));
+		$end = trim((string) ($metaObj['event_end_date'] ?? ''));
+		if ($start === '' && $end === '') return true;
+		$todayStart = strtotime(wp_date('Y-m-d') . ' 00:00:00');
+		$todayEnd = strtotime(wp_date('Y-m-d') . ' 23:59:59');
+		$startTs = $start !== '' ? strtotime($start . ' ' . trim((string) ($metaObj['event_start_time'] ?? '')) . '') : null;
+		$endTs = $end !== '' ? strtotime($end . ' ' . (trim((string) ($metaObj['event_end_time'] ?? '')) ?: '23:59:59')) : null;
+		if ($scope === 'today') {
+			$from = $startTs ?? 0;
+			$to = $endTs ?? PHP_INT_MAX;
+			return $from <= $todayEnd && $to >= $todayStart;
+		}
+		// since: not over yet
+		$to = $endTs ?? PHP_INT_MAX;
+		return $to >= $todayStart;
+	}
+
+	/**
+	 * Replay queued offline scans. Each event runs through the SAME redeem
+	 * path as a live scan (CVV gate, token bindings, direct-sale state).
+	 * Idempotent per client event id: a network retry returns the stored
+	 * result, marked duplicate — never a second redemption.
+	 * Returns per event: state ok|conflict|invalid|cvv, duplicate flag.
+	 */
+	function rest_offline_sync(WP_REST_Request $web_request) {
+		if (!$this->offline_master_active()) throw new Exception("#9023 ".__("offline scanning is not enabled", 'event-tickets-with-ticket-scanner'));
+		$tokenObj = $this->offline_token($web_request);
+		if ($tokenObj) {
+			$ts = $this->offline_token_meta($tokenObj);
+			if (intval($ts['offline_enabled'] ?? 0) !== 1) throw new Exception("#9021 ".__("offline scanning is not enabled for this token", 'event-tickets-with-ticket-scanner'));
+		}
+
+		$scannerId = trim((string) $web_request->get_param('sid'));
+		$events = $web_request->get_param('events');
+		if (!is_array($events) || count($events) === 0) throw new Exception("#9022 ".__("no events", 'event-tickets-with-ticket-scanner'));
+
+		$results = [];
+		foreach ($events as $event) {
+			if (!is_array($event)) continue;
+			$eid = substr(trim((string) ($event['eid'] ?? '')), 0, 64);
+			$code = trim((string) ($event['code'] ?? ''));
+			if ($eid === '' || $code === '') {
+				$results[] = ['eid' => $eid, 'state' => 'invalid', 'msg' => 'malformed event'];
+				continue;
+			}
+
+			// dedupe: already processed event ids answer with the stored state
+			// security (Wordfence review 2026-10): eid is client-controlled REST
+			// input — must never be interpolated raw. Prepared + escaped.
+			$existing = $this->MAIN->getDB()->_db_datenholen_prepared(
+				"select state from ".$this->MAIN->getDB()->getTabelle('offline_sync')." where eid = %s limit 1",
+				[$eid]
+			);
+			if (!empty($existing)) {
+				$results[] = ['eid' => $eid, 'state' => (string) $existing[0]['state'], 'duplicate' => true];
+				continue;
+			}
+
+			$state = 'invalid';
+			$msg = '';
+			try {
+				$evReq = new WP_REST_Request('GET');
+				$evReq->set_param('code', $code);
+				if (!empty($event['cvv']) && is_string($event['cvv'])) $evReq->set_param('cvv', $event['cvv']);
+				$ret = $this->rest_redeem_ticket($evReq);
+				$payload = is_array($ret) ? $ret : (is_object($ret) && method_exists($ret, 'get_data') ? $ret->get_data() : null);
+				if (is_array($payload) && !empty($payload['requires_cvv'])) {
+					$state = 'cvv';
+					$msg = 'cvv required';
+				} elseif (is_array($payload) && !empty($payload['redeem_successfully'])) {
+					$state = 'ok';
+				} else {
+					$msg = 'redeem refused';
+				}
+				$this->offline_reset_scan_state();
+			} catch (Exception $e) {
+				$m = strtolower($e->getMessage());
+				if (strpos($m, 'cvv') !== false) {
+					$state = 'cvv';
+				} elseif (strpos($m, 'redeem') !== false) {
+					$state = 'conflict';
+					$msg = 'already redeemed (another scanner or earlier scan)';
+				} else {
+					$msg = substr($e->getMessage(), 0, 200);
+				}
+				$this->offline_reset_scan_state();
+			}
+
+			$this->MAIN->getDB()->insert('offline_sync', [
+				'time' => current_time('mysql'),
+				'eid' => $eid,
+				'authtoken_id' => $this->authtoken_id,
+				'scanner_id' => substr($scannerId, 0, 64),
+				'code' => substr($code, 0, 255),
+				'state' => $state,
+			]);
+			$results[] = ['eid' => $eid, 'state' => $state, 'duplicate' => false, 'msg' => $msg];
+		}
+		return ['results' => $results, 'v' => time()];
+	}
+
 	function rest_helper_tickets_redeemed($codeObj) {
 		$metaObj = $metaObj = $codeObj['metaObj'];
 		$ret = [];
@@ -570,7 +831,19 @@ final class sasoEventtickets_Ticket {
 			$cvvMap = $this->readCVVMapFromRequest($web_request);
 			return $this->retrieve_order_ticket($code, $cvvMap);
 		}
-		return $this->retrieve_ticket($code, $cvv);
+		// Proof gate (discount ticket types): proof_ok=1 is the scanner's
+		// "eligibility checked at the door" confirmation — without it a
+		// proof-required ticket is returned unredeemed with its infos.
+		$proofConfirmed = false;
+		if (SASO_EVENTTICKETS::issetRPara('proof_ok')) {
+			$proofConfirmed = intval(SASO_EVENTTICKETS::getRequestPara('proof_ok')) === 1;
+		} elseif (is_object($web_request) && method_exists($web_request, 'get_param')) {
+			$paramProof = $web_request->get_param('proof_ok');
+			if ($paramProof !== null) {
+				$proofConfirmed = intval($paramProof) === 1;
+			}
+		}
+		return $this->retrieve_ticket($code, $cvv, $proofConfirmed);
 	}
 
 	/**
@@ -779,7 +1052,7 @@ final class sasoEventtickets_Ticket {
 			'public_ticket_id' => (string) ($rowMeta['wc_ticket']['_public_ticket_id'] ?? ''),
 		];
 	}
-	private function retrieve_ticket($code, string $cvv = '') {
+	private function retrieve_ticket($code, string $cvv = '', bool $proofConfirmed = false) {
 		$ret = [];
 
 		// CVV-locked pre-check: if this ticket was locked by 5 wrong CVV attempts,
@@ -845,7 +1118,12 @@ final class sasoEventtickets_Ticket {
 		}
 
 		// check if redeem immediately is requested (runs AFTER CVV gate above)
-		if (isset($_GET['redeem']) && $_GET['redeem'] == "1") {
+		// Proof gate (discount ticket types): auto-redeem must not fire for a
+		// proof-required ticket until the operator confirmed the eligibility
+		// check at the door (proof_ok=1). The response then carries the ticket
+		// infos + proof_required so the scanner shows the prompt instead.
+		$proofRequired = !empty($metaObj['internal_order']['proof_required']);
+		if (isset($_GET['redeem']) && $_GET['redeem'] == "1" && !($proofRequired && !$proofConfirmed)) {
 			// redeem immediately
 			$_redeem_ret = [];
 			try {
@@ -876,11 +1154,16 @@ final class sasoEventtickets_Ticket {
 		if ($isOrderless) {
 			// Empty stand-ins carrying the ticket list name: every product meta read
 			// below resolves to nothing instead of fataling, and the scanner shows the
-			// list as the ticket title
+			// list as the ticket title. Tickets sold via Kasse / online shop carry
+			// their ticket type as the frozen internal-order product name — that
+			// name wins (falls back to the list/event name).
 			$order_item = new WC_Order_Item_Product();
 			$product = new WC_Product_Simple();
 			$listObj = $this->MAIN->getCore()->getListById(intval($codeObj['list_id'] ?? 0));
-			$product->set_name(!empty($listObj['name']) ? $listObj['name'] : '');
+			$ticketTypeName = !empty($metaObj['internal_order']['product_name'])
+				? (string) $metaObj['internal_order']['product_name']
+				: (!empty($listObj['name']) ? $listObj['name'] : '');
+			$product->set_name($ticketTypeName);
 			$product_parent = $product;
 			$product_original = $product;
 			$product_parent_original = $product;
@@ -948,6 +1231,9 @@ final class sasoEventtickets_Ticket {
 		// Eine Karte, die nie durch den Shop lief, ist nicht "unbezahlt" - sie ist
 		// ein anderer Fall. Der Scanner soll ihn benennen statt einen Mangel zu melden.
 		$ret['is_without_order'] = $this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj);
+		// Proof-of-eligibility flag (discount ticket types sold via Kasse/online
+		// shop): the scanner shows the door-check prompt before redeeming.
+		$ret['proof_required'] = !empty($metaObj['internal_order']['proof_required']) ? 1 : 0;
 		$ret['allow_redeem_only_paid'] = $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketAllowRedeemOnlyPaid');
 		$ret['order_status'] = $order != null ? $order->get_status() : '';
 		$ret = array_merge($ret, $this->rest_helper_tickets_redeemed($codeObj));
@@ -961,7 +1247,7 @@ final class sasoEventtickets_Ticket {
 			}
 			$ret['ticket_sub_title'] = trim($ret['ticket_sub_title']);
 		}
-		$ret['ticket_location'] = trim(get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_event_location', true ));
+		$ret['ticket_location'] = $this->getEventLocationForCodeObj($codeObj, $product_parent_original->get_id());
 		$ret['ticket_info'] = wp_kses_post(nl2br(trim(get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_ticket_is_ticket_info', true ))));
 		$ret['ticket_location_label'] = wp_kses_post($this->MAIN->getAdmin()->getOptionValue("wcTicketTransLocation"));
 
@@ -984,6 +1270,21 @@ final class sasoEventtickets_Ticket {
 			$ret['cst_label'] = wp_kses_post($this->MAIN->getAdmin()->getOptionValue("wcTicketTransCustomer"));
 			$ret['cst_billing_address'] = $order != null ? wp_kses_post(trim($order->get_formatted_billing_address())) : '';
 		}
+		// Large-display elements (scanner big blocks). The guest name comes
+		// from the order — WooCommerce billing name, or the customer name of
+		// the plugin's own checkout (internal order) once it stores one.
+		$ret['cst_name'] = "";
+		if ($order != null) {
+			$ret['cst_name'] = esc_html(trim($order->get_billing_first_name()." ".$order->get_billing_last_name()));
+		} else if (!empty($metaObj['internal_order']['customer_name'])) {
+			$ret['cst_name'] = esc_html(trim((string) $metaObj['internal_order']['customer_name']));
+		}
+		// Per-element switches, transported with every scan response.
+		$ret['big'] = [
+			'name' => $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketScannerBigCustomerName') ? 1 : 0,
+			'values' => $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketScannerBigTicketValues') ? 1 : 0,
+			'type' => $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketScannerBigTicketType') ? 1 : 0,
+		];
 		$ret['payment_label'] = "";
 		$ret['payment_paid_at_label'] = "";
 		$ret['payment_paid_at'] = "";
@@ -1020,6 +1321,11 @@ final class sasoEventtickets_Ticket {
 		$ret['product']['id_original'] = $product_original->get_id();
 		$ret['product']['parent_id_original'] = $product_parent_original->get_id();
 		$ret['product']['name'] = esc_html($product_parent->get_Title());
+		// Order-less tickets (plugin's own checkout) have no product title —
+		// fall back to the frozen ticket-type name of the internal order.
+		if (trim((string) $ret['product']['name']) === '' && !empty($metaObj['internal_order']['product_name'])) {
+			$ret['product']['name'] = esc_html((string) $metaObj['internal_order']['product_name']);
+		}
 		$ret['product']['name_variant'] = "";
 		//if ($is_variation && $this->MAIN->getOptions()->isOptionCheckboxActive('wcTicketPDFDisplayVariantName') && count($product->get_attributes()) > 0) {
 		if ($is_variation && count($product->get_attributes()) > 0) {
@@ -1332,62 +1638,10 @@ final class sasoEventtickets_Ticket {
 					$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 					$codeObj["metaObj"] = $metaObj;
 					$public_ticket_id = $metaObj["wc_ticket"]["_public_ticket_id"];
-					// $code is the display form (with dashes); $codeObj['code'] is the raw form
-					$rawCodeForGate = (string) ($codeObj['code'] ?? '');
-					$displayCodeForGate = (string) $code;
-
-					// Task 15 — per-row CVV gate. If this row's product requires CVV, verify
-					// the CVV from the per-row map BEFORE invoking redeem_ticket. Rows that
-					// fail the gate are NOT redeemed; they get a requires_cvv stub.
-					if ($this->MAIN->getCore()->isCVVRequiredForScanner($codeObj)) {
-						// Build a ticketObj-compatible shape so stripDetailsForCVVLocked
-						// can be used for all three stub cases below (locked, empty-CVV,
-						// wrong-CVV). product_id / product_parent_id come from woocommerce
-						// meta; these are the same product-public values carried by
-						// getOrderTicketsInfos rows, so retrieve and redeem shapes stay
-						// in lockstep when the helper changes.
-						$stubTicketObj = [
-							'code'             => $rawCodeForGate,
-							'code_display'     => $displayCodeForGate,
-							'code_public'      => (string) $public_ticket_id,
-							'product_id'       => (int) ($metaObj['woocommerce']['product_id'] ?? 0),
-							'product_parent_id'=> (int) ($metaObj['woocommerce']['product_parent_id'] ?? 0),
-						];
-
-						$lockedMeta = $rawCodeForGate !== '' ? $this->loadLockedMetaForCode($rawCodeForGate) : null;
-						if ($lockedMeta !== null) {
-							$ret["cvv_required"][] = $this->stripDetailsForCVVLocked(
-								$stubTicketObj,
-								['attempts_remaining' => 0, 'locked' => true],
-								$metaObj
-							);
-							continue;
-						}
-						// CVV map keyed by raw or display code — accept both.
-						$cvvInput = '';
-						if ($rawCodeForGate !== '' && isset($cvvMap[$rawCodeForGate])) {
-							$cvvInput = (string) $cvvMap[$rawCodeForGate];
-						} elseif (isset($cvvMap[$displayCodeForGate])) {
-							$cvvInput = (string) $cvvMap[$displayCodeForGate];
-						}
-						if ($cvvInput === '') {
-							$ret["cvv_required"][] = $this->stripDetailsForCVVLocked(
-								$stubTicketObj,
-								null,
-								$metaObj
-							);
-							continue;
-						}
-						$result = $this->MAIN->getCore()->verifyCVV($codeObj, $cvvInput);
-						if (!$result['ok']) {
-							$ret["cvv_required"][] = $this->stripDetailsForCVVLocked(
-								$stubTicketObj,
-								$result,
-								$metaObj
-							);
-							continue;
-						}
-						// CVV verified — fall through to redeem_ticket call
+					$gate = $this->cvvGateOrderRow($codeObj, (string) $code, $cvvMap, $metaObj, $public_ticket_id);
+					if ($gate !== null) {
+						$ret["cvv_required"][] = $gate;
+						continue;
 					}
 
 					$r = $this->redeem_ticket("", $codeObj);
@@ -1402,9 +1656,93 @@ final class sasoEventtickets_Ticket {
 				}
 			}
 		}
+
+		// ── Reconcile against the codes table ─────────────────────────────
+		// The order item meta code list can drift from the real ticket rows
+		// (partial refunds rewrite the meta; ticket generation before 3.2.8
+		// could lose part of it under parallel triggers). "Redeem Complete
+		// Order" must cover EVERY active ticket of the order, so missing
+		// rows are redeemed here too and reported via order_redeem_reconciled.
+		$processed = [];
+		foreach ($ret["redeemed"] as $r) { $processed[] = (string) $r["code"]; }
+		foreach ($ret["errors"] as $r) { $processed[] = (string) $r["code"]; }
+		foreach ($ret["cvv_required"] as $r) { if (!empty($r["code"])) $processed[] = (string) $r["code"]; }
+		$missing = [];
+		try {
+			$rows = $this->MAIN->getDB()->_db_datenholen(
+				"select code, code_display from " . $this->MAIN->getDB()->getTabelle("codes") .
+				" where order_id = " . $order_id . " and aktiv = 1"
+			);
+			foreach ((array) $rows as $row) {
+				$display = (string) ($row["code_display"] ?? $row["code"]);
+				if (!in_array($display, $processed, true) && !in_array((string) $row["code"], $processed, true)) {
+					$missing[] = $display;
+				}
+			}
+		} catch (Exception $e) { /* best-effort: without the lookup the loop above stands */ }
+		$ret["order_redeem_reconciled"] = count($missing);
+		foreach ($missing as $code) {
+			$public_ticket_id = "";
+			try {
+				$this->parts = null;
+				$codeObj = $this->MAIN->getCore()->retrieveCodeByCode($code);
+				$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+				$codeObj["metaObj"] = $metaObj;
+				$public_ticket_id = $metaObj["wc_ticket"]["_public_ticket_id"] ?? "";
+				$gate = $this->cvvGateOrderRow($codeObj, (string) $code, $cvvMap, $metaObj, $public_ticket_id);
+				if ($gate !== null) {
+					$ret["cvv_required"][] = $gate;
+					continue;
+				}
+				$r = $this->redeem_ticket("", $codeObj);
+				$r["code"] = $code;
+				if ($this->redeem_successfully) {
+					$ret["redeemed"][] = $r;
+				} else {
+					$ret["not_redeemed"] = $r;
+				}
+			} catch (Exception $e) {
+				$ret["errors"][] = ["error"=>$e->getMessage(), "code"=>$code, "ticket_id"=>$public_ticket_id];
+			}
+		}
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_redeem_order_ticket', $ret, $code );
 		do_action( $this->MAIN->_do_action_prefix.'ticket_redeem_order_ticket', $code, $ret );
 		return $ret;
+	}
+
+	/**
+	 * Per-row CVV gate for order-ticket redemption loops (batch "Redeem
+	 * Complete Order" and the reconcile pass). Returns a requires_cvv stub
+	 * row when this ticket must NOT be redeemed yet, null when it may pass.
+	 */
+	private function cvvGateOrderRow(array $codeObj, string $code, array $cvvMap, array $metaObj, string $public_ticket_id) {
+		if (!$this->MAIN->getCore()->isCVVRequiredForScanner($codeObj)) return null;
+		$rawCodeForGate = (string) ($codeObj['code'] ?? '');
+		$stubTicketObj = [
+			'code'              => $rawCodeForGate,
+			'code_display'      => (string) $code,
+			'code_public'       => (string) $public_ticket_id,
+			'product_id'        => (int) ($metaObj['woocommerce']['product_id'] ?? 0),
+			'product_parent_id' => (int) ($metaObj['woocommerce']['product_parent_id'] ?? 0),
+		];
+		$lockedMeta = $rawCodeForGate !== '' ? $this->loadLockedMetaForCode($rawCodeForGate) : null;
+		if ($lockedMeta !== null) {
+			return $this->stripDetailsForCVVLocked($stubTicketObj, ['attempts_remaining' => 0, 'locked' => true], $metaObj);
+		}
+		$cvvInput = '';
+		if ($rawCodeForGate !== '' && isset($cvvMap[$rawCodeForGate])) {
+			$cvvInput = (string) $cvvMap[$rawCodeForGate];
+		} elseif (isset($cvvMap[(string) $code])) {
+			$cvvInput = (string) $cvvMap[(string) $code];
+		}
+		if ($cvvInput === '') {
+			return $this->stripDetailsForCVVLocked($stubTicketObj, null, $metaObj);
+		}
+		$result = $this->MAIN->getCore()->verifyCVV($codeObj, $cvvInput);
+		if (!$result['ok']) {
+			return $this->stripDetailsForCVVLocked($stubTicketObj, $result, $metaObj);
+		}
+		return null;
 	}
 	private function redeem_ticket($code, $codeObj=null, string $cvv = '') {
 		// CVV-locked pre-check: if this ticket was locked by 5 wrong CVV attempts,
@@ -1578,30 +1916,81 @@ final class sasoEventtickets_Ticket {
 		}
 	}
 
+	/**
+	 * Event config of a ticket list (the event entity). Order-less tickets
+	 * (Kasse / online shop, no WooCommerce product) read their event data —
+	 * date, times and location — from here instead of product post meta.
+	 * @param int $list_id
+	 * @return array{location:string, ticket_start_date:string, ticket_start_time:string, ticket_end_date:string, ticket_end_time:string}
+	 */
+	public function getEventConfigForList(int $list_id): array {
+		$ret = ['location' => '', 'ticket_start_date' => '', 'ticket_start_time' => '',
+			'ticket_end_date' => '', 'ticket_end_time' => ''];
+		if ($list_id < 1) return $ret;
+		try {
+			$listObj = $this->MAIN->getAdmin()->getList(['id' => $list_id]);
+		} catch (Exception $e) {
+			return $ret;
+		}
+		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
+		foreach (['ticket_start_date' => 'event_start_date', 'ticket_end_date' => 'event_end_date',
+			'ticket_start_time' => 'event_start_time', 'ticket_end_time' => 'event_end_time'] as $target => $key) {
+			if (!empty($metaObj[$key])) $ret[$target] = trim((string) $metaObj[$key]);
+		}
+		if (!empty($metaObj['event_location'])) $ret['location'] = trim(sanitize_text_field((string) $metaObj['event_location']));
+		return $ret;
+	}
+
+	/**
+	 * Event location for a ticket: product post meta when a product is bound
+	 * (classic Woo path), the list's event config for order-less tickets.
+	 */
+	public function getEventLocationForCodeObj($codeObj, $product_id): string {
+		$product_id = intval($product_id);
+		if ($product_id > 0) {
+			return trim(get_post_meta($product_id, 'saso_eventtickets_event_location', true));
+		}
+		if (is_array($codeObj)) {
+			return $this->getEventConfigForList(intval($codeObj['list_id'] ?? 0))['location'];
+		}
+		return '';
+	}
+
 	public function calcDateStringAllowedRedeemFrom($product_id, $codeObj = null) {
 		// check if product id is from WPML plugin
 		// get the original product id, because the event ticket information is stored in the original product
 		$product_id_orig = $this->getWPMLProductId($product_id);
 
 		$ret = [];
-		$ret['is_daychooser'] = get_post_meta( $product_id_orig, 'saso_eventtickets_is_daychooser', true ) == "yes" ? true : false;
+		// Event source: an order-less ticket (Kasse / online shop without a
+		// WooCommerce product) carries no product config — its event date and
+		// times come from the ticket list (the event entity) instead.
+		$listEvent = null;
+		if (empty($product_id_orig) && is_array($codeObj)) {
+			$listEvent = $this->getEventConfigForList(intval($codeObj['list_id'] ?? 0));
+		}
+		$readEvent = function(string $post_key, string $list_key) use ($product_id_orig, $listEvent): string {
+			if ($listEvent !== null) return $listEvent[$list_key];
+			return trim(get_post_meta($product_id_orig, $post_key, true));
+		};
+		$ret['is_daychooser'] = $listEvent === null && get_post_meta( $product_id_orig, 'saso_eventtickets_is_daychooser', true ) == "yes" ? true : false;
 		$ret['is_daychooser_value_set'] = false;
-		$ret['is_date_for_all_variants'] = get_post_meta( $product_id_orig, 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
+		$ret['is_date_for_all_variants'] = $listEvent === null && get_post_meta( $product_id_orig, 'saso_eventtickets_is_date_for_all_variants', true ) == "yes" ? true : false;
 		$ret['is_date_set'] = true;
 		$ret['is_end_date_set'] = true;
 		$ret['is_end_time_set'] = false;
 
-		$ret['ticket_start_date'] = trim(get_post_meta( $product_id_orig, 'saso_eventtickets_ticket_start_date', true ));
+		$ret['ticket_start_date'] = $readEvent('saso_eventtickets_ticket_start_date', 'ticket_start_date');
 		$ret['is_start_date_set'] = !empty($ret['ticket_start_date']) ? true : false;
-		$ret['ticket_start_time'] = trim(get_post_meta( $product_id_orig, 'saso_eventtickets_ticket_start_time', true ));
+		$ret['ticket_start_time'] = $readEvent('saso_eventtickets_ticket_start_time', 'ticket_start_time');
 		$ret['is_start_time_set'] = !empty($ret['ticket_start_time']) ? true : false;
-		$ret['ticket_end_date'] = trim(get_post_meta( $product_id_orig, 'saso_eventtickets_ticket_end_date', true ));
+		$ret['ticket_end_date'] = $readEvent('saso_eventtickets_ticket_end_date', 'ticket_end_date');
 		$ret['ticket_end_date_orig'] = $ret['ticket_end_date'];
-		$ret['ticket_end_time'] = trim(get_post_meta( $product_id_orig, 'saso_eventtickets_ticket_end_time', true ));
+		$ret['ticket_end_time'] = $readEvent('saso_eventtickets_ticket_end_time', 'ticket_end_time');
 
-		$ret['daychooser_offset_start'] = intval(get_post_meta( $product_id_orig, 'saso_eventtickets_daychooser_offset_start', true ));
-		$ret['daychooser_offset_end'] = intval(get_post_meta( $product_id_orig, 'saso_eventtickets_daychooser_offset_end', true ));
-		$ret['daychooser_exclude_wdays'] = get_post_meta( $product_id_orig, 'saso_eventtickets_daychooser_exclude_wdays', true );
+		$ret['daychooser_offset_start'] = $listEvent === null ? intval(get_post_meta( $product_id_orig, 'saso_eventtickets_daychooser_offset_start', true )) : 0;
+		$ret['daychooser_offset_end'] = $listEvent === null ? intval(get_post_meta( $product_id_orig, 'saso_eventtickets_daychooser_offset_end', true )) : 0;
+		$ret['daychooser_exclude_wdays'] = $listEvent !== null ? [] : get_post_meta( $product_id_orig, 'saso_eventtickets_daychooser_exclude_wdays', true );
 		if ($ret['daychooser_exclude_wdays'] == "") $ret['daychooser_exclude_wdays'] = [];
 
 		$ret['daychooser_exclude_dates'] = [];
@@ -2303,8 +2692,8 @@ final class sasoEventtickets_Ticket {
 				echo '</p></center>';
 			} catch (Exception $e) {
 				echo '</div>';
-				echo '<div style="color:red;">'.$e->getMessage().'</div>';
-				echo $this->getParts()['code'];
+				echo '<div style="color:red;">'.esc_html($e->getMessage()).'</div>';
+				echo esc_html($this->getParts()['code']);
 			}
 		}
 		echo '</div>';
@@ -4073,7 +4462,7 @@ final class sasoEventtickets_Ticket {
 					echo $this->renderStatusBanner('error', __('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage()));
 				} else {
 					echo '<h1 style="color:red;">'.esc_html__('Error', 'event-tickets-with-ticket-scanner').'</h1>';
-					echo '<p>'.$e->getMessage().'</p>';
+					echo '<p>'.esc_html($e->getMessage()).'</p>';
 				}
 			}
 

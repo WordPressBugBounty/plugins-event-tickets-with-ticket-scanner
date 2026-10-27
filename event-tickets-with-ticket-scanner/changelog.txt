@@ -2,6 +2,30 @@
 
 
 
+= 3.2.9 - 2026-10-27 =
+* Kasse: touch-friendly minus/plus steppers around each ticket product quantity field.
+* Kasse: the change calculator now works like a real calculator — quick buttons add onto the current amount, typed digits append to it, and a backspace key (⌫) removes the last entered digit.
+
+* Kasse: change calculator with keypad and additive quick buttons (5/10/20/50/100) plus a big live change display — payment method and amounts are tracked in the order meta JSON.
+* Kasse: ticket products are prefetched once per visit instead of one request per dialog — noticeably faster product display.
+* Security: offline scanner sync event IDs are now passed as prepared SQL parameters (hardens the sync endpoint against SQL injection via crafted event payloads).* Security: admin table searches (codes, error logs, options history) escape the decoded search term before it enters the query — URL-encoded quotes can no longer break out of the search filter.* Security: error messages that echo back scanned or entered ticket codes are HTML-escaped at the source, in the legacy ticket/scanner fallbacks, and are rendered as plain text by the scanner and the public validation widget (protects against malicious QR codes).* Security: sensitive admin actions (option changes, code deletion, CSV exports, auth-token management) now require the manage_options capability — plugin admin-area access alone is no longer sufficient.* Security: releasing a fresh seat reservation requires the matching ownership token issued when the seat was blocked.* Security: visitor-controlled proxy headers (X-Forwarded-For, Client-IP) are no longer trusted for rate limits and IP blocks. IP-based limits now use the server-side address; sites behind a CDN/reverse proxy can enable the new option "Trust proxy IP headers (X-Forwarded-For)" (trustProxyIpHeaders) to restore proxy resolution.
+* Security: the wallet ticket lookup endpoint is now rate-limited per IP to block ticket-ID enumeration attempts.
+* Offline ticket scanning (premium): a master option enables the feature; per auth token you choose which ticket lists that scanner preloads. Scanners opened without a token are asked at start whether to preload tickets — all from today onwards, or today only (ask mode, choice remembered for the session, changeable any time). Scans keep working without a connection — validated locally, queued, and synced automatically when the network returns (online event, periodic retry, sync button). Safe with several scanners: the server replays every queued scan through the regular redeem path, retries are idempotent per scan id, and conflicts are reported. With the option off, everything behaves exactly as before.
+* Unpaid online-shop orders no longer block contingents: draft orders older than 48 hours (filterable) are cancelled automatically once a day and release their reserved tickets.
+* Wallet: tickets sold through the Kasse and the built-in online shop can now be saved into the Vollstart Wallet app — the wallet previously accepted WooCommerce-paid tickets only.
+* Google Ads measurement: visits that arrive with a ?gclid= click parameter keep it through the session and store it on the order at checkout (private order meta), so advertising conversions can be measured per order.
+* New lists open directly in the edit dialog after saving — ticket products with prices, limits and shop settings are visible immediately instead of showing up only when editing an existing list.
+
+* Ticket types (Kasse and online shop): new optional eligibility-proof switch for discounted types — the ticket scanner asks at the entrance to check the proof (ID, student or retiree pass) before it redeems the ticket.
+* Events without WooCommerce: date, times and location now live on the event (ticket list) — tickets sold via Kasse and the online shop print them on the PDF, together with the ticket type each ticket was sold as.
+* Admin: when the security session (nonce) expires after a long idle time, a single dialog explains it and reloads the page via OK — instead of an error message on every action.
+* Ticket scanner: new per-element large display options — guest name from the order (WooCommerce or the plugin's own checkout), ticket values and ticket type can each be shown in big, clearly visible letters right after validation.
+* Ticket scanner, "Redeem Complete Order": the batch now cross-checks the order's tickets in the database — tickets missing from the order item code list (for example after partial refunds) are redeemed too, and the scan answer reports how many were reconciled.
+* Own checkout (Kasse and online shop): the buyer's name is now frozen onto every ticket at sale time, so the scanner treats tickets sold without WooCommerce exactly like WooCommerce tickets.
+* Own checkout: optional per-type ticket contingent — a maximum sellable quantity per ticket type. The Kasse and the online shop stop automatically at the limit and show how many are already sold; open orders count as reserved.
+* Ticket lists: optional overall capacity — set a total maximum on the list and all ticket types share one pool. Mixed sales (regular + discounted) can no longer oversell the venue's seats.
+* Ticket lists: new "Show in shop catalog" switch — every list sells in the central ticket shop catalog by default; turn it off per list when an event should not be offered there.
+
 = 3.2.8 - 2026-10-20 =
 * Fix: When two orders are paid at the exact same moment, a ticket could end up linked to the other order. Ticket generation now locks per order and the ticket data writes are protected against such parallel-payment mix-ups.
 * Fix: PDF library compatibility reworked — plugins that bundle their own TCPDF/FPDF (e.g. shipping-label plugins) no longer crash when both libraries load in the same request; the legacy class names are now provided lazily on reference instead of being occupied at load time.

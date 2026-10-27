@@ -796,7 +796,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 if (ecbf) ecbf(response);
                 else {
                     let msg = (typeof response.data !== "undefined" && response.data.status ? response.data.status : '') + " " + (response.data.message ? response.data.message : '');
-                    renderFatalError(msg.trim());
+                    renderFatalError(escapeHtml(msg.trim()));
                 }
             } else {
                 cbf && cbf(response.data);
@@ -824,7 +824,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 if (ecbf) ecbf(response);
                 else {
                     let msg = (response.data.status ? response.data.status : '') + " " + (response.data.message ? response.data.message : '');
-                    renderFatalError(msg.trim());
+                    renderFatalError(escapeHtml(msg.trim()));
                 }
             } else {
                 cbf && cbf(response.data);
@@ -1087,6 +1087,25 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                 return;
             }
 
+            // Proof gate: discounted ticket (proof_required) that has NOT been
+            // redeemed yet — the operator must confirm the eligibility check at
+            // the door before the ticket may be redeemed. Server-side gated:
+            // redeem=1 without proof_ok=1 returned the ticket unredeemed.
+            if (data && data._ret && parseInt(data._ret.proof_required, 10) === 1
+                && typeof data._ret.redeem_operation === "undefined"
+                && !(data.metaObj && data.metaObj.wc_ticket && data.metaObj.wc_ticket.redeemed_date)) {
+                system.code = code;
+                system.status = 'awaiting_proof';
+                showProofPrompt(code, data);
+                cbf && cbf();
+                clearScanSuccessFrame();
+                // The scan lifecycle ends at the hand-over card — the proof
+                // confirm runs its own flow. Release the lock so the operator
+                // can scan the next guest if this customer walks away.
+                finishScanLifecycle();
+                return;
+            }
+
             system.status = "retrieved";
             system.data = data;
             system.last_scanned_ticket.data = data;
@@ -1123,13 +1142,80 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             clearAreas();
             $("#reader_output").html('');
             clearScanSuccessFrame();
-            updateTicketScannerInfoArea('<h1 style="color:red !important;">'+response.data+'</h3>');
+            updateTicketScannerInfoArea('<h1 style="color:red !important;">'+escapeHtml(response.data)+'</h3>');
             showScanNextTicketButton();
             cbf && cbf();
             drainPendingScan();
         });
     }
     // ── CVV prompt / hand-over / hand-back / locked ──────────────────────────
+
+    /**
+     * Proof gate card: discounted ticket (proof_required) — the operator checks
+     * the eligibility (ID, student/retiree pass, honorary card …) at the door
+     * and confirms. Only the confirm button redeems (retrieve with redeem=1 +
+     * proof_ok=1); the decline button leaves the ticket untouched.
+     * @param {string} code  Scanned ticket code (already normalized)
+     * @param {Object} data  Payload from REST with proof_required:1
+     */
+    function showProofPrompt(code, data) {
+        clearAreas();
+        var $card = $('<div class="saso-cvv-prompt saso-proof-prompt">');
+        $card.append('<h3>⚠️ ' + __('Proof of eligibility required', 'event-tickets-with-ticket-scanner') + '</h3>');
+        $card.append('<p>' + __('This ticket is discounted. Please check the eligibility (e.g. ID, student or retiree pass) before redeeming.', 'event-tickets-with-ticket-scanner') + '</p>');
+        if (data && data.metaObj && data.metaObj.wc_ticket && data.metaObj.wc_ticket.name_per_ticket) {
+            $card.append('<p><b>' + $('<i>').text(data.metaObj.wc_ticket.name_per_ticket).html() + '</b></p>');
+        }
+        var $actions = $('<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">').appendTo($card);
+        var $confirm = $('<button>', {'type': 'button', 'class': 'button button-primary saso-proof-confirm'})
+            .text(__('Proof checked — redeem', 'event-tickets-with-ticket-scanner'));
+        var $decline = $('<button>', {'type': 'button', 'class': 'button saso-proof-decline'})
+            .text(__('Not eligible — do not redeem', 'event-tickets-with-ticket-scanner'));
+        $actions.append($confirm).append($decline);
+        updateTicketScannerInfoArea($card);
+
+        $confirm.on('click', function() {
+            // Same flow as a normal auto-redeem scan, now with the door check
+            // confirmed — the server-side gate accepts redeem for this ticket.
+            _makeGet('retrieve_ticket', {'code': code, 'redeem': 1, 'proof_ok': 1}, function(resp) {
+                if (resp && resp.requires_cvv === true) {
+                    // proof- and CVV-protected: run the CVV hand-over next
+                    system.code = code;
+                    system.status = (resp.locked === true) ? 'locked' : 'awaiting_cvv';
+                    if (resp.locked === true) { showLockedScreen(resp); }
+                    else { showCVVPrompt(resp); }
+                    return;
+                }
+                system.status = "retrieved";
+                system.data = resp;
+                system.last_scanned_ticket.data = resp;
+                system.code = code;
+                clearAreas();
+                displayTicketInfo(resp);
+                displayTicketRetrievedInfo(resp);
+                displayTicketAdditionalInfos(resp);
+                $("#reader_output").html("");
+                if (resp && resp._ret && typeof resp._ret.redeem_operation !== "undefined") {
+                    displayRedeemedInfo(code, resp._ret.redeem_operation);
+                } else {
+                    showScanNextTicketButton();
+                }
+                finishScanLifecycle();
+            }, function(response) {
+                clearAreas();
+                $("#reader_output").html('');
+                updateTicketScannerInfoArea('<h1 style="color:red !important;">'+escapeHtml(response.data)+'</h3>');
+                showScanNextTicketButton();
+                drainPendingScan();
+            });
+        });
+        $decline.on('click', function() {
+            clearAreas();
+            updateTicketScannerInfoArea('<h3 style="color:#b32d2e !important;">' + __('Ticket not redeemed. Please ask for a regular ticket.', 'event-tickets-with-ticket-scanner') + '</h3>');
+            showScanNextTicketButton();
+            drainPendingScan();
+        });
+    }
 
     /**
      * Stage 1: hand-over screen — customer enters their security code.
@@ -1611,9 +1697,16 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         // Scroll to top so the user sees the result of the redeem action
         // (the buttons are below the fold on mobile, the result is at the top).
         window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
+        // Offline scanning (auth-token-controlled): with a preloaded pack and
+        // no connection the scan is validated locally and queued for sync.
+        if (window.SasoScannerOffline && SasoScannerOffline.shouldHandle()) {
+            SasoScannerOffline.handleScan(code, system.currentCVV || '');
+            return;
+        }
         $("#reader_output").html(__("start redeem ticket...loading..."));
         updateTicketScannerInfoArea(_getSpinnerHTML());
         _makeGet('redeem_ticket', {'code':code, 'cvv': system.currentCVV || ''}, data=>{
+            if (window.SasoScannerOffline) SasoScannerOffline.markRestOk();
             system.data = data;
             $("#reader_output").html('');
 
@@ -1625,7 +1718,7 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                     elems.css("margin-bottom", "5px");
                     elems.css("background-color", "red");
                     //elems.css("color", "white");
-                    elems.append("<br>"+item.error);
+                    elems.append("<br>"+escapeHtml(item.error));
                 });
                 data.not_redeemed.forEach(item=>{
                     let elems = $('#order_info').find('li[data-id="'+encodeURIComponent(item.code)+'"]');
@@ -1653,7 +1746,14 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         }, response=>{
             clearAreas();
             $("#reader_output").html('');
-            updateTicketScannerInfoArea('<h1 style="color:red !important;">'+response.data+'</h3>');
+            // REST unreachable but offline mode has a preloaded pack: fall
+            // back to local validation + queue instead of a dead scanner.
+            if (window.SasoScannerOffline && SasoScannerOffline.isActive() && SasoScannerOffline.state.ready) {
+                SasoScannerOffline.markRestFailed();
+                SasoScannerOffline.handleScan(code, system.currentCVV || '');
+                return;
+            }
+            updateTicketScannerInfoArea('<h1 style="color:red !important;">'+escapeHtml(response.data)+'</h3>');
 
             showScanNextTicketButton();
 
@@ -1852,10 +1952,14 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             }
         }
         if (metaObj.wc_ticket.name_per_ticket != "") {
-            $('<p>').html(ret.name_per_ticket_label + " " +metaObj.wc_ticket.name_per_ticket).appendTo(div);
+            if (!(ret.big && parseInt(ret.big.values, 10) === 1)) {
+                $('<p>').html(ret.name_per_ticket_label + " " +metaObj.wc_ticket.name_per_ticket).appendTo(div);
+            }
         }
         if (metaObj.wc_ticket.value_per_ticket != "") {
-            $('<p>').html(ret.value_per_ticket_label + " " +metaObj.wc_ticket.value_per_ticket).appendTo(div);
+            if (!(ret.big && parseInt(ret.big.values, 10) === 1)) {
+                $('<p>').html(ret.value_per_ticket_label + " " +metaObj.wc_ticket.value_per_ticket).appendTo(div);
+            }
         }
         if (ret.ticket_amount_label != "") {
             $('<p>').html(ret.ticket_amount_label).appendTo(div);
@@ -1866,6 +1970,26 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
             p.append(' <b>('+ret.product_price_label+' '+ret.product_price_as_string+')</b>');
         }
         $('<p style="text-align:center;">').html(system.code).appendTo(div);
+
+        // Big display blocks (per-element scanner options): prepended so
+        // they sit right under the validation status — readable at arm's
+        // length, no scrolling. Order after prepending: name, values, type.
+        if (ret.big) {
+            if (parseInt(ret.big.type, 10) === 1 && ret.product && ret.product.name) {
+                div.prepend($('<p>').css({fontSize:'1.35em', fontWeight:'700', margin:'.15em 0', lineHeight:'1.25', textAlign:'center'}).text(ret.product.name));
+            }
+            if (parseInt(ret.big.values, 10) === 1) {
+                let _vals = [];
+                if (metaObj.wc_ticket.name_per_ticket) _vals.push($('<i>').text(metaObj.wc_ticket.name_per_ticket).html());
+                if (metaObj.wc_ticket.value_per_ticket) _vals.push($('<i>').text(metaObj.wc_ticket.value_per_ticket).html());
+                if (_vals.length > 0) {
+                    div.prepend($('<p>').css({fontSize:'1.35em', fontWeight:'700', margin:'.15em 0', lineHeight:'1.25', textAlign:'center'}).html(_vals.join(' · ')));
+                }
+            }
+            if (parseInt(ret.big.name, 10) === 1 && ret.cst_name) {
+                div.prepend($('<p>').css({fontSize:'1.8em', fontWeight:'800', margin:'.1em 0', lineHeight:'1.1', textAlign:'center', textTransform:'uppercase', letterSpacing:'.02em'}).text(ret.cst_name));
+            }
+        }
 
         // Store the ticket info HTML for the overlay — don't render inline.
         // Render a compact "summary card" inline so the area is never empty.

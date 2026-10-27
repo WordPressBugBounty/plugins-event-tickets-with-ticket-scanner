@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.2.8
+ * Version: 3.2.9
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.2.8');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.2.9');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -103,6 +103,7 @@ class sasoEventtickets {
 			$this->init_frontend();
 		}
 		add_action( 'sasoEventtickets_cronjob_daily', [$this, 'relay_sasoEventtickets_cronjob_daily'], 10, 0 ); // set in tickets.php
+		add_action( 'sasoEventtickets_cronjob_daily', [$this, 'relay_expire_stale_internal_orders'], 20, 0 );
 		add_action( 'plugins_loaded', [$this, 'WooCommercePluginLoaded'], 20, 0 );
   		if (basename($_SERVER['SCRIPT_NAME'] ?? '') == "admin-ajax.php") {
 			add_action('wp_ajax_nopriv_'.$this->_prefix.'_executeFrontend', [$this,'executeFrontend_a'], 10, 0); // nicht angemeldete user, sollen eine antwort erhalten
@@ -643,6 +644,9 @@ class sasoEventtickets {
 		add_action('woocommerce_checkout_create_order_line_item', [$this, 'relay_woocommerce_checkout_create_order_line_item'], 20, 4 );
 		add_action('woocommerce_check_cart_items', [$this, 'relay_woocommerce_check_cart_items'] );
 		add_action('woocommerce_new_order', [$this, 'relay_woocommerce_new_order'], 10, 1);
+		// Google Ads click tracking: capture ?gclid on landing, store on order.
+		add_action('template_redirect', [$this, 'relay_capture_gclid']);
+		add_action('woocommerce_checkout_create_order', [$this, 'relay_store_gclid_on_order'], 10, 2);
 		add_action('woocommerce_checkout_update_order_meta', [$this, 'relay_woocommerce_checkout_update_order_meta'], 20, 2);
 		add_action('woocommerce_order_status_changed', [$this, 'relay_woocommerce_order_status_changed'], 10, 3);
 		add_filter('woocommerce_order_item_display_meta_key', [$this, 'relay_woocommerce_order_item_display_meta_key'], 20, 3 );
@@ -969,6 +973,16 @@ class sasoEventtickets {
 	public function relay_woocommerce_new_order() {
 		$args = func_get_args();
 		return $this->getWC()->getOrderManager()->woocommerce_new_order(...$args);
+	}
+	public function relay_capture_gclid() {
+		return $this->getWC()->getGclidManager()->captureFromRequest($_GET);
+	}
+	public function relay_expire_stale_internal_orders() {
+		return $this->getAdmin()->expireStaleInternalOrders();
+	}
+	public function relay_store_gclid_on_order() {
+		$args = func_get_args();
+		return $this->getWC()->getGclidManager()->storeOnOrder(...$args);
 	}
 	public function relay_woocommerce_checkout_update_order_meta() {
 		$args = func_get_args();
@@ -1587,6 +1601,35 @@ class sasoEventtickets {
 		wp_register_script('ajax_script_ticket_scanner', $js_url, array('jquery', 'jquery-ui-dialog', 'wp-i18n'));
 		wp_enqueue_script('ajax_script_ticket_scanner');
 		wp_set_script_translations('ajax_script_ticket_scanner', 'event-tickets-with-ticket-scanner', __DIR__.'/languages');
+
+		// Offline scanning (token-controlled) — loaded after the scanner,
+		// hooks into redeemTicket when no connection is available.
+		$js_url = plugins_url( "scanner-offline.js?_v=".$this->getPluginVersion(), __FILE__);
+		wp_register_script('saso_et_scanner_offline', $js_url, array('ajax_script_ticket_scanner'));
+		wp_enqueue_script('saso_et_scanner_offline');
+		// translated UI strings shipped server-side (no client JED split)
+		wp_add_inline_script('saso_et_scanner_offline', 'window.ticketScannerOfflineStrings = '.wp_json_encode([
+			'connected' => __('Connected', 'event-tickets-with-ticket-scanner'),
+			'offlineHint' => __('Offline — scans are validated locally and queued', 'event-tickets-with-ticket-scanner'),
+			'preloaded' => __('Preloaded tickets: %s', 'event-tickets-with-ticket-scanner'),
+			'waiting' => __('Waiting for sync: %s', 'event-tickets-with-ticket-scanner'),
+			'conflicts' => __('Conflicts after last sync: %s', 'event-tickets-with-ticket-scanner'),
+			'syncNow' => __('Sync now', 'event-tickets-with-ticket-scanner'),
+			'scannerTitle' => __('Offline scanner', 'event-tickets-with-ticket-scanner'),
+			'packTooLarge' => __('Pack too large — restrict the offline lists on the auth token', 'event-tickets-with-ticket-scanner'),
+			'syncFailed' => __('Sync failed — will retry', 'event-tickets-with-ticket-scanner'),
+			'offlineUnknown' => __('Unknown ticket (offline)', 'event-tickets-with-ticket-scanner'),
+			'offlineCvv' => __('CVV-protected ticket — an online connection is required', 'event-tickets-with-ticket-scanner'),
+			'offlineUsed' => __('Already redeemed (offline state)', 'event-tickets-with-ticket-scanner'),
+			'offlineQueued' => __('Valid — saved, queued for sync', 'event-tickets-with-ticket-scanner'),
+			'askTitle' => __('Offline scanning?', 'event-tickets-with-ticket-scanner'),
+			'askText' => __('Preload the tickets onto this device so scanning keeps working when the connection drops?', 'event-tickets-with-ticket-scanner'),
+			'choiceSince' => __('Load tickets — from today onwards', 'event-tickets-with-ticket-scanner'),
+			'choiceToday' => __('Load tickets — today only', 'event-tickets-with-ticket-scanner'),
+			'choiceNo' => __('No, stay online', 'event-tickets-with-ticket-scanner'),
+			'changeChoice' => __('Offline…', 'event-tickets-with-ticket-scanner'),
+			'loadingPack' => __('Loading tickets…', 'event-tickets-with-ticket-scanner'),
+		]).';', 'before');
 
 		$ticketScannerDontRememberCamChoice = $this->getOptions()->isOptionCheckboxActive("ticketScannerDontRememberCamChoice") ? true : false;
 

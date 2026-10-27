@@ -100,6 +100,30 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 	var system = {is_debug:false, DYNJS:{}, DYNJS_CACHE:{}};
 	var FATAL_ERROR = false;
+
+	// ── expired security session (admin ajax nonce) ─────────────────────
+	// After a long idle time the nonce is stale and EVERY admin action
+	// answers "Security check failed". Show ONE dialog and reload on OK —
+	// instead of an error window per action.
+	var SECURITY_SESSION_HANDLED = false;
+	function _isSecuritySessionError(payload) {
+		// exact text of the nonce gate in sasoEventtickets_AdminSettings.php
+		return typeof payload === 'string' && payload.trim() === 'Security check failed';
+	}
+	function _handleSecuritySessionExpired() {
+		if (SECURITY_SESSION_HANDLED) return true;
+		SECURITY_SESSION_HANDLED = true;
+		FATAL_ERROR = true; // stop all further admin calls until the reload
+		var $backdrop = $('<div>').css({position:'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,.45)', zIndex:999998});
+		var $box = $('<div>').css({position:'fixed', top:'50%', left:'50%', transform:'translate(-50%,-50%)',
+			background:'#fff', borderRadius:'6px', boxShadow:'0 5px 30px rgba(0,0,0,.25)', padding:'24px 28px',
+			maxWidth:'380px', zIndex:999999, textAlign:'center'});
+		$box.append($('<h3 style="margin:0 0 10px;">').text(__('Security session expired', 'event-tickets-with-ticket-scanner')));
+		$box.append($('<p style="margin:0 0 16px;">').text(__('Your security session has expired after a long idle time. The page reloads to restore it — nothing was lost.', 'event-tickets-with-ticket-scanner')));
+		$box.append($('<button type="button" class="button button-primary">').text(__('OK — reload page', 'event-tickets-with-ticket-scanner')).on('click', function(){ window.location.reload(); }));
+		$('body').append($backdrop).append($box);
+		return true;
+	}
     var DIV = null;
     var LAYOUT = null;
     var DATA_LISTS = null;
@@ -171,6 +195,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
                 DATA.nonce = response.data.nonce;
             }
             if (!response.success) {
+            	if (_isSecuritySessionError(response.data) && _handleSecuritySessionExpired()) return;
             	if (ecbf) ecbf(response);
             	else LAYOUT.renderFatalError(response.data);
             } else {
@@ -202,7 +227,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
                 DATA.nonce = response.data.nonce;
             }
             if (!response.success) {
-				if (ecbf) ecbf(response);
+            	if (_isSecuritySessionError(response.data) && _handleSecuritySessionExpired()) return;
+            	if (ecbf) ecbf(response);
             	else LAYOUT.renderFatalError(response.data);
             } else {
             	cbf && cbf(response.data);
@@ -947,6 +973,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 				dlg.find("form").append('<p>'+_x('Bound to product(s)', 'label', 'event-tickets-with-ticket-scanner')+'<br><input name="inputBoundToProducts" type="text" placeholder="'+_x('all products allowed to be redeemed', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:100%;"><br>'+__('You can add comma separated "," product ids. This will limit the user to redeem tickets only of products listed here. If left empty, all are allowed.', 'event-tickets-with-ticket-scanner')+'</p>');
 				dlg.find("form").append('<p>'+_x('Bound to ticket list(s)', 'label', 'event-tickets-with-ticket-scanner')+'<br><input name="inputBoundToLists" type="text" placeholder="'+_x('all ticket lists allowed to be redeemed', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:100%;"><br>'+__('You can add comma separated "," ticket list ids. This will limit the user to redeem tickets of these lists only. If left empty, all are allowed. This is the only restriction that works for tickets without an order, because those have no product.', 'event-tickets-with-ticket-scanner')+'</p>');
+				if (isPremium()) {
+					dlg.find("form").append('<p><input type="checkbox" name="inputOfflineEnabled"> '+_x('Offline scanning', 'label', 'event-tickets-with-ticket-scanner')+'<br>'+__('The scanner of this token preloads its ticket lists and keeps scanning when the connection drops: scans are validated locally, queued and synced automatically once the network returns (also periodically and via a sync button). Multiple scanners are safe — the server keeps the final say and reports conflicts.', 'event-tickets-with-ticket-scanner')+'</p>');
+					dlg.find("form").append('<p>'+_x('Preload ticket list(s)', 'label', 'event-tickets-with-ticket-scanner')+'<br><input name="inputOfflineLists" type="text" placeholder="'+_x('all accessible ticket lists', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:100%;"><br>'+__('Comma separated ticket list ids the scanner preloads, or leave empty for every list this token may access. Keep the pack small if you have many tickets.', 'event-tickets-with-ticket-scanner')+'</p>');
+				}
 				dlg.dialog(_options);
 
 				dlg.find("form").append($('<p>'+_x('Description', 'label', 'event-tickets-with-ticket-scanner')+'<br><textarea name="desc" style="width:100%;"></textarea></p>'));
@@ -970,6 +1000,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					form[0].elements['inputName'].select();
 					form[0].elements['inputBoundToProducts'].value = editValues.metaObj.ticketscanner.bound_to_products;
 					form[0].elements['inputBoundToLists'].value = editValues.metaObj.ticketscanner.bound_to_lists || "";
+					if (form[0].elements['inputOfflineEnabled']) {
+						form[0].elements['inputOfflineEnabled'].checked = (parseInt(editValues.metaObj.ticketscanner.offline_enabled, 10) === 1);
+						form[0].elements['inputOfflineLists'].value = editValues.metaObj.ticketscanner.offline_lists || "";
+					}
 					form[0].elements['aktiv'].checked = editValues.aktiv == 1 ? true : false;
 					if (typeof metaObj.desc !== "undefined") {
 						form[0].elements['desc'].value = metaObj.desc;
@@ -987,6 +1021,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					_data['meta']['desc'] = form[0].elements['desc'].value.trim();
 					_data['meta']['ticketscanner']['bound_to_products'] = form[0].elements['inputBoundToProducts'].value.trim();
 					_data['meta']['ticketscanner']['bound_to_lists'] = form[0].elements['inputBoundToLists'].value.trim();
+					if (form[0].elements['inputOfflineEnabled']) {
+						_data['meta']['ticketscanner']['offline_enabled'] = form[0].elements['inputOfflineEnabled'].checked ? 1 : 0;
+						_data['meta']['ticketscanner']['offline_lists'] = form[0].elements['inputOfflineLists'].value.trim();
+					}
 					if (isPremium() && typeof PREMIUM.addAuthtokenMaskEditFieldsData != "undefined") PREMIUM.addAuthtokenMaskEditFieldsData(_data, form[0], editValues);
 
 					form[0].reset();
@@ -1103,7 +1141,11 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							let bound_to_products = metaObj.ticketscanner.bound_to_products == "" ? [] : metaObj.ticketscanner.bound_to_products.toString().split(",");
 							$("<div>").html("<b>Bound to product:</b> "+(bound_to_products.length == 0 ? "all products": bound_to_products.join(", "))).appendTo(div_inner);
 							let bound_to_lists = !metaObj.ticketscanner.bound_to_lists ? [] : metaObj.ticketscanner.bound_to_lists.toString().split(",");
-							$("<div>").html("<b>"+_x('Bound to ticket list', 'label', 'event-tickets-with-ticket-scanner')+":</b> "+(bound_to_lists.length == 0 ? _x('all ticket lists', 'label', 'event-tickets-with-ticket-scanner') : bound_to_lists.join(", "))).appendTo(div_inner);
+							$("<div>").html("<b>"+_x('Bound to ticket list', 'label', 'event-tickets-with-ticket-scanner')+":</b> "+(bound_to_lists.length == 0 || metaObj.ticketscanner.bound_to_lists == "" ? _x('all ticket lists', 'label', 'event-tickets-with-ticket-scanner') : bound_to_lists.join(", "))).appendTo(div_inner);
+							if (isPremium() && parseInt(metaObj.ticketscanner.offline_enabled, 10) === 1) {
+								let offline_lists = !metaObj.ticketscanner.offline_lists || metaObj.ticketscanner.offline_lists == "all" ? [] : metaObj.ticketscanner.offline_lists.toString().split(",");
+								$("<div>").html("<b>"+_x('Offline scanning', 'label', 'event-tickets-with-ticket-scanner')+":</b> "+(offline_lists.length == 0 ? _x('all accessible ticket lists', 'label', 'event-tickets-with-ticket-scanner') : offline_lists.join(", "))).appendTo(div_inner);
+							}
 
 							return div;
 						}
@@ -1161,6 +1203,84 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		}
 	}
 
+	// ── Kasse product cache (Saso 2026-10-26: "ticketliste nur einmal laden,
+	// wenn man kasse betritt — ein klick auf button kasse laedt neu") ──
+	// Filled once per Kasse entry (parallel silent prefetch over all lists);
+	// the sell dialog renders cache-first and never blocks on an AJAX call.
+	let KASSE_PRODUCTS_CACHE = null;
+	function __kassePrefetchProducts() {
+		KASSE_PRODUCTS_CACHE = {};
+		(DATA_LISTS || []).forEach(l => {
+			_makePost('getTicketProducts', {list_id: l.id, aktiv: 1}, ret => {
+				if (KASSE_PRODUCTS_CACHE !== null) KASSE_PRODUCTS_CACHE[l.id] = (ret && ret.products) || [];
+			}, ()=>{ /* silent — dialog falls back to lazy load */ });
+		});
+	}
+
+	/**
+	 * Pure keypad state machine for the Kasse change calculator (cash given).
+	 * state = {major:'12', minor:'5', dec:true, fresh:true}
+	 * keys: '0'–'9', ',' decimal separator, 'C' clear. fresh=true means the
+	 * buffer is empty (display may still show a quick-button sum).
+	 */
+	function kasseKeypadKey(state, key) {
+		if (!state || typeof state !== 'object') state = {major:'', minor:'', dec:false, fresh:true};
+		if (key === 'C') return {major:'', minor:'', dec:false, fresh:true};
+		if (key === 'back') {
+			// calculator back-delete (Saso 2026-10-27): drop the last entered
+			// character — decimal digit first, then the comma, then euros.
+			if (state.dec) {
+				if ((state.minor || '') !== '') return {major: state.major, minor: state.minor.slice(0, -1), dec:true, fresh:false};
+				return {major: state.major, minor:'', dec:false, fresh:false}; // dangling comma
+			}
+			return {major: (state.major || '').slice(0, -1), minor:'', dec:false, fresh:false};
+		}
+		if (key === ',') {
+			if (state.dec) return state;
+			return {major: state.major === '' ? '0' : state.major, minor:'', dec:true, fresh:false};
+		}
+		if (key < '0' || key > '9' || key.length !== 1) return state;
+		if (state.dec) {
+				if ((state.minor || '').length >= 2) return state; // max 2 decimals
+				return {major: state.major, minor: (state.minor || '') + key, dec:true, fresh:false};
+		}
+		let major = state.major || '';
+		if (major.replace(/^0+/, '').length >= 6) return state; // <= 999999
+		major = (major === '0' ? '' : major) + key;
+		return {major: major, minor:'', dec:false, fresh:false};
+	}
+
+	/** keypad state → integer cents (pure) */
+	function kasseKeypadCents(state) {
+		if (!state) return 0;
+		let major = parseInt(state.major || '0', 10) || 0;
+		let minor = state.minor || '';
+		minor = (minor + '00').slice(0, 2);
+		return major * 100 + (parseInt(minor, 10) || 0);
+	}
+
+	/** quick buttons add up: 2x 50 = 100 (pure) */
+	function kasseQuickAddCents(cents, addCents) {
+		let sum = (parseInt(cents, 10) || 0) + (parseInt(addCents, 10) || 0);
+		return sum > 99999999 ? 99999999 : sum;
+	}
+
+	/**
+	 * Calculator quick button (Saso 2026-10-27): ADD the quick value to the
+	 * current buffer and return the SUM as the new keypad state, so a digit
+	 * typed afterwards APPENDS to the sum instead of replacing it
+	 * ("klick 10 → 10, dann Zahl → hinten anhängen").
+	 */
+	function kasseQuickApply(state, addCents) {
+		let total = kasseQuickAddCents(kasseKeypadCents(state), addCents);
+		let major = Math.floor(total / 100);
+		let minor = total % 100;
+		if (minor === 0) return {major: String(major), minor:'', dec:false, fresh:false};
+		let minorStr = String(minor);
+		if (minorStr.length < 2) minorStr = '0' + minorStr; // 5 → "05"
+		return {major: String(major), minor: minorStr, dec:true, fresh:false};
+	}
+
 	function _displayKasseArea() {
 		STATE = 'kasse';
 		__kasseAutoRefreshStop(); // falls noch ein Timer einer vorherigen Session läuft
@@ -1170,6 +1290,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 
 		KASSE_DIV = $('<div/>').html(_getSpinnerHTML()).appendTo(DIV);
 		getDataLists(()=>{
+			__kassePrefetchProducts(); // one silent parallel sweep per Kasse entry
 			__renderKasse();
 		});
 	}
@@ -1506,10 +1627,63 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		// plain amount field; total + change (Bargeld-Back) update live.
 		let prodWrap = $('<div style="margin-bottom:8px;"/>').insertAfter(row1).hide();
 		let totalDiv = $('<div style="margin-bottom:8px;font-weight:600;"/>').insertAfter(prodWrap).hide();
-		let cashDiv = $('<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"/>').insertAfter(totalDiv).hide();
-		cashDiv.append($('<label/>').text(_x('Given', 'label', 'event-tickets-with-ticket-scanner')));
-		let givenInput = $('<input type="text" inputmode="decimal" class="et-kasse-form__given" style="width:100px;"/>').appendTo(cashDiv);
-		let changeDiv = $('<span/>').appendTo(cashDiv);
+		// ── Change calculator (Geld-zurück-Rechner, Saso 2026-10-26): keypad
+		// + additive quick buttons (2x 50 = 100) + big live change display.
+		// Only rendered when priced products are present; the amount flows
+		// through the hidden input the sell logic already reads.
+		let cashDiv = $('<div class="et-kasse-cash" style="margin-bottom:8px;"/>').insertAfter(totalDiv).hide();
+		let givenInput = $('<input type="hidden" class="et-kasse-form__given"/>').appendTo(cashDiv);
+		let kpState = kasseKeypadKey(null, 'C');
+		let givenCents = 0;
+		let givenDisp = $('<div/>').css({'font-size':'22px','font-weight':'700','text-align':'right','font-family':'monospace'}).text('0.00');
+		let dispRow = $('<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;"/>').appendTo(cashDiv);
+		dispRow.append($('<label/>').text(_x('Given', 'label', 'event-tickets-with-ticket-scanner')));
+		dispRow.append(givenDisp);
+		let quickRow = $('<div style="display:flex;gap:4px;margin-bottom:6px;"/>').appendTo(cashDiv);
+		// NOTE: static labels — __kassePrice is a let declared further down
+		// the dialog; calling it here at build time crashed with a TDZ
+		// ReferenceError and the sell popup never opened (Saso 2026-10-26).
+		[500, 1000, 2000, 5000, 10000].forEach((c, qi)=>{
+			$('<button type="button" class="et-btn-action" style="flex:1;padding:10px 0;font-size:15px;font-weight:600;"/>').text(['5','10','20','50','100'][qi]).on('click', e=>{
+				e.preventDefault();
+				// calculator (Saso 2026-10-27): the sum becomes the new buffer,
+				// so following digits APPEND instead of wiping the amount
+				kpState = kasseQuickApply(kpState, c);
+				givenCents = kasseKeypadCents(kpState);
+				__kasseCashSync();
+			}).appendTo(quickRow);
+		});
+		let pad = $('<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;max-width:220px;margin-bottom:4px;"/>').appendTo(cashDiv);
+		['7','8','9','4','5','6','1','2','3'].forEach(k=>{
+			$('<button type="button" class="et-btn-action" style="padding:10px 0;font-size:16px;"/>').text(k).on('click', e=>{
+				e.preventDefault();
+				kpState = kasseKeypadKey(kpState, k);
+				givenCents = kasseKeypadCents(kpState);
+				__kasseCashSync();
+			}).appendTo(pad);
+		});
+		// function row: clear, back-delete, zero, decimal (Saso 2026-10-27)
+		let fnRow = $('<div style="display:flex;gap:4px;max-width:220px;margin-bottom:6px;"/>').appendTo(cashDiv);
+		[['C',''], ['back','⌫'], ['0','0'], [',',',']].forEach(p=>{
+			let isBack = p[0] === 'back';
+			$('<button type="button" class="et-btn-action" style="flex:1;padding:10px 0;font-size:16px;'+(p[0]===','?'font-weight:700;':'')+'"'+(isBack?' aria-label="'+_x('Delete last digit', 'kasse keypad', 'event-tickets-with-ticket-scanner')+'"':'')+'/>').text(p[1]).on('click', e=>{
+				e.preventDefault();
+				kpState = kasseKeypadKey(kpState, p[0]);
+				givenCents = kasseKeypadCents(kpState);
+				__kasseCashSync();
+			}).appendTo(fnRow);
+		});
+		let bigChange = $('<div/>').css({'font-size':'26px','font-weight':'800','text-align':'right','font-family':'monospace','margin-top':'4px'});
+		$('<div style="border-top:1px solid #dcdcde;padding-top:6px;"/>').appendTo(cashDiv).append(bigChange);
+		let __kasseCashSync = () => {
+			let cur = '';
+			prodWrap.find('.et-kasse-prod').each(function(){
+				if (!cur && $(this).data('currency')) cur = String($(this).data('currency'));
+			});
+			givenDisp.text(__kassePrice(givenCents)+(cur ? ' '+cur : ''));
+			givenInput.val(givenCents > 0 ? __kassePrice(givenCents) : '');
+			__updateKasseTotals();
+		};
 		let __kassePrice = c => (c/100).toFixed(2);
 		let __updateKasseTotals = () => {
 			if (!prodWrap.is(':visible')) return;
@@ -1520,21 +1694,65 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				if (!cur && $(this).data('currency')) cur = String($(this).data('currency'));
 			});
 			totalDiv.text(_x('Total', 'label', 'event-tickets-with-ticket-scanner')+': '+__kassePrice(total)+(cur ? ' '+cur : '')).show();
+			// big change line: only when there is a priced total
 			let g = $.trim(givenInput.val());
-			if (g === '') {
-				changeDiv.text('').css('color', '');
+			if (g === '' || total <= 0) {
+				bigChange.text('').css('color', '');
 			} else {
 				let gc = Math.round(parseFloat(g.replace(',', '.')) * 100);
-				if (isNaN(gc)) { changeDiv.text('').css('color', ''); return; }
+				if (isNaN(gc)) { bigChange.text('').css('color', ''); return; }
 				if (gc < total) {
-					changeDiv.text(_x('Given amount is less than the total.', 'label', 'event-tickets-with-ticket-scanner')).css('color', '#b32d2e');
+					bigChange.text(_x('Still open', 'label', 'event-tickets-with-ticket-scanner')+': '+__kassePrice(total - gc)+(cur ? ' '+cur : '')).css('color', '#b32d2e');
 				} else {
-					changeDiv.text(_x('Change', 'label', 'event-tickets-with-ticket-scanner')+': '+__kassePrice(gc - total)).css('color', '');
+					bigChange.text(_x('Change', 'label', 'event-tickets-with-ticket-scanner')+': '+__kassePrice(gc - total)+(cur ? ' '+cur : '')).css('color', '#1a7f37');
 				}
 			}
 		};
 		prodWrap.on('input change', '.et-kasse-prod__qty', __updateKasseTotals);
+		// touch steppers: delegated once per dialog, then trigger the same
+		// change pipeline (totals + big change line) as manual typing
+		prodWrap.on('click', '.et-kasse-prod__minus, .et-kasse-prod__plus', function(e){
+			e.preventDefault();
+			let inp = $(this).siblings('.et-kasse-prod__qty');
+			let v = parseInt(inp.val(), 10);
+			if (isNaN(v)) v = 0;
+			v = v + ($(this).hasClass('et-kasse-prod__plus') ? 1 : -1);
+			if (v < 0) v = 0;
+			if (v > 100) v = 100;
+			inp.val(v).trigger('change');
+		});
 		givenInput.on('input change', __updateKasseTotals);
+		let __renderKasseProducts = prods => {
+			if (prods.length == 0) {
+				prodWrap.hide().empty();
+				totalDiv.hide();
+				cashDiv.hide();
+				row2.show();
+				return;
+			}
+			row2.hide();
+			prodWrap.empty().show();
+			// payment panel becomes visible together with the priced
+			// products — was missing (the given field was never shown)
+			totalDiv.show();
+			cashDiv.show();
+			prods.forEach(p=>{
+				let row = $('<div class="et-kasse-prod" style="display:flex;gap:8px;align-items:center;margin-bottom:4px;"/>')
+					.data('price-cents', parseInt(p.price_cents, 10) || 0)
+					.data('currency', p.currency || '')
+					.appendTo(prodWrap);
+				$('<span style="flex:1;"/>').text(p.name).appendTo(row);
+				$('<span/>').text(__kassePrice(parseInt(p.price_cents, 10) || 0)+(p.currency ? ' '+p.currency : '')).appendTo(row);
+				// touch steppers (Saso 2026-10-26): minus/plus around the qty
+				// field beats fiddling with a spin-less number input on
+				// phones/tablets — one tap = one ticket
+				let qtyWrap = $('<div style="display:flex;gap:4px;align-items:center;"/>').appendTo(row);
+				$('<button type="button" class="et-btn-action et-kasse-prod__minus" aria-label="'+_x('Decrease quantity', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:40px;height:40px;font-size:20px;line-height:1;padding:0;">&minus;</button>').appendTo(qtyWrap);
+				$('<input type="number" class="et-kasse-prod__qty" min="0" max="100" value="0" data-product-id="'+parseInt(p.id, 10)+'" style="width:64px;text-align:center;">').appendTo(qtyWrap);
+				$('<button type="button" class="et-btn-action et-kasse-prod__plus" aria-label="'+_x('Increase quantity', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:40px;height:40px;font-size:20px;line-height:1;padding:0;">+</button>').appendTo(qtyWrap);
+			});
+			__updateKasseTotals();
+		};
 		let __loadKasseProducts = lid => {
 			if (!lid) {
 				prodWrap.hide().empty();
@@ -1543,27 +1761,18 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				row2.show();
 				return;
 			}
+			// cache-first: prefetched on Kasse entry — instant, no AJAX wait
+			let cached = (KASSE_PRODUCTS_CACHE || {})[lid];
+			if (typeof cached !== 'undefined') { __renderKasseProducts(cached); return; }
+			// race (dialog opened before the prefetch landed): show where the
+			// products will appear, load once, then cache
+			prodWrap.empty().show().append(_getSpinnerHTML());
 			_makePost('getTicketProducts', {list_id: lid, aktiv: 1}, ret=>{
-				let prods = (ret && ret.products) || [];
-				if (prods.length == 0) {
-					prodWrap.hide().empty();
-					totalDiv.hide();
-					cashDiv.hide();
-					row2.show();
-					return;
-				}
-				row2.hide();
-				prodWrap.empty().show();
-				prods.forEach(p=>{
-					let row = $('<div class="et-kasse-prod" style="display:flex;gap:8px;align-items:center;margin-bottom:4px;"/>')
-						.data('price-cents', parseInt(p.price_cents, 10) || 0)
-						.data('currency', p.currency || '')
-						.appendTo(prodWrap);
-					$('<span style="flex:1;"/>').text(p.name).appendTo(row);
-					$('<span/>').text(__kassePrice(parseInt(p.price_cents, 10) || 0)+(p.currency ? ' '+p.currency : '')).appendTo(row);
-					$('<input type="number" class="et-kasse-prod__qty" min="0" max="100" value="0" data-product-id="'+parseInt(p.id, 10)+'" style="width:64px;"/>').appendTo(row);
-				});
-				__updateKasseTotals();
+				if (KASSE_PRODUCTS_CACHE !== null) KASSE_PRODUCTS_CACHE[lid] = (ret && ret.products) || [];
+				__renderKasseProducts((ret && ret.products) || []);
+			}, ()=>{
+				prodWrap.hide().empty();
+				row2.show();
 			});
 		};
 		let row2 = $('<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"/>').appendTo(dlg);
@@ -5754,6 +5963,31 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				};
 				let meta_event_start = _winRow(_x('From', 'label', 'event-tickets-with-ticket-scanner'), 'meta_event_start_date', 'meta_event_start_time');
 				let meta_event_end = _winRow(_x('Until', 'label', 'event-tickets-with-ticket-scanner'), 'meta_event_end_date', 'meta_event_end_time');
+				// Event location (event entity) — lands on order-less tickets
+				// (Kasse / online shop) and the shop page.
+				let meta_event_location_row = $('<div style="margin-top:5px;display:flex;align-items:center;gap:6px;">').insertAfter(meta_event_end.date.closest('div'));
+				$('<label style="white-space:nowrap;">').text(_x('Location', 'label', 'event-tickets-with-ticket-scanner')).appendTo(meta_event_location_row);
+				let meta_event_location = $('<input type="text" maxlength="255" style="flex:1;">').appendTo(meta_event_location_row);
+
+				// Overall capacity of the list: shared limit across ALL ticket
+				// types (e.g. the venue's seats). 0 = unlimited.
+				let meta_max_tickets_row = $('<div style="margin-top:5px;display:flex;align-items:center;gap:6px;">').insertAfter(meta_event_location_row);
+				$('<label style="white-space:nowrap;">').text(_x('Max. tickets (total)', 'label', 'event-tickets-with-ticket-scanner')).appendTo(meta_max_tickets_row);
+				let meta_max_tickets = $('<input type="number" min="0" max="1000000" style="width:90px;">').attr('title', _x('Shared limit across all ticket types of this list — protects the venue capacity from overselling. 0 = unlimited.', 'label', 'event-tickets-with-ticket-scanner')).appendTo(meta_max_tickets_row);
+
+				// Shop catalog (central Kasse overview at /tickets/, premium):
+				// every list sells there BY DEFAULT — opt out per list here.
+				let meta_show_in_shop_row = $('<div style="margin-top:5px;display:flex;align-items:center;gap:6px;">').insertAfter(meta_max_tickets_row);
+				let meta_show_in_shop_label = $('<label style="white-space:nowrap;display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:normal;">').appendTo(meta_show_in_shop_row);
+				let meta_show_in_shop = $('<input type="checkbox">').attr('title', _x("Show this list as an event in the central shop catalog (/tickets/). The list's own event page and WooCommerce are not affected.", 'label', 'event-tickets-with-ticket-scanner')).appendTo(meta_show_in_shop_label);
+				meta_show_in_shop_label.append(document.createTextNode(' ' + _x('Show in shop catalog', 'label', 'event-tickets-with-ticket-scanner')));
+
+				// ── Create-mode hint: the ticket-product section needs the list
+				// id and therefore shows in edit mode only. Tell the user where
+				// it appears instead of leaving them searching (#17905).
+				if (!editValues) {
+					dlg.find("form").append('<p style="color:#666;">'+_x('After saving, the list opens again with all options — including ticket products with prices and limits.', 'label', 'event-tickets-with-ticket-scanner')+'</p>');
+				}
 
 				// ── Ticket products (Ticketarten) with prices — product-ticket-
 				// entity spec. Edit mode only (products need the list id); the
@@ -5767,15 +6001,22 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					let __fmtPrice = c => (c/100).toFixed(2);
 					let __renderProdRow = p => {
 						let row = $('<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"/>').appendTo(prodRows);
+						if (p.list_id) row.attr('data-list-id', parseInt(p.list_id, 10));
 						$('<input type="text" class="et-prod-name" value="'+String(p.name == null ? '' : p.name).replace(/"/g, '&quot;')+'" style="flex:1;" placeholder="'+_x('Name', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
 						$('<input type="text" class="et-prod-price" inputmode="decimal" value="'+(p.id ? __fmtPrice(parseInt(p.price_cents, 10) || 0) : '')+'" style="width:80px;" placeholder="'+_x('Price', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
 						$('<input type="text" class="et-prod-currency" value="'+String(p.currency == null ? '' : p.currency)+'" style="width:52px;" placeholder="EUR"/>').appendTo(row);
 						let akt = $('<input type="checkbox" class="et-prod-aktiv"'+((!p.id || parseInt(p.aktiv, 10) === 1) ? ' checked' : '')+'/>').appendTo(row);
 						$('<label style="white-space:nowrap;">').text(' '+_x('Active', 'label', 'event-tickets-with-ticket-scanner')).insertAfter(akt).prepend(akt);
+						let prf = $('<input type="checkbox" class="et-prod-proof"'+(p.id && parseInt(p.proof_required, 10) === 1 ? ' checked' : '')+'/>').appendTo(row);
+						$('<input type="text" class="et-prod-max" inputmode="numeric" value="'+(p.id && parseInt(p.max_tickets, 10) > 0 ? parseInt(p.max_tickets, 10) : '')+'" style="width:70px;" placeholder="'+_x('Max.', 'label', 'event-tickets-with-ticket-scanner')+'" title="'+_x('Contingent: maximum sellable tickets of this type, 0 or empty means unlimited. The Kasse and the online shop stop automatically when it is reached.', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
+						if (p.id && parseInt(p.max_tickets, 10) > 0) {
+							$('<span style="color:#666;white-space:nowrap;" class="et-prod-sold"/>').text(' '+_x('sold', 'label', 'event-tickets-with-ticket-scanner')+' '+parseInt(p.sold, 10)+'/'+parseInt(p.max_tickets, 10)).insertAfter(row.find('.et-prod-max'));
+						}
+						$('<label style="white-space:nowrap;cursor:help;" title="'+_x('Discount ticket type: the ticket scanner asks at the entrance to check the eligibility (ID, student or retiree pass …) before it redeems the ticket.', 'label', 'event-tickets-with-ticket-scanner')+'">').text(' '+_x('Proof', 'label', 'event-tickets-with-ticket-scanner')).insertAfter(prf).prepend(prf);
 						if (p.id) {
 							row.append($('<button type="button" class="et-btn-action"/>').text(_x('Save', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 								e.preventDefault();
-								_makePost('editTicketProduct', {id:p.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), aktiv:row.find('.et-prod-aktiv').prop('checked')?1:0}, ()=>{ __loadListProducts(); });
+								_makePost('editTicketProduct', {id:p.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), aktiv:row.find('.et-prod-aktiv').prop('checked')?1:0, proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0}, ()=>{ __loadListProducts(); });
 							}));
 							row.append($('<button type="button" class="et-btn-action et-btn-action--danger"/>').text(_x('Remove', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 								e.preventDefault();
@@ -5784,7 +6025,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						} else {
 							row.append($('<button type="button" class="et-btn-action"/>').text(_x('Add ticket product', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 								e.preventDefault();
-								_makePost('addTicketProduct', {list_id:editValues.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val()}, ()=>{ __loadListProducts(); });
+								_makePost('addTicketProduct', {list_id:editValues.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0}, ()=>{ __loadListProducts(); });
 							}));
 						}
 					};
@@ -5830,6 +6071,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					meta_event_start.time.val(metaObj.event_start_time || '');
 					meta_event_end.date.val(metaObj.event_end_date || '');
 					meta_event_end.time.val(metaObj.event_end_time || '');
+					meta_event_location.val(metaObj.event_location || '');
+					meta_max_tickets.val(parseInt(metaObj.max_tickets, 10) > 0 ? parseInt(metaObj.max_tickets, 10) : 0);
+					meta_show_in_shop.prop('checked', !(metaObj && parseInt(metaObj.show_in_shop, 10) === 0));
 				}
 
 				function ___submitForm() {
@@ -5851,6 +6095,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					_data['meta']['event_start_time'] = meta_event_start.time.val();
 					_data['meta']['event_end_date'] = meta_event_end.date.val();
 					_data['meta']['event_end_time'] = meta_event_end.time.val();
+					_data['meta']['event_location'] = meta_event_location.val().trim();
+					_data['meta']['max_tickets'] = parseInt(meta_max_tickets.val(), 10) > 0 ? parseInt(meta_max_tickets.val(), 10) : 0;
+					_data['meta']['show_in_shop'] = meta_show_in_shop.prop('checked') ? 1 : 0;
 					if (isPremium()) PREMIUM.addListMaskEditFieldsData(_data, form[0], editValues);
 
 					form[0].reset();
@@ -5867,8 +6114,24 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					} else {
 						_makePost('addList', _data, result=>{
 							DATA_LISTS = null;
-							__renderTabelleListen();
-							closeDialog(dlg);
+							getDataLists(fresh=>{
+								__renderTabelleListen();
+								// #17905: the create mask hides ticket products on
+								// purpose (they need the list id) — reopen the fresh
+								// list directly in edit mode so ALL options (ticket
+								// products with prices, limits, shop settings) are
+								// visible right after creating. The option must
+								// never again appear to be missing.
+								let newName = String(_data['inputName'] || '').trim().toLowerCase();
+								let cand = (fresh || []).filter(l => String(l.name || '').trim().toLowerCase() === newName);
+								if (cand.length) {
+									let newest = cand.reduce((a,b) => (parseInt(b.id, 10) > parseInt(a.id, 10) ? b : a));
+									closeDialog(dlg);
+									__showMaskList(newest);
+								} else {
+									closeDialog(dlg);
+								}
+							});
 						}, function(response) {
 							closeDialog(dlg);
 							if (response.data.slice(0,1) === "#") {

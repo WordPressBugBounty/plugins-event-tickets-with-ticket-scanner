@@ -1,11 +1,11 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventticketsDB extends sasoEventtickets_DB {
-	public $dbversion = '1.23';
+	public $dbversion = '1.24';
 	public function __construct($MAIN) {
 		$this->MAIN = $MAIN;
 		parent::$dbprefix = "saso_eventtickets_";
-		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks', 'options', 'options_history', 'congresses', 'congress_pages', 'congress_sections', 'congress_products', 'orders', 'products'];
+		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks', 'options', 'options_history', 'congresses', 'congress_pages', 'congress_sections', 'congress_products', 'orders', 'products', 'offline_sync'];
 		$this->init();
 	}
 
@@ -318,6 +318,24 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				"CREATE INDEX idx2 ON ".$this->getTabelle('products')." (aktiv)"
 			]
 			];
+		// Offline scanner sync dedupe: one row per client event id — a network
+		// retry after a processed scan must never redeem a second time.
+		$tabellen[] = [
+			"sql"=>
+			"CREATE TABLE ".$this->getTabelle('offline_sync')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(255) NOT NULL DEFAULT '',
+				eid varchar(64) NOT NULL DEFAULT '',
+				authtoken_id int(32) unsigned NOT NULL DEFAULT 0,
+				scanner_id varchar(64) NOT NULL DEFAULT '',
+				code varchar(255) NOT NULL DEFAULT '',
+				state varchar(20) NOT NULL DEFAULT '',
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[
+				"CREATE UNIQUE INDEX idx1 ON ".$this->getTabelle('offline_sync')." (eid)"
+			]
+		];
 		$tabellen = apply_filters( $this->MAIN->_add_filter_prefix.'db_system_installiereTabellen', $tabellen );
 		do_action( $this->MAIN->_do_action_prefix.'db_system_installiereTabellen', $tabellen );
 		return $tabellen;

@@ -23,6 +23,7 @@
 		 * Map of seat_id => block_id
 		 */
 		currentBlockIds: {},
+		currentBlockOwners: {},
 
 		/**
 		 * Currently selected seats data (array for multi-select)
@@ -813,6 +814,7 @@
 						validSeats.forEach(function(seat) {
 							if (seat.block_id) {
 								self.currentBlockIds[seat.seat_id] = seat.block_id;
+								self.currentBlockOwners[seat.seat_id] = seat.owner_token || '';
 							}
 						});
 
@@ -854,6 +856,7 @@
 
 						// Track block ID
 						self.currentBlockIds[block.seat_id] = block.block_id;
+						self.currentBlockOwners[block.seat_id] = block.owner_token || '';
 						restoredSeats.push(seatData);
 					});
 
@@ -1271,11 +1274,12 @@
 			// Release all previous seat blocks (but don't clear selectedSeats/hidden input)
 			var releasePromises = [];
 			Object.keys(this.currentBlockIds).forEach(function(seatId) {
-				releasePromises.push(self.releaseSeat(self.currentBlockIds[seatId]));
+				releasePromises.push(self.releaseSeat(self.currentBlockIds[seatId], self.currentBlockOwners[seatId] || ''));
 			});
 
 			$.when.apply($, releasePromises).always(function() {
 				self.currentBlockIds = {};
+				self.currentBlockOwners = {};
 
 				// Block all new seats sequentially
 				var blockedSeats = [];
@@ -1329,6 +1333,7 @@
 								countdown_end: countdownEnd
 							};
 							self.currentBlockIds[seatData.seat_id] = response.data.block_id;
+								self.currentBlockOwners[seatData.seat_id] = response.data.owner_token || '';
 							blockedSeats.push(blockedSeat);
 						} else {
 							var errorMsg = response.data && response.data.error === 'seat_unavailable'
@@ -1362,11 +1367,12 @@
 			// Release all previous seats
 			var releasePromises = [];
 			Object.keys(this.currentBlockIds).forEach(function(seatId) {
-				releasePromises.push(self.releaseSeat(self.currentBlockIds[seatId]));
+				releasePromises.push(self.releaseSeat(self.currentBlockIds[seatId], self.currentBlockOwners[seatId] || ''));
 			});
 
 			$.when.apply($, releasePromises).always(function() {
 				self.currentBlockIds = {};
+				self.currentBlockOwners = {};
 				self.selectedSeats = [];
 
 				// Block all new seats sequentially to avoid race conditions
@@ -1407,6 +1413,7 @@
 							seatData.expires_at = response.data.expires_at;
 							seatData.countdown_end = Date.now() + (remainingSeconds * 1000);
 							self.currentBlockIds[seatData.seat_id] = response.data.block_id;
+								self.currentBlockOwners[seatData.seat_id] = response.data.owner_token || '';
 							blockedSeats.push(seatData);
 						} else {
 							var errorMsg = response.data && response.data.error === 'seat_unavailable'
@@ -1442,10 +1449,11 @@
 
 			// Release all blocked seats
 			Object.keys(this.currentBlockIds).forEach(function(seatId) {
-				self.releaseSeat(self.currentBlockIds[seatId]);
+				self.releaseSeat(self.currentBlockIds[seatId], self.currentBlockOwners[seatId] || '');
 			});
 
 			this.currentBlockIds = {};
+			this.currentBlockOwners = {};
 			this.selectedSeats = [];
 			this.updateSelection($selector, []);
 			this.updateButtonText($selector, []);
@@ -1486,7 +1494,7 @@
 		 * @param {number} blockId Block ID
 		 * @returns {jQuery.Promise}
 		 */
-		releaseSeat: function(blockId) {
+		releaseSeat: function(blockId, ownerToken) {
 			return $.ajax({
 				url: sasoSeatingData.ajaxurl,
 				type: 'POST',
@@ -1494,7 +1502,8 @@
 					action: sasoSeatingData.action, // sasoEventtickets_executeSeatingFrontend
 					a: 'releaseSeat',
 					security: sasoSeatingData.nonce,
-					block_id: blockId
+					block_id: blockId,
+					owner_token: ownerToken || ''
 				}
 			});
 		},

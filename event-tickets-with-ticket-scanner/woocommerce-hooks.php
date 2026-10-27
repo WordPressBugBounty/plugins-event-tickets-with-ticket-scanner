@@ -27,6 +27,7 @@ class sasoEventtickets_WC {
 	 * @var sasoEventtickets_WC_Order|null
 	 */
 	private $orderManager = null;
+	private $gclidManager = null;
 
 	/**
 	 * Frontend handler instance
@@ -104,6 +105,19 @@ class sasoEventtickets_WC {
 			$this->emailHandler = new sasoEventtickets_WC_Email($this->MAIN);
 		}
 		return $this->emailHandler;
+	}
+
+	/**
+	 * Get Gclid Manager instance (lazy loading) — Google Ads click tracking.
+	 *
+	 * @return sasoEventtickets_WC_Gclid
+	 */
+	public function getGclidManager() {
+		if ($this->gclidManager === null) {
+			$this->loadWCClass('class-gclid.php', 'sasoEventtickets_WC_Gclid');
+			$this->gclidManager = new sasoEventtickets_WC_Gclid($this->MAIN);
+		}
+		return $this->gclidManager;
 	}
 
 	/**

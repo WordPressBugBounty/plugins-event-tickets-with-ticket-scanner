@@ -133,7 +133,14 @@ class sasoEventtickets_TicketDesigner {
 			$order_item = new WC_Order_Item_Product();
 			$product = new WC_Product_Simple();
 			$listObj = $this->MAIN->getAdmin()->getList(['id'=>intval($codeObj['list_id'] ?? 0)]);
-			$product->set_name(!empty($listObj['name']) ? $listObj['name'] : '');
+			// Order-less tickets are sold via Kasse/online shop as ticket
+			// types — the frozen product name of the internal order line is
+			// the ticket name (falls back to the list/event name).
+			$ticketTypeName = '';
+			if (!empty($metaObj['internal_order']['product_name'])) {
+				$ticketTypeName = (string) $metaObj['internal_order']['product_name'];
+			}
+			$product->set_name($ticketTypeName !== '' ? $ticketTypeName : (!empty($listObj['name']) ? $listObj['name'] : ''));
 		} else {
 			$order = wc_get_order($order_id);
 			if ($order == null) throw new Exception("#7001 Ticket Designer: Order not available");
@@ -179,8 +186,10 @@ class sasoEventtickets_TicketDesigner {
 
         $ticket = [];
         $ticket["public_ticket_number"] = $this->MAIN->getCore()->getTicketId($codeObj, $metaObj);
-		$date_time_format = $this->MAIN->getOptions()->getOptionDateTimeFormat();
-		$ticket["location"] = trim(get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_event_location', true ));
+        $date_time_format = $this->MAIN->getOptions()->getOptionDateTimeFormat();
+        // Event location: product meta on the Woo path, the list's event
+        // config for order-less tickets (Kasse / online shop).
+        $ticket["location"] = $this->MAIN->getTicketHandler()->getEventLocationForCodeObj($codeObj, $product_parent_original->get_id());
 		// zeige datum
 		$tmp_product = $product_parent_original;
 		if (!$saso_eventtickets_is_date_for_all_variants) $tmp_product = $product_original; // unter Umständen die Variante

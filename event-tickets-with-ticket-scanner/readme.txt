@@ -1,20 +1,20 @@
 === Event Tickets with Ticket Scanner ===
 Contributors: sasonikolov
-Tags: event tickets, ticket scanner, congress, woocommerce tickets, seating plan
+Tags: event tickets, ticket scanner, box office, pos, seating plan, woocommerce tickets, congress, membership
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.2.8
+Stable tag: 3.2.9
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Sell tickets with WooCommerce: seating plans, PDF tickets with QR codes, door scanner. No per-ticket service fees; free version up to 50 tickets.
+Sell tickets on your site: seating plans, PDF tickets with QR codes, a built-in POS for door sales (box office), and a scanner app — no per-ticket service fees. Free version up to 50 tickets.
 
 == Description ==
 
-**Run your entire ticketing workflow inside WordPress.** No platform service fees, no per-ticket commissions — you only pay your payment processor (Stripe, PayPal, etc.) like any WooCommerce product.
+**Run your entire ticketing workflow inside WordPress.** No platform service fees, no per-ticket commissions — you only pay your payment processor (Stripe, PayPal, etc.).
 
-Event Tickets with Ticket Scanner turns any WooCommerce product into a scannable event ticket — complete with QR code, downloadable PDF, and a built-in mobile ticket scanner for your team at the door.
+Event Tickets with Ticket Scanner turns your events into scannable tickets — complete with QR code, downloadable PDF, and a built-in mobile ticket scanner for your team at the door.
 
 Unlike ticketing platforms that charge service fees on paid tickets, this plugin adds no per-ticket commission — you keep your ticket revenue (minus your payment processor's standard fee). Unlike other WordPress plugins, you get a **visual seating plan designer** and a **ticket PDF designer** included — not as expensive add-ons.
 
@@ -24,9 +24,10 @@ https://youtu.be/uWSdKdOyn70
 
 = Who is this for? =
 
+* **Selling at the door — evening box office (POS)?** The built-in Kasse is a complete point of sale: sell tickets, memberships, day passes, ride tickets and entries at the counter, with ticket types, automatic totals and a cash change calculator. No event, no online shop required
 * **Concert & festival organizers** — sell general admission or assigned seats with interactive seat selection
 * **Theaters & venues** — design your seating layout with drag & drop, let customers pick their seats
-* **Sports events & arenas** — handle high volumes with offline fallback and team scanner access
+* **Sports events & arenas** — handle high scan volumes with rapid-scan queueing and team scanner access
 * **Conferences & congresses** — give attendees a private companion portal with programme, speakers, downloads and time-controlled access, opened straight from the ticket (see "Congress & Attendee Portal" below)
 * **Single events with an info app** — any event, not just big congresses: build a mobile info page (schedule, speaker info, downloads, support pages) your visitors open with their ticket — no separate app to install
 * **Clubs, spas, gyms & theme parks** — sell multi-entry passes, family tickets, or memberships with expiration
@@ -111,7 +112,9 @@ Build it under the Congresses menu, assign it in the product's Event Tickets tab
 * **Day chooser tickets** — let customers pick their event date at checkout
 * **Purchase allowance codes** — require a valid ticket or access code before a product can be bought. Use it for presale and access codes, or to require a ticket from an earlier event (for example a group-stage ticket in order to buy the final). Per product you decide whether a code unlocks one purchase or several
 
-= Built for WooCommerce =
+= Also supports WooCommerce =
+
+Sell standalone with the built-in checkout and Kasse — or plug into your existing WooCommerce store, whichever you prefer.
 
 * Works with product variants (e.g., VIP vs. General Admission)
 * Tickets auto-generate on order completion
@@ -185,16 +188,16 @@ To test: Create a manual order in WooCommerce, set it to "Completed", and check 
 == Frequently Asked Questions ==
 
 = Do I need any other plugins? =
-You need WooCommerce (free) to handle payments and orders. Everything else is included — no additional ticketing add-ons required.
+No. Everything is included — no additional ticketing add-ons required. The built-in checkout (premium) handles payments and orders on its own.
 
 = Does this work without WooCommerce? =
-WooCommerce is required for selling tickets. However, you can use the plugin to manage and validate ticket lists manually without WooCommerce sales.
+Yes. The Kasse (direct sales) and the online shop (premium) sell tickets with their own checkout — no WooCommerce needed. And if you already run a WooCommerce store, the plugin supports it as fully as ever.
 
 = Can my team scan tickets without a WordPress account? =
 Yes! Premium includes Auth Tokens that give your door staff scanner access via a simple URL — no login required.
 
 = Does the scanner work offline? =
-The scanner is browser-based and requires an internet connection. For large events, the plugin includes offline fallback options to prevent interruptions.
+By default the scanner validates live against your site (it is browser-based and built for speed: rapid scans are queued automatically, so nothing gets lost while a result is still on screen, and the app is an installable PWA). Premium adds true offline scanning: enable it on the scanner's auth token, choose which ticket lists get preloaded, and your door team keeps scanning when the venue network drops — scans are validated locally, queued, and synced automatically once the connection returns, with conflict reports when two scanners hit the same ticket.
 
 = Can customers choose their own seats? =
 Yes. Design your venue layout with the drag & drop seating designer, and customers will see an interactive seat map during checkout where they can pick available seats.
@@ -247,8 +250,29 @@ Old premium version will no longer work with this version. You need to downgrade
 == Changelog ==
 
 
+= 3.2.9 - 2026-10-27 =
+* Kasse: touch-friendly minus/plus steppers around each ticket product quantity field.
+* Kasse: the change calculator now works like a real calculator — quick buttons add onto the current amount, typed digits append to it, and a backspace key (⌫) removes the last entered digit.
 
+* Kasse: change calculator with keypad and additive quick buttons (5/10/20/50/100) plus a big live change display — payment method and amounts are tracked in the order meta JSON.
+* Kasse: ticket products are prefetched once per visit instead of one request per dialog — noticeably faster product display.
+* Security: offline scanner sync event IDs are now passed as prepared SQL parameters (hardens the sync endpoint against SQL injection via crafted event payloads).* Security: admin table searches (codes, error logs, options history) escape the decoded search term before it enters the query — URL-encoded quotes can no longer break out of the search filter.* Security: error messages that echo back scanned or entered ticket codes are HTML-escaped at the source, in the legacy ticket/scanner fallbacks, and are rendered as plain text by the scanner and the public validation widget (protects against malicious QR codes).* Security: sensitive admin actions (option changes, code deletion, CSV exports, auth-token management) now require the manage_options capability — plugin admin-area access alone is no longer sufficient.* Security: releasing a fresh seat reservation requires the matching ownership token issued when the seat was blocked.* Security: visitor-controlled proxy headers (X-Forwarded-For, Client-IP) are no longer trusted for rate limits and IP blocks. IP-based limits now use the server-side address; sites behind a CDN/reverse proxy can enable the new option "Trust proxy IP headers (X-Forwarded-For)" (trustProxyIpHeaders) to restore proxy resolution.
+* Security: the wallet ticket lookup endpoint is now rate-limited per IP to block ticket-ID enumeration attempts.
+* Offline ticket scanning (premium): a master option enables the feature; per auth token you choose which ticket lists that scanner preloads. Scanners opened without a token are asked at start whether to preload tickets — all from today onwards, or today only (ask mode, choice remembered for the session, changeable any time). Scans keep working without a connection — validated locally, queued, and synced automatically when the network returns (online event, periodic retry, sync button). Safe with several scanners: the server replays every queued scan through the regular redeem path, retries are idempotent per scan id, and conflicts are reported. With the option off, everything behaves exactly as before.
+* Unpaid online-shop orders no longer block contingents: draft orders older than 48 hours (filterable) are cancelled automatically once a day and release their reserved tickets.
+* Wallet: tickets sold through the Kasse and the built-in online shop can now be saved into the Vollstart Wallet app — the wallet previously accepted WooCommerce-paid tickets only.
+* Google Ads measurement: visits that arrive with a ?gclid= click parameter keep it through the session and store it on the order at checkout (private order meta), so advertising conversions can be measured per order.
+* New lists open directly in the edit dialog after saving — ticket products with prices, limits and shop settings are visible immediately instead of showing up only when editing an existing list.
 
+* Ticket types (Kasse and online shop): new optional eligibility-proof switch for discounted types — the ticket scanner asks at the entrance to check the proof (ID, student or retiree pass) before it redeems the ticket.
+* Events without WooCommerce: date, times and location now live on the event (ticket list) — tickets sold via Kasse and the online shop print them on the PDF, together with the ticket type each ticket was sold as.
+* Admin: when the security session (nonce) expires after a long idle time, a single dialog explains it and reloads the page via OK — instead of an error message on every action.
+* Ticket scanner: new per-element large display options — guest name from the order (WooCommerce or the plugin's own checkout), ticket values and ticket type can each be shown in big, clearly visible letters right after validation.
+* Ticket scanner, "Redeem Complete Order": the batch now cross-checks the order's tickets in the database — tickets missing from the order item code list (for example after partial refunds) are redeemed too, and the scan answer reports how many were reconciled.
+* Own checkout (Kasse and online shop): the buyer's name is now frozen onto every ticket at sale time, so the scanner treats tickets sold without WooCommerce exactly like WooCommerce tickets.
+* Own checkout: optional per-type ticket contingent — a maximum sellable quantity per ticket type. The Kasse and the online shop stop automatically at the limit and show how many are already sold; open orders count as reserved.
+* Ticket lists: optional overall capacity — set a total maximum on the list and all ticket types share one pool. Mixed sales (regular + discounted) can no longer oversell the venue's seats.
+* Ticket lists: new "Show in shop catalog" switch — every list sells in the central ticket shop catalog by default; turn it off per list when an event should not be offered there.
 
 = 3.2.8 - 2026-10-20 =
 * Fix: When two orders are paid at the exact same moment, a ticket could end up linked to the other order. Ticket generation now locks per order and the ticket data writes are protected against such parallel-payment mix-ups.
