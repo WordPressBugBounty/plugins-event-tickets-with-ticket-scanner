@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, box office, pos, seating plan, woocommerce tickets, congress, membership
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.2.9
+Stable tag: 3.2.10
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -248,6 +248,9 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.2.10 - 2026-10-28 =
+* Fix: every WooCommerce checkout failed with a fatal error since 3.2.9 (class-gclid.php) - the Google Ads click tracking read the checkout data array as a session object. Checkouts work again immediately after updating.
 
 
 = 3.2.9 - 2026-10-27 =

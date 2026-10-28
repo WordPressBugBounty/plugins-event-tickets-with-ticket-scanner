@@ -40,7 +40,7 @@ if (!class_exists('sasoEventtickets_WC_Gclid')) {
 			if ($gclid === '') {
 				return false;
 			}
-			$session = $session ?? $this->liveSession();
+			$session = $this->resolveSession($session);
 			if ($session === null) {
 				return false;
 			}
@@ -59,7 +59,7 @@ if (!class_exists('sasoEventtickets_WC_Gclid')) {
 		 * @return bool true when meta was written.
 		 */
 		public function storeOnOrder($order, $session = null): bool {
-			$session = $session ?? $this->liveSession();
+			$session = $this->resolveSession($session);
 			if ($session === null || !is_object($order) || !method_exists($order, 'update_meta_data')) {
 				return false;
 			}
@@ -90,6 +90,21 @@ if (!class_exists('sasoEventtickets_WC_Gclid')) {
 				return null;
 			}
 			return WC()->session;
+		}
+
+		/**
+		 * Accept only a real session-like object (set + get). Anything else —
+		 * null, an array, a scalar — falls back to the live WC session instead
+		 * of crashing. Ticket #015451: WooCommerce's
+		 * woocommerce_checkout_create_order passes the checkout DATA ARRAY as
+		 * the second argument; when that reached storeOnOrder() as the
+		 * "session", $session->get() fatalised EVERY checkout on 3.2.9.
+		 */
+		private function resolveSession($session) {
+			if (is_object($session) && method_exists($session, 'get') && method_exists($session, 'set')) {
+				return $session;
+			}
+			return $this->liveSession();
 		}
 	}
 }

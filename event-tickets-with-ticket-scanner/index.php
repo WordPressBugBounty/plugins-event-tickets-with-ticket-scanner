@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.2.9
+ * Version: 3.2.10
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.2.9');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.2.10');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -645,8 +645,11 @@ class sasoEventtickets {
 		add_action('woocommerce_check_cart_items', [$this, 'relay_woocommerce_check_cart_items'] );
 		add_action('woocommerce_new_order', [$this, 'relay_woocommerce_new_order'], 10, 1);
 		// Google Ads click tracking: capture ?gclid on landing, store on order.
+		// accepted_args = 1 on purpose: Woo passes (WC_Order, array $data) — the
+		// data array must NEVER reach storeOnOrder() as the "session" (#015451,
+		// fatal on every checkout in 3.2.9).
 		add_action('template_redirect', [$this, 'relay_capture_gclid']);
-		add_action('woocommerce_checkout_create_order', [$this, 'relay_store_gclid_on_order'], 10, 2);
+		add_action('woocommerce_checkout_create_order', [$this, 'relay_store_gclid_on_order'], 10, 1);
 		add_action('woocommerce_checkout_update_order_meta', [$this, 'relay_woocommerce_checkout_update_order_meta'], 20, 2);
 		add_action('woocommerce_order_status_changed', [$this, 'relay_woocommerce_order_status_changed'], 10, 3);
 		add_filter('woocommerce_order_item_display_meta_key', [$this, 'relay_woocommerce_order_item_display_meta_key'], 20, 3 );
