@@ -31,6 +31,14 @@
 		selectedSeats: [],
 
 		/**
+		 * Last confirmed selection, kept even when a rebuild clears
+		 * selectedSeats (geo-pricing refresh racing confirm/blockSeat or
+		 * replacing the input node) — the add-to-cart submit hook restores
+		 * the hidden input from here. Cleared on explicit clearSelection.
+		 */
+		lastConfirmedSelection: [],
+
+		/**
 		 * Temporary selections in modal (before confirm)
 		 */
 		tempSelections: [],
@@ -682,17 +690,30 @@
 						inputValue = $selectorInput.val();
 					}
 
-					// Create hidden input in form
-					if (self.selectedSeats && self.selectedSeats.length > 0) {
-						inputValue = JSON.stringify(self.selectedSeats);
+					// Create hidden input in form — the live selection wins,
+					// the last confirmed one is the geo-rebuild fallback.
+					var seatsForForm = (self.selectedSeats && self.selectedSeats.length > 0) ? self.selectedSeats
+						: ((self.lastConfirmedSelection && self.lastConfirmedSelection.length > 0) ? self.lastConfirmedSelection : null);
+					if (seatsForForm) {
+						inputValue = JSON.stringify(seatsForForm);
 					}
 
 					if (inputValue) {
 						$form.append('<input type="hidden" name="' + fieldName + '" value="' + inputValue.replace(/"/g, '&quot;') + '">');
 					}
-				} else if ((!inputValue || inputValue === '') && self.selectedSeats && self.selectedSeats.length > 0) {
-					// Input exists but empty - fill it
-					var jsonValue = JSON.stringify(self.selectedSeats);
+				} else if ((!inputValue || inputValue === '')
+					&& ((self.selectedSeats && self.selectedSeats.length > 0)
+						|| (self.lastConfirmedSelection && self.lastConfirmedSelection.length > 0))) {
+					// Input exists but empty - fill it. Falls back to the last
+					// confirmed selection: the geo-pricing refresh can clear
+					// selectedSeats (confirm/blockSeat race) or replace the
+					// input node entirely after the confirm.
+					var seatsSource = (self.selectedSeats && self.selectedSeats.length > 0) ? self.selectedSeats : self.lastConfirmedSelection;
+					if (seatsSource !== self.selectedSeats
+						&& (!self.selectedSeats || self.selectedSeats.length === 0)) {
+						self.selectedSeats = self.lastConfirmedSelection.slice();
+					}
+					var jsonValue = JSON.stringify(seatsSource);
 					$input.val(jsonValue);
 				}
 			});
@@ -1236,6 +1257,10 @@
 			// This ensures form has seat data even if user submits before AJAX completes
 			var seatsToSave = this.tempSelections.slice();
 			this.selectedSeats = seatsToSave;
+			// Remember for the geo-rebuild window: a refresh landing between
+			// confirm and the blockSeat response can clear selectedSeats and
+			// the input — the submit hook restores from this copy.
+			this.lastConfirmedSelection = seatsToSave.slice();
 			this.updateSelection(this.$currentSelector, seatsToSave);
 			this.updateButtonText(this.$currentSelector, seatsToSave);
 
@@ -1300,6 +1325,9 @@
 						} else if (blockedSeats.length > 0) {
 							// Update with block_ids
 							self.selectedSeats = blockedSeats;
+							// Keep the remembered copy in sync so a restore never
+							// revives stale block ids.
+							self.lastConfirmedSelection = blockedSeats.slice();
 							self.updateSelection($selector, blockedSeats);
 							self.updateButtonText($selector, blockedSeats);
 
@@ -1389,6 +1417,9 @@
 							self.refreshAvailability($selector);
 						} else if (blockedSeats.length > 0) {
 							self.selectedSeats = blockedSeats;
+							// Keep the remembered copy in sync so a restore never
+							// revives stale block ids.
+							self.lastConfirmedSelection = blockedSeats.slice();
 							self.updateSelection($selector, blockedSeats);
 							self.updateButtonText($selector, blockedSeats);
 
@@ -1455,6 +1486,9 @@
 			this.currentBlockIds = {};
 			this.currentBlockOwners = {};
 			this.selectedSeats = [];
+			// Explicit clear also forgets the remembered selection — the
+			// submit hook must never resurrect deliberately removed seats.
+			this.lastConfirmedSelection = [];
 			this.updateSelection($selector, []);
 			this.updateButtonText($selector, []);
 		},
@@ -1604,13 +1638,139 @@
 				$wrapper.append($selector);
 			}
 
+			// Rennen gegen das Confirm (Support 015487-Familie): Ein interner
+			// Refresh, der ~1s nach confirmSelection() ankommt (z.B. der
+			// found_variation-Request, der bei Bestaetigung noch in der Luft
+			// war), darf eine lebende Auswahl nie wegwerfen. Ein evtl.
+			// offenes Modal zuerst schliessen, damit der Rebuild keine
+			// verwaiste DOM-Referenz hinterlaesst.
+			if (this.$currentModal) {
+				this.closeModal();
+			}
+
+			// Auswahl fuer den Rebuild ermitteln: Server-Truth zuerst
+			// (existingBlocks dieser Session), sonst die lokale Auswahl
+			// behalten, solange sie zu den Sitzen dieses Plans gehoert.
+			var keepSeats = this.restoreSeatsFromSelectorData(data);
+			if (keepSeats.length === 0 && this.selectedSeats && this.selectedSeats.length > 0
+				&& this.selectionBelongsToPlan(this.selectedSeats, data)) {
+				keepSeats = this.selectedSeats;
+			}
+			// Geo-Rebuild-Fenster (vollstart-geo-pricing 0.5.5): landet der
+			// Refresh zwischen confirmSelection() und der blockSeat-Antwort,
+			// ist selectedSeats evtl. schon geleert und die Bloecke sind dem
+			// Server noch unbekannt — die letzte bestaetigte Auswahl rettet
+			// den Zustand (und fuellt dabei einen komplett ERSETZTEN
+			// Input-Knoten wieder). Sie muss zum Plan passen; nach einer
+			// echten Variation-Auswahl bleibt sie weg.
+			if (keepSeats.length === 0 && (!this.selectedSeats || this.selectedSeats.length === 0)
+				&& this.lastConfirmedSelection && this.lastConfirmedSelection.length > 0
+				&& this.selectionBelongsToPlan(this.lastConfirmedSelection, data)) {
+				keepSeats = this.lastConfirmedSelection.slice();
+			}
+
 			// Die alte Karte muss weg, sonst haengt die neue darunter
 			$selector.children().not('.saso-seat-selection-input').remove();
-			$selector.find('.saso-seat-selection-input').val('');
+
+			if (keepSeats.length > 0) {
+				this.trackRestoredBlocks(keepSeats);
+				this.selectedSeats = keepSeats;
+			} else {
+				this.selectedSeats = [];
+				$selector.find('.saso-seat-selection-input').val('');
+				// Echte Auswahl-Wechsel vergessen auch die Erinnerung — sonst
+				// wuerde der Submit-Hook Sitze des alten Plans wiederbeleben.
+				if (this.lastConfirmedSelection && this.lastConfirmedSelection.length > 0
+					&& !this.selectionBelongsToPlan(this.lastConfirmedSelection, data)) {
+					this.lastConfirmedSelection = [];
+				}
+			}
 
 			$selector.attr('data-variation-id', variationId);
-			this.selectedSeats = [];
 			this.buildSelectorUI($selector, data);
+
+			if (keepSeats.length > 0) {
+				// Verstecktes Feld im updateSelection-Format neu befuellen
+				// und Button-Text/Countdowns wiederherstellen — der Rebuild
+				// allein schreibt kein leeres Feld.
+				this.updateSelection($selector, keepSeats);
+				this.updateButtonText($selector, keepSeats);
+			}
+		},
+
+		/**
+		 * Sitz-Daten aus dem getSelectorData-Response uebernehmen.
+		 *
+		 * existingBlocks dieser Session in das updateSelection-Format
+		 * ueberfuehren; abgelaufene Bloecke (remaining_seconds <= 0) fallen
+		 * weg. Der Owner-Token wird vom Server nicht mitgeliefert und bleibt
+		 * am client-seitigen Stand erhalten.
+		 *
+		 * @param {Object} data Selector data from the server
+		 * @returns {Array} Seats in the updateSelection format
+		 */
+		restoreSeatsFromSelectorData: function(data) {
+			var self = this;
+			var seats = [];
+			if (!data || !data.existingBlocks || !data.existingBlocks.length) {
+				return seats;
+			}
+			data.existingBlocks.forEach(function(block) {
+				var remainingSeconds = block.remaining_seconds || 0;
+				if (remainingSeconds <= 0) {
+					return; // Skip expired blocks
+				}
+				seats.push({
+					seat_id: block.seat_id,
+					seat_label: block.seat_label || '',
+					seat_category: block.seat_category || '',
+					seat_desc: block.seat_desc || '',
+					block_id: block.block_id,
+					expires_at: block.expires_at,
+					countdown_end: Date.now() + (remainingSeconds * 1000),
+					owner_token: self.currentBlockOwners[block.seat_id] || ''
+				});
+			});
+			return seats;
+		},
+
+		/**
+		 * Gehoert jede Sitz-Auswahl zu den Sitzen des gelieferten Plans?
+		 *
+		 * @param {Array} seats Selected seats
+		 * @param {Object} data Selector data from the server
+		 * @returns {boolean}
+		 */
+		selectionBelongsToPlan: function(seats, data) {
+			if (!data || !data.seats || !data.seats.length) {
+				return false;
+			}
+			var planSeatIds = {};
+			data.seats.forEach(function(seat) {
+				planSeatIds[String(seat.id)] = true;
+			});
+			return seats.every(function(seat) {
+				return planSeatIds[String(seat.seat_id)] === true;
+			});
+		},
+
+		/**
+		 * Block-IDs einer (wieder-)uebernommenen Auswahl sauber mappen,
+		 * damit ein spaeteres clearSelection() die richtigen Bloecke freigibt.
+		 *
+		 * @param {Array} seats Seats carrying block_id
+		 */
+		trackRestoredBlocks: function(seats) {
+			var ids = {};
+			var owners = {};
+			seats.forEach(function(seat) {
+				if (seat.block_id) {
+					ids[seat.seat_id] = seat.block_id;
+					owners[seat.seat_id] = seat.owner_token || '';
+				}
+			});
+			this.currentBlockIds = ids;
+			this.currentBlockOwners = owners;
 		},
 
 		/**

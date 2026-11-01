@@ -607,69 +607,6 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 	}
 
 	/**
-	 * AJAX: Block a seat (legacy - kept for compatibility)
-	 * @deprecated Use executeSeatingFrontend with a=blockSeat instead
-	 */
-	public function ajaxBlockSeat(): void {
-		check_ajax_referer('sasoEventtickets', 'security');
-
-		$seatId = isset($_POST['seat_id']) ? (int) $_POST['seat_id'] : 0;
-		$productIdRaw = isset($_POST['product_id']) ? (int) $_POST['product_id'] : 0;
-		$eventDate = isset($_POST['event_date']) ? sanitize_text_field($_POST['event_date']) : null;
-
-		if (!$seatId || !$productIdRaw) {
-			wp_send_json_error(['error' => 'missing_params']);
-			return;
-		}
-
-		// WPML: Normalize to original product ID
-		$productId = $this->MAIN->getTicketHandler()->getWPMLProductId($productIdRaw);
-
-		$result = $this->MAIN->getSeating()->blockSeatForCart($productId, $seatId, $eventDate);
-
-		if ($result['success']) {
-			// Get seat info for response
-			$seatInfo = $this->MAIN->getSeating()->getSeatInfo($seatId);
-
-			// Calculate remaining seconds for countdown (avoids timezone issues)
-			$expiresTimestamp = strtotime($result['expires_at']);
-			$remainingSeconds = max(0, $expiresTimestamp - current_time('timestamp'));
-
-			wp_send_json_success([
-				'block_id' => $result['block_id'],
-				'expires_at' => $result['expires_at'],
-				'remaining_seconds' => $remainingSeconds,
-				'extended' => $result['extended'] ?? false,
-				'seat' => $seatInfo
-			]);
-		} else {
-			wp_send_json_error($result);
-		}
-	}
-
-	/**
-	 * AJAX: Release a seat
-	 */
-	public function ajaxReleaseSeat(): void {
-		check_ajax_referer('sasoEventtickets', 'security');
-
-		$blockId = isset($_POST['block_id']) ? (int) $_POST['block_id'] : 0;
-
-		if (!$blockId) {
-			wp_send_json_error(['error' => 'missing_params']);
-			return;
-		}
-
-		$success = $this->MAIN->getSeating()->releaseSeatFromCart($blockId);
-
-		if ($success) {
-			wp_send_json_success();
-		} else {
-			wp_send_json_error(['error' => 'release_failed']);
-		}
-	}
-
-	/**
 	 * AJAX: Get available seats for product/date
 	 */
 	public function ajaxGetAvailableSeats(): void {

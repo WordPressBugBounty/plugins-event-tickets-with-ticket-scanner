@@ -11591,3 +11591,211 @@ msgstr "Nur aktivieren, wenn die Website hinter einem Reverse-Proxy oder CDN lä
 msgctxt "kasse keypad"
 msgid "Delete last digit"
 msgstr "Letzte Ziffer löschen"
+
+#: backend.js:4487
+msgctxt "label"
+msgid "Sales"
+msgstr "Kasse"
+
+#: backend.js
+msgctxt "label"
+msgid "Products & Tax"
+msgstr "Produkte & MwSt."
+
+#: backend.js
+msgctxt "heading"
+msgid "VAT rates"
+msgstr "MwSt.-Sätze"
+
+#: backend.js
+msgctxt "label"
+msgid "Manage the VAT rates you can assign to products and ticket lists. Prices are gross — the rate documents how the price splits into net and tax, it never changes the price the customer pays. Each product uses its own rate first, then the default rate of its ticket list, and without a rate the price counts as net. You can type the percent with a point or a comma. Removed rates stay on past orders, so their net and tax split does not change afterwards."
+msgstr "Verwalten Sie die MwSt.-Sätze, die Sie Produkten und Ticketlisten zuweisen können. Preise sind Bruttopreise — der Satz dokumentiert, wie sich der Preis in Netto und Steuer aufteilt, er ändert nie den Preis, den der Kunde zahlt. Jedes Produkt nutzt zuerst seinen eigenen Satz, dann den Standard-Satz seiner Ticketliste, und ohne jeden Satz gilt der Preis als Netto. Den Prozentwert können Sie mit Punkt oder Komma eingeben. Entfernte Sätze bleiben auf vergangenen Bestellungen erhalten, damit sich deren Netto- und Steuer-Aufteilung danach nicht mehr ändert."
+
+#: backend.js
+msgctxt "column"
+msgid "Name"
+msgstr "Name"
+
+#: backend.js
+msgctxt "column"
+msgid "Percent"
+msgstr "Prozent"
+
+#: backend.js
+msgctxt "column"
+msgid "Active"
+msgstr "Aktiv"
+
+#: backend.js
+msgctxt "label"
+msgid "Add VAT rate"
+msgstr "MwSt.-Satz hinzufügen"
+
+#: backend.js
+msgctxt "label"
+msgid "No VAT rates yet."
+msgstr "Noch keine MwSt.-Sätze."
+
+#: backend.js
+msgctxt "heading"
+msgid "Products"
+msgstr "Produkte"
+
+#: backend.js
+msgctxt "label"
+msgid "All sellable products — event tickets, optional add-ons and fees — across all lists plus global products without a list. An event ticket is the ticket itself and is always sold, an optional add-on is chosen by the customer with a checkbox, and a fee with auto-add sits on every order by default (e.g. a pre-sale fee). Prices are gross — the assigned rate only documents the net and tax split."
+msgstr "Alle verkaufbaren Produkte — Event-Tickets, optionale Zusatzprodukte und Gebühren — über alle Listen hinweg plus globale Produkte ohne Liste. Ein Event-Ticket ist das eigentliche Ticket und wird immer verkauft, ein optionales Zusatzprodukt wählt der Kunde per Checkbox, und eine Gebühr mit Automatik liegt standardmäßig auf jeder Bestellung (z. B. Vorverkaufsgebühr). Preise sind Bruttopreise — der zugewiesene Satz dokumentiert nur die Netto- und Steuer-Aufteilung."
+
+#: backend.js
+msgctxt "label"
+msgid "WooCommerce is active — you do not need these entries for WooCommerce, because product, price and VAT are handled by WooCommerce itself."
+msgstr "WooCommerce ist aktiv — diese Angaben sind bei WooCommerce nicht nötig, da Produkt, Preis und MwSt. dort über WooCommerce abgewickelt werden."
+
+#: backend.js
+msgctxt "column"
+msgid "Type"
+msgstr "Typ"
+
+#: backend.js
+msgctxt "column"
+msgid "Price"
+msgstr "Preis"
+
+#: backend.js
+msgctxt "column"
+msgid "Tax rate"
+msgstr "MwSt.-Satz"
+
+#: backend.js
+msgctxt "column"
+msgid "List"
+msgstr "Liste"
+
+#: backend.js
+msgctxt "label"
+msgid "Event ticket"
+msgstr "Event-Ticket"
+
+#: backend.js
+msgctxt "label"
+msgid "Fee"
+msgstr "Gebühr"
+
+#: backend.js
+msgctxt "label"
+msgid "No tax rate"
+msgstr "Kein MwSt.-Satz"
+
+#: backend.js
+msgctxt "label"
+msgid "Global (no list)"
+msgstr "Global (keine Liste)"
+
+#: backend.js
+msgctxt "label"
+msgid "Optional"
+msgstr "Optional"
+
+#: backend.js
+msgctxt "label"
+msgid "Optional add-on: the customer chooses whether to take it (shop and Kasse show a checkbox)."
+msgstr "Optionales Zusatzprodukt: Der Kunde entscheidet, ob er es mitnimmt (Shop und Kasse zeigen eine Checkbox)."
+
+#: backend.js
+msgctxt "label"
+msgid "Auto-add"
+msgstr "Automatisch hinzufügen"
+
+#: backend.js
+msgctxt "label"
+msgid "The fee is added to every order by default (e.g. pre-sale or system fee)."
+msgstr "Die Gebühr liegt standardmäßig auf jeder Bestellung (z. B. Vorverkaufs- oder Systemgebühr)."
+
+#: backend.js
+msgctxt "label"
+msgid "Add product"
+msgstr "Produkt hinzufügen"
+
+#: backend.js
+msgctxt "label"
+msgid "No products yet."
+msgstr "Noch keine Produkte."
+
+#: backend.js
+msgctxt "label"
+msgid "Active"
+msgstr "Aktiv"
+
+#: backend.js
+msgctxt "label"
+msgid "Remove"
+msgstr "Entfernen"
+
+#: index.php
+msgctxt "label"
+msgid "included"
+msgstr "inklusive"
+
+#: index.php
+msgctxt "label"
+msgid "Add-on"
+msgstr "Add-on"
+
+
+#: backend.js
+msgctxt "label"
+msgid "Define your VAT rates once and assign them to products — or set a default rate per ticket list. An event ticket is the mandatory ticket itself, a product is an optional add-on the customer chooses (drinks, merchandise), and a fee is added to every order by default. The online shop and the Kasse both follow these settings."
+msgstr "Definieren Sie Ihre MwSt.-Sätze einmal und weisen Sie sie den Produkten zu — oder legen Sie einen Standard-Satz pro Ticketliste fest. Ein Event-Ticket ist das eigentliche Ticket und gehört immer zum Verkauf, ein Produkt ist ein optionales Zusatzprodukt, das der Kunde wählt (Getränke, Merchandise), und eine Gebühr liegt standardmäßig auf jeder Bestellung. Der Online-Shop und die Kasse richten sich beide nach diesen Einstellungen."
+
+
+#: backend.js
+msgctxt "title"
+msgid "Edit VAT rate"
+msgstr "MwSt.-Satz bearbeiten"
+
+
+#: backend.js
+msgctxt "title"
+msgid "Add VAT rate"
+msgstr "MwSt.-Satz hinzufügen"
+
+
+#: backend.js
+msgctxt "title"
+msgid "Edit product"
+msgstr "Produkt bearbeiten"
+
+
+#: backend.js
+msgctxt "title"
+msgid "Add product"
+msgstr "Produkt hinzufügen"
+
+
+#: backend.js
+msgctxt "label"
+msgid "Percent"
+msgstr "Prozent"
+
+
+#: backend.js
+msgctxt "label"
+msgid "Currency"
+msgstr "Währung"
+
+
+#: backend.js
+msgctxt "column"
+msgid "Flags"
+msgstr "Merkmale"
+
+
+#: backend.js
+msgid "Are you sure, you want to delete this VAT rate?"
+msgstr "Sind Sie sicher, dass Sie diesen MwSt.-Satz löschen möchten?"
+
+
+#: backend.js
+msgid "Are you sure, you want to delete this product?"
+msgstr "Sind Sie sicher, dass Sie dieses Produkt löschen möchten?"

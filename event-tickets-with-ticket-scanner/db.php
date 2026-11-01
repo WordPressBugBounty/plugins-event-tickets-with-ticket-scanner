@@ -1,11 +1,11 @@
 <?php
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventticketsDB extends sasoEventtickets_DB {
-	public $dbversion = '1.24';
+	public $dbversion = '1.27';
 	public function __construct($MAIN) {
 		$this->MAIN = $MAIN;
 		parent::$dbprefix = "saso_eventtickets_";
-		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks', 'options', 'options_history', 'congresses', 'congress_pages', 'congress_sections', 'congress_products', 'orders', 'products', 'offline_sync'];
+		$this->_tabellen = ['lists', 'codes', 'ips', 'authtokens', 'errorlogs', 'seatingplans', 'seats', 'seat_blocks', 'options', 'options_history', 'congresses', 'congress_pages', 'congress_sections', 'congress_products', 'orders', 'products', 'product_categories', 'tax_rates', 'offline_sync', 'tgen_claims'];
 		$this->init();
 	}
 
@@ -19,6 +19,7 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				timezone varchar(255) NOT NULL DEFAULT '',
 				name varchar(255) NOT NULL DEFAULT '',
 				aktiv int(1) unsigned NOT NULL DEFAULT 0,
+				default_tax_rate_id bigint(20) unsigned NOT NULL DEFAULT 0,
 				meta longtext NOT NULL DEFAULT '',
 				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
 			"additional"=>[
@@ -311,6 +312,11 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				currency varchar(8) NOT NULL DEFAULT '',
 				aktiv int(1) unsigned NOT NULL DEFAULT 1,
 				sort int(11) NOT NULL DEFAULT 0,
+				category_id int(32) unsigned NOT NULL DEFAULT 0,
+				product_type varchar(20) NOT NULL DEFAULT 'event',
+				tax_rate_id bigint(20) unsigned NOT NULL DEFAULT 0,
+				is_optional tinyint(1) unsigned NOT NULL DEFAULT 0,
+				auto_add tinyint(1) unsigned NOT NULL DEFAULT 0,
 				meta longtext NOT NULL DEFAULT '',
 				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
 			"additional"=>[
@@ -318,7 +324,46 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				"CREATE INDEX idx2 ON ".$this->getTabelle('products')." (aktiv)"
 			]
 			];
-		// Offline scanner sync dedupe: one row per client event id — a network
+		// Product categories (Saso 2026-10-27 "online verkaufssystem —
+		// produkte, kategorien"): grouping for products in Kasse and shop,
+		// e.g. drinks, food, merchandise. Deleting a category leaves
+		// products at category_id = 0 (no FK cascade).
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('product_categories')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(64) NOT NULL DEFAULT '',
+				name varchar(255) NOT NULL DEFAULT '',
+				aktiv int(1) unsigned NOT NULL DEFAULT 1,
+				sort int(11) NOT NULL DEFAULT 0,
+				meta longtext NOT NULL DEFAULT '',
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[]
+			];
+		// Tax rates (Steuersätze) — Products & Tax, v1.26 (3.3.0). Referenced by
+		// products.tax_rate_id and lists.default_tax_rate_id; products keep their
+		// id when a rate is deleted here (resolution falls through, no FK cascade).
+		// percent is stored with decimal POINT (input accepts comma AND point —
+		// decimal convention 28./29.10.); soft deletes via is_deleted.
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('tax_rates')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(64) NOT NULL DEFAULT '',
+				name varchar(255) NOT NULL DEFAULT '',
+				percent decimal(5,2) NOT NULL DEFAULT 0,
+				aktiv tinyint(1) unsigned NOT NULL DEFAULT 1,
+				is_deleted tinyint(1) unsigned NOT NULL DEFAULT 0,
+				created_by int(32) unsigned DEFAULT NULL,
+				updated_by int(32) unsigned DEFAULT NULL,
+				created_at datetime DEFAULT NULL,
+				updated_at datetime DEFAULT NULL,
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[]
+		];
+	// Offline scanner sync dedupe: one row per client event id — a network
 		// retry after a processed scan must never redeem a second time.
 		$tabellen[] = [
 			"sql"=>
@@ -334,6 +379,24 @@ class sasoEventticketsDB extends sasoEventtickets_DB {
 				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
 			"additional"=>[
 				"CREATE UNIQUE INDEX idx1 ON ".$this->getTabelle('offline_sync')." (eid)"
+			]
+		];
+	// Ticket-generation claim (#015487): genau EINE Zeile pro (order_id, item_id).
+		// Der UNIQUE INDEX macht den Claim atomisch auf DB-Ebene — unabhängig vom
+		// Object Cache (Redis): der zweite Trigger (payment webhook + status
+		// completed Sekunden auseinander) verliert das INSERT-RENnen sichtbar,
+		// statt auf einen veralteten Cache-Wert zu vertrauen.
+		$tabellen[] = [
+			"sql"=>
+				"CREATE TABLE ".$this->getTabelle('tgen_claims')." (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(255) NOT NULL DEFAULT '',
+				order_id int(32) unsigned NOT NULL DEFAULT 0,
+				item_id int(32) unsigned NOT NULL DEFAULT 0,
+				PRIMARY KEY (id)) ".$this->getCharsetCollate().";",
+			"additional"=>[
+				"CREATE UNIQUE INDEX idx1 ON ".$this->getTabelle('tgen_claims')." (order_id, item_id)"
 			]
 		];
 		$tabellen = apply_filters( $this->MAIN->_add_filter_prefix.'db_system_installiereTabellen', $tabellen );

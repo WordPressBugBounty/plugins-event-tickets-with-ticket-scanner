@@ -1215,6 +1215,11 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				if (KASSE_PRODUCTS_CACHE !== null) KASSE_PRODUCTS_CACHE[l.id] = (ret && ret.products) || [];
 			}, ()=>{ /* silent — dialog falls back to lazy load */ });
 		});
+		// global non-event products (drinks, merch …) ride along on every
+		// Kasse entry (Saso 2026-10-27 "non-event produkte wie trinken")
+		_makePost('getTicketProducts', {list_id: 0, aktiv: 1}, ret => {
+			if (KASSE_PRODUCTS_CACHE !== null) KASSE_PRODUCTS_CACHE[0] = (ret && ret.products) || [];
+		}, ()=>{});
 	}
 
 	/**
@@ -1281,6 +1286,17 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		return {major: String(major), minor: minorStr, dec:true, fresh:false};
 	}
 
+	/**
+	 * Starting qty for a Kasse product row (Saso 2026-11-01: "an auto added
+	 * product should have 1 as a starting amount if sale is started") —
+	 * auto-add fees sit on every order by default (server adds them, 3.3.0),
+	 * so their row starts at 1 and the live total includes them from the
+	 * first render. Tickets, optional add-ons and merch keep starting at 0.
+	 */
+	function kasseInitialQty(p) {
+		return (p && parseInt(p.auto_add, 10) === 1) ? 1 : 0;
+	}
+
 	function _displayKasseArea() {
 		STATE = 'kasse';
 		__kasseAutoRefreshStop(); // falls noch ein Timer einer vorherigen Session läuft
@@ -1305,6 +1321,20 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		if (order.payment_note) head.append($('<span class="et-kasse-order__note"/>').text(order.payment_note));
 		if (order.customer_name) head.append($('<span class="et-kasse-order__customer"/>').text(order.customer_name));
 		let btns = $('<div class="et-btn-group"/>').appendTo(head);
+		// (D) Einheitliche Info-Basis: every order gets a detail view built by
+		// the ONE shared renderer (__kasseRenderOrderDetail) — lazy fetch of
+		// the single payload, toggled in place.
+		btns.append($('<button class="et-btn-action et-kasse-order__details-toggle"/>').text(_x('Details', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+			let box = div.find('.et-kasse-order__details');
+			if (box.length) { box.toggle(); return; }
+			box = $('<div class="et-kasse-order__details"/>').appendTo(div);
+			_makeGet('getInternalOrderDetails', {id:order.id}, (payload)=>{
+				box.append(__kasseRenderOrderDetail(payload, 'kasse'));
+			}, (err)=>{
+				box.remove();
+				LAYOUT.renderFatalError(err.data || 'error');
+			});
+		}));
 		if (order.status == 'draft') {
 			btns.append($('<button class="et-btn-action"/>').text(_x('Confirm payment', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 				__kasseSetStatus(order, 'completed');
@@ -1319,9 +1349,25 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			btns.append($('<button class="et-btn-action"/>').text(_x('Partial refund', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 				__kassePartialRefund(order);
 			}));
+			// Kassenbeleg (3.3.0): receipt of a paid sale — drafts have none
+			// (endpoint refuses #9277), so the button only exists here.
+			btns.append($('<button class="et-btn-action"/>').text(_x('Receipt', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
+				_makeGet('getInternalOrderReceipt', {id:order.id}, (ret)=>{
+					if (!ret || !ret.html) { LAYOUT.renderFatalError('no receipt'); return; }
+					let w = window.open('', '_blank');
+					if (!w) { LAYOUT.renderFatalError('popup blocked'); return; }
+					w.document.write('<html><head><title>'+_x('Receipt', 'label', 'event-tickets-with-ticket-scanner')+' #'+(ret.number||'')+'</title></head><body style="margin:16px;background:#fff;">'+ret.html+'<script>window.onload=function(){window.print();}<\/script></body></html>');
+					w.document.close();
+				}, (err)=>{
+					LAYOUT.renderFatalError(err.data || 'error');
+				});
+			}));
 		}
 		let codes = $('<div class="et-kasse-order__codes"/>').appendTo(div);
-		(order.code_ids_arr || []).forEach(cid=>{
+		// Draft (unconfirmed) sales show no print chips — the Kasse prints
+		// after "Confirm payment"; the endpoint refuses drafts as well.
+		if (order.status != 'draft') {
+			(order.code_ids_arr || []).forEach(cid=>{
 			let chip = $('<div class="et-kasse-card"/>').appendTo(codes);
 			$('<div class="et-kasse-card__code"/>').text('#'+cid).appendTo(chip);
 			$('<div class="et-kasse-card__actions"/>')
@@ -1334,8 +1380,80 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					});
 				}))
 				.appendTo(chip);
-		});
+			});
+		}
 		return div;
+	}
+
+	/**
+	 * (D) Einheitliche Info-Basis — THE one order-detail renderer (3.3.0).
+	 * One payload (getInternalOrderDetails), one renderer, one context flag:
+	 * 'kasse' = internal view (payment trail incl. cash given/change,
+	 * payment note); 'online' = customer view (lines, tax, total, receipt
+	 * number — no payment internals). Later customer-facing views reuse this
+	 * renderer with context 'online'; the payload stays identical.
+	 */
+	function __kasseRenderOrderDetail(payload, context) {
+		context = context || 'kasse';
+		let d = $('<div class="et-order-detail"/>');
+		let fmt = c => (parseInt(c, 10) || 0) / 100;
+		let cur = payload.price_currency || '';
+		let money = c => fmt(c).toFixed(2) + (cur ? ' ' + cur : '');
+
+		let head = $('<div class="et-order-detail__head"/>').appendTo(d);
+		head.append($('<span class="et-order-detail__status"/>').text(payload.status));
+		if (payload.time) head.append($('<span class="et-order-detail__time"/>').text(payload.time));
+
+		let lines = $('<div class="et-order-detail__lines"/>').appendTo(d);
+		(payload.lines || []).forEach(line=>{
+			let qty = Math.max(1, parseInt(line.qty, 10) || 1);
+			let row = $('<div class="et-order-detail__line"/>').appendTo(lines);
+			row.append($('<span class="et-order-detail__line-name"/>').text(qty + 'x ' + (line.name || '')));
+			row.append($('<span class="et-order-detail__line-price"/>').text(money((parseInt(line.price_cents, 10) || 0) * qty)));
+		});
+
+		if (payload.tax && payload.tax.rates && payload.tax.rates.length) {
+			let tax = $('<div class="et-order-detail__tax"/>').appendTo(d);
+			payload.tax.rates.forEach(r=>{
+				let label = (parseFloat(r.rate) || 0);
+				label = String(label).replace(/\.0+$/, '');
+				let row = $('<div class="et-order-detail__tax-row"/>').appendTo(tax);
+				row.append($('<span/>').text(_x('VAT', 'label', 'event-tickets-with-ticket-scanner') + ' ' + label + '%: ' + fmt(r.net_cents).toFixed(2) + ' + ' + fmt(r.tax_cents).toFixed(2)));
+				row.append($('<span/>').text(fmt(r.gross_cents).toFixed(2)));
+			});
+			let netRow = $('<div class="et-order-detail__tax-row"/>').appendTo(tax);
+			netRow.append($('<span/>').text(_x('Net', 'label', 'event-tickets-with-ticket-scanner')));
+			netRow.append($('<span/>').text(fmt(payload.tax.total_net_cents).toFixed(2)));
+		}
+
+		let totalRow = $('<div class="et-order-detail__total"/>').appendTo(d);
+		totalRow.append($('<span/>').text(_x('Total', 'label', 'event-tickets-with-ticket-scanner')));
+		totalRow.append($('<span/>').text(money(payload.price_total_cents)));
+
+		// context flag: the only branch that differs between kasse and online
+		if (context == 'kasse') {
+			if (payload.payment && payload.payment.method) {
+				let pay = $('<div class="et-order-detail__payment"/>').appendTo(d);
+				pay.append($('<span class="et-order-detail__pay-method"/>').text(payload.payment.method));
+				if (payload.payment.source) pay.append($('<span class="et-order-detail__pay-source"/>').text(payload.payment.source));
+				if (payload.payment.given_cents !== null && payload.payment.given_cents !== undefined) {
+					pay.append($('<span class="et-order-detail__pay-cash"/>').text(_x('Given', 'label', 'event-tickets-with-ticket-scanner') + ' ' + fmt(payload.payment.given_cents).toFixed(2)));
+					pay.append($('<span class="et-order-detail__pay-cash"/>').text(_x('Change', 'label', 'event-tickets-with-ticket-scanner') + ' ' + fmt(payload.payment.change_cents || 0).toFixed(2)));
+				}
+			}
+			if (payload.payment_note) d.append($('<div class="et-order-detail__note"/>').text(payload.payment_note));
+		}
+
+		if (payload.receipt && payload.receipt.number) {
+			d.append($('<div class="et-order-detail__receipt"/>').text(_x('Receipt', 'label', 'event-tickets-with-ticket-scanner') + ' #' + payload.receipt.number));
+		}
+
+		let tickets = $('<div class="et-order-detail__tickets"/>').appendTo(d);
+		(payload.tickets || []).forEach(t=>{
+			if (t.url) tickets.append($('<a class="et-order-detail__ticket" target="_blank"/>').attr('href', t.url).text('#' + t.code_id));
+			else tickets.append($('<span class="et-order-detail__ticket et-order-detail__ticket--nourl"/>').text('#' + t.code_id));
+		});
+		return d;
 	}
 
 	function __kasseListMeta(l) {
@@ -1519,7 +1637,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						html += '<button class="et-btn-action et-btn-action--danger" data-type="refund">'+_x('Refund','label','event-tickets-with-ticket-scanner')+'</button>';
 						html += '<button class="et-btn-action" data-type="partial">'+_x('Partial refund','label','event-tickets-with-ticket-scanner')+'</button>';
 					}
-					if (row.tickets_count > 0) {
+					if (row.tickets_count > 0 && row.status != 'draft') {
 						html += '<button class="et-btn-action" data-type="print">'+_x('Print tickets','label','event-tickets-with-ticket-scanner')+'</button>';
 					}
 					html += '</div>';
@@ -1736,19 +1854,37 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			// products — was missing (the given field was never shown)
 			totalDiv.show();
 			cashDiv.show();
+			// category headers for grouped products (Saso 2026-10-27):
+			// ticket types of the event render ungrouped as before,
+			// global products show their category (Getränke, Speisen …)
+			let lastCat = null;
 			prods.forEach(p=>{
+				let cat = (p.category_name && p.category_name !== '') ? p.category_name : null;
+				if (cat !== lastCat) {
+					lastCat = cat;
+					if (cat !== null) {
+						$('<div class="et-kasse-cat" style="margin:10px 0 4px;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:#50575e;"/>').text(cat).appendTo(prodWrap);
+					}
+				}
 				let row = $('<div class="et-kasse-prod" style="display:flex;gap:8px;align-items:center;margin-bottom:4px;"/>')
 					.data('price-cents', parseInt(p.price_cents, 10) || 0)
 					.data('currency', p.currency || '')
 					.appendTo(prodWrap);
-				$('<span style="flex:1;"/>').text(p.name).appendTo(row);
+				let nameWrap = $('<span style="flex:1;"/>').appendTo(row);
+				$('<span/>').text(p.name).appendTo(nameWrap);
+				// display_desc (Saso 2026-10-27): type-aware description from
+				// the server — list desc for ticket products, own desc for
+				// global drinks/merch. Server already sanitized (wp_kses_post).
+				if (p.display_desc && $.trim(p.display_desc) !== '') {
+					$('<span class="et-kasse-prod__desc" style="display:block;font-size:11px;color:#50575e;"/>').html(p.display_desc).appendTo(nameWrap);
+				}
 				$('<span/>').text(__kassePrice(parseInt(p.price_cents, 10) || 0)+(p.currency ? ' '+p.currency : '')).appendTo(row);
 				// touch steppers (Saso 2026-10-26): minus/plus around the qty
 				// field beats fiddling with a spin-less number input on
 				// phones/tablets — one tap = one ticket
 				let qtyWrap = $('<div style="display:flex;gap:4px;align-items:center;"/>').appendTo(row);
 				$('<button type="button" class="et-btn-action et-kasse-prod__minus" aria-label="'+_x('Decrease quantity', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:40px;height:40px;font-size:20px;line-height:1;padding:0;">&minus;</button>').appendTo(qtyWrap);
-				$('<input type="number" class="et-kasse-prod__qty" min="0" max="100" value="0" data-product-id="'+parseInt(p.id, 10)+'" style="width:64px;text-align:center;">').appendTo(qtyWrap);
+				$('<input type="number" class="et-kasse-prod__qty" min="0" max="100" value="' + kasseInitialQty(p) + '" data-product-id="'+parseInt(p.id, 10)+'" style="width:64px;text-align:center;">').appendTo(qtyWrap);
 				$('<button type="button" class="et-btn-action et-kasse-prod__plus" aria-label="'+_x('Increase quantity', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:40px;height:40px;font-size:20px;line-height:1;padding:0;">+</button>').appendTo(qtyWrap);
 			});
 			__updateKasseTotals();
@@ -1763,18 +1899,31 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			}
 			// cache-first: prefetched on Kasse entry — instant, no AJAX wait
 			let cached = (KASSE_PRODUCTS_CACHE || {})[lid];
-			if (typeof cached !== 'undefined') { __renderKasseProducts(cached); return; }
+			let globals = (KASSE_PRODUCTS_CACHE || {})[0];
+			if (typeof cached !== 'undefined' && typeof globals !== 'undefined') { __renderKasseProducts(cached.concat(globals)); return; }
 			// race (dialog opened before the prefetch landed): show where the
 			// products will appear, load once, then cache
 			prodWrap.empty().show().append(_getSpinnerHTML());
+			let done = 0, list = null, glob = [];
+			let __merge = () => {
+				if (done < 2) return;
+				if (KASSE_PRODUCTS_CACHE !== null) {
+					KASSE_PRODUCTS_CACHE[lid] = list || [];
+					KASSE_PRODUCTS_CACHE[0] = glob;
+				}
+				__renderKasseProducts((list || []).concat(glob));
+			};
 			_makePost('getTicketProducts', {list_id: lid, aktiv: 1}, ret=>{
-				if (KASSE_PRODUCTS_CACHE !== null) KASSE_PRODUCTS_CACHE[lid] = (ret && ret.products) || [];
-				__renderKasseProducts((ret && ret.products) || []);
+				list = (ret && ret.products) || []; done++; __merge();
 			}, ()=>{
-				prodWrap.hide().empty();
-				row2.show();
+				done++; list = []; __merge(); // list failed → still show globals
 			});
-		};
+			_makePost('getTicketProducts', {list_id: 0, aktiv: 1}, ret=>{
+				glob = (ret && ret.products) || []; done++; __merge();
+			}, ()=>{
+				done++; glob = []; __merge();
+			});
+			};
 		let row2 = $('<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;"/>').appendTo(dlg);
 		row2.append($('<label/>').text(_x('Amount', 'label', 'event-tickets-with-ticket-scanner')));
 		$('<input type="number" class="et-kasse-form__amount" min="1" max="100" value="1" style="width:80px;"/>').appendTo(row2);
@@ -2515,6 +2664,18 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let tabSeatingplan = $('<div id="tab-seatingplan" class="tab-content"/>');
 			tabs.append(tabSeatingplan);
 
+			// products & tax tab — its own section, the exact pattern of
+			// Seating Plans / Ticket Templates: own nav entry in this tab
+			// list, own display state, deep link &display=productstax
+			let tabNavProductsTax = $('<li><a href="#tab-productstax">' + _x('Products & Tax', 'label', 'event-tickets-with-ticket-scanner') + '</a></li>');
+			tabNavProductsTax.on("click", ()=>{
+				tabProductsTax.html('');
+				__mountProductsTaxSection(tabProductsTax);
+			});
+			tabNav.append(tabNavProductsTax);
+			let tabProductsTax = $('<div id="tab-productstax" class="tab-content"/>');
+			tabs.append(tabProductsTax);
+
 			// change history tab
 			let tabNavHistory = $('<li><a href="#tab-options-history">' + _x('Change History', 'label', 'event-tickets-with-ticket-scanner') + '</a></li>');
 			let tabHistory = $('<div id="tab-options-history" class="tab-content"/>');
@@ -3144,9 +3305,13 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				$(this).addClass('active');
 			});
 
-			// Show the first tab by default
+			// Show the first tab by default (deep links may pin another tab:
+			// &display=options&subdisplay=templates -> Ticket Templates,
+			// &display=productstax -> Products & Tax)
 			if (typeof PARAS.subdisplay !== "undefined" && PARAS.subdisplay == 'templates') {
 				$('.tab-nav a').eq(1).click();
+			} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'productstax') {
+				$('.tab-nav a[href="#tab-productstax"]').click();
 			} else {
 				$('.tab-nav a:first').click();
 			}
@@ -4298,6 +4463,384 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		return div_buttons;
 	}
 
+	// ── Products & Tax (own SECTION, 3.3.0, docs/plan-products-mwst.md) ──────
+	// Its own tab of the Options page — the exact pattern of Seating Plans /
+	// Ticket Templates: a tab-nav entry hardcoded in backend.js (no options
+	// entry, no use-case group), own display STATE, deep link &display=productstax.
+	// (a) VAT rate management (getTaxRates / saveTaxRate / deleteTaxRate)
+	// and (b) products management across all lists + global (list_id = 0)
+	// with type event/product/fee, price, rate assignment, optional /
+	// auto-add flags. Both lists render as DataTables (authtokens pattern:
+	// keyed JSON rows, deferRender, columns.render, search + sort + paging —
+	// built for growing data, no limit-clipped HTML dumps), add/edit runs in
+	// jQuery-UI dialogs (authtokens-mask pattern), deletes stay confirmed and
+	// soft (server-side is_deleted). SRP: PHP delivers data, JS renders; all
+	// writes go through the existing AJAX actions. Deep link:
+	// &display=productstax opens the Options page with this tab pinned.
+	let PRODUCTSTAX_DIV = null;
+	let __ptRates = [];
+	let __ptLists = [];
+	let __ptProducts = [];
+	let __ptRatesTableDt = null;
+	let __ptProductsTableDt = null;
+
+	// percent ALWAYS renders with a decimal point (locale-independent house
+	// rule): 19 -> "19", 19.5 -> "19.5", never "19,5"
+	function __ptFormatPercent(v) {
+		let n = parseFloat(v);
+		if (isNaN(n)) return '0';
+		return String(Math.round(n * 100) / 100);
+	}
+
+	function __ptEsc(s) {
+		return $('<span/>').text(s == null ? '' : String(s)).html();
+	}
+
+	function __ptTypeName(t) {
+		if (t === 'product') return _x('Product', 'label', 'event-tickets-with-ticket-scanner');
+		if (t === 'fee') return _x('Fee', 'label', 'event-tickets-with-ticket-scanner');
+		return _x('Event ticket', 'label', 'event-tickets-with-ticket-scanner');
+	}
+
+	// one parallel sweep (rates + products + lists); render when all three are in
+	function __ptLoadData(cbf) {
+		let pending = 3;
+		let fin = () => { pending--; if (pending === 0 && cbf) { let f = cbf; cbf = null; f(); } };
+		_makePost('getTaxRates', {}, ret => { __ptRates = (ret && ret.tax_rates) || []; fin(); }, () => { __ptRates = []; fin(); });
+		_makePost('getProductsForAdmin', {}, ret => { __ptProducts = (ret && ret.products) || []; fin(); }, () => { __ptProducts = []; fin(); });
+		getDataLists(() => { __ptLists = DATA_LISTS || []; fin(); });
+	}
+
+	function __ptReload() {
+		__ptLoadData(() => { __renderProductsTax(); });
+	}
+
+	// called from the tab click (Seating Plans pattern): the tab is the
+	// section owner — no options/search machinery around it anymore
+	function __mountProductsTaxSection(target) {
+		// own display state (like STATE = 'seatingplan' for Seating Plans)
+		STATE = 'productstax';
+		// a previous visit's DataTable instances belong to removed DOM —
+		// destroy them so the registry does not keep orphaned tables alive
+		if (__ptRatesTableDt) { try { __ptRatesTableDt.destroy(); } catch (e) {} __ptRatesTableDt = null; }
+		if (__ptProductsTableDt) { try { __ptProductsTableDt.destroy(); } catch (e) {} __ptProductsTableDt = null; }
+		PRODUCTSTAX_DIV = $('<div/>')
+			.html(_getSpinnerHTML())
+			.appendTo(target);
+		__ptLoadData(() => {
+			__renderProductsTax();
+		});
+	}
+
+	function __ptRateOptions(selectedId) {
+		let sel = $('<select name="etPtProdRate" style="width:100%;"/>');
+		sel.append($('<option/>').val('0').text(_x('No tax rate', 'label', 'event-tickets-with-ticket-scanner')));
+		__ptRates.forEach(r => {
+			sel.append($('<option/>').val(String(parseInt(r.id, 10))).text(r.name + ' (' + __ptFormatPercent(r.percent) + ' %)').prop('selected', parseInt(r.id, 10) === parseInt(selectedId || 0, 10)));
+		});
+		return sel;
+	}
+
+	function __ptListOptions(selectedId) {
+		let sel = $('<select name="etPtProdList" style="width:100%;max-width:260px;"/>');
+		sel.append($('<option/>').val('0').text(_x('Global (no list)', 'label', 'event-tickets-with-ticket-scanner')));
+		__ptLists.forEach(l => {
+			sel.append($('<option/>').val(String(parseInt(l.id, 10))).text(l.name).prop('selected', parseInt(l.id, 10) === parseInt(selectedId || 0, 10)));
+		});
+		return sel;
+	}
+
+	// add/edit one VAT rate — jQuery-UI dialog (authtokens-mask pattern).
+	// Everything the dialog renders is plain form markup: jQuery-UI moves the
+	// widget outside the admin page container, so et-* card/pill classes must
+	// not be relied on here (see the dialog CSS scope rule).
+	function __ptRateDialog(r) {
+		let isEdit = r && parseInt(r.id, 10) > 0;
+		let dlg = null;
+		function __submitRateForm() {
+			let payload = {
+				name: dlg.find('[name="etPtRateName"]').val(),
+				percent: dlg.find('[name="etPtRatePercent"]').val(),
+				aktiv: dlg.find('[name="etPtRateAktiv"]').prop('checked') ? 1 : 0,
+			};
+			if (isEdit) payload.id = parseInt(r.id, 10);
+			_makePost('saveTaxRate', payload, () => { closeDialog(dlg); __ptReload(); }, response => {
+				// keep the dialog open so the input can be fixed; the server
+				// reasons (#9279 ...) render as the house fatal-error box
+				if (response && response.data && typeof response.data.slice === 'function' && response.data.slice(0, 1) === '#') {
+					LAYOUT.renderFatalError(response.data);
+				}
+			});
+		}
+		let _options = {
+			title: isEdit ? _x('Edit VAT rate', 'title', 'event-tickets-with-ticket-scanner') : _x('Add VAT rate', 'title', 'event-tickets-with-ticket-scanner'),
+			modal: true,
+			width: 420,
+			buttons: [
+				{ text: _x('Save', 'label', 'event-tickets-with-ticket-scanner'), click: function () { __submitRateForm(); } },
+				{ text: _x('Cancel', 'label', 'event-tickets-with-ticket-scanner'), click: function () { closeDialog(this); } },
+			],
+		};
+		dlg = $('<div/>').html(
+			'<form>'
+			+ '<p>' + _x('Name', 'label', 'event-tickets-with-ticket-scanner') + '<br><input name="etPtRateName" type="text" style="width:100%;" required></p>'
+			+ '<p>' + _x('Percent', 'label', 'event-tickets-with-ticket-scanner') + '<br><input name="etPtRatePercent" type="text" inputmode="decimal" style="width:120px;" placeholder="19" title="19 / 19,5 / 7.5"></p>'
+			+ '<p><label style="cursor:pointer;font-weight:normal;"><input type="checkbox" name="etPtRateAktiv"> ' + _x('Active', 'label', 'event-tickets-with-ticket-scanner') + '</label></p>'
+			+ '</form>'
+		);
+		dlg.dialog(_options);
+		dlg.find('[name="etPtRateName"]').val(isEdit ? (r.name == null ? '' : r.name) : '');
+		dlg.find('[name="etPtRatePercent"]').val(isEdit ? __ptFormatPercent(r.percent) : '');
+		dlg.find('[name="etPtRateAktiv"]').prop('checked', !isEdit || parseInt(r.aktiv, 10) === 1);
+		dlg.find('form').on('submit', e => { e.preventDefault(); __submitRateForm(); });
+	}
+
+	// add/edit one product — jQuery-UI dialog; flags show/hide by type:
+	// Optional only for type 'product', Auto-add only for type 'fee'
+	function __ptProductDialog(p) {
+		let isEdit = p && parseInt(p.id, 10) > 0;
+		let dlg = null;
+		let optWrap = $('<label style="white-space:nowrap;display:none;align-items:center;gap:4px;cursor:pointer;font-weight:normal;" title="' + _x('Optional add-on: the customer chooses whether to take it (shop and Kasse show a checkbox).', 'label', 'event-tickets-with-ticket-scanner') + '"/>');
+		let opt = $('<input type="checkbox" name="etPtProdOptional"/>').appendTo(optWrap);
+		optWrap.append(document.createTextNode(' ' + _x('Optional', 'label', 'event-tickets-with-ticket-scanner')));
+		let autoWrap = $('<label style="white-space:nowrap;display:none;align-items:center;gap:4px;cursor:pointer;font-weight:normal;" title="' + _x('The fee is added to every order by default (e.g. pre-sale or system fee).', 'label', 'event-tickets-with-ticket-scanner') + '"/>');
+		let auto = $('<input type="checkbox" name="etPtProdAuto"/>').appendTo(autoWrap);
+		autoWrap.append(document.createTextNode(' ' + _x('Auto-add', 'label', 'event-tickets-with-ticket-scanner')));
+		function __refreshFlags() {
+			let t = dlg.find('[name="etPtProdType"]').val();
+			optWrap.css('display', t === 'product' ? 'flex' : 'none');
+			autoWrap.css('display', t === 'fee' ? 'flex' : 'none');
+		}
+		function __submitProductForm() {
+			// a hidden flag is not editable here — keep its stored value on
+			// edit instead of silently clearing it; on CREATE there is no
+			// product object yet, hidden flags default to 0 (never read p)
+			let optHidden = optWrap.css('display') === 'none';
+			let autoHidden = autoWrap.css('display') === 'none';
+			let payload = {
+				name: dlg.find('[name="etPtProdName"]').val(),
+				product_type: dlg.find('[name="etPtProdType"]').val(),
+				price: dlg.find('[name="etPtProdPrice"]').val(),
+				currency: dlg.find('[name="etPtProdCurrency"]').val(),
+				tax_rate_id: parseInt(dlg.find('[name="etPtProdRate"]').val(), 10) || 0,
+				list_id: parseInt(dlg.find('[name="etPtProdList"]').val(), 10) || 0,
+				is_optional: optHidden ? (isEdit ? (parseInt(p.is_optional, 10) || 0) : 0) : (opt.prop('checked') ? 1 : 0),
+				auto_add: autoHidden ? (isEdit ? (parseInt(p.auto_add, 10) || 0) : 0) : (auto.prop('checked') ? 1 : 0),
+				aktiv: dlg.find('[name="etPtProdAktiv"]').prop('checked') ? 1 : 0,
+			};
+			if (isEdit) payload.id = parseInt(p.id, 10);
+			_makePost(isEdit ? 'editTicketProduct' : 'addTicketProduct', payload, () => { closeDialog(dlg); __ptReload(); }, response => {
+				if (response && response.data && typeof response.data.slice === 'function' && response.data.slice(0, 1) === '#') {
+					LAYOUT.renderFatalError(response.data);
+				}
+			});
+		}
+		let _options = {
+			title: isEdit ? _x('Edit product', 'title', 'event-tickets-with-ticket-scanner') : _x('Add product', 'title', 'event-tickets-with-ticket-scanner'),
+			modal: true,
+			width: 480,
+			buttons: [
+				{ text: _x('Save', 'label', 'event-tickets-with-ticket-scanner'), click: function () { __submitProductForm(); } },
+				{ text: _x('Cancel', 'label', 'event-tickets-with-ticket-scanner'), click: function () { closeDialog(this); } },
+			],
+		};
+		dlg = $('<div/>').html(
+			'<form>'
+			+ '<p>' + _x('Name', 'label', 'event-tickets-with-ticket-scanner') + '<br><input name="etPtProdName" type="text" style="width:100%;" required></p>'
+			+ '<p style="margin-bottom:4px;">' + __('Type', 'event-tickets-with-ticket-scanner') + '<br>'
+			+ '<select name="etPtProdType" style="width:100%;">'
+			+ '<option value="event">' + _x('Event ticket', 'label', 'event-tickets-with-ticket-scanner') + '</option>'
+			+ '<option value="product">' + _x('Product', 'label', 'event-tickets-with-ticket-scanner') + '</option>'
+			+ '<option value="fee">' + _x('Fee', 'label', 'event-tickets-with-ticket-scanner') + '</option>'
+			+ '</select></p>'
+			+ '<div style="display:flex;gap:8px;"><p style="flex:1;">' + _x('Price', 'label', 'event-tickets-with-ticket-scanner') + '<br><input name="etPtProdPrice" type="text" inputmode="decimal" style="width:100%;" placeholder="19.90"></p>'
+			+ '<p style="width:80px;">' + _x('Currency', 'label', 'event-tickets-with-ticket-scanner') + '<br><input name="etPtProdCurrency" type="text" style="width:100%;" placeholder="EUR"></p></div>'
+			+ '<p>' + _x('Tax rate', 'column', 'event-tickets-with-ticket-scanner') + '<br><span class="et-pt-rate-slot"></span></p>'
+			+ '<p>' + _x('List', 'column', 'event-tickets-with-ticket-scanner') + '<br><span class="et-pt-list-slot"></span></p>'
+			+ '<p style="margin-bottom:4px;"><span class="et-pt-opt-slot"></span></p>'
+			+ '<p style="margin-bottom:4px;"><span class="et-pt-auto-slot"></span></p>'
+			+ '<p><label style="cursor:pointer;font-weight:normal;"><input type="checkbox" name="etPtProdAktiv"> ' + _x('Active', 'label', 'event-tickets-with-ticket-scanner') + '</label></p>'
+			+ '</form>'
+		);
+		dlg.dialog(_options);
+		dlg.find('.et-pt-rate-slot').append(__ptRateOptions(isEdit ? p.tax_rate_id : 0));
+		dlg.find('.et-pt-list-slot').append(__ptListOptions(isEdit ? p.list_id : 0));
+		dlg.find('.et-pt-opt-slot').append(optWrap);
+		dlg.find('.et-pt-auto-slot').append(autoWrap);
+		dlg.find('[name="etPtProdName"]').val(isEdit ? (p.name == null ? '' : p.name) : '');
+		dlg.find('[name="etPtProdType"]').val(isEdit ? (p.product_type || 'event') : 'event');
+		dlg.find('[name="etPtProdPrice"]').val(isEdit ? ((parseInt(p.price_cents, 10) || 0) / 100).toFixed(2) : '');
+		dlg.find('[name="etPtProdCurrency"]').val(isEdit ? String(p.currency == null ? '' : p.currency) : '');
+		opt.prop('checked', isEdit && parseInt(p.is_optional, 10) === 1);
+		auto.prop('checked', isEdit && parseInt(p.auto_add, 10) === 1);
+		dlg.find('[name="etPtProdAktiv"]').prop('checked', !isEdit || parseInt(p.aktiv, 10) === 1);
+		dlg.find('[name="etPtProdType"]').on('change', __refreshFlags);
+		__refreshFlags();
+		dlg.find('form').on('submit', e => { e.preventDefault(); __submitProductForm(); });
+	}
+
+	// ── VAT rates table: DataTables, keyed JSON rows, deferred rendering ──
+	function __ptRenderRatesTable() {
+		if (!PRODUCTSTAX_DIV) return;
+		let table_id = myAjax.divPrefix + '_pt_rates';
+		let tabelle = $('<table/>').attr('id', table_id);
+		tabelle.html('<thead><tr>'
+			+ '<th>' + _x('Name', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th>' + _x('Percent', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th>' + _x('Active', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th></th>'
+			+ '</tr></thead>');
+		PRODUCTSTAX_DIV.find('.et-pt-rates-table').html(tabelle);
+		let table = $('#' + table_id);
+		if ($.fn.DataTable.isDataTable(table)) $(table).DataTable().destroy();
+		__ptRatesTableDt = $(table).DataTable({
+			"responsive": true,
+			"searching": true,
+			"ordering": true,
+			"deferRender": true,
+			"processing": false,
+			"serverSide": false,
+			"stateSave": false,
+			"pageLength": 10,
+			"language": { "emptyTable": _x('No VAT rates yet.', 'label', 'event-tickets-with-ticket-scanner') },
+			"data": __ptRates || [],
+			"order": [[1, 'desc']],
+			"columns": [
+				{ "data": "name", "render": (d, type) => type === 'display' ? __ptEsc(d) : (d || '') },
+				{ "data": "percent", "className": "dt-center", "width": "90px",
+					"render": (d, type) => type === 'display' ? __ptEsc(__ptFormatPercent(d)) + ' %' : (parseFloat(d) || 0) },
+				{ "data": "aktiv", "className": "dt-center", "width": "80px",
+					"render": (d, type) => {
+						let label = parseInt(d, 10) === 1 ? _x('Yes', 'label', 'event-tickets-with-ticket-scanner') : _x('No', 'label', 'event-tickets-with-ticket-scanner');
+						return type === 'display' ? __ptEsc(label) : (parseInt(d, 10) === 1 ? 1 : 0);
+					} },
+				{ "data": null, "orderable": false, "className": "dt-right", "width": "170px",
+					"render": () =>
+						'<div class="et-btn-group"><button class="et-btn-action" data-type="edit">' + _x('Edit', 'label', 'event-tickets-with-ticket-scanner') + '</button></div>'
+						+ '<div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger" data-type="delete">' + _x('Remove', 'label', 'event-tickets-with-ticket-scanner') + '</button></div>' },
+			],
+		});
+		table.on('click', 'button[data-type="edit"]', e => {
+			let data = __ptRatesTableDt.row($(e.target).parents('tr')).data();
+			if (data) __ptRateDialog(data);
+		});
+		table.on('click', 'button[data-type="delete"]', e => {
+			let data = __ptRatesTableDt.row($(e.target).parents('tr')).data();
+			if (!data) return;
+			LAYOUT.renderYesNo(_x('Do you want to delete?', 'title', 'event-tickets-with-ticket-scanner'), __('Are you sure, you want to delete this VAT rate?', 'event-tickets-with-ticket-scanner') + '<br><br><b>' + __ptEsc(data.name) + '</b>', () => {
+				_makePost('deleteTaxRate', { id: parseInt(data.id, 10) }, () => { __ptReload(); });
+			});
+		});
+	}
+
+	// ── products table: same DataTables contract as the rates table ──
+	function __ptRenderProductsTable() {
+		if (!PRODUCTSTAX_DIV) return;
+		let table_id = myAjax.divPrefix + '_pt_products';
+		let tabelle = $('<table/>').attr('id', table_id);
+		tabelle.html('<thead><tr>'
+			+ '<th>' + _x('Name', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th>' + _x('Type', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th>' + _x('Price', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th>' + _x('Tax rate', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th>' + _x('List', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th>' + _x('Flags', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th>' + _x('Active', 'column', 'event-tickets-with-ticket-scanner') + '</th>'
+			+ '<th></th>'
+			+ '</tr></thead>');
+		PRODUCTSTAX_DIV.find('.et-pt-products-table').html(tabelle);
+		let table = $('#' + table_id);
+		if ($.fn.DataTable.isDataTable(table)) $(table).DataTable().destroy();
+		__ptProductsTableDt = $(table).DataTable({
+			"responsive": true,
+			"searching": true,
+			"ordering": true,
+			"deferRender": true,
+			"processing": false,
+			"serverSide": false,
+			"stateSave": false,
+			"pageLength": 10,
+			"language": { "emptyTable": _x('No products yet.', 'label', 'event-tickets-with-ticket-scanner') },
+			"data": __ptProducts || [],
+			"order": [[0, 'asc']],
+			"columns": [
+				{ "data": "name", "render": (d, type) => type === 'display' ? __ptEsc(d) : (d || '') },
+				{ "data": "product_type", "width": "110px",
+					"render": (d, type) => { let label = __ptTypeName(d); return type === 'display' ? __ptEsc(label) : label; } },
+				{ "data": "price_cents", "width": "110px",
+					"render": (d, type, row) => {
+						let txt = ((parseInt(d, 10) || 0) / 100).toFixed(2) + ' ' + (row.currency == null ? '' : row.currency);
+						return type === 'display' ? __ptEsc(txt) : (parseInt(d, 10) || 0);
+					} },
+				{ "data": "resolved_tax_rate_percent", "className": "dt-center", "width": "90px",
+					"render": (d, type) => type === 'display' ? __ptEsc(__ptFormatPercent(d)) + ' %' : (parseFloat(d) || 0) },
+				{ "data": "list_name", "width": "150px",
+					"render": (d, type) => {
+						let label = (d == null || d === '') ? _x('Global (no list)', 'label', 'event-tickets-with-ticket-scanner') : d;
+						return type === 'display' ? __ptEsc(label) : label;
+					} },
+				{ "data": null, "orderable": false, "className": "dt-center", "width": "120px",
+					"render": (d, type, row) => {
+						let flags = [];
+						if (row.product_type === 'product' && parseInt(row.is_optional, 10) === 1) flags.push(_x('Optional', 'label', 'event-tickets-with-ticket-scanner'));
+						if (row.product_type === 'fee' && parseInt(row.auto_add, 10) === 1) flags.push(_x('Auto-add', 'label', 'event-tickets-with-ticket-scanner'));
+						return __ptEsc(flags.join(', '));
+					} },
+				{ "data": "aktiv", "className": "dt-center", "width": "80px",
+					"render": (d, type) => {
+						let label = parseInt(d, 10) === 1 ? _x('Yes', 'label', 'event-tickets-with-ticket-scanner') : _x('No', 'label', 'event-tickets-with-ticket-scanner');
+						return type === 'display' ? __ptEsc(label) : (parseInt(d, 10) === 1 ? 1 : 0);
+					} },
+				{ "data": null, "orderable": false, "className": "dt-right", "width": "170px",
+					"render": () =>
+						'<div class="et-btn-group"><button class="et-btn-action" data-type="edit">' + _x('Edit', 'label', 'event-tickets-with-ticket-scanner') + '</button></div>'
+						+ '<div class="et-btn-group et-btn-group--danger"><button class="et-btn-action et-btn-action--danger" data-type="delete">' + _x('Remove', 'label', 'event-tickets-with-ticket-scanner') + '</button></div>' },
+			],
+		});
+		table.on('click', 'button[data-type="edit"]', e => {
+			let data = __ptProductsTableDt.row($(e.target).parents('tr')).data();
+			if (data) __ptProductDialog(data);
+		});
+		table.on('click', 'button[data-type="delete"]', e => {
+			let data = __ptProductsTableDt.row($(e.target).parents('tr')).data();
+			if (!data) return;
+			LAYOUT.renderYesNo(_x('Do you want to delete?', 'title', 'event-tickets-with-ticket-scanner'), __('Are you sure, you want to delete this product?', 'event-tickets-with-ticket-scanner') + '<br><br><b>' + __ptEsc(data.name) + '</b>', () => {
+				_makePost('removeTicketProduct', { id: parseInt(data.id, 10) }, () => { __ptReload(); });
+			});
+		});
+	}
+
+	function __renderProductsTax() {
+		if (!PRODUCTSTAX_DIV) return;
+		let wrap = $('<div/>');
+		// intro paragraph first — persistent content must never sit beside the
+		// spinner (spinner-child trap), it is the FIRST element of wrap
+		wrap.append($('<p style="color:#666;margin:4px 0 14px;max-width:900px;"/>').text(_x('Define your VAT rates once and assign them to products — or set a default rate per ticket list. An event ticket is the mandatory ticket itself, a product is an optional add-on the customer chooses (drinks, merchandise), and a fee is added to every order by default. The online shop and the Kasse both follow these settings.', 'label', 'event-tickets-with-ticket-scanner')));
+		// Woo present AND active → these entries are not needed for WooCommerce:
+		// product, price and VAT run through WooCommerce there. Server exposes the
+		// state as versions.is_wc_available (class_exists('WooCommerce')).
+		if (_getOptions_Versions_isActivatedByKey('is_wc_available')) {
+			wrap.append($('<div class="notice notice-info" style="max-width:900px;"/>').text(_x('WooCommerce is active — you do not need these entries for WooCommerce, because product, price and VAT are handled by WooCommerce itself.', 'label', 'event-tickets-with-ticket-scanner')));
+		}
+		let ratesCard = $('<div class="et-card" style="margin-bottom:16px;"/>').appendTo(wrap);
+		ratesCard.append($('<h4 style="margin:8px 0;"/>').text(_x('VAT rates', 'heading', 'event-tickets-with-ticket-scanner')));
+		ratesCard.append($('<div style="color:#666;margin-bottom:8px;">').text(_x('Manage the VAT rates you can assign to products and ticket lists. Prices are gross — the rate documents how the price splits into net and tax, it never changes the price the customer pays. Each product uses its own rate first, then the default rate of its ticket list, and without a rate the price counts as net. You can type the percent with a point or a comma. Removed rates stay on past orders, so their net and tax split does not change afterwards.', 'label', 'event-tickets-with-ticket-scanner')));
+		let ratesToolbar = $('<div class="et-toolbar" style="margin-bottom:8px;"/>').appendTo(ratesCard);
+		$('<button/>').addClass('button-primary').text(_x('Add VAT rate', 'label', 'event-tickets-with-ticket-scanner')).on('click', () => { __ptRateDialog(null); }).appendTo(ratesToolbar);
+		ratesCard.append($('<div class="et-pt-rates-table"/>'));
+		let prodCard = $('<div class="et-card"/>').appendTo(wrap);
+		prodCard.append($('<h4 style="margin:8px 0;"/>').text(_x('Products', 'heading', 'event-tickets-with-ticket-scanner')));
+		prodCard.append($('<div style="color:#666;margin-bottom:8px;">').text(_x('All sellable products — event tickets, optional add-ons and fees — across all lists plus global products without a list. An event ticket is the ticket itself and is always sold, an optional add-on is chosen by the customer with a checkbox, and a fee with auto-add sits on every order by default (e.g. a pre-sale fee). Prices are gross — the assigned rate only documents the net and tax split.', 'label', 'event-tickets-with-ticket-scanner')));
+		let prodToolbar = $('<div class="et-toolbar" style="margin-bottom:8px;"/>').appendTo(prodCard);
+		$('<button/>').addClass('button-primary').text(_x('Add product', 'label', 'event-tickets-with-ticket-scanner')).on('click', () => { __ptProductDialog(null); }).appendTo(prodToolbar);
+		prodCard.append($('<div class="et-pt-products-table"/>'));
+		PRODUCTSTAX_DIV.html(wrap);
+		// DataTable init AFTER the tables are attached — responsive needs the
+		// live column widths
+		__ptRenderRatesTable();
+		__ptRenderProductsTable();
+	}
+
 	function _getTicketScannerURL() {
 		let url = _getOptions_Infos_getByKey('ticket').ticket_scanner_path;
 		let _urlpath = _getOptions_getValByKey("wcTicketCompatibilityModeURLPath");
@@ -4346,7 +4889,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			$('<button/>')
 				.addClass("event-tickets-with-ticket-scanner-topmenu-item")
 				.toggleClass('event-tickets-with-ticket-scanner-topmenu-item-active', STATE === 'kasse')
-				.html(_x('Kasse', 'label', 'event-tickets-with-ticket-scanner'))
+				.html(_x('Sales', 'label', 'event-tickets-with-ticket-scanner'))
 				.on("click", ()=>{
 					_displayKasseArea();
 				}).appendTo(btn_grp);
@@ -6005,6 +6548,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						$('<input type="text" class="et-prod-name" value="'+String(p.name == null ? '' : p.name).replace(/"/g, '&quot;')+'" style="flex:1;" placeholder="'+_x('Name', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
 						$('<input type="text" class="et-prod-price" inputmode="decimal" value="'+(p.id ? __fmtPrice(parseInt(p.price_cents, 10) || 0) : '')+'" style="width:80px;" placeholder="'+_x('Price', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
 						$('<input type="text" class="et-prod-currency" value="'+String(p.currency == null ? '' : p.currency)+'" style="width:52px;" placeholder="EUR"/>').appendTo(row);
+						let taxIn = $('<input type="text" class="et-prod-tax" inputmode="decimal" value="'+(p.id && parseFloat(p.tax_rate) > 0 ? parseFloat(p.tax_rate) : '')+'" style="width:56px;" placeholder="'+_x('Tax %', 'label', 'event-tickets-with-ticket-scanner')+'" title="'+_x('Tax rate (Steuersatz) of the gross price, e.g. 19 or 7. Empty = 0%. Shown as "incl. x % VAT" in the shop and printed on the Kasse receipt.', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
 						let akt = $('<input type="checkbox" class="et-prod-aktiv"'+((!p.id || parseInt(p.aktiv, 10) === 1) ? ' checked' : '')+'/>').appendTo(row);
 						$('<label style="white-space:nowrap;">').text(' '+_x('Active', 'label', 'event-tickets-with-ticket-scanner')).insertAfter(akt).prepend(akt);
 						let prf = $('<input type="checkbox" class="et-prod-proof"'+(p.id && parseInt(p.proof_required, 10) === 1 ? ' checked' : '')+'/>').appendTo(row);
@@ -6016,7 +6560,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						if (p.id) {
 							row.append($('<button type="button" class="et-btn-action"/>').text(_x('Save', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 								e.preventDefault();
-								_makePost('editTicketProduct', {id:p.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), aktiv:row.find('.et-prod-aktiv').prop('checked')?1:0, proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0}, ()=>{ __loadListProducts(); });
+								_makePost('editTicketProduct', {id:p.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), aktiv:row.find('.et-prod-aktiv').prop('checked')?1:0, proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0, tax_rate:row.find('.et-prod-tax').val()}, ()=>{ __loadListProducts(); });
 							}));
 							row.append($('<button type="button" class="et-btn-action et-btn-action--danger"/>').text(_x('Remove', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 								e.preventDefault();
@@ -6025,7 +6569,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						} else {
 							row.append($('<button type="button" class="et-btn-action"/>').text(_x('Add ticket product', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 								e.preventDefault();
-								_makePost('addTicketProduct', {list_id:editValues.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0}, ()=>{ __loadListProducts(); });
+								_makePost('addTicketProduct', {list_id:editValues.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0, tax_rate:row.find('.et-prod-tax').val()}, ()=>{ __loadListProducts(); });
 							}));
 						}
 					};
@@ -7822,6 +8366,11 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			document.body.style.background = "#ffffff";
 	 		_loadingJSDatatables(function() {
 				if (typeof PARAS.display !== "undefined" && PARAS.display == 'options') {
+					_displayOptionsArea();
+				} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'productstax') {
+					// deep link: Products & Tax is a tab of the Options page
+					// (Seating Plans pattern) — open Options, the tab init
+					// pins #tab-productstax
 					_displayOptionsArea();
 				} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'support') {
 					_displaySupportInfoArea();

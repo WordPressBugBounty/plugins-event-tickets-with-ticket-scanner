@@ -83,13 +83,21 @@ class sasoEventtickets_Core {
 	 */
 	public function retrieveCodeByTicketNumber($number) {
 		$number = $this->clearCode($number);
-		$number = $this->MAIN->getDB()->reinigen_in($number);
 		if (empty($number)) throw new Exception("#260 ticket number empty");
 		$table = $this->MAIN->getDB()->getTabelle("codes");
-		$sql = "select * from ".$table." where code = '".$number."' or code_display = '".$number."'";
-		$ret = $this->MAIN->getDB()->_db_datenholen($sql);
-		if (count($ret) == 0) throw new Exception("#261 ticket number ".$number." not found");
-		if (count($ret) > 1) throw new Exception("#262 ticket number ".$number." is ambiguous");
+		// security (audit follow-up 2026-10-31): parameterized instead of the
+		// addslashes-style string building; the number is attacker-influenced
+		// and also lands in the #261/#262 messages
+		global $wpdb;
+		$ret = $this->MAIN->getDB()->_db_datenholen(
+			$wpdb->prepare(
+				"select * from ".$table." where code = %s or code_display = %s",
+				$number,
+				$number
+			)
+		);
+		if (count($ret) == 0) throw new Exception("#261 ticket number ".esc_html($number)." not found");
+		if (count($ret) > 1) throw new Exception("#262 ticket number ".esc_html($number)." is ambiguous");
 		return $ret[0];
 	}
 

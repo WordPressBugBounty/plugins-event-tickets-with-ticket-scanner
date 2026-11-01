@@ -1,0 +1,166 @@
+/*
+ * Public shop catalog (3.3.0) — [sasoEventTicketsValidator_shop_catalog]
+ * Server-rendered visitor face: lists flagged "show in shop" with their
+ * active products, grouped by category. BEM, no inline styles.
+ */
+
+.et-shop-catalog {
+	display: grid;
+	gap: 2.5rem;
+}
+
+.et-shop-catalog__list {
+	margin: 0;
+}
+
+.et-shop-catalog__list-name {
+	margin: 0 0 1rem;
+	font-size: 1.4em;
+	line-height: 1.25;
+}
+
+.et-shop-catalog__group {
+	margin: 0 0 1.5rem;
+}
+
+.et-shop-catalog__group-name {
+	margin: 0 0 .75rem;
+	font-size: .85em;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	color: #50575e;
+}
+
+.et-shop-catalog__prod {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: .5rem;
+	padding: .75rem 0;
+	border-bottom: 1px solid rgba(0, 0, 0, .07);
+}
+
+.et-shop-catalog__prod:last-child {
+	border-bottom: 0;
+}
+
+.et-shop-catalog__prod-name {
+	font-weight: 600;
+}
+
+.et-shop-catalog__prod-cat {
+	display: inline-block;
+	padding: .1rem .55rem;
+	border-radius: 999px;
+	background: rgba(0, 0, 0, .06);
+	font-size: .72em;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+	color: #50575e;
+}
+
+.et-shop-catalog__prod-desc {
+	flex-basis: 100%;
+	font-size: .9em;
+	color: #50575e;
+}
+
+.et-shop-catalog__prod-desc > :first-child {
+	margin-top: 0;
+}
+
+.et-shop-catalog__prod-desc > :last-child {
+	margin-bottom: 0;
+}
+
+.et-shop-catalog__prod-price {
+	margin-left: auto;
+	font-variant-numeric: tabular-nums;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+/* Steuersatz note (3.3.0) — sits beside the price, opt-in per product */
+.et-shop-catalog__prod-tax {
+	font-size: .78em;
+	color: #50575e;
+	white-space: nowrap;
+}
+
+/*
+ * Type badges (3.3.0 Slice C) — chip style of the category badge above:
+ * 'Add-on' marks optional add-ons (type product / fee auto_add=0),
+ * 'included' marks fixed default lines (fee auto_add=1). The mandatory
+ * event renders without a badge.
+ */
+.et-shop-catalog__prod-type {
+	display: inline-block;
+	padding: .1rem .55rem;
+	border-radius: 999px;
+	font-size: .72em;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+}
+
+.et-shop-catalog__prod-type--optional {
+	background: rgba(0, 0, 0, .06);
+	color: #50575e;
+}
+
+.et-shop-catalog__prod-type--included {
+	background: rgba(26, 127, 55, .12);
+	color: #1a7f37;
+}
+
+/*
+ * Event detail page (3.3.0 Slice 2) — [sasoEventTicketsValidator_shop_event]
+ * Reuses the .et-shop-catalog__* product blocks above; adds the event head
+ * and the buy button.
+ */
+
+.et-shop-event__head {
+	margin: 0 0 1.5rem;
+}
+
+.et-shop-event__name {
+	margin: 0 0 .5rem;
+	font-size: 1.6em;
+	line-height: 1.25;
+}
+
+.et-shop-event__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .35rem 1.25rem;
+	color: #50575e;
+}
+
+.et-shop-event__meta-item::before {
+	content: "•";
+	margin-right: .5rem;
+	opacity: .5;
+}
+
+.et-shop-event__meta-item:first-child::before {
+	content: "";
+	margin-right: 0;
+}
+
+.et-shop-catalog__buy {
+	margin-left: auto;
+	padding: .35rem 1rem;
+	border-radius: 4px;
+	background: #2271b1;
+	color: #fff;
+	font-weight: 600;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.et-shop-catalog__buy:hover,
+.et-shop-catalog__buy:focus {
+	background: #135e96;
+	color: #fff;
+	text-decoration: none;
+}

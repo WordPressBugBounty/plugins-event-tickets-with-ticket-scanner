@@ -64,15 +64,19 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 	 * wpdb->prepare('%s', null) yields '' as well). No date chosen → ts = 0
 	 * matches exactly the no-event rows. Returns [sql, args].
 	 */
-	private function eventDateCondition(?string $eventDate): array {
+	private function eventDateCondition(?string $eventDate, string $alias = ''): array {
+		// $alias must be set ('s.') whenever the fragment lands in a query that
+		// joins seats with seat_blocks — both carry event_date_ts and MySQL
+		// aborts with "Column 'event_date_ts' in ON is ambiguous" otherwise
+		// (MAYA 30.10.: selector returned success:true with seats=[]).
 		$eventDate = sasoEventtickets_Seating::normalizeEventDate($eventDate);
 		if ($eventDate !== null) {
 			$ts = strtotime($eventDate);
 			if ($ts === false) $ts = 0;
 			$dayStart = strtotime(date('Y-m-d 00:00:00', $ts));
-			return ["AND (event_date_ts BETWEEN %d AND %d OR event_date_ts = 0)", [$dayStart, $dayStart + 86399]];
+			return ["AND ({$alias}event_date_ts BETWEEN %d AND %d OR {$alias}event_date_ts = 0)", [$dayStart, $dayStart + 86399]];
 		}
-		return ["AND event_date_ts = 0", []];
+		return ["AND {$alias}event_date_ts = 0", []];
 	}
 
 	private static bool $_tsBackfilled = false;
@@ -936,7 +940,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		// MySQL 8 strict mode can no longer kill the query with an
 		// 'Incorrect DATE value' error on the empty-string date.
 		$this->backfillEventDateTs();
-		[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
+		[$edCond, $edArgs] = $this->eventDateCondition($eventDate, 's.');
 
 		$now = current_time('mysql');
 		$staleTimeout = $this->getStaleTimeout();

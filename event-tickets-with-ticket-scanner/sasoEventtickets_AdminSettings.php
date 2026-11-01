@@ -28,6 +28,11 @@ class sasoEventtickets_AdminSettings {
 		}
 
 		// Defense in depth: require manage_options for sensitive actions
+		// (audit follow-up 2026-10-31: deleteTaxRate, removeTicketProduct,
+		// exportTableCodes added). getInternalOrderReceipt deliberately stays
+		// OUTSIDE this list: it is the Kassenbeleg print of an already
+		// confirmed direct sale (backend.js "Confirm payment" -> "Receipt"),
+		// part of the documented shop_manager Kasse flow.
 		$sensitive_actions = [
 			'changeOption', 'resetOptions', 'deleteOptions', 'exportOptions', 'importOptions', 'applyWizardPreset', 'applyPremiumDefaults', 'recheckLicense', 'migrateOptionsToCustomTable', 'getOptionsHistory', 'revertOption', 'cleanupOptionsHistory', 'dismissSuggestion',
 			'emptyTableCodes', 'emptyTableLists', 'emptyTableErrorLogs',
@@ -41,6 +46,7 @@ class sasoEventtickets_AdminSettings {
 			'removeUsedInformationFromCodeBulk', 'editTicketMetaEntry',
 			'getAllDaychooserCalendarData', 'getProductCalendarDetails', 'getRedemptionSummary', 'getRedemptionDetails', 'downloadRedemptionSummary',
 			'downloadSoldTicketsCSV', 'downloadErrorLogsCSV',
+			'deleteTaxRate', 'removeTicketProduct', 'exportTableCodes',
 		];
 		// security (Wordfence review 2026-10): this layer used to fall back to
 		// isUserAllowedToAccessAdminArea() — dead code, because every caller of
@@ -140,8 +146,17 @@ class sasoEventtickets_AdminSettings {
 				case "getInternalOrderTicketURL":
 					$ret = $this->getInternalOrderTicketURL($data);
 					break;
+				case "getInternalOrderReceipt":
+					$ret = $this->getInternalOrderReceipt($data);
+					break;
+				case "getInternalOrderDetails":
+					$ret = $this->getInternalOrderDetails($data);
+					break;
 				case "getTicketProducts":
 					$ret = $this->getTicketProducts($data);
+					break;
+				case "getProductsForAdmin":
+					$ret = $this->getProductsForAdmin($data);
 					break;
 				case "addTicketProduct":
 					$ret = $this->addTicketProduct($data);
@@ -151,6 +166,27 @@ class sasoEventtickets_AdminSettings {
 					break;
 				case "removeTicketProduct":
 					$ret = $this->removeTicketProduct($data);
+					break;
+				case "getProductCategories":
+					$ret = $this->getProductCategories($data);
+					break;
+				case "addProductCategory":
+					$ret = $this->addProductCategory($data);
+					break;
+				case "updateProductCategory":
+					$ret = $this->updateProductCategory($data);
+					break;
+				case "deleteProductCategory":
+					$ret = $this->deleteProductCategory($data);
+					break;
+				case "getTaxRates":
+					$ret = $this->getTaxRates($data);
+					break;
+				case "saveTaxRate":
+					$ret = $this->saveTaxRate($data);
+					break;
+				case "deleteTaxRate":
+					$ret = $this->deleteTaxRate($data);
 					break;
 				case "premium":
 					$ret = $this->executeJSONPremium($data);
@@ -1037,7 +1073,35 @@ class sasoEventtickets_AdminSettings {
 		return $ret;
 	}
 	public function changeOption($data) {
+		// Shop template overrides (3.3.0 Slice 3): compile + sandbox-check
+		// BEFORE the write — invalid Twig is rejected with an error and
+		// nothing is stored; an empty value resets to the built-in rendering.
+		$this->validateShopTemplateOption(isset($data['key']) ? (string) $data['key'] : "", isset($data['value']) ? $data['value'] : "");
 		$this->MAIN->getOptions()->changeOption($data);
+	}
+
+	/**
+	 * Guard for the two shop-template option keys (shopTemplateCatalog /
+	 * shopTemplateEventDetail): a non-empty value must compile and pass
+	 * a sandboxed test render before anything is saved. Throws with a
+	 * readable message — the AJAX dispatcher turns it into a JSON error.
+	 * Unknown keys and empty values pass untouched.
+	 *
+	 * Premium/other shop-template surfaces register their own validator
+	 * via the shop_template_option_validator filter (key in, callable or
+	 * null out) — same contract: invalid = throw, nothing is stored. The
+	 * filter runs for save AND options import (both come through here).
+	 */
+	private function validateShopTemplateOption(string $key, $value): void {
+		if (in_array($key, ['shopTemplateCatalog', 'shopTemplateEventDetail'], true)) {
+			if (trim((string) $value) === "") return; // empty = default rendering, always valid
+			$this->MAIN->getShopTemplatesHandler()->validateTemplate((string) $value);
+			return;
+		}
+		$validator = apply_filters($this->MAIN->_add_filter_prefix.'shop_template_option_validator', null, $key);
+		if (!is_callable($validator)) return;
+		if (trim((string) $value) === "") return; // empty = default rendering, always valid
+		call_user_func($validator, (string) $value);
 	}
 	/**
 	 * Resets options to their defaults - all of them, or only the keys the
@@ -1098,6 +1162,15 @@ class sasoEventtickets_AdminSettings {
 			}
 			$option = $this->MAIN->getOptions()->getOption($key);
 			if ($option === null || $option['type'] === 'heading') {
+				$skipped++;
+				continue;
+			}
+			// shop templates (3.3.0 Slice 3): an invalid import must never
+			// reach the store — it counts as skipped instead of aborting
+			// the whole import
+			try {
+				$this->validateShopTemplateOption((string) $key, $value);
+			} catch (\Throwable $e) {
 				$skipped++;
 				continue;
 			}
@@ -3648,6 +3721,41 @@ class sasoEventtickets_AdminSettings {
 			}
 		}
 
+		// v1.25: product categories + products.category_id (Saso 2026-10-27
+		// "online verkaufssystem — produkte, kategorien")
+		if (version_compare($dbversion, '1.25', '>=') && version_compare($dbversion_pre, '1.25', '<')) {
+			global $wpdb;
+			$products = $this->MAIN->getDB()->getTabelle('products');
+			$cols = $wpdb->get_col("DESCRIBE {$products}", 0);
+			if (!in_array('category_id', $cols, true)) {
+				$wpdb->query("ALTER TABLE {$products} ADD COLUMN category_id int(32) unsigned NOT NULL DEFAULT 0 AFTER sort");
+			}
+			$cats = $this->MAIN->getDB()->getTabelle('product_categories');
+			// $tabellen CREATE runs for missing tables; belt-and-braces for
+			// installs where the installer skipped it:
+			$exists = $wpdb->get_var("SHOW TABLES LIKE '{$cats}'");
+			if (!$exists) {
+				dbDelta("CREATE TABLE {$cats} (
+					id int(32) unsigned NOT NULL auto_increment,
+					time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+					timezone varchar(64) NOT NULL DEFAULT '',
+					name varchar(255) NOT NULL DEFAULT '',
+					aktiv int(1) unsigned NOT NULL DEFAULT 1,
+					sort int(11) NOT NULL DEFAULT 0,
+					meta longtext NOT NULL DEFAULT '',
+					PRIMARY KEY (id)
+				) ".$this->MAIN->getDB()->getCharsetCollate().";");
+			}
+		}
+
+		// v1.26: Products & Tax (3.3.0) — tax_rates table, products
+		// product_type/tax_rate_id/is_optional/auto_add, lists
+		// default_tax_rate_id, legacy meta.tax_rate -> tax_rate_id backfill.
+		// All ADD COLUMN only + idempotent (see migrateProductsAndTax).
+		if (version_compare($dbversion, '1.26', '>=') && version_compare($dbversion_pre, '1.26', '<')) {
+			$this->migrateProductsAndTax();
+		}
+
 		// Premium and hook calls wrapped in try/catch — an exception here must NOT
 		// prevent update_option(db_version) from being saved in installiereTabellen(),
 		// otherwise the upgrade re-runs on every request → infinite crash loop.
@@ -3745,6 +3853,106 @@ class sasoEventtickets_AdminSettings {
 	}
 
 	/**
+	 * v1.26 "Products & Tax" migration (3.3.0, docs/plan-products-mwst.md).
+	 * Self-healing and idempotent — safe to run any number of times:
+	 * - ensures the tax_rates table exists (belt-and-braces dbDelta)
+	 * - ADD COLUMN only (never drops/renames), every column checked via
+	 *   information_schema before the ALTER
+	 * - backfill: products with meta.tax_rate > 0 and tax_rate_id = 0 get a
+	 *   matching tax_rates row (name generated from the percent, "Standard
+	 *   19%" style, decimal POINT) and tax_rate_id set; the same percent
+	 *   shares one rate row. Running twice neither duplicates rates nor
+	 *   reassigns — only tax_rate_id = 0 rows are touched.
+	 * Returns counters for tests and the error log.
+	 */
+	public function migrateProductsAndTax(): array {
+		global $wpdb;
+		$db = $this->MAIN->getDB();
+		$productsTable = $db->getTabelle('products');
+		$listsTable = $db->getTabelle('lists');
+		$taxRatesTable = $db->getTabelle('tax_rates');
+		$stats = ["rates_created" => 0, "products_assigned" => 0];
+
+		// a) tax_rates table — belt-and-braces for installs where the installer skipped it
+		if (!$wpdb->get_var("SHOW TABLES LIKE '{$taxRatesTable}'")) {
+			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+			dbDelta("CREATE TABLE {$taxRatesTable} (
+				id int(32) unsigned NOT NULL auto_increment,
+				time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				timezone varchar(64) NOT NULL DEFAULT '',
+				name varchar(255) NOT NULL DEFAULT '',
+				percent decimal(5,2) NOT NULL DEFAULT 0,
+				aktiv tinyint(1) unsigned NOT NULL DEFAULT 1,
+				is_deleted tinyint(1) unsigned NOT NULL DEFAULT 0,
+				created_by int(32) unsigned DEFAULT NULL,
+				updated_by int(32) unsigned DEFAULT NULL,
+				created_at datetime DEFAULT NULL,
+				updated_at datetime DEFAULT NULL,
+				PRIMARY KEY (id)
+			) ".$db->getCharsetCollate().";");
+		}
+
+		// b) self-healing columns — ADD COLUMN only, checked first
+		$this->migrateAddColumnIfMissing($productsTable, 'product_type', "varchar(20) NOT NULL DEFAULT 'event' AFTER category_id");
+		$this->migrateAddColumnIfMissing($productsTable, 'tax_rate_id', "bigint(20) unsigned NOT NULL DEFAULT 0 AFTER product_type");
+		$this->migrateAddColumnIfMissing($productsTable, 'is_optional', "tinyint(1) unsigned NOT NULL DEFAULT 0 AFTER tax_rate_id");
+		$this->migrateAddColumnIfMissing($productsTable, 'auto_add', "tinyint(1) unsigned NOT NULL DEFAULT 0 AFTER is_optional");
+		$this->migrateAddColumnIfMissing($listsTable, 'default_tax_rate_id', "bigint(20) unsigned NOT NULL DEFAULT 0 AFTER aktiv");
+
+		// c) legacy backfill: meta.tax_rate > 0 and tax_rate_id = 0 -> rate row + reference
+		$pending = $wpdb->get_results("SELECT id, meta FROM {$productsTable} WHERE tax_rate_id = 0", ARRAY_A);
+		$rateIdByPercent = []; // percent (2dp string) -> tax_rates.id
+		foreach ((array) $pending as $row) {
+			$meta = json_decode((string) $row['meta'], true);
+			$rate = (is_array($meta) && isset($meta['tax_rate'])) ? floatval($meta['tax_rate']) : 0.0;
+			if ($rate <= 0) continue;
+			$pctKey = number_format($rate, 2, '.', ''); // exact decimal POINT key, e.g. "19.00"
+			if (!isset($rateIdByPercent[$pctKey])) {
+				$existing = $wpdb->get_var("SELECT id FROM {$taxRatesTable} WHERE percent = '{$pctKey}' AND is_deleted = 0 ORDER BY id ASC LIMIT 1");
+				if ($existing !== null) {
+					$rateIdByPercent[$pctKey] = intval($existing);
+				} else {
+					$label = rtrim(rtrim($pctKey, '0'), '.'); // 19.00 -> "19", 7.50 -> "7.5"
+					$rateIdByPercent[$pctKey] = intval($db->insert('tax_rates', [
+						'time' => wp_date('Y-m-d H:i:s'),
+						'name' => 'Standard ' . $label . '%',
+						'percent' => floatval($pctKey),
+						'aktiv' => 1,
+						'is_deleted' => 0,
+						'created_by' => get_current_user_id(),
+						'updated_by' => get_current_user_id(),
+						'created_at' => wp_date('Y-m-d H:i:s'),
+						'updated_at' => wp_date('Y-m-d H:i:s'),
+					]));
+					$stats['rates_created']++;
+				}
+			}
+			$rateId = $rateIdByPercent[$pctKey];
+			if ($rateId > 0) {
+				$affected = $wpdb->query($wpdb->prepare(
+					"UPDATE {$productsTable} SET tax_rate_id = %d WHERE id = %d AND tax_rate_id = 0",
+					$rateId, intval($row['id'])));
+				if ($affected > 0) $stats['products_assigned']++;
+			}
+		}
+		return $stats;
+	}
+
+	/**
+	 * One self-healing ADD COLUMN: checks information_schema first, then adds.
+	 * Never drops or modifies an existing column — re-running is a no-op.
+	 */
+	private function migrateAddColumnIfMissing(string $table, string $column, string $definition): void {
+		global $wpdb;
+		$exists = $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = %s AND COLUMN_NAME = %s",
+			$table, $column));
+		if (!intval($exists)) {
+			$wpdb->query("ALTER TABLE {$table} ADD COLUMN {$column} {$definition}");
+		}
+	}
+
+	/**
 	 * Get options change history for DataTable (server-side processing).
 	 */
 	public function getOptionsHistory(array $data, array $request): array {
@@ -3817,6 +4025,10 @@ class sasoEventtickets_AdminSettings {
 		}
 		$decoded = json_decode($row['old_value'], true);
 		$value = is_array($decoded) ? $decoded : $row['old_value'];
+		// shop templates (3.3.0 / premium 1.9.0): a revert is a write like
+		// any other — an invalid template stored in history must not come
+		// back through the back door
+		$this->validateShopTemplateOption((string) $row['option_key'], $value);
 		$this->MAIN->getOptions()->changeOption(['key' => $row['option_key'], 'value' => $value]);
 		return ['reverted' => true, 'option_key' => $row['option_key']];
 	}
@@ -4032,6 +4244,9 @@ class sasoEventtickets_AdminSettings {
 			$meta = json_decode((string) $row['meta'], true);
 			if (!is_array($meta) || !is_array($meta['lines'] ?? null)) continue;
 			foreach ($meta['lines'] as $l) {
+				// fees are money-only lines (3.3.0) — they never consumed
+				// a seat and must never count as sold tickets
+				if ((string)($l['product_type'] ?? '') === 'fee') continue;
 				$pid = isset($l['product_id']) ? intval($l['product_id']) : 0;
 				$qty = max(1, intval($l['qty'] ?? 1));
 				if ($pid > 0) $counts[$pid] = ($counts[$pid] ?? 0) + $qty;
@@ -4094,6 +4309,21 @@ class sasoEventtickets_AdminSettings {
 				];
 				$line['formatter_values'] = (is_array($prodMeta) && !empty($prodMeta['formatter_values'])) ? stripslashes((string)$prodMeta['formatter_values']) : null;
 				$line['proof_required'] = (is_array($prodMeta) && !empty($prodMeta['proof_required'])) ? 1 : 0;
+				// tax rate freeze (same principle as the price): the sold
+				// order keeps the rate the product had at sale time —
+				// resolved per 3.3.0 (product.tax_rate_id > list default,
+				// resolveTaxRatePercent). The legacy meta.tax_rate percent
+				// only answers when the product has NO rate reference
+				// (pre-Slice-A rows keep their documented split).
+				$resolvedRate = $this->resolveTaxRatePercent($prod, $listObj);
+				if (intval($prod['tax_rate_id'] ?? 0) < 1 && $resolvedRate == 0.0
+					&& is_array($prodMeta) && isset($prodMeta['tax_rate']) && floatval($prodMeta['tax_rate']) > 0) {
+					$resolvedRate = floatval($prodMeta['tax_rate']);
+				}
+				$line['tax_rate'] = $resolvedRate;
+				// type stamp (3.3.0): drives the money-only fee semantics
+				// below and lets order views tell tickets from add-ons
+				$line['product_type'] = self::normalizeProductType($prod['product_type'] ?? 'event');
 			$line['max_tickets'] = (is_array($prodMeta) && !empty($prodMeta['max_tickets'])) ? intval($prodMeta['max_tickets']) : 0;
 			if ($line['max_tickets'] > 0) {
 				$taken = intval($soldByProduct[$pid] ?? 0) + intval($pendingByProduct[$pid] ?? 0);
@@ -4106,7 +4336,55 @@ class sasoEventtickets_AdminSettings {
 				if ($priceCurrency == '' && $line['currency'] != '') $priceCurrency = $line['currency'];
 				$lines[] = $line;
 			}
-			$amount = array_sum(array_column($lines, 'qty'));
+
+			// ── auto_add fees ride along (3.3.0 Products & Tax) ─────
+			// Every active fee (product_type 'fee', auto_add = 1) of this
+			// list — or a global one (list_id = 0) — becomes a default
+			// order line (system/Vorverkaufsgebuehr): qty 1, money only —
+			// no ticket codes, no contingent. A fee the request already
+			// includes is never duplicated. Only the products path merges
+			// (the legacy amount-only quick sale keeps its exact old shape).
+			$chosenIds = [];
+			foreach ($lines as $l) { $chosenIds[intval($l['product_id'])] = 1; }
+			$feeRows = $this->MAIN->getDB()->_db_datenholen(
+				"select * from ".$prodTable." where product_type = 'fee' and auto_add = 1 and aktiv = 1 and list_id in (0, ".intval($list_id).") order by sort asc, name asc"
+			);
+			foreach ((array) $feeRows as $fee) {
+				$fid = intval($fee['id']);
+				if (isset($chosenIds[$fid])) continue; // chosen fees never duplicate
+				$feeMeta = json_decode((string)$fee['meta'], true);
+				$feeLine = [
+					'product_id' => $fid,
+					'name' => (string)$fee['name'],
+					'price' => self::ticketCentsToPrice(self::ticketPriceToCents($fee['price'])),
+					'price_cents' => self::ticketPriceToCents($fee['price']),
+					'currency' => strtoupper(substr(trim((string)$fee['currency']), 0, 8)),
+					'qty' => 1,
+					'code_ids' => [],
+					'product_type' => 'fee',
+					'auto_add' => 1,
+				];
+				$feeLine['formatter_values'] = (is_array($feeMeta) && !empty($feeMeta['formatter_values'])) ? stripslashes((string)$feeMeta['formatter_values']) : null;
+				$feeLine['proof_required'] = (is_array($feeMeta) && !empty($feeMeta['proof_required'])) ? 1 : 0;
+				// same freeze rule as every line: resolved rate, legacy fallback
+				$feeRate = $this->resolveTaxRatePercent($fee, $listObj);
+				if (intval($fee['tax_rate_id'] ?? 0) < 1 && $feeRate == 0.0
+					&& is_array($feeMeta) && isset($feeMeta['tax_rate']) && floatval($feeMeta['tax_rate']) > 0) {
+					$feeRate = floatval($feeMeta['tax_rate']);
+				}
+				$feeLine['tax_rate'] = $feeRate;
+				$feeLine['max_tickets'] = 0; // fees never consume contingent
+				$priceTotalCents += $feeLine['price_cents'];
+				if ($priceCurrency == '' && $feeLine['currency'] != '') $priceCurrency = $feeLine['currency'];
+				$lines[] = $feeLine;
+				$chosenIds[$fid] = 1;
+			}
+			// ticket amount: fees are money-only lines and never count
+			$amount = 0;
+			foreach ($lines as $l) {
+				if (($l['product_type'] ?? '') === 'fee') continue;
+				$amount += intval($l['qty']);
+			}
 		}
 		if ($amount < 1 || $amount > 100) throw new Exception("#9241 amount must be between 1 and 100");
 
@@ -4162,6 +4440,8 @@ class sasoEventtickets_AdminSettings {
 		$plan = [];
 		if (count($lines) > 0) {
 			foreach ($lines as $li => $line) {
+				// fees are money-only order lines (3.3.0) — no ticket codes
+				if (($line['product_type'] ?? '') === 'fee') continue;
 				for ($i = 0; $i < $line['qty']; $i++) {
 					$plan[] = [$li, $line['formatter_values'] !== null ? $line['formatter_values'] : $formatterValues];
 				}
@@ -4235,6 +4515,16 @@ class sasoEventtickets_AdminSettings {
 			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($this->buildInternalOrderMeta($lines, $priceTotalCents, $priceCurrency, $givenCents, $paymentMethod)),
 		], ["id"=>$order_id]);
 
+		// direct confirm at the Kasse: the sale is paid immediately — issue
+		// the receipt snapshot right away (same path as the later confirm)
+		if ($confirm) {
+			try {
+				$this->ensureInternalOrderReceipt($order_id);
+			} catch (Exception $e) {
+				$this->logErrorToDB($e, null, "receipt on immediate sale order #".$order_id);
+			}
+		}
+
 		do_action( $this->MAIN->_do_action_prefix.'admin_addInternalOrder', $order_id, $code_ids, $data );
 		$ret = ["order_id"=>$order_id, "code_ids"=>$code_ids, "codes"=>$codes, "urls"=>$urls, "status"=>$confirm ? "completed" : "draft"];
 		if (count($lines) > 0) {
@@ -4263,6 +4553,9 @@ class sasoEventtickets_AdminSettings {
 			"price_total" => self::ticketCentsToPrice($priceTotalCents),
 			"price_total_cents" => $priceTotalCents,
 			"price_currency" => $priceCurrency,
+			// per-rate tax breakdown (3.3.0 Steuersätze) — consumed by the
+			// Kassenbeleg, the order detail view and later online views
+			"tax" => self::buildTaxBreakdown($lines),
 		];
 		if ($givenCents !== null) {
 			$meta["payment_amount_given"] = self::ticketCentsToPrice($givenCents);
@@ -4281,6 +4574,51 @@ class sasoEventtickets_AdminSettings {
 			"change_cents" => ($givenCents !== null) ? ($givenCents - $priceTotalCents) : null,
 		];
 		return $meta;
+	}
+
+	/**
+	 * Tax rate input normalizer (3.3.0 Steuersätze): accepts "19", "19,5",
+	 * "7.5"; empty = 0.0; anything non-numeric or outside 0–100 -> #9278.
+	 * Pure helper — shared by addTicketProduct / editTicketProduct.
+	 */
+	public static function normalizeTaxRate($raw): float {
+		$s = trim((string)$raw);
+		if ($s === "") return 0.0;
+		$normalized = str_replace(",", ".", $s);
+		if (!is_numeric($normalized)) throw new Exception("#9278 tax rate must be a number between 0 and 100");
+		$rate = round(floatval($normalized), 2);
+		if ($rate < 0 || $rate > 100) throw new Exception("#9278 tax rate must be a number between 0 and 100");
+		return $rate;
+	}
+
+	/**
+	 * Per-rate tax breakdown of sold lines (3.3.0 Steuersätze). Prices are
+	 * gross-inclusive (German retail model): net = round(gross / (1 + rate/100))
+	 * per LINE in cents, tax = gross - net — so net + tax always equals gross
+	 * exactly and the totals are float-free sums. Rates DESC (standard rate
+	 * first, as German receipts show them). Pure helper, directly testable.
+	 */
+	public static function buildTaxBreakdown(array $lines): array {
+		$byRate = [];
+		foreach ($lines as $line) {
+			$rate = isset($line['tax_rate']) ? floatval($line['tax_rate']) : 0.0;
+			$gross = intval($line['price_cents'] ?? 0) * max(1, intval($line['qty'] ?? 1));
+			$net = ($rate > 0) ? intval(round($gross / (1 + $rate / 100))) : $gross;
+			$tax = $gross - $net;
+			$key = number_format($rate, 2, ".", "");
+			if (!isset($byRate[$key])) {
+				$byRate[$key] = ["rate" => $rate, "net_cents" => 0, "tax_cents" => 0, "gross_cents" => 0];
+			}
+			$byRate[$key]['net_cents'] += $net;
+			$byRate[$key]['tax_cents'] += $tax;
+			$byRate[$key]['gross_cents'] += $gross;
+		}
+		krsort($byRate); // 19.00 before 7.00 before 0.00
+		return [
+			"rates" => array_values($byRate),
+			"total_net_cents" => array_sum(array_column($byRate, 'net_cents')),
+			"total_tax_cents" => array_sum(array_column($byRate, 'tax_cents')),
+		];
 	}
 
 	/** decimal price string/expression to integer cents (never float-added). */
@@ -4303,6 +4641,9 @@ class sasoEventtickets_AdminSettings {
 		$where = "1=1";
 		if (isset($data['list_id'])) $where .= " and list_id = ".intval($data['list_id']);
 		if (isset($data['aktiv'])) $where .= " and aktiv = ".intval($data['aktiv']);
+		// 3.3.0 Products & Tax: type filter for the admin section (fail
+		// closed on an unknown type — same whitelist as the save path)
+		if (isset($data['product_type'])) $where .= " and product_type = '".$this->validateProductType($data['product_type'])."'";
 		$daten = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where ".$where." order by sort asc, name asc");
 		if (!is_array($daten)) $daten = [];
 		foreach ($daten as &$r) {
@@ -4310,10 +4651,54 @@ class sasoEventtickets_AdminSettings {
 			$r['price_cents'] = self::ticketPriceToCents($r['price']);
 			$r['proof_required'] = !empty($r['meta_obj']['proof_required']) ? 1 : 0;
 			$r['max_tickets'] = isset($r['meta_obj']['max_tickets']) ? intval($r['meta_obj']['max_tickets']) : 0;
+			// flat tax rate (3.3.0) — Kasse dialog + shop front render "inkl. x % MwSt" from it
+			$r['tax_rate'] = isset($r['meta_obj']['tax_rate']) ? floatval($r['meta_obj']['tax_rate']) : 0.0;
+			// flat type/rate/flags (3.3.0 Slice B — admin section + Kasse/shop
+			// behaviour switches; defaults mirror the column defaults so rows
+			// from a not-yet-migrated schema behave like legacy products)
+			$r['product_type'] = self::normalizeProductType($r['product_type'] ?? 'event');
+			$r['tax_rate_id'] = intval($r['tax_rate_id'] ?? 0);
+			$r['is_optional'] = !empty($r['is_optional']) ? 1 : 0;
+			$r['auto_add'] = !empty($r['auto_add']) ? 1 : 0;
 			$r['sold'] = 0;
 			unset($r['meta']);
 		}
 		unset($r); // break the & reference BEFORE any later foreach reuses $r
+		// resolve category names in one pass (categories are few — no join)
+		$catNames = [];
+		foreach ($this->getProductCategories()['categories'] as $c) {
+			$catNames[intval($c['id'])] = (string) $c['name'];
+		}
+		// display_desc — the description to render depends on the product
+		// type (Saso 2026-10-27, spec: produkt-desc-typ-abhaengig;
+		// priority sharpened 2026-10-28: a product carrying its OWN desc
+		// always shows it — the list desc is the FALLBACK, not the override):
+		// own desc > list desc (ticket products, list_id > 0) > ''.
+		// Global products (list_id = 0, drinks/merch) only ever use their own
+		// desc — there is no list to fall back to.
+		// One pass over the lists table, same sanitize contract as _getLists.
+		$listDescs = [];
+		$listIdsForDesc = [];
+		foreach ($daten as $r) { if (!empty($r['list_id'])) $listIdsForDesc[intval($r['list_id'])] = 1; }
+		if (!empty($listIdsForDesc)) {
+			$listsTable = $this->MAIN->getDB()->getTabelle("lists");
+			foreach ($this->MAIN->getDB()->_db_datenholen("select id, meta from ".$listsTable." where id in (".implode(",", array_map('intval', array_keys($listIdsForDesc))).")") as $lrow) {
+				$lm = json_decode((string) $lrow['meta'], true);
+				$listDescs[intval($lrow['id'])] = (is_array($lm) && isset($lm['desc']) && is_string($lm['desc']) && $lm['desc'] !== "")
+					? wp_kses_post(wp_unslash($lm['desc']))
+					: "";
+			}
+		}
+		foreach ($daten as $i => $r) {
+			$daten[$i]['category_id'] = intval($r['category_id'] ?? 0);
+			$daten[$i]['category_name'] = $daten[$i]['category_id'] > 0 && isset($catNames[$daten[$i]['category_id']]) ? $catNames[$daten[$i]['category_id']] : '';
+			$prodDesc = isset($r['meta_obj']['description']) && is_string($r['meta_obj']['description']) ? trim($r['meta_obj']['description']) : '';
+			$lid = intval($r['list_id'] ?? 0);
+			$daten[$i]['display_desc'] = $prodDesc !== ''
+				? $prodDesc
+				: (($lid > 0 && isset($listDescs[$lid]) && $listDescs[$lid] !== '') ? $listDescs[$lid] : '');
+		}
+		unset($r);
 		// sold counts in one pass (per-type contingents display)
 		$listIds = [];
 		foreach ($daten as $r) { if (!empty($r['list_id'])) $listIds[intval($r['list_id'])] = 1; }
@@ -4327,18 +4712,184 @@ class sasoEventtickets_AdminSettings {
 		return ["products" => $daten];
 	}
 
+	/**
+	 * Admin section payload (3.3.0 Products & Tax Slice B): every product
+	 * across all lists + global (list_id = 0) with the flat type/rate/flag
+	 * fields from getTicketProducts, plus the display fields the section
+	 * table renders — the list NAME and the RESOLVED rate percent
+	 * (product rate > list default > 0, resolveTaxRatePercent). Same
+	 * filters as getTicketProducts (list_id / aktiv / product_type).
+	 * SRP: PHP delivers data, backend.js renders.
+	 */
+	public function getProductsForAdmin($data = []): array {
+		$products = $this->getTicketProducts($data)['products'] ?? [];
+		if (!is_array($products)) $products = [];
+		$listsTable = $this->MAIN->getDB()->getTabelle('lists');
+		$listRows = [];
+		foreach ($this->MAIN->getDB()->_db_datenholen("select id, name, default_tax_rate_id from ".$listsTable) as $lrow) {
+			$listRows[intval($lrow['id'])] = [
+				"name" => (string)$lrow['name'],
+				"default_tax_rate_id" => intval($lrow['default_tax_rate_id'] ?? 0),
+			];
+		}
+		foreach ($products as $i => $p) {
+			$lid = intval($p['list_id'] ?? 0);
+			$list = isset($listRows[$lid]) ? $listRows[$lid] : null;
+			$products[$i]['list_name'] = $list !== null ? $list['name'] : '';
+			$products[$i]['resolved_tax_rate_percent'] = $this->resolveTaxRatePercent($p, $list);
+		}
+		return ["products" => $products];
+	}
+
+	/**
+	 * Public shop catalog (3.3.0 Slice 1, Saso 2026-10-28 "full eigener
+	 * Ticket-Shop"): the lists flagged show_in_shop = 1 with their active
+	 * products, grouped by category. Opt-in gate — a list WITHOUT the flag
+	 * (0 or absent) stays out of the public face (deliberately stricter
+	 * than the premium /tickets/ Kasse overview, where absence means
+	 * visible; see the editList show_in_shop comment).
+	 * $data['only_ids'] optionally scopes the catalog to explicit list
+	 * ids (targeted embedding / test scoping on the shared test DB).
+	 */
+	public function getShopCatalog($data = []): array {
+		$listsTable = $this->MAIN->getDB()->getTabelle("lists");
+		$daten = $this->MAIN->getDB()->_db_datenholen("select * from ".$listsTable." order by name asc");
+		if (!is_array($daten)) $daten = [];
+		$onlyIds = [];
+		if (isset($data['only_ids']) && is_array($data['only_ids'])) {
+			foreach ($data['only_ids'] as $oid) { $onlyIds[intval($oid)] = 1; }
+		}
+		$categories = $this->getProductCategories()['categories'];
+		$catalog = [];
+		foreach ($daten as $lrow) {
+			if (!empty($onlyIds) && empty($onlyIds[intval($lrow['id'])])) continue;
+			$lm = json_decode((string)$lrow['meta'], true);
+			$showInShop = (is_array($lm) && isset($lm['show_in_shop'])) ? intval($lm['show_in_shop']) : 0;
+			if ($showInShop !== 1) continue; // the gate: 1 = public, 0/absent = hidden
+			$products = $this->getTicketProducts(['list_id' => intval($lrow['id']), 'aktiv' => 1])['products'];
+			if (!is_array($products)) $products = [];
+			// resolved VAT rate per product (3.3.0 Slice C): product rate >
+			// list default > legacy meta percent > 0 — the shop front's
+			// 'incl. x % VAT' renders THIS, never a stale flat copy
+			foreach ($products as $i => $p) {
+				$resolved = $this->resolveTaxRatePercent($p, $lrow);
+				if (intval($p['tax_rate_id'] ?? 0) < 1 && $resolved == 0.0 && floatval($p['tax_rate'] ?? 0) > 0) {
+					$resolved = floatval($p['tax_rate']);
+				}
+				$products[$i]['resolved_tax_rate_percent'] = $resolved;
+			}
+			$catalog[] = [
+				"id" => intval($lrow['id']),
+				"name" => (string)$lrow['name'],
+				// event head (Slice 2, additive — Slice 1 consumers see one
+				// extra key): stored list-meta strings, sanitized at write
+				// time (_setMetaDataForList), rendered esc_html'd
+				"event" => self::shopEventMetaOf($lm),
+				// products arrive with the full display_desc contract
+				// (own desc > list desc > '', kses-sanitized) and the
+				// resolved category name — inherited from getTicketProducts
+				"groups" => self::groupShopProductsByCategory($products, $categories),
+			];
+		}
+		return ["catalog" => $catalog];
+	}
+
+	/**
+	 * Event-head fields of a list meta (3.2.9 keys), delivered as plain
+	 * strings — '' when absent. Pure helper, no DB access.
+	 */
+	public static function shopEventMetaOf($listMeta): array {
+		$lm = is_array($listMeta) ? $listMeta : [];
+		return [
+			"event_start_date" => isset($lm['event_start_date']) ? (string)$lm['event_start_date'] : "",
+			"event_start_time" => isset($lm['event_start_time']) ? (string)$lm['event_start_time'] : "",
+			"event_location" => isset($lm['event_location']) ? (string)$lm['event_location'] : "",
+		];
+	}
+
+	/**
+	 * Public event detail payload (3.3.0 Slice 2): ONE shop list (the
+	 * "event") with its event head and product groups. Same gate as the
+	 * catalog — show_in_shop = 1; an unknown or hidden list yields []
+	 * (the detail page is invisible too). Built ON the catalog scoping,
+	 * so grouping/display_desc logic is never copied.
+	 */
+	public function getShopEvent($data = []): array {
+		$listId = isset($data['list_id']) ? intval($data['list_id']) : 0;
+		if ($listId < 1) return [];
+		$catalog = $this->getShopCatalog(['only_ids' => [$listId]]);
+		if (!isset($catalog['catalog'][0]) || !is_array($catalog['catalog'][0])) return [];
+		return $catalog['catalog'][0];
+	}
+
+	/**
+	 * Group catalog products by their category: one group per category
+	 * that carries at least one of the products, in the categories' own
+	 * order (sort asc, name asc — as getProductCategories delivers).
+	 * Products without a usable category (category_id = 0 or a dangling
+	 * reference) share the LAST group with an empty name (renders
+	 * without a header). Pure helper — no DB access, directly testable.
+	 */
+	public static function groupShopProductsByCategory(array $products, array $categories): array {
+		$catOrder = [];
+		$catNames = [];
+		foreach ($categories as $c) {
+			$cid = intval($c['id']);
+			$catOrder[$cid] = count($catOrder);
+			$catNames[$cid] = isset($c['name']) ? (string)$c['name'] : "";
+		}
+		$groups = []; // keyed by category position (uncategorized = PHP_INT_MAX)
+		foreach ($products as $p) {
+			$cid = isset($p['category_id']) ? intval($p['category_id']) : 0;
+			$known = $cid > 0 && isset($catOrder[$cid]);
+			$pos = $known ? $catOrder[$cid] : PHP_INT_MAX;
+			if (!isset($groups[$pos])) {
+				$groups[$pos] = [
+					"category_id" => $known ? $cid : 0,
+					"category_name" => $known ? $catNames[$cid] : "",
+					"products" => [],
+				];
+			}
+			$groups[$pos]['products'][] = $p;
+		}
+		ksort($groups); // category order asc — the PHP_INT_MAX group lands last
+		return array_values($groups);
+	}
+
 	public function addTicketProduct($data): array {
 		if (!isset($data['name']) || trim((string)$data['name']) == "") throw new Exception("#9250 name parameter missing - cannot add ticket product");
 		$list_id = isset($data['list_id']) ? intval($data['list_id']) : 0;
-		if ($list_id < 1) throw new Exception("#9251 list id is missing");
-		$this->getList(['id'=>$list_id]); // throws #104/#105 when unknown
+		// list_id = 0 is a VALID scope: global non-event products (drinks,
+		// merchandise …) sold at the Kasse or shop without any event
+		// (Saso 2026-10-27 "non-event produkte wie trinken").
+		if ($list_id < 0) throw new Exception("#9251 list id is missing");
+		if ($list_id > 0) $this->getList(['id'=>$list_id]); // throws #104/#105 when unknown
 		$priceCents = self::ticketPriceToCents(isset($data['price']) ? $data['price'] : 0);
 		if ($priceCents < 0) throw new Exception("#9252 price must not be negative");
+		$category_id = $this->validateProductCategoryId(isset($data['category_id']) ? intval($data['category_id']) : 0);
+		// Tax rate (Steuersatz, 3.3.0): gross-inclusive price model, so the
+		// rate only documents how the price splits into net/tax. Stored on
+		// the product meta and frozen into every sold order line.
+		$taxRate = 0.0;
+		if (isset($data['tax_rate']) && trim((string)$data['tax_rate']) !== '') {
+			$taxRate = self::normalizeTaxRate($data['tax_rate']);
+		}
+		// 3.3.0 Products & Tax Slice B: type + rate reference + flags on the
+		// product columns. An explicit tax_rate_id is authoritative — the
+		// legacy meta.tax_rate percent is kept in sync from it (old readers
+		// — Kasse dialog, receipt, shop front — keep rendering the split).
+		$productType = isset($data['product_type']) ? self::validateProductType($data['product_type']) : 'event';
+		$taxRateId = $this->validateTaxRateId(isset($data['tax_rate_id']) ? intval($data['tax_rate_id']) : 0);
+		if (isset($data['tax_rate_id'])) $taxRate = $this->taxRatePercentOf($taxRateId);
+		// plan default: a type 'product' is an optional add-on unless said otherwise
+		$isOptional = isset($data['is_optional']) ? (!empty($data['is_optional']) ? 1 : 0) : ($productType === 'product' ? 1 : 0);
+		$autoAdd = !empty($data['auto_add']) ? 1 : 0;
 		$meta = [
 			"description" => isset($data['description']) ? wp_kses_post((string)$data['description']) : "",
 			"formatter_values" => isset($data['formatter_values']) ? (string)$data['formatter_values'] : "",
 			"proof_required" => !empty($data['proof_required']) ? 1 : 0,
 			"max_tickets" => (isset($data['max_tickets']) && intval($data['max_tickets']) > 0) ? intval($data['max_tickets']) : 0,
+			"tax_rate" => $taxRate,
 		];
 		$id = $this->MAIN->getDB()->insert("products", [
 			"time"=>wp_date("Y-m-d H:i:s"),
@@ -4348,9 +4899,120 @@ class sasoEventtickets_AdminSettings {
 			"currency"=>strtoupper(substr(sanitize_text_field(isset($data['currency']) ? (string)$data['currency'] : ""), 0, 8)),
 			"aktiv"=>isset($data['aktiv']) ? intval($data['aktiv']) : 1,
 			"sort"=>isset($data['sort']) ? intval($data['sort']) : 0,
+			"category_id"=>$category_id,
+			"product_type"=>$productType,
+			"tax_rate_id"=>$taxRateId,
+			"is_optional"=>$isOptional,
+			"auto_add"=>$autoAdd,
 			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($meta),
 		]);
 		return ["id"=>$id];
+	}
+
+	/**
+	 * Product type whitelist + validation for the save path and the
+	 * getTicketProducts filter (3.3.0 Products & Tax Slice B):
+	 * 'event' (the ticket itself, mandatory), 'product' (optional add-on,
+	 * e.g. drinks), 'fee' (auto-added default line when auto_add = 1).
+	 * Anything else -> #9282 (fail closed, house style).
+	 */
+	public static function validateProductType($raw): string {
+		$type = trim((string)$raw);
+		if (!in_array($type, ['event', 'product', 'fee'], true)) {
+			throw new Exception("#9282 invalid product type: ".$type);
+		}
+		return $type;
+	}
+
+	/** Read-side twin of validateProductType: never throws, defaults legacy/unknown to 'event'. */
+	public static function normalizeProductType($raw): string {
+		$type = trim((string)$raw);
+		return in_array($type, ['event', 'product', 'fee'], true) ? $type : 'event';
+	}
+
+	/**
+	 * Rate reference check for products (3.3.0 Slice B): 0 = no own rate
+	 * (falls through to the list default, resolveTaxRatePercent), anything
+	 * else must exist and must not be soft-deleted — fail closed (#9283)
+	 * instead of silently storing a dangling reference.
+	 */
+	private function validateTaxRateId(int $tax_rate_id): int {
+		if ($tax_rate_id < 0) throw new Exception("#9283 invalid tax rate id: ".$tax_rate_id);
+		if ($tax_rate_id === 0) return 0;
+		$rows = $this->MAIN->getDB()->_db_datenholen("select id from ".$this->MAIN->getDB()->getTabelle('tax_rates')." where id = ".$tax_rate_id." and is_deleted = 0 limit 1");
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9283 tax rate not found: ".$tax_rate_id);
+		return $tax_rate_id;
+	}
+
+	/** Percent of one tax rate row (0.0 when unknown) — for the meta.tax_rate sync. */
+	private function taxRatePercentOf(int $tax_rate_id): float {
+		if ($tax_rate_id < 1) return 0.0;
+		$rows = $this->MAIN->getDB()->_db_datenholen("select percent from ".$this->MAIN->getDB()->getTabelle('tax_rates')." where id = ".$tax_rate_id." and is_deleted = 0 limit 1");
+		return (is_array($rows) && count($rows) > 0) ? floatval($rows[0]['percent']) : 0.0;
+	}
+
+	/**
+	 * Category reference check for products: 0 = no category (always valid),
+	 * anything else must exist in product_categories — fail closed on
+	 * dangling references instead of silently storing them.
+	 */
+	private function validateProductCategoryId(int $category_id): int {
+		if ($category_id < 1) return 0;
+		$table = $this->MAIN->getDB()->getTabelle('product_categories');
+		$rows = $this->MAIN->getDB()->_db_datenholen("select id from ".$table." where id = ".intval($category_id)." limit 1");
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9260 product category not found: ".intval($category_id));
+		return intval($category_id);
+	}
+
+	public function getProductCategories($data = []): array {
+		$table = $this->MAIN->getDB()->getTabelle('product_categories');
+		$where = "1=1";
+		if (isset($data['aktiv'])) $where .= " and aktiv = ".intval($data['aktiv']);
+		$daten = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where ".$where." order by sort asc, name asc");
+		if (!is_array($daten)) $daten = [];
+		foreach ($daten as &$r) {
+			$r['meta_obj'] = json_decode((string)$r['meta'], true) ?: [];
+			unset($r['meta']);
+		}
+		unset($r);
+		return ["categories" => $daten];
+	}
+
+	public function addProductCategory($data): array {
+		if (!isset($data['name']) || trim((string)$data['name']) == "") throw new Exception("#9261 name parameter missing - cannot add product category");
+		$id = $this->MAIN->getDB()->insert("product_categories", [
+			"time"=>wp_date("Y-m-d H:i:s"),
+			"name"=>sanitize_text_field(substr(trim((string)$data['name']), 0, 255)),
+			"aktiv"=>isset($data['aktiv']) ? intval($data['aktiv']) : 1,
+			"sort"=>isset($data['sort']) ? intval($data['sort']) : 0,
+			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling(isset($data['meta']) && is_array($data['meta']) ? $data['meta'] : []),
+		]);
+		return ["id"=>$id];
+	}
+
+	public function updateProductCategory($data): array {
+		if (!isset($data['id']) || intval($data['id']) == 0) throw new Exception("#9262 product category id missing");
+		if (!isset($data['name']) || trim((string)$data['name']) == "") throw new Exception("#9261 name parameter missing");
+		$id = intval($data['id']);
+		$table = $this->MAIN->getDB()->getTabelle('product_categories');
+		$rows = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where id = ".$id);
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9263 product category not found: ".$id);
+		$cat = $rows[0];
+		$this->MAIN->getDB()->update("product_categories", [
+			"name"=>sanitize_text_field(substr(trim((string)$data['name']), 0, 255)),
+			"aktiv"=>isset($data['aktiv']) ? intval($data['aktiv']) : intval($cat['aktiv']),
+			"sort"=>isset($data['sort']) ? intval($data['sort']) : intval($cat['sort']),
+		], ["id"=>$id]);
+		return ["id"=>$id];
+	}
+
+	public function deleteProductCategory($data): array {
+		if (!isset($data['id']) || intval($data['id']) == 0) throw new Exception("#9262 product category id missing");
+		$id = intval($data['id']);
+		// products survive with category_id = 0 — never cascade-delete products
+		$this->MAIN->getDB()->_db_query("update ".$this->MAIN->getDB()->getTabelle('products')." set category_id = 0 where category_id = ".$id);
+		$this->MAIN->getDB()->_db_query("delete from ".$this->MAIN->getDB()->getTabelle('product_categories')." where id = ".$id);
+		return ["id"=>$id, "removed"=>true];
 	}
 
 	public function editTicketProduct($data): array {
@@ -4372,15 +5034,30 @@ class sasoEventtickets_AdminSettings {
 		];
 		if (isset($data['list_id'])) {
 			$list_id = intval($data['list_id']);
-			if ($list_id < 1) throw new Exception("#9251 list id is missing");
-			$this->getList(['id'=>$list_id]);
+			if ($list_id < 0) throw new Exception("#9251 list id is missing");
+			if ($list_id > 0) $this->getList(['id'=>$list_id]);
 			$felder["list_id"] = $list_id;
 		}
+		if (isset($data['category_id'])) $felder["category_id"] = $this->validateProductCategoryId(intval($data['category_id']));
+		// 3.3.0 Products & Tax Slice B: fields not sent keep their current
+		// value (backward compat — callers that never heard of the new
+		// columns behave exactly as before).
+		if (isset($data['product_type'])) $felder["product_type"] = self::validateProductType($data['product_type']);
+		if (isset($data['tax_rate_id'])) {
+			$taxRateId = $this->validateTaxRateId(intval($data['tax_rate_id']));
+			$felder["tax_rate_id"] = $taxRateId;
+		}
+		if (isset($data['is_optional'])) $felder["is_optional"] = !empty($data['is_optional']) ? 1 : 0;
+		if (isset($data['auto_add'])) $felder["auto_add"] = !empty($data['auto_add']) ? 1 : 0;
 		$metaObj = json_decode((string)$prod['meta'], true) ?: [];
 		if (isset($data['description'])) $metaObj['description'] = wp_kses_post((string)$data['description']);
 		if (isset($data['formatter_values'])) $metaObj['formatter_values'] = (string)$data['formatter_values'];
 		if (isset($data['proof_required'])) $metaObj['proof_required'] = !empty($data['proof_required']) ? 1 : 0;
 		if (isset($data['max_tickets'])) $metaObj['max_tickets'] = intval($data['max_tickets']) > 0 ? intval($data['max_tickets']) : 0;
+		if (isset($data['tax_rate'])) $metaObj['tax_rate'] = self::normalizeTaxRate($data['tax_rate']);
+		// an explicit tax_rate_id wins over a raw percent: sync the legacy
+		// meta.tax_rate from the referenced rate (0 clears it)
+		if (isset($data['tax_rate_id'])) $metaObj['tax_rate'] = $this->taxRatePercentOf(intval($data['tax_rate_id']));
 		$felder["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
 		$this->MAIN->getDB()->update("products", $felder, ["id"=>$id]);
 		return ["id"=>$id];
@@ -4395,6 +5072,122 @@ class sasoEventtickets_AdminSettings {
 		$sql = "delete from ".$this->MAIN->getDB()->getTabelle('products')." where id = ".$id;
 		$this->MAIN->getDB()->_db_query($sql); // orders keep their line snapshots
 		return ["id"=>$id, "removed"=>true];
+	}
+
+	// ── Tax rates CRUD (3.3.0 Products & Tax, docs/plan-products-mwst.md) ──
+	// Error codes (next free after #9278):
+	//   #9279 tax rate name missing
+	//   #9280 tax rate id missing
+	//   #9281 tax rate not found
+	// Percent validation reuses normalizeTaxRate (#9278): comma AND point
+	// input, 0–100 only, output always decimal POINT (locale-independent).
+
+	/**
+	 * All VAT rates for the dropdowns and the "Products & Tax" section.
+	 * Soft-deleted rates are never listed; aktiv=1 filters to active only.
+	 */
+	public function getTaxRates($data = []): array {
+		$table = $this->MAIN->getDB()->getTabelle('tax_rates');
+		$where = "is_deleted = 0";
+		if (isset($data['aktiv'])) $where .= " and aktiv = ".intval($data['aktiv']);
+		$daten = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where ".$where." order by percent desc, name asc");
+		if (!is_array($daten)) $daten = [];
+		foreach ($daten as &$r) {
+			$r['id'] = intval($r['id']);
+			$r['percent'] = floatval($r['percent']);
+			$r['aktiv'] = intval($r['aktiv']);
+		}
+		unset($r);
+		return ["tax_rates" => $daten];
+	}
+
+	/**
+	 * Create (no id) or update (id) one VAT rate. Name is required (#9279),
+	 * percent runs through normalizeTaxRate (#9278) when sent; fields not
+	 * sent keep their current value.
+	 */
+	public function saveTaxRate($data): array {
+		if (!isset($data['name']) || trim((string)$data['name']) == "") throw new Exception("#9279 tax rate name parameter missing - cannot save tax rate");
+		$name = sanitize_text_field(substr(trim((string)$data['name']), 0, 255));
+		$percent = null;
+		if (isset($data['percent']) && trim((string)$data['percent']) !== '') $percent = self::normalizeTaxRate($data['percent']);
+		$now = wp_date("Y-m-d H:i:s");
+		$by = get_current_user_id();
+		$id = 0;
+		if (array_key_exists('id', $data)) {
+			// an explicitly sent id must be a positive int — a create never
+			// carries one, an update always does (#9280, house style)
+			$id = intval($data['id']);
+			if ($id < 1) throw new Exception("#9280 tax rate id missing - cannot save tax rate");
+		}
+		if ($id > 0) {
+			$rows = $this->MAIN->getDB()->_db_datenholen("select id from ".$this->MAIN->getDB()->getTabelle('tax_rates')." where id = ".$id." and is_deleted = 0 limit 1");
+			if (!is_array($rows) || count($rows) == 0) throw new Exception("#9281 tax rate not found: ".$id);
+			$felder = [
+				"name" => $name,
+				"updated_by" => $by,
+				"updated_at" => $now,
+			];
+			if ($percent !== null) $felder["percent"] = $percent;
+			if (isset($data['aktiv'])) $felder["aktiv"] = !empty($data['aktiv']) ? 1 : 0;
+			$this->MAIN->getDB()->update("tax_rates", $felder, ["id" => $id]);
+			return ["id" => $id];
+		}
+		$id = $this->MAIN->getDB()->insert("tax_rates", [
+			"time" => $now,
+			"name" => $name,
+			"percent" => ($percent !== null) ? $percent : 0.0,
+			"aktiv" => isset($data['aktiv']) ? (!empty($data['aktiv']) ? 1 : 0) : 1,
+			"is_deleted" => 0,
+			"created_by" => $by,
+			"updated_by" => $by,
+			"created_at" => $now,
+			"updated_at" => $now,
+		]);
+		return ["id" => $id, "percent" => ($percent !== null) ? $percent : 0.0];
+	}
+
+	/**
+	 * SOFT delete (is_deleted = 1 — the row survives for order-line history).
+	 * Products keep their tax_rate_id: resolution skips deleted rates and
+	 * falls through to the list default (resolveTaxRatePercent). Deleting an
+	 * already-deleted rate stays a quiet success (idempotent).
+	 */
+	public function deleteTaxRate($data): array {
+		if (!isset($data['id']) || intval($data['id']) == 0) throw new Exception("#9280 tax rate id missing - cannot delete tax rate");
+		$id = intval($data['id']);
+		$rows = $this->MAIN->getDB()->_db_datenholen("select id, is_deleted from ".$this->MAIN->getDB()->getTabelle('tax_rates')." where id = ".$id." limit 1");
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9281 tax rate not found: ".$id);
+		if (intval($rows[0]['is_deleted']) !== 1) {
+			$this->MAIN->getDB()->update("tax_rates", [
+				"is_deleted" => 1,
+				"updated_by" => get_current_user_id(),
+				"updated_at" => wp_date("Y-m-d H:i:s"),
+			], ["id" => $id]);
+		}
+		return ["id" => $id, "removed" => true];
+	}
+
+	/**
+	 * Rate resolution per order line (3.3.0): product.tax_rate_id >
+	 * list.default_tax_rate_id > 0. Rows (not ids) so callers resolve from
+	 * data they already hold. Soft-deleted rates fall through like absent
+	 * ones; a DEACTIVATED rate still resolves — aktiv only hides a rate from
+	 * new assignments, it must never silently change an assigned product's
+	 * documented split. Public: Slice B/C (shop + Kasse) reuse this.
+	 */
+	public function resolveTaxRatePercent($product = null, $list = null): float {
+		$table = $this->MAIN->getDB()->getTabelle('tax_rates');
+		$candidates = [
+			is_array($product) && isset($product['tax_rate_id']) ? intval($product['tax_rate_id']) : 0,
+			is_array($list) && isset($list['default_tax_rate_id']) ? intval($list['default_tax_rate_id']) : 0,
+		];
+		foreach ($candidates as $rateId) {
+			if ($rateId < 1) continue;
+			$rows = $this->MAIN->getDB()->_db_datenholen("select percent from ".$table." where id = ".$rateId." and is_deleted = 0 limit 1");
+			if (is_array($rows) && count($rows) > 0) return floatval($rows[0]['percent']);
+		}
+		return 0.0;
 	}
 
 	/**
@@ -4455,6 +5248,16 @@ class sasoEventtickets_AdminSettings {
 		}
 
 		$ret = $this->MAIN->getDB()->update("orders", $felder, ["id"=>$order_id]);
+		// Kassenbeleg (3.3.0): confirming payment issues the receipt snapshot
+		// (idempotent — re-confirms keep their number). A receipt failure
+		// must never fail the payment confirmation itself.
+		if ($status == "completed") {
+			try {
+				$this->ensureInternalOrderReceipt($order_id);
+			} catch (Exception $e) {
+				$this->logErrorToDB($e, null, "receipt on confirm order #".$order_id);
+			}
+		}
 		do_action( $this->MAIN->_do_action_prefix.'admin_setInternalOrderStatus', $order_id, $status, $data );
 		return $ret;
 	}
@@ -4465,10 +5268,211 @@ class sasoEventtickets_AdminSettings {
 	private function getInternalOrderTicketURL($data) {
 		if (!isset($data['code_id'])) throw new Exception("#9246 code id parameter is missing");
 		$codeObj = $this->MAIN->getCore()->retrieveCodeById(intval($data['code_id']));
+		// Draft (unconfirmed) direct sales must not produce print urls — the
+		// Kasse prints after "Confirm payment", same rule as the ticket
+		// delivery gate (#8030). Non-direct-sale codes pass unchanged.
+		if (!$this->MAIN->getCore()->isInternalOrderRedeemable($codeObj)) {
+			throw new Exception("#9276 the sale of this ticket has not been confirmed as paid yet");
+		}
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		$url = $this->MAIN->getCore()->getTicketURL($codeObj, $metaObj);
 		// ?pdf delivers the ticket PDF inline — the Kasse preview opens the PDF
 		return ["url"=>$url.'?pdf'];
+	}
+
+	/**
+	 * Kassenbeleg snapshot of a direct-sale order (3.3.0, POS-Desk model).
+	 * Returns the persisted snapshot; generates + persists one on demand for
+	 * confirmed orders that predate the feature. Drafts are refused (#9277) —
+	 * a receipt proves a PAID sale, same rule as ticket delivery (#8030/#9276).
+	 */
+	private function getInternalOrderReceipt($data) {
+		if (!isset($data['id'])) throw new Exception("#9243 order id parameter is missing");
+		return $this->ensureInternalOrderReceipt(intval($data['id']));
+	}
+
+	/**
+	 * Idempotent receipt accessor: existing snapshot wins, otherwise a
+	 * confirmed order gets its number + html built and written back into
+	 * orders.meta. Returns ["number"=>..., "html"=>...].
+	 */
+	public function ensureInternalOrderReceipt(int $order_id): array {
+		$order = $this->MAIN->getCore()->getInternalOrderById($order_id);
+		if ($order === null) throw new Exception("#9244 internal order not found");
+		if ($order['status'] == "draft") {
+			throw new Exception("#9277 the sale has not been confirmed as paid yet — receipts are issued after payment confirmation");
+		}
+		$meta = json_decode((string)$order['meta'], true);
+		if (!is_array($meta)) $meta = [];
+		if (isset($meta['receipt']['number']) && isset($meta['receipt']['html'])) {
+			return ["number"=>(string)$meta['receipt']['number'], "html"=>(string)$meta['receipt']['html'], "order_id"=>$order_id, "status"=>$order['status']];
+		}
+		// cancelled orders pre-dating the feature: still a valid (paid then
+		// stornoed) sale record — the receipt documents the sale, the order
+		// status documents the storno. Partially refunded: same.
+		$number = $this->generateInternalReceiptNumber();
+		$html = $this->buildInternalReceiptHtml($order, $meta, $number);
+		$meta['receipt'] = ["number"=>$number, "html"=>$html, "time"=>wp_date("Y-m-d H:i:s")];
+		$this->MAIN->getDB()->update("orders", [
+			"meta"=>$this->MAIN->getCore()->json_encode_with_error_handling($meta),
+		], ["id"=>$order_id]);
+		return ["number"=>$number, "html"=>$html, "order_id"=>$order_id, "status"=>$order['status']];
+	}
+
+	/**
+	 * Sequential receipt number: prefix option + zero-padded (6) max+1 over
+	 * every stored receipt — never reused, monotonic (POS-Desk model, but
+	 * stored in orders.meta since the orders table has no receipt column).
+	 */
+	public function generateInternalReceiptNumber(): string {
+		$prefix = (string) $this->getOptionValue('receiptNumberPrefix', '');
+		$rows = $this->MAIN->getDB()->_db_datenholen(
+			"select meta from ".$this->MAIN->getDB()->getTabelle('orders')." where meta like '%receipt%'"
+		);
+		$max = 0;
+		foreach ((array) $rows as $row) {
+			$meta = json_decode((string)$row['meta'], true);
+			if (!is_array($meta) || !isset($meta['receipt']['number'])) continue;
+			$digits = intval(preg_replace('/[^0-9]/', '', (string)$meta['receipt']['number']));
+			if ($digits > $max) $max = $digits;
+		}
+		return $prefix . str_pad((string)($max + 1), 6, "0", STR_PAD_LEFT);
+	}
+
+	/**
+	 * Receipt HTML — single source of truth for Beleg rendering, POS-Desk
+	 * anatomy (buildReceiptHtml): business header, meta line, items with
+	 * per-line tax letters (multi-rate only), per-rate tax breakdown
+	 * (net + tax = gross), payment block with cash change, footer with
+	 * payment method + receipt number. Self-contained inline styles so the
+	 * print window needs no plugin CSS. No TSE block — the ET Kasse has no
+	 * KassenSichV signature hardware integration.
+	 */
+	public function buildInternalReceiptHtml(array $order, array $meta, string $number): string {
+		$businessName = trim((string) $this->getOptionValue('receiptBusinessName', ''));
+		$businessTaxId = trim((string) $this->getOptionValue('receiptBusinessTaxId', ''));
+		$currency = (string) ($meta['price_currency'] ?? '');
+		$fmt = function($cents) { return number_format(intval($cents) / 100, 2, '.', ''); };
+
+		$h = '<div class="et-receipt" style="font-family:monospace;font-size:12px;color:#111;max-width:380px;">';
+
+		// Header (POS-Desk: business name + tax id)
+		if ($businessName !== '') $h .= '<div style="text-align:center;font-weight:700;">' . esc_html($businessName) . '</div>';
+		if ($businessTaxId !== '') $h .= '<div style="text-align:center;font-size:10px;color:#666;margin-bottom:4px;">' . esc_html__('VAT ID', 'event-tickets-with-ticket-scanner') . ': ' . esc_html($businessTaxId) . '</div>';
+
+		// Meta
+		$h .= '<div style="margin:4px 0;font-size:10px;color:#444;">';
+		$h .= esc_html($order['time'] ?? '');
+		if (!empty($order['customer_name'])) $h .= ' &bull; ' . esc_html__('Customer', 'event-tickets-with-ticket-scanner') . ': ' . esc_html($order['customer_name']);
+		$h .= '</div>';
+
+		// Items (with tax letter markers when multiple rates are sold)
+		$taxBlock = (isset($meta['tax']) && is_array($meta['tax'])) ? $meta['tax'] : null;
+		$multiTax = is_array($taxBlock) && count($taxBlock['rates'] ?? []) > 1;
+		$letterOf = [];
+		if ($multiTax) {
+			foreach ($taxBlock['rates'] as $i => $r) $letterOf[number_format((float)$r['rate'], 2, '.', '')] = chr(65 + $i);
+		}
+		$h .= '<div style="border-top:1px dashed #999;border-bottom:1px dashed #999;padding:4px 0;">';
+		$lines = (isset($meta['lines']) && is_array($meta['lines'])) ? $meta['lines'] : [];
+		if (count($lines) == 0) {
+			// legacy amount-only sale: one synthetic ticket line at the total
+			$gross = intval($meta['price_total_cents'] ?? 0);
+			$h .= '<div style="display:flex;justify-content:space-between;"><span>' . esc_html__('Ticket', 'event-tickets-with-ticket-scanner') . '</span><span>' . $fmt($gross) . '</span></div>';
+		}
+		foreach ($lines as $line) {
+			$qty = max(1, intval($line['qty'] ?? 1));
+			$gross = intval($line['price_cents'] ?? 0) * $qty;
+			$rateKey = number_format(floatval($line['tax_rate'] ?? 0), 2, '.', '');
+			$letter = ($multiTax && isset($letterOf[$rateKey])) ? ' <span style="color:#94a3b8">' . $letterOf[$rateKey] . '</span>' : '';
+			$h .= '<div style="display:flex;justify-content:space-between;"><span>' . $qty . 'x ' . esc_html((string)($line['name'] ?? '')) . $letter . '</span><span>' . $fmt($gross) . '</span></div>';
+		}
+		$h .= '</div>';
+
+		// Totals: per-rate breakdown (always — required by tax law), then net/VAT/total
+		$h .= '<div style="padding:4px 0;">';
+		if (is_array($taxBlock)) {
+			foreach ($taxBlock['rates'] as $r) {
+				$prefix = $multiTax ? ($letterOf[number_format((float)$r['rate'], 2, '.', '')] . ' = ') : '';
+				$rateLabel = rtrim(rtrim(number_format((float)$r['rate'], 1, '.', ''), '0'), '.');
+				$h .= '<div style="font-size:10px;display:flex;justify-content:space-between;"><span>' . $prefix . esc_html__('VAT', 'event-tickets-with-ticket-scanner') . ' ' . esc_html($rateLabel) . '%: ' . $fmt($r['net_cents']) . ' + ' . $fmt($r['tax_cents']) . '</span><span>' . $fmt($r['gross_cents']) . '</span></div>';
+			}
+			$h .= '<div style="display:flex;justify-content:space-between;font-size:11px;"><span>' . esc_html__('Net', 'event-tickets-with-ticket-scanner') . '</span><span>' . $fmt($taxBlock['total_net_cents'] ?? 0) . '</span></div>';
+			$h .= '<div style="display:flex;justify-content:space-between;font-size:11px;"><span>' . esc_html__('VAT', 'event-tickets-with-ticket-scanner') . '</span><span>' . $fmt($taxBlock['total_tax_cents'] ?? 0) . '</span></div>';
+		}
+		$h .= '<div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid #333;margin-top:2px;padding-top:2px;"><span>' . esc_html__('Total', 'event-tickets-with-ticket-scanner') . '</span><span>' . $fmt($meta['price_total_cents'] ?? 0) . ($currency !== '' ? ' ' . esc_html($currency) : '') . '</span></div>';
+		$h .= '</div>';
+
+		// Payment (cash change printed like POS-Desk)
+		$pmLabels = ['cash' => __('Cash', 'event-tickets-with-ticket-scanner'), 'card' => __('Card', 'event-tickets-with-ticket-scanner'), 'other' => __('Other', 'event-tickets-with-ticket-scanner')];
+		$pm = (string) ($meta['payment']['method'] ?? 'cash');
+		$pmLabel = $pmLabels[$pm] ?? esc_html($pm);
+		if (isset($meta['payment_amount_given_cents'])) {
+			$h .= '<div style="font-size:11px;">';
+			$h .= '<div style="display:flex;justify-content:space-between;"><span>' . esc_html__('Given', 'event-tickets-with-ticket-scanner') . '</span><span>' . $fmt($meta['payment_amount_given_cents']) . '</span></div>';
+			$h .= '<div style="display:flex;justify-content:space-between;font-weight:700;"><span>' . esc_html__('Change', 'event-tickets-with-ticket-scanner') . '</span><span>' . $fmt($meta['payment_change_returned_cents'] ?? 0) . '</span></div>';
+			$h .= '</div>';
+		}
+
+		// Footer
+		$h .= '<div style="border-top:1px dashed #999;margin-top:4px;padding-top:4px;font-size:10px;color:#444;text-align:center;">' . esc_html($pmLabel) . ' &bull; #' . esc_html($number) . '</div>';
+		$h .= '</div>';
+		return $h;
+	}
+
+	/**
+	 * (D) Einheitliche Info-Basis — ONE payload builder for the order detail
+	 * (3.3.0): the Kasse detail view consumes it today, the later online/
+	 * customer view the same shape ("ein Renderer, ein Payload, ein Flag" —
+	 * the context flag lives in the RENDERER, the payload stays identical).
+	 * Receipt carries the number only; the html stays on the receipt
+	 * endpoint. Drafts show lines/money (the Kasse must see what is pending)
+	 * but no receipt and no ticket urls — same gate as #8030/#9276.
+	 */
+	private function getInternalOrderDetails($data) {
+		if (!isset($data['id'])) throw new Exception("#9243 order id parameter is missing");
+		$order_id = intval($data['id']);
+		$order = $this->MAIN->getCore()->getInternalOrderById($order_id);
+		if ($order === null) throw new Exception("#9244 internal order not found");
+		$meta = json_decode((string)$order['meta'], true);
+		if (!is_array($meta)) $meta = [];
+
+		$isDraft = ($order['status'] == "draft");
+		$tickets = [];
+		if (!$isDraft) {
+			$code_ids = json_decode((string)$order['code_ids'], true) ?: [];
+			foreach ($code_ids as $cid) {
+				$url = "";
+				try {
+					$codeObj = $this->MAIN->getCore()->retrieveCodeById(intval($cid));
+					$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
+					$url = $this->MAIN->getCore()->getTicketURL($codeObj, $metaObj);
+				} catch (Exception $e) {
+					// a single broken ticket must not kill the detail view
+					$this->logErrorToDB($e, null, "details url order #".$order_id." ticket #".$cid);
+				}
+				$tickets[] = ["code_id"=>intval($cid), "url"=>$url];
+			}
+		}
+
+		return [
+			"id"             => $order_id,
+			"status"         => (string) $order['status'],
+			"time"           => (string) $order['time'],
+			"list_id"        => intval($order['list_id']),
+			"customer_name"  => (string) ($order['customer_name'] ?? ''),
+			"payment_note"   => (string) ($order['payment_note'] ?? ''),
+			"lines"          => (isset($meta['lines']) && is_array($meta['lines'])) ? $meta['lines'] : [],
+			"price_total"    => (string) ($meta['price_total'] ?? ''),
+			"price_total_cents" => intval($meta['price_total_cents'] ?? 0),
+			"price_currency" => (string) ($meta['price_currency'] ?? ''),
+			"tax"            => (isset($meta['tax']) && is_array($meta['tax'])) ? $meta['tax'] : null,
+			"payment"        => (isset($meta['payment']) && is_array($meta['payment'])) ? $meta['payment'] : null,
+			"receipt"        => isset($meta['receipt']['number'])
+				? ["number"=>(string)$meta['receipt']['number'], "time"=>(string)($meta['receipt']['time'] ?? '')]
+				: null,
+			"tickets"        => $tickets,
+		];
 	}
 
 	private function emptyTableErrorLogs() {

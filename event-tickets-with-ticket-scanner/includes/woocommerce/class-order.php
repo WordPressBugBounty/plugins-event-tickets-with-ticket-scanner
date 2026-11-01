@@ -515,6 +515,61 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 		}
 
 		/**
+		 * Atomischer Generierungs-Claim pro Bestellposition (Support #015487).
+		 *
+		 * Die beiden Auslöser — payment-webhook (pending→processing) und
+		 * status→completed — feuern Sekunden hintereinander. Der 0264407-GET_LOCK
+		 * hilft nicht: er ist zu dem Zeitpunkt längst wieder frei. Der einzige
+		 * Schutz war der Meta-Read, der über den WP-Meta-Cache (Redis) läuft —
+		 * dort kann der zweite Trigger den VOR der Generierung geparkten Stand
+		 * ("leer") serviert bekommen und generiert die volle Menge erneut.
+		 *
+		 * Der Claim umgeht den Cache komplett: ein einzelnes INSERT IGNORE mit
+		 * UNIQUE KEY (order_id, item_id). Gewinnt genau der erste Trigger
+		 * (affected_rows = 1), jeder weitere geht leer aus — unabhängig davon,
+		 * was der Object Cache gerade glaubt. Kein Read-Modify-Write, also
+		 * keine Rennlücke zwischen Lesen und Schreiben.
+		 *
+		 * @param int $order_id Order ID
+		 * @param int $item_id Order item ID
+		 * @return bool true nur beim allerersten Claim; false bei jedem weiteren
+		 *               (oder wenn die Claim-Tabelle fehlt — dann fällt der
+		 *               Aufrufer auf den direkten DB-Read zurück, der allein
+		 *               schon sicher topped up)
+		 */
+		public function claimTicketGenerationForItem(int $order_id, int $item_id): bool {
+			if ($order_id <= 0 || $item_id <= 0) return false;
+			global $wpdb;
+			$table = $this->MAIN->getDB()->getTabelle('tgen_claims');
+			$result = $wpdb->query($wpdb->prepare(
+				"INSERT IGNORE INTO {$table} (time, timezone, order_id, item_id) VALUES (%s, %s, %d, %d)",
+				current_time('mysql'), wp_timezone_string(), $order_id, $item_id
+			));
+			return intval($result) === 1;
+		}
+
+		/**
+		 * Codes einer Bestellposition direkt aus der DB lesen — bewusst NICHT
+		 * über wc_get_order_item_meta() (Support #015487): der Meta-Cache
+		 * (Redis) kann einen veralteten Stand servieren. Der direkte Read ist
+		 * die Wahrheit, an der quantity_needed gemessen wird, wenn ein zweiter
+		 * Trigger (beliebig später) die Position erneut behandelt — Top-up
+		 * statt Doppelgenerierung.
+		 *
+		 * @param int $item_id Order item ID
+		 * @return string Komma-separierte Codes ("" wenn keine vorhanden)
+		 */
+		public function getOrderItemCodesDirectFromDb(int $item_id): string {
+			if ($item_id <= 0) return "";
+			global $wpdb;
+			$value = $wpdb->get_var($wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->prefix}woocommerce_order_itemmeta WHERE order_item_id = %d AND meta_key = %s LIMIT 1",
+				$item_id, self::META_ORDER_ITEM_CODES
+			));
+			return is_string($value) ? $value : "";
+		}
+
+		/**
 		 * Main ticket generation entry point
 		 *
 		 * **CRITICAL METHOD:** Generates tickets for all items in an order.
@@ -670,7 +725,21 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 				$quantity_needed = $quantity;
 
 				$codes = [];
+				// Rennen gegen den zweiten Trigger (Support #015487): Erst den
+				// atomaren DB-Claim holen — INSERT IGNORE mit UNIQUE (order_id,
+				// item_id). Gewinnt nur der allererste Trigger; jeder weitere
+				// (payment-webhook + status-completed Sekunden auseinander) liest
+				// die Codes danach DIREKT aus der DB statt aus dem Meta-Cache
+				// (Redis kann dort den VOR der Generierung geparkten Stand
+				// servieren → volle Menge ein zweites Mal generiert). Der
+				// 0264407-GET_LOCK schützt nur gegen Parallelität, nicht gegen
+				// zeitversetzte Trigger — der Claim schließt genau diese Lücke.
+				$claimed = $this->claimTicketGenerationForItem($order_id, $item_id);
 				$existingCode = wc_get_order_item_meta($item_id, self::META_ORDER_ITEM_CODES, true); // if called repeatly, do not overwrite existing codes
+				if (!$claimed) {
+					// zweiter (oder spaeterer) Trigger: Cache umgehen, DB ist Wahrheit
+					$existingCode = $this->getOrderItemCodesDirectFromDb($item_id);
+				}
 				if (!empty($existingCode)) {
 					$codes = explode(",", $existingCode);
 					$quantity_needed = $quantity - count($codes);

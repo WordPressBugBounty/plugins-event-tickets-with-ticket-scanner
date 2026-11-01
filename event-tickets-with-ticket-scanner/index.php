@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.2.10
+ * Version: 3.3.0
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.2.10');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.3.0');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -58,6 +58,8 @@ class sasoEventtickets {
 	protected $_shortcode_ticket_scanner = 'sasoEventTicketsValidator_ticket_scanner';
 	protected $_shortcode_feature_list = 'sasoEventTicketsValidator_feature_list';
 	protected $_shortcode_ticket_detail = 'sasoEventTicketsValidator_ticket_detail';
+	protected $_shortcode_shop_catalog = 'sasoEventTicketsValidator_shop_catalog';
+	protected $_shortcode_shop_event = 'sasoEventTicketsValidator_shop_event';
 	protected $_divId = 'sasoEventtickets';
 
 	private $_isPrem = null;
@@ -239,6 +241,14 @@ class sasoEventtickets {
 	public function getTicketDesignerHandler($template="") {
 		$this->loadOnce('sasoEventtickets_TicketDesigner');
 		return sasoEventtickets_TicketDesigner::Instance($this, $template);
+	}
+	/**
+	 * Twig template overrides for the public shop faces (3.3.0 Slice 3).
+	 * Empty template options = the built-in code renderer keeps rendering.
+	 */
+	public function getShopTemplatesHandler() {
+		$this->loadOnce('sasoEventtickets_ShopTemplates');
+		return sasoEventtickets_ShopTemplates::Instance($this);
 	}
 	public function getTicketBadgeHandler() {
 		$this->loadOnce('sasoEventtickets_TicketBadge');
@@ -543,6 +553,8 @@ class sasoEventtickets {
 		add_shortcode($this->_shortcode_eventviews, [$this, 'replacingShortcodeEventViews']);
 		add_shortcode($this->_shortcode_feature_list, [$this, 'replacingShortcodeFeatureList']);
 		add_shortcode($this->_shortcode_ticket_detail, [$this, 'replacingShortcodeTicketDetail']);
+		add_shortcode($this->_shortcode_shop_catalog, [$this, 'replacingShortcodeShopCatalog']);
+		add_shortcode($this->_shortcode_shop_event, [$this, 'replacingShortcodeShopEvent']);
 
 		// Congress: REST API always registered; frontend page only when active
 		// (guarded — class files arrive in later tasks)
@@ -1394,6 +1406,25 @@ class sasoEventtickets {
 								['code', __('Show details for a specific code directly', 'event-tickets-with-ticket-scanner')],
 							],
 						],
+						[
+							'tag' => $this->_shortcode_shop_catalog,
+							'name' => __('Shop catalog', 'event-tickets-with-ticket-scanner'),
+							'desc' => __('Public shop catalog: lists marked "show in shop" appear with their active products, grouped by category.', 'event-tickets-with-ticket-scanner'),
+							'params' => [
+								['only_ids', __('Comma-separated list ids to limit the catalog to (optional)', 'event-tickets-with-ticket-scanner')],
+							],
+							'css' => 'shop_catalog.css',
+						],
+						[
+							'tag' => $this->_shortcode_shop_event,
+							'name' => __('Event detail page', 'event-tickets-with-ticket-scanner'),
+							'desc' => __('Public detail page of one "show in shop" list: event date, time and location with its buyable products. Buy buttons open the event\'s online shop page (premium) with the ticket type preselected.', 'event-tickets-with-ticket-scanner'),
+							'params' => [
+								['list_id', __('Show details for this list id directly', 'event-tickets-with-ticket-scanner')],
+								['event', __('Read ?event=LISTID from URL (default behaviour)', 'event-tickets-with-ticket-scanner')],
+							],
+							'css' => 'shop_catalog.css',
+						],
 					];
 					?>
 					<table class="et-shortcodes-table">
@@ -2189,6 +2220,233 @@ class sasoEventtickets {
 
 		$ret = apply_filters( $this->_add_filter_prefix.'main_replacingShortcodeEventViews', $ret );
 		do_action( $this->_do_action_prefix.'main_replacingShortcodeEventViews', $vars, $ret );
+
+		return $ret;
+	}
+
+	/*
+	 * Manual buy-URL override for the public event detail page (3.3.0).
+	 * Normally EMPTY: the target is resolved at runtime in shopEventBuyUrl()
+	 * — with premium active the button links the list's public shop page
+	 * (the own ET-Kasse entry, /tickets/{list_id}/ since premium 1.8.9) with
+	 * ?et_product={product_id} preselecting that product's quantity row.
+	 * Without premium there is no public kasse → '' renders href="#" —
+	 * nothing guessed. Filling this template ({list_id} / {product_id}
+	 * placeholders) wins over the runtime resolution; the
+	 * saso_eventtickets_shop_event_buy_url filter ($url, $listId, $productId)
+	 * always decides last. NEVER a WooCommerce product page — Saso
+	 * 2026-10-28: "full eigener Ticket-Shop" = independent of Woo.
+	 */
+	public const SHOP_EVENT_BUY_URL_TEMPLATE = '';
+
+	/**
+	 * Resolved buy URL for one product of one list: the manual template
+	 * override when filled, else the premium public shop page with the
+	 * product preselected (?et_product=); without premium '' (no public
+	 * kasse exists). The integration filter decides last.
+	 */
+	public function shopEventBuyUrl(int $listId, int $productId): string {
+		$url = '';
+		if (self::SHOP_EVENT_BUY_URL_TEMPLATE != "") {
+			$url = strtr(self::SHOP_EVENT_BUY_URL_TEMPLATE, [
+				'{list_id}' => (string) $listId,
+				'{product_id}' => (string) $productId,
+			]);
+		} elseif ($listId > 0 && $productId > 0 && $this->isPremium()
+			&& method_exists($this->getPremiumFunctions(), 'getShopPageUrl')) {
+			$kasseUrl = $this->getPremiumFunctions()->getShopPageUrl($listId);
+			if ($kasseUrl != "") {
+				$url = add_query_arg('et_product', (string) $productId, $kasseUrl);
+			}
+		}
+		return apply_filters('saso_eventtickets_shop_event_buy_url', $url, $listId, $productId);
+	}
+
+	/**
+	 * Shared stylesheet of the public shop faces (catalog + event detail).
+	 */
+	private function enqueueShopCatalogCss(): void {
+		$css_url = "shop_catalog.css?_v=".$this->getPluginVersion();
+		if (defined('WP_DEBUG')) $css_url .= '&t='.time();
+		wp_enqueue_style("shop_catalog_css", plugins_url( $css_url,__FILE__ ), [], null);
+	}
+
+	/**
+	 * Public shop catalog shortcode (3.3.0 Slice 1, Saso 2026-10-28):
+	 * renders every list flagged show_in_shop = 1 with its active
+	 * products, grouped by category. Server-side PHP rendering — a public
+	 * visitor face needs no nonce/AJAX. display_desc arrives
+	 * kses-sanitized from the data layer (same contract as the Kasse
+	 * tiles) and renders as HTML; everything else is esc_html'd.
+	 * Empty catalog renders '' (the shortcode degrades silently).
+	 */
+	public function replacingShortcodeShopCatalog($attr = [], $content = null, $tag = '') {
+		$attr = array_change_key_case( (array) $attr, CASE_LOWER );
+
+		$data = [];
+		if (isset($attr['only_ids']) && is_string($attr['only_ids']) && trim($attr['only_ids']) != "") {
+			$ids = array_values(array_filter(array_map('intval', explode(',', $attr['only_ids'])), function($v) { return $v > 0; }));
+			if (!empty($ids)) $data['only_ids'] = $ids;
+		}
+		$catalog = $this->getAdmin()->getShopCatalog($data);
+		$entries = (isset($catalog['catalog']) && is_array($catalog['catalog'])) ? $catalog['catalog'] : [];
+
+		// Template override (3.3.0 Slice 3): a saved catalog template takes
+		// over the whole shortcode output; null keeps the built-in renderer
+		// byte-identical. Even an empty catalog is handed to the template
+		// (it renders its own empty state).
+		$templated = $this->getShopTemplatesHandler()->renderCatalog($entries);
+		if ($templated !== null) {
+			$this->enqueueShopCatalogCss();
+			return $templated;
+		}
+
+		if (count($entries) == 0) return '';
+
+		$this->enqueueShopCatalogCss();
+
+		$divId = "sasoEventTicketsValidator_shop_catalog";
+		if (isset($attr['divid']) && trim((string)$attr['divid']) != "") {
+			$divId = sanitize_key(trim((string)$attr['divid']));
+		}
+
+		$ret = '<div class="et-shop-catalog" id="'.esc_attr($divId).'">';
+		foreach ($entries as $entry) {
+			$ret .= '<section class="et-shop-catalog__list">';
+			$ret .= '<h2 class="et-shop-catalog__list-name">'.esc_html($entry['name']).'</h2>';
+			// no buy buttons here — the catalog stays a pure browsable face
+			$ret .= $this->renderShopProductGroups($entry, false);
+			$ret .= '</section>';
+		}
+		$ret .= '</div>';
+
+		return $ret;
+	}
+
+	/**
+	 * Shared product rendering of the public shop faces (Slice 1 catalog +
+	 * Slice 2 event detail): category groups with products — name, chip,
+	 * kses'd desc, price+currency, and (only on the detail page) the buy
+	 * button into the own ET-Kasse. withBuyButtons=false keeps the Slice-1
+	 * catalog output byte-identical.
+	 */
+	public function renderShopProductGroups(array $entry, bool $withBuyButtons): string {
+		$ret = '';
+		foreach ($entry['groups'] as $group) {
+			$hasHeader = trim((string)$group['category_name']) != "";
+			$ret .= '<div class="et-shop-catalog__group'.($hasHeader ? '' : ' et-shop-catalog__group--uncategorized').'">';
+			if ($hasHeader) {
+				$ret .= '<h3 class="et-shop-catalog__group-name">'.esc_html($group['category_name']).'</h3>';
+			}
+			foreach ($group['products'] as $p) {
+				$price = sasoEventtickets_AdminSettings::ticketCentsToPrice(intval(isset($p['price_cents']) ? $p['price_cents'] : 0));
+				$currency = isset($p['currency']) ? trim((string)$p['currency']) : "";
+				$ret .= '<div class="et-shop-catalog__prod">';
+				$ret .= '<span class="et-shop-catalog__prod-name">'.esc_html($p['name']).'</span>';
+				// Kategorie-Chip am Produkt (spec: Produkt-in-Liste-Template)
+				if ($hasHeader) {
+					$ret .= '<span class="et-shop-catalog__prod-cat">'.esc_html($group['category_name']).'</span>';
+				}
+				$desc = isset($p['display_desc']) ? trim((string)$p['display_desc']) : "";
+				if ($desc != "") {
+					// already wp_kses_post-sanitized server-side (getTicketProducts) —
+					// same delivery contract the Kasse tiles rely on
+					$ret .= '<div class="et-shop-catalog__prod-desc">'.$desc.'</div>';
+				}
+				$ret .= '<span class="et-shop-catalog__prod-price">'.esc_html($price).($currency != "" ? ' '.esc_html($currency) : '').'</span>';
+				// Steuersatz note (3.3.0): prices are gross-inclusive — say so
+				// whenever a rate is set (0/absent renders nothing, keeping
+				// existing shops byte-identical). The RESOLVED rate decides
+				// (product rate > list default > legacy percent, Slice C) —
+				// decimal POINT always.
+				$taxRate = isset($p['resolved_tax_rate_percent']) ? floatval($p['resolved_tax_rate_percent']) : (isset($p['tax_rate']) ? floatval($p['tax_rate']) : 0.0);
+				if ($taxRate > 0) {
+					$taxLabel = rtrim(rtrim(number_format($taxRate, 1, '.', ''), '0'), '.');
+					$ret .= '<span class="et-shop-catalog__prod-tax">'.esc_html(sprintf(__('incl. %s %% VAT', 'event-tickets-with-ticket-scanner'), $taxLabel)).'</span>';
+				}
+				// type badge (3.3.0 Slice C): products/optional fees are
+				// add-ons, auto_add fees are fixed default lines — the
+				// mandatory event renders as before (no badge, existing
+				// shops stay byte-identical)
+				$prodType = sasoEventtickets_AdminSettings::normalizeProductType($p['product_type'] ?? 'event');
+				if ($prodType === 'fee' && !empty($p['auto_add'])) {
+					$ret .= '<span class="et-shop-catalog__prod-type et-shop-catalog__prod-type--included">'.esc_html__('included', 'event-tickets-with-ticket-scanner').'</span>';
+				} elseif ($prodType !== 'event') {
+					$ret .= '<span class="et-shop-catalog__prod-type et-shop-catalog__prod-type--optional">'.esc_html__('Add-on', 'event-tickets-with-ticket-scanner').'</span>';
+				}
+				if ($withBuyButtons) {
+					$buyUrl = $this->shopEventBuyUrl(intval($entry['id']), intval($p['id']));
+					$ret .= '<a class="et-shop-catalog__buy" data-et-buy="'.esc_attr(intval($p['id'])).'" href="'.esc_attr($buyUrl != "" ? $buyUrl : '#').'">'.esc_html__('Buy', 'event-tickets-with-ticket-scanner').'</a>';
+				}
+				$ret .= '</div>';
+			}
+			$ret .= '</div>';
+		}
+		return $ret;
+	}
+
+	/**
+	 * Public event detail shortcode (3.3.0 Slice 2): ONE "show in shop"
+	 * list as a visitor page — event head from the list meta (date, time,
+	 * location; 3.2.9 keys) above the list's buyable products. Addressing
+	 * follows the existing public pattern (attribute, else GET param —
+	 * like ticket_detail's code/?ticket=): the list_id attribute wins over
+	 * ?event=. Unknown/hidden list or missing addressing renders ''
+	 * (silent degradation, same as the catalog — show_in_shop=0 hides the
+	 * detail page too). Server-side PHP, no nonce/AJAX.
+	 */
+	public function replacingShortcodeShopEvent($attr = [], $content = null, $tag = '') {
+		$attr = array_change_key_case( (array) $attr, CASE_LOWER );
+
+		$listId = 0;
+		if (isset($attr['list_id']) && trim((string)$attr['list_id']) != "") {
+			$listId = intval($attr['list_id']);
+		} elseif (isset($_GET['event'])) {
+			$listId = intval($_GET['event']); // intval defuses injected strings
+		}
+		if ($listId < 1) return '';
+
+		$event = $this->getAdmin()->getShopEvent(['list_id' => $listId]);
+		if (!isset($event['id'])) return '';
+
+		// Template override (3.3.0 Slice 3): a saved event template takes
+		// over the whole shortcode output; null keeps the built-in renderer
+		// byte-identical.
+		$templated = $this->getShopTemplatesHandler()->renderEventDetail($event);
+		if ($templated !== null) {
+			$this->enqueueShopCatalogCss();
+			return $templated;
+		}
+
+		$this->enqueueShopCatalogCss();
+
+		$divId = "sasoEventTicketsValidator_shop_event";
+		if (isset($attr['divid']) && trim((string)$attr['divid']) != "") {
+			$divId = sanitize_key(trim((string)$attr['divid']));
+		}
+
+		$meta = isset($event['event']) && is_array($event['event']) ? $event['event'] : [];
+		$ret = '<div class="et-shop-event" id="'.esc_attr($divId).'">';
+		$ret .= '<header class="et-shop-event__head">';
+		$ret .= '<h2 class="et-shop-event__name">'.esc_html($event['name']).'</h2>';
+		$metaItems = '';
+		if (trim((string)($meta['event_start_date'] ?? '')) != "") {
+			$metaItems .= '<span class="et-shop-event__meta-item et-shop-event__date">'.esc_html($meta['event_start_date']).'</span>';
+		}
+		if (trim((string)($meta['event_start_time'] ?? '')) != "") {
+			$metaItems .= '<span class="et-shop-event__meta-item et-shop-event__time">'.esc_html($meta['event_start_time']).'</span>';
+		}
+		if (trim((string)($meta['event_location'] ?? '')) != "") {
+			$metaItems .= '<span class="et-shop-event__meta-item et-shop-event__location">'.esc_html($meta['event_location']).'</span>';
+		}
+		if ($metaItems != '') {
+			$ret .= '<div class="et-shop-event__meta">'.$metaItems.'</div>';
+		}
+		$ret .= '</header>';
+		$ret .= '<div class="et-shop-event__products">';
+		$ret .= $this->renderShopProductGroups($event, true);
+		$ret .= '</div>';
+		$ret .= '</div>';
 
 		return $ret;
 	}

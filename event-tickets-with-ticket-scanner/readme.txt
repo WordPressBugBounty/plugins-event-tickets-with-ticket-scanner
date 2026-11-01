@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, box office, pos, seating plan, woocommerce tickets, congress, membership
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.2.10
+Stable tag: 3.3.0
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -249,9 +249,18 @@ Old premium version will no longer work with this version. You need to downgrade
 
 == Changelog ==
 
-= 3.2.10 - 2026-10-28 =
-* Fix: every WooCommerce checkout failed with a fatal error since 3.2.9 (class-gclid.php) - the Google Ads click tracking read the checkout data array as a session object. Checkouts work again immediately after updating.
+= 3.3.0 - 2026-11-01 =
+* New: Products & Tax — VAT rates as manageable entities and products with a type (event ticket, add-on, fee) plus optional/auto-add flags and per-list default rates; every sale freezes the resolved rate per line (product rate > list default > 0%) into a cent-exact net/tax/gross breakdown. Managed in its own admin section (data tables, dialog editing) beside Seating Plans; while WooCommerce is active a notice marks these entries as unnecessary there.
+* New: sell products without an event (drinks, merchandise) with categories and type-aware descriptions alongside ticket types — in the online shop and at the Kasse; auto-add fees sit on every order of their list (or globally) and start at quantity 1 in the sell dialog, add-ons only when chosen.
+* New: public shop catalog [sasoEventTicketsValidator_shop_catalog] and event detail page [sasoEventTicketsValidator_shop_event] for lists marked "show in shop" — Buy opens the event's own order page (premium), and both pages are freely designable via sandboxed Twig templates.
+* New: Kasse receipts (Kassenbelege) — numbered, sequential, reprintable snapshots with per-rate tax breakdown, business name and VAT ID from the settings; plus an order detail view (lines, tax breakdown, payment trail) on every order card.
+* Security: audit follow-up — escaped exception output, prepared ticket-number lookup, removed dead legacy endpoints, capability checks on destructive admin actions.
+* Fix: Kasse printing — direct-sale tickets print again (the ticket-number check compared the wrong order id), and draft (unpaid) orders no longer offer ticket printing or PDFs.
+* Fix: seating hardening — empty seat map on updated schemas, third-party price refreshes (geo-pricing) no longer clear a confirmed seat selection before add-to-cart, and the seat-map refresh race right after confirming seats.
+* Fix: duplicate ticket codes on multi-quantity orders when the payment webhook and the order-status trigger raced — ticket generation is now claimed atomically per order line.
 
+= 3.2.10 =
+* Fix: every WooCommerce checkout failed with a fatal error since 3.2.9 (class-gclid.php) - the Google Ads click tracking read the checkout data array as a session object. Checkouts work again immediately after updating.
 
 = 3.2.9 - 2026-10-27 =
 * Kasse: touch-friendly minus/plus steppers around each ticket product quantity field.

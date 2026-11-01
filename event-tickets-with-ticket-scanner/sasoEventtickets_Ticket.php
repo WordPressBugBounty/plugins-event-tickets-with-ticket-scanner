@@ -2397,12 +2397,36 @@ final class sasoEventtickets_Ticket {
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObject($codeObj['meta'], $codeObj);
 		$codeObj["metaObj"] = $metaObj;
 
-		// check ob order_id stimmen
-		if ($this->getParts($code)['order_id'] != $codeObj['order_id']) throw new Exception("#8001 ".esc_html($this->MAIN->getAdmin()->getOptionValue("wcTicketTransTicketNumberWrong")));
+		// check ob order_id stimmen — the order part of the public id is the
+		// INTERNAL order id for direct-sale (no-Woo) tickets (getTicketId),
+		// the Woo order id otherwise. Compare against the same value the id
+		// was built from, otherwise every Kasse print fails #8001.
+		$expectedOrderId = $codeObj['order_id'];
+		if ($this->MAIN->getCore()->getInternalOrderIdOfCode($codeObj) > 0) {
+			$expectedOrderId = $this->MAIN->getCore()->getInternalOrderIdOfCode($codeObj);
+		}
+		if ($this->getParts($code)['order_id'] != $expectedOrderId) throw new Exception("#8001 ".esc_html($this->MAIN->getAdmin()->getOptionValue("wcTicketTransTicketNumberWrong")));
 		// check idcode
 		if ($this->getParts($code)['idcode'] != $metaObj['wc_ticket']['idcode']) throw new Exception("#8006 ".esc_html($this->MAIN->getAdmin()->getOptionValue("wcTicketTransTicketNumberWrong")));
 		// check ob serial ein ticket ist
 		if ($metaObj['wc_ticket']['is_ticket'] != 1) throw new Exception("#8002 ".esc_html($this->MAIN->getAdmin()->getOptionValue("wcTicketTransTicketNotValid")));
+		// Direct-sale delivery gate: a draft internal order has not been paid
+		// yet — no ticket page, PDF, ICS or badge may leave the shop (same
+		// rule as the ticket mail that only goes out after confirmation and
+		// the redeem gate #8030 in redeem_ticket). Scanner requests keep the
+		// redeem path's own JSON error shape, so the gate is page-context only.
+		if (!$this->isScanner()) {
+			$_internalOrderId = $this->MAIN->getCore()->getInternalOrderIdOfCode($codeObj);
+			if ($_internalOrderId > 0 && !$this->MAIN->getCore()->isInternalOrderRedeemable($codeObj)) {
+				$_io = $this->MAIN->getCore()->getInternalOrderById($_internalOrderId);
+				$_io_status = is_array($_io) ? (string) $_io['status'] : 'unknown';
+				throw new Exception("#8030 ".esc_html(sprintf(
+					/* translators: %s: internal order status */
+					__('The ticket was sold directly but its sale has not been confirmed as paid yet (sale status: %s).', 'event-tickets-with-ticket-scanner'),
+					$_io_status
+				)));
+			}
+		}
 		// check ob order bezahlt ist — entfällt für Tickets ohne Order, das ist
 		// der bewusste Verzicht hinter dem Schalter (Core::isOrderlessTicketAllowed)
 		if ($dontFailPaid == false && !$this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
@@ -4519,7 +4543,7 @@ final class sasoEventtickets_Ticket {
 						echo $this->renderStatusBanner('error', __('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage()));
 					} else {
 						echo '<h1 style="color:red;">Error</h1>';
-						echo $e->getMessage();
+						echo esc_html($e->getMessage());
 					}
 				}
 			}
