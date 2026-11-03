@@ -1782,9 +1782,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		});
 		// function row: clear, back-delete, zero, decimal (Saso 2026-10-27)
 		let fnRow = $('<div style="display:flex;gap:4px;max-width:220px;margin-bottom:6px;"/>').appendTo(cashDiv);
-		[['C',''], ['back','⌫'], ['0','0'], [',',',']].forEach(p=>{
+		[['C','AC'], ['back','⌫'], ['0','0'], [',',',']].forEach(p=>{
 			let isBack = p[0] === 'back';
-			$('<button type="button" class="et-btn-action" style="flex:1;padding:10px 0;font-size:16px;'+(p[0]===','?'font-weight:700;':'')+'"'+(isBack?' aria-label="'+_x('Delete last digit', 'kasse keypad', 'event-tickets-with-ticket-scanner')+'"':'')+'/>').text(p[1]).on('click', e=>{
+			let isClear = p[0] === 'C';
+			$('<button type="button" class="et-btn-action" style="flex:1;padding:10px 0;font-size:16px;'+(p[0]===','?'font-weight:700;':'')+'"'+(isBack?' aria-label="'+_x('Delete last digit', 'kasse keypad', 'event-tickets-with-ticket-scanner')+'"':'')+(isClear?' aria-label="'+_x('Clear amount', 'kasse keypad', 'event-tickets-with-ticket-scanner')+'"':'')+'/>').text(p[1]).on('click', e=>{
 				e.preventDefault();
 				kpState = kasseKeypadKey(kpState, p[0]);
 				givenCents = kasseKeypadCents(kpState);
@@ -1882,10 +1883,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				// touch steppers (Saso 2026-10-26): minus/plus around the qty
 				// field beats fiddling with a spin-less number input on
 				// phones/tablets — one tap = one ticket
-				let qtyWrap = $('<div style="display:flex;gap:4px;align-items:center;"/>').appendTo(row);
-				$('<button type="button" class="et-btn-action et-kasse-prod__minus" aria-label="'+_x('Decrease quantity', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:40px;height:40px;font-size:20px;line-height:1;padding:0;">&minus;</button>').appendTo(qtyWrap);
-				$('<input type="number" class="et-kasse-prod__qty" min="0" max="100" value="' + kasseInitialQty(p) + '" data-product-id="'+parseInt(p.id, 10)+'" style="width:64px;text-align:center;">').appendTo(qtyWrap);
-				$('<button type="button" class="et-btn-action et-kasse-prod__plus" aria-label="'+_x('Increase quantity', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:40px;height:40px;font-size:20px;line-height:1;padding:0;">+</button>').appendTo(qtyWrap);
+				let qtyWrap = $('<div class="et-btn-group" style="align-items:stretch;"/>').appendTo(row);
+				$('<button type="button" class="et-btn-action et-kasse-prod__minus" aria-label="'+_x('Decrease quantity', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:44px;height:40px;font-size:20px;line-height:1;padding:0;">&minus;</button>').appendTo(qtyWrap);
+				$('<input type="number" class="et-kasse-prod__qty" min="0" max="100" value="' + kasseInitialQty(p) + '" data-product-id="'+parseInt(p.id, 10)+'" style="width:64px;text-align:center;border:none;box-shadow:none;background:#fff;height:40px;">').appendTo(qtyWrap);
+				$('<button type="button" class="et-btn-action et-kasse-prod__plus" aria-label="'+_x('Increase quantity', 'label', 'event-tickets-with-ticket-scanner')+'" style="width:44px;height:40px;font-size:20px;line-height:1;padding:0;">+</button>').appendTo(qtyWrap);
 			});
 			__updateKasseTotals();
 		};
@@ -3824,6 +3825,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		DIV.html('');
 		DIV.append(getBackButtonDiv());
 		var $container = $('<div/>').attr('id', 'saso-et-congress-app').appendTo(DIV);
+		// Immediate loading feedback like every other topmenu area — the
+		// congress admin script replaces this on its first render.
+		$container.html(_getSpinnerHTML());
 
 		var _congressV = myAjax._congress_assets_v || myAjax._plugin_version;
 		if (!document.getElementById('saso-et-congress-css')) {
@@ -6543,9 +6547,13 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					let prodRows = $('<div style="margin-top:8px;">').appendTo(prodAdmin);
 					let __fmtPrice = c => (c/100).toFixed(2);
 					let __renderProdRow = p => {
-						let row = $('<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"/>').appendTo(prodRows);
-						if (p.list_id) row.attr('data-list-id', parseInt(p.list_id, 10));
-						$('<input type="text" class="et-prod-name" value="'+String(p.name == null ? '' : p.name).replace(/"/g, '&quot;')+'" style="flex:1;" placeholder="'+_x('Name', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
+						// Name gets its own full-width row (the old single-line layout
+						// squeezed the name field to a few pixels next to price,
+						// currency, tax, checkboxes and buttons).
+						let nameRow = $('<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;"/>').appendTo(prodRows);
+						let row = $('<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;flex-wrap:wrap;"/>').appendTo(prodRows);
+						if (p.list_id) nameRow.attr('data-list-id', parseInt(p.list_id, 10));
+						$('<input type="text" class="et-prod-name" value="'+String(p.name == null ? '' : p.name).replace(/"/g, '&quot;')+'" style="flex:1;min-width:180px;" placeholder="'+_x('Name', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(nameRow);
 						$('<input type="text" class="et-prod-price" inputmode="decimal" value="'+(p.id ? __fmtPrice(parseInt(p.price_cents, 10) || 0) : '')+'" style="width:80px;" placeholder="'+_x('Price', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
 						$('<input type="text" class="et-prod-currency" value="'+String(p.currency == null ? '' : p.currency)+'" style="width:52px;" placeholder="EUR"/>').appendTo(row);
 						let taxIn = $('<input type="text" class="et-prod-tax" inputmode="decimal" value="'+(p.id && parseFloat(p.tax_rate) > 0 ? parseFloat(p.tax_rate) : '')+'" style="width:56px;" placeholder="'+_x('Tax %', 'label', 'event-tickets-with-ticket-scanner')+'" title="'+_x('Tax rate (Steuersatz) of the gross price, e.g. 19 or 7. Empty = 0%. Shown as "incl. x % VAT" in the shop and printed on the Kasse receipt.', 'label', 'event-tickets-with-ticket-scanner')+'"/>').appendTo(row);
@@ -6560,7 +6568,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						if (p.id) {
 							row.append($('<button type="button" class="et-btn-action"/>').text(_x('Save', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 								e.preventDefault();
-								_makePost('editTicketProduct', {id:p.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), aktiv:row.find('.et-prod-aktiv').prop('checked')?1:0, proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0, tax_rate:row.find('.et-prod-tax').val()}, ()=>{ __loadListProducts(); });
+								_makePost('editTicketProduct', {id:p.id, name:nameRow.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), aktiv:row.find('.et-prod-aktiv').prop('checked')?1:0, proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0, tax_rate:row.find('.et-prod-tax').val()}, ()=>{ __loadListProducts(); });
 							}));
 							row.append($('<button type="button" class="et-btn-action et-btn-action--danger"/>').text(_x('Remove', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 								e.preventDefault();
@@ -6569,7 +6577,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 						} else {
 							row.append($('<button type="button" class="et-btn-action"/>').text(_x('Add ticket product', 'label', 'event-tickets-with-ticket-scanner')).on('click', e=>{
 								e.preventDefault();
-								_makePost('addTicketProduct', {list_id:editValues.id, name:row.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0, tax_rate:row.find('.et-prod-tax').val()}, ()=>{ __loadListProducts(); });
+								_makePost('addTicketProduct', {list_id:editValues.id, name:nameRow.find('.et-prod-name').val(), price:row.find('.et-prod-price').val(), currency:row.find('.et-prod-currency').val(), proof_required:row.find('.et-prod-proof').prop('checked')?1:0, max_tickets:parseInt(row.find('.et-prod-max').val(), 10) || 0, tax_rate:row.find('.et-prod-tax').val()}, ()=>{ __loadListProducts(); });
 							}));
 						}
 					};

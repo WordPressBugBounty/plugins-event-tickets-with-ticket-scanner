@@ -2,6 +2,11 @@
 
 
 
+= 3.3.1 - 2026-11-03 =
+* New: PRODUCTID search filter in the ticket list (and the product ticket download) now also matches product variations of variable products — existing tickets resolve via their order item, new tickets store the variation id directly.
+* New: public bridge for premium online payment (Stufe 3) — a paid shop order completes through the exact Kasse confirmation path (confirmInternalOrderPayment), no visible change without premium 1.9.1+.
+* Fix: seat selector showed an empty seat map after the 3.3.0 update — the event-date condition in the seat query was aliased to the seats table, which does not carry that column on standard installations, so the query failed silently (seats stayed visible in the designer and in the stats but never reached the selector); the condition now targets the reservation rows and works on every schema.
+
 = 3.3.0 - 2026-11-01 =
 * New: Products & Tax — VAT rates as manageable entities and products with a type (event ticket, add-on, fee) plus optional/auto-add flags and per-list default rates; every sale freezes the resolved rate per line (product rate > list default > 0%) into a cent-exact net/tax/gross breakdown. Managed in its own admin section (data tables, dialog editing) beside Seating Plans; while WooCommerce is active a notice marks these entries as unnecessary there.
 * New: sell products without an event (drinks, merchandise) with categories and type-aware descriptions alongside ticket types — in the online shop and at the Kasse; auto-add fees sit on every order of their list (or globally) and start at quantity 1 in the sell dialog, add-ons only when chosen.
@@ -10,6 +15,7 @@
 * Security: audit follow-up — escaped exception output, prepared ticket-number lookup, removed dead legacy endpoints, capability checks on destructive admin actions.
 * Fix: Kasse printing — direct-sale tickets print again (the ticket-number check compared the wrong order id (#8001)), and draft (unpaid) orders no longer offer ticket printing or PDFs.
 * Fix: seating hardening — empty seat map on updated schemas, third-party price refreshes (geo-pricing) no longer clear a confirmed seat selection before add-to-cart, and the seat-map refresh race right after confirming seats.
+* Fix: the offline scanner sync no longer terminates the process when a scanned ticket belongs to an unconfirmed direct sale — the #8030 gate now answers the sync with a per-event state instead of killing the request; online scanner answers stay byte-identical.
 * Fix: duplicate ticket codes on multi-quantity orders when the payment webhook and the order-status trigger raced — ticket generation is now claimed atomically per order line.
 
 = 3.2.10 =

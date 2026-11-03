@@ -65,10 +65,12 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 	 * matches exactly the no-event rows. Returns [sql, args].
 	 */
 	private function eventDateCondition(?string $eventDate, string $alias = ''): array {
-		// $alias must be set ('s.') whenever the fragment lands in a query that
-		// joins seats with seat_blocks — both carry event_date_ts and MySQL
-		// aborts with "Column 'event_date_ts' in ON is ambiguous" otherwise
-		// (MAYA 30.10.: selector returned success:true with seats=[]).
+		// $alias must be set ('sb.') whenever the fragment lands in a query
+		// that joins seats with seat_blocks — the condition targets the BLOCK
+		// rows. Unaliased it is ambiguous on schemas where both tables carry
+		// event_date_ts (MAYA 30.10.: selector returned success:true with
+		// seats=[]); 's.' died on real dbDelta schemas where ONLY seat_blocks
+		// has the column (#015510, 3.3.0 regression).
 		$eventDate = sasoEventtickets_Seating::normalizeEventDate($eventDate);
 		if ($eventDate !== null) {
 			$ts = strtotime($eventDate);
@@ -939,8 +941,15 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		// fills event_date_ts=0 rows first; the JOIN then compares ints —
 		// MySQL 8 strict mode can no longer kill the query with an
 		// 'Incorrect DATE value' error on the empty-string date.
+		// #015510 (3.3.0 regression, entrades.betxi.es): the alias must be the
+		// BLOCK table ('sb.') — on real dbDelta installs ONLY seat_blocks carries
+		// event_date_ts (see db.php); 's.' died with "Unknown column
+		// 's.event_date_ts' in 'ON'" and the selector answered success:true
+		// with seats=[]. The date filter targets the block rows, never the
+		// seat row. 'sb.' is also unambiguous on schemas where both tables
+		// carry the column (the MAYA 30.10. case).
 		$this->backfillEventDateTs();
-		[$edCond, $edArgs] = $this->eventDateCondition($eventDate, 's.');
+		[$edCond, $edArgs] = $this->eventDateCondition($eventDate, 'sb.');
 
 		$now = current_time('mysql');
 		$staleTimeout = $this->getStaleTimeout();
@@ -1000,8 +1009,10 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 			return [];
 		}
 
-		// #015050: int timestamp compare via event_date_ts
-		[$edCond, $edArgs] = $this->eventDateCondition($eventDate);
+		// #015050: int timestamp compare via event_date_ts — alias 'sb.' because
+		// this query joins seat_blocks with seats (#015510: unaliased is
+		// ambiguous once both tables carry the column)
+		[$edCond, $edArgs] = $this->eventDateCondition($eventDate, 'sb.');
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT sb.*, s.seat_identifier, s.meta as seat_meta

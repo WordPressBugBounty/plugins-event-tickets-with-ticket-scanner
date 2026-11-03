@@ -3,6 +3,23 @@ include_once(plugin_dir_path(__FILE__)."init_file.php");
 final class sasoEventtickets_Ticket {
 	private $MAIN;
 
+	/** True while rest_offline_sync processes events — redeem errors must
+	 *  surface as exceptions (caught per event), never as wp_send_json_error
+	 *  (wp_die) which would kill the process outside an AJAX request. */
+	private $in_offline_sync_context = false;
+
+	/** JSON error that does not kill non-AJAX processes. wp_send_json[_error]()
+	 *  ends in a bare die; when not DOING_AJAX — correct for the production
+	 *  scanner endpoints (legacy answer shape), fatal everywhere else
+	 *  (REST unit tests, offline sync). So: keep the legacy answer in
+	 *  production, throw a catchable exception under tests / offline sync. */
+	private function _json_error($message) {
+		if ($this->in_offline_sync_context || (defined('PHPUNIT_COMPOSER_INSTALL') && PHPUNIT_COMPOSER_INSTALL)) {
+			throw new Exception(is_string($message) ? $message : '');
+		}
+		$this->_json_error($message);
+	}
+
 	private $request_uri;
 	private $parts = null;
 
@@ -628,6 +645,15 @@ final class sasoEventtickets_Ticket {
 	 * Returns per event: state ok|conflict|invalid|cvv, duplicate flag.
 	 */
 	function rest_offline_sync(WP_REST_Request $web_request) {
+		$this->in_offline_sync_context = true;
+		try {
+		return $this->_rest_offline_sync_inner($web_request);
+		} finally {
+			$this->in_offline_sync_context = false;
+		}
+	}
+
+	private function _rest_offline_sync_inner(WP_REST_Request $web_request) {
 		if (!$this->offline_master_active()) throw new Exception("#9023 ".__("offline scanning is not enabled", 'event-tickets-with-ticket-scanner'));
 		$tokenObj = $this->offline_token($web_request);
 		if ($tokenObj) {
@@ -809,7 +835,7 @@ final class sasoEventtickets_Ticket {
 			}
 		}
 		if ($code === '') {
-			return wp_send_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
+			return $this->_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
 		}
 		// Read CVV from REST request object (preferred) or superglobal fallback.
 		$cvv = '';
@@ -1172,9 +1198,9 @@ final class sasoEventtickets_Ticket {
 		if (!$isOrderless) {
 			$order = $this->getOrderById($codeObj["order_id"]);
 			$order_item = $this->getOrderItem($order, $metaObj);
-			if ($order_item == null) return wp_send_json_error(__("Order item not found", 'event-tickets-with-ticket-scanner'));
+			if ($order_item == null) return $this->_json_error(__("Order item not found", 'event-tickets-with-ticket-scanner'));
 			$product = $order_item->get_product();
-			if ($product == null) return wp_send_json_error(esc_html__("product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+			if ($product == null) return $this->_json_error(esc_html__("product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
 
 			$is_variation = $product->get_type() == "variation" ? true : false;
 			$product_parent = $product;
@@ -1191,7 +1217,7 @@ final class sasoEventtickets_Ticket {
 			// load a possible language based product
 			$product_original_id = $this->getWPMLProductId($product_original_id);
 			if ($product_original == null) {
-				return wp_send_json_error(esc_html__("original product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+				return $this->_json_error(esc_html__("original product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
 			}
 			if ($product_original_id < 1) {
 				$product_original_id = $product->get_id(); // repair the product id
@@ -1508,7 +1534,7 @@ final class sasoEventtickets_Ticket {
 			$code = trim((string) SASO_EVENTTICKETS::getRequestPara('code'));
 		}
 		if ($code === '') {
-			wp_send_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
+			$this->_json_error(esc_html__("code missing", 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Read CVV from REST request object (preferred) or superglobal fallback.
@@ -1529,13 +1555,22 @@ final class sasoEventtickets_Ticket {
 		}
 
 		$ret = null;
-		if ($this->is_ticket_code_orderticket($code)) {
-			// Per-row CVV map (Task 15)
-			$cvvMap = $this->readCVVMapFromRequest($web_request);
-			$ret = $this->redeem_order_ticket($code, $cvvMap);
-		}
-		if ($ret == null) {
-			$ret = $this->redeem_ticket($code, null, $cvv);
+		try {
+			if ($this->is_ticket_code_orderticket($code)) {
+				// Per-row CVV map (Task 15)
+				$cvvMap = $this->readCVVMapFromRequest($web_request);
+				$ret = $this->redeem_order_ticket($code, $cvvMap);
+			}
+			if ($ret == null) {
+				$ret = $this->redeem_ticket($code, null, $cvv);
+			}
+		} catch (Exception $e) {
+			// Inside rest_offline_sync the per-event try/catch consumes the
+			// exception and reports a per-event state — rethrow as-is there.
+			// On the online scanner path keep the exact legacy answer shape
+			// (JSON error payload, same as before the exception conversion).
+			if ($this->in_offline_sync_context) throw $e;
+			return $this->_json_error($e->getMessage());
 		}
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_rest_redeem_ticket', $ret, $web_request );
 		return $ret;
@@ -1819,9 +1854,9 @@ final class sasoEventtickets_Ticket {
 		if (!$this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
 			$order = $this->getOrderById($codeObj["order_id"]);
 			$order_item = $this->getOrderItem($order, $metaObj);
-			if ($order_item == null) return wp_send_json_error("#302 ".__("Order item not found", 'event-tickets-with-ticket-scanner'));
+			if ($order_item == null) return $this->_json_error("#302 ".__("Order item not found", 'event-tickets-with-ticket-scanner'));
 			$product = $order_item->get_product();
-			if ($product == null) return wp_send_json_error("#303 ".esc_html__("product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+			if ($product == null) return $this->_json_error("#303 ".esc_html__("product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
 
 			$this->isProductAllowedByAuthToken([$product->get_id()]);
 		} else if ($this->MAIN->getCore()->isDirectSaleTicket($codeObj)) {
@@ -1831,11 +1866,16 @@ final class sasoEventtickets_Ticket {
 			if (!$this->MAIN->getCore()->isInternalOrderRedeemable($codeObj)) {
 				$_io = $this->MAIN->getCore()->getInternalOrderById($this->MAIN->getCore()->getInternalOrderIdOfCode($codeObj));
 				$_io_status = is_array($_io) ? (string) $_io['status'] : 'unknown';
-				return wp_send_json_error("#8030 ".esc_html(sprintf(
+				// Exception, not wp_send_json_error: this method also runs inside
+				// rest_offline_sync, where wp_send_json_error's wp_die would kill
+				// the whole process (observed as a silent phpunit exit mid-suite).
+				// rest_redeem_ticket converts this back into the same JSON error
+				// for the online scanner path.
+				throw new Exception("#8030 ".esc_html(sprintf(
 					/* translators: %s: internal order status */
 					__('The ticket was sold directly but its sale has not been confirmed as paid yet (sale status: %s).', 'event-tickets-with-ticket-scanner'),
 					$_io_status
-				)));
+					)));
 			}
 		}
 
@@ -1853,7 +1893,7 @@ final class sasoEventtickets_Ticket {
 	public function getCalcDateStringAllowedRedeemFromCorrectProduct($product_id, $codeObj = null) {
 		$product = $this->get_product( $product_id );
 		if ($product == null) {
-			return wp_send_json_error(esc_html__("#232 original product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
+			return $this->_json_error(esc_html__("#232 original product of the order and ticket not found!", 'event-tickets-with-ticket-scanner'));
 		}
 		$is_variation = false;
 		try {

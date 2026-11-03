@@ -2080,11 +2080,32 @@ class sasoEventtickets_AdminSettings {
 		if (!isset($data['code']) || trim($data['code']) == "") throw new Exception("#202 code missing");
 		return $this->MAIN->getCore()->retrieveCodeByCode($data['code'], true);
 	}
+	/**
+	 * #015500: product-id match that also covers product VARIATIONS of Woo
+	 * variable products. A ticket belongs to id X when
+	 *  (a) meta.woocommerce.product_id  = X (parent product, as always stored)
+	 *  (b) meta.woocommerce.variation_id = X (persisted at code creation since this change)
+	 *  (c) the Woo order item of the ticket carries _variation_id = X
+	 *      (legacy tickets sold before (b) existed — the order item keeps it)
+	 * Post IDs are unique across products and variations, so the OR cannot mix ids.
+	 */
+	private function buildProductIdMatchSql(string $alias, int $product_id): string {
+		global $wpdb;
+		$product_id = intval($product_id);
+		return " (json_extract(".$alias.".meta, '$.woocommerce.product_id') = ".$product_id.
+			" or json_extract(".$alias.".meta, '$.woocommerce.variation_id') = ".$product_id.
+			" or exists (select 1 from ".$wpdb->prefix."woocommerce_order_itemmeta vim".
+			" where vim.order_item_id = json_extract(".$alias.".meta, '$.woocommerce.item_id')".
+			" and vim.meta_key = '_variation_id' and vim.meta_value = '".$product_id."')) ";
+	}
+
 	public function getCodesByProductId($product_id) {
 		$sql = "select a.*, order_id as o, b.name as list_name ";
 		$sql .= " from ".$this->MAIN->getDB()->getTabelle("codes")." a left join ".$this->MAIN->getDB()->getTabelle("lists")." b on a.list_id = b.id";
 		$sql .= " where";
-		$sql .= " a.meta != '' and json_extract(a.meta, '$.woocommerce.product_id') = ".intval($product_id);
+		// #015500: variation ids resolve here too (downloadTicketInfosOfProduct
+		// accepts any id) — same three-way match as the PRODUCTID: list filter.
+		$sql .= " a.meta != '' and ".$this->buildProductIdMatchSql("a", intval($product_id));
 		$sql .= " order by a.time";
 		$daten = $this->MAIN->getDB()->_db_datenholen($sql);
 		foreach($daten as $key => $item) {
@@ -2227,7 +2248,9 @@ class sasoEventtickets_AdminSettings {
 				if ($matches && count($matches) > 1) {
 					$search_element = str_replace($matches[0], "", $search_element);
 					$product_id = intval($matches[1]);
-					$where .= " and json_extract(a.meta, '$.woocommerce.product_id') = ".$product_id." ";
+					// #015500: PRODUCTID also matches a product VARIATION id (Woo
+					// variable products) — see buildProductIdMatchSql().
+					$where .= " and ".$this->buildProductIdMatchSql("a", $product_id);
 					$nomatch = false;
 				}
 				preg_match('/\s?AUTHTOKEN:\s*([0-9]+)/', $search_element, $matches);
@@ -2453,7 +2476,7 @@ class sasoEventtickets_AdminSettings {
 		throw new Exception("#205 ".__('code exists already', 'event-tickets-with-ticket-scanner'));
 	}
 
-	public function addCodeFromListForOrder($list_id, $order_id, $product_id = 0, $item_id = 0, $formatterValues="") {
+	public function addCodeFromListForOrder($list_id, $order_id, $product_id = 0, $item_id = 0, $formatterValues="", $variation_id = 0) {
 		// item_id is in der order der eintrag
 		$list_id = intval($list_id);
 		if ($list_id == 0) throw new Exception("#602 list id is invalid");
@@ -2592,12 +2615,13 @@ class sasoEventtickets_AdminSettings {
 			$this->MAIN->getCore()->maybeGenerateCVVForCode($id, $product_id);
 			$this->editCode($data); // order_id wird nicht beim anlegen gespeichert, deswegen hier nochmal ein update
 			$codeObj = $this->addWoocommerceInfoToCode([
-												'code'=>$data["code"],
-												'list_id'=>$list_id,
-												'order_id'=>$order_id,
-												'product_id'=>$product_id,
-												'item_id'=>$item_id
-												]);
+											'code'=>$data["code"],
+											'list_id'=>$list_id,
+											'order_id'=>$order_id,
+											'product_id'=>$product_id,
+											'item_id'=>$item_id,
+											'variation_id'=>intval($variation_id)
+											]);
 			if ($this->MAIN->isPremium() && method_exists($this->MAIN->getPremiumFunctions(), 'addCodeFromListForOrderAfter')) {
 				$codeObj = $this->MAIN->getPremiumFunctions()->addCodeFromListForOrderAfter($codeObj);
 			}
@@ -2749,6 +2773,10 @@ class sasoEventtickets_AdminSettings {
 		$metaObj[$key] = ['order_id'=>$data['order_id'], 'creation_date'=>wp_date("Y-m-d H:i:s"), 'creation_date_tz'=>wp_timezone_string()];
 		if (isset($data['product_id'])) $metaObj[$key]['product_id'] = $data['product_id'];
 		if (isset($data['item_id'])) $metaObj[$key]['item_id'] = $data['item_id'];
+		// #015500: persist the variation id of variable-product purchases so
+		// PRODUCTID: filters and exports resolve variations without the
+		// order-itemmeta fallback. Only stored when actually set (> 0).
+		if (isset($data['variation_id']) && intval($data['variation_id']) > 0) $metaObj[$key]['variation_id'] = intval($data['variation_id']);
 		$metaObj[$key]['user_id'] = intval($order->get_user_id());
 
 		$codeObj['meta'] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
@@ -4188,6 +4216,21 @@ class sasoEventtickets_AdminSettings {
 	 */
 	public function createInternalOrder($data) {
 		return $this->addInternalOrder($data);
+	}
+
+	/**
+	 * Complete an internal order's payment (Premium online payment, Stufe 3 —
+	 * specs/shop-online-payment). Public wrapper so premium can confirm a PAID
+	 * order through the exact path the Kasse uses: same status validation, same
+	 * ticket-issuing side effects, and it fires admin_setInternalOrderStatus,
+	 * which premium hooks for the one-time ticket delivery. No new logic —
+	 * purely an access bridge for the payment webhook return channel.
+	 */
+	public function confirmInternalOrderPayment($order_id, $data = []) {
+		if (!is_array($data)) $data = [];
+		$data['id'] = intval($order_id);
+		$data['status'] = 'completed';
+		return $this->setInternalOrderStatus($data);
 	}
 
 	/**

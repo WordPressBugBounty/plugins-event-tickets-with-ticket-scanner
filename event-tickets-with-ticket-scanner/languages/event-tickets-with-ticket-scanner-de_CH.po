@@ -11148,3 +11148,7 @@ msgstr "Sind Sie sicher, dass Sie diesen MwSt.-Satz löschen möchten?"
 #: backend.js
 msgid "Are you sure, you want to delete this product?"
 msgstr "Sind Sie sicher, dass Sie dieses Produkt löschen möchten?"
+
+#: js/kasse keypad
+msgid "Clear amount"
+msgstr "Betrag löschen"

@@ -4,7 +4,11 @@
    ========================================================================== */
 
 /* --- Custom Properties (scoped to admin page) --- */
-.event-tickets-with-ticket-scanner-admin-page {
+/* jQuery UI appends dialogs to the body end — outside the admin page class.
+   The variable block has to cover both scopes so dialog controls resolve
+   the same design tokens. */
+.event-tickets-with-ticket-scanner-admin-page,
+body > .ui-dialog {
     --et-primary: #9333ea;
     --et-primary-hover: #7c22d0;
     --et-primary-light: #f3e8ff;
@@ -1486,7 +1490,8 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
 /* ==========================================================================
    Table row action buttons — lightweight ghost style
    ========================================================================== */
-.event-tickets-with-ticket-scanner-admin-page .et-btn-action {
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action,
+.ui-dialog .et-btn-action {
     display: inline-block;
     padding: 2px 7px;
     font-size: 11px;
@@ -1505,7 +1510,9 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
 }
 
 .event-tickets-with-ticket-scanner-admin-page .et-btn-action:hover,
-.event-tickets-with-ticket-scanner-admin-page .et-btn-action:focus {
+.ui-dialog .et-btn-action:hover,
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action:focus,
+.ui-dialog .et-btn-action:focus {
     color: var(--et-text);
     background: var(--et-border-light);
     border-color: var(--et-border);
@@ -1513,12 +1520,15 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     outline: none;
 }
 
-.event-tickets-with-ticket-scanner-admin-page .et-btn-action--danger {
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action--danger,
+.ui-dialog .et-btn-action--danger {
     color: #b91c1c;
 }
 
 .event-tickets-with-ticket-scanner-admin-page .et-btn-action--danger:hover,
-.event-tickets-with-ticket-scanner-admin-page .et-btn-action--danger:focus {
+.ui-dialog .et-btn-action--danger:hover,
+.event-tickets-with-ticket-scanner-admin-page .et-btn-action--danger:focus,
+.ui-dialog .et-btn-action--danger:focus {
     color: #991b1b;
     background: #fef2f2;
     border-color: #fecaca;
@@ -1545,7 +1555,8 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     color: var(--et-text-muted);
 }
 
-.event-tickets-with-ticket-scanner-admin-page .et-btn-group {
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group,
+body > .ui-dialog .et-btn-group {
     display: inline-flex;
     border: 1px solid var(--et-border);
     border-radius: 5px;
@@ -1553,23 +1564,27 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
     vertical-align: middle;
 }
 
-.event-tickets-with-ticket-scanner-admin-page .et-btn-group--danger {
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group--danger,
+body > .ui-dialog .et-btn-group--danger {
     border-color: #fecaca;
 }
 
 /* et-btn-action inside a group */
-.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-btn-action {
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-btn-action,
+body > .ui-dialog .et-btn-group .et-btn-action {
     border-radius: 0;
     border: none;
     border-right: 1px solid var(--et-border);
     margin: 0;
 }
 
-.event-tickets-with-ticket-scanner-admin-page .et-btn-group--danger .et-btn-action {
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group--danger .et-btn-action,
+body > .ui-dialog .et-btn-group--danger .et-btn-action {
     border-right-color: #fecaca;
 }
 
-.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-btn-action:last-child {
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-btn-action:last-child,
+body > .ui-dialog .et-btn-group .et-btn-action:last-child {
     border-right: none;
 }
 
@@ -2043,3 +2058,47 @@ button.event-tickets-with-ticket-scanner-topmenu-item-active:focus {
 .et-kasse-status--completed { background: #dff5e0; color: #00a32a; }
 .et-kasse-status--cancelled { background: #f7e4e4; color: #b32d2e; }
 .et-kasse-status--partially_refunded { background: #fff2cc; color: #8b6e00; }
+
+/* Kasse stepper (et-kasse-prod): qty input sits INSIDE the button group as
+   the middle segment — buttons supply the separators. */
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-kasse-prod__qty,
+body > .ui-dialog .et-btn-group .et-kasse-prod__qty {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+.event-tickets-with-ticket-scanner-admin-page .et-btn-group .et-btn-action.et-kasse-prod__plus,
+body > .ui-dialog .et-btn-group .et-btn-action.et-kasse-prod__plus {
+    border-left: 1px solid var(--et-border);
+}
+
+/* Standalone et-btn-action inside dialogs (no group wrapper): full outline
+   button using the same tokens as the table row actions — Save/Add in the
+   ticket-products editor. Keeps buttons clearly recognizable as buttons. */
+body > .ui-dialog .et-btn-action {
+    border: 1px solid var(--et-border);
+    border-radius: 5px;
+    padding: 2px 12px;
+    background: #fff;
+    color: var(--et-text);
+    line-height: 1.8;
+}
+body > .ui-dialog .et-btn-action:hover,
+body > .ui-dialog .et-btn-action:focus {
+    background: var(--et-border-light);
+    border-color: var(--et-border);
+    color: var(--et-text);
+}
+body > .ui-dialog .et-btn-action:active {
+    background: var(--et-primary-light);
+}
+body > .ui-dialog .et-btn-action--danger {
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+body > .ui-dialog .et-btn-action--danger:hover,
+body > .ui-dialog .et-btn-action--danger:focus {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}

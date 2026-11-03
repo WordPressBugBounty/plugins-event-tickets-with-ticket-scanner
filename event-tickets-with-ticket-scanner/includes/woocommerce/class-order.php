@@ -817,7 +817,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 						}
 						$newcode = "";
 						try {
-							$newcode = $this->MAIN->getAdmin()->addCodeFromListForOrder($saso_eventtickets_list, $order_id, $product_id, $item_id, $product_formatter_values);
+							$newcode = $this->MAIN->getAdmin()->addCodeFromListForOrder($saso_eventtickets_list, $order_id, $product_id, $item_id, $product_formatter_values, $item_variation_id);
 						} catch (Exception $e) {
 							// error handling
 							$order = wc_get_order($order_id);
