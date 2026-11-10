@@ -1,5 +1,15 @@
 
 
+= 3.3.4 — 2026-11-10 =
+* Removed the transition safety net for premium versions older than 1.8.0 — the license state alone decides again (expired premium now switches its features off regardless of the installed premium version)
+* Kasse (direct sales): "Pay by QR" button on draft orders when the premium box office payment is enabled
+* Shop template examples are now byte-identical replicas of the built-in renderers (catalog + event detail, incl. the anchor ids) — templates get catalog_div_id / event_div_id variables
+* Designable order mails: TWIG templates for the customer order confirmation, the organizer notification and the ticket delivery mail (sandboxed engine, HTML mail when set, built-in plain text stays the empty default)
+* Shop template fields: one-click "Insert example template" button — a documented starting point mirroring the built-in rendering (empty fields still use the built-in renderer)
+* New "Online payments" tab (like Products & Tax) — payment providers get their own settings area instead of being tucked into the ticket templates
+* Fixed a PHP warning ("Trying to access array offset on null", sasoEventtickets_Core.php) that could appear in order confirmation emails when webhooks are enabled and the Premium add-on did not register its webhook options — a missing webhook option is now treated as "no webhook URL" and skips silently.
+* Options: the shop templates section moved from the Ticket Designer block into its proper place inside "Direct sales (no WooCommerce order)" and is now clearly labeled as direct-sales-only (these templates do not affect WooCommerce checkouts) — it previously appeared between ticket-designer sections with no context.
+
 = 3.3.3 — 2026-11-05 =
 * Plugin Check: resolved all remaining directory review errors — wp_rand() for generated ticket PDF passwords, WP_Filesystem for file access, gmdate() for deterministic timestamps, and prepared-statement cleanup across the database layer.
 * Security: the admin settings, ticket list and error log searches now build their database search through prepared statements — previously a search value could break out of the query (SQL injection, administrator only, CVE-2026-115870 reported by Wordfence PRISM). Searching the error log also works again: the search filter had a broken query that returned a database error.
@@ -50,7 +60,6 @@
 * Own checkout: optional per-type ticket contingent — a maximum sellable quantity per ticket type. The Kasse and the online shop stop automatically at the limit and show how many are already sold; open orders count as reserved.
 * Ticket lists: optional overall capacity — set a total maximum on the list and all ticket types share one pool. Mixed sales (regular + discounted) can no longer oversell the venue's seats.
 * Ticket lists: new "Show in shop catalog" switch — every list sells in the central ticket shop catalog by default; turn it off per list when an event should not be offered there.
-
 
 = 3.2.8 - 2026-10-20 =
 * Fix: When two orders are paid at the exact same moment, a ticket could end up linked to the other order. Ticket generation now locks per order and the ticket data writes are protected against such parallel-payment mix-ups.

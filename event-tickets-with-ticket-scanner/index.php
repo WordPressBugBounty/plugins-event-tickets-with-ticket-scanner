@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.3.3
+ * Version: 3.3.4
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -25,7 +25,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.3.3');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.3.4');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -2291,11 +2291,17 @@ class sasoEventtickets {
 		$catalog = $this->getAdmin()->getShopCatalog($data);
 		$entries = (isset($catalog['catalog']) && is_array($catalog['catalog'])) ? $catalog['catalog'] : [];
 
+		$divId = "sasoEventTicketsValidator_shop_catalog";
+		if (isset($attr['divid']) && trim((string)$attr['divid']) != "") {
+			$divId = sanitize_key(trim((string)$attr['divid']));
+		}
+
 		// Template override (3.3.0 Slice 3): a saved catalog template takes
 		// over the whole shortcode output; null keeps the built-in renderer
 		// byte-identical. Even an empty catalog is handed to the template
-		// (it renders its own empty state).
-		$templated = $this->getShopTemplatesHandler()->renderCatalog($entries);
+		// (it renders its own empty state). catalog_div_id carries the
+		// anchor id so a replica template renders the same hooks.
+		$templated = $this->getShopTemplatesHandler()->renderCatalog($entries, $divId);
 		if ($templated !== null) {
 			$this->enqueueShopCatalogCss();
 			return $templated;
@@ -2305,10 +2311,6 @@ class sasoEventtickets {
 
 		$this->enqueueShopCatalogCss();
 
-		$divId = "sasoEventTicketsValidator_shop_catalog";
-		if (isset($attr['divid']) && trim((string)$attr['divid']) != "") {
-			$divId = sanitize_key(trim((string)$attr['divid']));
-		}
 
 		$ret = '<div class="et-shop-catalog" id="'.esc_attr($divId).'">';
 		foreach ($entries as $entry) {
@@ -2409,21 +2411,22 @@ class sasoEventtickets {
 		$event = $this->getAdmin()->getShopEvent(['list_id' => $listId]);
 		if (!isset($event['id'])) return '';
 
+		$divId = "sasoEventTicketsValidator_shop_event";
+		if (isset($attr['divid']) && trim((string)$attr['divid']) != "") {
+			$divId = sanitize_key(trim((string)$attr['divid']));
+		}
+
 		// Template override (3.3.0 Slice 3): a saved event template takes
 		// over the whole shortcode output; null keeps the built-in renderer
-		// byte-identical.
-		$templated = $this->getShopTemplatesHandler()->renderEventDetail($event);
+		// byte-identical. event_div_id carries the anchor id so a replica
+		// template renders the same hooks.
+		$templated = $this->getShopTemplatesHandler()->renderEventDetail($event, $divId);
 		if ($templated !== null) {
 			$this->enqueueShopCatalogCss();
 			return $templated;
 		}
 
 		$this->enqueueShopCatalogCss();
-
-		$divId = "sasoEventTicketsValidator_shop_event";
-		if (isset($attr['divid']) && trim((string)$attr['divid']) != "") {
-			$divId = sanitize_key(trim((string)$attr['divid']));
-		}
 
 		$meta = isset($event['event']) && is_array($event['event']) ? $event['event'] : [];
 		$ret = '<div class="et-shop-event" id="'.esc_attr($divId).'">';

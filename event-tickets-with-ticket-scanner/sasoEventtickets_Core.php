@@ -1002,7 +1002,13 @@ class sasoEventtickets_Core {
 			];
 			$optionname = $statusToOption[$status] ?? "";
 			if (!empty($optionname)) {
-				$url = $options->getOption($optionname)['value'];
+				// #015544: the premium plugin registers some of these options
+				// (webhookURLexpired/ipblocking/ipblocked). In requests where
+				// that registration did not run, getOption() returns null and
+				// null['value'] raised "array offset on null" warnings inside
+				// order mails. Treat a missing option as "no webhook URL".
+				$opt = $options->getOption($optionname);
+				$url = (is_array($opt) && isset($opt['value'])) ? $opt['value'] : "";
 
 				if ($optionname == "webhookURLaddwcticketsold") {
 					$list_id = intval($codeObj['list_id']);

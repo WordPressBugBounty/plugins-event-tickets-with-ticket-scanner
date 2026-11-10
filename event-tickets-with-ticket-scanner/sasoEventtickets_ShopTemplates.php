@@ -24,14 +24,23 @@ include_once(plugin_dir_path(__FILE__)."init_file.php");
  * output cannot be bypassed by template code (URL building by hand is
  * not the sanctioned path and stays undocumented).
  *
- * Contracts, variables and validation flow: docs/plan-shop-templates.md
+ * Contracts, variables and validation flow: vault specs/imported-from-plugin/plan-shop-templates.md
  */
 class sasoEventtickets_ShopTemplates {
 	/** Storage keys per surface (options registry, def ''). */
 	public const OPTION_KEYS = [
 		'catalog'      => 'shopTemplateCatalog',
 		'event_detail' => 'shopTemplateEventDetail',
+		// order emails (Saso 2026-11-06: "die email fuer order zum kunden
+		// und zum user muss auch designed werden koennen") — rendered as
+		// HTML mail when set, empty = the built-in plain-text mail.
+		'mail_order_customer' => 'shopTemplateMailOrderCustomer',
+		'mail_order_admin'    => 'shopTemplateMailOrderAdmin',
+		'mail_tickets'        => 'shopTemplateMailTickets',
 	];
+
+	/** Mail template surfaces (renderMail); page surfaces keep buildVars. */
+	public const MAIL_SURFACES = ['mail_order_customer', 'mail_order_admin', 'mail_tickets'];
 
 	/** Tags a shop template may use — no include/import/extends/macro/block. */
 	private const ALLOWED_TAGS = ['if', 'for', 'set', 'apply', 'do', 'verbatim'];
@@ -81,6 +90,20 @@ class sasoEventtickets_ShopTemplates {
 	 * Throws an Exception with a readable message on invalid Twig.
 	 */
 	public function validateTemplate(string $source): void {
+		$sample = self::sampleEntry();
+		$this->validateSourceWithVars($source, $this->buildVars([$sample], true, $sample));
+	}
+
+	/**
+	 * Mail variant of the save-time guard: same compile + sandbox trial
+	 * render, but with a representative MAIL payload (order/customer
+	 * variables instead of catalog entries).
+	 */
+	public function validateMailTemplate(string $source): void {
+		$this->validateSourceWithVars($source, self::sampleMailVars());
+	}
+
+	private function validateSourceWithVars(string $source, array $trialVars): void {
 		$source = trim($source);
 		if ($source === "") return; // empty = default rendering, always valid
 		if (strpos($source, '<?') !== false) {
@@ -97,8 +120,7 @@ class sasoEventtickets_ShopTemplates {
 		// a render-time, not compile-time, check) and where templates that
 		// would explode on real data fail before anything is stored.
 		try {
-			$sample = self::sampleEntry();
-			$this->renderSource($source, $this->buildVars([$sample], true, $sample));
+			$this->renderSource($source, $trialVars);
 		} catch (\Twig\Sandbox\SecurityError $e) {
 			throw new Exception("Shop template: blocked by the Twig sandbox — ".$e->getMessage(), 0, $e);
 		} catch (\Throwable $e) {
@@ -111,11 +133,15 @@ class sasoEventtickets_ShopTemplates {
 	 * keeps the built-in rendering. A render error degrades to ''
 	 * (a public face never fatals on a broken template).
 	 */
-	public function renderCatalog(array $entries): ?string {
+	public function renderCatalog(array $entries, string $divId = ''): ?string {
 		$source = trim((string)$this->MAIN->getOptions()->getOptionValue(self::OPTION_KEYS['catalog']));
 		if ($source === "") return null;
 		try {
-			return $this->renderSource($source, $this->buildVars($entries, false, null));
+			$vars = $this->buildVars($entries, false, null);
+			// so a template replica can render the same anchor id as the
+			// built-in (JS/CSS hooks rely on it)
+			$vars['catalog_div_id'] = $divId;
+			return $this->renderSource($source, $vars);
 		} catch (\Throwable $e) {
 			return '';
 		}
@@ -124,11 +150,13 @@ class sasoEventtickets_ShopTemplates {
 	/**
 	 * Event detail shortcode override. Same contract as renderCatalog.
 	 */
-	public function renderEventDetail(array $entry): ?string {
+	public function renderEventDetail(array $entry, string $divId = ''): ?string {
 		$source = trim((string)$this->MAIN->getOptions()->getOptionValue(self::OPTION_KEYS['event_detail']));
 		if ($source === "") return null;
 		try {
-			return $this->renderSource($source, $this->buildVars([$entry], true, $entry));
+			$vars = $this->buildVars([$entry], true, $entry);
+			$vars['event_div_id'] = $divId;
+			return $this->renderSource($source, $vars);
 		} catch (\Throwable $e) {
 			return '';
 		}
@@ -186,6 +214,26 @@ class sasoEventtickets_ShopTemplates {
 		if (!isset($entry['event']) || !is_array($entry['event'])) return $entry;
 		$entry['event'] = array_merge($entry['event'], $this->shopFormattedEventMeta($entry['event']));
 		return $entry;
+	}
+
+	/**
+	 * Order-mail override. null = no template set (or render error) — the
+	 * caller keeps the built-in plain-text mail. A broken template must
+	 * NEVER swallow an order confirmation, so every failure degrades to
+	 * null. $vars is a plain payload built by the caller (documented in
+	 * the option descs): order_id, lines[], total, currency, qty,
+	 * customer_name, customer_email, payment_instructions (pre-escaped
+	 * HTML), ticket_links[], blog_name, site_url.
+	 */
+	public function renderMail(string $surface, array $vars): ?string {
+		if (!in_array($surface, self::MAIL_SURFACES, true)) return null;
+		$source = trim((string)$this->MAIN->getOptions()->getOptionValue(self::OPTION_KEYS[$surface]));
+		if ($source === "") return null;
+		try {
+			return $this->renderSource($source, $vars);
+		} catch (\Throwable $e) {
+			return null;
+		}
 	}
 
 	private function renderSource(string $source, array $vars): string {
@@ -248,6 +296,26 @@ class sasoEventtickets_ShopTemplates {
 		if (!class_exists('\Twig\Environment')) {
 			throw new Exception("Shop template: the Twig engine could not be loaded");
 		}
+	}
+
+	/** Representative MAIL payload for the save-time trial render. */
+	private static function sampleMailVars(): array {
+		return [
+			'order_id' => 12,
+			'customer_name' => 'Sample Customer',
+			'customer_email' => 'customer@example.com',
+			'qty' => 2,
+			'lines' => [
+				['qty' => 2, 'name' => 'Sample Product', 'price' => '9.90', 'price_cents' => 990, 'currency' => 'EUR'],
+			],
+			'total' => '19.80',
+			'total_cents' => 1980,
+			'currency' => 'EUR',
+			'payment_instructions' => 'We have received your order.',
+			'ticket_links' => ['https://example.com/ticket/sample'],
+			'blog_name' => 'Sample Blog',
+			'site_url' => 'https://example.com',
+		];
 	}
 
 	/** Representative payload for the save-time trial render (documented variable shape). */

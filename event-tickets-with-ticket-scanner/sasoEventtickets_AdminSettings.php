@@ -1099,6 +1099,16 @@ class sasoEventtickets_AdminSettings {
 			$this->MAIN->getShopTemplatesHandler()->validateTemplate((string) $value);
 			return;
 		}
+		// mail template keys (renderMail surfaces): same save-time guard
+		// with a mail-shaped trial payload. IMPORTANT: resolve the handler
+		// FIRST — the class literal would fatal in boot orders where the
+		// shop templates class is not loaded yet (CLI/cron).
+		$st = $this->MAIN->getShopTemplatesHandler();
+		if (in_array($key, array_values($st::OPTION_KEYS), true)) {
+			if (trim((string) $value) === "") return;
+			$st->validateMailTemplate((string) $value);
+			return;
+		}
 		$validator = apply_filters($this->MAIN->_add_filter_prefix.'shop_template_option_validator', null, $key);
 		if (!is_callable($validator)) return;
 		if (trim((string) $value) === "") return; // empty = default rendering, always valid
@@ -3893,7 +3903,7 @@ class sasoEventtickets_AdminSettings {
 	}
 
 	/**
-	 * v1.26 "Products & Tax" migration (3.3.0, docs/plan-products-mwst.md).
+	 * v1.26 "Products & Tax" migration (3.3.0, vault specs/imported-from-plugin/plan-products-mwst.md).
 	 * Self-healing and idempotent — safe to run any number of times:
 	 * - ensures the tax_rates table exists (belt-and-braces dbDelta)
 	 * - ADD COLUMN only (never drops/renames), every column checked via
@@ -4222,6 +4232,18 @@ class sasoEventtickets_AdminSettings {
 			$r['code_ids_arr'] = json_decode($r['code_ids'], true) ?: [];
 			$r['tickets_count'] = count($r['code_ids_arr']);
 			unset($r['tickets_count_dummy']);
+			// Box office QR payment (premium): attach the guarded pay URL to
+			// draft rows so the Kasse can offer "pay by QR". Absent = button
+			// hidden (option off / no provider / premium not installed).
+			if (trim((string)($r['status'] ?? '')) === 'draft'
+				&& class_exists('sasoEventtickets_ShopBoxOffice')) {
+				try {
+					$bo = sasoEventtickets_ShopBoxOffice::instance($this->MAIN);
+					if ($bo->isEnabled()) {
+						$r['box_office'] = ['pay_url' => $bo->payUrl(intval($r['id']))];
+					}
+				} catch (Throwable $boEx) { /* never break the Kasse listing */ }
+			}
 		}
 		unset($r);
 
@@ -5141,7 +5163,7 @@ class sasoEventtickets_AdminSettings {
 		return ["id"=>$id, "removed"=>true];
 	}
 
-	// ── Tax rates CRUD (3.3.0 Products & Tax, docs/plan-products-mwst.md) ──
+	// ── Tax rates CRUD (3.3.0 Products & Tax, vault specs/imported-from-plugin/plan-products-mwst.md) ──
 	// Error codes (next free after #9278):
 	//   #9279 tax rate name missing
 	//   #9280 tax rate id missing

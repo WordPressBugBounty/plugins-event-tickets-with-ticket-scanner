@@ -1632,6 +1632,9 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					let html = '<div class="et-btn-group">';
 					if (row.status == 'draft') {
 						html += '<button class="et-btn-action" data-type="confirm">'+_x('Confirm payment','label','event-tickets-with-ticket-scanner')+'</button>';
+						if (row.box_office && row.box_office.pay_url) {
+							html += '<button class="et-btn-action et-btn-action--qr" data-type="qr">'+_x('Pay by QR','label','event-tickets-with-ticket-scanner')+'</button>';
+						}
 						html += '<button class="et-btn-action et-btn-action--danger" data-type="cancel">'+_x('Cancel','label','event-tickets-with-ticket-scanner')+'</button>';
 					} else if (row.status == 'completed' || row.status == 'partially_refunded') {
 						html += '<button class="et-btn-action et-btn-action--danger" data-type="refund">'+_x('Refund','label','event-tickets-with-ticket-scanner')+'</button>';
@@ -1651,6 +1654,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let data = tabelle_orders_datatable.row($(e.target).parents('tr')).data();
 			__kasseSetStatus(data, 'completed');
 		});
+		table.on('click', 'button[data-type="qr"]', e=>{
+			let data = tabelle_orders_datatable.row($(e.target).parents('tr')).data();
+			__kasseShowQr(data);
+		});
 		table.on('click', 'button[data-type="cancel"]', e=>{
 			let data = tabelle_orders_datatable.row($(e.target).parents('tr')).data();
 			__kasseSetStatus(data, 'cancelled');
@@ -1668,6 +1675,43 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			__kassePrintAll(data);
 		});
 	}
+
+	// ── Box office QR payment (premium): show the token-guarded pay URL as a
+	// QR code. The customer scans, pays on the provider page; the webhook
+	// completes the order — this dialog watches the status and refreshes the
+	// Kasse table when the payment lands.
+	function __kasseShowQr(row) {
+		if (!row || !row.box_office || !row.box_office.pay_url) return;
+		let url = row.box_office.pay_url;
+		let qrId = 'et_kasse_qr_' + row.id + '_' + Date.now();
+		let statusId = qrId + '_status';
+		let $dlg = $('<div/>').html(
+			'<div style="text-align:center">'
+			+ '<div id="'+qrId+'" style="margin:0 auto 12px auto;width:fit-content;padding:12px;background:#fff;border:1px solid #ddd;border-radius:8px"></div>'
+			+ '<div style="font-size:13px;color:#667085;margin-bottom:6px">'+_x('Customer scans → chooses payment method → pays. This dialog updates automatically.','label','event-tickets-with-ticket-scanner')+'</div>'
+			+ '<div id="'+statusId+'" style="font-size:14px;font-weight:600;color:#667085">'+_x('Waiting for payment…','label','event-tickets-with-ticket-scanner')+'</div>'
+			+ '<div style="margin-top:10px"><a href="'+url+'" target="_blank" rel="noopener" style="font-size:12px">'+_x('Open pay page instead','label','event-tickets-with-ticket-scanner')+'</a></div>'
+			+ '</div>');
+		$dlg.dialog({
+			title: _x('Box office payment','label','event-tickets-with-ticket-scanner') + ' — ' + _x('Order','label','event-tickets-with-ticket-scanner') + ' #' + row.id,
+			width: 360, modal: true,
+			close: function(){ $dlg.dialog('destroy'); if (__kasseQrTimer) { clearInterval(__kasseQrTimer); __kasseQrTimer = null; } }
+		});
+		jQuery('#'+qrId).qrcode({ text: url, width: 232, height: 232 });
+		__kasseQrTimer = setInterval(()=>{
+			fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + 'format=json')
+				.then(r=>r.json())
+				.then(d=>{
+					if (d && d.paid) {
+						clearInterval(__kasseQrTimer); __kasseQrTimer = null;
+						jQuery('#'+statusId).html('&#10003; ' + _x('Paid — order completed','label','event-tickets-with-ticket-scanner')).css('color', '#1a7f37');
+						if (tabelle_orders_datatable) tabelle_orders_datatable.ajax.reload(null, false);
+					}
+				})
+				.catch(()=>{ /* transient — keep polling until the dialog closes */ });
+		}, 4000);
+	}
+	let __kasseQrTimer = null;
 
 	function __kasseSell(confirm, ctx) {
 		let $ctx = ctx || $(document);
@@ -2677,6 +2721,30 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let tabProductsTax = $('<div id="tab-productstax" class="tab-content"/>');
 			tabs.append(tabProductsTax);
 
+			// online payments tab — own section like Products & Tax
+			// (Saso 2026-11-06: "lager diese am besten aus, wie die
+			// product and tax. die payment sollte man separat
+			// hinterlegen"). The premium plugin mounts its provider
+			// cards into this container; without premium the tab shows
+			// the premium hint.
+			let tabNavPayments = $('<li><a href="#tab-payments">' + _x('Online payments', 'label', 'event-tickets-with-ticket-scanner') + '</a></li>');
+			let tabPayments = $('<div id="tab-payments" class="tab-content"/>');
+			let paymentsRendered = false;
+			tabNavPayments.on("click", ()=>{
+				tabPayments.html('');
+				paymentsRendered = true;
+				if (isPremium() && typeof PREMIUM.displayPaymentsArea !== "function") {
+					// premium loaded but older version without the payments area
+					tabPayments.append($('<p/>').text(_x('The installed premium version does not contain the online payments area yet — update the premium plugin.', 'label', 'event-tickets-with-ticket-scanner')));
+				} else if (isPremium()) {
+					PREMIUM.displayPaymentsArea(tabPayments);
+				} else {
+					tabPayments.append($('<p/>').html(_x('Online payments (Stripe Checkout, PayPal, Mollie) are part of the Premium plugin. Sell tickets directly from your event pages without WooCommerce.', 'label', 'event-tickets-with-ticket-scanner')));
+				}
+			});
+			tabNav.append(tabNavPayments);
+			tabs.append(tabPayments);
+
 			// change history tab
 			let tabNavHistory = $('<li><a href="#tab-options-history">' + _x('Change History', 'label', 'event-tickets-with-ticket-scanner') + '</a></li>');
 			let tabHistory = $('<div id="tab-options-history" class="tab-content"/>');
@@ -3313,6 +3381,8 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 				$('.tab-nav a').eq(1).click();
 			} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'productstax') {
 				$('.tab-nav a[href="#tab-productstax"]').click();
+			} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'payments') {
+				$('.tab-nav a[href="#tab-payments"]').click();
 			} else {
 				$('.tab-nav a:first').click();
 			}
@@ -3420,6 +3490,33 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							elem_input.val(value);
 							if (typeof v.additional !== "undefined" && typeof v.additional.rows !== "undefined") {
 								elem_input.attr("rows", v.additional.rows);
+							}
+							// optional example template (Saso 2026-11-06: "und
+							// einem default template?"): a documented starting
+							// point the operator can load with one click — never
+							// auto-applied, empty stays the built-in rendering.
+							if (typeof v.additional !== "undefined" && typeof v.additional.example !== "undefined" && v.additional.example !== "") {
+								let ex_btn = $('<button type="button" class="button button-small">')
+									.css({ display: "block", marginTop: "4px" })
+									.text(_x('Insert example template', 'label', 'event-tickets-with-ticket-scanner'));
+								let ex_target = elem_input;
+								let ex_code = v.additional.example;
+								ex_btn.on("click", ()=>{
+									if (ex_target.val() != "") {
+										LAYOUT.renderYesNo(
+											_x('Insert example template', 'title', 'event-tickets-with-ticket-scanner'),
+											__('The field is not empty — inserting the example replaces the current template text. Continue?', 'event-tickets-with-ticket-scanner'),
+											()=>{
+												ex_target.val(ex_code).trigger("change");
+											});
+									} else {
+										ex_target.val(ex_code).trigger("change");
+									}
+								});
+								// the option row is appended right after this
+								// switch — defer one tick so the button lands
+								// under the textarea
+								setTimeout(()=>{ if (ex_target.parent().length) ex_btn.insertAfter(ex_target); }, 0);
 							}
 							break;
 						case "vtext":
@@ -4467,7 +4564,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 		return div_buttons;
 	}
 
-	// ── Products & Tax (own SECTION, 3.3.0, docs/plan-products-mwst.md) ──────
+	// ── Products & Tax (own SECTION, 3.3.0, vault specs/imported-from-plugin/plan-products-mwst.md) ──────
 	// Its own tab of the Options page — the exact pattern of Seating Plans /
 	// Ticket Templates: a tab-nav entry hardcoded in backend.js (no options
 	// entry, no use-case group), own display STATE, deep link &display=productstax.
@@ -8379,6 +8476,10 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					// deep link: Products & Tax is a tab of the Options page
 					// (Seating Plans pattern) — open Options, the tab init
 					// pins #tab-productstax
+					_displayOptionsArea();
+				} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'payments') {
+					// deep link: Online payments is a tab of the Options
+					// page (Products & Tax pattern) — pins #tab-payments
 					_displayOptionsArea();
 				} else if (typeof PARAS.display !== "undefined" && PARAS.display == 'support') {
 					_displaySupportInfoArea();

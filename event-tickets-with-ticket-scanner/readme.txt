@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, box office, pos, seating plan, woocommerce tickets, congress, membership
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.3.3
+Stable tag: 3.3.4
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -248,6 +248,16 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.3.4 — 2026-11-10 =
+* Removed the transition safety net for premium versions older than 1.8.0 — the license state alone decides again (expired premium now switches its features off regardless of the installed premium version)
+* Kasse (direct sales): "Pay by QR" button on draft orders when the premium box office payment is enabled
+* Shop template examples are now byte-identical replicas of the built-in renderers (catalog + event detail, incl. the anchor ids) — templates get catalog_div_id / event_div_id variables
+* Designable order mails: TWIG templates for the customer order confirmation, the organizer notification and the ticket delivery mail (sandboxed engine, HTML mail when set, built-in plain text stays the empty default)
+* Shop template fields: one-click "Insert example template" button — a documented starting point mirroring the built-in rendering (empty fields still use the built-in renderer)
+* New "Online payments" tab (like Products & Tax) — payment providers get their own settings area instead of being tucked into the ticket templates
+* Fixed a PHP warning ("Trying to access array offset on null", sasoEventtickets_Core.php) that could appear in order confirmation emails when webhooks are enabled and the Premium add-on did not register its webhook options — a missing webhook option is now treated as "no webhook URL" and skips silently.
+* Options: the shop templates section moved from the Ticket Designer block into its proper place inside "Direct sales (no WooCommerce order)" and is now clearly labeled as direct-sales-only (these templates do not affect WooCommerce checkouts) — it previously appeared between ticket-designer sections with no context.
 
 = 3.3.3 — 2026-11-05 =
 * Plugin Check: resolved all remaining directory review errors — wp_rand() for generated ticket PDF passwords, WP_Filesystem for file access, gmdate() for deterministic timestamps, and prepared-statement cleanup across the database layer.

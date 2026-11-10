@@ -403,6 +403,163 @@ class sasoEventtickets_Options {
 	$options[] = ['key'=>'receiptBusinessTaxId', 'label'=>__("Receipt: VAT ID (USt-IdNr.)", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Printed under the business name on the Kasse receipt. Left empty, the line is omitted.", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>""];
 	$options[] = ['key'=>'receiptNumberPrefix', 'label'=>__("Receipt: number prefix", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Prefix of the sequential receipt number, e.g. \"B-\" for B-000001. Left empty, the number is plain (000001).", 'event-tickets-with-ticket-scanner'), 'type'=>"text", 'def'=>""];
 
+		$options[] = ['key'=>'h16b', 'label'=>__("Direct sales shop templates (public catalog & event page — no WooCommerce order)", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Twig templates for the two public shop shortcodes [sasoEventTicketsValidator_shop_catalog] and [sasoEventTicketsValidator_shop_event]. Leave a template empty to keep the built-in rendering. Templates are validated on save — invalid Twig is rejected.", 'event-tickets-with-ticket-scanner'), 'type'=>"heading"];
+		$options[] = ['key'=>'h16b_desc', 'label'=>__('The shop templates use the same Twig engine as the ticket designer (3.22.0), in a secure sandboxed environment. Variables: catalog — <b>entries</b> (each with <b>id</b>, <b>name</b>, <b>event</b> (event_start_date, event_start_time, event_location plus *_formatted variants) and <b>groups</b> (category_id, category_name, products with id, name, price_cents, currency, display_desc, tax_rate)) and <b>with_buy_buttons</b>; event page — <b>entry</b> (same shape), <b>event_date</b>, <b>event_time</b>, <b>event_datetime</b> (formatted) and <b>with_buy_buttons</b>. Functions: <b>shop_price(product.price_cents)</b> and <b>shop_buy_url(entry, product)</b> (always runs through the buy-URL filter). display_desc is already sanitized (wp_kses_post) — output it with <b>|raw</b>. Full documentation: https://vollstart.com/event-tickets-with-ticket-scanner/docs/', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Direct sales shop (no WooCommerce order): these templates style the public catalog at /tickets/ and the event page. They do not affect WooCommerce checkouts.', 'event-tickets-with-ticket-scanner'), 'type'=>'desc'];
+		$options[] = ['key'=>'h16b_shortcodes', 'label'=>__('Where to show the shop', 'event-tickets-with-ticket-scanner'), 'desc'=>__("The catalog renders automatically at <b>/tickets/</b> and every event at <b>/tickets/&lt;id&gt;</b>. You can also place these shortcodes on any page or post: <b>[sasoEventTicketsValidator_shop_catalog]</b> — the catalog (optional: only_ids=\"4,7\" to limit it to specific events), <b>[sasoEventTicketsValidator_shop_event list_id=\"4\"]</b> — one event page with buy buttons (list_id = the ticket list ID).", 'event-tickets-with-ticket-scanner'), 'type'=>'desc'];
+		// Example shop/mail templates as nowdoc (real Twig, no escaping)
+		$tplShopCatalog = <<<'TWIG'
+{# Example template: EXACT replica of the built-in catalog renderer —
+   a safe starting point. Variables: entries, with_buy_buttons, catalog_div_id
+   Functions: shop_price(cents), shop_buy_url(entry, product) #}
+{% apply spaceless %}
+<div class="et-shop-catalog"{% if catalog_div_id %} id="{{ catalog_div_id }}"{% endif %}>
+{% for entry in entries %}
+  <section class="et-shop-catalog__list">
+    <h2 class="et-shop-catalog__list-name">{{ entry.name }}</h2>
+    {% for group in entry.groups %}
+      {% set hasHeader = group.category_name|trim != "" %}
+      <div class="et-shop-catalog__group{% if not hasHeader %} et-shop-catalog__group--uncategorized{% endif %}">
+        {% if hasHeader %}<h3 class="et-shop-catalog__group-name">{{ group.category_name }}</h3>{% endif %}
+        {% for product in group.products %}
+          <div class="et-shop-catalog__prod">
+            <span class="et-shop-catalog__prod-name">{{ product.name }}</span>
+            {% if hasHeader %}<span class="et-shop-catalog__prod-cat">{{ group.category_name }}</span>{% endif %}
+            {% if product.display_desc|default("")|trim != "" %}<div class="et-shop-catalog__prod-desc">{{ product.display_desc|raw }}</div>{% endif %}
+            <span class="et-shop-catalog__prod-price">{{ shop_price(product.price_cents) }}{% if product.currency|default("") != "" %} {{ product.currency }}{% endif %}</span>
+            {% set taxRate = product.resolved_tax_rate_percent|default(product.tax_rate|default(0)) %}
+            {% if taxRate > 0 %}<span class="et-shop-catalog__prod-tax">{{ "incl. %s%% VAT"|format(taxRate|round(1)) }}</span>{% endif %}
+            {% set prodType = product.product_type|default("event") %}
+            {% if prodType == "fee" and product.auto_add %}<span class="et-shop-catalog__prod-type et-shop-catalog__prod-type--included">included</span>
+            {% elseif prodType != "event" %}<span class="et-shop-catalog__prod-type et-shop-catalog__prod-type--optional">Add-on</span>{% endif %}
+            {% if with_buy_buttons %}<a class="et-shop-catalog__buy" data-et-buy="{{ product.id }}" href="{{ shop_buy_url(entry, product) != "" ? shop_buy_url(entry, product) : "#" }}">Buy</a>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </section>
+{% endfor %}
+</div>
+{% endapply %}
+TWIG;
+		$tplShopEvent = <<<'TWIG'
+{# Example template: EXACT replica of the built-in event detail renderer.
+   Variables: entry (entry.event.event_start_date/_time/_location), with_buy_buttons, event_div_id
+   Functions: shop_price(cents), shop_buy_url(entry, product) #}
+{% apply spaceless %}
+<div class="et-shop-event"{% if event_div_id %} id="{{ event_div_id }}"{% endif %}>
+  <header class="et-shop-event__head">
+    <h2 class="et-shop-event__name">{{ entry.name }}</h2>
+    {% set meta = entry.event %}
+    {% if meta.event_start_date|default("")|trim != "" or meta.event_start_time|default("")|trim != "" or meta.event_location|default("")|trim != "" %}
+    <div class="et-shop-event__meta">
+      {% if meta.event_start_date|default("")|trim != "" %}<span class="et-shop-event__meta-item et-shop-event__date">{{ meta.event_start_date }}</span>{% endif %}
+      {% if meta.event_start_time|default("")|trim != "" %}<span class="et-shop-event__meta-item et-shop-event__time">{{ meta.event_start_time }}</span>{% endif %}
+      {% if meta.event_location|default("")|trim != "" %}<span class="et-shop-event__meta-item et-shop-event__location">{{ meta.event_location }}</span>{% endif %}
+    </div>
+    {% endif %}
+  </header>
+  <div class="et-shop-event__products">
+    {% for group in entry.groups %}
+      {% set hasHeader = group.category_name|trim != "" %}
+      <div class="et-shop-catalog__group{% if not hasHeader %} et-shop-catalog__group--uncategorized{% endif %}">
+        {% if hasHeader %}<h3 class="et-shop-catalog__group-name">{{ group.category_name }}</h3>{% endif %}
+        {% for product in group.products %}
+          <div class="et-shop-catalog__prod">
+            <span class="et-shop-catalog__prod-name">{{ product.name }}</span>
+            {% if hasHeader %}<span class="et-shop-catalog__prod-cat">{{ group.category_name }}</span>{% endif %}
+            {% if product.display_desc|default("")|trim != "" %}<div class="et-shop-catalog__prod-desc">{{ product.display_desc|raw }}</div>{% endif %}
+            <span class="et-shop-catalog__prod-price">{{ shop_price(product.price_cents) }}{% if product.currency|default("") != "" %} {{ product.currency }}{% endif %}</span>
+            {% if with_buy_buttons %}<a class="et-shop-catalog__buy" data-et-buy="{{ product.id }}" href="{{ shop_buy_url(entry, product) != "" ? shop_buy_url(entry, product) : "#" }}">Buy</a>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endapply %}
+TWIG;
+		$tplMailCustomer = <<<'TWIG'
+{# Example: customer order confirmation (HTML mail body — the subject
+   stays as the plugin sends it). payment_instructions arrives PRE-ESCAPED,
+   print it with |raw. Variables: order_id, customer_name, customer_email,
+   lines[] (qty, name, price, price_cents, currency), total, currency, qty,
+   payment_instructions, blog_name, site_url #}
+<div style="margin:0;padding:24px;background:#f4f4f7;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:8px;">
+    <tr><td style="padding:28px 32px;">
+      <h1 style="margin:0 0 4px;font-size:20px;">{{ blog_name }} — Your ticket order #{{ order_id }}</h1>
+      <p style="margin:0 0 20px;color:#666;">Hello {{ customer_name }}, thank you for your order!</p>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        {% for line in lines %}
+        <tr>
+          <td style="padding:8px 0;border-bottom:1px solid #eee;">{{ line.qty }} &times; {{ line.name }}</td>
+          <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;white-space:nowrap;">{{ line.price }}{% if line.currency %} {{ line.currency }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td style="padding:12px 0;font-weight:bold;">Total</td>
+          <td style="padding:12px 0;font-weight:bold;text-align:right;white-space:nowrap;">{{ total }}{% if currency %} {{ currency }}{% endif %}</td>
+        </tr>
+      </table>
+      <p style="margin:20px 0 0;line-height:1.5;">{{ payment_instructions|raw }}</p>
+    </td></tr>
+  </table>
+  <p style="max-width:560px;margin:16px auto 0;color:#999;font-size:12px;text-align:center;"><a href="{{ site_url }}" style="color:#999;text-decoration:none;">{{ blog_name }}</a></p>
+</div>
+TWIG;
+		$tplMailAdmin = <<<'TWIG'
+{# Example: organizer notification for a new online order (HTML mail
+   body — the subject stays as the plugin sends it). Variables: order_id,
+   customer_name, customer_email, lines[] (qty, name, price, price_cents,
+   currency), total, currency, qty, blog_name, site_url #}
+<div style="margin:0;padding:24px;background:#f4f4f7;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:8px;">
+    <tr><td style="padding:28px 32px;">
+      <h1 style="margin:0 0 4px;font-size:20px;">New online ticket order #{{ order_id }}</h1>
+      <p style="margin:0 0 20px;color:#666;">Waiting for payment confirmation.</p>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr><td style="padding:6px 0;color:#666;">Customer</td><td style="padding:6px 0;text-align:right;">{{ customer_name }} &lt;{{ customer_email }}&gt;</td></tr>
+        <tr><td style="padding:6px 0;color:#666;">Tickets</td><td style="padding:6px 0;text-align:right;">{{ qty }}</td></tr>
+        {% for line in lines %}
+        <tr>
+          <td style="padding:8px 0;border-bottom:1px solid #eee;">{{ line.qty }} &times; {{ line.name }}</td>
+          <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;white-space:nowrap;">{{ line.price }}{% if line.currency %} {{ line.currency }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td style="padding:12px 0;font-weight:bold;">Total</td>
+          <td style="padding:12px 0;font-weight:bold;text-align:right;white-space:nowrap;">{{ total }}{% if currency %} {{ currency }}{% endif %}</td>
+        </tr>
+      </table>
+      <p style="margin:20px 0 0;line-height:1.5;color:#666;">Confirm the payment in the Kasse (direct sales) to send the tickets to the customer automatically.</p>
+    </td></tr>
+  </table>
+</div>
+TWIG;
+		$tplMailTickets = <<<'TWIG'
+{# Example: ticket delivery mail after payment confirmation (HTML mail
+   body). Variables: order_id, ticket_links[] (public ticket URLs),
+   customer_name, blog_name, site_url #}
+<div style="margin:0;padding:24px;background:#f4f4f7;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:8px;">
+    <tr><td style="padding:28px 32px;">
+      <h1 style="margin:0 0 4px;font-size:20px;">{{ blog_name }} — Your tickets for order #{{ order_id }}</h1>
+      <p style="margin:0 0 20px;color:#666;">Hello{{ customer_name != "" ? " " ~ customer_name : "" }}, your payment was confirmed. Your tickets:</p>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        {% for link in ticket_links %}
+        <tr><td style="padding:8px 0;border-bottom:1px solid #eee;"><a href="{{ link }}" style="color:#31708f;">{{ link }}</a></td></tr>
+        {% endfor %}
+      </table>
+      <p style="margin:20px 0 0;line-height:1.5;color:#666;">Each link opens the ticket — add "?pdf" to the URL for the PDF version. Show the QR code at the entrance. See you at the event!</p>
+    </td></tr>
+  </table>
+</div>
+TWIG;
+		$options[] = ['key'=>'shopTemplateCatalog', 'label'=>__("TWIG template for the shop catalog [sasoEventTicketsValidator_shop_catalog]", 'event-tickets-with-ticket-scanner'), 'desc'=>__('Replaces the whole catalog shortcode output when set. Empty = built-in rendering. Available: entries, with_buy_buttons, catalog_div_id, shop_price(), shop_buy_url(entry, product).', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>"", "additional"=>["rows"=>12, "example"=>$tplShopCatalog]];
+		$options[] = ['key'=>'shopTemplateEventDetail', 'label'=>__("TWIG template for the event detail page [sasoEventTicketsValidator_shop_event]", 'event-tickets-with-ticket-scanner'), 'desc'=>__('Replaces the whole event detail shortcode output when set. Empty = built-in rendering. Available: entry, event_date, event_time, event_datetime, with_buy_buttons, event_div_id, shop_price(), shop_buy_url(entry, product).', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>"", "additional"=>["rows"=>12, "example"=>$tplShopEvent]];
+		$options[] = ['key'=>'shopTemplateMailOrderCustomer', 'label'=>__("TWIG template for the order confirmation mail to the customer", 'event-tickets-with-ticket-scanner'), 'desc'=>__('Designs the customer order confirmation mail body as HTML when set. Subject stays as sent by the plugin. Empty = built-in plain-text mail. Variables: order_id, customer_name, customer_email, lines[] (qty, name, price, price_cents, currency), total, currency, qty, payment_instructions (pre-escaped — print with |raw), blog_name, site_url.', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>"", "additional"=>["rows"=>12, "example"=>$tplMailCustomer]];
+		$options[] = ['key'=>'shopTemplateMailOrderAdmin', 'label'=>__("TWIG template for the new-order notification mail to the organizer", 'event-tickets-with-ticket-scanner'), 'desc'=>__('Designs the organizer notification mail body as HTML when set. Empty = built-in plain-text mail. Same variables as the customer mail.', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>"", "additional"=>["rows"=>12, "example"=>$tplMailAdmin]];
+		$options[] = ['key'=>'shopTemplateMailTickets', 'label'=>__("TWIG template for the ticket delivery mail to the customer", 'event-tickets-with-ticket-scanner'), 'desc'=>__('Designs the ticket delivery mail (after payment confirmation) as HTML when set. Empty = built-in plain-text mail. Variables: order_id, ticket_links[], customer_name, blog_name, site_url.', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>"", "additional"=>["rows"=>12, "example"=>$tplMailTickets]];
 		$options[] = [
 				'key'=>'h12',
 				'label'=>__("Woocommerce ticket sale", 'event-tickets-with-ticket-scanner'),
@@ -694,10 +851,6 @@ $options[] = ['key'=>'h_view_access', 'label'=>__("View access (security)", 'eve
 		$options[] = ['key'=>'wcTicketQRSizeTest', 'label'=>__('Size for the QR code image on the <b>test PDF</b>', 'event-tickets-with-ticket-scanner'), 'desc'=>__('Will be used to set the width and height of the QR code image on the PDF ticket. If empty or zero, the default of 50 will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>'number', 'def'=>50, "additional"=>["min"=>0], '_doc_video'=>'https://youtu.be/ylgo0rvn9SA'];
 		$options[] = ['key'=>'wcTicketDesignerTemplateTest', 'label'=>__("The template screen <b>test code</b> - TWIG HTML value for the testing the ticket. Use <b>{QRCODE_INLINE}</b> to place the QR-Code anywhere", 'event-tickets-with-ticket-scanner'), 'desc'=>__('Only for administrator role. Within the admin ticket detail view, you can start the ticket detail page to view this template code. The easiest way is to open the preview in another browser window. Everytime you did a change and clicked out of the textarea, you can reload your ticket preview browser window to see the changes in effect. If you leave it empty, then the default template will be used.', 'event-tickets-with-ticket-scanner'), 'type'=>"editor", 'def'=>"", "additional"=>["rows"=>30,"height"=>"500px"], '_doc_video'=>'https://youtu.be/y5mp7JLTLgo'];
 
-		$options[] = ['key'=>'h16b', 'label'=>__("Shop templates (public catalog & event page)", 'event-tickets-with-ticket-scanner'), 'desc'=>__("Twig templates for the two public shop shortcodes [sasoEventTicketsValidator_shop_catalog] and [sasoEventTicketsValidator_shop_event]. Leave a template empty to keep the built-in rendering. Templates are validated on save — invalid Twig is rejected.", 'event-tickets-with-ticket-scanner'), 'type'=>"heading"];
-		$options[] = ['key'=>'h16b_desc', 'label'=>__('The shop templates use the same Twig engine as the ticket designer (3.22.0), in a secure sandboxed environment. Variables: catalog — <b>entries</b> (each with <b>id</b>, <b>name</b>, <b>event</b> (event_start_date, event_start_time, event_location plus *_formatted variants) and <b>groups</b> (category_id, category_name, products with id, name, price_cents, currency, display_desc, tax_rate)) and <b>with_buy_buttons</b>; event page — <b>entry</b> (same shape), <b>event_date</b>, <b>event_time</b>, <b>event_datetime</b> (formatted) and <b>with_buy_buttons</b>. Functions: <b>shop_price(product.price_cents)</b> and <b>shop_buy_url(entry, product)</b> (always runs through the buy-URL filter). display_desc is already sanitized (wp_kses_post) — output it with <b>|raw</b>. Full documentation: docs/plan-shop-templates.md in the plugin folder.', 'event-tickets-with-ticket-scanner'), 'desc'=>'', 'type'=>'desc'];
-		$options[] = ['key'=>'shopTemplateCatalog', 'label'=>__("TWIG template for the shop catalog [sasoEventTicketsValidator_shop_catalog]", 'event-tickets-with-ticket-scanner'), 'desc'=>__('Replaces the whole catalog shortcode output when set. Empty = built-in rendering. Available: entries, with_buy_buttons, shop_price(), shop_buy_url(entry, product).', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>"", "additional"=>["rows"=>12]];
-		$options[] = ['key'=>'shopTemplateEventDetail', 'label'=>__("TWIG template for the event detail page [sasoEventTicketsValidator_shop_event]", 'event-tickets-with-ticket-scanner'), 'desc'=>__('Replaces the whole event detail shortcode output when set. Empty = built-in rendering. Available: entry, event_date, event_time, event_datetime, with_buy_buttons, shop_price(), shop_buy_url(entry, product).', 'event-tickets-with-ticket-scanner'), 'type'=>"textarea", 'def'=>"", "additional"=>["rows"=>12]];
 
 		$options[] = [
 			'key'=>'h12b1',

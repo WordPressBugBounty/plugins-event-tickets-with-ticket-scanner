@@ -139,9 +139,13 @@ final class sasoEventtickets_Ticket {
 	/**
 	 * Does the installed premium plugin refresh the license state itself?
 	 *
-	 * Since premium 1.8.0 the premium plugin owns the server call. Older premium
-	 * versions cannot refresh anything — the basic plugin must not switch their
-	 * features off for that reason alone.
+	 * Since premium 1.8.0 the premium plugin owns the server call. This used
+	 * to gate a transition safety net in isSubscriptionActive() (old premium
+	 * versions kept their features on) — that net was REMOVED on 2026-11-09,
+	 * three months after the 1.8.0 rollout (license server data: only 15
+	 * installations still checked in with < 1.8.0, 3 of them with expired
+	 * licenses running premium for free). The license state alone decides.
+	 * The method stays as a public diagnostic/filter surface.
 	 *
 	 * @return bool
 	 */
@@ -154,12 +158,6 @@ final class sasoEventtickets_Ticket {
 
 	public function isSubscriptionActive(): bool {
 		$info = $this->get_expiration();
-
-		// Premium too old to refresh the state on its own: keep the features on and
-		// ask for an update instead of silently expiring a paying customer
-		if (defined('SASO_EVENTTICKETS_PREMIUM_PLUGIN_VERSION') && !$this->premiumProvidesLicenseState()) {
-			return true;
-		}
 
 		// Lifetime = immer aktiv
 		if (isset($info['timestamp']) && $info['timestamp'] == -1) return true;
