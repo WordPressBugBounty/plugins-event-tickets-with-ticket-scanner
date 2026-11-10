@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventtickets_Core {
 	private $MAIN;
@@ -14,7 +15,7 @@ class sasoEventtickets_Core {
 	}
 
 	public function clearCode($code) {
-		$ret = trim(strip_tags(urldecode(str_replace(" ","",str_replace(":","",str_replace("-", "", $code))))));
+		$ret = trim(wp_strip_all_tags(urldecode(str_replace(" ","",str_replace(":","",str_replace("-", "", $code))))));
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'core_clearCode', $ret );
 		return $ret;
 	}
@@ -91,7 +92,7 @@ class sasoEventtickets_Core {
 		global $wpdb;
 		$ret = $this->MAIN->getDB()->_db_datenholen(
 			$wpdb->prepare(
-				"select * from ".$table." where code = %s or code_display = %s",
+				"select * from {$table} where code = %s or code_display = %s",
 				$number,
 				$number
 			)
@@ -873,7 +874,7 @@ class sasoEventtickets_Core {
 			$addresses_table = $wpdb->prefix . 'wc_order_addresses';
 			$orders_table = $wpdb->prefix . 'wc_orders';
 
-			$sql = $wpdb->prepare(
+			$results = $wpdb->get_results($wpdb->prepare(
 				"SELECT DISTINCT o.id as order_id, o.customer_id
 				FROM {$orders_table} o
 				INNER JOIN {$addresses_table} a ON o.id = a.order_id
@@ -882,9 +883,7 @@ class sasoEventtickets_Core {
 					OR a.email LIKE %s
 					OR a.company LIKE %s)",
 				$search_like, $search_like, $search_like, $search_like
-			);
-
-			$results = $wpdb->get_results($sql);
+			));
 			foreach ($results as $row) {
 				$customer_id = (int) $row->customer_id;
 				$order_id = (int) $row->order_id;
@@ -901,16 +900,14 @@ class sasoEventtickets_Core {
 			}
 		} else {
 			// Legacy: Search in post meta
-			$sql = $wpdb->prepare(
+			$results = $wpdb->get_results($wpdb->prepare(
 				"SELECT DISTINCT pm.post_id as order_id, COALESCE(pm_cust.meta_value, 0) as customer_id
 				FROM {$wpdb->postmeta} pm
 				LEFT JOIN {$wpdb->postmeta} pm_cust ON pm.post_id = pm_cust.post_id AND pm_cust.meta_key = '_customer_user'
 				WHERE pm.meta_key IN ('_billing_first_name', '_billing_last_name', '_billing_email', '_billing_company')
 				AND pm.meta_value LIKE %s",
 				$search_like
-			);
-
-			$results = $wpdb->get_results($sql);
+			));
 			foreach ($results as $row) {
 				$customer_id = (int) $row->customer_id;
 				$order_id = (int) $row->order_id;
@@ -1373,7 +1370,7 @@ class sasoEventtickets_Core {
 	}
 	public function getTicketURLPath($defaultPath=false) {
 		$p = $this->getTicketURLBase($defaultPath);
-		$teile = parse_url($p);
+		$teile = wp_parse_url($p);
 		$ret = $teile['path'];
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'core_getTicketURLPath', $ret, $defaultPath );
 		return $ret;
@@ -1528,7 +1525,7 @@ class sasoEventtickets_Core {
 			if ($deleteFilesAfterMerge) {
 				foreach($filepaths as $filepath) {
 					if (file_exists($filepath)) {
-						@unlink($filepath);
+						wp_delete_file($filepath);
 					}
 				}
 			}

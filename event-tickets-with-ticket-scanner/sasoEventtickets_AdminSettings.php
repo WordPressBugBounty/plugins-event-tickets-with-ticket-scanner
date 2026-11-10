@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventtickets_AdminSettings {
 
@@ -1293,14 +1294,15 @@ class sasoEventtickets_AdminSettings {
 	private function countTicketProducts(): array {
 		global $wpdb;
 
-		$sql = "SELECT COUNT(DISTINCT p.ID) AS anzahl,
-				SUM(CASE WHEN ml.meta_value IS NOT NULL AND ml.meta_value <> '' AND ml.meta_value <> '0' THEN 1 ELSE 0 END) AS mit_liste
+		$row = $wpdb->get_row($wpdb->prepare(
+			"SELECT COUNT(DISTINCT p.ID) AS anzahl,
+			SUM(CASE WHEN ml.meta_value IS NOT NULL AND ml.meta_value <> '' AND ml.meta_value <> '0' THEN 1 ELSE 0 END) AS mit_liste
 			FROM {$wpdb->posts} p
 			INNER JOIN {$wpdb->postmeta} mt ON mt.post_id = p.ID AND mt.meta_key = %s AND mt.meta_value = 'yes'
 			LEFT JOIN {$wpdb->postmeta} ml ON ml.post_id = p.ID AND ml.meta_key = %s
-			WHERE p.post_type IN ('product','product_variation') AND p.post_status = 'publish'";
-
-		$row = $wpdb->get_row($wpdb->prepare($sql, 'saso_eventtickets_is_ticket', 'saso_eventtickets_list'), ARRAY_A);
+			WHERE p.post_type IN ('product','product_variation') AND p.post_status = 'publish'",
+			'saso_eventtickets_is_ticket', 'saso_eventtickets_list'
+		), ARRAY_A);
 
 		$all = isset($row['anzahl']) ? (int) $row['anzahl'] : 0;
 		$withList = isset($row['mit_liste']) ? (int) $row['mit_liste'] : 0;
@@ -1927,7 +1929,7 @@ class sasoEventtickets_AdminSettings {
 	public function _addList($data) {
 		if (!isset($data['name']) || trim($data['name']) == "") throw new Exception("#101 name parameter missing - cannot add ticket list");
 		if (!$this->MAIN->getBase()->_isMaxReachedForList($this->MAIN->getDB()->_db_getRecordCountOfTable('lists'))) throw new Exception("#108 too many codes. Unlimited codes only with premium possible");
-		$data['name'] = strip_tags($data['name']);
+		$data['name'] = wp_strip_all_tags($data['name']);
 
 		$listObj = ['meta'=>''];
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
@@ -1958,7 +1960,7 @@ class sasoEventtickets_AdminSettings {
 	public function _editList($data) {
 		if (!isset($data['name']) || trim($data['name']) == "") throw new Exception("#102 name missing");
 		if (!isset($data['id']) || intval($data['id']) == 0) throw new Exception("#103 id missing");
-		$data['name'] = strip_tags($data['name']);
+		$data['name'] = wp_strip_all_tags($data['name']);
 
 		$listObj = $this->getList($data);
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectList($listObj['meta']);
@@ -2150,7 +2152,7 @@ class sasoEventtickets_AdminSettings {
 		$order_dir = "asc";
 		if (isset($request['order']) && $request['order'][0]['dir'] == 'desc') $order_dir = "desc";
 		$search = "";
-		if (isset($request['search'])) $search = $this->MAIN->getDB()->reinigen_in($request['search']['value']);
+		if (isset($request['search'])) $search = (string) $request['search']['value'];
 
 		$where = "";
 		if ($search != "") {
@@ -2277,7 +2279,17 @@ class sasoEventtickets_AdminSettings {
 			$search = trim(str_replace("&", "", $search));
 
 			if ($search != "") {
-				$where .= " and (a.code like '%".$this->MAIN->getDB()->reinigen_in($this->MAIN->getCore()->clearCode($search))."%' or b.name like '%".$search."%' or a.time like '%".$search."%' ";
+				// CVE-2026-115870 class fix: prepare() + esc_like() instead
+				// of concatenated slashed values (the slashed $search went
+				// into b.name/a.time raw; clearCode() must only normalize
+				// the code lookup, never act as an SQL escaper).
+				global $wpdb;
+				$likeCode = '%' . $wpdb->esc_like($this->MAIN->getCore()->clearCode($search)) . '%';
+				$likeName = '%' . $wpdb->esc_like($search) . '%';
+				$where .= $wpdb->prepare(
+					" and (a.code like %s or b.name like %s or a.time like %s ",
+					$likeCode, $likeName, $likeName
+				);
 				if (intval($search) > 0) {
 					$where .= " or a.order_id = ".intval($search)." ";
 				}
@@ -2679,7 +2691,7 @@ class sasoEventtickets_AdminSettings {
 					$code = "";
 					for ($a=0;$a<$laenge;$a++) {
 				        shuffle($letters);
-				        $zufallszahl = rand(0, count($letters)-1);
+				        $zufallszahl = wp_rand(0, count($letters)-1);
 				        $buchstabe = $letters[$zufallszahl];
 				        $code .= $buchstabe;
 					}
@@ -2813,11 +2825,11 @@ class sasoEventtickets_AdminSettings {
 		if (class_exists( 'WooCommerce' )) {
 			// include Woocommerce file for delete
 			if ( !function_exists( 'wc_get_order' ) ) {
-				require_once ABSPATH . PLUGINDIR . '/woocommerce/includes/wc-order-functions.php';
+				require_once WP_PLUGIN_DIR . '/woocommerce/includes/wc-order-functions.php';
 			}
 			// include Woocommerce file for delete
 			if ( !function_exists( 'wc_delete_order_item_meta' ) ) {
-				require_once ABSPATH . PLUGINDIR . '/woocommerce/includes/wc-order-item-functions.php';
+				require_once WP_PLUGIN_DIR . '/woocommerce/includes/wc-order-item-functions.php';
 			}
 		}
 		// lade code
@@ -2898,10 +2910,10 @@ class sasoEventtickets_AdminSettings {
 			if (class_exists( 'WooCommerce' )) {
 				// include Woocommerce file for delete
 				if ( !function_exists( 'wc_get_order' ) ) {
-					require_once ABSPATH . PLUGINDIR . '/woocommerce/includes/wc-order-functions.php';
+					require_once WP_PLUGIN_DIR . '/woocommerce/includes/wc-order-functions.php';
 				}
 				if ( !function_exists( 'wc_delete_order_item_meta' ) ) {
-					require_once ABSPATH . PLUGINDIR . '/woocommerce/includes/wc-order-item-functions.php';
+					require_once WP_PLUGIN_DIR . '/woocommerce/includes/wc-order-item-functions.php';
 				}
 				// extrahiere item id
 				$item_id = isset($metaObj['wc_rp']['item_id']) ? $metaObj['wc_rp']['item_id'] : 0;
@@ -3002,10 +3014,10 @@ class sasoEventtickets_AdminSettings {
 		if (class_exists( 'WooCommerce' )) {
 			// include Woocommerce file for delete
 			if ( !function_exists( 'wc_get_order' ) ) {
-				require_once ABSPATH . PLUGINDIR . '/woocommerce/includes/wc-order-functions.php';
+				require_once WP_PLUGIN_DIR . '/woocommerce/includes/wc-order-functions.php';
 			}
 			if ( !function_exists( 'wc_delete_order_item_meta' ) ) {
-				require_once ABSPATH . PLUGINDIR . '/woocommerce/includes/wc-order-item-functions.php';
+				require_once WP_PLUGIN_DIR . '/woocommerce/includes/wc-order-item-functions.php';
 			}
 		}
 		// lade code
@@ -3162,11 +3174,11 @@ class sasoEventtickets_AdminSettings {
 		if ( ! class_exists( 'WooCommerce' ) )  throw new Exception("#9625 WooCommerce plugin is missing or not active");
 
 		if ( !function_exists( 'wc_get_order' ) ) {
-		    require_once ABSPATH . PLUGINDIR . '/woocommerce/includes/wc-order-functions.php';
+		    require_once WP_PLUGIN_DIR . '/woocommerce/includes/wc-order-functions.php';
 		}
 		// include Woocommerce file for delete
 		if ( !function_exists( 'wc_add_order_item_meta' ) || !function_exists('wc_delete_order_item_meta')) {
-			require_once ABSPATH . PLUGINDIR . '/woocommerce/includes/wc-order-item-functions.php';
+			require_once WP_PLUGIN_DIR . '/woocommerce/includes/wc-order-item-functions.php';
 		}
 
 		$order_id = intval($metaObj['woocommerce']['order_id']);
@@ -4004,16 +4016,28 @@ class sasoEventtickets_AdminSettings {
 
 		$search = '';
 		if (isset($request['search']['value'])) {
-			$search = $this->MAIN->getDB()->reinigen_in($request['search']['value']);
+			$search = (string) $request['search']['value'];
 		}
 
 		$sql = "SELECT h.*, u.display_name AS changed_by_name FROM {$table} h LEFT JOIN {$usersTable} u ON h.changed_by = u.ID";
 		$whereJoin = '';
 		$whereCount = '';
 		if ($search !== '') {
-			$searchClean = $this->MAIN->getDB()->reinigen_in($this->MAIN->getCore()->clearCode($search));
-			$whereJoin = " WHERE h.option_key LIKE '%{$searchClean}%' OR h.old_value LIKE '%{$search}%' OR h.new_value LIKE '%{$search}%'";
-			$whereCount = "option_key LIKE '%{$searchClean}%' OR old_value LIKE '%{$search}%' OR new_value LIKE '%{$search}%'";
+			// CVE-2026-115870: never concatenate search input into SQL — not
+			// slashed raw values, and Core::clearCode() must not sit in an
+			// escape chain (its urldecode() re-introduces quotes AFTER
+			// escaping). Normalization for the option_key lookup stays, but
+			// every value goes through esc_like() + prepare().
+			$likeKey = '%' . $wpdb->esc_like($this->MAIN->getCore()->clearCode($search)) . '%';
+			$likeRaw = '%' . $wpdb->esc_like($search) . '%';
+			$whereJoin = $wpdb->prepare(
+				" WHERE h.option_key LIKE %s OR h.old_value LIKE %s OR h.new_value LIKE %s",
+				$likeKey, $likeRaw, $likeRaw
+			);
+			$whereCount = $wpdb->prepare(
+				"option_key LIKE %s OR old_value LIKE %s OR new_value LIKE %s",
+				$likeKey, $likeRaw, $likeRaw
+			);
 			$sql .= $whereJoin;
 		}
 		$sql .= " ORDER BY {$order_column} {$order_dir}";
@@ -5523,12 +5547,13 @@ class sasoEventtickets_AdminSettings {
 		$this->MAIN->getDB()->_db_query($sql);
 	}
 	private function getErrorLogs($data, $request) {
+		global $wpdb;
 		$sql = "select * from ".$this->MAIN->getDB()->getTabelle("errorlogs");
 
 		// für datatables
 		$length = 0; // wieviele pro seite angezeigt werden sollen (limit)
 		if (isset($request['length'])) $length = intval($request['length']);
-		$draw = 1; // sequenz zähler, also fortlaufend für jede aktion auf der JS datentabelle
+		$draw = 1; // sequenz zähler, also fortlaufend für jede aktion auf der js datentabelle
 		if (isset($request['draw'])) $draw = intval($request['draw']);
 		$start = 0;
 		if (isset($request['start'])) $start = intval($request['start']);
@@ -5536,16 +5561,30 @@ class sasoEventtickets_AdminSettings {
 
 		if (isset($request['order'])) {
 			$order_columns = ['', 'time', 'exception_msg', 'caller_name'];
-			$order_column = $order_columns[intval($request['order'][0]['column'])];
+			$colIdx = intval($request['order'][0]['column']);
+			if (isset($order_columns[$colIdx]) && $order_columns[$colIdx] !== '') {
+				$order_column = $order_columns[$colIdx];
+			}
 		}
 		$order_dir = "asc";
-		if (isset($request['order']) && $request['order'][0]['dir'] == 'desc') $order_dir = "desc";
+		if (isset($request['order']) && $request['order'][0]['dir'] == "desc") $order_dir = "desc";
 		$search = "";
-		if (isset($request['search'])) $search = $this->MAIN->getDB()->reinigen_in($request['search']['value']);
+		if (isset($request['search'])) $search = (string) $request['search']['value'];
 
 		$where = "";
 		if ($search != "") {
-			$where .= " caller_name like '%".$this->MAIN->getDB()->reinigen_in($this->MAIN->getCore()->clearCode($search))."%' or exception_msg like '%".$search."%' ";
+			// CVE-2026-115870 class fix + repair: the old fragment lacked the
+			// WHERE keyword (every error-log search died in a SQL syntax
+			// error) and concatenated slashed values into the LIKEs. Now
+			// prepare() + esc_like(); clearCode() only normalizes the
+			// caller_name lookup.
+			$likeCaller = '%' . $wpdb->esc_like($this->MAIN->getCore()->clearCode($search)) . '%';
+			$likeMsg    = '%' . $wpdb->esc_like($search) . '%';
+			$whereCount = $wpdb->prepare(
+				"caller_name like %s or exception_msg like %s ",
+				$likeCaller, $likeMsg
+			);
+			$where = " where " . $whereCount;
 			$sql .= $where;
 		}
 
@@ -5556,7 +5595,7 @@ class sasoEventtickets_AdminSettings {
 		$recordsTotal = $this->MAIN->getDB()->_db_getRecordCountOfTable('errorlogs');
 		$recordsTotalFilter = $recordsTotal;
 		if (!empty($where)) {
-			$recordsTotalFilter = $this->MAIN->getDB()->_db_getRecordCountOfTable('errorlogs', $where);
+			$recordsTotalFilter = $this->MAIN->getDB()->_db_getRecordCountOfTable('errorlogs', $whereCount);
 		}
 
 		return ["draw"=>$draw,

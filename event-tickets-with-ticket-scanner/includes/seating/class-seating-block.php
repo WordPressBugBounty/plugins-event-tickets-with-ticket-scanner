@@ -75,7 +75,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		if ($eventDate !== null) {
 			$ts = strtotime($eventDate);
 			if ($ts === false) $ts = 0;
-			$dayStart = strtotime(date('Y-m-d 00:00:00', $ts));
+			$dayStart = strtotime(gmdate('Y-m-d 00:00:00', $ts));
 			return ["AND ({$alias}event_date_ts BETWEEN %d AND %d OR {$alias}event_date_ts = 0)", [$dayStart, $dayStart + 86399]];
 		}
 		return ["AND {$alias}event_date_ts = 0", []];
@@ -150,7 +150,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		$planId = (int) $seat['seatingplan_id'];
 		$timeoutMinutes = $this->getBlockTimeout();
 		// Use WordPress timezone (current_time) to match DB comparisons
-		$expiresAt = date('Y-m-d H:i:s', current_time('timestamp') + ($timeoutMinutes * 60));
+		$expiresAt = gmdate('Y-m-d H:i:s', current_time('timestamp') + ($timeoutMinutes * 60));
 
 		// Start transaction
 		$wpdb->query('START TRANSACTION');
@@ -347,12 +347,13 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 			if ($ed !== null) {
 				$ts = strtotime($ed);
 				if ($ts !== false) {
-					$dayStart = strtotime(date('Y-m-d 00:00:00', $ts));
+					$dayStart = strtotime(gmdate('Y-m-d 00:00:00', $ts));
 					$sql .= $wpdb->prepare(" AND b.event_date_ts BETWEEN %d AND %d", $dayStart, $dayStart + 86399);
 				}
 			}
 		}
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql is assembled from literals and run with prepare() above
 		$results = $wpdb->get_results($sql, ARRAY_A);
 
 		// Parse seat meta to get label
@@ -639,7 +640,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		// Build stale condition
 		$staleCondition = '';
 		if ($staleTimeout > 0) {
-			$staleTime = date('Y-m-d H:i:s', current_time('timestamp') - $staleTimeout);
+			$staleTime = gmdate('Y-m-d H:i:s', current_time('timestamp') - $staleTimeout);
 			$staleCondition = $wpdb->prepare(" AND (last_seen IS NULL OR last_seen > %s)", $staleTime);
 		}
 
@@ -716,6 +717,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 
 		$sql .= " ORDER BY sort_order ASC";
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql is assembled from literals and run with prepare() above
 		return $wpdb->get_col($sql);
 	}
 
@@ -736,7 +738,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		// Build stale condition
 		$staleCondition = '';
 		if ($staleTimeout > 0) {
-			$staleTime = date('Y-m-d H:i:s', current_time('timestamp') - $staleTimeout);
+			$staleTime = gmdate('Y-m-d H:i:s', current_time('timestamp') - $staleTimeout);
 			$staleCondition = $wpdb->prepare(" AND (last_seen IS NULL OR last_seen > %s)", $staleTime);
 		}
 
@@ -826,7 +828,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 
 		// Add stale check if enabled
 		if ($staleTimeout > 0) {
-			$staleTime = date('Y-m-d H:i:s', current_time('timestamp') - $staleTimeout);
+			$staleTime = gmdate('Y-m-d H:i:s', current_time('timestamp') - $staleTimeout);
 			// Block is NOT stale if: last_seen is NULL (new block, heartbeat not yet received) OR last_seen is recent
 			$condition .= " AND ({$prefix}last_seen IS NULL OR {$prefix}last_seen > '{$staleTime}')";
 		}
@@ -957,7 +959,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 		// Build stale condition for the JOIN
 		$staleCondition = '';
 		if ($staleTimeout > 0) {
-			$staleTime = date('Y-m-d H:i:s', current_time('timestamp') - $staleTimeout);
+			$staleTime = gmdate('Y-m-d H:i:s', current_time('timestamp') - $staleTimeout);
 			$staleCondition = $wpdb->prepare(" AND (sb.last_seen IS NULL OR sb.last_seen > %s)", $staleTime);
 		}
 
@@ -979,6 +981,7 @@ class sasoEventtickets_Seating_Block extends sasoEventtickets_Seating_Base {
 			$edArgs,
 			[$planId]
 		);
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql contains generated %d placeholders and is passed to prepare() here
 		$seats = $wpdb->get_results($wpdb->prepare($sql, ...$args), ARRAY_A);
 
 		// Get SeatManager for proper meta merging with defaults

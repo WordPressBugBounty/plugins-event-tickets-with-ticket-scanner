@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 // https://twig.symfony.com/doc/3.x/
 class sasoEventtickets_TicketDesigner {
@@ -670,9 +671,14 @@ class sasoEventtickets_TicketDesigner {
                         {%- if OPTIONS.wcTicketPDFDisplayVariantName and PRODUCT.get_attributes|length > 0 -%}
                             <p>
                             {%- for item in PRODUCT.get_attributes -%}
-                                {% if item is not iterable %}
+                                {#- #18147: Woo returns WC_Product_Attribute OBJECTS for plain
+                                    product attributes (only variations resolve to strings) —
+                                    |striptags on an object is a fatal TypeError on PHP 8,
+                                    which got injected into the ticket PDF. Same string guard
+                                    as template 0. -#}
+                                {%- if item is string -%}
                                     {{- item|striptags -}}&nbsp;
-                                {% endif %}
+                                {%- endif -%}
                             {%- endfor -%}
                             </p>
                         {%- endif -%}

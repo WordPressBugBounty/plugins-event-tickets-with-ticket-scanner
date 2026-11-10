@@ -85,7 +85,8 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			$pw = "";
 			for ($a=0;$a<$anzahl;$a++):
 				shuffle($werte);
-				$zufallszahl = rand(0, count($werte)-1);
+				// wp_rand: these passwords protect ticket PDFs — rand() is predictable.
+				$zufallszahl = wp_rand(0, count($werte)-1);
 				$buchstabe = $werte[$zufallszahl];
 				if ($a == 0 && $buchstabe == ".")
 					$buchstabe = "a"; // weil man den Punkt am Anfang nicht sieht
@@ -102,6 +103,7 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			header('Pragma: public');
 
 			ob_end_clean();
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- php://output is a write stream to the client, WP_Filesystem has no CSV writer
 			$out = fopen('php://output', 'w');
 
 			if (count($daten) > 0) {
@@ -112,6 +114,7 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			} else {
 				fputcsv($out, array("no data"), $delimiter);
 			}
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closing the php://output client stream
 			fclose($out);
 		}
 		public static function sendeDaten($daten, $name, $type)
@@ -189,6 +192,7 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			}
 			header("Content-Transfer-Encoding: binary");
 			//open the file
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- HTTP range streaming with fseek/bandwidth control; WP_Filesystem cannot stream partial content
 			$fp=fopen($datei,"rb");
 			if (!$fp)
 				return false;
@@ -209,11 +213,13 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 			$gesendetbytes = 0;
 			while(!feof($fp)) {
 				if (connection_aborted()) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closing the range-download stream
 					fclose($fp);
 					return false;
 				}
 				//reset time limit for big files
 				@set_time_limit(0);
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread -- buffered range streaming; WP_Filesystem cannot stream partial content
 				echo (fread($fp, $buffersize));
 				$gesendetbytes += $buffersize;
 				if ($range_stop > 0 && $gesendetbytes >= $size)
@@ -226,6 +232,7 @@ if (!class_exists('SASO_EVENTTICKETS', false)) {
 					$a--;
 				endif;
 			}
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closing the range-download stream
 			fclose($fp);
 			return true;
 		}

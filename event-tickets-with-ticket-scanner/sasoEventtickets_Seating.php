@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 class sasoEventtickets_Seating {
@@ -987,10 +988,11 @@ class sasoEventtickets_Seating {
 			$this->getPlanManager()->saveDraft($targetId, $draft);
 
 			// Alte Seats des Zielplans soft-deleten (nur unbestätigte, ohne Sold-Historie)
+			$seats_table = $this->MAIN->getDB()->getTabelle('seats');
 			$wpdb->query($wpdb->prepare(
-				"UPDATE " . $this->MAIN->getDB()->getTabelle('seats') . "
-				 SET is_deleted = 1, deleted_at = %s, deleted_by = %d
-				 WHERE seatingplan_id = %d AND is_deleted = 0",
+				"UPDATE {$seats_table}
+				SET is_deleted = 1, deleted_at = %s, deleted_by = %d
+				WHERE seatingplan_id = %d AND is_deleted = 0",
 				current_time('mysql'), get_current_user_id(), $targetId
 			));
 
@@ -1078,9 +1080,10 @@ class sasoEventtickets_Seating {
 		}
 
 		global $wpdb;
+		$seats_table = $this->MAIN->getDB()->getTabelle('seats');
 		$seats = $wpdb->get_results($wpdb->prepare(
 			"SELECT id, seatingplan_id, seat_identifier, aktiv, sort_order, is_deleted, meta
-			 FROM " . $this->MAIN->getDB()->getTabelle('seats') . "
+			 FROM {$seats_table}
 			 WHERE seatingplan_id = %d ORDER BY sort_order ASC, id ASC",
 			$plan_id
 		), ARRAY_A);

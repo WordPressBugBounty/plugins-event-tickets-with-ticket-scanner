@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 /**
  * Admin notice: seating plan bound to a product but never published (#015050).
  *
@@ -40,8 +41,9 @@ class sasoEventtickets_UnpublishedPlanNotice {
 		// der eigenen Tabelle (nicht in meta_draft) — nur dann ist die leere
 		// Produktseite für den Händler überraschend.
 		global $wpdb;
+		$seats_table = $MAIN->getDB()->getTabelle('seats');
 		$seatCount = intval($wpdb->get_var($wpdb->prepare(
-			"SELECT COUNT(*) FROM " . $MAIN->getDB()->getTabelle('seats') . " WHERE seatingplan_id = %d",
+			"SELECT COUNT(*) FROM {$seats_table} WHERE seatingplan_id = %d",
 			$planId
 		)));
 		if ($seatCount < 1) return '';

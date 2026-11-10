@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 final class sasoEventtickets_Ticket {
 	private $MAIN;
@@ -2371,9 +2372,9 @@ final class sasoEventtickets_Ticket {
 		$DTEND_line = "";
 		if (empty($ticket_start_time)) {
 			// Use date() - ticket dates are stored in local time, using wp_date() would double-convert
-			$DTSTART_line .= ";VALUE=DATE:".date("Ymd", $start_timestamp);
+			$DTSTART_line .= ";VALUE=DATE:".gmdate("Ymd", $start_timestamp);
 			if (!empty($ticket_end_date)) {
-				$DTEND_line .= ";VALUE=DATE:".date("Ymd", strtotime(trim($ticket_start_date)));
+				$DTEND_line .= ";VALUE=DATE:".gmdate("Ymd", strtotime(trim($ticket_start_date)));
 			}
 		} else {
 			$DTEND_line = "DTEND";
@@ -2383,8 +2384,8 @@ final class sasoEventtickets_Ticket {
 			//	$DTEND_line .= ";TZID=".$tzid;
 			//}
 			// Use date() - ticket dates are stored in local time, using wp_date() would double-convert
-			$DTSTART_line .= ":".date("Ymd\THis", $start_timestamp);
-			$DTEND_line .= ":".date("Ymd\THis", $end_timestamp);
+			$DTSTART_line .= ":".gmdate("Ymd\THis", $start_timestamp);
+			$DTEND_line .= ":".gmdate("Ymd\THis", $end_timestamp);
 		}
 
 		$LOCATION = trim(get_post_meta( $product_parent_original->get_id(), 'saso_eventtickets_event_location', true ));

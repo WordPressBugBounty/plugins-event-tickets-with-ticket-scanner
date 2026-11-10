@@ -458,8 +458,8 @@ msgstr "\"%1$s\" के लिए सीट आरक्षण समाप्�
 msgid ""
 "\"%1$s\" requires a seat selection. Please go back to the product page and "
 "select your seat."
-msgstr "\"%1$s\" को सीट चयन की आवश्यकता है। कृपया उत्पाद पृष्ठ पर वापस जाएँ"
-"और अपनी सीट चुनें।"
+msgstr ""
+"\"%1$s\" को सीट चयन की आवश्यकता है। कृपया उत्पाद पृष्ठ पर वापस जाएँऔर अपनी सीट चुनें।"
 
 #: includes/woocommerce/class-frontend.php:1930
 msgid "Security check failed. Please reload page."
@@ -1388,7 +1388,7 @@ msgstr ""
 msgid "Shortcode"
 msgstr ""
 
-#: index.php:1378 js/seating_admin.js:1441
+#: index.php:1378 js/seating_admin.js:1441 backend.js:230
 msgid "Description"
 msgstr "Leírás"
 
@@ -3021,7 +3021,7 @@ msgid ""
 "switched on (premium, per product)."
 msgstr ""
 
-#: sasoEventtickets_Options.php:414
+#: sasoEventtickets_Options.php:414 sasoEventtickets_PremiumFunctions.php:2361
 msgid "Tickets are still available at the box office."
 msgstr ""
 
@@ -3668,6 +3668,18 @@ msgstr "यदि सक्रिय है, तो कार्ट और च�
 msgid "Show seat description in seating plan chooser"
 msgstr "सीटिंग प्लान चयनकर्ता में सीट विवरण दिखाएँ"
 
+#: sasoEventtickets_Options.php:637
+msgid "Confirm seat selection automatically once complete"
+msgstr ""
+
+#: sasoEventtickets_Options.php:637
+msgid ""
+"If active, the seat map confirms the selection as soon as the customer has "
+"picked the number of seats matching the product quantity - no need to tap "
+"Confirm. Fewer taps on mobile, but no chance to review the seats before they "
+"are confirmed."
+msgstr ""
+
 #: sasoEventtickets_Options.php:621
 msgid ""
 "If active, the seat description will be displayed when hovering or selecting "
@@ -3938,7 +3950,7 @@ msgid "This is the title of the ticket"
 msgstr "यह टिकट का शीर्षक है"
 
 #: sasoEventtickets_Options.php:654 backend.js:3235 wc_backend.js:384
-#: wc_backend.js:581
+#: wc_backend.js:581 sasoEventtickets_PremiumFunctions.php:3426
 msgid "Ticket"
 msgstr "टिकट"
 
@@ -5464,6 +5476,7 @@ msgstr ""
 "बाद, सभी प्रीमियम सुविधाएँ पुनर्स्थापित हो जाएंगी।"
 
 #: sasoEventtickets_Options.php:964 backend.js:426
+#: sasoEventtickets_PremiumFunctions.php:1049
 msgid "Premium License Key"
 msgstr "प्रीमियम लाइसेंस कुंजी"
 
@@ -5658,7 +5671,7 @@ msgstr "कृपया समाधान के लिए हमसे सं�
 msgid "function \"%s\" in wc backend not implemented"
 msgstr "A \"%s\" funkció a WC háttérrendszerben nincs implementálva"
 
-#: backend.js:273 backend.js:2785
+#: backend.js:273 backend.js:2785 backend.js:460
 msgid "Preview Test Template Code as PDF"
 msgstr "परीक्षण टेम्पलेट कोड को PDF के रूप में पूर्वावलोकन करें"
 
@@ -5869,11 +5882,13 @@ msgid "Ok"
 msgstr "ठीक है"
 
 #: backend.js:934 backend.js:5091 backend.js:5159 backend.js:5323
+#: backend.js:897 backend.js:956
 msgctxt "label"
 msgid "Cancel"
 msgstr "रद्द करें"
 
 #: backend.js:941 backend.js:1020 backend.js:5166 backend.js:5395
+#: backend.js:230
 msgctxt "label"
 msgid "Name"
 msgstr "नाम"
@@ -5914,7 +5929,7 @@ msgid ""
 "those have no product."
 msgstr ""
 
-#: backend.js:948 backend.js:5169
+#: backend.js:948 backend.js:5169 backend.js:230
 msgctxt "label"
 msgid "Description"
 msgstr "विवरण"
@@ -5935,17 +5950,18 @@ msgctxt "label"
 msgid "Area"
 msgstr "क्षेत्र"
 
-#: backend.js:1020 backend.js:5599
+#: backend.js:1020 backend.js:5599 backend.js:230
 msgctxt "label"
 msgid "Status"
 msgstr "स्थिति"
 
-#: backend.js:1053 backend.js:5422 backend.js:5756
+#: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:257
 msgctxt "label"
 msgid "Edit"
 msgstr "संपादित करें"
 
 #: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:6778
+#: backend.js:259
 msgctxt "label"
 msgid "Delete"
 msgstr "हटाएं"
@@ -5980,7 +5996,7 @@ msgstr ""
 
 #: backend.js:1298 backend.js:1318 backend.js:3237 js/congress-admin.js:63
 #: js/seating_admin.js:118 js/seating_admin.js:759 wc_backend.js:386
-#: wc_backend.js:583
+#: wc_backend.js:583 backend.js:230
 msgid "Status"
 msgstr "Állapot"
 
@@ -6058,7 +6074,7 @@ msgstr ""
 msgid "congress page disabled in options"
 msgstr "विकल्पों में कांग्रेस पृष्ठ अक्षम है"
 
-#: backend.js:1553 backend.js:2855 backend.js:5633
+#: backend.js:1553 backend.js:2855 backend.js:5633 backend.js:218
 msgid "Refresh table"
 msgstr "तालिका रीफ़्रेश करें"
 
@@ -6623,12 +6639,12 @@ msgstr "कुल बेचे गए: %d टिकट"
 msgid "No tickets found for this month."
 msgstr "इस महीने के लिए कोई टिकट नहीं मिला।"
 
-#: backend.js:3287 backend.js:5228
+#: backend.js:3287 backend.js:5228 backend.js:919
 msgctxt "label"
 msgid "From"
 msgstr "से"
 
-#: backend.js:3290
+#: backend.js:3290 backend.js:921
 msgctxt "label"
 msgid "To"
 msgstr "को"
@@ -6693,7 +6709,7 @@ msgctxt "label"
 msgid "No individual ticket data available."
 msgstr "कोई व्यक्तिगत टिकट डेटा उपलब्ध नहीं।"
 
-#: backend.js:3418
+#: backend.js:3418 sasoEventtickets_PremiumFunctions.php:3426
 msgctxt "column"
 msgid "Ticket"
 msgstr "टिकट"
@@ -7741,7 +7757,7 @@ msgstr "चोरी हो गया है"
 msgid "Use the add option"
 msgstr "जोड़ने के विकल्प का उपयोग करें"
 
-#: backend.js:5422
+#: backend.js:5422 sasoEventtickets_PremiumFunctions.php:3773
 msgctxt "label"
 msgid "Tickets"
 msgstr "टिकट"
@@ -7762,6 +7778,22 @@ msgstr "कोई टिकट डिलीट नहीं होगा। स�
 #: backend.js:5447
 msgid "Check if list is used by products"
 msgstr "जाँचें कि सूची उत्पादों द्वारा उपयोग में है"
+
+#: backend.js:5832
+msgid "Block if list still contains tickets"
+msgstr ""
+
+#: backend.js:5844
+msgid "This list still contains %d tickets!"
+msgstr ""
+
+#: backend.js:5844
+msgid ""
+"Deleting the list would leave these tickets without a list — their QR code, "
+"PDF and scanner checks can break. Delete the tickets first, or move them to "
+"another list. To delete anyway, uncheck \"Block if list still contains "
+"tickets\" in the delete dialog."
+msgstr ""
 
 #: backend.js:5458
 msgid "This list is still assigned to products:"
@@ -7874,6 +7906,7 @@ msgid "Order line details"
 msgstr ""
 
 #: backend.js:5594 ticket_scanner.js:1461
+#: sasoEventtickets_PremiumFunctions.php:3426
 msgctxt "label"
 msgid "Ticket"
 msgstr "टिकट"
@@ -8286,7 +8319,7 @@ msgid "Export contacts"
 msgstr "संपर्क निर्यात करें"
 
 #: js/congress-admin.js:100 js/congress-admin.js:597 js/seating_admin.js:183
-#: js/seating_admin.js:814
+#: js/seating_admin.js:814 backend.js:257
 msgid "Edit"
 msgstr "Szerkesztés"
 
@@ -8296,6 +8329,7 @@ msgstr "नया संस्करण"
 
 #: js/congress-admin.js:100 js/congress-admin.js:570 js/congress-admin.js:598
 #: js/seating_admin.js:49 js/seating_admin.js:186 js/seating_admin.js:817
+#: backend.js:259
 msgid "Delete"
 msgstr "Törlés"
 
@@ -8342,6 +8376,7 @@ msgstr "बनाएँ"
 #: js/congress-admin.js:163 js/congress-admin.js:310 js/congress-admin.js:457
 #: js/congress-admin.js:532 js/congress-admin.js:1275 js/seating_admin.js:975
 #: js/seating_admin.js:1469 js/seating_admin.js:1508 js/seating_frontend.js:364
+#: backend.js:897 backend.js:956
 msgid "Cancel"
 msgstr "Mégse"
 
@@ -8670,7 +8705,7 @@ msgstr "छवियाँ"
 msgid "Image URL and optional caption for each item. Drag to reorder."
 msgstr "प्रत्येक आइटम के लिए छवि URL और वैकल्पिक कैप्शन। पुनः क्रमबद्ध करने के लिए खींचें।"
 
-#: js/congress-admin.js:925 js/seating_admin.js:115
+#: js/congress-admin.js:925 js/seating_admin.js:115 backend.js:230
 msgid "Name"
 msgstr "Név"
 
@@ -8793,7 +8828,7 @@ msgstr "अनुभाग संपादित करें"
 msgid "Add"
 msgstr "Hozzáadás"
 
-#: js/congress-admin.js:1251
+#: js/congress-admin.js:1251 js/shop-payment-settings.js:72
 msgid "Save"
 msgstr "सहेजें"
 
@@ -9132,6 +9167,18 @@ msgstr "आरक्षित"
 msgid "Open Seat Map"
 msgstr "सीट मैप खोलें"
 
+#: js/seating_frontend.js:366
+msgid "Zoom in"
+msgstr ""
+
+#: js/seating_frontend.js:367
+msgid "Reset zoom"
+msgstr ""
+
+#: js/seating_frontend.js:368
+msgid "Zoom out"
+msgstr ""
+
 #: js/seating_frontend.js:335
 msgid "Selected: {label} - Click to change"
 msgstr "चयनित: {label} - बदलने के लिए क्लिक करें"
@@ -9213,7 +9260,7 @@ msgstr "स्थान प्लान"
 msgid "Order Ticket Infos"
 msgstr "ऑर्डर टिकट जानकारी"
 
-#: order_details.js:34
+#: order_details.js:34 sasoEventtickets_PremiumFunctions.php:3773
 msgid "Tickets"
 msgstr "टिकट"
 
@@ -9629,6 +9676,594 @@ msgstr ""
 msgid "This code is not valid for this product."
 msgstr ""
 
+#: sasoEventtickets_Options.php:322
+msgid ""
+"Ticket scanner: waiting time in seconds before the same ticket can be "
+"scanned again"
+msgstr ""
+
+#: sasoEventtickets_Options.php:322
+msgid ""
+"How long the ticket scanner ignores a repeated scan of the same ticket code. "
+"This prevents the camera from picking up the same ticket twice while it is "
+"still in front of the lens. Enter the waiting time in seconds. Default is 7 "
+"seconds."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:180
+#, php-format
+msgid "Payment amount mismatch on order #%1$d"
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:181
+#, php-format
+msgid ""
+"Provider %1$s reported %2$d %3$s cents, but the order total is %4$d %5$s "
+"cents. The order was NOT completed automatically. Source: %6$s. Please "
+"review the payment in your provider dashboard and the order in the Kasse."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:207
+#, php-format
+msgid "Payment received AFTER order #%1$d was closed"
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:208
+#, php-format
+msgid ""
+"The order status is '%1$s', but provider %2$s reported a completed payment. "
+"The order was NOT reopened — its tickets may have been released to other "
+"buyers. Source: %3$s. Please review: either refund the payment or re-issue "
+"tickets manually in the Kasse."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:247
+#, php-format
+msgid "Order #%1$d — %2$s <%3$s>, total %4$s"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:469
+msgid ""
+"Redeeming all tickets, because the order status changed and option "
+"wcTicketOrderStatusToRedeemAllTickets is set to '"
+msgstr ""
+"सभी टिकट भुना दिए जा रहे हैं, क्योंकि ऑर्डर स्थिति बदल गई है और विकल्प "
+"wcTicketOrderStatusToRedeemAllTickets इस पर सेट है '"
+
+#. translators: 1: ticket number 2: error message
+#: sasoEventtickets_PremiumFunctions.php:488
+#, php-format
+msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
+msgstr "टिकट \"%1$s\" रिडीम नहीं किया जा सका। \"%2$s\""
+
+#: sasoEventtickets_PremiumFunctions.php:868
+msgid "Choose the order status for ticket assignment"
+msgstr "टिकट असाइनमेंट के लिए ऑर्डर स्थिति चुनें"
+
+#: sasoEventtickets_PremiumFunctions.php:869
+msgid ""
+"In doubt, do not play with it. :) The ticket will be added to the order "
+"items, if the choosen order status is applied to the order. If none is "
+"selected, then you need to manually assign the tickets, by clicking the "
+"corresponding button within the order details. The button will only be "
+"executed, if the order status is paid (processing or completed) then. <a "
+"href='https://woocommerce.com/document/managing-orders/order-statuses/' "
+"target='_blank'>Learn more about the woocommerce order statuses here.</a>"
+msgstr ""
+"संदेह होने पर, इसके साथ खेलें नहीं। :) यदि चुनी गई ऑर्डर स्थिति ऑर्डर पर लागू होती है तो "
+"टिकट ऑर्डर आइटम में जोड़ दिया जाएगा। यदि कोई चयनित नहीं है, तो आपको ऑर्डर विवरण के "
+"भीतर संबंधित बटन पर क्लिक करके मैन्युअल रूप से टिकट असाइन करने होंगे। बटन तभी निष्पादित "
+"किया जाएगा, यदि ऑर्डर स्थिति भुगतान की गई है (प्रसंस्करण या पूर्ण)। <a href='https://"
+"woocommerce.com/document/managing-orders/order-statuses/' "
+"target='_blank'>WooCommerce ऑर्डर स्थितियों के बारे में यहाँ और जानें।</a>"
+
+#: sasoEventtickets_PremiumFunctions.php:925
+msgid "Attach QR image of the order to the purchase email"
+msgstr "खरीद ईमेल में ऑर्डर का QR चित्र संलग्न करें"
+
+#: sasoEventtickets_PremiumFunctions.php:925
+msgid ""
+"If active, then the order view QR code image will be attached to the "
+"purchase email."
+msgstr "यदि सक्रिय है, तो ऑर्डर व्यू QR कोड छवि खरीद ईमेल के साथ संलग्न की जाएगी।"
+
+#: sasoEventtickets_PremiumFunctions.php:927
+msgid "Do not allow the redeem operation after the event started"
+msgstr "इवेंट शुरू होने के बाद रिडीम ऑपरेशन की अनुमति न दें"
+
+#: sasoEventtickets_PremiumFunctions.php:927
+msgid ""
+"If active and the event start date is set, then the system will not allow to "
+"redeem the ticket anymore."
+msgstr ""
+"यदि सक्रिय है और कार्यक्रम प्रारंभ तिथि निर्धारित है, तो सिस्टम टिकट को और रिडीम करने "
+"की अनुमति नहीं देगा।"
+
+#: sasoEventtickets_PremiumFunctions.php:1049
+msgid ""
+"Enter your Premium license key to activate features. If you do not have one, "
+"please contact support@vollstart.com."
+msgstr ""
+"सुविधाएँ सक्रिय करने के लिए अपनी प्रीमियम लाइसेंस कुंजी दर्ज करें। यदि आपके पास एक नहीं है, "
+"तो कृपया support@vollstart.com पर संपर्क करें।"
+
+#: sasoEventtickets_PremiumFunctions.php:2172
+msgid "Ticket numbers assigned by the bulk tool."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2380
+msgid "Stop online sales this many hours before the event"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2383
+msgid ""
+"Only for this product. Leave empty to use the shop-wide setting, enter 0 to "
+"sell right up to the start. Needs a start date on the product."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2389
+msgid "Own message when sales are closed"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2390
+msgid ""
+"Shown on the product page and in the cart instead of the shop-wide text. Use "
+"{PRODUCT_NAME} for the product name."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2396
+msgid "Tickets still available at the box office"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2397
+msgid ""
+"Adds a line to the \"sales closed\" message so buyers know they can still "
+"get a ticket at the door."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2451
+msgid ""
+"The option \"Use the default template for the ticket\" is active. It does "
+"not affect a template chosen here — your choice wins. It only applies to "
+"products without their own template."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2458
+msgid "Ticket Template"
+msgstr "टिकट टेम्पलेट"
+
+#: sasoEventtickets_PremiumFunctions.php:2459
+msgid "Choose a ticket template to overwrite the default template"
+msgstr "डिफ़ॉल्ट टेम्पलेट को बदलने के लिए टिकट टेम्पलेट चुनें"
+
+#: sasoEventtickets_PremiumFunctions.php:2494
+msgid "Excluded days for the date picker"
+msgstr "दिनांक पिकर के लिए बहिष्कृत दिन"
+
+#: sasoEventtickets_PremiumFunctions.php:2495
+msgid ""
+"If you use the date chooser option, then you can exclude specific dates like "
+"holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
+"2025-12-22"
+msgstr ""
+"यदि आप तिथि चुनने वाला विकल्प उपयोग करते हैं, तो आप छुट्टियों जैसी विशिष्ट तिथियों को "
+"बाहर कर सकते हैं। प्रत्येक तिथि एक नई पंक्ति पर और YYYY-MM-DD प्रारूप में दर्ज करें। जैसे "
+"2025-12-22"
+
+#: sasoEventtickets_PremiumFunctions.php:2513
+msgid ""
+"These options affect how this single product is treated by the global "
+"eventado.com sync."
+msgstr ""
+"ये विकल्प प्रभावित करते हैं कि वैश्विक eventado.com सिंक द्वारा इस एकल उत्पाद को कैसे "
+"संभाला जाए।"
+
+#: sasoEventtickets_PremiumFunctions.php:2521
+msgid "Publish this event for free on eventado.com"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2522
+msgid ""
+"Off by default — you decide which events go public. Tick this to give this "
+"event a free public listing on eventado.com, our brand-neutral event "
+"discovery platform, so new customers can find it and buy tickets. Leave it "
+"unticked to keep the event off the public calendar (e.g. internal, staff-"
+"only or private events)."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2528
+msgid "For adults only (18+)"
+msgstr "केवल वयस्कों के लिए (18+)"
+
+#: sasoEventtickets_PremiumFunctions.php:2529
+msgid ""
+"Mark this event as 18+ on eventado.com. The public listing will show an age-"
+"restriction badge and a content notice."
+msgstr ""
+"इस इवेंट को eventado.com पर 18+ के रूप में चिह्नित करें। सार्वजनिक लिस्टिंग में आयु-प्रतिबंध "
+"बैज और सामग्री सूचना दिखाई जाएगी।"
+
+#: sasoEventtickets_PremiumFunctions.php:3231
+msgid ""
+"Public calendar publishing was disabled — the eventado.com server rejected "
+"this site (license or domain mismatch). Please contact support@vollstart.com."
+msgstr ""
+"सार्वजनिक कैलेंडर प्रकाशन अक्षम कर दिया गया था — eventado.com सर्वर ने इस साइट को "
+"अस्वीकार कर दिया (लाइसेंस या डोमेन बेमेल)। कृपया support@vollstart.com से संपर्क करें।"
+
+#: sasoEventtickets_PremiumFunctions.php:3362
+#, php-format
+msgid "Thank you! Your order #%d has been received. Check your email inbox."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3417
+#: sasoEventtickets_PremiumFunctions.php:3583
+msgid "Sold out in total"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3420
+#: sasoEventtickets_PremiumFunctions.php:3584
+#, php-format
+msgid "%d of %d ticket still available in total"
+msgid_plural "%d of %d tickets still available in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#: sasoEventtickets_PremiumFunctions.php:3427
+msgid "Price"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3428
+msgid "Quantity"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3519
+msgid "Sold out"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3522
+#, php-format
+msgid "%d ticket available"
+msgid_plural "%d tickets available"
+msgstr[0] ""
+msgstr[1] ""
+
+#: sasoEventtickets_PremiumFunctions.php:3593
+msgid "Your name"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3594
+msgid "Your email address"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3608
+msgid "Order tickets"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3646
+msgid "Payment received — your tickets are on their way to your email address."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3649
+msgid ""
+"Your payment was received but needs a short review by the organizer. You "
+"will be contacted."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3652
+msgid ""
+"Your payment is being processed — as soon as it is confirmed, your tickets "
+"are sent to your email address automatically."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3656
+msgid ""
+"Payment was cancelled — your order stays reserved for a short time, you can "
+"try again."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3696
+msgid "Online shop page"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3697
+msgid "open"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3746
+msgid "No events on sale at the moment."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3785
+msgid "Ticket shop"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3884
+msgid ""
+"We have received your order. You will get an email with payment details from "
+"the organizer — as soon as your payment is confirmed, your tickets are sent "
+"to this email address automatically."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3904
+#, php-format
+msgid "[%s] Your ticket order #%d"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3909
+#, php-format
+msgid "[%s] New online ticket order #%d"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3954
+#, php-format
+msgid "[%s] Your tickets for order #%d"
+msgstr ""
+
+#: sasoEventtickets_TemplateTickets.php:69
+msgid "No ticket template set"
+msgstr "कोई टिकट टेम्पलेट सेट नहीं"
+
+#: backend.js:202
+msgid "Add new template"
+msgstr ""
+
+#: backend.js:230
+msgctxt "label"
+msgid "Changed"
+msgstr ""
+
+#: backend.js:257
+msgctxt "button"
+msgid "Edit"
+msgstr ""
+
+#: backend.js:258
+msgctxt "button"
+msgid "Duplicate"
+msgstr ""
+
+#: backend.js:259
+msgctxt "button"
+msgid "Delete"
+msgstr ""
+
+#: backend.js:356
+msgid "Do you want to close the editor? All unsaved changes will be lost."
+msgstr ""
+
+#: backend.js:377
+msgid "Please add a name for the template."
+msgstr ""
+
+#: backend.js:457
+msgid "Public Ticket Number"
+msgstr ""
+
+#: backend.js:678
+msgctxt "label"
+msgid "Add QR code images"
+msgstr ""
+
+#: backend.js:679
+msgid ""
+"Be careful - this uses a lot of resources. The images will be created and "
+"then zipped into a file, together with the csv file"
+msgstr ""
+
+#: backend.js:888 backend.js:916
+msgid "Bulk Assign Tickets"
+msgstr ""
+
+#: backend.js:890
+msgid ""
+"Find all completed WooCommerce orders with ticket products that have no "
+"ticket numbers assigned, and assign them automatically in batches."
+msgstr ""
+
+#: backend.js:896
+msgid "Start Bulk Assignment"
+msgstr ""
+
+#: backend.js:917
+msgid ""
+"Select a date range to filter which orders to check. Leave empty to check "
+"all orders."
+msgstr ""
+
+#: backend.js:919
+msgid "From"
+msgstr ""
+
+#: backend.js:921
+msgid "To"
+msgstr ""
+
+#: backend.js:931
+msgid "With Order Status"
+msgstr ""
+
+#: backend.js:943
+msgid "Resend order details email after ticket assignment"
+msgstr ""
+
+#: backend.js:945
+msgid "Only for orders where tickets were actually assigned."
+msgstr ""
+
+#: backend.js:948
+msgid "Set the order to \"Completed\" after all its tickets are assigned"
+msgstr ""
+
+#: backend.js:950
+msgid ""
+"Only for orders that are fully served afterwards. WooCommerce then sends its "
+"completed-order email, and that email carries the new tickets."
+msgstr ""
+
+#: backend.js:957 backend.js:1032
+msgid "Check Orders"
+msgstr ""
+
+#: backend.js:958
+msgid "Start Assignment"
+msgstr ""
+
+#: backend.js:959
+msgid "Stop"
+msgstr ""
+
+#: backend.js:960
+msgid "Continue"
+msgstr ""
+
+#: backend.js:994
+msgid "Counting..."
+msgstr ""
+
+#: backend.js:1014
+msgid "Checked %1$d of %2$d orders — %3$d need ticket numbers."
+msgstr ""
+
+#: backend.js:1023
+msgid "No orders found that need ticket assignment."
+msgstr ""
+
+#: backend.js:1028
+msgid ""
+"<strong>%d orders</strong> found with missing ticket numbers. Click \"Start "
+"Assignment\" to begin."
+msgstr ""
+
+#: backend.js:1033
+msgid "Error counting orders."
+msgstr ""
+
+#: backend.js:1044
+msgid "Checked %1$d of %2$d orders — tickets assigned for %3$d."
+msgstr ""
+
+#: backend.js:1051
+msgid "%d orders were set to \"Completed\"."
+msgstr ""
+
+#: backend.js:1055
+msgid ""
+"%d orders still miss ticket numbers and could not be served (for example "
+"%s). Usually their order status is not one of the statuses allowed to "
+"receive ticket numbers, or the product has no ticket list assigned."
+msgstr ""
+
+#: backend.js:1064
+msgid "Stopped after %1$d orders — tickets assigned for %2$d."
+msgstr ""
+
+#: backend.js:1087
+msgid "Done! Tickets assigned for %d orders."
+msgstr ""
+
+#: backend.js:1097
+msgid "Connection problem — retrying (%1$d of %2$d)."
+msgstr ""
+
+#: backend.js:1103
+msgid ""
+"Stopped after %1$d orders — tickets assigned for %2$d. Click \"Continue\" to "
+"carry on where it stopped."
+msgstr ""
+
+#: js/shop-payment-settings.js:18
+msgid "Network error."
+msgstr "नेटवर्क त्रुटि।"
+
+#: js/shop-payment-settings.js:32
+msgid "Online payments"
+msgstr "ऑनलाइन भुगतान"
+
+#: js/shop-payment-settings.js:34
+msgid ""
+"Sell through the shop page with a hosted Stripe checkout — buyers pay by "
+"card and the tickets are sent automatically."
+msgstr "होस्टेड Stripe चेकआउट के साथ शॉप पेज के माध्यम से बेचें — खरीदार कार्ड से भुगतान करते हैं और टिकट स्वचालित रूप से भेजे जाते हैं।"
+
+#: js/shop-payment-settings.js:37
+msgid "Off — orders are confirmed manually in the Kasse"
+msgstr "बंद — ऑर्डर कैशियर में मैन्युअल रूप से पुष्ट किए जाते हैं"
+
+#: js/shop-payment-settings.js:55
+msgid "Configured"
+msgstr "कॉन्फ़िगर किया गया"
+
+#: js/shop-payment-settings.js:56
+msgid "Not configured"
+msgstr "कॉन्फ़िगर नहीं है"
+
+#: js/shop-payment-settings.js:66
+msgid "Payment provider"
+msgstr "भुगतान प्रदाता"
+
+#: js/shop-payment-settings.js:67
+msgid "Stripe secret key"
+msgstr "Stripe गुप्त कुंजी"
+
+#: js/shop-payment-settings.js:69
+msgid ""
+"Leave empty to keep the stored key. A secret key (sk_…) — never the "
+"publishable one."
+msgstr "संग्रहीत कुंजी बनाए रखने के लिए खाली छोड़ें। गुप्त कुंजी (sk_…) — कभी भी सार्वजनिक कुंजी नहीं।"
+
+#: js/shop-payment-settings.js:70
+msgid "Stripe webhook signing secret"
+msgstr "Stripe वेबहुक साइनिंग रहस्य"
+
+#: js/shop-payment-settings.js:79
+msgid "Saving…"
+msgstr "सहेजा जा रहा है…"
+
+#: js/shop-payment-settings.js:85
+msgid "Saved."
+msgstr "सहेजा गया।"
+
+#: js/shop-payment-settings.js:87
+msgid "Save failed."
+msgstr "सहेजना विफल।"
+
+#: js/shop-payment-settings.js:94
+msgid "Webhook endpoint (register in the Stripe dashboard → Webhooks)"
+msgstr "वेबहुक एंडपॉइंट (Stripe डैशबोर्ड → Webhooks में पंजीकृत करें)"
+
+#: js/shop-payment-settings.js:97
+msgid ""
+"Events: checkout.session.completed, checkout.session.expired, checkout."
+"session.async_payment_failed"
+msgstr "इवेंट: checkout.session.completed, checkout.session.expired, checkout.session.async_payment_failed"
+
+#: js/shop-payment-settings.js:99
+msgid "Test connection"
+msgstr "कनेक्शन परीक्षण"
+
+#: js/shop-payment-settings.js:103
+msgid "Checking…"
+msgstr "जाँच हो रही है…"
+
+#: js/shop-payment-settings.js:109
+msgid "Key valid"
+msgstr "कुंजी मान्य है"
+
+#: js/shop-payment-settings.js:109
+msgid "Webhook delivery still needs to be confirmed in the Stripe dashboard."
+msgstr "वेबहुक डिलीवरी की पुष्टि अभी भी Stripe डैशबोर्ड में करनी होगी।"
+
+#: js/shop-payment-settings.js:112
+msgid "Check failed."
+msgstr "जाँच विफल।"
+
+#: js/shop-payment-settings.js:120
+msgid ""
+"The installed free plugin is too old for automatic ticket delivery after "
+"payment — update the free plugin to 3.3.1 or newer."
+msgstr "भुगतान के बाद टिकट की स्वचालित डिलीवरी के लिए स्थापित निःशुल्क प्लगइन बहुत पुराना है — निःशुल्क प्लगइन को 3.3.1 या नए में अपडेट करें।"
+
 #~ msgid ""
 #~ "Enable PDF ticket attachment in emails? Customers receive their tickets "
 #~ "as PDF directly in the order confirmation email."
@@ -9642,17 +10277,8 @@ msgstr ""
 #~ msgid "Activate ob_end_flush"
 #~ msgstr "ob_end_flush सक्रिय करें"
 
-#~ msgid "Attach QR image of the order to the purchase email"
-#~ msgstr "खरीद ईमेल में ऑर्डर का QR चित्र संलग्न करें"
-
 #~ msgid "Check License Now"
 #~ msgstr "अभी लाइसेंस जाँचें"
-
-#~ msgid "Choose a ticket template to overwrite the default template"
-#~ msgstr "डिफ़ॉल्ट टेम्पलेट को बदलने के लिए टिकट टेम्पलेट चुनें"
-
-#~ msgid "Choose the order status for ticket assignment"
-#~ msgstr "टिकट असाइनमेंट के लिए ऑर्डर स्थिति चुनें"
 
 #~ msgid "Click the button below to update your premium plugin now."
 #~ msgstr "अपना प्रीमियम प्लगइन अभी अपडेट करने के लिए नीचे दिए गए बटन पर क्लिक करें।"
@@ -9678,27 +10304,14 @@ msgstr ""
 #~ "वर्तमान लॉग-इन उपयोगकर्ता को दिए गए टिकट (डिफ़ॉल्ट) या किसी विशिष्ट ऑर्डर के "
 #~ "टिकट प्रदर्शित करता है।"
 
-#~ msgid "Do not allow the redeem operation after the event started"
-#~ msgstr "इवेंट शुरू होने के बाद रिडीम ऑपरेशन की अनुमति न दें"
-
 #~ msgid "Enable tickets on a WooCommerce product"
 #~ msgstr "WooCommerce उत्पाद पर टिकट सक्षम करें"
-
-#~ msgid ""
-#~ "Enter your Premium license key to activate features. If you do not have "
-#~ "one, please contact support@vollstart.com."
-#~ msgstr ""
-#~ "सुविधाएँ सक्रिय करने के लिए अपनी प्रीमियम लाइसेंस कुंजी दर्ज करें। यदि आपके पास एक नहीं "
-#~ "है, तो कृपया support@vollstart.com पर संपर्क करें।"
 
 #~ msgid "Example with JSON output:"
 #~ msgstr "JSON आउटपुट के साथ उदाहरण:"
 
 #~ msgid "Example:"
 #~ msgstr "उदाहरण:"
-
-#~ msgid "Excluded days for the date picker"
-#~ msgstr "दिनांक पिकर के लिए बहिष्कृत दिन"
 
 #~ msgid ""
 #~ "Fields to show (comma-separated). Values: codes, validation, user, used, "
@@ -9715,13 +10328,6 @@ msgstr ""
 #~ msgstr "उत्पादों पर जाएँ"
 
 #~ msgid ""
-#~ "If active and the event start date is set, then the system will not allow "
-#~ "to redeem the ticket anymore."
-#~ msgstr ""
-#~ "यदि सक्रिय है और कार्यक्रम प्रारंभ तिथि निर्धारित है, तो सिस्टम टिकट को और रिडीम "
-#~ "करने की अनुमति नहीं देगा।"
-
-#~ msgid ""
 #~ "If active, the system will try to use an existing ticket from the ticket "
 #~ "list that is free. If no free ticket number could be found, a new ticket "
 #~ "will be created and assigned to the purchase."
@@ -9729,20 +10335,6 @@ msgstr ""
 #~ "यदि सक्रिय है, तो सिस्टम टिकट सूची से मौजूदा मुफ़्त टिकट का उपयोग करने का प्रयास "
 #~ "करेगा। यदि कोई मुफ़्त टिकट नंबर नहीं मिलता है, तो एक नया टिकट बनाकर खरीद को "
 #~ "असाइन किया जाएगा।"
-
-#~ msgid ""
-#~ "If active, then the order view QR code image will be attached to the "
-#~ "purchase email."
-#~ msgstr "यदि सक्रिय है, तो ऑर्डर व्यू QR कोड छवि खरीद ईमेल के साथ संलग्न की जाएगी।"
-
-#~ msgid ""
-#~ "If you use the date chooser option, then you can exclude specific dates "
-#~ "like holidays. Enter each date on a new line and in the format YYYY-MM-"
-#~ "DD. eg. 2025-12-22"
-#~ msgstr ""
-#~ "यदि आप तिथि चुनने वाला विकल्प उपयोग करते हैं, तो आप छुट्टियों जैसी विशिष्ट तिथियों को "
-#~ "बाहर कर सकते हैं। प्रत्येक तिथि एक नई पंक्ति पर और YYYY-MM-DD प्रारूप में दर्ज करें। जैसे "
-#~ "2025-12-22"
 
 #~ msgid ""
 #~ "If your images on the PDF are not shown then this option trigger not to "
@@ -9766,22 +10358,6 @@ msgstr ""
 #~ "आप इस संगतता मोड का उपयोग करने का प्रयास कर सकते हैं। यदि सक्रिय है, तो टिकट "
 #~ "विवरण और टिकट PDF पृष्ठ के लिंक के लिए URL /ticket/XYZ के बजाय /ticket/?"
 #~ "code=XYZ URL होगा। कुछ थीम सामान्य मोड के साथ समस्याएँ पैदा करती हैं।"
-
-#~ msgid ""
-#~ "In doubt, do not play with it. :) The ticket will be added to the order "
-#~ "items, if the choosen order status is applied to the order. If none is "
-#~ "selected, then you need to manually assign the tickets, by clicking the "
-#~ "corresponding button within the order details. The button will only be "
-#~ "executed, if the order status is paid (processing or completed) then. <a "
-#~ "href='https://woocommerce.com/document/managing-orders/order-statuses/' "
-#~ "target='_blank'>Learn more about the woocommerce order statuses here.</a>"
-#~ msgstr ""
-#~ "संदेह होने पर, इसके साथ खेलें नहीं। :) यदि चुनी गई ऑर्डर स्थिति ऑर्डर पर लागू होती है "
-#~ "तो टिकट ऑर्डर आइटम में जोड़ दिया जाएगा। यदि कोई चयनित नहीं है, तो आपको ऑर्डर "
-#~ "विवरण के भीतर संबंधित बटन पर क्लिक करके मैन्युअल रूप से टिकट असाइन करने होंगे। बटन तभी "
-#~ "निष्पादित किया जाएगा, यदि ऑर्डर स्थिति भुगतान की गई है (प्रसंस्करण या पूर्ण)। <a "
-#~ "href='https://woocommerce.com/document/managing-orders/order-statuses/' "
-#~ "target='_blank'>WooCommerce ऑर्डर स्थितियों के बारे में यहाँ और जानें।</a>"
 
 #~ msgid ""
 #~ "In order to make the ticket detail view and the ticket scanner work, you "
@@ -9814,9 +10390,6 @@ msgstr ""
 #~ msgid "New Premium Features Available"
 #~ msgstr "नई प्रीमियम सुविधाएं उपलब्ध हैं"
 
-#~ msgid "No ticket template set"
-#~ msgstr "कोई टिकट टेम्पलेट सेट नहीं"
-
 #~ msgid "Open Options"
 #~ msgstr "विकल्प खोलें"
 
@@ -9835,13 +10408,6 @@ msgstr ""
 #, javascript-format
 #~ msgid "Premium version %s is available with new features:"
 #~ msgstr "नई सुविधाओं के साथ प्रीमियम संस्करण %s उपलब्ध है:"
-
-#~ msgid ""
-#~ "Redeeming all tickets, because the order status changed and option "
-#~ "wcTicketOrderStatusToRedeemAllTickets is set to '"
-#~ msgstr ""
-#~ "सभी टिकट भुना दिए जा रहे हैं, क्योंकि ऑर्डर स्थिति बदल गई है और विकल्प "
-#~ "wcTicketOrderStatusToRedeemAllTickets इस पर सेट है '"
 
 #~ msgid ""
 #~ "Shortcode to display the assigned tickets and codes of an user within a "
@@ -9890,13 +10456,6 @@ msgstr ""
 #~ msgid "This day is not selectable"
 #~ msgstr "यह दिन चयन योग्य नहीं है"
 
-#, php-format
-#~ msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
-#~ msgstr "टिकट \"%1$s\" रिडीम नहीं किया जा सका। \"%2$s\""
-
-#~ msgid "Ticket Template"
-#~ msgstr "टिकट टेम्पलेट"
-
 #~ msgid "Update Now"
 #~ msgstr "अभी अपडेट करें"
 
@@ -9940,31 +10499,6 @@ msgstr ""
 
 #~ msgid "Exclude this product from eventado.com"
 #~ msgstr "इस उत्पाद को eventado.com से बाहर रखें"
-
-#~ msgid "For adults only (18+)"
-#~ msgstr "केवल वयस्कों के लिए (18+)"
-
-#~ msgid ""
-#~ "Mark this event as 18+ on eventado.com. The public listing will show an "
-#~ "age-restriction badge and a content notice."
-#~ msgstr ""
-#~ "इस इवेंट को eventado.com पर 18+ के रूप में चिह्नित करें। सार्वजनिक लिस्टिंग में आयु-"
-#~ "प्रतिबंध बैज और सामग्री सूचना दिखाई जाएगी।"
-
-#~ msgid ""
-#~ "Public calendar publishing was disabled — the eventado.com server "
-#~ "rejected this site (license or domain mismatch). Please contact "
-#~ "support@vollstart.com."
-#~ msgstr ""
-#~ "सार्वजनिक कैलेंडर प्रकाशन अक्षम कर दिया गया था — eventado.com सर्वर ने इस साइट को "
-#~ "अस्वीकार कर दिया (लाइसेंस या डोमेन बेमेल)। कृपया support@vollstart.com से संपर्क करें।"
-
-#~ msgid ""
-#~ "These options affect how this single product is treated by the global "
-#~ "eventado.com sync."
-#~ msgstr ""
-#~ "ये विकल्प प्रभावित करते हैं कि वैश्विक eventado.com सिंक द्वारा इस एकल उत्पाद को कैसे "
-#~ "संभाला जाए।"
 
 #~ msgid "Upload a custom file for this product."
 #~ msgstr "इस उत्पाद के लिए कस्टम फ़ाइल अपलोड करें।"

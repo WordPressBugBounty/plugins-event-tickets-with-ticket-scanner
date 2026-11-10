@@ -1352,7 +1352,7 @@ msgstr ""
 msgid "Shortcode"
 msgstr ""
 
-#: index.php:1378 js/seating_admin.js:1441
+#: index.php:1378 js/seating_admin.js:1441 backend.js:230
 msgid "Description"
 msgstr "描述"
 
@@ -2913,7 +2913,7 @@ msgid ""
 "switched on (premium, per product)."
 msgstr ""
 
-#: sasoEventtickets_Options.php:414
+#: sasoEventtickets_Options.php:414 sasoEventtickets_PremiumFunctions.php:2361
 msgid "Tickets are still available at the box office."
 msgstr ""
 
@@ -3533,6 +3533,18 @@ msgstr "如果啟用，座位描述將會顯示於購物車和結帳頁面。"
 msgid "Show seat description in seating plan chooser"
 msgstr "在座位圖選擇器中顯示座位說明"
 
+#: sasoEventtickets_Options.php:637
+msgid "Confirm seat selection automatically once complete"
+msgstr ""
+
+#: sasoEventtickets_Options.php:637
+msgid ""
+"If active, the seat map confirms the selection as soon as the customer has "
+"picked the number of seats matching the product quantity - no need to tap "
+"Confirm. Fewer taps on mobile, but no chance to review the seats before they "
+"are confirmed."
+msgstr ""
+
 #: sasoEventtickets_Options.php:621
 msgid ""
 "If active, the seat description will be displayed when hovering or selecting "
@@ -3780,7 +3792,7 @@ msgid "This is the title of the ticket"
 msgstr "這是票券的標題"
 
 #: sasoEventtickets_Options.php:654 backend.js:3235 wc_backend.js:384
-#: wc_backend.js:581
+#: wc_backend.js:581 sasoEventtickets_PremiumFunctions.php:3426
 msgid "Ticket"
 msgstr "票券"
 
@@ -5226,6 +5238,7 @@ msgstr ""
 "功能將會恢復。"
 
 #: sasoEventtickets_Options.php:964 backend.js:426
+#: sasoEventtickets_PremiumFunctions.php:1049
 msgid "Premium License Key"
 msgstr "進階版授權金鑰"
 
@@ -5417,7 +5430,7 @@ msgstr "請聯絡我們以取得解決方案。"
 msgid "function \"%s\" in wc backend not implemented"
 msgstr "WC後端中的函式「%s」未實作"
 
-#: backend.js:273 backend.js:2785
+#: backend.js:273 backend.js:2785 backend.js:460
 msgid "Preview Test Template Code as PDF"
 msgstr "預覽測試範本代碼為 PDF"
 
@@ -5627,11 +5640,13 @@ msgid "Ok"
 msgstr "確定"
 
 #: backend.js:934 backend.js:5091 backend.js:5159 backend.js:5323
+#: backend.js:897 backend.js:956
 msgctxt "label"
 msgid "Cancel"
 msgstr "取消"
 
 #: backend.js:941 backend.js:1020 backend.js:5166 backend.js:5395
+#: backend.js:230
 msgctxt "label"
 msgid "Name"
 msgstr "姓名"
@@ -5672,7 +5687,7 @@ msgid ""
 "those have no product."
 msgstr ""
 
-#: backend.js:948 backend.js:5169
+#: backend.js:948 backend.js:5169 backend.js:230
 msgctxt "label"
 msgid "Description"
 msgstr "說明"
@@ -5693,17 +5708,18 @@ msgctxt "label"
 msgid "Area"
 msgstr "區域"
 
-#: backend.js:1020 backend.js:5599
+#: backend.js:1020 backend.js:5599 backend.js:230
 msgctxt "label"
 msgid "Status"
 msgstr "狀態"
 
-#: backend.js:1053 backend.js:5422 backend.js:5756
+#: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:257
 msgctxt "label"
 msgid "Edit"
 msgstr "編輯"
 
 #: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:6778
+#: backend.js:259
 msgctxt "label"
 msgid "Delete"
 msgstr "刪除"
@@ -5738,7 +5754,7 @@ msgstr ""
 
 #: backend.js:1298 backend.js:1318 backend.js:3237 js/congress-admin.js:63
 #: js/seating_admin.js:118 js/seating_admin.js:759 wc_backend.js:386
-#: wc_backend.js:583
+#: wc_backend.js:583 backend.js:230
 msgid "Status"
 msgstr "狀態"
 
@@ -5815,7 +5831,7 @@ msgstr ""
 msgid "congress page disabled in options"
 msgstr "議會頁面已於選項中停用"
 
-#: backend.js:1553 backend.js:2855 backend.js:5633
+#: backend.js:1553 backend.js:2855 backend.js:5633 backend.js:218
 msgid "Refresh table"
 msgstr "重新整理表格"
 
@@ -6373,12 +6389,12 @@ msgstr "已售出總計：%d 張票券"
 msgid "No tickets found for this month."
 msgstr "本月找不到任何票券。"
 
-#: backend.js:3287 backend.js:5228
+#: backend.js:3287 backend.js:5228 backend.js:919
 msgctxt "label"
 msgid "From"
 msgstr "從"
 
-#: backend.js:3290
+#: backend.js:3290 backend.js:921
 msgctxt "label"
 msgid "To"
 msgstr "至"
@@ -6443,7 +6459,7 @@ msgctxt "label"
 msgid "No individual ticket data available."
 msgstr "沒有可用的單張票券資料。"
 
-#: backend.js:3418
+#: backend.js:3418 sasoEventtickets_PremiumFunctions.php:3426
 msgctxt "column"
 msgid "Ticket"
 msgstr "票券"
@@ -7471,7 +7487,7 @@ msgstr "遭竊"
 msgid "Use the add option"
 msgstr "使用新增選項"
 
-#: backend.js:5422
+#: backend.js:5422 sasoEventtickets_PremiumFunctions.php:3773
 msgctxt "label"
 msgid "Tickets"
 msgstr "票券"
@@ -7492,6 +7508,22 @@ msgstr "不會刪除任何票券,只刪除此列表。"
 #: backend.js:5447
 msgid "Check if list is used by products"
 msgstr "檢查清單是否被產品使用"
+
+#: backend.js:5832
+msgid "Block if list still contains tickets"
+msgstr ""
+
+#: backend.js:5844
+msgid "This list still contains %d tickets!"
+msgstr ""
+
+#: backend.js:5844
+msgid ""
+"Deleting the list would leave these tickets without a list — their QR code, "
+"PDF and scanner checks can break. Delete the tickets first, or move them to "
+"another list. To delete anyway, uncheck \"Block if list still contains "
+"tickets\" in the delete dialog."
+msgstr ""
 
 #: backend.js:5458
 msgid "This list is still assigned to products:"
@@ -7603,6 +7635,7 @@ msgid "Order line details"
 msgstr ""
 
 #: backend.js:5594 ticket_scanner.js:1461
+#: sasoEventtickets_PremiumFunctions.php:3426
 msgctxt "label"
 msgid "Ticket"
 msgstr "票券"
@@ -8012,7 +8045,7 @@ msgid "Export contacts"
 msgstr "匯出聯絡人"
 
 #: js/congress-admin.js:100 js/congress-admin.js:597 js/seating_admin.js:183
-#: js/seating_admin.js:814
+#: js/seating_admin.js:814 backend.js:257
 msgid "Edit"
 msgstr "編輯"
 
@@ -8022,6 +8055,7 @@ msgstr "新增屆次"
 
 #: js/congress-admin.js:100 js/congress-admin.js:570 js/congress-admin.js:598
 #: js/seating_admin.js:49 js/seating_admin.js:186 js/seating_admin.js:817
+#: backend.js:259
 msgid "Delete"
 msgstr "刪除"
 
@@ -8067,6 +8101,7 @@ msgstr "建立"
 #: js/congress-admin.js:163 js/congress-admin.js:310 js/congress-admin.js:457
 #: js/congress-admin.js:532 js/congress-admin.js:1275 js/seating_admin.js:975
 #: js/seating_admin.js:1469 js/seating_admin.js:1508 js/seating_frontend.js:364
+#: backend.js:897 backend.js:956
 msgid "Cancel"
 msgstr "取消"
 
@@ -8385,7 +8420,7 @@ msgstr "圖片"
 msgid "Image URL and optional caption for each item. Drag to reorder."
 msgstr "每個項目包含圖片 URL 與選填的說明文字。拖曳以重新排序。"
 
-#: js/congress-admin.js:925 js/seating_admin.js:115
+#: js/congress-admin.js:925 js/seating_admin.js:115 backend.js:230
 msgid "Name"
 msgstr "名稱"
 
@@ -8506,7 +8541,7 @@ msgstr "編輯區段"
 msgid "Add"
 msgstr "新增"
 
-#: js/congress-admin.js:1251
+#: js/congress-admin.js:1251 js/shop-payment-settings.js:72
 msgid "Save"
 msgstr "儲存"
 
@@ -8844,6 +8879,18 @@ msgstr "已保留"
 msgid "Open Seat Map"
 msgstr "開啟座位圖"
 
+#: js/seating_frontend.js:366
+msgid "Zoom in"
+msgstr ""
+
+#: js/seating_frontend.js:367
+msgid "Reset zoom"
+msgstr ""
+
+#: js/seating_frontend.js:368
+msgid "Zoom out"
+msgstr ""
+
 #: js/seating_frontend.js:335
 msgid "Selected: {label} - Click to change"
 msgstr "已選擇：{label} - 點擊以變更"
@@ -8925,7 +8972,7 @@ msgstr "場地平面圖"
 msgid "Order Ticket Infos"
 msgstr "訂單票券資訊"
 
-#: order_details.js:34
+#: order_details.js:34 sasoEventtickets_PremiumFunctions.php:3773
 msgid "Tickets"
 msgstr "票券"
 
@@ -9335,6 +9382,585 @@ msgstr ""
 msgid "This code is not valid for this product."
 msgstr ""
 
+#: sasoEventtickets_Options.php:322
+msgid ""
+"Ticket scanner: waiting time in seconds before the same ticket can be "
+"scanned again"
+msgstr ""
+
+#: sasoEventtickets_Options.php:322
+msgid ""
+"How long the ticket scanner ignores a repeated scan of the same ticket code. "
+"This prevents the camera from picking up the same ticket twice while it is "
+"still in front of the lens. Enter the waiting time in seconds. Default is 7 "
+"seconds."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:180
+#, php-format
+msgid "Payment amount mismatch on order #%1$d"
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:181
+#, php-format
+msgid ""
+"Provider %1$s reported %2$d %3$s cents, but the order total is %4$d %5$s "
+"cents. The order was NOT completed automatically. Source: %6$s. Please "
+"review the payment in your provider dashboard and the order in the Kasse."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:207
+#, php-format
+msgid "Payment received AFTER order #%1$d was closed"
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:208
+#, php-format
+msgid ""
+"The order status is '%1$s', but provider %2$s reported a completed payment. "
+"The order was NOT reopened — its tickets may have been released to other "
+"buyers. Source: %3$s. Please review: either refund the payment or re-issue "
+"tickets manually in the Kasse."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:247
+#, php-format
+msgid "Order #%1$d — %2$s <%3$s>, total %4$s"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:469
+msgid ""
+"Redeeming all tickets, because the order status changed and option "
+"wcTicketOrderStatusToRedeemAllTickets is set to '"
+msgstr ""
+"正在兌換所有票券，因為訂單狀態已變更，且選項 "
+"wcTicketOrderStatusToRedeemAllTickets 設定為 '"
+
+#. translators: 1: ticket number 2: error message
+#: sasoEventtickets_PremiumFunctions.php:488
+#, php-format
+msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
+msgstr "票券「%1$s」無法兌換。「%2$s」"
+
+#: sasoEventtickets_PremiumFunctions.php:868
+msgid "Choose the order status for ticket assignment"
+msgstr "選擇票券分配的訂單狀態"
+
+#: sasoEventtickets_PremiumFunctions.php:869
+msgid ""
+"In doubt, do not play with it. :) The ticket will be added to the order "
+"items, if the choosen order status is applied to the order. If none is "
+"selected, then you need to manually assign the tickets, by clicking the "
+"corresponding button within the order details. The button will only be "
+"executed, if the order status is paid (processing or completed) then. <a "
+"href='https://woocommerce.com/document/managing-orders/order-statuses/' "
+"target='_blank'>Learn more about the woocommerce order statuses here.</a>"
+msgstr ""
+"如有疑問，請勿更動。:) 若選擇的訂單狀態套用至訂單，票券將會被加入訂單項目中。"
+"若未選擇，您需要手動指派票券，方法是在訂單詳細資訊中點擊對應按鈕。該按鈕僅在"
+"訂單狀態為已付款（處理中或已完成）時才會生效。<a href='https://woocommerce."
+"com/document/managing-orders/order-statuses/' target='_blank'>請點此瞭解更多"
+"關於 WooCommerce 訂單狀態的資訊。</a>"
+
+#: sasoEventtickets_PremiumFunctions.php:925
+msgid "Attach QR image of the order to the purchase email"
+msgstr "將訂單的 QR 圖片附加至購買確認信"
+
+#: sasoEventtickets_PremiumFunctions.php:925
+msgid ""
+"If active, then the order view QR code image will be attached to the "
+"purchase email."
+msgstr "啟用後，將在購買郵件中附加訂單檢視的 QR Code 圖片。"
+
+#: sasoEventtickets_PremiumFunctions.php:927
+msgid "Do not allow the redeem operation after the event started"
+msgstr "活動開始後不允許執行兌換操作"
+
+#: sasoEventtickets_PremiumFunctions.php:927
+msgid ""
+"If active and the event start date is set, then the system will not allow to "
+"redeem the ticket anymore."
+msgstr "如果啟用且已設定活動開始日期，系統將不再允許兌換該票券。"
+
+#: sasoEventtickets_PremiumFunctions.php:1049
+msgid ""
+"Enter your Premium license key to activate features. If you do not have one, "
+"please contact support@vollstart.com."
+msgstr ""
+"輸入您的 Premium 授權金鑰以啟用功能。若尚未擁有金鑰,請聯絡 support@vollstart."
+"com。"
+
+#: sasoEventtickets_PremiumFunctions.php:2172
+msgid "Ticket numbers assigned by the bulk tool."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2380
+msgid "Stop online sales this many hours before the event"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2383
+msgid ""
+"Only for this product. Leave empty to use the shop-wide setting, enter 0 to "
+"sell right up to the start. Needs a start date on the product."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2389
+msgid "Own message when sales are closed"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2390
+msgid ""
+"Shown on the product page and in the cart instead of the shop-wide text. Use "
+"{PRODUCT_NAME} for the product name."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2396
+msgid "Tickets still available at the box office"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2397
+msgid ""
+"Adds a line to the \"sales closed\" message so buyers know they can still "
+"get a ticket at the door."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2451
+msgid ""
+"The option \"Use the default template for the ticket\" is active. It does "
+"not affect a template chosen here — your choice wins. It only applies to "
+"products without their own template."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2458
+msgid "Ticket Template"
+msgstr "票券範本"
+
+#: sasoEventtickets_PremiumFunctions.php:2459
+msgid "Choose a ticket template to overwrite the default template"
+msgstr "選擇票券範本以覆寫預設範本"
+
+#: sasoEventtickets_PremiumFunctions.php:2494
+msgid "Excluded days for the date picker"
+msgstr "日期選擇器排除的日期"
+
+#: sasoEventtickets_PremiumFunctions.php:2495
+msgid ""
+"If you use the date chooser option, then you can exclude specific dates like "
+"holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
+"2025-12-22"
+msgstr ""
+"若您使用日期選擇器選項，可以排除特定日期（例如假日）。請每行輸入一個日期，格"
+"式為 YYYY-MM-DD。例如：2025-12-22"
+
+#: sasoEventtickets_PremiumFunctions.php:2513
+msgid ""
+"These options affect how this single product is treated by the global "
+"eventado.com sync."
+msgstr "這些選項會影響此單一商品在全站 eventado.com 同步中的處理方式。"
+
+#: sasoEventtickets_PremiumFunctions.php:2521
+msgid "Publish this event for free on eventado.com"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2522
+msgid ""
+"Off by default — you decide which events go public. Tick this to give this "
+"event a free public listing on eventado.com, our brand-neutral event "
+"discovery platform, so new customers can find it and buy tickets. Leave it "
+"unticked to keep the event off the public calendar (e.g. internal, staff-"
+"only or private events)."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2528
+msgid "For adults only (18+)"
+msgstr "僅限成人（18+）"
+
+#: sasoEventtickets_PremiumFunctions.php:2529
+msgid ""
+"Mark this event as 18+ on eventado.com. The public listing will show an age-"
+"restriction badge and a content notice."
+msgstr ""
+"在 eventado.com 上將此活動標記為 18+。公開列表將顯示年齡限制標章與內容提醒。"
+
+#: sasoEventtickets_PremiumFunctions.php:3231
+msgid ""
+"Public calendar publishing was disabled — the eventado.com server rejected "
+"this site (license or domain mismatch). Please contact support@vollstart.com."
+msgstr ""
+"公開行事曆發佈已停用 — eventado.com 伺服器拒絕了此網站（授權或網域不符）。請"
+"聯絡 support@vollstart.com。"
+
+#: sasoEventtickets_PremiumFunctions.php:3362
+#, php-format
+msgid "Thank you! Your order #%d has been received. Check your email inbox."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3417
+#: sasoEventtickets_PremiumFunctions.php:3583
+msgid "Sold out in total"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3420
+#: sasoEventtickets_PremiumFunctions.php:3584
+#, php-format
+msgid "%d of %d ticket still available in total"
+msgid_plural "%d of %d tickets still available in total"
+msgstr[0] ""
+
+#: sasoEventtickets_PremiumFunctions.php:3427
+msgid "Price"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3428
+msgid "Quantity"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3519
+msgid "Sold out"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3522
+#, php-format
+msgid "%d ticket available"
+msgid_plural "%d tickets available"
+msgstr[0] ""
+
+#: sasoEventtickets_PremiumFunctions.php:3593
+msgid "Your name"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3594
+msgid "Your email address"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3608
+msgid "Order tickets"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3646
+msgid "Payment received — your tickets are on their way to your email address."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3649
+msgid ""
+"Your payment was received but needs a short review by the organizer. You "
+"will be contacted."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3652
+msgid ""
+"Your payment is being processed — as soon as it is confirmed, your tickets "
+"are sent to your email address automatically."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3656
+msgid ""
+"Payment was cancelled — your order stays reserved for a short time, you can "
+"try again."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3696
+msgid "Online shop page"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3697
+msgid "open"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3746
+msgid "No events on sale at the moment."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3785
+msgid "Ticket shop"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3884
+msgid ""
+"We have received your order. You will get an email with payment details from "
+"the organizer — as soon as your payment is confirmed, your tickets are sent "
+"to this email address automatically."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3904
+#, php-format
+msgid "[%s] Your ticket order #%d"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3909
+#, php-format
+msgid "[%s] New online ticket order #%d"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3954
+#, php-format
+msgid "[%s] Your tickets for order #%d"
+msgstr ""
+
+#: sasoEventtickets_TemplateTickets.php:69
+msgid "No ticket template set"
+msgstr "尚未設定票券範本"
+
+#: backend.js:202
+msgid "Add new template"
+msgstr ""
+
+#: backend.js:230
+msgctxt "label"
+msgid "Changed"
+msgstr ""
+
+#: backend.js:257
+msgctxt "button"
+msgid "Edit"
+msgstr ""
+
+#: backend.js:258
+msgctxt "button"
+msgid "Duplicate"
+msgstr ""
+
+#: backend.js:259
+msgctxt "button"
+msgid "Delete"
+msgstr ""
+
+#: backend.js:356
+msgid "Do you want to close the editor? All unsaved changes will be lost."
+msgstr ""
+
+#: backend.js:377
+msgid "Please add a name for the template."
+msgstr ""
+
+#: backend.js:457
+msgid "Public Ticket Number"
+msgstr ""
+
+#: backend.js:678
+msgctxt "label"
+msgid "Add QR code images"
+msgstr ""
+
+#: backend.js:679
+msgid ""
+"Be careful - this uses a lot of resources. The images will be created and "
+"then zipped into a file, together with the csv file"
+msgstr ""
+
+#: backend.js:888 backend.js:916
+msgid "Bulk Assign Tickets"
+msgstr ""
+
+#: backend.js:890
+msgid ""
+"Find all completed WooCommerce orders with ticket products that have no "
+"ticket numbers assigned, and assign them automatically in batches."
+msgstr ""
+
+#: backend.js:896
+msgid "Start Bulk Assignment"
+msgstr ""
+
+#: backend.js:917
+msgid ""
+"Select a date range to filter which orders to check. Leave empty to check "
+"all orders."
+msgstr ""
+
+#: backend.js:919
+msgid "From"
+msgstr ""
+
+#: backend.js:921
+msgid "To"
+msgstr ""
+
+#: backend.js:931
+msgid "With Order Status"
+msgstr ""
+
+#: backend.js:943
+msgid "Resend order details email after ticket assignment"
+msgstr ""
+
+#: backend.js:945
+msgid "Only for orders where tickets were actually assigned."
+msgstr ""
+
+#: backend.js:948
+msgid "Set the order to \"Completed\" after all its tickets are assigned"
+msgstr ""
+
+#: backend.js:950
+msgid ""
+"Only for orders that are fully served afterwards. WooCommerce then sends its "
+"completed-order email, and that email carries the new tickets."
+msgstr ""
+
+#: backend.js:957 backend.js:1032
+msgid "Check Orders"
+msgstr ""
+
+#: backend.js:958
+msgid "Start Assignment"
+msgstr ""
+
+#: backend.js:959
+msgid "Stop"
+msgstr ""
+
+#: backend.js:960
+msgid "Continue"
+msgstr ""
+
+#: backend.js:994
+msgid "Counting..."
+msgstr ""
+
+#: backend.js:1014
+msgid "Checked %1$d of %2$d orders — %3$d need ticket numbers."
+msgstr ""
+
+#: backend.js:1023
+msgid "No orders found that need ticket assignment."
+msgstr ""
+
+#: backend.js:1028
+msgid ""
+"<strong>%d orders</strong> found with missing ticket numbers. Click \"Start "
+"Assignment\" to begin."
+msgstr ""
+
+#: backend.js:1033
+msgid "Error counting orders."
+msgstr ""
+
+#: backend.js:1044
+msgid "Checked %1$d of %2$d orders — tickets assigned for %3$d."
+msgstr ""
+
+#: backend.js:1051
+msgid "%d orders were set to \"Completed\"."
+msgstr ""
+
+#: backend.js:1055
+msgid ""
+"%d orders still miss ticket numbers and could not be served (for example "
+"%s). Usually their order status is not one of the statuses allowed to "
+"receive ticket numbers, or the product has no ticket list assigned."
+msgstr ""
+
+#: backend.js:1064
+msgid "Stopped after %1$d orders — tickets assigned for %2$d."
+msgstr ""
+
+#: backend.js:1087
+msgid "Done! Tickets assigned for %d orders."
+msgstr ""
+
+#: backend.js:1097
+msgid "Connection problem — retrying (%1$d of %2$d)."
+msgstr ""
+
+#: backend.js:1103
+msgid ""
+"Stopped after %1$d orders — tickets assigned for %2$d. Click \"Continue\" to "
+"carry on where it stopped."
+msgstr ""
+
+#: js/shop-payment-settings.js:18
+msgid "Network error."
+msgstr "網路錯誤。"
+
+#: js/shop-payment-settings.js:32
+msgid "Online payments"
+msgstr "線上付款"
+
+#: js/shop-payment-settings.js:34
+msgid ""
+"Sell through the shop page with a hosted Stripe checkout — buyers pay by "
+"card and the tickets are sent automatically."
+msgstr "透過代管的 Stripe 結帳在商店頁面銷售——買家以刷卡付款,票券會自動寄送。"
+
+#: js/shop-payment-settings.js:37
+msgid "Off — orders are confirmed manually in the Kasse"
+msgstr "關閉 — 訂單在收銀台手動確認"
+
+#: js/shop-payment-settings.js:55
+msgid "Configured"
+msgstr "已設定"
+
+#: js/shop-payment-settings.js:56
+msgid "Not configured"
+msgstr "未設定"
+
+#: js/shop-payment-settings.js:66
+msgid "Payment provider"
+msgstr "付款服務提供商"
+
+#: js/shop-payment-settings.js:67
+msgid "Stripe secret key"
+msgstr "Stripe 密鑰"
+
+#: js/shop-payment-settings.js:69
+msgid ""
+"Leave empty to keep the stored key. A secret key (sk_…) — never the "
+"publishable one."
+msgstr "留空以保留已儲存的金鑰。請填入私密金鑰(sk_…)——絕不可填入可公開的金鑰。"
+
+#: js/shop-payment-settings.js:70
+msgid "Stripe webhook signing secret"
+msgstr "Stripe Webhook 簽署金鑰"
+
+#: js/shop-payment-settings.js:79
+msgid "Saving…"
+msgstr "正在儲存…"
+
+#: js/shop-payment-settings.js:85
+msgid "Saved."
+msgstr "已儲存。"
+
+#: js/shop-payment-settings.js:87
+msgid "Save failed."
+msgstr "儲存失敗。"
+
+#: js/shop-payment-settings.js:94
+msgid "Webhook endpoint (register in the Stripe dashboard → Webhooks)"
+msgstr "Webhook 端點(在 Stripe 控制台 → Webhooks 中註冊)"
+
+#: js/shop-payment-settings.js:97
+msgid ""
+"Events: checkout.session.completed, checkout.session.expired, checkout."
+"session.async_payment_failed"
+msgstr "事件:checkout.session.completed、checkout.session.expired、checkout.session.async_payment_failed"
+
+#: js/shop-payment-settings.js:99
+msgid "Test connection"
+msgstr "測試連線"
+
+#: js/shop-payment-settings.js:103
+msgid "Checking…"
+msgstr "正在檢查…"
+
+#: js/shop-payment-settings.js:109
+msgid "Key valid"
+msgstr "金鑰有效"
+
+#: js/shop-payment-settings.js:109
+msgid "Webhook delivery still needs to be confirmed in the Stripe dashboard."
+msgstr "Webhook 的傳遞仍需在 Stripe 控制台中確認。"
+
+#: js/shop-payment-settings.js:112
+msgid "Check failed."
+msgstr "檢查失敗。"
+
+#: js/shop-payment-settings.js:120
+msgid ""
+"The installed free plugin is too old for automatic ticket delivery after "
+"payment — update the free plugin to 3.3.1 or newer."
+msgstr "已安裝的免費外掛版本過舊,無法在付款後自動傳送票券——請將免費外掛更新至 3.3.1 或更新版本。"
+
 #~ msgid ""
 #~ "Enable PDF ticket attachment in emails? Customers receive their tickets "
 #~ "as PDF directly in the order confirmation email."
@@ -9348,17 +9974,8 @@ msgstr ""
 #~ msgid "Activate ob_end_flush"
 #~ msgstr "啟用 ob_end_flush"
 
-#~ msgid "Attach QR image of the order to the purchase email"
-#~ msgstr "將訂單的 QR 圖片附加至購買確認信"
-
 #~ msgid "Check License Now"
 #~ msgstr "立即檢查授權"
-
-#~ msgid "Choose a ticket template to overwrite the default template"
-#~ msgstr "選擇票券範本以覆寫預設範本"
-
-#~ msgid "Choose the order status for ticket assignment"
-#~ msgstr "選擇票券分配的訂單狀態"
 
 #~ msgid "Click the button below to update your premium plugin now."
 #~ msgstr "點擊下方按鈕以立即更新您的進階版插件。"
@@ -9382,27 +9999,14 @@ msgstr ""
 #~ "tickets from a specific order."
 #~ msgstr "顯示指派給目前登入使用者的票券（預設），或顯示特定訂單的票券。"
 
-#~ msgid "Do not allow the redeem operation after the event started"
-#~ msgstr "活動開始後不允許執行兌換操作"
-
 #~ msgid "Enable tickets on a WooCommerce product"
 #~ msgstr "在 WooCommerce 產品上啟用門票功能"
-
-#~ msgid ""
-#~ "Enter your Premium license key to activate features. If you do not have "
-#~ "one, please contact support@vollstart.com."
-#~ msgstr ""
-#~ "輸入您的 Premium 授權金鑰以啟用功能。若尚未擁有金鑰,請聯絡 "
-#~ "support@vollstart.com。"
 
 #~ msgid "Example with JSON output:"
 #~ msgstr "JSON 輸出範例:"
 
 #~ msgid "Example:"
 #~ msgstr "範例:"
-
-#~ msgid "Excluded days for the date picker"
-#~ msgstr "日期選擇器排除的日期"
 
 #~ msgid ""
 #~ "Fields to show (comma-separated). Values: codes, validation, user, used, "
@@ -9419,30 +10023,12 @@ msgstr ""
 #~ msgstr "前往產品列表"
 
 #~ msgid ""
-#~ "If active and the event start date is set, then the system will not allow "
-#~ "to redeem the ticket anymore."
-#~ msgstr "如果啟用且已設定活動開始日期，系統將不再允許兌換該票券。"
-
-#~ msgid ""
 #~ "If active, the system will try to use an existing ticket from the ticket "
 #~ "list that is free. If no free ticket number could be found, a new ticket "
 #~ "will be created and assigned to the purchase."
 #~ msgstr ""
 #~ "如果啟用，系統將會嘗試使用票券清單中現有的空閒票券。如果找不到空閒的票券編"
 #~ "號，則會建立一張新票券並指派給該購買。"
-
-#~ msgid ""
-#~ "If active, then the order view QR code image will be attached to the "
-#~ "purchase email."
-#~ msgstr "啟用後，將在購買郵件中附加訂單檢視的 QR Code 圖片。"
-
-#~ msgid ""
-#~ "If you use the date chooser option, then you can exclude specific dates "
-#~ "like holidays. Enter each date on a new line and in the format YYYY-MM-"
-#~ "DD. eg. 2025-12-22"
-#~ msgstr ""
-#~ "若您使用日期選擇器選項，可以排除特定日期（例如假日）。請每行輸入一個日期，"
-#~ "格式為 YYYY-MM-DD。例如：2025-12-22"
 
 #~ msgid ""
 #~ "If your images on the PDF are not shown then this option trigger not to "
@@ -9463,21 +10049,6 @@ msgstr ""
 #~ "若您佈景主題顯示 404 標題或票券完全無法呈現，您可以嘗試使用此相容模式。啟"
 #~ "用後，票券詳細頁與票券 PDF 頁面的連結將由 /ticket/XYZ 改為 /ticket/?"
 #~ "code=XYZ。部分佈景主題在正常模式下會發生問題。"
-
-#~ msgid ""
-#~ "In doubt, do not play with it. :) The ticket will be added to the order "
-#~ "items, if the choosen order status is applied to the order. If none is "
-#~ "selected, then you need to manually assign the tickets, by clicking the "
-#~ "corresponding button within the order details. The button will only be "
-#~ "executed, if the order status is paid (processing or completed) then. <a "
-#~ "href='https://woocommerce.com/document/managing-orders/order-statuses/' "
-#~ "target='_blank'>Learn more about the woocommerce order statuses here.</a>"
-#~ msgstr ""
-#~ "如有疑問，請勿更動。:) 若選擇的訂單狀態套用至訂單，票券將會被加入訂單項目"
-#~ "中。若未選擇，您需要手動指派票券，方法是在訂單詳細資訊中點擊對應按鈕。該按"
-#~ "鈕僅在訂單狀態為已付款（處理中或已完成）時才會生效。<a href='https://"
-#~ "woocommerce.com/document/managing-orders/order-statuses/' target='_blank'>"
-#~ "請點此瞭解更多關於 WooCommerce 訂單狀態的資訊。</a>"
 
 #~ msgid ""
 #~ "In order to make the ticket detail view and the ticket scanner work, you "
@@ -9509,9 +10080,6 @@ msgstr ""
 #~ msgid "New Premium Features Available"
 #~ msgstr "新的 Premium 功能已推出"
 
-#~ msgid "No ticket template set"
-#~ msgstr "尚未設定票券範本"
-
 #~ msgid "Open Options"
 #~ msgstr "開啟選項"
 
@@ -9530,13 +10098,6 @@ msgstr ""
 #, javascript-format
 #~ msgid "Premium version %s is available with new features:"
 #~ msgstr "進階版 %s 已推出新功能："
-
-#~ msgid ""
-#~ "Redeeming all tickets, because the order status changed and option "
-#~ "wcTicketOrderStatusToRedeemAllTickets is set to '"
-#~ msgstr ""
-#~ "正在兌換所有票券，因為訂單狀態已變更，且選項 "
-#~ "wcTicketOrderStatusToRedeemAllTickets 設定為 '"
 
 #~ msgid ""
 #~ "Shortcode to display the assigned tickets and codes of an user within a "
@@ -9580,13 +10141,6 @@ msgstr ""
 #~ msgid "This day is not selectable"
 #~ msgstr "此日期無法選擇"
 
-#, php-format
-#~ msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
-#~ msgstr "票券「%1$s」無法兌換。「%2$s」"
-
-#~ msgid "Ticket Template"
-#~ msgstr "票券範本"
-
 #~ msgid "Update Now"
 #~ msgstr "立即更新"
 
@@ -9628,29 +10182,6 @@ msgstr ""
 
 #~ msgid "Exclude this product from eventado.com"
 #~ msgstr "將此商品排除於 eventado.com 之外"
-
-#~ msgid "For adults only (18+)"
-#~ msgstr "僅限成人（18+）"
-
-#~ msgid ""
-#~ "Mark this event as 18+ on eventado.com. The public listing will show an "
-#~ "age-restriction badge and a content notice."
-#~ msgstr ""
-#~ "在 eventado.com 上將此活動標記為 18+。公開列表將顯示年齡限制標章與內容提"
-#~ "醒。"
-
-#~ msgid ""
-#~ "Public calendar publishing was disabled — the eventado.com server "
-#~ "rejected this site (license or domain mismatch). Please contact "
-#~ "support@vollstart.com."
-#~ msgstr ""
-#~ "公開行事曆發佈已停用 — eventado.com 伺服器拒絕了此網站（授權或網域不符）。"
-#~ "請聯絡 support@vollstart.com。"
-
-#~ msgid ""
-#~ "These options affect how this single product is treated by the global "
-#~ "eventado.com sync."
-#~ msgstr "這些選項會影響此單一商品在全站 eventado.com 同步中的處理方式。"
 
 #~ msgid "Upload a custom file for this product."
 #~ msgstr "為此商品上傳自訂檔案。"

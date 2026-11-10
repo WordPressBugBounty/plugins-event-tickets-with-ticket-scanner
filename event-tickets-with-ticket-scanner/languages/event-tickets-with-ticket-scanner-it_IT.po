@@ -482,8 +482,9 @@ msgstr ""
 msgid ""
 "\"%1$s\" requires a seat selection. Please go back to the product page and "
 "select your seat."
-msgstr "\"%1$s\" richiede la selezione del posto. Torna alla pagina del"
-"prodotto e seleziona il tuo posto."
+msgstr ""
+"\"%1$s\" richiede la selezione del posto. Torna alla pagina delprodotto e "
+"seleziona il tuo posto."
 
 #: includes/woocommerce/class-frontend.php:1930
 msgid "Security check failed. Please reload page."
@@ -1439,7 +1440,7 @@ msgstr ""
 msgid "Shortcode"
 msgstr ""
 
-#: index.php:1378 js/seating_admin.js:1441
+#: index.php:1378 js/seating_admin.js:1441 backend.js:230
 msgid "Description"
 msgstr "Descrizione"
 
@@ -3161,7 +3162,7 @@ msgid ""
 "switched on (premium, per product)."
 msgstr ""
 
-#: sasoEventtickets_Options.php:414
+#: sasoEventtickets_Options.php:414 sasoEventtickets_PremiumFunctions.php:2361
 msgid "Tickets are still available at the box office."
 msgstr ""
 
@@ -3855,6 +3856,18 @@ msgstr ""
 msgid "Show seat description in seating plan chooser"
 msgstr "Mostrare la descrizione del posto nel selettore piano posti"
 
+#: sasoEventtickets_Options.php:637
+msgid "Confirm seat selection automatically once complete"
+msgstr ""
+
+#: sasoEventtickets_Options.php:637
+msgid ""
+"If active, the seat map confirms the selection as soon as the customer has "
+"picked the number of seats matching the product quantity - no need to tap "
+"Confirm. Fewer taps on mobile, but no chance to review the seats before they "
+"are confirmed."
+msgstr ""
+
 #: sasoEventtickets_Options.php:621
 msgid ""
 "If active, the seat description will be displayed when hovering or selecting "
@@ -4134,7 +4147,7 @@ msgid "This is the title of the ticket"
 msgstr "Questo è il titolo del biglietto"
 
 #: sasoEventtickets_Options.php:654 backend.js:3235 wc_backend.js:384
-#: wc_backend.js:581
+#: wc_backend.js:581 sasoEventtickets_PremiumFunctions.php:3426
 msgid "Ticket"
 msgstr "Biglietto"
 
@@ -5742,6 +5755,7 @@ msgstr ""
 "ripristinate."
 
 #: sasoEventtickets_Options.php:964 backend.js:426
+#: sasoEventtickets_PremiumFunctions.php:1049
 msgid "Premium License Key"
 msgstr "Chiave di licenza Premium"
 
@@ -5940,7 +5954,7 @@ msgstr "Si prega di contattarci per una soluzione."
 msgid "function \"%s\" in wc backend not implemented"
 msgstr "Funzione \"%s\" nel backend WC non implementata"
 
-#: backend.js:273 backend.js:2785
+#: backend.js:273 backend.js:2785 backend.js:460
 msgid "Preview Test Template Code as PDF"
 msgstr "Anteprima codice modello di test come PDF"
 
@@ -6156,11 +6170,13 @@ msgid "Ok"
 msgstr "Ok"
 
 #: backend.js:934 backend.js:5091 backend.js:5159 backend.js:5323
+#: backend.js:897 backend.js:956
 msgctxt "label"
 msgid "Cancel"
 msgstr "Annulla"
 
 #: backend.js:941 backend.js:1020 backend.js:5166 backend.js:5395
+#: backend.js:230
 msgctxt "label"
 msgid "Name"
 msgstr "Nome"
@@ -6202,7 +6218,7 @@ msgid ""
 "those have no product."
 msgstr ""
 
-#: backend.js:948 backend.js:5169
+#: backend.js:948 backend.js:5169 backend.js:230
 msgctxt "label"
 msgid "Description"
 msgstr "Descrizione"
@@ -6223,17 +6239,18 @@ msgctxt "label"
 msgid "Area"
 msgstr "Area"
 
-#: backend.js:1020 backend.js:5599
+#: backend.js:1020 backend.js:5599 backend.js:230
 msgctxt "label"
 msgid "Status"
 msgstr "Stato"
 
-#: backend.js:1053 backend.js:5422 backend.js:5756
+#: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:257
 msgctxt "label"
 msgid "Edit"
 msgstr "Modifica"
 
 #: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:6778
+#: backend.js:259
 msgctxt "label"
 msgid "Delete"
 msgstr "Elimina"
@@ -6269,7 +6286,7 @@ msgstr ""
 
 #: backend.js:1298 backend.js:1318 backend.js:3237 js/congress-admin.js:63
 #: js/seating_admin.js:118 js/seating_admin.js:759 wc_backend.js:386
-#: wc_backend.js:583
+#: wc_backend.js:583 backend.js:230
 msgid "Status"
 msgstr "Stato"
 
@@ -6350,7 +6367,7 @@ msgstr ""
 msgid "congress page disabled in options"
 msgstr "pagina congresso disattivata nelle opzioni"
 
-#: backend.js:1553 backend.js:2855 backend.js:5633
+#: backend.js:1553 backend.js:2855 backend.js:5633 backend.js:218
 msgid "Refresh table"
 msgstr "Aggiorna tabella"
 
@@ -6918,12 +6935,12 @@ msgstr "Totale venduti: %d biglietti"
 msgid "No tickets found for this month."
 msgstr "Nessun biglietto trovato per questo mese."
 
-#: backend.js:3287 backend.js:5228
+#: backend.js:3287 backend.js:5228 backend.js:919
 msgctxt "label"
 msgid "From"
 msgstr "Da"
 
-#: backend.js:3290
+#: backend.js:3290 backend.js:921
 msgctxt "label"
 msgid "To"
 msgstr "A"
@@ -6988,7 +7005,7 @@ msgctxt "label"
 msgid "No individual ticket data available."
 msgstr "Nessun dato di biglietto individuale disponibile."
 
-#: backend.js:3418
+#: backend.js:3418 sasoEventtickets_PremiumFunctions.php:3426
 msgctxt "column"
 msgid "Ticket"
 msgstr "Biglietto"
@@ -8084,7 +8101,7 @@ msgstr "è rubato"
 msgid "Use the add option"
 msgstr "Utilizza l'opzione aggiungi"
 
-#: backend.js:5422
+#: backend.js:5422 sasoEventtickets_PremiumFunctions.php:3773
 msgctxt "label"
 msgid "Tickets"
 msgstr "Biglietti"
@@ -8105,6 +8122,22 @@ msgstr "Nessun biglietto verrà eliminato. Solo l'elenco."
 #: backend.js:5447
 msgid "Check if list is used by products"
 msgstr "Verificare se la lista è utilizzata dai prodotti"
+
+#: backend.js:5832
+msgid "Block if list still contains tickets"
+msgstr ""
+
+#: backend.js:5844
+msgid "This list still contains %d tickets!"
+msgstr ""
+
+#: backend.js:5844
+msgid ""
+"Deleting the list would leave these tickets without a list — their QR code, "
+"PDF and scanner checks can break. Delete the tickets first, or move them to "
+"another list. To delete anyway, uncheck \"Block if list still contains "
+"tickets\" in the delete dialog."
+msgstr ""
 
 #: backend.js:5458
 msgid "This list is still assigned to products:"
@@ -8222,6 +8255,7 @@ msgid "Order line details"
 msgstr ""
 
 #: backend.js:5594 ticket_scanner.js:1461
+#: sasoEventtickets_PremiumFunctions.php:3426
 msgctxt "label"
 msgid "Ticket"
 msgstr "Biglietto"
@@ -8640,7 +8674,7 @@ msgid "Export contacts"
 msgstr ""
 
 #: js/congress-admin.js:100 js/congress-admin.js:597 js/seating_admin.js:183
-#: js/seating_admin.js:814
+#: js/seating_admin.js:814 backend.js:257
 msgid "Edit"
 msgstr "Modifica"
 
@@ -8650,6 +8684,7 @@ msgstr "Nuova edizione"
 
 #: js/congress-admin.js:100 js/congress-admin.js:570 js/congress-admin.js:598
 #: js/seating_admin.js:49 js/seating_admin.js:186 js/seating_admin.js:817
+#: backend.js:259
 msgid "Delete"
 msgstr "Elimina"
 
@@ -8700,6 +8735,7 @@ msgstr "Crea"
 #: js/congress-admin.js:163 js/congress-admin.js:310 js/congress-admin.js:457
 #: js/congress-admin.js:532 js/congress-admin.js:1275 js/seating_admin.js:975
 #: js/seating_admin.js:1469 js/seating_admin.js:1508 js/seating_frontend.js:364
+#: backend.js:897 backend.js:956
 msgid "Cancel"
 msgstr "Annulla"
 
@@ -9030,7 +9066,7 @@ msgstr ""
 "URL dell'immagine e didascalia opzionale per ogni elemento. Trascini per "
 "riordinare."
 
-#: js/congress-admin.js:925 js/seating_admin.js:115
+#: js/congress-admin.js:925 js/seating_admin.js:115 backend.js:230
 msgid "Name"
 msgstr "Nome"
 
@@ -9153,7 +9189,7 @@ msgstr "Modifica sezione"
 msgid "Add"
 msgstr ""
 
-#: js/congress-admin.js:1251
+#: js/congress-admin.js:1251 js/shop-payment-settings.js:72
 msgid "Save"
 msgstr "Salva"
 
@@ -9495,6 +9531,18 @@ msgstr "Riservato"
 msgid "Open Seat Map"
 msgstr "Apri mappa posti"
 
+#: js/seating_frontend.js:366
+msgid "Zoom in"
+msgstr ""
+
+#: js/seating_frontend.js:367
+msgid "Reset zoom"
+msgstr ""
+
+#: js/seating_frontend.js:368
+msgid "Zoom out"
+msgstr ""
+
 #: js/seating_frontend.js:335
 msgid "Selected: {label} - Click to change"
 msgstr "Selezionato: {label} - Cliccare per modificare"
@@ -9576,7 +9624,7 @@ msgstr "Piano sede"
 msgid "Order Ticket Infos"
 msgstr "Informazioni biglietto ordine"
 
-#: order_details.js:34
+#: order_details.js:34 sasoEventtickets_PremiumFunctions.php:3773
 msgid "Tickets"
 msgstr "Biglietti"
 
@@ -9994,6 +10042,600 @@ msgstr ""
 msgid "This code is not valid for this product."
 msgstr ""
 
+#: sasoEventtickets_Options.php:322
+msgid ""
+"Ticket scanner: waiting time in seconds before the same ticket can be "
+"scanned again"
+msgstr ""
+
+#: sasoEventtickets_Options.php:322
+msgid ""
+"How long the ticket scanner ignores a repeated scan of the same ticket code. "
+"This prevents the camera from picking up the same ticket twice while it is "
+"still in front of the lens. Enter the waiting time in seconds. Default is 7 "
+"seconds."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:180
+#, php-format
+msgid "Payment amount mismatch on order #%1$d"
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:181
+#, php-format
+msgid ""
+"Provider %1$s reported %2$d %3$s cents, but the order total is %4$d %5$s "
+"cents. The order was NOT completed automatically. Source: %6$s. Please "
+"review the payment in your provider dashboard and the order in the Kasse."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:207
+#, php-format
+msgid "Payment received AFTER order #%1$d was closed"
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:208
+#, php-format
+msgid ""
+"The order status is '%1$s', but provider %2$s reported a completed payment. "
+"The order was NOT reopened — its tickets may have been released to other "
+"buyers. Source: %3$s. Please review: either refund the payment or re-issue "
+"tickets manually in the Kasse."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:247
+#, php-format
+msgid "Order #%1$d — %2$s <%3$s>, total %4$s"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:469
+msgid ""
+"Redeeming all tickets, because the order status changed and option "
+"wcTicketOrderStatusToRedeemAllTickets is set to '"
+msgstr ""
+"Riscatto di tutti i biglietti in corso, perché lo stato dell'ordine è "
+"cambiato e l'opzione wcTicketOrderStatusToRedeemAllTickets è impostata su '"
+
+#. translators: 1: ticket number 2: error message
+#: sasoEventtickets_PremiumFunctions.php:488
+#, php-format
+msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
+msgstr "Il biglietto \"%1$s\" non può essere riscattato. \"%2$s\""
+
+#: sasoEventtickets_PremiumFunctions.php:868
+msgid "Choose the order status for ticket assignment"
+msgstr "Scegli lo stato dell'ordine per l'assegnazione dei biglietti"
+
+#: sasoEventtickets_PremiumFunctions.php:869
+msgid ""
+"In doubt, do not play with it. :) The ticket will be added to the order "
+"items, if the choosen order status is applied to the order. If none is "
+"selected, then you need to manually assign the tickets, by clicking the "
+"corresponding button within the order details. The button will only be "
+"executed, if the order status is paid (processing or completed) then. <a "
+"href='https://woocommerce.com/document/managing-orders/order-statuses/' "
+"target='_blank'>Learn more about the woocommerce order statuses here.</a>"
+msgstr ""
+"In caso di dubbio, non modificare questa impostazione. :) Il biglietto verrà "
+"aggiunto agli articoli dell'ordine se lo stato dell'ordine selezionato viene "
+"applicato all'ordine. Se non ne viene selezionato nessuno, dovrai assegnare "
+"manualmente i biglietti cliccando il pulsante corrispondente nei dettagli "
+"dell'ordine. Il pulsante verrà eseguito solo se lo stato dell'ordine è "
+"pagato (in elaborazione o completato). <a href='https://woocommerce.com/"
+"document/managing-orders/order-statuses/' target='_blank'>Scopri di più "
+"sugli stati degli ordini WooCommerce qui.</a>"
+
+#: sasoEventtickets_PremiumFunctions.php:925
+msgid "Attach QR image of the order to the purchase email"
+msgstr "Allega l'immagine QR dell'ordine all'e-mail di acquisto"
+
+#: sasoEventtickets_PremiumFunctions.php:925
+msgid ""
+"If active, then the order view QR code image will be attached to the "
+"purchase email."
+msgstr ""
+"Se attivo, l'immagine del codice QR della vista dell'ordine verrà allegata "
+"all'e-mail di acquisto."
+
+#: sasoEventtickets_PremiumFunctions.php:927
+msgid "Do not allow the redeem operation after the event started"
+msgstr "Non consentire il riscatto dopo l'inizio dell'evento"
+
+#: sasoEventtickets_PremiumFunctions.php:927
+msgid ""
+"If active and the event start date is set, then the system will not allow to "
+"redeem the ticket anymore."
+msgstr ""
+"Se attivo e la data di inizio dell'evento è impostata, il sistema non "
+"consentirà più il riscatto del biglietto."
+
+#: sasoEventtickets_PremiumFunctions.php:1049
+msgid ""
+"Enter your Premium license key to activate features. If you do not have one, "
+"please contact support@vollstart.com."
+msgstr ""
+"Inserisci la tua chiave di licenza Premium per attivare le funzionalità. Se "
+"non ne hai una, contatta support@vollstart.com."
+
+#: sasoEventtickets_PremiumFunctions.php:2172
+msgid "Ticket numbers assigned by the bulk tool."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2380
+msgid "Stop online sales this many hours before the event"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2383
+msgid ""
+"Only for this product. Leave empty to use the shop-wide setting, enter 0 to "
+"sell right up to the start. Needs a start date on the product."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2389
+msgid "Own message when sales are closed"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2390
+msgid ""
+"Shown on the product page and in the cart instead of the shop-wide text. Use "
+"{PRODUCT_NAME} for the product name."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2396
+msgid "Tickets still available at the box office"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2397
+msgid ""
+"Adds a line to the \"sales closed\" message so buyers know they can still "
+"get a ticket at the door."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2451
+msgid ""
+"The option \"Use the default template for the ticket\" is active. It does "
+"not affect a template chosen here — your choice wins. It only applies to "
+"products without their own template."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2458
+msgid "Ticket Template"
+msgstr "Modello di biglietto"
+
+#: sasoEventtickets_PremiumFunctions.php:2459
+msgid "Choose a ticket template to overwrite the default template"
+msgstr ""
+"Scegli un modello di biglietto per sovrascrivere il modello predefinito"
+
+#: sasoEventtickets_PremiumFunctions.php:2494
+msgid "Excluded days for the date picker"
+msgstr "Giorni esclusi per il selettore di date"
+
+#: sasoEventtickets_PremiumFunctions.php:2495
+msgid ""
+"If you use the date chooser option, then you can exclude specific dates like "
+"holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
+"2025-12-22"
+msgstr ""
+"Se utilizzi l'opzione di selezione della data, puoi escludere date "
+"specifiche come le festività. Inserisci ogni data su una nuova riga nel "
+"formato AAAA-MM-GG. es. 2025-12-22"
+
+#: sasoEventtickets_PremiumFunctions.php:2513
+msgid ""
+"These options affect how this single product is treated by the global "
+"eventado.com sync."
+msgstr ""
+"Queste opzioni influenzano come questo singolo prodotto viene trattato dalla "
+"sincronizzazione globale di eventado.com."
+
+#: sasoEventtickets_PremiumFunctions.php:2521
+msgid "Publish this event for free on eventado.com"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2522
+msgid ""
+"Off by default — you decide which events go public. Tick this to give this "
+"event a free public listing on eventado.com, our brand-neutral event "
+"discovery platform, so new customers can find it and buy tickets. Leave it "
+"unticked to keep the event off the public calendar (e.g. internal, staff-"
+"only or private events)."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2528
+msgid "For adults only (18+)"
+msgstr "Solo per adulti (18+)"
+
+#: sasoEventtickets_PremiumFunctions.php:2529
+msgid ""
+"Mark this event as 18+ on eventado.com. The public listing will show an age-"
+"restriction badge and a content notice."
+msgstr ""
+"Contrassegna questo evento come 18+ su eventado.com. La scheda pubblica "
+"mostrerà un badge di restrizione d'età e un avviso sui contenuti."
+
+#: sasoEventtickets_PremiumFunctions.php:3231
+msgid ""
+"Public calendar publishing was disabled — the eventado.com server rejected "
+"this site (license or domain mismatch). Please contact support@vollstart.com."
+msgstr ""
+"La pubblicazione sul calendario pubblico è stata disattivata — il server "
+"eventado.com ha rifiutato questo sito (licenza o dominio non valido). "
+"Contatta support@vollstart.com."
+
+#: sasoEventtickets_PremiumFunctions.php:3362
+#, php-format
+msgid "Thank you! Your order #%d has been received. Check your email inbox."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3417
+#: sasoEventtickets_PremiumFunctions.php:3583
+msgid "Sold out in total"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3420
+#: sasoEventtickets_PremiumFunctions.php:3584
+#, php-format
+msgid "%d of %d ticket still available in total"
+msgid_plural "%d of %d tickets still available in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#: sasoEventtickets_PremiumFunctions.php:3427
+msgid "Price"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3428
+msgid "Quantity"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3519
+msgid "Sold out"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3522
+#, php-format
+msgid "%d ticket available"
+msgid_plural "%d tickets available"
+msgstr[0] ""
+msgstr[1] ""
+
+#: sasoEventtickets_PremiumFunctions.php:3593
+msgid "Your name"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3594
+msgid "Your email address"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3608
+msgid "Order tickets"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3646
+msgid "Payment received — your tickets are on their way to your email address."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3649
+msgid ""
+"Your payment was received but needs a short review by the organizer. You "
+"will be contacted."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3652
+msgid ""
+"Your payment is being processed — as soon as it is confirmed, your tickets "
+"are sent to your email address automatically."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3656
+msgid ""
+"Payment was cancelled — your order stays reserved for a short time, you can "
+"try again."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3696
+msgid "Online shop page"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3697
+msgid "open"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3746
+msgid "No events on sale at the moment."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3785
+msgid "Ticket shop"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3884
+msgid ""
+"We have received your order. You will get an email with payment details from "
+"the organizer — as soon as your payment is confirmed, your tickets are sent "
+"to this email address automatically."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3904
+#, php-format
+msgid "[%s] Your ticket order #%d"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3909
+#, php-format
+msgid "[%s] New online ticket order #%d"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3954
+#, php-format
+msgid "[%s] Your tickets for order #%d"
+msgstr ""
+
+#: sasoEventtickets_TemplateTickets.php:69
+msgid "No ticket template set"
+msgstr "Nessun modello di biglietto impostato"
+
+#: backend.js:202
+msgid "Add new template"
+msgstr ""
+
+#: backend.js:230
+msgctxt "label"
+msgid "Changed"
+msgstr ""
+
+#: backend.js:257
+msgctxt "button"
+msgid "Edit"
+msgstr ""
+
+#: backend.js:258
+msgctxt "button"
+msgid "Duplicate"
+msgstr ""
+
+#: backend.js:259
+msgctxt "button"
+msgid "Delete"
+msgstr ""
+
+#: backend.js:356
+msgid "Do you want to close the editor? All unsaved changes will be lost."
+msgstr ""
+
+#: backend.js:377
+msgid "Please add a name for the template."
+msgstr ""
+
+#: backend.js:457
+msgid "Public Ticket Number"
+msgstr ""
+
+#: backend.js:678
+msgctxt "label"
+msgid "Add QR code images"
+msgstr ""
+
+#: backend.js:679
+msgid ""
+"Be careful - this uses a lot of resources. The images will be created and "
+"then zipped into a file, together with the csv file"
+msgstr ""
+
+#: backend.js:888 backend.js:916
+msgid "Bulk Assign Tickets"
+msgstr ""
+
+#: backend.js:890
+msgid ""
+"Find all completed WooCommerce orders with ticket products that have no "
+"ticket numbers assigned, and assign them automatically in batches."
+msgstr ""
+
+#: backend.js:896
+msgid "Start Bulk Assignment"
+msgstr ""
+
+#: backend.js:917
+msgid ""
+"Select a date range to filter which orders to check. Leave empty to check "
+"all orders."
+msgstr ""
+
+#: backend.js:919
+msgid "From"
+msgstr ""
+
+#: backend.js:921
+msgid "To"
+msgstr ""
+
+#: backend.js:931
+msgid "With Order Status"
+msgstr ""
+
+#: backend.js:943
+msgid "Resend order details email after ticket assignment"
+msgstr ""
+
+#: backend.js:945
+msgid "Only for orders where tickets were actually assigned."
+msgstr ""
+
+#: backend.js:948
+msgid "Set the order to \"Completed\" after all its tickets are assigned"
+msgstr ""
+
+#: backend.js:950
+msgid ""
+"Only for orders that are fully served afterwards. WooCommerce then sends its "
+"completed-order email, and that email carries the new tickets."
+msgstr ""
+
+#: backend.js:957 backend.js:1032
+msgid "Check Orders"
+msgstr ""
+
+#: backend.js:958
+msgid "Start Assignment"
+msgstr ""
+
+#: backend.js:959
+msgid "Stop"
+msgstr ""
+
+#: backend.js:960
+msgid "Continue"
+msgstr ""
+
+#: backend.js:994
+msgid "Counting..."
+msgstr ""
+
+#: backend.js:1014
+msgid "Checked %1$d of %2$d orders — %3$d need ticket numbers."
+msgstr ""
+
+#: backend.js:1023
+msgid "No orders found that need ticket assignment."
+msgstr ""
+
+#: backend.js:1028
+msgid ""
+"<strong>%d orders</strong> found with missing ticket numbers. Click \"Start "
+"Assignment\" to begin."
+msgstr ""
+
+#: backend.js:1033
+msgid "Error counting orders."
+msgstr ""
+
+#: backend.js:1044
+msgid "Checked %1$d of %2$d orders — tickets assigned for %3$d."
+msgstr ""
+
+#: backend.js:1051
+msgid "%d orders were set to \"Completed\"."
+msgstr ""
+
+#: backend.js:1055
+msgid ""
+"%d orders still miss ticket numbers and could not be served (for example "
+"%s). Usually their order status is not one of the statuses allowed to "
+"receive ticket numbers, or the product has no ticket list assigned."
+msgstr ""
+
+#: backend.js:1064
+msgid "Stopped after %1$d orders — tickets assigned for %2$d."
+msgstr ""
+
+#: backend.js:1087
+msgid "Done! Tickets assigned for %d orders."
+msgstr ""
+
+#: backend.js:1097
+msgid "Connection problem — retrying (%1$d of %2$d)."
+msgstr ""
+
+#: backend.js:1103
+msgid ""
+"Stopped after %1$d orders — tickets assigned for %2$d. Click \"Continue\" to "
+"carry on where it stopped."
+msgstr ""
+
+#: js/shop-payment-settings.js:18
+msgid "Network error."
+msgstr "Errore di rete."
+
+#: js/shop-payment-settings.js:32
+msgid "Online payments"
+msgstr "Pagamenti online"
+
+#: js/shop-payment-settings.js:34
+msgid ""
+"Sell through the shop page with a hosted Stripe checkout — buyers pay by "
+"card and the tickets are sent automatically."
+msgstr "Vendi tramite la pagina del negozio con un checkout Stripe ospitato — gli acquirenti pagano con carta e i biglietti vengono inviati automaticamente."
+
+#: js/shop-payment-settings.js:37
+msgid "Off — orders are confirmed manually in the Kasse"
+msgstr "Disattivato: gli ordini vengono confermati manualmente in cassa"
+
+#: js/shop-payment-settings.js:55
+msgid "Configured"
+msgstr "Configurato"
+
+#: js/shop-payment-settings.js:56
+msgid "Not configured"
+msgstr "Non configurato"
+
+#: js/shop-payment-settings.js:66
+msgid "Payment provider"
+msgstr "Provider di pagamento"
+
+#: js/shop-payment-settings.js:67
+msgid "Stripe secret key"
+msgstr "Chiave segreta Stripe"
+
+#: js/shop-payment-settings.js:69
+msgid ""
+"Leave empty to keep the stored key. A secret key (sk_…) — never the "
+"publishable one."
+msgstr "Lascia vuoto per mantenere la chiave salvata. Una chiave segreta (sk_…), mai quella pubblicabile."
+
+#: js/shop-payment-settings.js:70
+msgid "Stripe webhook signing secret"
+msgstr "Segreto di firma del webhook Stripe"
+
+#: js/shop-payment-settings.js:79
+msgid "Saving…"
+msgstr "Salvataggio…"
+
+#: js/shop-payment-settings.js:85
+msgid "Saved."
+msgstr "Salvato."
+
+#: js/shop-payment-settings.js:87
+msgid "Save failed."
+msgstr "Salvataggio non riuscito."
+
+#: js/shop-payment-settings.js:94
+msgid "Webhook endpoint (register in the Stripe dashboard → Webhooks)"
+msgstr "Endpoint del webhook (registrarlo nella dashboard Stripe → Webhooks)"
+
+#: js/shop-payment-settings.js:97
+msgid ""
+"Events: checkout.session.completed, checkout.session.expired, checkout."
+"session.async_payment_failed"
+msgstr "Eventi: checkout.session.completed, checkout.session.expired, checkout.session.async_payment_failed"
+
+#: js/shop-payment-settings.js:99
+msgid "Test connection"
+msgstr "Testa la connessione"
+
+#: js/shop-payment-settings.js:103
+msgid "Checking…"
+msgstr "Verifica…"
+
+#: js/shop-payment-settings.js:109
+msgid "Key valid"
+msgstr "Chiave valida"
+
+#: js/shop-payment-settings.js:109
+msgid "Webhook delivery still needs to be confirmed in the Stripe dashboard."
+msgstr "La consegna del webhook deve ancora essere confermata nella dashboard Stripe."
+
+#: js/shop-payment-settings.js:112
+msgid "Check failed."
+msgstr "Verifica non riuscita."
+
+#: js/shop-payment-settings.js:120
+msgid ""
+"The installed free plugin is too old for automatic ticket delivery after "
+"payment — update the free plugin to 3.3.1 or newer."
+msgstr "Il plugin gratuito installato è troppo vecchio per la consegna automatica dei biglietti dopo il pagamento — aggiorna il plugin gratuito alla versione 3.3.1 o successiva."
+
 #~ msgid ""
 #~ "Enable PDF ticket attachment in emails? Customers receive their tickets "
 #~ "as PDF directly in the order confirmation email."
@@ -10007,18 +10649,8 @@ msgstr ""
 #~ msgid "Activate ob_end_flush"
 #~ msgstr "Attivare ob_end_flush"
 
-#~ msgid "Attach QR image of the order to the purchase email"
-#~ msgstr "Allega l'immagine QR dell'ordine all'e-mail di acquisto"
-
 #~ msgid "Check License Now"
 #~ msgstr "Verifica licenza ora"
-
-#~ msgid "Choose a ticket template to overwrite the default template"
-#~ msgstr ""
-#~ "Scegli un modello di biglietto per sovrascrivere il modello predefinito"
-
-#~ msgid "Choose the order status for ticket assignment"
-#~ msgstr "Scegli lo stato dell'ordine per l'assegnazione dei biglietti"
 
 #~ msgid "Click the button below to update your premium plugin now."
 #~ msgstr ""
@@ -10047,27 +10679,14 @@ msgstr ""
 #~ "Mostra i biglietti assegnati all'utente attualmente connesso "
 #~ "(predefinito) o i biglietti di un ordine specifico."
 
-#~ msgid "Do not allow the redeem operation after the event started"
-#~ msgstr "Non consentire il riscatto dopo l'inizio dell'evento"
-
 #~ msgid "Enable tickets on a WooCommerce product"
 #~ msgstr "Abilitare i biglietti su un prodotto WooCommerce"
-
-#~ msgid ""
-#~ "Enter your Premium license key to activate features. If you do not have "
-#~ "one, please contact support@vollstart.com."
-#~ msgstr ""
-#~ "Inserisci la tua chiave di licenza Premium per attivare le funzionalità. "
-#~ "Se non ne hai una, contatta support@vollstart.com."
 
 #~ msgid "Example with JSON output:"
 #~ msgstr "Esempio con output JSON:"
 
 #~ msgid "Example:"
 #~ msgstr "Esempio:"
-
-#~ msgid "Excluded days for the date picker"
-#~ msgstr "Giorni esclusi per il selettore di date"
 
 #~ msgid ""
 #~ "Fields to show (comma-separated). Values: codes, validation, user, used, "
@@ -10084,13 +10703,6 @@ msgstr ""
 #~ msgstr "Vai ai prodotti"
 
 #~ msgid ""
-#~ "If active and the event start date is set, then the system will not allow "
-#~ "to redeem the ticket anymore."
-#~ msgstr ""
-#~ "Se attivo e la data di inizio dell'evento è impostata, il sistema non "
-#~ "consentirà più il riscatto del biglietto."
-
-#~ msgid ""
 #~ "If active, the system will try to use an existing ticket from the ticket "
 #~ "list that is free. If no free ticket number could be found, a new ticket "
 #~ "will be created and assigned to the purchase."
@@ -10099,22 +10711,6 @@ msgstr ""
 #~ "lista biglietti che è libero. Se non viene trovato nessun numero di "
 #~ "biglietto libero, verrà creato un nuovo biglietto e assegnato "
 #~ "all'acquisto."
-
-#~ msgid ""
-#~ "If active, then the order view QR code image will be attached to the "
-#~ "purchase email."
-#~ msgstr ""
-#~ "Se attivo, l'immagine del codice QR della vista dell'ordine verrà "
-#~ "allegata all'e-mail di acquisto."
-
-#~ msgid ""
-#~ "If you use the date chooser option, then you can exclude specific dates "
-#~ "like holidays. Enter each date on a new line and in the format YYYY-MM-"
-#~ "DD. eg. 2025-12-22"
-#~ msgstr ""
-#~ "Se utilizzi l'opzione di selezione della data, puoi escludere date "
-#~ "specifiche come le festività. Inserisci ogni data su una nuova riga nel "
-#~ "formato AAAA-MM-GG. es. 2025-12-22"
 
 #~ msgid ""
 #~ "If your images on the PDF are not shown then this option trigger not to "
@@ -10139,25 +10735,6 @@ msgstr ""
 #~ "attivo, l'URL /ticket/XYZ diventerà /ticket/?code=XYZ per il link alla "
 #~ "pagina dettagli biglietto e PDF del biglietto. Alcuni temi causano "
 #~ "problemi con la modalità normale."
-
-#~ msgid ""
-#~ "In doubt, do not play with it. :) The ticket will be added to the order "
-#~ "items, if the choosen order status is applied to the order. If none is "
-#~ "selected, then you need to manually assign the tickets, by clicking the "
-#~ "corresponding button within the order details. The button will only be "
-#~ "executed, if the order status is paid (processing or completed) then. <a "
-#~ "href='https://woocommerce.com/document/managing-orders/order-statuses/' "
-#~ "target='_blank'>Learn more about the woocommerce order statuses here.</a>"
-#~ msgstr ""
-#~ "In caso di dubbio, non modificare questa impostazione. :) Il biglietto "
-#~ "verrà aggiunto agli articoli dell'ordine se lo stato dell'ordine "
-#~ "selezionato viene applicato all'ordine. Se non ne viene selezionato "
-#~ "nessuno, dovrai assegnare manualmente i biglietti cliccando il pulsante "
-#~ "corrispondente nei dettagli dell'ordine. Il pulsante verrà eseguito solo "
-#~ "se lo stato dell'ordine è pagato (in elaborazione o completato). <a "
-#~ "href='https://woocommerce.com/document/managing-orders/order-statuses/' "
-#~ "target='_blank'>Scopri di più sugli stati degli ordini WooCommerce qui.</"
-#~ "a>"
 
 #~ msgid ""
 #~ "In order to make the ticket detail view and the ticket scanner work, you "
@@ -10191,9 +10768,6 @@ msgstr ""
 #~ msgid "New Premium Features Available"
 #~ msgstr "Nuove funzionalità Premium disponibili"
 
-#~ msgid "No ticket template set"
-#~ msgstr "Nessun modello di biglietto impostato"
-
 #~ msgid "Open Options"
 #~ msgstr "Apri opzioni"
 
@@ -10212,14 +10786,6 @@ msgstr ""
 #, javascript-format
 #~ msgid "Premium version %s is available with new features:"
 #~ msgstr "La versione Premium %s è disponibile con nuove funzionalità:"
-
-#~ msgid ""
-#~ "Redeeming all tickets, because the order status changed and option "
-#~ "wcTicketOrderStatusToRedeemAllTickets is set to '"
-#~ msgstr ""
-#~ "Riscatto di tutti i biglietti in corso, perché lo stato dell'ordine è "
-#~ "cambiato e l'opzione wcTicketOrderStatusToRedeemAllTickets è impostata su "
-#~ "'"
 
 #~ msgid ""
 #~ "Shortcode to display the assigned tickets and codes of an user within a "
@@ -10276,13 +10842,6 @@ msgstr ""
 #~ msgid "This day is not selectable"
 #~ msgstr "Questo giorno non è selezionabile"
 
-#, php-format
-#~ msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
-#~ msgstr "Il biglietto \"%1$s\" non può essere riscattato. \"%2$s\""
-
-#~ msgid "Ticket Template"
-#~ msgstr "Modello di biglietto"
-
 #~ msgid "Update Now"
 #~ msgstr "Aggiorna ora"
 
@@ -10328,32 +10887,6 @@ msgstr ""
 
 #~ msgid "Exclude this product from eventado.com"
 #~ msgstr "Escludi questo prodotto da eventado.com"
-
-#~ msgid "For adults only (18+)"
-#~ msgstr "Solo per adulti (18+)"
-
-#~ msgid ""
-#~ "Mark this event as 18+ on eventado.com. The public listing will show an "
-#~ "age-restriction badge and a content notice."
-#~ msgstr ""
-#~ "Contrassegna questo evento come 18+ su eventado.com. La scheda pubblica "
-#~ "mostrerà un badge di restrizione d'età e un avviso sui contenuti."
-
-#~ msgid ""
-#~ "Public calendar publishing was disabled — the eventado.com server "
-#~ "rejected this site (license or domain mismatch). Please contact "
-#~ "support@vollstart.com."
-#~ msgstr ""
-#~ "La pubblicazione sul calendario pubblico è stata disattivata — il server "
-#~ "eventado.com ha rifiutato questo sito (licenza o dominio non valido). "
-#~ "Contatta support@vollstart.com."
-
-#~ msgid ""
-#~ "These options affect how this single product is treated by the global "
-#~ "eventado.com sync."
-#~ msgstr ""
-#~ "Queste opzioni influenzano come questo singolo prodotto viene trattato "
-#~ "dalla sincronizzazione globale di eventado.com."
 
 #~ msgid "Upload a custom file for this product."
 #~ msgstr "Carica un file personalizzato per questo prodotto."

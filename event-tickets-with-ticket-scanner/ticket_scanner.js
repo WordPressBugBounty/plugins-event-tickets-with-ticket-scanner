@@ -1829,9 +1829,9 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                             li.append(header).append($cvvInput).append($hint);
                         }
                     } else {
-                        let extra_content = (item.code_display || '') + '<br>';
+                        let extra_content = escapeHtml(item.code_display || '') + '<br>';
                         if (item.name_per_ticket != "" || item.value_per_ticket != "") {
-                            extra_content += item.name_per_ticket+" "+item.value_per_ticket;
+                            extra_content += escapeHtml(item.name_per_ticket)+" "+escapeHtml(item.value_per_ticket);
                         } else {
                             extra_content += "No name or value on ticket set";
                         }
@@ -1841,10 +1841,10 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
                             extra_content += "<br>" + itemSeatHtml;
                         }
                         if (item.location) {
-                            extra_content += "<br>"+item.location;
+                            extra_content += "<br>" + escapeHtml(item.location);
                         }
                         if (item.ticket_date) {
-                            extra_content += "<br>"+item.ticket_date;
+                            extra_content += "<br>" + escapeHtml(item.ticket_date);
                         }
                         li.append(extra_content+'<br>')
                             .append($('<button style="color:white;border-color:#008CBA;background-color:#008CBA;">').html("Retrieve ticket").on("click", e=>{
@@ -1953,12 +1953,14 @@ qrScanner.toggleFlash(); // toggle the flash if supported; async.
         }
         if (metaObj.wc_ticket.name_per_ticket != "") {
             if (!(ret.big && parseInt(ret.big.values, 10) === 1)) {
-                $('<p>').html(ret.name_per_ticket_label + " " +metaObj.wc_ticket.name_per_ticket).appendTo(div);
+                // #18172: customer-supplied value — render as text, never as HTML
+                $('<p>').text(ret.name_per_ticket_label + " " + metaObj.wc_ticket.name_per_ticket).appendTo(div);
             }
         }
         if (metaObj.wc_ticket.value_per_ticket != "") {
             if (!(ret.big && parseInt(ret.big.values, 10) === 1)) {
-                $('<p>').html(ret.value_per_ticket_label + " " +metaObj.wc_ticket.value_per_ticket).appendTo(div);
+                // #18172: customer-supplied value — render as text, never as HTML
+                $('<p>').text(ret.value_per_ticket_label + " " + metaObj.wc_ticket.value_per_ticket).appendTo(div);
             }
         }
         if (ret.ticket_amount_label != "") {

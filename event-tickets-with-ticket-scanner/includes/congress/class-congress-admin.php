@@ -159,7 +159,7 @@ class sasoEventtickets_CongressAdmin {
                 // Expire the original in 30 days
                 $orig = $repo->getById($id);
                 if ($orig) {
-                    $orig['access_expires_at'] = date('Y-m-d H:i:s', strtotime('+30 days'));
+                    $orig['access_expires_at'] = gmdate('Y-m-d H:i:s', strtotime('+30 days'));
                     if (!$repo->save($orig)) {
                         wp_send_json_error('expire_original_failed');
                     }

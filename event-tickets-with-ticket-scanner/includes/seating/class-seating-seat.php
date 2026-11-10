@@ -325,6 +325,7 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 
 		$sql .= " ORDER BY sort_order ASC, seat_identifier ASC";
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql is assembled from literals and run with prepare() above
 		$rows = $wpdb->get_results($sql, ARRAY_A);
 
 		foreach ($rows as &$row) {
@@ -716,6 +717,7 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 			);
 		}
 
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql is assembled from literals; count query without user input
 		return (int) $wpdb->get_var($sql) > 0;
 	}
 
@@ -852,6 +854,7 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 			WHERE seatingplan_id = %d AND id IN ({$placeholders})";
 
 		$wpdb->query($wpdb->prepare(
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sql contains generated %d placeholders and is passed to prepare() here
 			$sql,
 			array_merge($params, [get_current_user_id(), current_time('mysql'), $planId], $ids)
 		));

@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 use setasign\Fpdi\Tcpdf\Fpdi;
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventtickets_PDF {

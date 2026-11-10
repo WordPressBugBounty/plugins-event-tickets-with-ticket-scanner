@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventtickets_Authtoken {
     public static $authtoken_param = "auth";
@@ -117,7 +118,7 @@ class sasoEventtickets_Authtoken {
 		$tokenObj = ['meta'=>''];
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectAuthtoken($tokenObj['meta']);
 
-		$felder = ["name"=>strip_tags($data['name']), "time"=>wp_date("Y-m-d H:i:s")];
+		$felder = ["name"=>wp_strip_all_tags($data['name']), "time"=>wp_date("Y-m-d H:i:s")];
 		// CWE-338 (DIG-1762): CSPRNG instead of a wall-clock/uniqid-seeded hash. This value
 		// is a bearer credential for the ticket-scanner API, so predictability was the
 		// highest-impact case in this class. random_bytes(16) keeps the same 32 hex chars.
@@ -133,7 +134,7 @@ class sasoEventtickets_Authtoken {
 		}
 		if (isset($felder['meta']) && !empty($felder['meta'])) { // evtl gesetzt vom premium plugin
 			$f_meta = json_decode($felder['meta'], true);
-			$f_meta["desc"] = strip_tags($f_meta["desc"]);
+			$f_meta["desc"] = wp_strip_all_tags($f_meta["desc"]);
 			$metaObj = array_replace_recursive($metaObj, $f_meta);
 		}
 		$felder["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
@@ -155,7 +156,7 @@ class sasoEventtickets_Authtoken {
 		$metaObj = $this->MAIN->getCore()->encodeMetaValuesAndFillObjectAuthtoken($tokenObj['meta']);
 		$felder = [];
 
-		if (isset($data['name']) && trim($data['name']) != "") $felder["name"] = strip_tags($data['name']);
+		if (isset($data['name']) && trim($data['name']) != "") $felder["name"] = wp_strip_all_tags($data['name']);
 		if (isset($data['aktiv'])) $felder["aktiv"] = intval($data['aktiv']);
 		$felder['changed'] = wp_date("Y-m-d H:i:s");
 
@@ -166,7 +167,7 @@ class sasoEventtickets_Authtoken {
 		}
 		if (isset($felder['meta']) && !empty($felder['meta'])) { // evtl gesetzt vom premium plugin
 			$f_meta = json_decode($felder['meta'], true);
-			$f_meta["desc"] = strip_tags($f_meta["desc"]);
+			$f_meta["desc"] = wp_strip_all_tags($f_meta["desc"]);
 			$metaObj = array_replace_recursive($metaObj, $f_meta);
 		}
 		$felder["meta"] = $this->MAIN->getCore()->json_encode_with_error_handling($metaObj);
@@ -188,10 +189,10 @@ class sasoEventtickets_Authtoken {
     private function setMetaDataForAuthtokens($data, $metaObj) {
 		if (isset($data['meta'])) {
 			if (isset($data['meta']['desc'])) {
-				$metaObj['desc'] = strip_tags(trim($data['meta']['desc']));
+				$metaObj['desc'] = wp_strip_all_tags(trim($data['meta']['desc']));
 			}
 			if (isset($data['meta']['ticketscanner']) && isset($data['meta']['ticketscanner']['bound_to_lists'])) {
-				$_raw = strip_tags(trim((string) $data['meta']['ticketscanner']['bound_to_lists']));
+				$_raw = wp_strip_all_tags(trim((string) $data['meta']['ticketscanner']['bound_to_lists']));
 				$_lists = array_filter(array_map("intval", array_map("trim", explode(",", $_raw))));
 				// An entry that boils down to nothing must not silently clear the
 				// restriction — empty means "all lists", so that would widen access
@@ -200,7 +201,7 @@ class sasoEventtickets_Authtoken {
 				}
 			}
 			if (isset($data['meta']['ticketscanner']) && isset($data['meta']['ticketscanner']['bound_to_products'])) {
-				$metaObj['ticketscanner']['bound_to_products'] = strip_tags(trim($data['meta']['ticketscanner']['bound_to_products']));
+				$metaObj['ticketscanner']['bound_to_products'] = wp_strip_all_tags(trim($data['meta']['ticketscanner']['bound_to_products']));
 			}
 			// Offline scanning (premium): token-controlled — offline_enabled is a
 			// 0/1 flag, offline_lists is 'all' or csv list ids. Premium only:
@@ -210,7 +211,7 @@ class sasoEventtickets_Authtoken {
 					$metaObj['ticketscanner']['offline_enabled'] = intval($data['meta']['ticketscanner']['offline_enabled']) === 1 ? 1 : '';
 				}
 				if (isset($data['meta']['ticketscanner']['offline_lists'])) {
-					$_rawOffline = strtolower(strip_tags(trim((string) $data['meta']['ticketscanner']['offline_lists'])));
+					$_rawOffline = strtolower(wp_strip_all_tags(trim((string) $data['meta']['ticketscanner']['offline_lists'])));
 					if ($_rawOffline === "" || $_rawOffline === "all") {
 						$metaObj['ticketscanner']['offline_lists'] = "all";
 					} else {

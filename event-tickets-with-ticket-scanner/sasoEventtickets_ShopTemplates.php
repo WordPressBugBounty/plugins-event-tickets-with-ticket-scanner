@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 /**
  * Twig template overrides for the public shop faces (3.3.0 Slice 3):

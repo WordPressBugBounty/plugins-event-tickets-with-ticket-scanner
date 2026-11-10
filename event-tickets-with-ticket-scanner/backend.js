@@ -7613,7 +7613,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 			let metaObj = getCodeObjectMeta(codeObj);
 			if(metaObj) {
 				if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.day_per_ticket != "undefined") {
-					div.append($('<div>').html('<b>Date per Ticket (chosen by customer):</b> '+metaObj.wc_ticket.day_per_ticket +" ").append(
+					div.append($('<div>').html('<b>Date per Ticket (chosen by customer):</b> ').append(document.createTextNode(metaObj.wc_ticket.day_per_ticket+" ")).append(
 						$("<button>").html("Edit").on("click", ()=>{
 
 							let _options = {
@@ -7641,7 +7641,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							let dlg = $('<div />');
 							let form = $('<form />').appendTo(dlg);
 
-							let elem_input = $('<input type="date" value="'+metaObj.wc_ticket.day_per_ticket+'" />');
+							let elem_input = $('<input>', {type: 'date'}).val(metaObj.wc_ticket.day_per_ticket);
 							$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
 								.html('Date per Ticket (yyyy-mm-dd).<br><b>Very important to not break the date format and syntax, if you want to change the date!</b><br>')
 								.append(elem_input)
@@ -7672,7 +7672,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					));
 				}
 				if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.name_per_ticket != "undefined") {
-					div.append($('<div>').html('<b>Name per Ticket (product detail setting):</b> '+metaObj.wc_ticket.name_per_ticket +" ").append(
+					div.append($('<div>').html('<b>Name per Ticket (product detail setting):</b> ').append(document.createTextNode(metaObj.wc_ticket.name_per_ticket+" ")).append(
 						$("<button>").html("Edit").on("click", ()=>{
 
 							let _options = {
@@ -7700,7 +7700,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							let dlg = $('<div />');
 							let form = $('<form />').appendTo(dlg);
 
-							let elem_input = $('<input type="text" value="'+metaObj.wc_ticket.name_per_ticket+'" />');
+							let elem_input = $('<input>', {type: 'text'}).val(metaObj.wc_ticket.name_per_ticket);
 							$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
 								.html('Name per Ticket<br>')
 								.append(elem_input)
@@ -7731,7 +7731,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 					));
 				}
 				if (typeof metaObj.wc_ticket != "undefined" && typeof metaObj.wc_ticket.value_per_ticket != "undefined") {
-					div.append($('<div>').html('<b>Value per Ticket (product detail setting):</b> '+metaObj.wc_ticket.value_per_ticket +" ").append(
+					div.append($('<div>').html('<b>Value per Ticket (product detail setting):</b> ').append(document.createTextNode(metaObj.wc_ticket.value_per_ticket+" ")).append(
 						$("<button>").html("Edit").on("click", ()=>{
 
 							let _options = {
@@ -7759,7 +7759,7 @@ function sasoEventtickets(_myAjaxVar, doNotInit) {
 							let dlg = $('<div />');
 							let form = $('<form />').appendTo(dlg);
 
-							let elem_input = $('<input type="text" value="'+metaObj.wc_ticket.value_per_ticket+'" />');
+							let elem_input = $('<input>', {type: 'text'}).val(metaObj.wc_ticket.value_per_ticket);
 							$('<div/>').css({"margin-top":"10px","margin-bottom": "15px","margin-right": "15px"})
 								.html('Value per Ticket<br>')
 								.append(elem_input)

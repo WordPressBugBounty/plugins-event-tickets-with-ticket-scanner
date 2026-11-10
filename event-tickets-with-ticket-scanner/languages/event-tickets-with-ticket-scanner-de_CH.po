@@ -483,8 +483,9 @@ msgstr ""
 msgid ""
 "\"%1$s\" requires a seat selection. Please go back to the product page and "
 "select your seat."
-msgstr "„%1$s“ erfordert eine Sitzplatzwahl. Bitte gehe zur Produktseite"
-"zurück und wähle deinen Sitzplatz."
+msgstr ""
+"„%1$s“ erfordert eine Sitzplatzwahl. Bitte gehe zur Produktseitezurück und "
+"wähle deinen Sitzplatz."
 
 #: includes/woocommerce/class-frontend.php:1930
 msgid "Security check failed. Please reload page."
@@ -1446,7 +1447,7 @@ msgstr ""
 msgid "Shortcode"
 msgstr ""
 
-#: index.php:1378 js/seating_admin.js:1441
+#: index.php:1378 js/seating_admin.js:1441 backend.js:230
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -3164,7 +3165,7 @@ msgid ""
 "switched on (premium, per product)."
 msgstr ""
 
-#: sasoEventtickets_Options.php:414
+#: sasoEventtickets_Options.php:414 sasoEventtickets_PremiumFunctions.php:2361
 msgid "Tickets are still available at the box office."
 msgstr ""
 
@@ -3855,6 +3856,18 @@ msgstr ""
 msgid "Show seat description in seating plan chooser"
 msgstr "Sitzplatzbeschreibung in der Sitzplanauswahl anzeigen"
 
+#: sasoEventtickets_Options.php:637
+msgid "Confirm seat selection automatically once complete"
+msgstr ""
+
+#: sasoEventtickets_Options.php:637
+msgid ""
+"If active, the seat map confirms the selection as soon as the customer has "
+"picked the number of seats matching the product quantity - no need to tap "
+"Confirm. Fewer taps on mobile, but no chance to review the seats before they "
+"are confirmed."
+msgstr ""
+
 #: sasoEventtickets_Options.php:621
 msgid ""
 "If active, the seat description will be displayed when hovering or selecting "
@@ -4132,7 +4145,7 @@ msgid "This is the title of the ticket"
 msgstr "Dies ist der Titel des Tickets"
 
 #: sasoEventtickets_Options.php:654 backend.js:3235 wc_backend.js:384
-#: wc_backend.js:581
+#: wc_backend.js:581 sasoEventtickets_PremiumFunctions.php:3426
 msgid "Ticket"
 msgstr "Ticket"
 
@@ -5737,6 +5750,7 @@ msgstr ""
 "wiederhergestellt."
 
 #: sasoEventtickets_Options.php:964 backend.js:426
+#: sasoEventtickets_PremiumFunctions.php:1049
 msgid "Premium License Key"
 msgstr "Premium-Lizenzschlüssel"
 
@@ -5952,7 +5966,7 @@ msgstr "Bitte kontaktiere uns für eine Problemlösung"
 msgid "function \"%s\" in wc backend not implemented"
 msgstr "Funktion \"%s\" im WC Backend nicht implementiert"
 
-#: backend.js:273 backend.js:2785
+#: backend.js:273 backend.js:2785 backend.js:460
 msgid "Preview Test Template Code as PDF"
 msgstr "Test-Vorlagencode als PDF-Vorschau anzeigen"
 
@@ -6167,11 +6181,13 @@ msgid "Ok"
 msgstr "Ok"
 
 #: backend.js:934 backend.js:5091 backend.js:5159 backend.js:5323
+#: backend.js:897 backend.js:956
 msgctxt "label"
 msgid "Cancel"
 msgstr "Abbrechen"
 
 #: backend.js:941 backend.js:1020 backend.js:5166 backend.js:5395
+#: backend.js:230
 msgctxt "label"
 msgid "Name"
 msgstr "Name"
@@ -6213,7 +6229,7 @@ msgid ""
 "those have no product."
 msgstr ""
 
-#: backend.js:948 backend.js:5169
+#: backend.js:948 backend.js:5169 backend.js:230
 msgctxt "label"
 msgid "Description"
 msgstr "Beschreibung"
@@ -6234,17 +6250,18 @@ msgctxt "label"
 msgid "Area"
 msgstr "Bereich"
 
-#: backend.js:1020 backend.js:5599
+#: backend.js:1020 backend.js:5599 backend.js:230
 msgctxt "label"
 msgid "Status"
 msgstr "Status"
 
-#: backend.js:1053 backend.js:5422 backend.js:5756
+#: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:257
 msgctxt "label"
 msgid "Edit"
 msgstr "Bearbeiten"
 
 #: backend.js:1053 backend.js:5422 backend.js:5756 backend.js:6778
+#: backend.js:259
 msgctxt "label"
 msgid "Delete"
 msgstr "Löschen"
@@ -6280,7 +6297,7 @@ msgstr ""
 
 #: backend.js:1298 backend.js:1318 backend.js:3237 js/congress-admin.js:63
 #: js/seating_admin.js:118 js/seating_admin.js:759 wc_backend.js:386
-#: wc_backend.js:583
+#: wc_backend.js:583 backend.js:230
 msgid "Status"
 msgstr "Status"
 
@@ -6360,7 +6377,7 @@ msgstr ""
 msgid "congress page disabled in options"
 msgstr "Kongress-Seite in den Optionen deaktiviert"
 
-#: backend.js:1553 backend.js:2855 backend.js:5633
+#: backend.js:1553 backend.js:2855 backend.js:5633 backend.js:218
 msgid "Refresh table"
 msgstr "Tabelle aktualisieren"
 
@@ -6931,12 +6948,12 @@ msgstr "Insgesamt verkauft: %d Tickets"
 msgid "No tickets found for this month."
 msgstr "Keine Tickets für diesen Monat gefunden."
 
-#: backend.js:3287 backend.js:5228
+#: backend.js:3287 backend.js:5228 backend.js:919
 msgctxt "label"
 msgid "From"
 msgstr "Von"
 
-#: backend.js:3290
+#: backend.js:3290 backend.js:921
 msgctxt "label"
 msgid "To"
 msgstr "Bis"
@@ -7001,7 +7018,7 @@ msgctxt "label"
 msgid "No individual ticket data available."
 msgstr "Keine individuellen Ticketdaten verfügbar."
 
-#: backend.js:3418
+#: backend.js:3418 sasoEventtickets_PremiumFunctions.php:3426
 msgctxt "column"
 msgid "Ticket"
 msgstr "Ticket"
@@ -8097,7 +8114,7 @@ msgstr "ist gestohlen"
 msgid "Use the add option"
 msgstr "Nutze die Hinzufügen Option"
 
-#: backend.js:5422
+#: backend.js:5422 sasoEventtickets_PremiumFunctions.php:3773
 msgctxt "label"
 msgid "Tickets"
 msgstr "Tickets"
@@ -8118,6 +8135,22 @@ msgstr "Kein Ticket wird gelöscht. Nur die Liste."
 #: backend.js:5447
 msgid "Check if list is used by products"
 msgstr "Prüfen, ob die Liste von Produkten verwendet wird"
+
+#: backend.js:5832
+msgid "Block if list still contains tickets"
+msgstr ""
+
+#: backend.js:5844
+msgid "This list still contains %d tickets!"
+msgstr ""
+
+#: backend.js:5844
+msgid ""
+"Deleting the list would leave these tickets without a list — their QR code, "
+"PDF and scanner checks can break. Delete the tickets first, or move them to "
+"another list. To delete anyway, uncheck \"Block if list still contains "
+"tickets\" in the delete dialog."
+msgstr ""
 
 #: backend.js:5458
 msgid "This list is still assigned to products:"
@@ -8235,6 +8268,7 @@ msgid "Order line details"
 msgstr ""
 
 #: backend.js:5594 ticket_scanner.js:1461
+#: sasoEventtickets_PremiumFunctions.php:3426
 msgctxt "label"
 msgid "Ticket"
 msgstr "Ticket"
@@ -8653,7 +8687,7 @@ msgid "Export contacts"
 msgstr "Kontakte exportieren"
 
 #: js/congress-admin.js:100 js/congress-admin.js:597 js/seating_admin.js:183
-#: js/seating_admin.js:814
+#: js/seating_admin.js:814 backend.js:257
 msgid "Edit"
 msgstr "Bearbeiten"
 
@@ -8663,6 +8697,7 @@ msgstr "Neue Ausgabe"
 
 #: js/congress-admin.js:100 js/congress-admin.js:570 js/congress-admin.js:598
 #: js/seating_admin.js:49 js/seating_admin.js:186 js/seating_admin.js:817
+#: backend.js:259
 msgid "Delete"
 msgstr "Löschen"
 
@@ -8712,6 +8747,7 @@ msgstr "Erstellen"
 #: js/congress-admin.js:163 js/congress-admin.js:310 js/congress-admin.js:457
 #: js/congress-admin.js:532 js/congress-admin.js:1275 js/seating_admin.js:975
 #: js/seating_admin.js:1469 js/seating_admin.js:1508 js/seating_frontend.js:364
+#: backend.js:897 backend.js:956
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -9052,7 +9088,7 @@ msgstr ""
 "Bild-URL und optionale Bildunterschrift für jedes Element. Zum Umsortieren "
 "ziehen."
 
-#: js/congress-admin.js:925 js/seating_admin.js:115
+#: js/congress-admin.js:925 js/seating_admin.js:115 backend.js:230
 msgid "Name"
 msgstr "Name"
 
@@ -9178,7 +9214,7 @@ msgstr "Sektion bearbeiten"
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: js/congress-admin.js:1251
+#: js/congress-admin.js:1251 js/shop-payment-settings.js:72
 msgid "Save"
 msgstr "Speichern"
 
@@ -9520,6 +9556,18 @@ msgstr "Reserviert"
 msgid "Open Seat Map"
 msgstr "Sitzplan öffnen"
 
+#: js/seating_frontend.js:366
+msgid "Zoom in"
+msgstr ""
+
+#: js/seating_frontend.js:367
+msgid "Reset zoom"
+msgstr ""
+
+#: js/seating_frontend.js:368
+msgid "Zoom out"
+msgstr ""
+
 #: js/seating_frontend.js:335
 msgid "Selected: {label} - Click to change"
 msgstr "Ausgewählt: {label} – Klicken zum Ändern"
@@ -9601,7 +9649,7 @@ msgstr "Veranstaltungsort-Plan"
 msgid "Order Ticket Infos"
 msgstr "Bestellticket-Informationen"
 
-#: order_details.js:34
+#: order_details.js:34 sasoEventtickets_PremiumFunctions.php:3773
 msgid "Tickets"
 msgstr "Tickets"
 
@@ -10017,6 +10065,599 @@ msgstr ""
 msgid "This code is not valid for this product."
 msgstr ""
 
+#: sasoEventtickets_Options.php:322
+msgid ""
+"Ticket scanner: waiting time in seconds before the same ticket can be "
+"scanned again"
+msgstr ""
+
+#: sasoEventtickets_Options.php:322
+msgid ""
+"How long the ticket scanner ignores a repeated scan of the same ticket code. "
+"This prevents the camera from picking up the same ticket twice while it is "
+"still in front of the lens. Enter the waiting time in seconds. Default is 7 "
+"seconds."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:180
+#, php-format
+msgid "Payment amount mismatch on order #%1$d"
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:181
+#, php-format
+msgid ""
+"Provider %1$s reported %2$d %3$s cents, but the order total is %4$d %5$s "
+"cents. The order was NOT completed automatically. Source: %6$s. Please "
+"review the payment in your provider dashboard and the order in the Kasse."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:207
+#, php-format
+msgid "Payment received AFTER order #%1$d was closed"
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:208
+#, php-format
+msgid ""
+"The order status is '%1$s', but provider %2$s reported a completed payment. "
+"The order was NOT reopened — its tickets may have been released to other "
+"buyers. Source: %3$s. Please review: either refund the payment or re-issue "
+"tickets manually in the Kasse."
+msgstr ""
+
+#: includes/shop-payments/class-saso-shop-payments.php:247
+#, php-format
+msgid "Order #%1$d — %2$s <%3$s>, total %4$s"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:469
+msgid ""
+"Redeeming all tickets, because the order status changed and option "
+"wcTicketOrderStatusToRedeemAllTickets is set to '"
+msgstr ""
+"Alle Tickets werden eingelöst, da sich der Bestellstatus geändert hat und "
+"die Option wcTicketOrderStatusToRedeemAllTickets auf '"
+
+#. translators: 1: ticket number 2: error message
+#: sasoEventtickets_PremiumFunctions.php:488
+#, php-format
+msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
+msgstr "Ticket \"%1$s\" konnte nicht eingelöst werden. \"%2$s\""
+
+#: sasoEventtickets_PremiumFunctions.php:868
+msgid "Choose the order status for ticket assignment"
+msgstr "Wähle den Bestellstatus für die Ticket-Zuweisung"
+
+#: sasoEventtickets_PremiumFunctions.php:869
+msgid ""
+"In doubt, do not play with it. :) The ticket will be added to the order "
+"items, if the choosen order status is applied to the order. If none is "
+"selected, then you need to manually assign the tickets, by clicking the "
+"corresponding button within the order details. The button will only be "
+"executed, if the order status is paid (processing or completed) then. <a "
+"href='https://woocommerce.com/document/managing-orders/order-statuses/' "
+"target='_blank'>Learn more about the woocommerce order statuses here.</a>"
+msgstr ""
+"Im Zweifelsfall nicht ändern. :) Das Ticket wird den Bestellpositionen "
+"hinzugefügt, wenn der gewählte Bestellstatus auf die Bestellung angewendet "
+"wird. Wenn keiner ausgewählt ist, musst du die Tickets manuell zuweisen, "
+"indem du den entsprechenden Button in den Bestelldetails klickst. Der Button "
+"wird nur ausgeführt, wenn der Bestellstatus bezahlt (in Bearbeitung oder "
+"abgeschlossen) ist. <a href='https://woocommerce.com/document/managing-"
+"orders/order-statuses/' target='_blank'>Erfahre hier mehr über die "
+"WooCommerce-Bestellstatus.</a>"
+
+#: sasoEventtickets_PremiumFunctions.php:925
+msgid "Attach QR image of the order to the purchase email"
+msgstr "QR-Bild der Bestellung an die Kauf-E-Mail anhängen"
+
+#: sasoEventtickets_PremiumFunctions.php:925
+msgid ""
+"If active, then the order view QR code image will be attached to the "
+"purchase email."
+msgstr ""
+"Wenn aktiv, wird das QR-Code-Bild der Bestellansicht an die Kauf-E-Mail "
+"angehängt."
+
+#: sasoEventtickets_PremiumFunctions.php:927
+msgid "Do not allow the redeem operation after the event started"
+msgstr "Einlösung nach Veranstaltungsbeginn nicht erlauben"
+
+#: sasoEventtickets_PremiumFunctions.php:927
+msgid ""
+"If active and the event start date is set, then the system will not allow to "
+"redeem the ticket anymore."
+msgstr ""
+"Wenn aktiv und das Startdatum der Veranstaltung gesetzt ist, erlaubt das "
+"System die Einlösung des Tickets nicht mehr."
+
+#: sasoEventtickets_PremiumFunctions.php:1049
+msgid ""
+"Enter your Premium license key to activate features. If you do not have one, "
+"please contact support@vollstart.com."
+msgstr ""
+"Gib deinen Premium-Lizenzschlüssel ein, um Funktionen zu aktivieren. Wenn du "
+"keinen hast, wende dich bitte an support@vollstart.com."
+
+#: sasoEventtickets_PremiumFunctions.php:2172
+msgid "Ticket numbers assigned by the bulk tool."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2380
+msgid "Stop online sales this many hours before the event"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2383
+msgid ""
+"Only for this product. Leave empty to use the shop-wide setting, enter 0 to "
+"sell right up to the start. Needs a start date on the product."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2389
+msgid "Own message when sales are closed"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2390
+msgid ""
+"Shown on the product page and in the cart instead of the shop-wide text. Use "
+"{PRODUCT_NAME} for the product name."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2396
+msgid "Tickets still available at the box office"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2397
+msgid ""
+"Adds a line to the \"sales closed\" message so buyers know they can still "
+"get a ticket at the door."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2451
+msgid ""
+"The option \"Use the default template for the ticket\" is active. It does "
+"not affect a template chosen here — your choice wins. It only applies to "
+"products without their own template."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2458
+msgid "Ticket Template"
+msgstr "Ticket-Vorlage"
+
+#: sasoEventtickets_PremiumFunctions.php:2459
+msgid "Choose a ticket template to overwrite the default template"
+msgstr "Wähle eine Ticket-Vorlage, um die Standard-Vorlage zu überschreiben"
+
+#: sasoEventtickets_PremiumFunctions.php:2494
+msgid "Excluded days for the date picker"
+msgstr "Ausgeschlossene Tage für die Datumsauswahl"
+
+#: sasoEventtickets_PremiumFunctions.php:2495
+msgid ""
+"If you use the date chooser option, then you can exclude specific dates like "
+"holidays. Enter each date on a new line and in the format YYYY-MM-DD. eg. "
+"2025-12-22"
+msgstr ""
+"Wenn du die Datumsauswahl-Option verwendest, kannst du bestimmte Daten wie "
+"Feiertage ausschliessen. Gib jedes Datum in einer neuen Zeile im Format JJJJ-"
+"MM-TT ein. z.B. 2025-12-22"
+
+#: sasoEventtickets_PremiumFunctions.php:2513
+msgid ""
+"These options affect how this single product is treated by the global "
+"eventado.com sync."
+msgstr ""
+"Diese Optionen beeinflussen, wie dieses einzelne Produkt vom globalen "
+"eventado.com-Sync behandelt wird."
+
+#: sasoEventtickets_PremiumFunctions.php:2521
+msgid "Publish this event for free on eventado.com"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2522
+msgid ""
+"Off by default — you decide which events go public. Tick this to give this "
+"event a free public listing on eventado.com, our brand-neutral event "
+"discovery platform, so new customers can find it and buy tickets. Leave it "
+"unticked to keep the event off the public calendar (e.g. internal, staff-"
+"only or private events)."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:2528
+msgid "For adults only (18+)"
+msgstr "Nur für Erwachsene (18+)"
+
+#: sasoEventtickets_PremiumFunctions.php:2529
+msgid ""
+"Mark this event as 18+ on eventado.com. The public listing will show an age-"
+"restriction badge and a content notice."
+msgstr ""
+"Dieses Event auf eventado.com als 18+ markieren. Im öffentlichen Listing "
+"erscheint ein Altersbeschränkungs-Badge und ein Inhaltshinweis."
+
+#: sasoEventtickets_PremiumFunctions.php:3231
+msgid ""
+"Public calendar publishing was disabled — the eventado.com server rejected "
+"this site (license or domain mismatch). Please contact support@vollstart.com."
+msgstr ""
+"Die öffentliche Kalender-Veröffentlichung wurde deaktiviert — der eventado."
+"com-Server hat diese Seite abgelehnt (Lizenz oder Domain stimmt nicht). "
+"Bitte support@vollstart.com kontaktieren."
+
+#: sasoEventtickets_PremiumFunctions.php:3362
+#, php-format
+msgid "Thank you! Your order #%d has been received. Check your email inbox."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3417
+#: sasoEventtickets_PremiumFunctions.php:3583
+msgid "Sold out in total"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3420
+#: sasoEventtickets_PremiumFunctions.php:3584
+#, php-format
+msgid "%d of %d ticket still available in total"
+msgid_plural "%d of %d tickets still available in total"
+msgstr[0] ""
+msgstr[1] ""
+
+#: sasoEventtickets_PremiumFunctions.php:3427
+msgid "Price"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3428
+msgid "Quantity"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3519
+msgid "Sold out"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3522
+#, php-format
+msgid "%d ticket available"
+msgid_plural "%d tickets available"
+msgstr[0] ""
+msgstr[1] ""
+
+#: sasoEventtickets_PremiumFunctions.php:3593
+msgid "Your name"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3594
+msgid "Your email address"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3608
+msgid "Order tickets"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3646
+msgid "Payment received — your tickets are on their way to your email address."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3649
+msgid ""
+"Your payment was received but needs a short review by the organizer. You "
+"will be contacted."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3652
+msgid ""
+"Your payment is being processed — as soon as it is confirmed, your tickets "
+"are sent to your email address automatically."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3656
+msgid ""
+"Payment was cancelled — your order stays reserved for a short time, you can "
+"try again."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3696
+msgid "Online shop page"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3697
+msgid "open"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3746
+msgid "No events on sale at the moment."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3785
+msgid "Ticket shop"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3884
+msgid ""
+"We have received your order. You will get an email with payment details from "
+"the organizer — as soon as your payment is confirmed, your tickets are sent "
+"to this email address automatically."
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3904
+#, php-format
+msgid "[%s] Your ticket order #%d"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3909
+#, php-format
+msgid "[%s] New online ticket order #%d"
+msgstr ""
+
+#: sasoEventtickets_PremiumFunctions.php:3954
+#, php-format
+msgid "[%s] Your tickets for order #%d"
+msgstr ""
+
+#: sasoEventtickets_TemplateTickets.php:69
+msgid "No ticket template set"
+msgstr "Keine Ticket-Vorlage gesetzt"
+
+#: backend.js:202
+msgid "Add new template"
+msgstr ""
+
+#: backend.js:230
+msgctxt "label"
+msgid "Changed"
+msgstr ""
+
+#: backend.js:257
+msgctxt "button"
+msgid "Edit"
+msgstr ""
+
+#: backend.js:258
+msgctxt "button"
+msgid "Duplicate"
+msgstr ""
+
+#: backend.js:259
+msgctxt "button"
+msgid "Delete"
+msgstr ""
+
+#: backend.js:356
+msgid "Do you want to close the editor? All unsaved changes will be lost."
+msgstr ""
+
+#: backend.js:377
+msgid "Please add a name for the template."
+msgstr ""
+
+#: backend.js:457
+msgid "Public Ticket Number"
+msgstr ""
+
+#: backend.js:678
+msgctxt "label"
+msgid "Add QR code images"
+msgstr ""
+
+#: backend.js:679
+msgid ""
+"Be careful - this uses a lot of resources. The images will be created and "
+"then zipped into a file, together with the csv file"
+msgstr ""
+
+#: backend.js:888 backend.js:916
+msgid "Bulk Assign Tickets"
+msgstr ""
+
+#: backend.js:890
+msgid ""
+"Find all completed WooCommerce orders with ticket products that have no "
+"ticket numbers assigned, and assign them automatically in batches."
+msgstr ""
+
+#: backend.js:896
+msgid "Start Bulk Assignment"
+msgstr ""
+
+#: backend.js:917
+msgid ""
+"Select a date range to filter which orders to check. Leave empty to check "
+"all orders."
+msgstr ""
+
+#: backend.js:919
+msgid "From"
+msgstr ""
+
+#: backend.js:921
+msgid "To"
+msgstr ""
+
+#: backend.js:931
+msgid "With Order Status"
+msgstr ""
+
+#: backend.js:943
+msgid "Resend order details email after ticket assignment"
+msgstr ""
+
+#: backend.js:945
+msgid "Only for orders where tickets were actually assigned."
+msgstr ""
+
+#: backend.js:948
+msgid "Set the order to \"Completed\" after all its tickets are assigned"
+msgstr ""
+
+#: backend.js:950
+msgid ""
+"Only for orders that are fully served afterwards. WooCommerce then sends its "
+"completed-order email, and that email carries the new tickets."
+msgstr ""
+
+#: backend.js:957 backend.js:1032
+msgid "Check Orders"
+msgstr ""
+
+#: backend.js:958
+msgid "Start Assignment"
+msgstr ""
+
+#: backend.js:959
+msgid "Stop"
+msgstr "Stopp"
+
+#: backend.js:960
+msgid "Continue"
+msgstr ""
+
+#: backend.js:994
+msgid "Counting..."
+msgstr ""
+
+#: backend.js:1014
+msgid "Checked %1$d of %2$d orders — %3$d need ticket numbers."
+msgstr ""
+
+#: backend.js:1023
+msgid "No orders found that need ticket assignment."
+msgstr ""
+
+#: backend.js:1028
+msgid ""
+"<strong>%d orders</strong> found with missing ticket numbers. Click \"Start "
+"Assignment\" to begin."
+msgstr ""
+
+#: backend.js:1033
+msgid "Error counting orders."
+msgstr ""
+
+#: backend.js:1044
+msgid "Checked %1$d of %2$d orders — tickets assigned for %3$d."
+msgstr ""
+
+#: backend.js:1051
+msgid "%d orders were set to \"Completed\"."
+msgstr ""
+
+#: backend.js:1055
+msgid ""
+"%d orders still miss ticket numbers and could not be served (for example "
+"%s). Usually their order status is not one of the statuses allowed to "
+"receive ticket numbers, or the product has no ticket list assigned."
+msgstr ""
+
+#: backend.js:1064
+msgid "Stopped after %1$d orders — tickets assigned for %2$d."
+msgstr ""
+
+#: backend.js:1087
+msgid "Done! Tickets assigned for %d orders."
+msgstr ""
+
+#: backend.js:1097
+msgid "Connection problem — retrying (%1$d of %2$d)."
+msgstr ""
+
+#: backend.js:1103
+msgid ""
+"Stopped after %1$d orders — tickets assigned for %2$d. Click \"Continue\" to "
+"carry on where it stopped."
+msgstr ""
+
+#: js/shop-payment-settings.js:18
+msgid "Network error."
+msgstr "Netzwerkfehler."
+
+#: js/shop-payment-settings.js:32
+msgid "Online payments"
+msgstr "Online-Zahlungen"
+
+#: js/shop-payment-settings.js:34
+msgid ""
+"Sell through the shop page with a hosted Stripe checkout — buyers pay by "
+"card and the tickets are sent automatically."
+msgstr "Verkaufen Sie über die Shop-Seite mit einem gehosteten Stripe-Checkout — Käufer zahlen per Karte und die Tickets werden automatisch versendet."
+
+#: js/shop-payment-settings.js:37
+msgid "Off — orders are confirmed manually in the Kasse"
+msgstr "Aus — Bestellungen werden manuell in der Kasse bestätigt"
+
+#: js/shop-payment-settings.js:55
+msgid "Configured"
+msgstr "Konfiguriert"
+
+#: js/shop-payment-settings.js:56
+msgid "Not configured"
+msgstr "Nicht konfiguriert"
+
+#: js/shop-payment-settings.js:66
+msgid "Payment provider"
+msgstr "Zahlungsanbieter"
+
+#: js/shop-payment-settings.js:67
+msgid "Stripe secret key"
+msgstr "Geheimer Stripe-Schlüssel"
+
+#: js/shop-payment-settings.js:69
+msgid ""
+"Leave empty to keep the stored key. A secret key (sk_…) — never the "
+"publishable one."
+msgstr "Leer lassen, um den gespeicherten Schlüssel zu behalten. Ein Geheimschlüssel (sk_…) — niemals der öffentliche."
+
+#: js/shop-payment-settings.js:70
+msgid "Stripe webhook signing secret"
+msgstr "Signatur-Geheimnis für Stripe-Webhooks"
+
+#: js/shop-payment-settings.js:79
+msgid "Saving…"
+msgstr "Wird gespeichert…"
+
+#: js/shop-payment-settings.js:85
+msgid "Saved."
+msgstr "Gespeichert."
+
+#: js/shop-payment-settings.js:87
+msgid "Save failed."
+msgstr "Speichern fehlgeschlagen."
+
+#: js/shop-payment-settings.js:94
+msgid "Webhook endpoint (register in the Stripe dashboard → Webhooks)"
+msgstr "Webhook-Endpunkt (im Stripe-Dashboard → Webhooks registrieren)"
+
+#: js/shop-payment-settings.js:97
+msgid ""
+"Events: checkout.session.completed, checkout.session.expired, checkout."
+"session.async_payment_failed"
+msgstr "Ereignisse: checkout.session.completed, checkout.session.expired, checkout.session.async_payment_failed"
+
+#: js/shop-payment-settings.js:99
+msgid "Test connection"
+msgstr "Verbindung testen"
+
+#: js/shop-payment-settings.js:103
+msgid "Checking…"
+msgstr "Wird geprüft…"
+
+#: js/shop-payment-settings.js:109
+msgid "Key valid"
+msgstr "Schlüssel gültig"
+
+#: js/shop-payment-settings.js:109
+msgid "Webhook delivery still needs to be confirmed in the Stripe dashboard."
+msgstr "Der Webhook-Empfang muss noch im Stripe-Dashboard bestätigt werden."
+
+#: js/shop-payment-settings.js:112
+msgid "Check failed."
+msgstr "Prüfung fehlgeschlagen."
+
+#: js/shop-payment-settings.js:120
+msgid ""
+"The installed free plugin is too old for automatic ticket delivery after "
+"payment — update the free plugin to 3.3.1 or newer."
+msgstr "Das installierte Gratis-Plugin ist zu alt für die automatische Ticket-Zustellung nach der Zahlung — Gratis-Plugin auf 3.3.1 oder neuer aktualisieren."
+
 #~ msgid ""
 #~ "Enable PDF ticket attachment in emails? Customers receive their tickets "
 #~ "as PDF directly in the order confirmation email."
@@ -10207,117 +10848,8 @@ msgstr ""
 #~ msgstr ""
 #~ "Deine Premium-Lizenz ist abgelaufen. Updates sind nicht mehr verfügbar."
 
-#~ msgid ""
-#~ "Redeeming all tickets, because the order status changed and option "
-#~ "wcTicketOrderStatusToRedeemAllTickets is set to '"
-#~ msgstr ""
-#~ "Alle Tickets werden eingelöst, da sich der Bestellstatus geändert hat und "
-#~ "die Option wcTicketOrderStatusToRedeemAllTickets auf '"
-
-#, php-format
-#~ msgid "Ticket \"%1$s\" could not be redeemed. \"%2$s\""
-#~ msgstr "Ticket \"%1$s\" konnte nicht eingelöst werden. \"%2$s\""
-
-#~ msgid "Choose the order status for ticket assignment"
-#~ msgstr "Wähle den Bestellstatus für die Ticket-Zuweisung"
-
-#~ msgid ""
-#~ "In doubt, do not play with it. :) The ticket will be added to the order "
-#~ "items, if the choosen order status is applied to the order. If none is "
-#~ "selected, then you need to manually assign the tickets, by clicking the "
-#~ "corresponding button within the order details. The button will only be "
-#~ "executed, if the order status is paid (processing or completed) then. <a "
-#~ "href='https://woocommerce.com/document/managing-orders/order-statuses/' "
-#~ "target='_blank'>Learn more about the woocommerce order statuses here.</a>"
-#~ msgstr ""
-#~ "Im Zweifelsfall nicht ändern. :) Das Ticket wird den Bestellpositionen "
-#~ "hinzugefügt, wenn der gewählte Bestellstatus auf die Bestellung "
-#~ "angewendet wird. Wenn keiner ausgewählt ist, musst du die Tickets manuell "
-#~ "zuweisen, indem du den entsprechenden Button in den Bestelldetails "
-#~ "klickst. Der Button wird nur ausgeführt, wenn der Bestellstatus bezahlt "
-#~ "(in Bearbeitung oder abgeschlossen) ist. <a href='https://woocommerce.com/"
-#~ "document/managing-orders/order-statuses/' target='_blank'>Erfahre hier "
-#~ "mehr über die WooCommerce-Bestellstatus.</a>"
-
-#~ msgid "Attach QR image of the order to the purchase email"
-#~ msgstr "QR-Bild der Bestellung an die Kauf-E-Mail anhängen"
-
-#~ msgid ""
-#~ "If active, then the order view QR code image will be attached to the "
-#~ "purchase email."
-#~ msgstr ""
-#~ "Wenn aktiv, wird das QR-Code-Bild der Bestellansicht an die Kauf-E-Mail "
-#~ "angehängt."
-
-#~ msgid "Do not allow the redeem operation after the event started"
-#~ msgstr "Einlösung nach Veranstaltungsbeginn nicht erlauben"
-
-#~ msgid ""
-#~ "If active and the event start date is set, then the system will not allow "
-#~ "to redeem the ticket anymore."
-#~ msgstr ""
-#~ "Wenn aktiv und das Startdatum der Veranstaltung gesetzt ist, erlaubt das "
-#~ "System die Einlösung des Tickets nicht mehr."
-
-#~ msgid ""
-#~ "Enter your Premium license key to activate features. If you do not have "
-#~ "one, please contact support@vollstart.com."
-#~ msgstr ""
-#~ "Gib deinen Premium-Lizenzschlüssel ein, um Funktionen zu aktivieren. Wenn "
-#~ "du keinen hast, wende dich bitte an support@vollstart.com."
-
-#~ msgid "Ticket Template"
-#~ msgstr "Ticket-Vorlage"
-
-#~ msgid "Choose a ticket template to overwrite the default template"
-#~ msgstr "Wähle eine Ticket-Vorlage, um die Standard-Vorlage zu überschreiben"
-
-#~ msgid "Excluded days for the date picker"
-#~ msgstr "Ausgeschlossene Tage für die Datumsauswahl"
-
-#~ msgid ""
-#~ "If you use the date chooser option, then you can exclude specific dates "
-#~ "like holidays. Enter each date on a new line and in the format YYYY-MM-"
-#~ "DD. eg. 2025-12-22"
-#~ msgstr ""
-#~ "Wenn du die Datumsauswahl-Option verwendest, kannst du bestimmte Daten "
-#~ "wie Feiertage ausschliessen. Gib jedes Datum in einer neuen Zeile im "
-#~ "Format JJJJ-MM-TT ein. z.B. 2025-12-22"
-
-#~ msgid ""
-#~ "These options affect how this single product is treated by the global "
-#~ "eventado.com sync."
-#~ msgstr ""
-#~ "Diese Optionen beeinflussen, wie dieses einzelne Produkt vom globalen "
-#~ "eventado.com-Sync behandelt wird."
-
 #~ msgid "Exclude this product from eventado.com"
 #~ msgstr "Dieses Produkt von eventado.com ausschliessen"
-
-#~ msgid "For adults only (18+)"
-#~ msgstr "Nur für Erwachsene (18+)"
-
-#~ msgid ""
-#~ "Mark this event as 18+ on eventado.com. The public listing will show an "
-#~ "age-restriction badge and a content notice."
-#~ msgstr ""
-#~ "Dieses Event auf eventado.com als 18+ markieren. Im öffentlichen Listing "
-#~ "erscheint ein Altersbeschränkungs-Badge und ein Inhaltshinweis."
-
-#~ msgid ""
-#~ "Public calendar publishing was disabled — the eventado.com server "
-#~ "rejected this site (license or domain mismatch). Please contact "
-#~ "support@vollstart.com."
-#~ msgstr ""
-#~ "Die öffentliche Kalender-Veröffentlichung wurde deaktiviert — der "
-#~ "eventado.com-Server hat diese Seite abgelehnt (Lizenz oder Domain stimmt "
-#~ "nicht). Bitte support@vollstart.com kontaktieren."
-
-#~ msgid "No ticket template set"
-#~ msgstr "Keine Ticket-Vorlage gesetzt"
-
-#~ msgid "Stop"
-#~ msgstr "Stopp"
 
 #~ msgid "No speakers yet."
 #~ msgstr "Noch keine Referenten."
@@ -10367,9 +10899,6 @@ msgstr ""
 #~ msgid "Please enter a valid email address."
 #~ msgstr "Bitte geben Sie eine gültige E-Mail-Adresse ein."
 
-#~ msgid "Saving…"
-#~ msgstr "Wird gespeichert…"
-
 #~ msgid "Could not save your details. Please try again."
 #~ msgstr ""
 #~ "Ihre Daten konnten nicht gespeichert werden. Bitte versuchen Sie es "
@@ -10397,9 +10926,6 @@ msgstr ""
 #~ msgid "Update the contact details you share with the organizer."
 #~ msgstr ""
 #~ "Aktualisieren Sie die Kontaktdaten, die Sie mit dem Veranstalter teilen."
-
-#~ msgid "Saved."
-#~ msgstr "Gespeichert."
 
 #~ msgid "Networking"
 #~ msgstr "Networking"
@@ -10931,224 +11457,222 @@ msgstr ""
 #~ msgid "Free ticket numbers used up. Added:"
 #~ msgstr "Mögliche Anzahl an Tickets verbraucht. Hinzugefügt:"
 
-#: backend.js:4487
-msgctxt "label"
-msgid "Sales"
-msgstr "Kasse"
+#~ msgctxt "label"
+#~ msgid "Sales"
+#~ msgstr "Kasse"
 
-#: backend.js
-msgctxt "label"
-msgid "Products & Tax"
-msgstr "Produkte & MwSt."
+#~ msgctxt "label"
+#~ msgid "Products & Tax"
+#~ msgstr "Produkte & MwSt."
 
-#: backend.js
-msgctxt "heading"
-msgid "VAT rates"
-msgstr "MwSt.-Sätze"
+#~ msgctxt "heading"
+#~ msgid "VAT rates"
+#~ msgstr "MwSt.-Sätze"
 
-#: backend.js
-msgctxt "label"
-msgid "Manage the VAT rates you can assign to products and ticket lists. Prices are gross — the rate documents how the price splits into net and tax, it never changes the price the customer pays. Each product uses its own rate first, then the default rate of its ticket list, and without a rate the price counts as net. You can type the percent with a point or a comma. Removed rates stay on past orders, so their net and tax split does not change afterwards."
-msgstr "Verwalten Sie die MwSt.-Sätze, die Sie Produkten und Ticketlisten zuweisen können. Preise sind Bruttopreise — der Satz dokumentiert, wie sich der Preis in Netto und Steuer aufteilt, er ändert nie den Preis, den der Kunde zahlt. Jedes Produkt nutzt zuerst seinen eigenen Satz, dann den Standard-Satz seiner Ticketliste, und ohne jeden Satz gilt der Preis als Netto. Den Prozentwert können Sie mit Punkt oder Komma eingeben. Entfernte Sätze bleiben auf vergangenen Bestellungen erhalten, damit sich deren Netto- und Steuer-Aufteilung danach nicht mehr ändert."
+#~ msgctxt "label"
+#~ msgid ""
+#~ "Manage the VAT rates you can assign to products and ticket lists. Prices "
+#~ "are gross — the rate documents how the price splits into net and tax, it "
+#~ "never changes the price the customer pays. Each product uses its own rate "
+#~ "first, then the default rate of its ticket list, and without a rate the "
+#~ "price counts as net. You can type the percent with a point or a comma. "
+#~ "Removed rates stay on past orders, so their net and tax split does not "
+#~ "change afterwards."
+#~ msgstr ""
+#~ "Verwalten Sie die MwSt.-Sätze, die Sie Produkten und Ticketlisten "
+#~ "zuweisen können. Preise sind Bruttopreise — der Satz dokumentiert, wie "
+#~ "sich der Preis in Netto und Steuer aufteilt, er ändert nie den Preis, den "
+#~ "der Kunde zahlt. Jedes Produkt nutzt zuerst seinen eigenen Satz, dann den "
+#~ "Standard-Satz seiner Ticketliste, und ohne jeden Satz gilt der Preis als "
+#~ "Netto. Den Prozentwert können Sie mit Punkt oder Komma eingeben. "
+#~ "Entfernte Sätze bleiben auf vergangenen Bestellungen erhalten, damit sich "
+#~ "deren Netto- und Steuer-Aufteilung danach nicht mehr ändert."
 
-#: backend.js
-msgctxt "column"
-msgid "Name"
-msgstr "Name"
+#~ msgctxt "column"
+#~ msgid "Name"
+#~ msgstr "Name"
 
-#: backend.js
-msgctxt "column"
-msgid "Percent"
-msgstr "Prozent"
+#~ msgctxt "column"
+#~ msgid "Percent"
+#~ msgstr "Prozent"
 
-#: backend.js
-msgctxt "column"
-msgid "Active"
-msgstr "Aktiv"
+#~ msgctxt "column"
+#~ msgid "Active"
+#~ msgstr "Aktiv"
 
-#: backend.js
-msgctxt "label"
-msgid "Add VAT rate"
-msgstr "MwSt.-Satz hinzufügen"
+#~ msgctxt "label"
+#~ msgid "Add VAT rate"
+#~ msgstr "MwSt.-Satz hinzufügen"
 
-#: backend.js
-msgctxt "label"
-msgid "No VAT rates yet."
-msgstr "Noch keine MwSt.-Sätze."
+#~ msgctxt "label"
+#~ msgid "No VAT rates yet."
+#~ msgstr "Noch keine MwSt.-Sätze."
 
-#: backend.js
-msgctxt "heading"
-msgid "Products"
-msgstr "Produkte"
+#~ msgctxt "heading"
+#~ msgid "Products"
+#~ msgstr "Produkte"
 
-#: backend.js
-msgctxt "label"
-msgid "All sellable products — event tickets, optional add-ons and fees — across all lists plus global products without a list. An event ticket is the ticket itself and is always sold, an optional add-on is chosen by the customer with a checkbox, and a fee with auto-add sits on every order by default (e.g. a pre-sale fee). Prices are gross — the assigned rate only documents the net and tax split."
-msgstr "Alle verkaufbaren Produkte — Event-Tickets, optionale Zusatzprodukte und Gebühren — über alle Listen hinweg plus globale Produkte ohne Liste. Ein Event-Ticket ist das eigentliche Ticket und wird immer verkauft, ein optionales Zusatzprodukt wählt der Kunde per Checkbox, und eine Gebühr mit Automatik liegt standardmäßig auf jeder Bestellung (z. B. Vorverkaufsgebühr). Preise sind Bruttopreise — der zugewiesene Satz dokumentiert nur die Netto- und Steuer-Aufteilung."
+#~ msgctxt "label"
+#~ msgid ""
+#~ "All sellable products — event tickets, optional add-ons and fees — across "
+#~ "all lists plus global products without a list. An event ticket is the "
+#~ "ticket itself and is always sold, an optional add-on is chosen by the "
+#~ "customer with a checkbox, and a fee with auto-add sits on every order by "
+#~ "default (e.g. a pre-sale fee). Prices are gross — the assigned rate only "
+#~ "documents the net and tax split."
+#~ msgstr ""
+#~ "Alle verkaufbaren Produkte — Event-Tickets, optionale Zusatzprodukte und "
+#~ "Gebühren — über alle Listen hinweg plus globale Produkte ohne Liste. Ein "
+#~ "Event-Ticket ist das eigentliche Ticket und wird immer verkauft, ein "
+#~ "optionales Zusatzprodukt wählt der Kunde per Checkbox, und eine Gebühr "
+#~ "mit Automatik liegt standardmäßig auf jeder Bestellung (z. B. "
+#~ "Vorverkaufsgebühr). Preise sind Bruttopreise — der zugewiesene Satz "
+#~ "dokumentiert nur die Netto- und Steuer-Aufteilung."
 
-#: backend.js
-msgctxt "label"
-msgid "WooCommerce is active — you do not need these entries for WooCommerce, because product, price and VAT are handled by WooCommerce itself."
-msgstr "WooCommerce ist aktiv — diese Angaben sind bei WooCommerce nicht nötig, da Produkt, Preis und MwSt. dort über WooCommerce abgewickelt werden."
+#~ msgctxt "label"
+#~ msgid ""
+#~ "WooCommerce is active — you do not need these entries for WooCommerce, "
+#~ "because product, price and VAT are handled by WooCommerce itself."
+#~ msgstr ""
+#~ "WooCommerce ist aktiv — diese Angaben sind bei WooCommerce nicht nötig, "
+#~ "da Produkt, Preis und MwSt. dort über WooCommerce abgewickelt werden."
 
-#: backend.js
-msgctxt "column"
-msgid "Type"
-msgstr "Typ"
+#~ msgctxt "column"
+#~ msgid "Type"
+#~ msgstr "Typ"
 
-#: backend.js
-msgctxt "column"
-msgid "Price"
-msgstr "Preis"
+#~ msgctxt "column"
+#~ msgid "Price"
+#~ msgstr "Preis"
 
-#: backend.js
-msgctxt "column"
-msgid "Tax rate"
-msgstr "MwSt.-Satz"
+#~ msgctxt "column"
+#~ msgid "Tax rate"
+#~ msgstr "MwSt.-Satz"
 
-#: backend.js
-msgctxt "column"
-msgid "List"
-msgstr "Liste"
+#~ msgctxt "column"
+#~ msgid "List"
+#~ msgstr "Liste"
 
-#: backend.js
-msgctxt "label"
-msgid "Event ticket"
-msgstr "Event-Ticket"
+#~ msgctxt "label"
+#~ msgid "Event ticket"
+#~ msgstr "Event-Ticket"
 
-#: backend.js
-msgctxt "label"
-msgid "Fee"
-msgstr "Gebühr"
+#~ msgctxt "label"
+#~ msgid "Fee"
+#~ msgstr "Gebühr"
 
-#: backend.js
-msgctxt "label"
-msgid "No tax rate"
-msgstr "Kein MwSt.-Satz"
+#~ msgctxt "label"
+#~ msgid "No tax rate"
+#~ msgstr "Kein MwSt.-Satz"
 
-#: backend.js
-msgctxt "label"
-msgid "Global (no list)"
-msgstr "Global (keine Liste)"
+#~ msgctxt "label"
+#~ msgid "Global (no list)"
+#~ msgstr "Global (keine Liste)"
 
-#: backend.js
-msgctxt "label"
-msgid "Optional"
-msgstr "Optional"
+#~ msgctxt "label"
+#~ msgid "Optional"
+#~ msgstr "Optional"
 
-#: backend.js
-msgctxt "label"
-msgid "Optional add-on: the customer chooses whether to take it (shop and Kasse show a checkbox)."
-msgstr "Optionales Zusatzprodukt: Der Kunde entscheidet, ob er es mitnimmt (Shop und Kasse zeigen eine Checkbox)."
+#~ msgctxt "label"
+#~ msgid ""
+#~ "Optional add-on: the customer chooses whether to take it (shop and Kasse "
+#~ "show a checkbox)."
+#~ msgstr ""
+#~ "Optionales Zusatzprodukt: Der Kunde entscheidet, ob er es mitnimmt (Shop "
+#~ "und Kasse zeigen eine Checkbox)."
 
-#: backend.js
-msgctxt "label"
-msgid "Auto-add"
-msgstr "Automatisch hinzufügen"
+#~ msgctxt "label"
+#~ msgid "Auto-add"
+#~ msgstr "Automatisch hinzufügen"
 
-#: backend.js
-msgctxt "label"
-msgid "The fee is added to every order by default (e.g. pre-sale or system fee)."
-msgstr "Die Gebühr liegt standardmäßig auf jeder Bestellung (z. B. Vorverkaufs- oder Systemgebühr)."
+#~ msgctxt "label"
+#~ msgid ""
+#~ "The fee is added to every order by default (e.g. pre-sale or system fee)."
+#~ msgstr ""
+#~ "Die Gebühr liegt standardmäßig auf jeder Bestellung (z. B. Vorverkaufs- "
+#~ "oder Systemgebühr)."
 
-#: backend.js
-msgctxt "label"
-msgid "Add product"
-msgstr "Produkt hinzufügen"
+#~ msgctxt "label"
+#~ msgid "Add product"
+#~ msgstr "Produkt hinzufügen"
 
-#: backend.js
-msgctxt "label"
-msgid "No products yet."
-msgstr "Noch keine Produkte."
+#~ msgctxt "label"
+#~ msgid "No products yet."
+#~ msgstr "Noch keine Produkte."
 
-#: backend.js
-msgctxt "label"
-msgid "Active"
-msgstr "Aktiv"
+#~ msgctxt "label"
+#~ msgid "Active"
+#~ msgstr "Aktiv"
 
-#: backend.js
-msgctxt "label"
-msgid "Remove"
-msgstr "Entfernen"
+#~ msgctxt "label"
+#~ msgid "Remove"
+#~ msgstr "Entfernen"
 
-#: backend.js
-msgctxt "label"
-msgid "Price"
-msgstr "Preis"
+#~ msgctxt "label"
+#~ msgid "Price"
+#~ msgstr "Preis"
 
-#: backend.js
-msgctxt "label"
-msgid "Save"
-msgstr "Speichern"
+#~ msgctxt "label"
+#~ msgid "Save"
+#~ msgstr "Speichern"
 
-#: index.php
-msgctxt "label"
-msgid "included"
-msgstr "inklusive"
+#~ msgctxt "label"
+#~ msgid "included"
+#~ msgstr "inklusive"
 
-#: index.php
-msgctxt "label"
-msgid "Add-on"
-msgstr "Add-on"
+#~ msgctxt "label"
+#~ msgid "Add-on"
+#~ msgstr "Add-on"
 
+#~ msgctxt "label"
+#~ msgid ""
+#~ "Define your VAT rates once and assign them to products — or set a default "
+#~ "rate per ticket list. An event ticket is the mandatory ticket itself, a "
+#~ "product is an optional add-on the customer chooses (drinks, merchandise), "
+#~ "and a fee is added to every order by default. The online shop and the "
+#~ "Kasse both follow these settings."
+#~ msgstr ""
+#~ "Definieren Sie Ihre MwSt.-Sätze einmal und weisen Sie sie den Produkten "
+#~ "zu — oder legen Sie einen Standard-Satz pro Ticketliste fest. Ein Event-"
+#~ "Ticket ist das eigentliche Ticket und gehört immer zum Verkauf, ein "
+#~ "Produkt ist ein optionales Zusatzprodukt, das der Kunde wählt (Getränke, "
+#~ "Merchandise), und eine Gebühr liegt standardmäßig auf jeder Bestellung. "
+#~ "Der Online-Shop und die Kasse richten sich beide nach diesen "
+#~ "Einstellungen."
 
-#: backend.js
-msgctxt "label"
-msgid "Define your VAT rates once and assign them to products — or set a default rate per ticket list. An event ticket is the mandatory ticket itself, a product is an optional add-on the customer chooses (drinks, merchandise), and a fee is added to every order by default. The online shop and the Kasse both follow these settings."
-msgstr "Definieren Sie Ihre MwSt.-Sätze einmal und weisen Sie sie den Produkten zu — oder legen Sie einen Standard-Satz pro Ticketliste fest. Ein Event-Ticket ist das eigentliche Ticket und gehört immer zum Verkauf, ein Produkt ist ein optionales Zusatzprodukt, das der Kunde wählt (Getränke, Merchandise), und eine Gebühr liegt standardmäßig auf jeder Bestellung. Der Online-Shop und die Kasse richten sich beide nach diesen Einstellungen."
+#~ msgctxt "title"
+#~ msgid "Edit VAT rate"
+#~ msgstr "MwSt.-Satz bearbeiten"
 
+#~ msgctxt "title"
+#~ msgid "Add VAT rate"
+#~ msgstr "MwSt.-Satz hinzufügen"
 
-#: backend.js
-msgctxt "title"
-msgid "Edit VAT rate"
-msgstr "MwSt.-Satz bearbeiten"
+#~ msgctxt "title"
+#~ msgid "Edit product"
+#~ msgstr "Produkt bearbeiten"
 
+#~ msgctxt "title"
+#~ msgid "Add product"
+#~ msgstr "Produkt hinzufügen"
 
-#: backend.js
-msgctxt "title"
-msgid "Add VAT rate"
-msgstr "MwSt.-Satz hinzufügen"
+#~ msgctxt "label"
+#~ msgid "Percent"
+#~ msgstr "Prozent"
 
+#~ msgctxt "label"
+#~ msgid "Currency"
+#~ msgstr "Währung"
 
-#: backend.js
-msgctxt "title"
-msgid "Edit product"
-msgstr "Produkt bearbeiten"
+#~ msgctxt "column"
+#~ msgid "Flags"
+#~ msgstr "Merkmale"
 
+#~ msgid "Are you sure, you want to delete this VAT rate?"
+#~ msgstr "Sind Sie sicher, dass Sie diesen MwSt.-Satz löschen möchten?"
 
-#: backend.js
-msgctxt "title"
-msgid "Add product"
-msgstr "Produkt hinzufügen"
+#~ msgid "Are you sure, you want to delete this product?"
+#~ msgstr "Sind Sie sicher, dass Sie dieses Produkt löschen möchten?"
 
-
-#: backend.js
-msgctxt "label"
-msgid "Percent"
-msgstr "Prozent"
-
-
-#: backend.js
-msgctxt "label"
-msgid "Currency"
-msgstr "Währung"
-
-
-#: backend.js
-msgctxt "column"
-msgid "Flags"
-msgstr "Merkmale"
-
-
-#: backend.js
-msgid "Are you sure, you want to delete this VAT rate?"
-msgstr "Sind Sie sicher, dass Sie diesen MwSt.-Satz löschen möchten?"
-
-
-#: backend.js
-msgid "Are you sure, you want to delete this product?"
-msgstr "Sind Sie sicher, dass Sie dieses Produkt löschen möchten?"
-
-#: js/kasse keypad
-msgid "Clear amount"
-msgstr "Betrag löschen"
+#~ msgid "Clear amount"
+#~ msgstr "Betrag löschen"

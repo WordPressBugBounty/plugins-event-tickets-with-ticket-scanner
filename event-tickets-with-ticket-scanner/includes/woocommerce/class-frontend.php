@@ -415,6 +415,12 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 						$this->session_set_value($key . '_' . $cart_item_id, $line[$key]);
 					}
 				} else {
+					// #18172: guest-supplied per-ticket data is untrusted plain text.
+					// Strip tags/handlers at the boundary (same treatment as the
+					// daychooser branch above) — it flows from here into the order
+					// item meta and the ticket, and gets rendered in the scanner
+					// and admin ticket views.
+					$value = sanitize_text_field($value);
 					$valueArray = WC()->session->get($type);
 					if ($valueArray === null) {
 						$valueArray = [];
@@ -678,13 +684,13 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 			if ($saso_eventtickets_daychooser_offset_start > 0) {
 				// if the start date is not set, then we set it to today + days offset
 				if (!isset($params['custom_attributes']['min'])) {
-					$params['custom_attributes']['min'] = date("Y-m-d", strtotime("+" . $saso_eventtickets_daychooser_offset_start . " days"));
+					$params['custom_attributes']['min'] = gmdate("Y-m-d", strtotime("+" . $saso_eventtickets_daychooser_offset_start . " days"));
 				} else {
 					// if the start date + offset days is set before the ticket start date then use the start date
 					if (time() < strtotime($params['custom_attributes']['min'] . " -" . $saso_eventtickets_daychooser_offset_start . " days")) {
 						$params['custom_attributes']['min'] = $saso_eventtickets_ticket_start_date;
 					} else {
-						$params['custom_attributes']['min'] = date("Y-m-d", strtotime("+" . $saso_eventtickets_daychooser_offset_start . " days"));
+						$params['custom_attributes']['min'] = gmdate("Y-m-d", strtotime("+" . $saso_eventtickets_daychooser_offset_start . " days"));
 					}
 				}
 			}
@@ -692,7 +698,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				$params['custom_attributes']['max'] = $saso_eventtickets_ticket_end_date;
 			}
 			if (!isset($params['custom_attributes']['max']) && $saso_eventtickets_daychooser_offset_end > 0) {
-				$params['custom_attributes']['max'] = date("Y-m-d", strtotime("+" . $saso_eventtickets_daychooser_offset_end . " days"));
+				$params['custom_attributes']['max'] = gmdate("Y-m-d", strtotime("+" . $saso_eventtickets_daychooser_offset_end . " days"));
 			}
 
 			// Disable datepicker if seats are selected (date change would invalidate seat blocks)
@@ -1439,10 +1445,10 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 					// Calculate start date with offset
 					if ($offset_start > 0) {
 						if (empty($ticket_start_date)) {
-							$ticket_start_date = date("Y-m-d", strtotime("+" . $offset_start . " days"));
+							$ticket_start_date = gmdate("Y-m-d", strtotime("+" . $offset_start . " days"));
 						} else {
 							if (time() < strtotime($ticket_start_date . " -" . $offset_start . " days")) {
-								$ticket_start_date = date("Y-m-d", strtotime("+" . $offset_start . " days"));
+								$ticket_start_date = gmdate("Y-m-d", strtotime("+" . $offset_start . " days"));
 							}
 						}
 					}
@@ -1450,7 +1456,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 					// Calculate end date with offset
 					if ($offset_end > 0) {
 						if (empty($ticket_end_date)) {
-							$ticket_end_date = date("Y-m-d", strtotime("+" . $offset_end . " days"));
+							$ticket_end_date = gmdate("Y-m-d", strtotime("+" . $offset_end . " days"));
 						}
 					}
 
@@ -1467,7 +1473,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 					// Validate excluded weekdays (0=Sun, 1=Mon, ..., 6=Sat)
 					$exclude_wdays = $dates['daychooser_exclude_wdays'] ?? [];
 					if (!empty($exclude_wdays) && is_array($exclude_wdays)) {
-						$dayOfWeek = (int) date('w', strtotime($value));
+						$dayOfWeek = (int) gmdate('w', strtotime($value));
 						if (in_array($dayOfWeek, array_map('intval', $exclude_wdays), true)) {
 							$this->displayWarningDatePicker($cart_item['data']->get_name(), $item_id, $a);
 							continue;
@@ -1957,7 +1963,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				}
 
 				// Disallow past dates
-				if ($date < date('Y-m-d')) {
+				if ($date < gmdate('Y-m-d')) {
 					$product = wc_get_product($product_id);
 					$this->displayWarningDatePicker($product->get_name(), '0', 1, true);
 					return false;

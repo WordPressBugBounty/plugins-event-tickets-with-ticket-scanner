@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventticketsDB extends sasoEventtickets_DB {
 	public $dbversion = '1.27';
@@ -465,6 +466,7 @@ class sasoEventtickets_DB {
 			//$felder[$a] = $wpdb->esc_like( $felder[$a] );
 			$felder[$a] = $this->reinigen_in( $felder[$a] );
 		}
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- generic executor — callers build $sql via prepare() with placeholders
 		$sql = $wpdb->prepare( $sql, $felder );
 		return $this->_db_datenholen($sql);
 	}
@@ -476,6 +478,7 @@ class sasoEventtickets_DB {
 	  	//if ($installed_ver != $this->dbversion) $this->installiereTabellen();
 	  	//echo $installed_ver;
 		try {
+	  		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- generic executor — callers build $sql via prepare() with placeholders
 	  		$ret = $wpdb->get_results($sql, ARRAY_A);
 		} catch(Exception $e) {
 			if ($again == true) {
@@ -565,11 +568,13 @@ class sasoEventtickets_DB {
 		$sets = [];
 		foreach ($felder as $k => $v) {
 			if ($v === null) { $sets[] = "`$k` = NULL"; continue; }
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every field value is individually passed through prepare(); the ternary only picks %d/%s
 			$sets[] = "`$k` = ".$wpdb->prepare(is_int($v) ? "%d" : "%s", $v);
 		}
 		$sql .= implode(", ", $sets);
 		$wheres = [];
 		foreach ($where as $k => $v) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every field value is individually passed through prepare(); the ternary only picks %d/%s
 			$wheres[] = "`$k` = ".$wpdb->prepare(is_int($v) ? "%d" : "%s", $v);
 		}
 		// Leerer erwarteter Lock = Altbestand vor der Spalte: NULL-Semantik zulassen.
@@ -580,6 +585,7 @@ class sasoEventtickets_DB {
 			$wheres[] = "meta_lock = ".$wpdb->prepare("%s", $expectedLock);
 		}
 		$sql .= " WHERE ".implode(" AND ", $wheres);
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- SET/WHERE fragments above are all prepared per-field; only literals are concatenated
 		return intval($wpdb->query($sql));
 	}
 
@@ -593,6 +599,7 @@ class sasoEventtickets_DB {
 
 	public function _db_query($sql) {
 		global $wpdb;
+  	    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- generic executor — callers build $sql via prepare() with placeholders
   	    $erg = $wpdb->query($sql);
 		if ($erg):
 			if (strtolower(substr($sql, 0, 6)) == "insert") {
@@ -627,6 +634,7 @@ class sasoEventtickets_DB {
 					$wpdb->suppress_errors = true;
 					foreach($tabelle['additional'] as $sql) {
 						//echo $sql;
+						// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- generic executor — callers build $sql via prepare() with placeholders
 						$wpdb->query($sql); // zusätzlich sql wie index
 					}
 					$wpdb->suppress_errors = false;

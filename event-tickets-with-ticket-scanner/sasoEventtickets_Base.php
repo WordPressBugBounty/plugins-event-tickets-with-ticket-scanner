@@ -1,4 +1,5 @@
 <?php
+if (!defined('ABSPATH')) exit; // direct access protection
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 class sasoEventtickets_Base {
 	private $_isPremInitialized = false;
@@ -97,15 +98,16 @@ class sasoEventtickets_Base {
 		$readme = plugin_dir_path(dirname(__FILE__) . '/index.php') . 'readme.txt';
 		if (!is_readable($readme)) return $cached;
 
-		$handle = fopen($readme, 'r');
-		if ($handle === false) return $cached;
-		while (($line = fgets($handle)) !== false) {
-			if (preg_match('/^= *[0-9.]+ +- +(\d{4}-\d{2}-\d{2}) *=/', $line, $match)) {
-				$cached = $match[1];
-				break;
-			}
+		global $wp_filesystem;
+		if (empty($wp_filesystem)) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+			WP_Filesystem();
 		}
-		fclose($handle);
+		$content = $wp_filesystem->get_contents($readme);
+		if ($content === false || $content === null) return $cached;
+		if (preg_match('/^= *[0-9.]+ +- +(\d{4}-\d{2}-\d{2}) *=/m', $content, $match)) {
+			$cached = $match[1];
+		}
 
 		return $cached;
 	}

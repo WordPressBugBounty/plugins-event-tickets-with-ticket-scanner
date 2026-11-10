@@ -370,7 +370,7 @@ if (!class_exists('sasoEventtickets_WC_Email')) {
 			foreach ($attachments as $item) {
 				try {
 					if (file_exists($item) && dirname($item) == $dirname) {
-						@unlink($item);
+						wp_delete_file($item);
 					}
 				} catch (Exception $e) {
 					$this->MAIN->getAdmin()->logErrorToDB($e);

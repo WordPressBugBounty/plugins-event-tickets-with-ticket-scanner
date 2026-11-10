@@ -6,6 +6,13 @@ function sasoEventtickets_order_detail() {
     let div_order = null;
     //console.log(DATA);
 
+    // #18172 follow-up: customer-supplied ticket fields must never enter an
+    // HTML string unescaped — this file builds extra_content/text_content
+    // strings that are appended via .html().
+    function escapeHtml(text) {
+        return $('<div>').text(text == null ? '' : String(text)).html();
+    }
+
     function addStyleCode(content) {
 		let c = document.createElement('style');
 		c.innerHTML = content;
@@ -36,9 +43,9 @@ function sasoEventtickets_order_detail() {
 
         for (let pidx=0;pidx<DATA.order.products.length;pidx++) {
             let product = DATA.order.products[pidx];
-            extra_content += "<b>"+product.product_name
+            extra_content += "<b>"+escapeHtml(product.product_name)
                 +(product.product_name_variant != "" ? " - "
-                +product.product_name_variant : "")
+                +escapeHtml(product.product_name_variant) : "")
                 +'</b><div style="padding-top:5px;text-align:left;"><ol>';
             for (let idx=0;idx<DATA.tickets.length;idx++) {
                 let item = DATA.tickets[idx];
@@ -47,16 +54,16 @@ function sasoEventtickets_order_detail() {
                     extra_content += item.code_display;
                     if (item.name_per_ticket != "" || item.value_per_ticket != "") {
                         if (item.name_per_ticket != "") {
-                            extra_content += '<br>'+item.name_per_ticket;
+                            extra_content += '<br>'+escapeHtml(item.name_per_ticket);
                         }
                         if (item.value_per_ticket != "") {
-                            extra_content += '<br>'+item.value_per_ticket;
+                            extra_content += '<br>'+escapeHtml(item.value_per_ticket);
                         }
                     } else {
                         //extra_content += "No name or value on ticket set";
                     }
                     if (item.location) {
-                        extra_content += "<br>"+item.location;
+                        extra_content += "<br>"+escapeHtml(item.location);
                     }
                     if (item.ticket_date) {
                         extra_content += "<br>"+item.ticket_date;
@@ -111,21 +118,21 @@ function sasoEventtickets_order_detail() {
         for (let idx=0;idx<DATA.tickets.length;idx++) {
             let item = DATA.tickets[idx];
 
-            let text_content = item.product_name;
+            let text_content = escapeHtml(item.product_name);
             if (item.product_name_variant) {
-                text_content += "<br>"+item.product_name_variant;
+                text_content += "<br>"+escapeHtml(item.product_name_variant);
             }
             if (item.name_per_ticket) {
-                text_content += "<br>"+item.name_per_ticket;
+                text_content += "<br>"+escapeHtml(item.name_per_ticket);
             }
             if (item.value_per_ticket) {
-                text_content += "<br>"+item.value_per_ticket;
+                text_content += "<br>"+escapeHtml(item.value_per_ticket);
             }
             if (item.location) {
-                text_content += "<br>"+item.location;
+                text_content += "<br>"+escapeHtml(item.location);
             }
             if (item.ticket_date) {
-                text_content += "<br>"+item.ticket_date;
+                text_content += "<br>"+escapeHtml(item.ticket_date);
             }
 
             let qr_code = $('<div style="padding:20px;text-align:center;" data-id="'+DATA.system.divPrefix+'_qr_'+idx+'">');

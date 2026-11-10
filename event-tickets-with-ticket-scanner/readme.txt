@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, box office, pos, seating plan, woocommerce tickets, congress, membership
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.3.1
+Stable tag: 3.3.3
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -248,6 +248,16 @@ Major release: Old premium version will no longer work with this version. Intera
 Old premium version will no longer work with this version. You need to downgrade the basic plugin or get a new license for premium to update your premium plugin too.
 
 == Changelog ==
+
+= 3.3.3 — 2026-11-05 =
+* Plugin Check: resolved all remaining directory review errors — wp_rand() for generated ticket PDF passwords, WP_Filesystem for file access, gmdate() for deterministic timestamps, and prepared-statement cleanup across the database layer.
+* Security: the admin settings, ticket list and error log searches now build their database search through prepared statements — previously a search value could break out of the query (SQL injection, administrator only, CVE-2026-115870 reported by Wordfence PRISM). Searching the error log also works again: the search filter had a broken query that returned a database error.
+* Note: the stored XSS reported as CVE-2026-111825 was already fixed in 3.3.2 (per-ticket name/value fields are sanitized as plain text and rendered as text everywhere).
+
+
+= 3.3.2 — 2026-11-04 =
+* Security: per-ticket name and value fields are now sanitized as plain text on input, and the ticket scanner, the admin ticket view and the order detail and scanner ticket lists render them as text or escape them — previously a guest buyer could store HTML in these fields, which then ran as JavaScript in the browser of an administrator or staff member opening the ticket (stored XSS). Thanks to Muni Nitish Kumar Yaddala for the responsible disclosure via WPScan.
+* Fix: ticket PDFs showed a PHP error instead of the ticket for products with product attributes when the second ticket template was used — WooCommerce returns attribute objects there, and the template piped them through HTML-stripping; the template now renders attribute strings only (no plugin data affected).
 
 = 3.3.1 - 2026-11-03 =
 * New: PRODUCTID search filter in the ticket list (and the product ticket download) now also matches product variations of variable products — existing tickets resolve via their order item, new tickets store the variation id directly.
