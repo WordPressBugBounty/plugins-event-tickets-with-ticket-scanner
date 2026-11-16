@@ -122,7 +122,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 
 			$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product_id_orig, $date_format, $time_format);
 			if (!empty($date_str)) {
-				echo "<br>" . $date_str;
+				echo "<br>" . esc_html($date_str);
 			}
 		}
 
@@ -344,6 +344,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 						break;
 					default:
 						throw new Exception("#6003 " . sprintf(
+							/* translators: %s: function name */
 							esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'),
 							$a
 						));
@@ -708,7 +709,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				$params['class'][] = 'saso-datepicker-disabled';
 			}
 
-			echo '<div id="datepicker-wrapper_' . $cart_item_key . '_' . $a . '" class="saso-eventtickets-datepicker' . ($disabled ? ' saso-datepicker-locked' : '') . '" data-product-id="' . $product_id . '">';
+			echo '<div id="datepicker-wrapper_' . esc_attr($cart_item_key) . '_' . esc_attr($a) . '" class="saso-eventtickets-datepicker' . ($disabled ? ' saso-datepicker-locked' : '') . '" data-product-id="' . esc_attr($product_id) . '">';
 			woocommerce_form_field('saso_eventtickets_request_daychooser[' . $cart_item_key . '][]', $params, $value);
 
 			// Show reason for disabled state
@@ -742,24 +743,13 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				$code = isset($cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM]) ? $cart_item[self::META_KEY_CODELIST_RESTRICTION_ORDER_ITEM] : '';
 				$infoLabel = $this->MAIN->getOptions()->getOptionValue('wcRestrictCartInfo');
 				$fieldPlaceholder = $this->MAIN->getOptions()->getOptionValue('wcRestrictCartFieldPlaceholder');
-				$html = '<p class="form-row form-row-wide"><label>%s</label>
-							<input
-								type="text"
-								maxlength="140"
-								placeholder="%s"
-								data-input-type="%s"
-								data-cart-item-id="%s"
-								data-plugin="event"
-								data-plg="' . esc_attr($this->MAIN->getPrefix()) . '"
-								value="%s"
-								class="input-text" /></p>';
 				printf(
-					str_replace("\n", "", $html),
+					'<p class="form-row form-row-wide"><label>%s</label>							<input								type="text"								maxlength="140"								placeholder="%s"								data-input-type="%s"								data-cart-item-id="%s"								data-plugin="event"								data-plg="' . esc_attr($this->MAIN->getPrefix()) . '"								value="%s"								class="input-text" /></p>',
 					esc_html($infoLabel),
 					esc_attr($fieldPlaceholder),
 					esc_attr($this->js_inputType),
 					esc_attr($cart_item_key),
-					wc_clean($code)
+					esc_html(wc_clean($code))
 				);
 			}
 
@@ -872,7 +862,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 						: esc_html__('Seat:', 'event-tickets-with-ticket-scanner');
 
 					echo '<div class="saso-cart-seat-info">';
-					echo '<strong>' . $seatTitle . '</strong>';
+					echo '<strong>' . esc_html($seatTitle) . '</strong>';
 					echo '<div class="saso-selected-seats-labels">';
 					echo '<ul class="saso-seat-list">';
 
@@ -895,8 +885,8 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 							$remainingAttr = ' data-remaining-seconds="' . (int) $remainingSeconds . '"';
 						}
 
-						echo '<li class="saso-seat-item" data-seat-id="' . esc_attr($seat['seat_id'] ?? '') . '"' . $remainingAttr . '>';
-						echo '<span class="saso-seat-name">' . $label . '</span>';
+						echo '<li class="saso-seat-item" data-seat-id="' . esc_attr($seat['seat_id'] ?? '') . '"' . ($remainingAttr !== '' ? ' data-remaining-seconds="' . (int) $remainingSeconds . '"' : '') . '>';
+						echo '<span class="saso-seat-name">' . wp_kses($label, ['small' => [], 'br' => []]) . '</span>';
 						// Only show countdown if not hidden by option
 						if ($remainingSeconds > 0) {
 							echo '<span class="saso-seat-countdown" data-remaining-seconds="' . (int) $remainingSeconds . '"></span>';
@@ -926,17 +916,8 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 						if ($valueArray != null && isset($valueArray[$cart_item_key]) && isset($valueArray[$cart_item_key][$a])) {
 							$value = trim($valueArray[$cart_item_key][$a]);
 						}
-						$html = '<p class="form-row form-row-wide"><label>' . esc_html(str_replace("{count}", $a + 1, $label)) . '</label>
-								<input type="text" data-input-type="text"
-									name="saso_eventtickets_request_name_per_ticket[%s][]"
-									data-cart-item-id="%s"
-									data-cart-item-count="%s"
-									data-plugin="event"
-									data-plg="' . esc_attr($this->MAIN->getPrefix()) . '"
-									value="%s"
-									class="input-text" /></p>';
 						printf(
-							str_replace("\n", "", $html),
+							'<p class="form-row form-row-wide"><label>' . esc_html(str_replace("{count}", $a + 1, $label)) . '</label>								<input type="text" data-input-type="text"									name="saso_eventtickets_request_name_per_ticket[%s][]"									data-cart-item-id="%s"									data-cart-item-count="%s"									data-plugin="event"									data-plg="' . esc_attr($this->MAIN->getPrefix()) . '"									value="%s"									class="input-text" /></p>',
 							esc_attr($cart_item_key),
 							esc_attr($cart_item_key),
 							esc_attr($a),
@@ -994,16 +975,8 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 								$html_options = '<option>' . esc_html($l) . '</option>' . $html_options;
 							}
 
-							$html = '<p class="form-row form-row-wide"><label>' . esc_html($l) . '</label>
-									<select
-										name="saso_eventtickets_request_value_per_ticket[%s][]"
-										data-input-type="value"
-										data-cart-item-id="%s"
-										data-cart-item-count="%s"
-										data-plugin="event"
-										data-plg="' . esc_attr($this->MAIN->getPrefix()) . '">' . $html_options . '</select></p>';
 							printf(
-								str_replace("\n", "", $html),
+								'<p class="form-row form-row-wide"><label>' . esc_html($l) . '</label>									<select										name="saso_eventtickets_request_value_per_ticket[%s][]"										data-input-type="value"										data-cart-item-id="%s"										data-cart-item-count="%s"										data-plugin="event"										data-plg="' . esc_attr($this->MAIN->getPrefix()) . '">' . wp_kses($html_options, ['option' => ['selected' => true]]) . '</select></p>',
 								esc_attr($cart_item_key),
 								esc_attr($cart_item_key),
 								esc_attr($a)
@@ -1279,7 +1252,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				return;
 			}
 
-			echo '<p class="saso-eventtickets-sales-closed">' . $this->getSalesCutoffLabel($product->get_name(), 'wcTicketTransSalesCutoffMessage', '', (int) $product_id) . '</p>';
+			echo '<p class="saso-eventtickets-sales-closed">' . wp_kses_post($this->getSalesCutoffLabel($product->get_name(), 'wcTicketTransSalesCutoffMessage', '', (int) $product_id)) . '</p>';
 		}
 
 		/**
@@ -1805,7 +1778,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				$frontendManager->enqueueScripts();
 
 				echo '<div class="saso-seating-wrapper" data-product-id="' . esc_attr($product_id) . '" data-requires-date="' . ($isDaychooser ? '1' : '0') . '">';
-				echo $frontendManager->renderSeatSelector($product_id_orig, $eventDate);
+				echo $frontendManager->renderSeatSelector($product_id_orig, $eventDate); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal renderer, returns markup built from escaped parts
 				echo '</div>';
 			}
 		}
@@ -1879,7 +1852,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 
 				echo '<div class="saso-seating-wrapper" data-product-id="' . esc_attr($product_id) . '" data-requires-date="' . ($isDaychooser ? '1' : '0') . '">';
 				if ($plan) {
-					echo $frontendManager->renderSeatSelector($product_id, $eventDate);
+					echo $frontendManager->renderSeatSelector($product_id, $eventDate); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- internal renderer, returns markup built from escaped parts
 				}
 				echo '</div>';
 			}
@@ -2050,6 +2023,7 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				if ($seatingRequired && $seatCount === 0) {
 					wc_add_notice(
 						sprintf(
+							/* translators: %d: number of seats required */
 							__('Please select %d seat(s) before adding to cart.', 'event-tickets-with-ticket-scanner'),
 							$quantity
 						),
@@ -2062,7 +2036,8 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 				if ($seatCount > 0 && $seatCount !== $quantity) {
 					wc_add_notice(
 						sprintf(
-							__('Please select exactly %d seat(s). You have selected %d.', 'event-tickets-with-ticket-scanner'),
+							/* translators: 1: required number of seats, 2: selected number of seats */
+							__('Please select exactly %1$d seat(s). You have selected %2$d.', 'event-tickets-with-ticket-scanner'),
 							$quantity,
 							$seatCount
 						),
@@ -2106,7 +2081,9 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 						if (!$blockResult['success']) {
 							$seatLabel = $seat['seat_label'] ?? $seat['seat_id'];
 							wc_add_notice(
-								sprintf(__('Seat "%s" is no longer available. Please choose another seat.', 'event-tickets-with-ticket-scanner'), $seatLabel),
+								sprintf(
+									/* translators: %s: seat label */
+									__('Seat "%s" is no longer available. Please choose another seat.', 'event-tickets-with-ticket-scanner'), $seatLabel),
 								'error'
 							);
 							return false;
@@ -2128,7 +2105,9 @@ if (!class_exists('sasoEventtickets_WC_Frontend')) {
 						if (!$validation['valid']) {
 							$seatLabel = $seat['seat_label'] ?? $seat['seat_id'];
 							$errorMsg = $validation['error'] === 'seat_unavailable'
+								/* translators: %s: seat label */
 								? sprintf(__('Seat "%s" is no longer available. Please choose another seat.', 'event-tickets-with-ticket-scanner'), $seatLabel)
+								/* translators: %s: seat label */
 								: sprintf(__('Invalid seat selection: %s. Please try again.', 'event-tickets-with-ticket-scanner'), $seatLabel);
 							wc_add_notice($errorMsg, 'error');
 							return false;

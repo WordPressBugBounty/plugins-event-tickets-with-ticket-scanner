@@ -543,7 +543,7 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 			'created_count' => count($createdIds),
 			'seat_ids' => $createdIds,
 			'message' => sprintf(
-				__('%d seats created successfully', 'event-tickets-with-ticket-scanner'),
+				/* translators: %d: number of seats created */__('%d seats created successfully', 'event-tickets-with-ticket-scanner'),
 				count($createdIds)
 			)
 		];
@@ -598,7 +598,7 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 			// Single seat response
 			if (empty($results) || !$results[0]['success']) {
 				$error = $results[0]['error'] ?? 'update failed';
-				throw new Exception('#8581 ' . $error);
+				throw new Exception('#8581 ' . esc_html($error));
 			}
 			return ['message' => __('Seat updated successfully', 'event-tickets-with-ticket-scanner')];
 		}
@@ -608,7 +608,7 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 			'results' => $results,
 			'success_count' => $successCount,
 			'fail_count' => count($results) - $successCount,
-			'message' => sprintf(__('%d seats updated successfully', 'event-tickets-with-ticket-scanner'), $successCount)
+			'message' => sprintf(/* translators: %d: number of seats updated */__('%d seats updated successfully', 'event-tickets-with-ticket-scanner'), $successCount)
 		];
 	}
 
@@ -663,7 +663,7 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 			// Single seat response
 			if (empty($results) || !$results[0]['success']) {
 				$error = $results[0]['error'] ?? 'delete failed';
-				throw new Exception('#8591 ' . $error);
+				throw new Exception('#8591 ' . esc_html($error));
 			}
 			return ['message' => __('Seat deleted successfully', 'event-tickets-with-ticket-scanner')];
 		}
@@ -673,7 +673,7 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 			'results' => $results,
 			'success_count' => $successCount,
 			'fail_count' => count($results) - $successCount,
-			'message' => sprintf(__('%d seats deleted successfully', 'event-tickets-with-ticket-scanner'), $successCount)
+			'message' => sprintf(/* translators: %d: number of seats deleted */__('%d seats deleted successfully', 'event-tickets-with-ticket-scanner'), $successCount)
 		];
 	}
 
@@ -1092,7 +1092,7 @@ class sasoEventtickets_Seating_Admin extends sasoEventtickets_Seating_Base {
 				'confirmPublish' => __('Publish changes? This will make them visible to customers.', 'event-tickets-with-ticket-scanner'),
 				'publishConflicts' => __('Cannot publish: The following seats have sold tickets and cannot be deleted:', 'event-tickets-with-ticket-scanner'),
 				'activeSalesWarning' => __('Warning: This seating plan has active ticket sales. Changes will only be visible after publishing.', 'event-tickets-with-ticket-scanner'),
-				'ticketsSold' => __('%d tickets sold', 'event-tickets-with-ticket-scanner'),
+				'ticketsSold' => /* translators: %d: number of tickets sold */__('%d tickets sold', 'event-tickets-with-ticket-scanner'),
 				'navigator' => __('Navigator', 'event-tickets-with-ticket-scanner'),
 				'searchElements' => __('Search label, identifier or id…', 'event-tickets-with-ticket-scanner')
 			]

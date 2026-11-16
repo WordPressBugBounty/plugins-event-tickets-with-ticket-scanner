@@ -94,7 +94,7 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 
 		// Validate required fields
 		if (empty($data['seat_identifier'])) {
-			throw new Exception(__('Seat identifier is required.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Seat identifier is required.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Check if plan exists
@@ -106,7 +106,7 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 		);
 
 		if (!$planExists) {
-			throw new Exception(__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Check free version limit (seats per plan) via existing infrastructure
@@ -117,15 +117,16 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 		if ($maxSeats > 0 && $currentCount >= $maxSeats) {
 			throw new Exception(
 				sprintf(
-					__('Limit reached (%d seats per plan). Upgrade to Premium for unlimited seats.', 'event-tickets-with-ticket-scanner'),
-					$maxSeats
+					/* translators: %d: maximum number of seats per plan in the free version */
+					esc_html__('Limit reached (%d seats per plan). Upgrade to Premium for unlimited seats.', 'event-tickets-with-ticket-scanner'),
+					(int) $maxSeats
 				)
 			);
 		}
 
 		// Check identifier uniqueness within plan
 		if ($this->identifierExistsInPlan($planId, $data['seat_identifier'])) {
-			throw new Exception(__('A seat with this identifier already exists in this plan.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('A seat with this identifier already exists in this plan.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Merge input meta with defaults
@@ -195,10 +196,11 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 		if ($maxSeats > 0 && ($currentCount + $newCount) > $maxSeats) {
 			throw new Exception(
 				sprintf(
-					__('Cannot add %d seats. Limit is %d seats per plan. Currently have %d.', 'event-tickets-with-ticket-scanner'),
-					$newCount,
-					$maxSeats,
-					$currentCount
+					/* translators: 1: number of seats to add, 2: seat limit per plan, 3: current seat count */
+					esc_html__('Cannot add %1$d seats. Limit is %2$d seats per plan. Currently have %3$d.', 'event-tickets-with-ticket-scanner'),
+					(int) $newCount,
+					(int) $maxSeats,
+					(int) $currentCount
 				)
 			);
 		}
@@ -384,7 +386,7 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 
 		$existing = $this->getById($id);
 		if (!$existing) {
-			throw new Exception(__('Seat not found.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Seat not found.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		$updateData = [];
@@ -393,7 +395,7 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 		// Update seat_identifier if provided
 		if (isset($data['seat_identifier']) && $data['seat_identifier'] !== $existing['seat_identifier']) {
 			if ($this->identifierExistsInPlan($existing['seatingplan_id'], $data['seat_identifier'], $id)) {
-				throw new Exception(__('A seat with this identifier already exists in this plan.', 'event-tickets-with-ticket-scanner'));
+				throw new Exception(esc_html__('A seat with this identifier already exists in this plan.', 'event-tickets-with-ticket-scanner'));
 			}
 			$updateData['seat_identifier'] = sanitize_text_field($data['seat_identifier']);
 			$updateFormats[] = '%s';
@@ -485,7 +487,7 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 
 		$existing = $this->getById($id);
 		if (!$existing) {
-			throw new Exception(__('Seat not found.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Seat not found.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		$currentUserId = get_current_user_id();
@@ -630,7 +632,7 @@ class sasoEventtickets_Seating_Seat extends sasoEventtickets_Seating_Base {
 
 		if ($confirmedBlocks > 0 && !$force) {
 			throw new Exception(
-				__('Cannot delete seat with confirmed bookings. Cancel orders first or use force delete.', 'event-tickets-with-ticket-scanner')
+				esc_html__('Cannot delete seat with confirmed bookings. Cancel orders first or use force delete.', 'event-tickets-with-ticket-scanner')
 			);
 		}
 

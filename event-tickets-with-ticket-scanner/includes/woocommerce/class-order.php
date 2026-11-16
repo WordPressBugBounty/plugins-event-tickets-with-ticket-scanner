@@ -962,7 +962,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 								// ticket must not survive into the ticket's next owner (same fix
 								// as Serial Codes, Saso 2026-09-10).
 								$this->MAIN->getAdmin()->removeUserRegistrationFromCode($data);
-								$order->add_order_note(sprintf(/* translators: %s: ticket number */esc_html__('Refunded ticket(s). Ticket number %s removed for order item id: %s.', 'event-tickets-with-ticket-scanner'), esc_attr($code), esc_attr($item_id)));
+								$order->add_order_note(sprintf(/* translators: 1: ticket number 2: order item id */esc_html__('Refunded ticket(s). Ticket number %1$s removed for order item id: %2$s.', 'event-tickets-with-ticket-scanner'), esc_attr($code), esc_attr($item_id)));
 							} catch (Exception $e) {
 								$this->MAIN->getAdmin()->logErrorToDB($e);
 							}
@@ -1178,7 +1178,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 							// check if the product is a day chooser
 							if (!$is_daychooser) {
 								$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product_id_orig);
-								if (!empty($date_str)) echo "<br>".$date_str."<br>";
+								if (!empty($date_str)) echo "<br>".esc_html($date_str)."<br>";
 							}
 						}
 
@@ -1281,16 +1281,16 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 									}
 									if (!empty($url) && !$wcTicketDontDisplayPDFButtonOnMail) {
 										$dlnbtnlabel = $this->MAIN->getOptions()->getOptionValue('wcTicketLabelPDFDownload');
-										echo "\n" . esc_html($dlnbtnlabel) . " " . esc_url($url).$parameter_add.'pdf';
+										echo "\n" . esc_html($dlnbtnlabel) . " " . esc_url($url).$parameter_add.'pdf'; // phpcs:ignore WordPress.Security.EscapeOutput -- literal '?'/'&' query separator, plain-text mail body
 									}
 									if (!empty($url) && $wcTicketBadgeAttachLinkToMail ) {
 										$dlnbtnlabel = $this->MAIN->getOptions()->getOptionValue('wcTicketBadgeLabelDownload');
-										echo "\n" . esc_html($dlnbtnlabel) . " " . esc_url($url).$parameter_add.'badge';
+										echo "\n" . esc_html($dlnbtnlabel) . " " . esc_url($url).$parameter_add.'badge'; // phpcs:ignore WordPress.Security.EscapeOutput -- literal '?'/'&' query separator, plain-text mail body
 									}
 								} else {
 									echo '<div class="product-serial-code" style="padding-bottom:15px;">';
 									if (!empty($ticket_info_text)) {
-										echo $ticket_info_text."<br>";
+										echo wp_kses_post($ticket_info_text)."<br>";
 									}
 									echo esc_html($preText)." ";
 									if (empty($url) || $wcTicketDontDisplayDetailLinkOnMail) {
@@ -1304,11 +1304,11 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 									echo '<p>';
 									if (!empty($url) && !$wcTicketDontDisplayPDFButtonOnMail) {
 										$dlnbtnlabel = $this->MAIN->getOptions()->getOptionValue('wcTicketLabelPDFDownload');
-										echo '<br><a target="_blank" data-plg="'.esc_attr($this->MAIN->getPrefix()).'" href="'.esc_url($url).$parameter_add.'pdf"><b>'.esc_html($dlnbtnlabel).'</b></a>';
+										echo '<br><a target="_blank" data-plg="'.esc_attr($this->MAIN->getPrefix()).'" href="'.esc_url($url).esc_html($parameter_add).'pdf"><b>'.esc_html($dlnbtnlabel).'</b></a>';
 									}
 									if (!empty($url) && $wcTicketBadgeAttachLinkToMail ) {
 										$dlnbtnlabel = $this->MAIN->getOptions()->getOptionValue('wcTicketBadgeLabelDownload');
-										echo '<br><a target="_blank" data-plg="'.esc_attr($this->MAIN->getPrefix()).'" href="'.esc_url($url).$parameter_add.'badge"><b>'.esc_html($dlnbtnlabel).'</b></a>';
+										echo '<br><a target="_blank" data-plg="'.esc_attr($this->MAIN->getPrefix()).'" href="'.esc_url($url).esc_html($parameter_add).'badge"><b>'.esc_html($dlnbtnlabel).'</b></a>';
 									}
 									echo '</p>';
 									echo '</div>';
@@ -1544,7 +1544,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 					$this->deleteRestrictionEntryOnOrderItem($item_get_id);
 				} catch (Exception $e) {
 					$this->MAIN->getAdmin()->logErrorToDB($e);
-					throw new Exception(esc_html__('Error while deleting restriction code from order item. ' . $e->getMessage(), 'event-tickets-with-ticket-scanner'));
+					throw new Exception(esc_html__('Error while deleting restriction code from order item. ', 'event-tickets-with-ticket-scanner') . esc_html($e->getMessage()));
 				}
 				// Add note to order
 				$order_id = wc_get_order_id_by_order_item_id($item_get_id);
@@ -1944,7 +1944,7 @@ if (!class_exists('sasoEventtickets_WC_Order')) {
 			if ($display_date && !$is_daychooser) {
 				$date_str = $this->MAIN->getTicketHandler()->displayTicketDateAsString($product_id_orig);
 				if (!empty($date_str)) {
-					echo "<br>" . $date_str . "<br>";
+					echo "<br>" . esc_html($date_str) . "<br>";
 				}
 			}
 

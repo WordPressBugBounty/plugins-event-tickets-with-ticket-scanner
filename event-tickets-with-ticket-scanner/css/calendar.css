@@ -72,26 +72,82 @@
     padding-bottom: 0;
     font-size: 1.2em;
 }
+
+/*
+ * Event cards (design polish): real card surfaces with a consistent
+ * internal hierarchy — title, muted meta, footer row (price + Tickets
+ * CTA) pinned to the bottom via flex, so cards of different description
+ * lengths keep equal visual height. Hover lifts the border; existing
+ * palette only (#2e74b5 accent, neutral alphas).
+ */
 .sasoEventTicketsValidator_list_event {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-top: 5px;
-    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, .08);
+    border-radius: 8px;
+    margin-top: 8px;
+    padding: 12px 14px;
+    background: #fff;
+    transition: border-color .15s ease, box-shadow .15s ease;
 }
+
+.sasoEventTicketsValidator_list_event:hover,
+.sasoEventTicketsValidator_list_event:focus-within {
+    border-color: rgba(0, 0, 0, .18);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+}
+
 .sasoEventTicketsValidator_event-title {
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 1.05em;
 }
 .sasoEventTicketsValidator_event-date {
+    font-size: .92em;
+    color: #50575e;
 }
 .sasoEventTicketsValidator_event-time {
+    font-size: .92em;
+    color: #50575e;
 }
 .sasoEventTicketsValidator_event-location {
+    font-size: .92em;
+    color: #50575e;
 }
 .sasoEventTicketsValidator_event-description {
     padding-top: 5px;
+    font-size: .95em;
 }
-.sasoEventTicketsValidator_event-info {
-    text-align: right;
+
+/* Footer row: price left, Tickets CTA right — margin-top:auto pins it to
+   the card bottom for consistent card heights. */
+.sasoEventTicketsValidator_event-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 10px;
+}
+.sasoEventTicketsValidator_event-price {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+.sasoEventTicketsValidator_event-tickets-btn {
+    padding: 6px 14px;
+    border: 0;
+    border-radius: 4px;
+    background: #2e74b5;
+    color: #fff;
+    font-size: .9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter .15s ease;
+}
+.sasoEventTicketsValidator_event-tickets-btn:hover,
+.sasoEventTicketsValidator_event-tickets-btn:focus {
+    background: #2e74b5;
+    color: #fff;
+    filter: brightness(.88);
 }
 .sasoEventTicketsValidator_list_calendar-row {
     padding: 10px;
@@ -100,6 +156,7 @@
     background-color: #f0f0f0;
 }
 .sasoEventTicketsValidator_list_calendar-header {
+    font-weight: 600;
 }
 .sasoEventTicketsValidator_list_calendar-header-today {
     background-color: #f0f0f0;

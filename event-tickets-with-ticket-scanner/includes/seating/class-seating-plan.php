@@ -81,7 +81,7 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 
 		// Validate required fields
 		if (empty($data['name'])) {
-			throw new Exception(__('Plan name is required.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Plan name is required.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Check free version limit via existing infrastructure
@@ -92,15 +92,16 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 		if ($maxPlans > 0 && $currentCount >= $maxPlans) {
 			throw new Exception(
 				sprintf(
-					__('Limit reached (%d plans). Upgrade to Premium for unlimited seating plans.', 'event-tickets-with-ticket-scanner'),
-					$maxPlans
+					/* translators: %d: maximum number of seating plans in the free version */
+					esc_html__('Limit reached (%d plans). Upgrade to Premium for unlimited seating plans.', 'event-tickets-with-ticket-scanner'),
+					(int) $maxPlans
 				)
 			);
 		}
 
 		// Check name uniqueness
 		if ($this->nameExists($data['name'])) {
-			throw new Exception(__('A plan with this name already exists.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('A plan with this name already exists.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Merge input meta with defaults
@@ -303,7 +304,7 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 
 		$existing = $this->getById($id);
 		if (!$existing) {
-			throw new Exception(__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		$updateData = [];
@@ -312,7 +313,7 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 		// Update name if provided
 		if (isset($data['name']) && $data['name'] !== $existing['name']) {
 			if ($this->nameExists($data['name'], $id)) {
-				throw new Exception(__('A plan with this name already exists.', 'event-tickets-with-ticket-scanner'));
+				throw new Exception(esc_html__('A plan with this name already exists.', 'event-tickets-with-ticket-scanner'));
 			}
 			$updateData['name'] = sanitize_text_field($data['name']);
 			$updateFormats[] = '%s';
@@ -384,8 +385,9 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 		if ($seatCount > 0 && !$force) {
 			throw new Exception(
 				sprintf(
-					__('Cannot delete plan with %d seats. Use force delete or remove seats first.', 'event-tickets-with-ticket-scanner'),
-					$seatCount
+					/* translators: %d: number of seats in the seating plan */
+					esc_html__('Cannot delete plan with %d seats. Use force delete or remove seats first.', 'event-tickets-with-ticket-scanner'),
+					(int) $seatCount
 				)
 			);
 		}
@@ -527,7 +529,7 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 
 		$existing = $this->getById($planId);
 		if (!$existing) {
-			throw new Exception(__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Merge with existing meta defaults — but element LISTS are replaced,
@@ -579,7 +581,7 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 
 		$existing = $this->getById($planId);
 		if (!$existing) {
-			throw new Exception(__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Check for conflicts: seats with sold tickets that are being deleted
@@ -611,7 +613,7 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 		);
 
 		if ($result === false) {
-			throw new Exception(__('Failed to publish seating plan.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Failed to publish seating plan.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Sync seats table (soft-delete removed seats, create new ones)
@@ -636,7 +638,7 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 
 		$existing = $this->getById($planId);
 		if (!$existing) {
-			throw new Exception(__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Seating plan not found.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Revert draft to published version
@@ -1065,7 +1067,7 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 		// Get source plan
 		$sourcePlan = $this->getById($sourcePlanId);
 		if (!$sourcePlan) {
-			throw new Exception(__('Source seating plan not found.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Source seating plan not found.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Generate unique name if not provided
@@ -1087,7 +1089,7 @@ class sasoEventtickets_Seating_Plan extends sasoEventtickets_Seating_Base {
 		]);
 
 		if (!$newPlanId) {
-			throw new Exception(__('Failed to create cloned seating plan.', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Failed to create cloned seating plan.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Copy draft and published meta if they exist

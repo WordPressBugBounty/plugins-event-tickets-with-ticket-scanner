@@ -1,0 +1,50 @@
+# plugin-check baseline — accepted stock, only NEW findings gate a release
+.gitattributes:0:hidden_files	Hidden files are not permitted.
+.remember/logs/logs-2026-05.tar.gz:0:compressed_files	Compressed files are not permitted.
+.remember/logs/logs-2026-06.tar.gz:0:compressed_files	Compressed files are not permitted.
+.remember/logs/logs-2026-07-part2.tar.gz:0:compressed_files	Compressed files are not permitted.
+.remember/logs/logs-2026-07.tar.gz:0:compressed_files	Compressed files are not permitted.
+.remember/logs/logs-2026-08-part2.tar.gz:0:compressed_files	Compressed files are not permitted.
+.remember/logs/logs-2026-08-part3.tar.gz:0:compressed_files	Compressed files are not permitted.
+.remember/logs/logs-2026-08-part4.tar.gz:0:compressed_files	Compressed files are not permitted.
+.remember/logs/logs-2026-08-part5.tar.gz:0:compressed_files	Compressed files are not permitted.
+.remember/logs/logs-2026-08.tar.gz:0:compressed_files	Compressed files are not permitted.
+CLAUDE/set_version.sh:0:application_detected	Application files are not permitted.
+CLAUDE/verify_version.sh:0:application_detected	Application files are not permitted.
+SASO_EVENTTICKETS.php:0:missing_direct_file_access_protection	PHP file should prevent direct access. Add a check like: if ( ! defined( 'ABSPATH' ) ) exit;
+SASO_EVENTTICKETS.php:126:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$daten'.
+SASO_EVENTTICKETS.php:223:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'fread'.
+SASO_EVENTTICKETS.php:413:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$js'.
+db.php:613:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$wpdb'.
+db.php:614:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$wpdb'.
+includes/congress/class-template-variables.php:14:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:15:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:16:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:17:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:18:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:19:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:20:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:21:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:22:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:23:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/congress/class-template-variables.php:24:WordPress.WP.I18n.NonSingularStringLiteralDomain	The $domain parameter must be a single text string literal. Found: $td
+includes/seating/class-seating-admin.php:1038:PluginCheck.CodeAnalysis.EnqueuedResourceOffloading.OffloadedContent	Found call to wp_enqueue_script() with external resource. Offloading scripts to your servers or any remote service is disallowed.
+includes/seating/class-seating-admin.php:1045:PluginCheck.CodeAnalysis.EnqueuedResourceOffloading.OffloadedContent	Found call to wp_enqueue_style() with external resource. Offloading styles to your servers or any remote service is disallowed.
+includes/seating/class-seating-unpublished-notice.php:62:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$planId'.
+includes/woocommerce/class-frontend.php:285:PluginCheck.CodeAnalysis.EnqueuedResourceOffloading.OffloadedContent	Found call to wp_register_style() with external resource. Offloading styles to your servers or any remote service is disallowed.
+includes/woocommerce/class-product.php:181:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
+readme.txt:0:license_mismatch	Your plugin has a different license declared in the readme file and plugin header. Please update your readme with a valid GPL license identifier.
+sasoEventtickets_Authtoken.php:146:WordPress.Security.EscapeOutput.ExceptionNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '__'.
+sasoEventtickets_Core.php:885:PluginCheck.Security.DirectDB.UnescapedDBParameter	Unescaped parameter $orders_table used in $wpdb->get_results()\n$orders_table assigned unsafely at line 883.
+sasoEventtickets_Core.php:939:WordPress.Security.EscapeOutput.ExceptionNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'json_last_error_msg'.
+sasoEventtickets_Frontend.php:27:WordPress.WP.I18n.MissingTranslatorsComment	A function call to esc_html__() with texts containing placeholders was found, but was not accompanied by a "translators:" comment on the line above to clarify t
+sasoEventtickets_Frontend.php:46:WordPress.Security.EscapeOutput.ExceptionNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$v'.
+ticket/index.php:0:missing_direct_file_access_protection	PHP file should prevent direct access. Add a check like: if ( ! defined( 'ABSPATH' ) ) exit;
+vollstart-cross-promo.php:137:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$nonce'.
+vollstart-cross-promo.php:225:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'number_format_i18n'.
+vollstart-cross-promo.php:229:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$stars'.
+vollstart-cross-promo.php:230:WordPress.Security.EscapeOutput.OutputNotEscaped	All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found '$num_ratings'.
+vollstart-cross-promo.php:29:PluginCheck.CodeAnalysis.Offloading.OffloadedContent	Offloading images, js, css, and other scripts to your servers or any remote service is disallowed.
+vollstart-cross-promo.php:36:PluginCheck.CodeAnalysis.Offloading.OffloadedContent	Offloading images, js, css, and other scripts to your servers or any remote service is disallowed.
+vollstart-cross-promo.php:43:PluginCheck.CodeAnalysis.Offloading.OffloadedContent	Offloading images, js, css, and other scripts to your servers or any remote service is disallowed.
+vollstart-cross-promo.php:51:PluginCheck.CodeAnalysis.Offloading.OffloadedContent	Offloading images, js, css, and other scripts to your servers or any remote service is disallowed.

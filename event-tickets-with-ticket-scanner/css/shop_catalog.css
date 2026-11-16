@@ -2,25 +2,71 @@
  * Public shop catalog (3.3.0) — [sasoEventTicketsValidator_shop_catalog]
  * Server-rendered visitor face: lists flagged "show in shop" with their
  * active products, grouped by category. BEM, no inline styles.
+ *
+ * Design polish (3.4.0): each list renders as a real event CARD —
+ * responsive auto-fill grid, equal card heights (stretch + flex column),
+ * event meta line under the title, hover states. Skeleton principle:
+ * every value is a neutral token or the plugin's existing accent —
+ * themes keep overriding via their own CSS.
  */
 
 .et-shop-catalog {
 	display: grid;
-	gap: 2.5rem;
+	gap: 1.5rem;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	align-items: stretch;
 }
 
 .et-shop-catalog__list {
+	display: flex;
+	flex-direction: column;
 	margin: 0;
+	padding: 1.25rem 1.25rem 1rem;
+	border: 1px solid rgba(0, 0, 0, .08);
+	border-radius: 8px;
+	background: #fff;
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.et-shop-catalog__list:hover {
+	border-color: rgba(0, 0, 0, .18);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
 }
 
 .et-shop-catalog__list-name {
-	margin: 0 0 1rem;
+	margin: 0 0 .35rem;
 	font-size: 1.4em;
 	line-height: 1.25;
 }
 
+/* Event meta line (3.4.0): "So, 1. Nov 2026 · 19:30 · Location" under the
+   card title — the same "when & where" scan pattern the event detail uses. */
+.et-shop-catalog__list-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .35rem 1.1rem;
+	margin: 0 0 1rem;
+	color: #50575e;
+	font-size: .92em;
+}
+
+.et-shop-catalog__list-meta-item::before {
+	content: "·";
+	margin-right: .55rem;
+	opacity: .55;
+}
+
+.et-shop-catalog__list-meta-item:first-child::before {
+	content: "";
+	margin-right: 0;
+}
+
 .et-shop-catalog__group {
-	margin: 0 0 1.5rem;
+	margin: 0 0 1.25rem;
+}
+
+.et-shop-catalog__group:last-child {
+	margin-bottom: 0;
 }
 
 .et-shop-catalog__group-name {
@@ -37,8 +83,14 @@
 	flex-wrap: wrap;
 	align-items: baseline;
 	gap: .5rem;
-	padding: .75rem 0;
+	padding: .6rem .35rem;
 	border-bottom: 1px solid rgba(0, 0, 0, .07);
+	border-radius: 4px;
+	transition: background .15s ease;
+}
+
+.et-shop-catalog__prod:hover {
+	background: rgba(0, 0, 0, .03);
 }
 
 .et-shop-catalog__prod:last-child {
@@ -137,9 +189,9 @@
 }
 
 .et-shop-event__meta-item::before {
-	content: "•";
+	content: "·";
 	margin-right: .5rem;
-	opacity: .5;
+	opacity: .55;
 }
 
 .et-shop-event__meta-item:first-child::before {
@@ -156,6 +208,7 @@
 	font-weight: 600;
 	text-decoration: none;
 	white-space: nowrap;
+	transition: background .15s ease;
 }
 
 .et-shop-catalog__buy:hover,

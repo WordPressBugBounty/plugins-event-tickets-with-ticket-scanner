@@ -338,7 +338,15 @@ class sasoEventtickets_Core {
 		if ($metaObj['wc_ticket']['is_ticket'] == 1 && $codeObj != null && is_array($codeObj)) {
 			if (empty($metaObj['wc_ticket']['idcode']))	$metaObj['wc_ticket']['idcode'] = crc32($codeObj['id']."-".time());
 			if (empty($metaObj['wc_ticket']['_public_ticket_id'])) $metaObj['wc_ticket']['_public_ticket_id'] = $this->getTicketId($codeObj, $metaObj);
-			if (empty($metaObj['wc_ticket']['_qr_content'])) $metaObj['wc_ticket']['_qr_content'] = $this->getQRCodeContent($codeObj, $metaObj);
+			// Self-heal: a stored QR content ending in "code=" carries an empty ticket id
+			// (broken QR generation under some shop setups). It is a NON-empty string, so
+			// a plain empty() guard never fires and the broken QR would never heal. Recalculate
+			// it, but only store the new value when it actually differs from the old one.
+			$_qr = isset($metaObj['wc_ticket']['_qr_content']) ? $metaObj['wc_ticket']['_qr_content'] : '';
+			if (empty($_qr) || preg_match('~code=$~', $_qr)) {
+				$_qr_neu = $this->getQRCodeContent($codeObj, $metaObj);
+				if ($_qr_neu != $_qr) $metaObj['wc_ticket']['_qr_content'] = $_qr_neu;
+			}
 			$metaObj['wc_ticket']['_url'] = $this->getTicketURL($codeObj, $metaObj);
 			$metaObj['wc_ticket']['_wallet_url'] = $this->getWalletImportURL($metaObj['wc_ticket']['_public_ticket_id']);
 		}
@@ -1402,6 +1410,10 @@ class sasoEventtickets_Core {
 		if (SASO_EVENTTICKETS::issetRPara('code')) { // overwrites any found code, if parameter is available
 			$foundcode = trim(SASO_EVENTTICKETS::getRequestPara('code'));
 			$foundcode = $this->maybeExpandPlainTicketNumber($foundcode); // opt-in: bare ticket number → full public id
+			// An empty scanned code means the ticket QR itself is broken (stored with an
+			// empty ticket id) — fail with a clear regenerate hint instead of the cryptic
+			// #9302 that the explode below produces for empty input.
+			if (trim($foundcode) === '') throw new Exception("#9303 scanned code is empty - the ticket QR seems broken, please regenerate the ticket");
 			if (strpos($foundcode, "'") === false) {
 				$parts = explode("-", $foundcode);
 			} else {

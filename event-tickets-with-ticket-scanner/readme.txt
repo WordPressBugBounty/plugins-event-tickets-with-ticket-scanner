@@ -3,7 +3,7 @@ Contributors: sasonikolov
 Tags: event tickets, ticket scanner, box office, pos, seating plan, woocommerce tickets, congress, membership
 Requires at least: 6.0
 Requires PHP: 8.1
-Stable tag: 3.3.4
+Stable tag: 3.4.0
 Tested up to: 7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -249,6 +249,17 @@ Old premium version will no longer work with this version. You need to downgrade
 
 == Changelog ==
 
+= 3.4.0 — 2026-11-16 =
+* Scanner robustness: broken QR content (stored with an empty ticket id) self-heals on the next render; scanning such a code now shows a clear message to regenerate the ticket
+* New shortcode [vollstart_tickets]: ticket buy button with availability and scarcity hint on any post — links the event shop page (premium), else the linked WooCommerce product, else the ticket detail
+* Design: polished shop catalog & event cards — human-readable localized event dates, event meta line, and a price + "Tickets" call-to-action in the event list (replaces the "Info" ghost button)
+* Security: continued output-escaping hardening in the ticket manager, admin settings, order e-mails and seating admin (Plugin Check hardening, phase 2)
+
+= 3.3.5 =
+* Shop template engine moved to the premium plugin (1.10.0+) — designable shop templates (catalog, event page, order mails) are now a premium feature; the built-in rendering stays the default
+* Update note: with an older premium (< 1.10.0) the shop template fields are inactive — the shop itself (orders, payments, ticket delivery) keeps working in every combination
+* Security: hardened output escaping in admin notices, cart and checkout output, seating error messages and the seating plan export (Plugin Check hardening, phase 1)
+
 = 3.3.4 — 2026-11-10 =
 * Removed the transition safety net for premium versions older than 1.8.0 — the license state alone decides again (expired premium now switches its features off regardless of the installed premium version)
 * Kasse (direct sales): "Pay by QR" button on draft orders when the premium box office payment is enabled
@@ -263,7 +274,6 @@ Old premium version will no longer work with this version. You need to downgrade
 * Plugin Check: resolved all remaining directory review errors — wp_rand() for generated ticket PDF passwords, WP_Filesystem for file access, gmdate() for deterministic timestamps, and prepared-statement cleanup across the database layer.
 * Security: the admin settings, ticket list and error log searches now build their database search through prepared statements — previously a search value could break out of the query (SQL injection, administrator only, CVE-2026-115870 reported by Wordfence PRISM). Searching the error log also works again: the search filter had a broken query that returned a database error.
 * Note: the stored XSS reported as CVE-2026-111825 was already fixed in 3.3.2 (per-ticket name/value fields are sanitized as plain text and rendered as text everywhere).
-
 
 = 3.3.2 — 2026-11-04 =
 * Security: per-ticket name and value fields are now sanitized as plain text on input, and the ticket scanner, the admin ticket view and the order detail and scanner ticket lists render them as text or escape them — previously a guest buyer could store HTML in these fields, which then ran as JavaScript in the browser of an administrator or staff member opening the ticket (stored XSS). Thanks to Muni Nitish Kumar Yaddala for the responsible disclosure via WPScan.

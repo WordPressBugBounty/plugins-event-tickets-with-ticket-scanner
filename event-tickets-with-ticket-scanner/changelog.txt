@@ -1,3 +1,13 @@
+= 3.4.0 — 2026-11-16 =
+* New shortcode [vollstart_tickets]: ticket buy button with availability and scarcity hint on any post — links the event shop page (premium), else the linked WooCommerce product, else the ticket detail
+* Design: polished shop catalog & event cards — human-readable localized event dates, event meta line, and a price + "Tickets" call-to-action in the event list (replaces the "Info" ghost button)
+* Scanner robustness: broken QR content (stored with an empty ticket id) self-heals on the next render; scanning such a code now shows a clear message to regenerate the ticket
+* Security: continued output-escaping hardening in the ticket manager, admin settings, order e-mails and seating admin (Plugin Check hardening, phase 2)
+
+= 3.3.5 — 2026-11-11 =
+* Shop template engine moved to the premium plugin (1.10.0+) — designable shop templates (catalog, event page, order mails) are now a premium feature; the built-in rendering stays the default
+* Update note: with an older premium (< 1.10.0) the shop template fields are inactive — the shop itself (orders, payments, ticket delivery) keeps working in every combination
+* Security: hardened output escaping in admin notices, cart and checkout output, seating error messages and the seating plan export (Plugin Check hardening, phase 1)
 
 
 = 3.3.4 — 2026-11-10 =

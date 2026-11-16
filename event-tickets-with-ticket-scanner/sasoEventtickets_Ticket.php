@@ -16,7 +16,7 @@ final class sasoEventtickets_Ticket {
 	 *  production, throw a catchable exception under tests / offline sync. */
 	private function _json_error($message) {
 		if ($this->in_offline_sync_context || (defined('PHPUNIT_COMPOSER_INSTALL') && PHPUNIT_COMPOSER_INSTALL)) {
-			throw new Exception(is_string($message) ? $message : '');
+			throw new Exception(is_string($message) ? esc_html($message) : '');
 		}
 		$this->_json_error($message);
 	}
@@ -535,7 +535,7 @@ final class sasoEventtickets_Ticket {
 	 * budget, used count and flags — no buyer data (data minimization).
 	 */
 	function rest_offline_pack($web_request) {
-		if (!$this->offline_master_active()) throw new Exception("#9013 ".__("offline scanning is not enabled", 'event-tickets-with-ticket-scanner'));
+		if (!$this->offline_master_active()) throw new Exception("#9013 ".esc_html__("offline scanning is not enabled", 'event-tickets-with-ticket-scanner'));
 		$tokenObj = $this->offline_token($web_request);
 		$ts = [];
 		if ($tokenObj) {
@@ -653,16 +653,16 @@ final class sasoEventtickets_Ticket {
 	}
 
 	private function _rest_offline_sync_inner(WP_REST_Request $web_request) {
-		if (!$this->offline_master_active()) throw new Exception("#9023 ".__("offline scanning is not enabled", 'event-tickets-with-ticket-scanner'));
+		if (!$this->offline_master_active()) throw new Exception("#9023 ".esc_html__("offline scanning is not enabled", 'event-tickets-with-ticket-scanner'));
 		$tokenObj = $this->offline_token($web_request);
 		if ($tokenObj) {
 			$ts = $this->offline_token_meta($tokenObj);
-			if (intval($ts['offline_enabled'] ?? 0) !== 1) throw new Exception("#9021 ".__("offline scanning is not enabled for this token", 'event-tickets-with-ticket-scanner'));
+			if (intval($ts['offline_enabled'] ?? 0) !== 1) throw new Exception("#9021 ".esc_html__("offline scanning is not enabled for this token", 'event-tickets-with-ticket-scanner'));
 		}
 
 		$scannerId = trim((string) $web_request->get_param('sid'));
 		$events = $web_request->get_param('events');
-		if (!is_array($events) || count($events) === 0) throw new Exception("#9022 ".__("no events", 'event-tickets-with-ticket-scanner'));
+		if (!is_array($events) || count($events) === 0) throw new Exception("#9022 ".esc_html__("no events", 'event-tickets-with-ticket-scanner'));
 
 		$results = [];
 		foreach ($events as $event) {
@@ -783,7 +783,7 @@ final class sasoEventtickets_Ticket {
 		}
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_isProductAllowedByAuthToken', $ret, $product_ids );
 		if ($ret == false) {
-			throw new Exception("#301 - product id ".join(", ", $product_ids)." is not allowed to be rededemed with this ticket scanner authentication");
+			throw new Exception("#301 - product id ".esc_html(join(", ", $product_ids))." is not allowed to be rededemed with this ticket scanner authentication");
 		}
 	}
 	/**
@@ -804,7 +804,7 @@ final class sasoEventtickets_Ticket {
 		}
 		$ret = apply_filters( $this->MAIN->_add_filter_prefix.'ticket_isListAllowedByAuthToken', $ret, $list_id );
 		if ($ret == false) {
-			throw new Exception("#304 - ticket list ".$list_id." is not allowed to be redeemed with this ticket scanner authentication");
+			throw new Exception("#304 - ticket list ".esc_html($list_id)." is not allowed to be redeemed with this ticket scanner authentication");
 		}
 	}
 
@@ -2471,7 +2471,7 @@ final class sasoEventtickets_Ticket {
 		if ($dontFailPaid == false && !$this->MAIN->getCore()->isOrderlessTicketAllowed($codeObj)) {
 			$order = $this->getOrderById($codeObj["order_id"]);
 			$ok_order_statuses = $this->get_is_paid_statuses();
-			if (!$dontFailPaid && !$this->isPaid($order)) throw new Exception("#8003 Ticket payment is not completed. The ticket order status has to be set to a paid status like ".join(" or ", $ok_order_statuses).".");
+			if (!$dontFailPaid && !$this->isPaid($order)) throw new Exception("#8003 Ticket payment is not completed. The ticket order status has to be set to a paid status like ".esc_html(join(" or ", $ok_order_statuses)).".");
 		}
 
 		$this->codeObj = $codeObj;
@@ -2553,7 +2553,7 @@ final class sasoEventtickets_Ticket {
 			echo '<link rel="manifest" href="'.esc_url(rest_url(SASO_EVENTTICKETS::getRESTPrefixURL().'/ticket/scanner/pwa-manifest')).'">';
 			echo '<link rel="apple-touch-icon" href="'.esc_url(plugins_url('img/pwa-icon-192.png', __FILE__)).'">';
 		}
-		$tc = esc_attr($themeColor);
+		$tc = $themeColor;
 		?>
 		<style>
             body {font-family: Helvetica, Arial, sans-serif;}
@@ -2562,7 +2562,7 @@ final class sasoEventtickets_Ticket {
 			div.ticket_content p {font-size:initial !important;margin-bottom:1em !important;}
             button {padding:10px;font-size: 1.5em;}
             .lds-dual-ring {display:inline-block;width:64px;height:64px;}
-            .lds-dual-ring:after {content:" ";display:block;width:46px;height:46px;margin:1px;border-radius:50%;border:5px solid #fff;border-color:<?php echo $tc; ?> transparent <?php echo $tc; ?> transparent;animation:lds-dual-ring 0.6s linear infinite;}
+            .lds-dual-ring:after {content:" ";display:block;width:46px;height:46px;margin:1px;border-radius:50%;border:5px solid #fff;border-color:<?php echo esc_html($tc); ?> transparent <?php echo esc_html($tc); ?> transparent;animation:lds-dual-ring 0.6s linear infinite;}
             @keyframes lds-dual-ring {0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);}}
 		</style>
 		<?php
@@ -2572,7 +2572,7 @@ final class sasoEventtickets_Ticket {
 		<center>
         <h1>Ticket Scanner</h1>
         <div style="width:90%;max-width:800px;">
-		<?php echo $this->getTicketScannerHTMLBoilerplate(); ?>
+		<?php echo $this->getTicketScannerHTMLBoilerplate(); // phpcs:ignore WordPress.Security.EscapeOutput -- filterable static markup renderer (apply_filters), escaping would break filtered output ?>
         </div>
         </center>
 		<?php
@@ -2606,7 +2606,7 @@ final class sasoEventtickets_Ticket {
 		}
 		wp_head();
 		echo '</head><body class="saso-scanner-standalone">';
-		echo $this->getTicketScannerHTMLBoilerplate();
+		echo $this->getTicketScannerHTMLBoilerplate(); // phpcs:ignore WordPress.Security.EscapeOutput -- filterable static markup renderer (apply_filters)
 		wp_footer();
 		echo '</body></html>';
 	}
@@ -2684,7 +2684,7 @@ final class sasoEventtickets_Ticket {
 	 */
 	public function outputTicketScannerLegacy() {
 		echo '<center>';
-		echo '<h3>'.__('Ticket scanner', 'event-tickets-with-ticket-scanner').'</h3>';
+		echo '<h3>'.esc_html__('Ticket scanner', 'event-tickets-with-ticket-scanner').'</h3>';
 		echo '<div id="ticket_scanner_info_area">';
 		if (isset($_GET['code']) && isset($_GET['redeemauto']) && $this->redeem_successfully == false) {
 			echo '<h3 style="color:red;">'.esc_html__('TICKET NOT REDEEMED - see reason below', 'event-tickets-with-ticket-scanner').'</h3>';
@@ -2715,9 +2715,9 @@ final class sasoEventtickets_Ticket {
 
 				if (SASO_EVENTTICKETS::issetRPara('action') && SASO_EVENTTICKETS::getRequestPara('action') == "redeem") {
 					if ($this->redeem_successfully) {
-						echo '<p style="text-align:center;color:green"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><br><b>'.__("Successfully redeemed", 'event-tickets-with-ticket-scanner').'</b></p>';
+						echo '<p style="text-align:center;color:green"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><br><b>'.esc_html__("Successfully redeemed", 'event-tickets-with-ticket-scanner').'</b></p>';
 					} else {
-						echo '<p style="text-align:center;color:red;"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><br><b>'.__("Failed to redeem", 'event-tickets-with-ticket-scanner').'</b></p>';
+						echo '<p style="text-align:center;color:red;"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><br><b>'.esc_html__("Failed to redeem", 'event-tickets-with-ticket-scanner').'</b></p>';
 					}
 				}
 
@@ -2750,7 +2750,7 @@ final class sasoEventtickets_Ticket {
 				}
 				echo '<center><p><button onclick="reload_ticket()">'.esc_attr__("Reload Ticket", 'event-tickets-with-ticket-scanner').'</button>';
 				if (empty($metaObj['wc_ticket']['redeemed_date'])) {
-					echo '<button onclick="redeem_ticket()" style="background-color:green;color:white;">'.__("Redeem Ticket", 'event-tickets-with-ticket-scanner').'</button>';
+					echo '<button onclick="redeem_ticket()" style="background-color:green;color:white;">'.esc_html__("Redeem Ticket", 'event-tickets-with-ticket-scanner').'</button>';
 				}
 				echo '</p></center>';
 			} catch (Exception $e) {
@@ -2782,7 +2782,7 @@ final class sasoEventtickets_Ticket {
 			function onScanSuccess(decodedText, decodedResult) {
 				if (loadingticket) return;
 				loadingticket = true;
-				jQuery("#reader_output").html(decodedText+"<br>...'.__("loading", 'event-tickets-with-ticket-scanner').'...");
+				jQuery("#reader_output").html(decodedText+"<br>...'.esc_js(__("loading", 'event-tickets-with-ticket-scanner')).'...");
 				window.location.href = "?code="+encodeURIComponent(decodedText) + (serial_ticket_scanner_redeem ? "&redeemauto=1" : "");
 				window.setTimeout(()=>{
 					html5QrcodeScanner.stop().then((ignore) => {}).catch((err) => {});
@@ -2821,7 +2821,7 @@ final class sasoEventtickets_Ticket {
 				$redeemed_tickets = $this->rest_helper_tickets_redeemed($codeObj);
 				if ($redeemed_tickets['tickets_redeemed_show']) {
 					echo "<center><h5>";
-					echo $redeemed_tickets['tickets_redeemed']." ".__('ticket redeemed already', 'event-tickets-with-ticket-scanner');
+					echo esc_html($redeemed_tickets['tickets_redeemed'])." ".esc_html__('ticket redeemed already', 'event-tickets-with-ticket-scanner');
 					echo "</h5></center>";
 				}
 			} catch (Exception $e) {}
@@ -2846,9 +2846,9 @@ final class sasoEventtickets_Ticket {
 		// Status banner
 		echo '<div class="saso-scanner__status" id="ticket_scanner_info_area">';
 		if (isset($_GET['code']) && isset($_GET['redeemauto']) && $this->redeem_successfully == false) {
-			echo $this->renderStatusBanner('error', esc_html__('Ticket not redeemed', 'event-tickets-with-ticket-scanner'), esc_html__('See reason below.', 'event-tickets-with-ticket-scanner'));
+			echo wp_kses_post($this->renderStatusBanner('error', esc_html__('Ticket not redeemed', 'event-tickets-with-ticket-scanner'), esc_html__('See reason below.', 'event-tickets-with-ticket-scanner')));
 		} else if (isset($_GET['code']) && isset($_GET['redeemauto']) && $this->redeem_successfully) {
-			echo $this->renderStatusBanner('success', esc_html__('TICKET OK — Redeemed', 'event-tickets-with-ticket-scanner'), '');
+			echo wp_kses_post($this->renderStatusBanner('success', esc_html__('TICKET OK — Redeemed', 'event-tickets-with-ticket-scanner'), ''));
 		}
 		echo '</div>';
 
@@ -2873,9 +2873,9 @@ final class sasoEventtickets_Ticket {
 
 				if (SASO_EVENTTICKETS::issetRPara('action') && SASO_EVENTTICKETS::getRequestPara('action') == "redeem") {
 					if ($this->redeem_successfully) {
-						echo $this->renderStatusBanner('success', __("Successfully redeemed", 'event-tickets-with-ticket-scanner'), '');
+						echo wp_kses_post($this->renderStatusBanner('success', esc_html__("Successfully redeemed", 'event-tickets-with-ticket-scanner'), ''));
 					} else {
-						echo $this->renderStatusBanner('error', __("Failed to redeem", 'event-tickets-with-ticket-scanner'), '');
+						echo wp_kses_post($this->renderStatusBanner('error', esc_html__("Failed to redeem", 'event-tickets-with-ticket-scanner'), ''));
 					}
 				}
 
@@ -2899,7 +2899,7 @@ final class sasoEventtickets_Ticket {
 				}
 				echo '</div>';
 			} catch (Exception $e) {
-				echo $this->renderStatusBanner('error', $e->getMessage(), $this->getParts()['code'] ?? '');
+				echo wp_kses_post($this->renderStatusBanner('error', esc_html($e->getMessage()), $this->getParts()['code'] ?? ''));
 			}
 		}
 		echo '</div>'; // /.saso-scanner__result
@@ -2914,7 +2914,7 @@ final class sasoEventtickets_Ticket {
 		if (SASO_EVENTTICKETS::issetRPara("code")) {
 			echo '<div class="saso-scanner__options">';
 			$checked = SASO_EVENTTICKETS::issetRPara("redeemauto") ? ' checked' : '';
-			echo '<label class="saso-scanner__toggle"><input type="checkbox" onclick="setRedeemImmediately()"' . $checked . '><span class="saso-scanner__toggle-slider"></span></label>';
+			echo '<label class="saso-scanner__toggle"><input type="checkbox" onclick="setRedeemImmediately()"' . esc_attr($checked) . '><span class="saso-scanner__toggle-slider"></span></label>';
 			echo '<span>' . esc_html__('Scan and Redeem immediately', 'event-tickets-with-ticket-scanner') . '</span>';
 			echo '</div>';
 
@@ -3413,7 +3413,7 @@ final class sasoEventtickets_Ticket {
 			// Verify the render actually produced a file - returning a path to a
 			// missing file made WooCommerce send the email without the ticket.
 			if (!is_readable($fullFilePath) || filesize($fullFilePath) === 0) {
-				throw new Exception("#8024 ".esc_html__("The ticket PDF could not be written to the temporary directory.", 'event-tickets-with-ticket-scanner')." (".$fullFilePath.")");
+				throw new Exception("#8024 ".esc_html__("The ticket PDF could not be written to the temporary directory.", 'event-tickets-with-ticket-scanner')." (".esc_html($fullFilePath).")");
 			}
 			return $fullFilePath;
 		} else {
@@ -3732,7 +3732,7 @@ final class sasoEventtickets_Ticket {
 			$order_infos["wcTicketLabelPDFDownload"] = esc_html($dlnbtnlabel);
 		}
 
-		echo '<div id="'.$this->MAIN->getPrefix().'_order_detail_area"></div>';
+		echo '<div id="'.esc_attr($this->MAIN->getPrefix()).'_order_detail_area"></div>';
 		echo "\n<script>\n";
 		echo 'let sasoEventtickets_order_detail_data = {"order":{},"tickets":[]};'."\n";
 		echo 'sasoEventtickets_order_detail_data.order = '.json_encode($order_infos).';';
@@ -3806,7 +3806,7 @@ final class sasoEventtickets_Ticket {
 				}
 			}
 			$ticketDesigner->setTemplate($template);
-			echo $ticketDesigner->renderHTML($codeObj, $forPDFOutput);
+			echo $ticketDesigner->renderHTML($codeObj, $forPDFOutput); // phpcs:ignore WordPress.Security.EscapeOutput -- admin-authored ticket-designer template markup
 
 			// buttons
 			$vars = $ticketDesigner->getVariables();
@@ -3823,9 +3823,9 @@ final class sasoEventtickets_Ticket {
 						$color = "green";
 					}
 					echo '<center>';
-					echo '<h4 style="color:'.$color.';">'.wp_kses_post($vars["OPTIONS"]["wcTicketTransTicketRedeemed"]).'</h4>';
+					echo '<h4 style="color:'.esc_attr($color).';">'.wp_kses_post($vars["OPTIONS"]["wcTicketTransTicketRedeemed"]).'</h4>';
 					// Use date_i18n with gmt=true - redeemed_date is stored in local time, gmt=true prevents timezone conversion but translates month/day names
-				echo wp_kses_post($vars["OPTIONS"]["wcTicketTransRedeemDate"]).' '.date_i18n($vars["TICKET"]["date_time_format"], strtotime($vars["METAOBJ"]["wc_ticket"]["redeemed_date"]), true);
+				echo wp_kses_post($vars["OPTIONS"]["wcTicketTransRedeemDate"]).' '.esc_html(date_i18n($vars["TICKET"]["date_time_format"], strtotime($vars["METAOBJ"]["wc_ticket"]["redeemed_date"]), true));
 					if ($is_expired == false && $vars["isScanner"] == false && $ticket_times['ticket_end_date_timestamp'] > $ticket_times['server_time_timestamp']) {
 						echo '<h5 style="font-weight:bold;color:green;">'.wp_kses_post($vars["OPTIONS"]["wcTicketTransTicketValid"]).'</h5>';
 						echo '<form method="get"><input type="hidden" name="code" value="'.esc_attr($metaObj["wc_ticket"]["_public_ticket_id"]).'"><input type="submit" value="'.esc_attr($vars["OPTIONS"]["wcTicketTransRefreshPage"]).'"></form>';
@@ -3849,7 +3849,7 @@ final class sasoEventtickets_Ticket {
 								echo '
 								<script>
 									function redeem_ticket() {
-									if (confirm("'.$vars["OPTIONS"]["wcTicketTransRedeemQuestion"].'")) {
+									if (confirm("'.esc_js($vars["OPTIONS"]["wcTicketTransRedeemQuestion"]).'")) {
 										return true;
 									}
 									return false;
@@ -3865,19 +3865,19 @@ final class sasoEventtickets_Ticket {
 					}
 				}
 				if (SASO_EVENTTICKETS::issetRPara('displaytime')) {
-					echo '<p>Server time: '.wp_date("Y-m-d H:i").'</p>';
+					echo '<p>Server time: '.esc_html(wp_date("Y-m-d H:i")).'</p>';
 					print_r($ticket_times);
 				}
 				if ($vars["OPTIONS"]["wcTicketDontDisplayPDFButtonOnDetail"] == false ||  $vars["OPTIONS"]["wcTicketLabelICSDownload"] == false || $vars["OPTIONS"]["wcTicketBadgeDisplayButtonOnDetail"]) {
 					echo '<p style="text-align:center;">';
 					if ($vars["OPTIONS"]["wcTicketDontDisplayPDFButtonOnDetail"] == false) {
-						echo '<a class="button button-primary" target="_blank" href="'.$vars["METAOBJ"]["wc_ticket"]["_url"].'?pdf">'.wp_kses_post($vars["OPTIONS"]["wcTicketLabelPDFDownload"]).'</a> ';
+						echo '<a class="button button-primary" target="_blank" href="'.esc_url($vars["METAOBJ"]["wc_ticket"]["_url"]).'?pdf">'.wp_kses_post($vars["OPTIONS"]["wcTicketLabelPDFDownload"]).'</a> ';
 					}
 					if ($vars["OPTIONS"]["wcTicketDontDisplayICSButtonOnDetail"] == false) {
-						echo '<a class="button button-primary" target="_blank" href="'.$vars["METAOBJ"]["wc_ticket"]["_url"].'?ics">'.wp_kses_post($vars["OPTIONS"]["wcTicketLabelICSDownload"]).'</a> ';
+						echo '<a class="button button-primary" target="_blank" href="'.esc_url($vars["METAOBJ"]["wc_ticket"]["_url"]).'?ics">'.wp_kses_post($vars["OPTIONS"]["wcTicketLabelICSDownload"]).'</a> ';
 					}
 					if ($vars["OPTIONS"]["wcTicketBadgeDisplayButtonOnDetail"] == true) {
-						echo '<a class="button button-primary" target="_blank" href="'.$vars["METAOBJ"]["wc_ticket"]["_url"].'?badge">'.wp_kses_post($vars["OPTIONS"]["wcTicketBadgeLabelDownload"]).'</a>';
+						echo '<a class="button button-primary" target="_blank" href="'.esc_url($vars["METAOBJ"]["wc_ticket"]["_url"]).'?badge">'.wp_kses_post($vars["OPTIONS"]["wcTicketBadgeLabelDownload"]).'</a>';
 					}
 					echo '</p>';
 				}
@@ -4307,7 +4307,7 @@ final class sasoEventtickets_Ticket {
 		if ($this->MAIN->getOptions()->isOptionCheckboxActive('brandingHideHeader') == false) $this->renderThemeHeader();
 		if ($modern) {
 			echo '<div style="max-width:640px;margin:40px auto;">';
-			echo $this->renderStatusBanner('info', esc_html($this->getViewDisabledMessage()), '');
+			echo wp_kses_post($this->renderStatusBanner('info', esc_html($this->getViewDisabledMessage()), ''));
 			echo '</div>';
 		} else {
 			echo '<div style="max-width:640px;margin:40px auto;padding:15px;border:1px solid #ccc;text-align:center;">';
@@ -4457,7 +4457,7 @@ final class sasoEventtickets_Ticket {
 			}
 		} catch (Exception $e) {
 			if ($modern) {
-				echo $this->renderStatusBanner('error', __('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage()));
+				echo wp_kses_post($this->renderStatusBanner('error', esc_html__('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage())));
 			} else {
 				echo '<h1 style="color:red;">' . esc_html__('Error', 'event-tickets-with-ticket-scanner') . '</h1>';
 				echo '<p>' . esc_html($e->getMessage()) . '</p>';
@@ -4522,7 +4522,7 @@ final class sasoEventtickets_Ticket {
 					echo '<div class="ticket_content" style="background-color:white;color:black;padding:15px;display:block;position: relative;left: 0;right: 0;margin: auto;text-align:left;max-width:640px;border:1px solid black;">';
 				}
 				if ($modern) {
-					echo $this->renderStatusBanner('error', __('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage()));
+					echo wp_kses_post($this->renderStatusBanner('error', esc_html__('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage())));
 				} else {
 					echo '<h1 style="color:red;">'.esc_html__('Error', 'event-tickets-with-ticket-scanner').'</h1>';
 					echo '<p>'.esc_html($e->getMessage()).'</p>';
@@ -4561,7 +4561,7 @@ final class sasoEventtickets_Ticket {
 						$this->outputTicketScanner();
 					} elseif (!$this->isViewEnabled('view')) {
 						if ($modern) {
-							echo $this->renderStatusBanner('info', esc_html($this->getViewDisabledMessage()), '');
+							echo wp_kses_post($this->renderStatusBanner('info', esc_html($this->getViewDisabledMessage()), ''));
 						} else {
 							echo '<p>'.esc_html($this->getViewDisabledMessage()).'</p>';
 						}
@@ -4579,7 +4579,7 @@ final class sasoEventtickets_Ticket {
 					}
 				} catch(Exception $e) {
 					if ($modern) {
-						echo $this->renderStatusBanner('error', __('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage()));
+						echo wp_kses_post($this->renderStatusBanner('error', esc_html__('Error', 'event-tickets-with-ticket-scanner'), esc_html($e->getMessage())));
 					} else {
 						echo '<h1 style="color:red;">Error</h1>';
 						echo esc_html($e->getMessage());

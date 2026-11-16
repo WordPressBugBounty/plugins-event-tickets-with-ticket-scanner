@@ -439,7 +439,7 @@ class sasoEventtickets_Seating_Frontend extends sasoEventtickets_Seating_Base {
 					return;
 				default:
 					throw new Exception("#7001 " . sprintf(
-						esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'),
+						/* translators: %s: function name */esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'),
 						$a
 					));
 			}

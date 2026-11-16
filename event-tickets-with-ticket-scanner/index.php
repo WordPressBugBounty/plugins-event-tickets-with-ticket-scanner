@@ -3,7 +3,7 @@
  * Plugin Name: Event Tickets with Ticket Scanner
  * Plugin URI: https://vollstart.com/event-tickets-with-ticket-scanner/docs/
  * Description: You can create and generate tickets and codes. You can redeem the tickets at entrance using the built-in ticket scanner. You customer can download a PDF with the ticket information. The Premium allows you also to activate user registration and more. This allows your user to register them self to a ticket.
- * Version: 3.3.4
+ * Version: 3.4.0
  * Author: Vollstart
  * Author URI: https://vollstart.com
  * Requires at least: 6.0
@@ -18,6 +18,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  */
+if (!defined('ABSPATH')) exit;
+
 // https://semver.org/
 // https://developer.wordpress.org/plugins/security/securing-output/
 // https://developer.wordpress.org/plugins/security/securing-input/
@@ -25,7 +27,7 @@
 include_once(plugin_dir_path(__FILE__)."init_file.php");
 
 if (!defined('SASO_EVENTTICKETS_PLUGIN_VERSION'))
-	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.3.4');
+	define('SASO_EVENTTICKETS_PLUGIN_VERSION', '3.4.0');
 if (!defined('SASO_EVENTTICKETS_PLUGIN_DIR_PATH'))
 	define('SASO_EVENTTICKETS_PLUGIN_DIR_PATH', plugin_dir_path(__FILE__));
 
@@ -60,6 +62,7 @@ class sasoEventtickets {
 	protected $_shortcode_ticket_detail = 'sasoEventTicketsValidator_ticket_detail';
 	protected $_shortcode_shop_catalog = 'sasoEventTicketsValidator_shop_catalog';
 	protected $_shortcode_shop_event = 'sasoEventTicketsValidator_shop_event';
+	protected $_shortcode_tickets_button = 'vollstart_tickets';
 	protected $_divId = 'sasoEventtickets';
 
 	private $_isPrem = null;
@@ -555,6 +558,7 @@ class sasoEventtickets {
 		add_shortcode($this->_shortcode_ticket_detail, [$this, 'replacingShortcodeTicketDetail']);
 		add_shortcode($this->_shortcode_shop_catalog, [$this, 'replacingShortcodeShopCatalog']);
 		add_shortcode($this->_shortcode_shop_event, [$this, 'replacingShortcodeShopEvent']);
+		add_shortcode($this->_shortcode_tickets_button, [$this, 'replacingShortcodeTicketsButton']);
 
 		// Congress: REST API always registered; frontend page only when active
 		// (guarded — class files arrive in later tasks)
@@ -878,9 +882,9 @@ class sasoEventtickets {
 		if (empty($walletLinks)) return;
 
 		if ($plain_text) {
-			echo "\n" . __('Add to Vollstart Wallet', 'event-tickets-with-ticket-scanner') . ":\n";
+			echo "\n" . esc_html__('Add to Vollstart Wallet', 'event-tickets-with-ticket-scanner') . ":\n";
 			foreach ($walletLinks as $url) {
-				echo $url . "\n";
+				echo esc_url_raw($url) . "\n";
 			}
 		} else {
 			echo '<p><b>' . esc_html__('Add to Vollstart Wallet', 'event-tickets-with-ticket-scanner') . '</b></p>';
@@ -1194,7 +1198,7 @@ class sasoEventtickets {
 		$allowed = $this->isUserAllowedToAccessAdminArea();
 		$allowed = apply_filters( $this->_add_filter_prefix.'main_options_page', $allowed );
 		if ( !$allowed )  {
-			wp_die( __( 'You do not have sufficient permissions to access this page.', 'event-tickets-with-ticket-scanner' ) );
+			wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'event-tickets-with-ticket-scanner' ) );
 		}
 
 		wp_enqueue_style("wp-jquery-ui-dialog");
@@ -1284,7 +1288,7 @@ class sasoEventtickets {
 		<div class="event-tickets-with-ticket-scanner-admin-page">
 			<div class="event-tickets-with-ticket-scanner-header">
 				<div class="event-tickets-with-ticket-scanner-header-left">
-					<img src="<?php echo plugins_url( "",__FILE__ ); ?>/img/logo_event-tickets-with-ticket-scanner.gif"
+					<img src="<?php echo esc_url( plugins_url( "",__FILE__ ) ); ?>/img/logo_event-tickets-with-ticket-scanner.gif"
 						alt="Event Tickets"
 						class="event-tickets-with-ticket-scanner-header-logo">
 
@@ -1293,7 +1297,7 @@ class sasoEventtickets {
 							Event Tickets with Ticket Scanner
 						</div>
 						<div class="event-tickets-with-ticket-scanner-header-meta">
-							<?php esc_html_e('Version', 'event-tickets-with-ticket-scanner'); ?>: <?php echo $versions_tail; ?> <?php echo $version_tail_add; ?>
+							<?php esc_html_e('Version', 'event-tickets-with-ticket-scanner'); ?>: <?php echo esc_html($versions_tail); ?> <?php echo esc_html($version_tail_add); ?>
 						</div>
 					</div>
 				</div>
@@ -1425,6 +1429,18 @@ class sasoEventtickets {
 							],
 							'css' => 'shop_catalog.css',
 						],
+						[
+							'tag' => $this->_shortcode_tickets_button,
+							'name' => __('Ticket buy button', 'event-tickets-with-ticket-scanner'),
+							'desc' => __('Buy button for a ticket list or a concrete ticket on any post: links the event shop page (premium) with the ticket type preselected, else the linked WooCommerce product, else the ticket detail. Availability and scarcity hint included.', 'event-tickets-with-ticket-scanner'),
+							'params' => [
+								['ticket', __('Code list name, or a numeric list / product / ticket id (at least one of ticket / type is required)', 'event-tickets-with-ticket-scanner')],
+								['type', __('Ticket type (product name) inside the list to preselect', 'event-tickets-with-ticket-scanner')],
+								['show_availability', __('Show "X of Y available" when a contingent limit is set. Values: 1/0. Default: 1', 'event-tickets-with-ticket-scanner')],
+								['scarcity', __('Scarcity hint shown when only few tickets are left (your text; English default when empty)', 'event-tickets-with-ticket-scanner')],
+								['button_text', __('Button label. Default: "Buy tickets"', 'event-tickets-with-ticket-scanner')],
+							],
+						],
 					];
 					?>
 					<table class="et-shortcodes-table">
@@ -1462,16 +1478,16 @@ class sasoEventtickets {
 					<a href="https://vollstart.com/event-tickets-with-ticket-scanner/docs/#filters" target="_blank"><?php esc_html_e('Click here for more help about the functions', 'event-tickets-with-ticket-scanner'); ?></a>
 					</p>
 					<ul>
-						<li>add_filter('<?php echo $this->_add_filter_prefix.'beforeCheckCodePre'; ?>', 'myfunc', 20, 1)</li>
-						<li>add_filter('<?php echo $this->_add_filter_prefix.'beforeCheckCode'; ?>', 'myfunc', 20, 1)</li>
-						<li>add_filter('<?php echo $this->_add_filter_prefix.'afterCheckCodePre'; ?>', 'myfunc', 20, 1)</li>
-						<li>add_filter('<?php echo $this->_add_filter_prefix.'afterCheckCode'; ?>', 'myfunc', 20, 1)</li>
+						<li>add_filter('<?php echo esc_html($this->_add_filter_prefix.'beforeCheckCodePre'); ?>', 'myfunc', 20, 1)</li>
+						<li>add_filter('<?php echo esc_html($this->_add_filter_prefix.'beforeCheckCode'); ?>', 'myfunc', 20, 1)</li>
+						<li>add_filter('<?php echo esc_html($this->_add_filter_prefix.'afterCheckCodePre'); ?>', 'myfunc', 20, 1)</li>
+						<li>add_filter('<?php echo esc_html($this->_add_filter_prefix.'afterCheckCode'); ?>', 'myfunc', 20, 1)</li>
 					</ul>
 
 					<h3><?php esc_html_e('For plugin developers: show your checkout fields on the ticket', 'event-tickets-with-ticket-scanner'); ?></h3>
 					<p><?php esc_html_e('Does your plugin add fields to the checkout or to the order? Register them here and they are listed where our users write their ticket template, so nobody has to look up a meta key in the database. The values themselves need nothing from us - a ticket template reads any order meta with ORDER.get_meta("your_key").', 'event-tickets-with-ticket-scanner'); ?></p>
 					<ul>
-						<li>add_filter('<?php echo $this->_add_filter_prefix.'template_order_fields'; ?>', 'myfunc', 20, 1)</li>
+						<li>add_filter('<?php echo esc_html($this->_add_filter_prefix.'template_order_fields'); ?>', 'myfunc', 20, 1)</li>
 					</ul>
 					<p><?php esc_html_e('Your function receives an array and returns it with your fields added. Two keys per field are enough:', 'event-tickets-with-ticket-scanner'); ?></p>
 					<ul>
@@ -1479,7 +1495,7 @@ class sasoEventtickets {
 						<li><code>name</code> — <?php esc_html_e('what the field is called for the shop owner', 'event-tickets-with-ticket-scanner'); ?></li>
 					</ul>
 					<p><?php esc_html_e('The heading above your fields is the name of your plugin - we take it from the plugin the callback lives in, you do not have to send it. Want a different heading? Then use your own, once as the array key:', 'event-tickets-with-ticket-scanner'); ?></p>
-					<pre style="background:#f6f7f7;border:1px solid #dcdcde;padding:10px;overflow:auto;">add_filter('<?php echo $this->_add_filter_prefix.'template_order_fields'; ?>', function($fields) {
+					<pre style="background:#f6f7f7;border:1px solid #dcdcde;padding:10px;overflow:auto;">add_filter('<?php echo esc_html($this->_add_filter_prefix.'template_order_fields'); ?>', function($fields) {
     $fields['Booking questions'] = [
         ['key' => '_arrival_day', 'name' => 'Arrival day'],
         ['key' => '_meal_choice', 'name' => 'Meal choice'],
@@ -1645,8 +1661,11 @@ class sasoEventtickets {
 		wp_add_inline_script('saso_et_scanner_offline', 'window.ticketScannerOfflineStrings = '.wp_json_encode([
 			'connected' => __('Connected', 'event-tickets-with-ticket-scanner'),
 			'offlineHint' => __('Offline — scans are validated locally and queued', 'event-tickets-with-ticket-scanner'),
+			/* translators: %s: number of preloaded tickets */
 			'preloaded' => __('Preloaded tickets: %s', 'event-tickets-with-ticket-scanner'),
+			/* translators: %s: number of tickets waiting for sync */
 			'waiting' => __('Waiting for sync: %s', 'event-tickets-with-ticket-scanner'),
+			/* translators: %s: number of conflicts after the last sync */
 			'conflicts' => __('Conflicts after last sync: %s', 'event-tickets-with-ticket-scanner'),
 			'syncNow' => __('Sync now', 'event-tickets-with-ticket-scanner'),
 			'scannerTitle' => __('Offline scanner', 'event-tickets-with-ticket-scanner'),
@@ -1886,7 +1905,7 @@ class sasoEventtickets {
 				sprintf(
 					/* translators: %d: maximum number of tickets */
 					esc_html__('Too many tickets. Maximum %d tickets can be downloaded at once.', 'event-tickets-with-ticket-scanner'),
-					$max_tickets
+					(int) $max_tickets
 				),
 				400
 			);
@@ -2263,6 +2282,303 @@ class sasoEventtickets {
 	}
 
 	/**
+	 * [vollstart_tickets] — ticket buy button on ANY post (Karte E, Saso
+	 * 2026-11-12): renders a link button plus optional availability and
+	 * scarcity hint for a ticket list, a concrete product or a concrete
+	 * ticket. No JS, no inline CSS (the .saso-et-tickets* classes are the
+	 * styling hooks — theme/custom CSS friendly, system fonts).
+	 *
+	 * Addressing (at least one of ticket / type is required):
+	 *  - ticket = list NAME (unique per table) or a NUMERIC id resolved in
+	 *    the documented order list → product → code
+	 *  - type   = product name inside the resolved list (case-insensitive)
+	 *
+	 * Buy target chain: premium shop route (getShortcodeBuyRoute — license
+	 * + shop gated; older premium falls back to shopEventBuyUrl) → linked
+	 * WooCommerce product permalink → the ticket's own detail URL (when the
+	 * target IS a ticket) → href="#" (nothing guessed, 3.3.0 principle).
+	 * The saso_et_tickets_button_url filter decides last.
+	 *
+	 * Unknown or inactive (event-over) targets render '' — silent, no leak.
+	 */
+	public function replacingShortcodeTicketsButton($attr = [], $content = null, $tag = ''): string {
+		$attr = array_change_key_case((array) $attr, CASE_LOWER);
+
+		$ticketRaw = isset($attr['ticket']) ? sanitize_text_field(trim((string) $attr['ticket'])) : '';
+		$typeRaw   = isset($attr['type']) ? sanitize_text_field(trim((string) $attr['type'])) : '';
+		if ($ticketRaw === '' && $typeRaw === '') return '';
+
+		$target = $this->resolveTicketsButtonTarget($ticketRaw, $typeRaw);
+		if ($target === null) return '';
+
+		$listId    = isset($target['list_id']) ? intval($target['list_id']) : 0;
+		$productId = isset($target['product_id']) ? intval($target['product_id']) : 0;
+
+		// Availability / scarcity: the same numbers the shop page renders
+		// its "Sold out" states from (product contingent, capped by the
+		// list's overall contingent). A concrete ticket has no contingent.
+		$avail = ($target['kind'] === 'code') ? null : $this->getTicketsButtonAvailability($listId, $productId);
+
+		$showAvail = !in_array(strtolower(trim((string) ($attr['show_availability'] ?? '1'))), ['0', 'false', 'no'], true);
+		$classes = 'saso-et-tickets';
+		$inner = '';
+		if ($avail !== null && $avail['limit_set'] && $showAvail) {
+			$inner .= '<span class="saso-et-tickets__avail">'
+				. esc_html(sprintf(
+					/* translators: 1: number of tickets still available, 2: total contingent of the list/product */
+					_n('%1$d of %2$d ticket available', '%1$d of %2$d tickets available', $avail['free'], 'event-tickets-with-ticket-scanner'),
+					$avail['free'], $avail['max']))
+				. '</span>';
+		}
+		$scarcityRaw = isset($attr['scarcity']) ? sanitize_text_field(trim((string) $attr['scarcity'])) : '';
+		if ($avail !== null && $avail['limit_set'] && !$avail['sold_out'] && $avail['free'] > 0
+			&& $this->isTicketsButtonScarcityReached($avail['free'], $avail['max'], $listId, $productId)) {
+			$classes .= ' saso-et-tickets--scarce';
+			$inner .= '<p class="saso-et-tickets__scarcity">'
+				. esc_html($scarcityRaw !== '' ? $scarcityRaw : __('Only a few tickets left!', 'event-tickets-with-ticket-scanner'))
+				. '</p>';
+		}
+		if ($avail !== null && $avail['sold_out']) $classes .= ' saso-et-tickets--soldout';
+
+		$url = $this->getTicketsButtonUrl($target);
+		if ($url === '') $classes .= ' saso-et-tickets--no-target';
+		$url = apply_filters('saso_et_tickets_button_url', $url, $listId, $productId);
+
+		$buttonText = isset($attr['button_text']) && trim((string) $attr['button_text']) !== ''
+			? sanitize_text_field((string) $attr['button_text'])
+			: __('Buy tickets', 'event-tickets-with-ticket-scanner');
+
+		$divId = 'sasoEventTicketsValidator_tickets';
+		if (isset($attr['divid']) && trim((string) $attr['divid']) != "") {
+			$divId = sanitize_key(trim((string) $attr['divid']));
+		}
+
+		$ret = '<div class="'.esc_attr($classes).'" id="'.esc_attr($divId).'">';
+		$ret .= $inner;
+		$ret .= '<a class="saso-et-tickets-button" href="'.esc_url($url !== '' ? $url : '#').'"'
+			.($listId > 0 ? ' data-et-list="'.esc_attr($listId).'"' : '')
+			.($productId > 0 ? ' data-et-product="'.esc_attr($productId).'"' : '')
+			.'>'.esc_html($buttonText).'</a>';
+		$ret .= '</div>';
+		return $ret;
+	}
+
+	/**
+	 * Resolves the shortcode addressing to a target descriptor:
+	 * ['kind' => 'list'|'product'|'code', 'list_id', 'product_id', 'code_row'].
+	 * Numeric ids resolve list → product → code (documented order — a known
+	 * but inactive list never falls through). All queries are id/name
+	 * validated ($wpdb->prepare / intval) — no raw user input in SQL.
+	 */
+	private function resolveTicketsButtonTarget(string $ticket, string $type): ?array {
+		global $wpdb;
+		if ($ticket !== '' && ctype_digit($ticket)) {
+			$id = intval($ticket);
+			// 1) ticket list
+			try {
+				$listObj = $this->getAdmin()->getList(['id' => $id]);
+				if (empty($listObj['aktiv'])) return null; // event over / archived
+				return $this->narrowTicketsButtonByType(intval($listObj['id']), $type);
+			} catch (Exception $e) {
+				// unknown list id — fall through to product / code
+			}
+			// 2) ticket product (own products table)
+			$table = $this->getDB()->getTabelle('products');
+			$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $id), ARRAY_A);
+			if (is_array($row)) {
+				if (empty($row['aktiv'])) return null;
+				// Review fix t_28524aa4: the product's LIST gates the target
+				// too — every other branch checks list aktiv, and the card
+				// contract says event-over/archived targets render ''. A
+				// dangling list reference or a global product (list_id = 0,
+				// no list context — no shop page, no contingent, no Woo
+				// link) is no buy target either.
+				$prodListId = intval($row['list_id']);
+				if ($prodListId < 1) return null;
+				try {
+					$prodListObj = $this->getAdmin()->getList(['id' => $prodListId]);
+				} catch (Exception $e) {
+					return null; // dangling list reference — unknown target
+				}
+				if (empty($prodListObj['aktiv'])) return null; // event over / archived
+				return ['kind' => 'product', 'list_id' => $prodListId, 'product_id' => intval($row['id'])];
+			}
+			// 3) concrete ticket (code row → its own detail URL)
+			$table = $this->getDB()->getTabelle('codes');
+			$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $id), ARRAY_A);
+			if (is_array($row) && !empty($row['code'])) {
+				return ['kind' => 'code', 'list_id' => 0, 'product_id' => 0, 'code_row' => $row];
+			}
+			return null;
+		}
+
+		if ($ticket !== '') {
+			// list by unique NAME (code-list slug)
+			$table = $this->getDB()->getTabelle('lists');
+			$row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE name = %s LIMIT 1", $ticket), ARRAY_A);
+			if (!is_array($row)) return null;
+			if (empty($row['aktiv'])) return null;
+			return $this->narrowTicketsButtonByType(intval($row['id']), $type);
+		}
+
+		// type only: product name across ACTIVE lists (deterministic: first
+		// by list id, then product id)
+		$pTable = $this->getDB()->getTabelle('products');
+		$lTable = $this->getDB()->getTabelle('lists');
+		$row = $wpdb->get_row($wpdb->prepare(
+			"SELECT p.* FROM {$pTable} p INNER JOIN {$lTable} l ON l.id = p.list_id
+			 WHERE p.aktiv = 1 AND l.aktiv = 1 AND p.name = %s ORDER BY p.list_id ASC, p.id ASC LIMIT 1",
+			$type), ARRAY_A);
+		if (!is_array($row)) return null;
+		return ['kind' => 'product', 'list_id' => intval($row['list_id']), 'product_id' => intval($row['id'])];
+	}
+
+	/**
+	 * Narrows a resolved list by the type attr (product name, aktiv = 1,
+	 * exact or case-insensitive match). An unknown type renders nothing —
+	 * the addressing was explicit, guessing the whole list would be wrong.
+	 */
+	private function narrowTicketsButtonByType(int $listId, string $type): ?array {
+		if ($type === '') return ['kind' => 'list', 'list_id' => $listId, 'product_id' => 0];
+		$ret = $this->getAdmin()->getTicketProducts(['list_id' => $listId, 'aktiv' => 1]);
+		$products = (is_array($ret) && isset($ret['products']) && is_array($ret['products'])) ? $ret['products'] : [];
+		foreach ($products as $p) {
+			if (trim((string) ($p['name'] ?? '')) === $type) {
+				return ['kind' => 'product', 'list_id' => $listId, 'product_id' => intval($p['id'])];
+			}
+		}
+		foreach ($products as $p) { // case-insensitive fallback
+			if (function_exists('mb_strtolower') && mb_strtolower(trim((string) ($p['name'] ?? ''))) === mb_strtolower($type)) {
+				return ['kind' => 'product', 'list_id' => $listId, 'product_id' => intval($p['id'])];
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Availability pair for the button: the addressed product's contingent
+	 * (meta max_tickets vs sold) when it has one, else the list's overall
+	 * contingent (list meta max_tickets vs sum of sold) — product availability
+	 * capped by the overall pool, the same contract the shop page renders.
+	 */
+	private function getTicketsButtonAvailability(int $listId, int $productId): array {
+		$ret = ['free' => 0, 'max' => 0, 'limit_set' => false, 'sold_out' => false];
+		if ($listId < 1) return $ret;
+		try {
+			$listObj = $this->getAdmin()->getList(['id' => $listId]);
+		} catch (Exception $e) {
+			return $ret;
+		}
+		$metaObj = !empty($listObj['meta']) ? json_decode((string) $listObj['meta'], true) : [];
+		$overallMax = (is_array($metaObj) && !empty($metaObj['max_tickets'])) ? intval($metaObj['max_tickets']) : 0;
+		$overallAvail = -1; // -1 = no overall limit
+		if ($overallMax > 0) {
+			$overallAvail = max(0, $overallMax - array_sum($this->getAdmin()->getSoldTicketCountsForList($listId)));
+		}
+
+		$max = 0;
+		$free = 0;
+		if ($productId > 0) {
+			$ret2 = $this->getAdmin()->getTicketProducts(['list_id' => $listId, 'aktiv' => 1]);
+			$products = (is_array($ret2) && isset($ret2['products'])) ? $ret2['products'] : [];
+			foreach ($products as $p) {
+				if (intval($p['id']) === $productId && intval($p['max_tickets']) > 0) {
+					$max = intval($p['max_tickets']);
+					$free = max(0, $max - intval($p['sold']));
+					break;
+				}
+			}
+		}
+		if ($max < 1 && $overallMax > 0) {
+			$max = $overallMax;
+			$free = max(0, $overallAvail);
+		} elseif ($max > 0 && $overallAvail >= 0) {
+			$free = min($free, $overallAvail); // shared pool caps the row
+		}
+		if ($max > 0) {
+			$ret['free'] = $free;
+			$ret['max'] = $max;
+			$ret['limit_set'] = true;
+			$ret['sold_out'] = ($free < 1);
+		}
+		return $ret;
+	}
+
+	/**
+	 * Scarcity threshold (Karte E): reached when free <= absolute OR
+	 * free <= max * percent / 100. Defaults <= 5 pieces / <= 10 %,
+	 * configurable via the saso_et_scarcity_threshold filter
+	 * (['absolute' => int, 'percent' => float], $listId, $productId).
+	 */
+	private function isTicketsButtonScarcityReached(int $free, int $max, int $listId, int $productId): bool {
+		$th = apply_filters('saso_et_scarcity_threshold', ['absolute' => 5, 'percent' => 10.0], $listId, $productId);
+		if (!is_array($th)) $th = [];
+		$absolute = isset($th['absolute']) ? max(0, intval($th['absolute'])) : 5;
+		$percent  = isset($th['percent']) ? max(0.0, floatval($th['percent'])) : 10.0;
+		if ($free <= $absolute) return true;
+		return ($percent > 0 && $max > 0 && $free <= ($max * $percent / 100.0));
+	}
+
+	/**
+	 * The button's buy target: premium shop route (license + shop gated,
+	 * with the product preselected) → linked WooCommerce product → the
+	 * ticket's own detail URL (code target). '' = no target (href="#").
+	 */
+	private function getTicketsButtonUrl(array $target): string {
+		if ($target['kind'] === 'code') {
+			$codeRow = $target['code_row'];
+			$metaObj = !empty($codeRow['meta']) ? json_decode((string) $codeRow['meta'], true) : [];
+			if (!is_array($metaObj)) $metaObj = [];
+			// getCore()->getTicketURL() mirrors this, but getTicketId()
+			// returns '' for a bare code row (no order, no list idcode) —
+			// the public detail id then IS the code itself.
+			$ticketId = $this->getCore()->getTicketId($codeRow, $metaObj);
+			if ($ticketId === '') $ticketId = (string) $codeRow['code'];
+			if ($ticketId === '') return '';
+			$baseURL = $this->getCore()->getTicketURLBase();
+			$url = $baseURL.$ticketId;
+			if ($this->getOptions()->isOptionCheckboxActive('wcTicketCompatibilityMode')) {
+				$url = $baseURL."?code=".$ticketId;
+			}
+			return $url;
+		}
+		$listId = intval($target['list_id'] ?? 0);
+		$productId = intval($target['product_id'] ?? 0);
+
+		$url = '';
+		if ($this->isPremium()) {
+			$prem = $this->getPremiumFunctions();
+			if (method_exists($prem, 'getShortcodeBuyRoute')) {
+				$url = (string) $prem->getShortcodeBuyRoute($listId, $productId);
+			} else {
+				$url = $this->shopEventBuyUrl($listId, $productId); // older premium: existing seam
+			}
+		}
+		if ($url === '') $url = $this->getTicketsButtonWooUrl($listId);
+		return $url;
+	}
+
+	/**
+	 * Linked WooCommerce product of the list (post meta
+	 * 'saso_eventtickets_list'): the first published product post.
+	 * Simple single-value assignments only — serialized multi-list values
+	 * do not match (documented; the operator links one product per list).
+	 */
+	private function getTicketsButtonWooUrl(int $listId): string {
+		if ($listId < 1 || !function_exists('wc_get_product')) return '';
+		global $wpdb;
+		$postId = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT p.ID FROM {$wpdb->posts} p
+			 INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = %s
+			 WHERE p.post_type = 'product' AND p.post_status = 'publish' AND m.meta_value = %s
+			 ORDER BY p.ID ASC LIMIT 1",
+			'saso_eventtickets_list', (string) $listId));
+		if ($postId < 1) return '';
+		$permalink = get_permalink($postId);
+		return is_string($permalink) ? $permalink : '';
+	}
+
+	/**
 	 * Shared stylesheet of the public shop faces (catalog + event detail).
 	 */
 	private function enqueueShopCatalogCss(): void {
@@ -2316,6 +2632,30 @@ class sasoEventtickets {
 		foreach ($entries as $entry) {
 			$ret .= '<section class="et-shop-catalog__list">';
 			$ret .= '<h2 class="et-shop-catalog__list-name">'.esc_html($entry['name']).'</h2>';
+			// Event meta line (3.4.0 design polish): a scannable "when &
+			// where" under the title — human-readable date first, then the
+			// formatted time, then the location. Renders ONLY when the
+			// list carries event meta; meta-less lists stay byte-identical.
+			$meta = (isset($entry['event']) && is_array($entry['event'])) ? $entry['event'] : [];
+			$hasDate = trim((string)($meta['event_start_date'] ?? "")) != "";
+			$hasTime = trim((string)($meta['event_start_time'] ?? "")) != "";
+			$hasLocation = trim((string)($meta['event_location'] ?? "")) != "";
+			if ($hasDate || $hasTime || $hasLocation) {
+				$fmt = $this->getShopTemplatesHandler()->shopFormattedEventMeta($meta);
+				$metaItems = '';
+				if ($hasDate) {
+					$dateTxt = ($fmt['event_start_date_human'] ?? "") != "" ? $fmt['event_start_date_human'] : (string)$meta['event_start_date'];
+					$metaItems .= '<span class="et-shop-catalog__list-meta-item et-shop-catalog__list-date">'.esc_html($dateTxt).'</span>';
+				}
+				if ($hasTime) {
+					$timeTxt = ($fmt['event_start_time_formatted'] ?? "") != "" ? $fmt['event_start_time_formatted'] : (string)$meta['event_start_time'];
+					$metaItems .= '<span class="et-shop-catalog__list-meta-item et-shop-catalog__list-time">'.esc_html($timeTxt).'</span>';
+				}
+				if ($hasLocation) {
+					$metaItems .= '<span class="et-shop-catalog__list-meta-item et-shop-catalog__list-location">'.esc_html($meta['event_location']).'</span>';
+				}
+				$ret .= '<div class="et-shop-catalog__list-meta">'.$metaItems.'</div>';
+			}
 			// no buy buttons here — the catalog stays a pure browsable face
 			$ret .= $this->renderShopProductGroups($entry, false);
 			$ret .= '</section>';
@@ -2364,6 +2704,7 @@ class sasoEventtickets {
 				$taxRate = isset($p['resolved_tax_rate_percent']) ? floatval($p['resolved_tax_rate_percent']) : (isset($p['tax_rate']) ? floatval($p['tax_rate']) : 0.0);
 				if ($taxRate > 0) {
 					$taxLabel = rtrim(rtrim(number_format($taxRate, 1, '.', ''), '0'), '.');
+					/* translators: %s: tax rate percentage */
 					$ret .= '<span class="et-shop-catalog__prod-tax">'.esc_html(sprintf(__('incl. %s %% VAT', 'event-tickets-with-ticket-scanner'), $taxLabel)).'</span>';
 				}
 				// type badge (3.3.0 Slice C): products/optional fees are
@@ -2429,15 +2770,21 @@ class sasoEventtickets {
 		$this->enqueueShopCatalogCss();
 
 		$meta = isset($event['event']) && is_array($event['event']) ? $event['event'] : [];
+		// Human-readable date/time (3.4.0 design polish): "So, 1. Nov 2026"
+		// and "19:30" instead of the stored ISO values; the raw value stays
+		// the fallback for unparsable meta (same guard as the template vars).
+		$fmt = $this->getShopTemplatesHandler()->shopFormattedEventMeta($meta);
 		$ret = '<div class="et-shop-event" id="'.esc_attr($divId).'">';
 		$ret .= '<header class="et-shop-event__head">';
 		$ret .= '<h2 class="et-shop-event__name">'.esc_html($event['name']).'</h2>';
 		$metaItems = '';
 		if (trim((string)($meta['event_start_date'] ?? '')) != "") {
-			$metaItems .= '<span class="et-shop-event__meta-item et-shop-event__date">'.esc_html($meta['event_start_date']).'</span>';
+			$dateTxt = ($fmt['event_start_date_human'] ?? "") != "" ? $fmt['event_start_date_human'] : (string)$meta['event_start_date'];
+			$metaItems .= '<span class="et-shop-event__meta-item et-shop-event__date">'.esc_html($dateTxt).'</span>';
 		}
 		if (trim((string)($meta['event_start_time'] ?? '')) != "") {
-			$metaItems .= '<span class="et-shop-event__meta-item et-shop-event__time">'.esc_html($meta['event_start_time']).'</span>';
+			$timeTxt = ($fmt['event_start_time_formatted'] ?? "") != "" ? $fmt['event_start_time_formatted'] : (string)$meta['event_start_time'];
+			$metaItems .= '<span class="et-shop-event__meta-item et-shop-event__time">'.esc_html($timeTxt).'</span>';
 		}
 		if (trim((string)($meta['event_location'] ?? '')) != "") {
 			$metaItems .= '<span class="et-shop-event__meta-item et-shop-event__location">'.esc_html($meta['event_location']).'</span>';
@@ -2601,7 +2948,7 @@ class sasoEventtickets {
 				printf(
 					/* translators: %1$d: days remaining in grace period, %2$s: renewal URL */
 					esc_html__('Your Premium subscription has expired. You have %1$d days remaining before features are disabled. %2$sReactivate now%3$s', 'event-tickets-with-ticket-scanner'),
-					ceil($grace_left),
+					(int) ceil($grace_left),
 					'<a href="' . esc_url($renewal_url) . '" target="_blank">',
 					'</a>'
 				);
@@ -2667,7 +3014,7 @@ class sasoEventtickets {
 		printf(
 			/* translators: %d: number of missed features */
 			esc_html__("You're missing %d new premium features!", 'event-tickets-with-ticket-scanner'),
-			$total
+			(int) $total
 		);
 		echo '</strong></p>';
 		echo '<ul style="list-style:disc;margin-left:20px;">';
@@ -2675,14 +3022,15 @@ class sasoEventtickets {
 			echo '<li>' . esc_html($feat) . '</li>';
 		}
 		if ($total > 5) {
-			printf('<li><em>' . esc_html__('...and %d more', 'event-tickets-with-ticket-scanner') . '</em></li>', $total - 5);
+			/* translators: %d: number of additional features not listed */
+			printf('<li><em>' . esc_html__('...and %d more', 'event-tickets-with-ticket-scanner') . '</em></li>', (int) ($total - 5));
 		}
 		echo '</ul>';
 		echo '<p><a href="' . esc_url($renewal_url) . '" target="_blank" class="button button-primary" style="background:#9333ea;border-color:#7c22d0;">';
 		esc_html_e('Renew now', 'event-tickets-with-ticket-scanner');
 		echo '</a></p>';
 		echo '</div>';
-		echo '<script>jQuery(function($){$("#saso-et-fomo-banner").on("click",".notice-dismiss",function(){$.post(ajaxurl,{action:"saso_et_dismiss_fomo",_wpnonce:"' . $nonce . '"});});});</script>';
+		echo '<script>jQuery(function($){$("#saso-et-fomo-banner").on("click",".notice-dismiss",function(){$.post(ajaxurl,{action:"saso_et_dismiss_fomo",_wpnonce:"' . esc_js($nonce) . '"});});});</script>';
 	}
 
 	/**
@@ -2745,6 +3093,7 @@ class sasoEventtickets {
 			}
 		} else {
 			printf(
+				/* translators: %s: installed Premium plugin version */
 				esc_html__('Event Tickets: Your Premium plugin (v%s) is outdated and not compatible with this version.', 'event-tickets-with-ticket-scanner'),
 				esc_html($old_version)
 			);
@@ -2829,6 +3178,7 @@ class sasoEventtickets {
 			echo '</p>';
 			echo '<p style="margin:0 0 8px 0;">';
 			printf(
+				/* translators: %s: installed Premium plugin version */
 				esc_html__('Required version: 1.6.0 or higher. You have: %s', 'event-tickets-with-ticket-scanner'),
 				'<strong>' . esc_html($old_version) . '</strong>'
 			);
@@ -2864,6 +3214,7 @@ class sasoEventtickets {
 		$downgrade_url = 'https://plugins.trac.wordpress.org/browser/event-tickets-with-ticket-scanner/tags';
 		echo '<p style="margin:6px 0 0 0;font-style:italic;color:#666;font-size:13px;">';
 		printf(
+			/* translators: 1: link opener, 2: link closer */
 			esc_html__('Alternatively, your old Premium plugin still works with basic plugin versions below 2.8.0. You can %1$sdowngrade the basic plugin here%2$s.', 'event-tickets-with-ticket-scanner'),
 			'<a href="' . esc_url($downgrade_url) . '" target="_blank">',
 			'</a>'
@@ -2982,8 +3333,8 @@ class sasoEventtickets {
 						printf(
 							/* translators: 1: list name, 2: attempts, 3: clear URL */
 							esc_html__('⚠️ CRITICAL: Ticket format for "%1$s" is exhausted! It took %2$d attempts to generate a code. Future ticket sales may fail. %3$sEdit list%4$s | %5$sDismiss%4$s', 'event-tickets-with-ticket-scanner'),
-							$list_name,
-							$attempts,
+							wp_kses_post($list_name),
+							(int) $attempts,
 							'<a href="' . esc_url(admin_url('admin.php?page=event-tickets-with-ticket-scanner')) . '">',
 							'</a>',
 							'<a href="' . esc_url($clear_url) . '">'
@@ -3000,8 +3351,8 @@ class sasoEventtickets {
 						printf(
 							/* translators: 1: list name, 2: attempts, 3: clear URL */
 							esc_html__('⚠️ WARNING: Ticket format for "%1$s" is running out of combinations. It took %2$d attempts to generate a code. Consider increasing code length. %3$sEdit list%4$s | %5$sDismiss%4$s', 'event-tickets-with-ticket-scanner'),
-							$list_name,
-							$attempts,
+							wp_kses_post($list_name),
+							(int) $attempts,
 							'<a href="' . esc_url(admin_url('admin.php?page=event-tickets-with-ticket-scanner')) . '">',
 							'</a>',
 							'<a href="' . esc_url($clear_url) . '">'

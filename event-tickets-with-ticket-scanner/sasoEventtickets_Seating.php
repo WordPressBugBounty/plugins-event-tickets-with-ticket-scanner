@@ -408,6 +408,7 @@ class sasoEventtickets_Seating {
 					break;
 
 				default:
+					/* translators: %s: function name */
 					throw new Exception("#8500 ".sprintf(esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'), $a));
 			}
 		} catch(Exception $e) {
@@ -578,7 +579,9 @@ class sasoEventtickets_Seating {
 		return [
 			'created_count' => count($createdIds),
 			'seat_ids' => $createdIds,
-			'message' => sprintf(__('%d seats created successfully', 'event-tickets-with-ticket-scanner'), count($createdIds))
+			'message' => sprintf(
+				/* translators: %d: number of seats created */
+				__('%d seats created successfully', 'event-tickets-with-ticket-scanner'), count($createdIds))
 		];
 	}
 
@@ -629,7 +632,7 @@ class sasoEventtickets_Seating {
 		$results = $this->getSeatManager()->delete($seatId, $force);
 		if (empty($results) || !$results[0]['success']) {
 			$error = $results[0]['error'] ?? 'delete failed';
-			throw new Exception('#8591 ' . $error);
+			throw new Exception('#8591 ' . esc_html($error));
 		}
 
 		return ['message' => __('Seat deleted successfully', 'event-tickets-with-ticket-scanner')];
@@ -924,7 +927,8 @@ class sasoEventtickets_Seating {
 			'skipped' => $skipped,
 			'ignored_columns' => $ignoredColumns,
 			'message' => sprintf(
-				__('%d created, %d updated, %d skipped', 'event-tickets-with-ticket-scanner'),
+				/* translators: 1: number of created seats, 2: number of updated seats, 3: number of skipped seats */
+				__('%1$d created, %2$d updated, %3$d skipped', 'event-tickets-with-ticket-scanner'),
 				$created, $updated, $skipped
 			),
 		];
@@ -953,12 +957,12 @@ class sasoEventtickets_Seating {
 		}
 		$payload = json_decode(wp_unslash($jsonRaw), true);
 		if (!is_array($payload) || ($payload['_format'] ?? '') !== 'saso-eventtickets-seatingplan-export/1') {
-			throw new \Exception(__('This file is not a seating plan export (unknown format).', 'event-tickets-with-ticket-scanner'));
+			throw new \Exception(esc_html__('This file is not a seating plan export (unknown format).', 'event-tickets-with-ticket-scanner'));
 		}
 		$planIn = $payload['plan'] ?? [];
 		$seatsIn = is_array($payload['seats'] ?? null) ? $payload['seats'] : [];
 		if (empty($planIn['name'])) {
-			throw new \Exception(__('The export contains no plan name.', 'event-tickets-with-ticket-scanner'));
+			throw new \Exception(esc_html__('The export contains no plan name.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		global $wpdb;
@@ -968,7 +972,7 @@ class sasoEventtickets_Seating {
 			$targetId = intval($data['target_plan_id'] ?? 0);
 			$target = $this->getPlanManager()->getById($targetId);
 			if (!$target) {
-				throw new \Exception(__('Target plan not found.', 'event-tickets-with-ticket-scanner'));
+				throw new \Exception(esc_html__('Target plan not found.', 'event-tickets-with-ticket-scanner'));
 			}
 			// Draft ersetzen (meta_draft), published unangetastet lassen:
 		// der Händler entscheidet per Publish, ob der Inhalt live geht.
@@ -1020,7 +1024,7 @@ class sasoEventtickets_Seating {
 			],
 		]);
 		if (!$planId) {
-			throw new \Exception(__('Could not create the plan.', 'event-tickets-with-ticket-scanner'));
+			throw new \Exception(esc_html__('Could not create the plan.', 'event-tickets-with-ticket-scanner'));
 		}
 
 		// Draft = published des Exports (der Import soll genau den exportierten Stand zeigen)
@@ -1107,13 +1111,12 @@ class sasoEventtickets_Seating {
 			'seats' => $seats,
 		];
 
-		$json = wp_json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 		$filename = 'seatingplan-' . sanitize_file_name($plan['name']) . '-' . wp_date('Y-m-d_His') . '.json';
 		header('Content-Type: application/json; charset=utf-8');
 		header('Content-Disposition: attachment; filename="' . $filename . '"');
 		header('Expires: 0');
 		header('Pragma: public');
-		echo $json;
+		echo wp_json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 		exit;
 	}
 

@@ -335,7 +335,7 @@ class sasoEventtickets_AdminSettings {
 					$this->downloadErrorLogsCSV();
 					break;
 				default:
-					throw new Exception(sprintf(esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'), $a));
+					throw new Exception(sprintf(/* translators: %s: function name */esc_html__('function "%s" not implemented', 'event-tickets-with-ticket-scanner'), $a));
 			}
 		} catch(Exception $e) {
 			$this->logErrorToDB($e, "executeJSON", __FILE__." on Line: ".__LINE__);
@@ -1523,8 +1523,8 @@ class sasoEventtickets_AdminSettings {
 		$defaults = self::getWizardPresetDefaults($preset);
 		if (empty($defaults)) {
 			throw new \Exception(sprintf(
-				esc_html__('Unknown wizard preset: "%s"', 'event-tickets-with-ticket-scanner'),
-				$preset
+				/* translators: %s: wizard preset name */esc_html__('Unknown wizard preset: "%s"', 'event-tickets-with-ticket-scanner'),
+				esc_html($preset)
 			));
 		}
 
@@ -1959,7 +1959,7 @@ class sasoEventtickets_AdminSettings {
 		try {
 			return $this->MAIN->getDB()->insert("lists", $felder);
 		} catch(Exception $e) {
-			throw new Exception(__("Could not create code list. Name exists already.", 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__("Could not create code list. Name exists already.", 'event-tickets-with-ticket-scanner'));
 		}
 	}
 	private function addList($data) {
@@ -2485,7 +2485,7 @@ class sasoEventtickets_AdminSettings {
 		}
 		$code = $this->MAIN->getCore()->clearCode($newcode);
 		if (empty($code)) {
-			throw new Exception(__('Code is empty', 'event-tickets-with-ticket-scanner'));
+			throw new Exception(esc_html__('Code is empty', 'event-tickets-with-ticket-scanner'));
 		}
 		try {
 			$this->MAIN->getCore()->retrieveCodeByCode($code, false);
@@ -2495,7 +2495,7 @@ class sasoEventtickets_AdminSettings {
 			$this->MAIN->getBase()->increaseGlobalTicketCounter();
 			return $this->MAIN->getDB()->insert("codes", $felder);
 		}
-		throw new Exception("#205 ".__('code exists already', 'event-tickets-with-ticket-scanner'));
+		throw new Exception("#205 ".esc_html__('code exists already', 'event-tickets-with-ticket-scanner'));
 	}
 
 	public function addCodeFromListForOrder($list_id, $order_id, $product_id = 0, $item_id = 0, $formatterValues="", $variation_id = 0) {
@@ -2652,7 +2652,7 @@ class sasoEventtickets_AdminSettings {
 
 			return $data["code"];
 		}
-		throw new Exception("#601 ".__('code could not be generated and stored', 'event-tickets-with-ticket-scanner'));
+		throw new Exception("#601 ".esc_html__('code could not be generated and stored', 'event-tickets-with-ticket-scanner'));
 	}
 	private function generateCode($formatterValues="") {
 		$datePrefix = $this->encodeDateToLetters();
@@ -3102,7 +3102,7 @@ class sasoEventtickets_AdminSettings {
 		if ($max_redeem_amount > 0) {
 			$redeemed_counter = count($metaObj['wc_ticket']['stats_redeemed']);
 			if ($redeemed_counter >= $max_redeem_amount) {
-				throw new Exception(sprintf(/* translators: 1: redeemed ticket counter 2: max redeem possible */esc_html__('Ticket cannot be redeemed anymore. All redeem operations are used up. %1$d of %2$d.', 'event-tickets-with-ticket-scanner'), $redeemed_counter, $max_redeem_amount));
+				throw new Exception(sprintf(/* translators: 1: redeemed ticket counter 2: max redeem possible */esc_html__('Ticket cannot be redeemed anymore. All redeem operations are used up. %1$d of %2$d.', 'event-tickets-with-ticket-scanner'), esc_html($redeemed_counter), esc_html($max_redeem_amount)));
 			}
 		}
 
@@ -3116,7 +3116,7 @@ class sasoEventtickets_AdminSettings {
 				throw new Exception(sprintf(
 					/* translators: 1: redeems used today 2: max allowed per day */
 					esc_html__('Daily redeem limit reached: %1$d of %2$d. Try again tomorrow.', 'event-tickets-with-ticket-scanner'),
-					$redeems_today, $max_per_day
+					esc_html($redeems_today), esc_html($max_per_day)
 				));
 			}
 		}
@@ -4123,19 +4123,19 @@ class sasoEventtickets_AdminSettings {
 		// zeigt infos im user profile an
 		$user_id = intval($profileuser->ID);
 		if ($this->isOptionCheckboxActive("wcTicketUserProfileDisplayRegisteredNumbers")) {
-			echo "<h3>".__('Event Tickets Registered', 'event-tickets-with-ticket-scanner')."</h3>";
+			echo "<h3>".esc_html__('Event Tickets Registered', 'event-tickets-with-ticket-scanner')."</h3>";
 			//print_r($profileuser);
 			$ret =  $this->MAIN->getMyCodeText($user_id);
 			if (empty($ret)) echo "-";
-			else echo $ret;
+			else echo $ret; // phpcs:ignore WordPress.Security.EscapeOutput -- trusted internal renderer markup (getMyCodeText: table cells with style attrs)
 		}
 		if ($this->isOptionCheckboxActive("wcTicketUserProfileDisplayBoughtNumbers")) {
-			echo "<h3>".__('Event Tickets Numbers', 'event-tickets-with-ticket-scanner')."</h3>";
+			echo "<h3>".esc_html__('Event Tickets Numbers', 'event-tickets-with-ticket-scanner')."</h3>";
 			$sql = "select * from ".$this->MAIN->getDB()->getTabelle("codes")." where
 				json_extract(meta, '$.wc_ticket.is_ticket') = 1 and
 				json_extract(meta, '$.woocommerce.user_id') = ".$user_id;
 			$codes = $this->MAIN->getDB()->_db_datenholen($sql);
-			echo $this->MAIN->getCodesTextAsShortList($codes);
+			echo $this->MAIN->getCodesTextAsShortList($codes); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted internal renderer markup (table cells with style attrs)
 		}
 	}
 
@@ -4383,9 +4383,9 @@ class sasoEventtickets_AdminSettings {
 				if ($qty < 1 || $qty > 100) throw new Exception("#9256 qty must be between 1 and 100");
 				$rows = $this->MAIN->getDB()->_db_datenholen("select * from ".$prodTable." where id = ".intval($pid));
 				$prod = (is_array($rows) && count($rows) > 0) ? $rows[0] : null;
-				if ($prod == null) throw new Exception("#9257 ticket product not found: ".$pid);
-				if (intval($prod['list_id']) != 0 && intval($prod['list_id']) != $list_id) throw new Exception("#9258 ticket product belongs to another list: ".$pid);
-				if (intval($prod['aktiv']) != 1) throw new Exception("#9259 ticket product is not active: ".$pid);
+				if ($prod == null) throw new Exception("#9257 ticket product not found: ".esc_html($pid));
+				if (intval($prod['list_id']) != 0 && intval($prod['list_id']) != $list_id) throw new Exception("#9258 ticket product belongs to another list: ".esc_html($pid));
+				if (intval($prod['aktiv']) != 1) throw new Exception("#9259 ticket product is not active: ".esc_html($pid));
 				$prodMeta = json_decode((string)$prod['meta'], true);
 				$line = [
 					'product_id' => intval($prod['id']),
@@ -4417,7 +4417,7 @@ class sasoEventtickets_AdminSettings {
 			if ($line['max_tickets'] > 0) {
 				$taken = intval($soldByProduct[$pid] ?? 0) + intval($pendingByProduct[$pid] ?? 0);
 				if ($taken + $qty > $line['max_tickets']) {
-					throw new Exception("#9270 sold out — only ".max(0, $line['max_tickets'] - $taken)." left for ".(string)$prod['name']);
+					throw new Exception("#9270 sold out — only ".esc_html(max(0, $line['max_tickets'] - $taken))." left for ".esc_html((string)$prod['name']));
 				}
 			}
 			$pendingByProduct[$pid] = intval($pendingByProduct[$pid] ?? 0) + $qty;
@@ -4485,7 +4485,7 @@ class sasoEventtickets_AdminSettings {
 			$soldTotal = array_sum($soldCounts);
 			$withThisOrder = ($productsInput !== null) ? $soldTotal + array_sum($pendingByProduct ?? []) : $soldTotal + $amount;
 			if ($withThisOrder > $listMaxTickets) {
-				throw new Exception("#9271 sold out — only ".max(0, $listMaxTickets - $soldTotal)." tickets left in total for this list");
+				throw new Exception("#9271 sold out — only ".esc_html(max(0, $listMaxTickets - $soldTotal))." tickets left in total for this list");
 			}
 		}
 
@@ -5008,7 +5008,7 @@ class sasoEventtickets_AdminSettings {
 	public static function validateProductType($raw): string {
 		$type = trim((string)$raw);
 		if (!in_array($type, ['event', 'product', 'fee'], true)) {
-			throw new Exception("#9282 invalid product type: ".$type);
+			throw new Exception("#9282 invalid product type: ".esc_html($type));
 		}
 		return $type;
 	}
@@ -5026,10 +5026,10 @@ class sasoEventtickets_AdminSettings {
 	 * instead of silently storing a dangling reference.
 	 */
 	private function validateTaxRateId(int $tax_rate_id): int {
-		if ($tax_rate_id < 0) throw new Exception("#9283 invalid tax rate id: ".$tax_rate_id);
+		if ($tax_rate_id < 0) throw new Exception("#9283 invalid tax rate id: ".esc_html($tax_rate_id));
 		if ($tax_rate_id === 0) return 0;
 		$rows = $this->MAIN->getDB()->_db_datenholen("select id from ".$this->MAIN->getDB()->getTabelle('tax_rates')." where id = ".$tax_rate_id." and is_deleted = 0 limit 1");
-		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9283 tax rate not found: ".$tax_rate_id);
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9283 tax rate not found: ".esc_html($tax_rate_id));
 		return $tax_rate_id;
 	}
 
@@ -5085,7 +5085,7 @@ class sasoEventtickets_AdminSettings {
 		$id = intval($data['id']);
 		$table = $this->MAIN->getDB()->getTabelle('product_categories');
 		$rows = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where id = ".$id);
-		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9263 product category not found: ".$id);
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9263 product category not found: ".esc_html($id));
 		$cat = $rows[0];
 		$this->MAIN->getDB()->update("product_categories", [
 			"name"=>sanitize_text_field(substr(trim((string)$data['name']), 0, 255)),
@@ -5110,7 +5110,7 @@ class sasoEventtickets_AdminSettings {
 		$id = intval($data['id']);
 		$table = $this->MAIN->getDB()->getTabelle('products');
 		$rows = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where id = ".$id);
-		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9257 ticket product not found: ".$id);
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9257 ticket product not found: ".esc_html($id));
 		$prod = $rows[0];
 		$priceCents = self::ticketPriceToCents(isset($data['price']) ? $data['price'] : $prod['price']);
 		if ($priceCents < 0) throw new Exception("#9252 price must not be negative");
@@ -5157,7 +5157,7 @@ class sasoEventtickets_AdminSettings {
 		$id = intval($data['id']);
 		$table = $this->MAIN->getDB()->getTabelle('products');
 		$rows = $this->MAIN->getDB()->_db_datenholen("select * from ".$table." where id = ".$id);
-		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9257 ticket product not found: ".$id);
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9257 ticket product not found: ".esc_html($id));
 		$sql = "delete from ".$this->MAIN->getDB()->getTabelle('products')." where id = ".$id;
 		$this->MAIN->getDB()->_db_query($sql); // orders keep their line snapshots
 		return ["id"=>$id, "removed"=>true];
@@ -5211,7 +5211,7 @@ class sasoEventtickets_AdminSettings {
 		}
 		if ($id > 0) {
 			$rows = $this->MAIN->getDB()->_db_datenholen("select id from ".$this->MAIN->getDB()->getTabelle('tax_rates')." where id = ".$id." and is_deleted = 0 limit 1");
-			if (!is_array($rows) || count($rows) == 0) throw new Exception("#9281 tax rate not found: ".$id);
+			if (!is_array($rows) || count($rows) == 0) throw new Exception("#9281 tax rate not found: ".esc_html($id));
 			$felder = [
 				"name" => $name,
 				"updated_by" => $by,
@@ -5246,7 +5246,7 @@ class sasoEventtickets_AdminSettings {
 		if (!isset($data['id']) || intval($data['id']) == 0) throw new Exception("#9280 tax rate id missing - cannot delete tax rate");
 		$id = intval($data['id']);
 		$rows = $this->MAIN->getDB()->_db_datenholen("select id, is_deleted from ".$this->MAIN->getDB()->getTabelle('tax_rates')." where id = ".$id." limit 1");
-		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9281 tax rate not found: ".$id);
+		if (!is_array($rows) || count($rows) == 0) throw new Exception("#9281 tax rate not found: ".esc_html($id));
 		if (intval($rows[0]['is_deleted']) !== 1) {
 			$this->MAIN->getDB()->update("tax_rates", [
 				"is_deleted" => 1,
@@ -5822,17 +5822,17 @@ class sasoEventtickets_AdminSettings {
 			$message = '';
 
 			if ($severity === 'critical') {
-				$subject = sprintf(__('[%s] CRITICAL: Ticket format exhausted for "%s"', 'event-tickets-with-ticket-scanner'), $blog_name, $listObj['name']);
+				$subject = sprintf(/* translators: 1: blog name 2: ticket list name */__('[%1$s] CRITICAL: Ticket format exhausted for "%2$s"', 'event-tickets-with-ticket-scanner'), $blog_name, $listObj['name']);
 				$message = sprintf(
-					__("WARNING: The ticket number format for list \"%s\" is exhausted!\n\nIt took %d attempts to generate a ticket code.\n\nActions:\n1. Go to: %s\n2. Edit the ticket list\n3. Increase code length or change character set\n\nWithout action, future ticket sales may fail!", 'event-tickets-with-ticket-scanner'),
+					/* translators: 1: ticket list name 2: generation attempts 3: admin URL */__("WARNING: The ticket number format for list \"%1\$s\" is exhausted!\n\nIt took %2\$d attempts to generate a ticket code.\n\nActions:\n1. Go to: %3\$s\n2. Edit the ticket list\n3. Increase code length or change character set\n\nWithout action, future ticket sales may fail!", 'event-tickets-with-ticket-scanner'),
 					$listObj['name'],
 					$counter,
 					admin_url('admin.php?page=event-tickets-with-ticket-scanner')
 				);
 			} else {
-				$subject = sprintf(__('[%s] WARNING: Ticket format running out for "%s"', 'event-tickets-with-ticket-scanner'), $blog_name, $listObj['name']);
+				$subject = sprintf(/* translators: 1: blog name 2: ticket list name */__('[%1$s] WARNING: Ticket format running out for "%2$s"', 'event-tickets-with-ticket-scanner'), $blog_name, $listObj['name']);
 				$message = sprintf(
-					__("WARNING: The ticket number format for list \"%s\" is running out of combinations!\n\nIt took %d attempts to generate a ticket code.\n\nRecommended action:\n1. Go to: %s\n2. Edit the ticket list\n3. Consider increasing code length or character set\n\nThis is a proactive warning to prevent future issues.", 'event-tickets-with-ticket-scanner'),
+					/* translators: 1: ticket list name 2: generation attempts 3: admin URL */__("WARNING: The ticket number format for list \"%1\$s\" is running out of combinations!\n\nIt took %2\$d attempts to generate a ticket code.\n\nRecommended action:\n1. Go to: %3\$s\n2. Edit the ticket list\n3. Consider increasing code length or character set\n\nThis is a proactive warning to prevent future issues.", 'event-tickets-with-ticket-scanner'),
 					$listObj['name'],
 					$counter,
 					admin_url('admin.php?page=event-tickets-with-ticket-scanner')

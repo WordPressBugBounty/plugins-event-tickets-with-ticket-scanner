@@ -20,7 +20,7 @@ class sasoEventtickets_TicketDesigner {
                 // the function — e.g. older Twig versions or namespace conflicts on PHP 8.2+.
                 if (!function_exists('trigger_deprecation')) {
                     function trigger_deprecation(string $package, string $version, string $message, mixed ...$args): void {
-                        @trigger_error(($package || $version ? "Since $package $version: " : '') . ($args ? vsprintf($message, $args) : $message), \E_USER_DEPRECATED);
+                        @trigger_error(($package || $version ? "Since $package $version: " : '') . ($args ? vsprintf($message, $args) : $message), \E_USER_DEPRECATED); // phpcs:ignore WordPress.Security.EscapeOutput -- Twig deprecation polyfill writing to trigger_error (PHP log), not HTML output
                     }
                 }
                 // Guard: the bundled Twig 3.22 requires PHP 8.1+. In the WEB context

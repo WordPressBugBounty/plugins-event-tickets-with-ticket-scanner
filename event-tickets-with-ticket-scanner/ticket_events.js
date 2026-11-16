@@ -303,6 +303,17 @@ jQuery(document).ready(()=>{
         let browserLanguage = navigator.language || navigator.userLanguage;
         let language = browserLanguage.split('-')[0];
 
+        // Human-readable event date ("So., 1. Nov. 2026" / "Sun, Nov 1,
+        // 2026", locale-aware) — replaces the raw Date2Text output in the
+        // list faces. Falls back to the configured display format.
+        function formatEventDateHuman(dateObj) {
+            try {
+                return dateObj.toLocaleDateString(language, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+            } catch (e) {
+                return Date2Text(dateObj.getTime());
+            }
+        }
+
         // iterate over the months
         let months_to_show = list_infos.months_to_show ? list_infos.months_to_show : 1;
         let html = '<div class="sasoEventTicketsValidator_list">';
@@ -314,7 +325,7 @@ jQuery(document).ready(()=>{
 
         let ret = $(html);
         // find all events and add click event
-        ret.find('.sasoEventTicketsValidator_event-info-btn').click(event=>{
+        ret.find('.sasoEventTicketsValidator_event-tickets-btn').click(event=>{
             event.preventDefault();
             //let div = $(event.target).closest('.sasoEventTicketsValidator_event');
             let elem = $(event.target).closest('.sasoEventTicketsValidator_list_event');
@@ -354,10 +365,7 @@ jQuery(document).ready(()=>{
             // render the actual month per day
             for (let day = 1; day <= daysInMonth; day++) {
                 let eventHtml = '';
-                // date object for the current day
                 let date_today = new Date(year, month, day);
-                // get the name of the day
-                let dayName = date_today.toLocaleString(language, {weekday: 'long'});
 
                 events.forEach(event => {
                     let eventStartDate = date_today;
@@ -403,7 +411,7 @@ jQuery(document).ready(()=>{
                             eventHtml += '<div class="sasoEventTicketsValidator_event-location">' + event.event.location_label + ' ' +event.event.location + '</div>';
                         }
 
-                        let event_date = Date2Text(eventStartDate.getTime()) + (eventStartDate == eventEndDate ? '' : ' - ' + Date2Text(eventEndDate.getTime()));
+                        let event_date = formatEventDateHuman(eventStartDate) + (eventStartDate == eventEndDate ? '' : ' – ' + formatEventDateHuman(eventEndDate));
 
                         eventHtml += '<div class="sasoEventTicketsValidator_event-date">' + event_date + '</div>';
                         if (event.dates.ticket_start_time && event.dates.ticket_start_time !== '') {
@@ -420,14 +428,27 @@ jQuery(document).ready(()=>{
                         if (event.event.description && event.event.description !== '') {
                             eventHtml += '<div class="sasoEventTicketsValidator_event-description">' + event.event.description + '</div>';
                         }
-                        // add info button aligned to the right
-                        eventHtml += '<div class="sasoEventTicketsValidator_event-info"><button class="sasoEventTicketsValidator_event-info-btn">' + __('Info', 'event-tickets-with-ticket-scanner') + '</button></div>';
+                        // price + "Tickets" call-to-action (3.4.0 polish):
+                        // the card answers what/when/where/how much + one
+                        // clear action — the ghost "Info" button is gone.
+                        // price_html is WooCommerce core output (trusted,
+                        // same markup the product page renders).
+                        let price_text = '';
+                        if (event.product && event.product.price_html) {
+                            price_text = event.product.price_html;
+                        } else if (event.product && event.product.price) {
+                            price_text = escapeHtml(String(event.product.price));
+                        }
+                        eventHtml += '<div class="sasoEventTicketsValidator_event-footer">';
+                        eventHtml += '<span class="sasoEventTicketsValidator_event-price">' + price_text + '</span>';
+                        eventHtml += '<button type="button" class="sasoEventTicketsValidator_event-tickets-btn">' + __('Tickets', 'event-tickets-with-ticket-scanner') + '</button>';
+                        eventHtml += '</div>';
                         eventHtml += '</div>';
                     }
                 });
                 let is_today = date_today.toDateString() === new Date().toDateString();
                 html += '<div class="sasoEventTicketsValidator_list_calendar-row'+(is_today ? '-today' : '')+'">'
-                    + '<div class="sasoEventTicketsValidator_list_calendar-header'+(is_today ? '-today' : '')+'">' + Date2Text(date_today.getTime()) + ' - ' + dayName + '</div>'
+                    + '<div class="sasoEventTicketsValidator_list_calendar-header'+(is_today ? '-today' : '')+'">' + formatEventDateHuman(date_today) + '</div>'
                     + (eventHtml == '' ? '-' : eventHtml)
                     + '</div>';
             }
